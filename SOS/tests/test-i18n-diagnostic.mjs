@@ -48,6 +48,11 @@ p.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); }
 async function mira(fitxer, titol, esperaEs) {
   console.log('\n· ' + fitxer);
   await p.goto(url(fitxer));
+  /* S'esborra la tria desada abans de mirar amb què obre: la tria es comparteix
+     entre les quatre pantalles **a posta**, i sense esborrar-la aquesta prova
+     comprovaria el que ha deixat la pàgina anterior i no el valor per defecte. */
+  await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
+  await p.reload();
   await p.waitForTimeout(250);
   const abans = await p.evaluate(() => ({
     botons: document.querySelectorAll('.lang-b').length,
@@ -101,6 +106,34 @@ async function mira(fitxer, titol, esperaEs) {
   await p.waitForTimeout(250);
   const v = await p.evaluate(() => document.querySelector('h1').textContent.trim());
   ok(v === titol, 'i es pot tornar al català');
+
+  /* ── LA QUE TROBA EL QUE NO TÉ CLAU ──────────────────────────────────────
+     Tot l'anterior mira **els elements amb clau**, i per això no veu el que no
+     en té. Al pressupost això va deixar passar vint-i-quatre noms de paquet i
+     tres paràgrafs sencers amb el formulari donat per traduït. Aquesta
+     recorre tot el text de la pàgina i no pregunta si té clau. */
+  await p.click('.lang-b[data-lang="es"]');
+  await p.waitForTimeout(300);
+  const tot = await p.evaluate(sCA => {
+    const re = new RegExp(sCA, 'i');
+    const out = [];
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) {
+      if (n.parentElement && /SCRIPT|STYLE/.test(n.parentElement.tagName)) continue;
+      const t = n.textContent.trim();
+      if (t.length < 12 || !re.test(t)) continue;
+      let e = n.parentElement, k = null;
+      while (e && !k) {
+        k = e.getAttribute && (e.getAttribute('data-i18n') || e.getAttribute('data-i18n-html'));
+        e = e.parentElement;
+      }
+      out.push((k ? '[' + k + '] ' : '[sense clau] ') + t.slice(0, 56));
+    }
+    return out;
+  }, CA.source);
+  ok(!tot.length, `i cap fragment en català a tota la pàgina (${tot.length})`
+    + (tot.length ? ':\n      ' + tot.slice(0, 5).join('\n      ') : ''));
 }
 
 console.log('\n1 · Les tres pantalles es poden llegir en castellà');

@@ -31,7 +31,7 @@ const PAGINA = pathToFileURL(join(import.meta.dirname, '..', 'pressupost.html'))
 
 /* Paraules que només existeixen en català. No és un detector de llengua: és
    una xarxa prou espessa per caçar una etiqueta o un paràgraf sense traduir. */
-const CA = /\b(amb|aquest|aquesta|això|què|però|perquè|véns|triat|cognoms|Següent|Enrere|teu|tria)\b/i;
+const CA = /\b(amb|aquest|aquesta|això|què|però|perquè|véns|triat|cognoms|Següent|Enrere|teu|tria|seva|següent|antiguitat|sencer|esdeveniments|pràctica|cadascú|hi ha|teixit)\b/i;
 
 let fail = 0;
 const ok = (c, m) => { if (c) console.log('  ✓ ' + m); else { fail++; console.log('  ✗ ' + m); } };
@@ -136,6 +136,109 @@ console.log('\n4 · I segueix sent un formulari');
     'els `value` dels desplegables no es tradueixen: ' + r.vals.join(', '));
   ok(r.rols.includes('direccio'), 'ni els dels rols: ' + r.rols.join(', '));
   ok(r.orgs.includes('ajuntament'), 'ni els dels tipus d\'organització: ' + r.orgs.join(', '));
+}
+
+/* ── 5 · LA QUE DECIDEIX UNA COMPRA · la proposta ─────────────────────────
+   El formulari es va traduir el 02/10/2026 i **la proposta no**: qui l'omplia
+   en castellà arribava al final i es trobava el total, el desglossament, com
+   s'ha calculat i què falta per tancar-ho **sencers en català**. És la pantalla
+   on algú decideix si ens truca.
+
+   Els noms dels paquets i dels nivells no són diccionari: vénen del catàleg
+   amb el seu `nomEs`, i per això es llegeixen de la pantalla i no del codi. */
+console.log('\n5 · I la proposta que en surt, també');
+{
+  await p.goto(PAGINA);
+  await p.waitForTimeout(200);
+  await p.click('.lang-b[data-lang="es"]');
+  await p.waitForTimeout(200);
+  await p.fill('#nom', 'Ana Ruiz');
+  await p.fill('#mail', 'ana@exemple.cat');
+  await p.click('[data-go="2"]');
+  await p.click('#orgType .opt[data-v="gran"]');
+  await p.fill('#municipi', 'Sabadell');
+  await p.click('[data-go="3"]');
+  await p.waitForTimeout(150);
+  await p.check('input[name="paquet"][value="mapa-organitzacio"]');
+  await p.check('input[name="paquet"][value="fent-pinya"]');
+  await p.click('[data-go="4"]');
+  await p.waitForTimeout(150);
+  await p.selectOption('#diners', 'subvencio');
+  /* Una partida d'hores, perquè la taula de l'escala també hi surt. */
+  const camps = await p.$$('#escBody input');
+  if (camps[1]) await camps[1].fill('10');
+  await p.click('#doProp');
+  await p.waitForTimeout(350);
+
+  const r = await p.evaluate(sCA => {
+    const re = new RegExp(sCA, 'i');
+    const t = id => (document.getElementById(id) || { innerText: '' }).innerText.trim();
+    const res = document.getElementById('result');
+    return {
+      visible: res.offsetHeight > 200,
+      totalD: t('rTotalD'), metode: t('rMetode'), falta: t('rFalta'),
+      lead: t('rLead'), lin: t('rLin'), hores: t('rHores'), esc: t('escBody'),
+      linies: res.innerText.split('\n').map(x => x.trim())
+        .filter(x => x.length > 14 && re.test(x)).slice(0, 5)
+    };
+  }, CA.source);
+
+  ok(r.visible, 'la proposta es veu de debò');
+  ok(!CA.test(r.totalD), 'el peu del total: ' + r.totalD.slice(0, 60) + '…');
+  ok(!CA.test(r.metode), 'com s\'ha calculat — la frase que sosté el preu');
+  ok(!CA.test(r.falta), 'i què falta per tancar-ho');
+  ok(/Para .+ · 2 paquetes/.test(r.lead), 'el lead, amb el plural que toca: ' + r.lead);
+  ok(/a medida/.test(r.lin), 'i «a mida» al desglossament: ' + r.lin.replace(/\n/g, ' · ').slice(0, 70));
+  ok(/Gestor/.test(r.hores), 'les hores per nivell, des del catàleg: ' + r.hores.replace(/\n/g, ' '));
+  ok(!r.linies.length, 'cap línia de la proposta en català'
+    + (r.linies.length ? ': ' + r.linies.join(' · ') : ''));
+
+  /* El resum, al contrari: **ha de seguir en català**. No és una pantalla, és
+     el que arriba a la nostra banda, amb els mateixos separadors que els dos
+     diagnòstics. Si canviés de llengua amb el botó, la safata trobaria les
+     seccions la meitat de les vegades. */
+  const resum = await p.evaluate(() => window.__PRESSU && window.__PRESSU.resum
+    ? window.__PRESSU.resum(window.__PRESSU.proposta()) : '');
+  ok(/PETICIÓ DE PRESSUPOST/.test(resum) && /── QUÈ ──/.test(resum),
+    'i el resum que viatja per correu segueix en català, amb els seus separadors');
+  ok(/Mapa de valor d'una organització/.test(resum),
+    'amb el nom català del paquet i no el de la pantalla');
+}
+
+/* ── 6 · LA QUE TROBA EL QUE NO TÉ CLAU ───────────────────────────────────
+   Les quatre primeres regles miren **els elements amb clau**, i per això no
+   veuen el que no en té. Això va deixar passar, amb el formulari donat per
+   traduït: els vint-i-quatre noms de paquet del triador, les quatre
+   capçaleres de família, el subtítol del pas 3, el paràgraf de la
+   contractació per hores i la promesa de privacitat.
+
+   Aquesta recorre **tot el text de la pàgina** i no pregunta si té clau. */
+console.log('\n6 · I res de la pàgina es queda en català, tingui clau o no');
+{
+  await p.goto(PAGINA);
+  await p.waitForTimeout(200);
+  await p.click('.lang-b[data-lang="es"]');
+  await p.waitForTimeout(300);
+  const r = await p.evaluate(sCA => {
+    const re = new RegExp(sCA, 'i');
+    const out = [];
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let n;
+    while ((n = w.nextNode())) {
+      if (n.parentElement && /SCRIPT|STYLE/.test(n.parentElement.tagName)) continue;
+      const t = n.textContent.trim();
+      if (t.length < 12 || !re.test(t)) continue;
+      let e = n.parentElement, k = null;
+      while (e && !k) {
+        k = e.getAttribute && (e.getAttribute('data-i18n') || e.getAttribute('data-i18n-html'));
+        e = e.parentElement;
+      }
+      out.push((k ? '[' + k + '] ' : '[sense clau] ') + t.slice(0, 60));
+    }
+    return out;
+  }, CA.source);
+  ok(!r.length, `cap fragment en català a tota la pàgina (${r.length})`
+    + (r.length ? ':\n      ' + r.slice(0, 6).join('\n      ') : ''));
 }
 
 await ctx.close();

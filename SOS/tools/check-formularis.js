@@ -262,6 +262,27 @@ else bad(`l'escala del formulari no quadra amb la del catàleg (${dolents.map(n 
     const nomesEs = [...es].filter(k => !ca.has(k));
     if (nomesCa.length) problemes.push(nom + ' → només en català: ' + nomesCa.slice(0, 5).join(', '));
     if (nomesEs.length) problemes.push(nom + ' → només en castellà: ' + nomesEs.slice(0, 5).join(', '));
+
+    /* I al revés: **cap clau que no la llegeixi ningú**. `pr.priv` existia als
+       dos diccionaris amb la promesa de privacitat i el marcatge no en portava
+       cap: la clau hi era, el paràgraf es quedava en català i les dues regles
+       de dalt donaven verd —les claus quadraven perfectament.
+
+       Una clau pot venir del marcatge o del JavaScript (`T('pr.r.metode')`), i
+       per això no es busca l'atribut sinó **el nom en qualsevol altre lloc del
+       fitxer**: si només apareix als dos diccionaris, no la demana ningú. */
+    /* `fo.*` i `nv.*` en queden fora: són els blocs compartits, i el generador
+       els escriu **sencers a totes** les pàgines. El diagnòstic del territori
+       porta `fo.l.persones` sense fer-la servir perquè aquell camp és de
+       l'altra branca, i això no és una clau morta sinó un diccionari compartit.
+       Les que es miren són les de la pàgina. */
+    const orfes = [...ca].filter(k => {
+      if (/^(fo|nv)\./.test(k)) return false;
+      const n = src.split("'" + k + "'").length - 1;
+      return n <= 2 && !usades.has(k);
+    });
+    if (orfes.length) problemes.push(nom + ' → claus que no llegeix ningú: '
+      + orfes.slice(0, 5).join(', ') + (orfes.length > 5 ? ` (+${orfes.length - 5})` : ''));
   });
   if (!problemes.length) ok('les quatre pantalles tenen commutador i els dos diccionaris amb les mateixes claus');
   else bad('la traducció dels formularis té forats:\n    ' + problemes.join('\n    ')

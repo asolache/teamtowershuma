@@ -92,6 +92,17 @@ textarea{min-height:88px;resize:vertical}
 .falta li{margin-bottom:.3rem}
 .send-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem}
 .priv{font-size:.82rem;color:var(--muted);margin-top:1.2rem;line-height:1.6}
+
+/* EL COMMUTADOR DE LLENGUA · la mateixa forma als quatre formularis. Aquesta
+   pàgina va rebre els botons el 02/10/2026 i **no l'estil**: sortien com dos
+   botons blancs del navegador, sense marcar quin hi havia posat. */
+.lang-sw{display:flex;gap:2px;width:max-content;margin:0 auto 1.1rem;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;padding:2px}
+.lang-b{background:transparent;border:none;color:var(--muted);font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.08em;cursor:pointer;padding:4px 11px;border-radius:5px;
+  transition:background .15s,color .15s}
+.lang-b.on{background:var(--indigo);color:#fff;font-weight:700}
+.lang-b:not(.on):hover{color:var(--text)}
 footer{padding:2.4rem 1.2rem 3rem;text-align:center;color:var(--muted);font-size:.83rem;border-top:1px solid rgba(255,255,255,.06)}
 footer a{color:var(--light)}
 </style>
@@ -188,7 +199,7 @@ footer a{color:var(--light)}
 </div>
 <div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
-<div class="err" id="e1">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="err" id="e1" data-i18n="pr.s1.err">Cal com a mínim el nom i un correu vàlid.</div>
 <div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="2">Següent →</button></div>
 </section>
 
@@ -225,61 +236,61 @@ footer a{color:var(--light)}
 </div>
 <div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
 <!--/FORM-ORG-->
-<div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
+<div class="err" id="e2" data-i18n="pr.s2.err">Tria el tipus d'organització i escriu el municipi.</div>
 <div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="3">Següent →</button></div>
 </section>
 
 <!-- ── Pas 3 · Què vols ── -->
 <section class="step" id="s3" hidden>
 <h2 data-i18n="pr.s3.h">3 · Què vols</h2>
-<p class="sub">Marca'n els que t'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d'empresa, per a un poble o per a una xarxa d'entitats. El que canvia és la forma, no el fons.</p>
+<p class="sub" data-i18n-html="pr.s3.sub">Marca'n els que t'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d'empresa, per a un poble o per a una xarxa d'entitats. El que canvia és la forma, no el fons.</p>
 <div class="pq-filtre" role="group" aria-label="Filtra per sector">
-<button type="button" class="pq-f on" data-sec="tot">Tot</button>
-<button type="button" class="pq-f" data-sec="privat">Empreses i cooperatives</button>
-<button type="button" class="pq-f" data-sec="public">Administració i entitats</button>
+<button type="button" class="pq-f on" data-sec="tot" data-i18n="pr.filtre.tots">Tot</button>
+<button type="button" class="pq-f" data-sec="privat" data-i18n="pr.filtre.privat">Empreses i cooperatives</button>
+<button type="button" class="pq-f" data-sec="public" data-i18n="pr.filtre.public">Administració i entitats</button>
 </div>
 <!--FORM-PAQUETS-->
-<h4 class="pq-fam">🕸️ Consultoria</h4>
+<h4 class="pq-fam" data-i18n="pr.fam.consultoria">🕸️ Consultoria</h4>
 <div class="pq-g">
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="diagnostic-teixit" data-min="1500" data-max="3000"><span class="pq-n">Diagnòstic del teixit local</span><span class="pq-p">1.500–3.000 €</span></label>
-<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="mapa-organitzacio" data-min="2500" data-max="4500"><span class="pq-n">Mapa de valor d'una organització</span><span class="pq-p">2.500–4.500 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fent-pinya-vna" data-min="4500" data-max="12000"><span class="pq-n">Fent pinya amb el mapa de valor</span><span class="pq-p">4.500–12.000 €</span></label>
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="mapa-comarcal" data-min="3500" data-max="6000"><span class="pq-n">Mapa comarcal i assemblea federativa</span><span class="pq-p">3.500–6.000 €</span></label>
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="impacte" data-min="600" data-max="1500"><span class="pq-n">Mesura d'impacte i justificació</span><span class="pq-p">600–1.500 €</span></label>
-<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="persones-cultura" data-min="1800" data-max="3200"><span class="pq-n">Diagnòstic de persones i cultura</span><span class="pq-p">1.800–3.200 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="diagnostic-teixit" data-min="1500" data-max="3000"><span class="pq-n" data-i18n="pr.paq.diagnostic-teixit">Diagnòstic del teixit local</span><span class="pq-p">1.500–3.000 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="mapa-organitzacio" data-min="2500" data-max="4500"><span class="pq-n" data-i18n="pr.paq.mapa-organitzacio">Mapa de valor d'una organització</span><span class="pq-p">2.500–4.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fent-pinya-vna" data-min="4500" data-max="12000"><span class="pq-n" data-i18n="pr.paq.fent-pinya-vna">Fent pinya amb el mapa de valor</span><span class="pq-p">4.500–12.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="mapa-comarcal" data-min="3500" data-max="6000"><span class="pq-n" data-i18n="pr.paq.mapa-comarcal">Mapa comarcal i assemblea federativa</span><span class="pq-p">3.500–6.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="impacte" data-min="600" data-max="1500"><span class="pq-n" data-i18n="pr.paq.impacte">Mesura d'impacte i justificació</span><span class="pq-p">600–1.500 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="persones-cultura" data-min="1800" data-max="3200"><span class="pq-n" data-i18n="pr.paq.persones-cultura">Diagnòstic de persones i cultura</span><span class="pq-p">1.800–3.200 €</span></label>
 </div>
-<h4 class="pq-fam">🎓 Formació</h4>
+<h4 class="pq-fam" data-i18n="pr.fam.formacio">🎓 Formació</h4>
 <div class="pq-g">
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="gestor" data-min="1200" data-max="2000"><span class="pq-n">Programa de Gestor/a</span><span class="pq-p">1.200–2.000 €</span></label>
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="equip-gestor" data-min="4500" data-max="7000"><span class="pq-n">Programa d'equip gestor</span><span class="pq-p">4.500–7.000 €</span></label>
-<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="comunitats-practica" data-min="3000" data-max="5500"><span class="pq-n">Comunitats de pràctica</span><span class="pq-p">3.000–5.500 €</span></label>
-<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="formacio-equips" data-min="1200" data-max="2800"><span class="pq-n">Formació d'equips</span><span class="pq-p">1.200–2.800 €</span></label>
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="escola" data-min="1800" data-max="3200"><span class="pq-n">La Fàbrica de Superherois</span><span class="pq-p">1.800–3.200 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="formar-formadors" data-min="2000" data-max="3500"><span class="pq-n">Formació de formadors</span><span class="pq-p">2.000–3.500 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="mentoria-directiva" data-min="3500" data-max="9000"><span class="pq-n">Mentoria per a equips directius</span><span class="pq-p">3.500–9.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="gestor" data-min="1200" data-max="2000"><span class="pq-n" data-i18n="pr.paq.gestor">Programa de Gestor/a</span><span class="pq-p">1.200–2.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="equip-gestor" data-min="4500" data-max="7000"><span class="pq-n" data-i18n="pr.paq.equip-gestor">Programa d'equip gestor</span><span class="pq-p">4.500–7.000 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="comunitats-practica" data-min="3000" data-max="5500"><span class="pq-n" data-i18n="pr.paq.comunitats-practica">Comunitats de pràctica</span><span class="pq-p">3.000–5.500 €</span></label>
+<label class="pq" data-sector="privat"><input type="checkbox" name="paquet" value="formacio-equips" data-min="1200" data-max="2800"><span class="pq-n" data-i18n="pr.paq.formacio-equips">Formació d'equips</span><span class="pq-p">1.200–2.800 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="escola" data-min="1800" data-max="3200"><span class="pq-n" data-i18n="pr.paq.escola">La Fàbrica de Superherois</span><span class="pq-p">1.800–3.200 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="formar-formadors" data-min="2000" data-max="3500"><span class="pq-n" data-i18n="pr.paq.formar-formadors">Formació de formadors</span><span class="pq-p">2.000–3.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="mentoria-directiva" data-min="3500" data-max="9000"><span class="pq-n" data-i18n="pr.paq.mentoria-directiva">Mentoria per a equips directius</span><span class="pq-p">3.500–9.000 €</span></label>
 </div>
-<h4 class="pq-fam">🎪 Producció i dinamització</h4>
+<h4 class="pq-fam" data-i18n="pr.fam.dinamitzacio">🎪 Producció i dinamització</h4>
 <div class="pq-g">
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="comu-diada" data-min="2200" data-max="4500"><span class="pq-n">Comú-diada</span><span class="pq-p">2.200–4.500 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fent-pinya" data-mida="1"><span class="pq-n">Taller de castells «Fent Pinya»</span><span class="pq-p">a mida</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="demos" data-mida="1"><span class="pq-n">Demostració castellera</span><span class="pq-p">a mida</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="produccio" data-min="3000" data-max="9000"><span class="pq-n">Producció d'esdeveniments</span><span class="pq-p">3.000–9.000 €</span></label>
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="posar-en-marxa" data-min="2400" data-max="5400"><span class="pq-n">Posada en marxa d'una dinàmica</span><span class="pq-p">2.400–5.400 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="comu-diada" data-min="2200" data-max="4500"><span class="pq-n" data-i18n="pr.paq.comu-diada">Comú-diada</span><span class="pq-p">2.200–4.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fent-pinya" data-mida="1"><span class="pq-n" data-i18n="pr.paq.fent-pinya">Taller de castells «Fent Pinya»</span><span class="pq-p" data-i18n="pr.r.amida">a mida</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="demos" data-mida="1"><span class="pq-n" data-i18n="pr.paq.demos">Demostració castellera</span><span class="pq-p" data-i18n="pr.r.amida">a mida</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="produccio" data-min="3000" data-max="9000"><span class="pq-n" data-i18n="pr.paq.produccio">Producció d'esdeveniments</span><span class="pq-p">3.000–9.000 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="posar-en-marxa" data-min="2400" data-max="5400"><span class="pq-n" data-i18n="pr.paq.posar-en-marxa">Posada en marxa d'una dinàmica</span><span class="pq-p">2.400–5.400 €</span></label>
 </div>
-<h4 class="pq-fam">⚙️ Digital i IA</h4>
+<h4 class="pq-fam" data-i18n="pr.fam.digital">⚙️ Digital i IA</h4>
 <div class="pq-g">
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fluxos-ia" data-min="1800" data-max="4500"><span class="pq-n">Fluxos amb IA · consultoria i formació</span><span class="pq-p">1.800–4.500 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="web-ia" data-min="2500" data-max="8000"><span class="pq-n">Web o eina feta amb IA</span><span class="pq-p">2.500–8.000 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="transmedia" data-min="4000" data-max="12000"><span class="pq-n">Projecte transmèdia</span><span class="pq-p">4.000–12.000 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="fluxos-ia" data-min="1800" data-max="4500"><span class="pq-n" data-i18n="pr.paq.fluxos-ia">Fluxos amb IA · consultoria i formació</span><span class="pq-p">1.800–4.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="web-ia" data-min="2500" data-max="8000"><span class="pq-n" data-i18n="pr.paq.web-ia">Web o eina feta amb IA</span><span class="pq-p">2.500–8.000 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="transmedia" data-min="4000" data-max="12000"><span class="pq-n" data-i18n="pr.paq.transmedia">Projecte transmèdia</span><span class="pq-p">4.000–12.000 €</span></label>
 </div>
-<h4 class="pq-fam">🖥️ Al voltant del SOS</h4>
+<h4 class="pq-fam" data-i18n="pr.fam.sos">🖥️ Al voltant del SOS</h4>
 <div class="pq-g">
-<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="implantacio" data-min="800" data-max="2500"><span class="pq-n">Implantació i suport</span><span class="pq-p">800–2.500 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="ia-amb-frens" data-min="600" data-max="1500"><span class="pq-n">IA amb frens · sessió de viabilitat</span><span class="pq-p">600–1.500 €</span></label>
-<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="contractes" data-min="1200" data-max="2500"><span class="pq-n">Contractes intel·ligents · estudi de viabilitat</span><span class="pq-p">1.200–2.500 €</span></label>
+<label class="pq" data-sector="public"><input type="checkbox" name="paquet" value="implantacio" data-min="800" data-max="2500"><span class="pq-n" data-i18n="pr.paq.implantacio">Implantació i suport</span><span class="pq-p">800–2.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="ia-amb-frens" data-min="600" data-max="1500"><span class="pq-n" data-i18n="pr.paq.ia-amb-frens">IA amb frens · sessió de viabilitat</span><span class="pq-p">600–1.500 €</span></label>
+<label class="pq" data-sector="tots"><input type="checkbox" name="paquet" value="contractes" data-min="1200" data-max="2500"><span class="pq-n" data-i18n="pr.paq.contractes">Contractes intel·ligents · estudi de viabilitat</span><span class="pq-p">1.200–2.500 €</span></label>
 </div>
 <!--/FORM-PAQUETS-->
-<div class="err" id="e3">Marca com a mínim un paquet.</div>
+<div class="err" id="e3" data-i18n="pr.s3.err">Marca com a mínim un paquet.</div>
 <div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="2">← Enrere</button><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="4">Següent →</button></div>
 </section>
 
@@ -307,7 +318,7 @@ footer a{color:var(--light)}
 </div>
 
 <h3 style="font-size:.98rem;margin:1.6rem 0 .4rem" data-i18n="pr.hores.h">Si ho contracteu per hores</h3>
-<p class="sub" style="margin-bottom:.6rem">Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.</p>
+<p class="sub" style="margin-bottom:.6rem" data-i18n-html="pr.hores.sub">Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.</p>
 <div class="taula-scroll">
 <table class="esc" id="escala">
 <thead><tr><th data-i18n="pr.esc.niv">Nivell</th><th data-i18n="pr.esc.preu">Preu hora</th><th data-i18n="pr.esc.hores">Hores</th><th style="text-align:right" data-i18n="pr.esc.sub">Subtotal</th></tr></thead>
@@ -317,16 +328,16 @@ footer a{color:var(--light)}
 
 <!--FORM-MIDA-->
 <div class="grid2">
-<div class="f" data-mida-per="fent-pinya demos produccio comu-diada"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Marca la diferència més gran del pressupost.</div></div>
-<div class="f" data-mida-per="demos"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
-<option value="">— tria —</option>
-<option value="4">4 pisos</option>
-<option value="5">5 pisos</option>
-<option value="6">6 pisos</option>
-</select><div class="hint">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
+<div class="f" data-mida-per="fent-pinya demos produccio comu-diada"><label for="participants" data-i18n="pr.mida.part">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint" data-i18n="pr.mida.part.h">Marca la diferència més gran del pressupost.</div></div>
+<div class="f" data-mida-per="demos"><label for="alcada" data-i18n="pr.mida.alc">Alçada de la demostració</label><select id="alcada" name="alcada">
+<option value="" data-i18n="pr.tria">— tria —</option>
+<option value="4" data-i18n="pr.pisos.4">4 pisos</option>
+<option value="5" data-i18n="pr.pisos.5">5 pisos</option>
+<option value="6" data-i18n="pr.pisos.6">6 pisos</option>
+</select><div class="hint" data-i18n="pr.mida.alc.h">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
 </div>
-<div class="f" data-mida-per="fent-pinya demos produccio comu-diada"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
-<p class="hint" id="midaCap" hidden>Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>
+<div class="f" data-mida-per="fent-pinya demos produccio comu-diada"><label for="lloc" data-i18n="pr.mida.lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" data-i18n-ph="pr.mida.lloc.ph" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint" data-i18n="pr.mida.lloc.h">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<p class="hint" id="midaCap" hidden data-i18n="pr.mida.cap">Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>
 <!--/FORM-MIDA-->
 
 <div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doProp" data-i18n="pr.veure">Veure la proposta →</button></div>
@@ -341,7 +352,7 @@ footer a{color:var(--light)}
 <p id="rLead" style="color:var(--light);margin:.3rem 0 0;font-size:.94rem"></p>
 
 <div class="tot">
-<div class="t-l">Total orientatiu · sense IVA</div>
+<div class="t-l" data-i18n="pr.prop.total">Total orientatiu · sense IVA</div>
 <div class="t-v" id="rTotal"></div>
 <div class="t-d" id="rTotalD"></div>
 </div>
@@ -351,25 +362,25 @@ footer a{color:var(--light)}
 <div class="sec"><h3 data-i18n="pr.prop.metode">Com s'ha calculat</h3><p id="rMetode" style="font-size:.88rem;color:var(--muted);line-height:1.65"></p></div>
 
 <div class="falta">
-<strong>Què falta per tancar-ho</strong>
+<strong data-i18n="pr.prop.falta">Què falta per tancar-ho</strong>
 <ul id="rFalta"></ul>
 </div>
 
 <div class="send-btns">
-<a class="btn btn-primary" id="bSend" href="#">✉ Envia'ns la petició</a>
-<button type="button" class="btn" id="bCopy">📋 Copia-la</button>
-<button type="button" class="btn" id="bJson">⬇ Descarrega-la (JSON)</button>
-<button type="button" class="btn" id="bAgain">↺ Torna-hi</button>
+<a class="btn btn-primary" id="bSend" href="#" data-i18n="pr.prop.envia">✉ Envia'ns la petició</a>
+<button type="button" class="btn" id="bCopy" data-i18n="pr.prop.copia">📋 Copia-la</button>
+<button type="button" class="btn" id="bJson" data-i18n="pr.prop.baixa">⬇ Descarrega-la (JSON)</button>
+<button type="button" class="btn" id="bAgain" data-i18n="pr.prop.torna">↺ Torna-hi</button>
 </div>
 
-<p class="priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns la petició». No hi ha analítica ni seguiment en aquesta pàgina.</p>
+<p class="priv" data-i18n-html="pr.priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns la petició». No hi ha analítica ni seguiment en aquesta pàgina.</p>
 </div>
 </div>
 
 </main>
 
 <footer>
-<p>SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a></p>
+<p data-i18n-html="pr.peu">SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a></p>
 </footer>
 
 <script type="module">
@@ -385,12 +396,36 @@ const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció 
 
 /*FORM-ESCALA*/
 // Generat per SOS/tools/build-formularis.js des del catàleg — no ho editis a mà.
-const NIVELLS=[{id:'N1',nom:'Practicant',hora:35},{id:'N2',nom:'Gestor/a',hora:55},{id:'N3',nom:'Mentor/a',hora:80}];
-const PAQ_NOM={'diagnostic-teixit':'Diagnòstic del teixit local','mapa-organitzacio':'Mapa de valor d\'una organització','fent-pinya-vna':'Fent pinya amb el mapa de valor','mapa-comarcal':'Mapa comarcal i assemblea federativa','impacte':'Mesura d\'impacte i justificació','persones-cultura':'Diagnòstic de persones i cultura','gestor':'Programa de Gestor/a','equip-gestor':'Programa d\'equip gestor','comunitats-practica':'Comunitats de pràctica','formacio-equips':'Formació d\'equips','escola':'La Fàbrica de Superherois','formar-formadors':'Formació de formadors','mentoria-directiva':'Mentoria per a equips directius','comu-diada':'Comú-diada','fent-pinya':'Taller de castells «Fent Pinya»','demos':'Demostració castellera','produccio':'Producció d\'esdeveniments','posar-en-marxa':'Posada en marxa d\'una dinàmica','fluxos-ia':'Fluxos amb IA · consultoria i formació','web-ia':'Web o eina feta amb IA','transmedia':'Projecte transmèdia','implantacio':'Implantació i suport','ia-amb-frens':'IA amb frens · sessió de viabilitat','contractes':'Contractes intel·ligents · estudi de viabilitat'};
+const NIVELLS=[{id:'N1',nom:'Practicant',nomEs:'Practicante',hora:35},{id:'N2',nom:'Gestor/a',nomEs:'Gestor/a',hora:55},{id:'N3',nom:'Mentor/a',nomEs:'Mentor/a',hora:80}];
+const PAQ_NOM={'diagnostic-teixit':{nom:'Diagnòstic del teixit local',nomEs:'Diagnóstico del tejido local'},'mapa-organitzacio':{nom:'Mapa de valor d\'una organització',nomEs:'Mapa de valor de una organización'},'fent-pinya-vna':{nom:'Fent pinya amb el mapa de valor',nomEs:'Haciendo piña con el mapa de valor'},'mapa-comarcal':{nom:'Mapa comarcal i assemblea federativa',nomEs:'Mapa comarcal y asamblea federativa'},'impacte':{nom:'Mesura d\'impacte i justificació',nomEs:'Medida de impacto y justificación'},'persones-cultura':{nom:'Diagnòstic de persones i cultura',nomEs:'Diagnóstico de personas y cultura'},'gestor':{nom:'Programa de Gestor/a',nomEs:'Programa de Gestor/a'},'equip-gestor':{nom:'Programa d\'equip gestor',nomEs:'Programa de equipo gestor'},'comunitats-practica':{nom:'Comunitats de pràctica',nomEs:'Comunidades de práctica'},'formacio-equips':{nom:'Formació d\'equips',nomEs:'Formación de equipos'},'escola':{nom:'La Fàbrica de Superherois',nomEs:'La Fábrica de Superhéroes'},'formar-formadors':{nom:'Formació de formadors',nomEs:'Formación de formadores'},'mentoria-directiva':{nom:'Mentoria per a equips directius',nomEs:'Mentoría para equipos directivos'},'comu-diada':{nom:'Comú-diada',nomEs:'Comú-diada'},'fent-pinya':{nom:'Taller de castells «Fent Pinya»',nomEs:'Taller de castells «Fent Pinya»'},'demos':{nom:'Demostració castellera',nomEs:'Demostración castellera'},'produccio':{nom:'Producció d\'esdeveniments',nomEs:'Producción de eventos'},'posar-en-marxa':{nom:'Posada en marxa d\'una dinàmica',nomEs:'Puesta en marcha de una dinámica'},'fluxos-ia':{nom:'Fluxos amb IA · consultoria i formació',nomEs:'Flujos con IA · consultoría y formación'},'web-ia':{nom:'Web o eina feta amb IA',nomEs:'Web o herramienta hecha con IA'},'transmedia':{nom:'Projecte transmèdia',nomEs:'Proyecto transmedia'},'implantacio':{nom:'Implantació i suport',nomEs:'Implantación y soporte'},'ia-amb-frens':{nom:'IA amb frens · sessió de viabilitat',nomEs:'IA con frenos · sesión de viabilidad'},'contractes':{nom:'Contractes intel·ligents · estudi de viabilitat',nomEs:'Contratos inteligentes · estudio de viabilidad'}};
 /*/FORM-ESCALA*/
 
 const st={org:''};
-const eur=n=>n.toLocaleString('ca-ES')+' €';
+/* ── El text de la proposta, en la llengua que hi ha posada ────────────────
+   `T` és el text d'una clau amb els forats omplerts; `L` el d'un camp amb
+   germà castellà (`nomEs`), que és com venen els noms dels paquets i els
+   nivells de l'escala des del catàleg. `catala` llegeix el diccionari català
+   passi el que passi, i és el que fa servir el resum que viatja per correu.
+
+   Les dues llegeixen `PR_LANG`, que es declara a baix amb el diccionari: no hi
+   pot haver mitja proposta en una llengua i mitja en l'altra. */
+const T=(k,f)=>{
+  const d=(typeof PR_I18N!=='undefined'&&PR_I18N[PR_LANG])||{};
+  let s=d[k]!==undefined?d[k]:((typeof PR_I18N!=='undefined'&&PR_I18N.ca[k])||'');
+  if(f)Object.keys(f).forEach(x=>{s=s.split('{'+x+'}').join(f[x]);});
+  return s;
+};
+const L=o=>!o?'':((PR_LANG==='es'?(o.nomEs||o.nom):o.nom)||'');
+const catala=(k,f)=>{
+  let s=(typeof PR_I18N!=='undefined'&&PR_I18N.ca[k])||'';
+  if(f)Object.keys(f).forEach(x=>{s=s.split('{'+x+'}').join(f[x]);});
+  return s;
+};
+/* El format dels números i de les dates segueix la llengua. Els dos idiomes
+   separen els milers igual, però la data no: «3/10/2026» i no «3 de octubre».*/
+const LOC=()=>PR_LANG==='es'?'es-ES':'ca-ES';
+const num=n=>n.toLocaleString(LOC());
+const eur=n=>num(n)+' €';
 const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
 
 /* ── El pont amb el diagnòstic ────────────────────────────────────────────
@@ -440,10 +475,13 @@ function filtraPaquets(sec){
 }
 $$('.pq-f').forEach(b=>b.onclick=()=>filtraPaquets(b.dataset.sec));
 
-/* ── L'escala per hores ── */
+/* ── L'escala per hores ──
+   El nom del nivell porta clau perquè la taula es llegeixi en la llengua que
+   hi ha posada: `data-i18n-niv` el torna a escriure des de `NIVELLS`, que és
+   d'on ve amb el seu `nomEs`. */
 NIVELLS.forEach(n=>{
   const tr=document.createElement('tr');
-  tr.innerHTML='<td><strong>'+n.id+'</strong> · '+n.nom+'</td>'+
+  tr.innerHTML='<td><strong>'+n.id+'</strong> · <span data-i18n-niv="'+n.id+'">'+n.nom+'</span></td>'+
     '<td class="e-h">'+n.hora+' €/h</td>'+
     '<td><input type="number" min="0" step="1" value="0" data-niv="'+n.id+'" data-hora="'+n.hora+'"></td>'+
     '<td class="e-s" data-sub="'+n.id+'">0 €</td>';
@@ -508,7 +546,7 @@ $$('[data-go]').forEach(b=>b.onclick=()=>{
 });
 
 const tries=()=>$$('input[name="paquet"]:checked').map(c=>({
-  id:c.value, nom:PAQ_NOM[c.value]||c.value,
+  id:c.value, nom:L(PAQ_NOM[c.value])||c.value, nomCa:(PAQ_NOM[c.value]||{}).nom||c.value,
   mida:c.dataset.mida==='1',
   min:Number(c.dataset.min||0), max:Number(c.dataset.max||0)
 }));
@@ -529,18 +567,30 @@ function proposta(){
   return {sel,mides,min,max,horesT};
 }
 
+/* Les cometes del nom d'un paquet. Dos del catàleg ja en porten —«Fent Pinya»,
+   «La Fàbrica de Superherois»— i embolicar-los un altre cop donava
+   «Taller de castells «Fent Pinya»», que es llegeix malament i no peta. */
+const cita=n=>/[«»]/.test(n)?n:'«'+n+'»';
+
+/* La proposta, escrita. Cap frase literal: totes surten del diccionari, perquè
+   és la pantalla on algú decideix si ens truca i es llegia **sencera en
+   català** encara que el formulari estigués en castellà.
+
+   Els noms dels paquets i dels nivells vénen del catàleg amb el seu `nomEs`.
+   `rPinta` guarda el que s'ha pintat perquè canviar de llengua amb la proposta
+   a la pantalla la torni a escriure sense recalcular-la. */
 function pinta(P){
-  $('#rTotal').textContent = P.min===P.max ? eur(P.min) : 'De '+P.min.toLocaleString('ca-ES')+' a '+eur(P.max);
+  $('#rTotal').textContent = P.min===P.max ? eur(P.min) : T('pr.r.de',{a:num(P.min),b:eur(P.max)});
   $('#rTotalD').textContent = P.mides.length
-    ? 'No hi entren '+P.mides.map(p=>'«'+p.nom+'»').join(' i ')+': es pressuposten amb el mapa de cost i el desglossament va a la proposta.'
-    : 'Sense IVA. És una forquilla orientativa: la proposta final la tanca una conversa.';
+    ? T('pr.r.fora',{p:P.mides.map(p=>cita(p.nom)).join(' · ')})
+    : T('pr.r.sense');
 
   $('#rLin').innerHTML='';
   P.sel.forEach(p=>{
     const li=document.createElement('li');
     if(p.mida)li.className='mida';
     li.innerHTML='<span>'+p.nom+'</span><span>'+
-      (p.mida?'a mida':(p.min===p.max?eur(p.min):p.min.toLocaleString('ca-ES')+'–'+eur(p.max)))+'</span>';
+      (p.mida?T('pr.r.amida'):(p.min===p.max?eur(p.min):num(p.min)+'–'+eur(p.max)))+'</span>';
     $('#rLin').appendChild(li);
   });
 
@@ -551,26 +601,40 @@ function pinta(P){
       const h=Math.max(0,Number(i.value)||0); if(!h)return;
       const n=NIVELLS.find(x=>x.id===i.dataset.niv);
       const li=document.createElement('li');
-      li.innerHTML='<span>'+n.id+' · '+n.nom+' — '+h+' h × '+n.hora+' €/h</span><span>'+eur(h*n.hora)+'</span>';
+      li.innerHTML='<span>'+n.id+' · '+L(n)+' — '+h+' h × '+n.hora+' €/h</span><span>'+eur(h*n.hora)+'</span>';
       $('#rHores').appendChild(li);
     });
   }
 
-  $('#rMetode').textContent='Les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell i les despeses directes van al seu preu de factura, sense marge a sobre. El que separa un nivell del següent és evidència registrada i verificable, no antiguitat.';
+  $('#rMetode').textContent=T('pr.r.metode');
 
   const F=[];
-  if(P.mides.length)F.push('Dimensionar '+P.mides.map(p=>'«'+p.nom+'»').join(' i ')+' amb les dades que has donat, i tornar-t\'ho desglossat.');
-  F.push('Una conversa de 45 minuts per ajustar l\'abast: sovint hi sobra alguna cosa.');
-  if($('#diners').value==='subvencio')F.push('Mirar el calendari de la convocatòria: la data de justificació canvia el calendari de la feina.');
-  if($('#diners').value==='perveure')F.push('Trobar la partida o la convocatòria que ho pot pagar. Sovint ja existeix i no s\'hi havia mirat.');
-  if(v('termini')==='data'||$('#termini').value==='data')F.push('Confirmar la data i reservar equip.');
-  F.push('Condicions de reserva i cancel·lació per escrit abans de signar res.');
+  if(P.mides.length)F.push(T('pr.r.f.dimensionar',{p:P.mides.map(p=>cita(p.nom)).join(' · ')}));
+  F.push(T('pr.r.f.conversa'));
+  if($('#diners').value==='subvencio')F.push(T('pr.r.f.convocatoria'));
+  if($('#diners').value==='perveure')F.push(T('pr.r.f.partida'));
+  if($('#termini').value==='data')F.push(T('pr.r.f.data'));
+  F.push(T('pr.r.f.condicions'));
   $('#rFalta').innerHTML=F.map(t=>'<li>'+t+'</li>').join('');
 
   const q=v('orgNom')||v('municipi')||'';
-  $('#rLead').textContent='Per a '+(q||'la teva organització')+' · '+P.sel.length+' paquet'+(P.sel.length===1?'':'s')+' · generada el '+new Date().toLocaleDateString('ca');
+  const n=P.sel.length;
+  $('#rLead').textContent=T('pr.r.lead',{
+    q:q||T('pr.r.teva'),
+    n:T(n===1?'pr.r.paquet':'pr.r.paquets',{n:n}),
+    d:new Date().toLocaleDateString(LOC())
+  });
 }
 
+/* El resum que viatja per correu. **Sempre en català**, tant si la pantalla
+   està en castellà com si no: no és una pantalla, és el que arriba a la nostra
+   banda, amb els mateixos separadors que els dos diagnòstics. Si canviés de
+   llengua amb el botó, el que llegeix la safata trobaria les seccions la meitat
+   de les vegades.
+
+   Per això aquí no es fa servir `p.nom` —que segueix la llengua de la
+   pantalla— sinó `p.nomCa`, i els imports van amb el format català. */
+const eurCa=n=>n.toLocaleString('ca-ES')+' €';
 function resum(P){
   const L=[];
   L.push('PETICIÓ DE PRESSUPOST · TEAMTOWERS HUMÀ');
@@ -589,20 +653,20 @@ function resum(P){
   if(v('poblacio'))L.push('Població: '+v('poblacio'));
   L.push('');
   L.push('── QUÈ ──');
-  P.sel.forEach(p=>L.push('· '+p.nom+' — '+(p.mida?'a mida (mapa de cost)':
-    (p.min===p.max?eur(p.min):'de '+p.min.toLocaleString('ca-ES')+' a '+eur(p.max)))));
+  P.sel.forEach(p=>L.push('· '+p.nomCa+' — '+(p.mida?'a mida (mapa de cost)':
+    (p.min===p.max?eurCa(p.min):'de '+p.min.toLocaleString('ca-ES')+' a '+eurCa(p.max)))));
   if(P.horesT>0){
     L.push('');
     L.push('── PER HORES ──');
     $$('#escBody input').forEach(i=>{
       const h=Math.max(0,Number(i.value)||0); if(!h)return;
       const n=NIVELLS.find(x=>x.id===i.dataset.niv);
-      L.push('· '+n.id+' '+n.nom+': '+h+' h × '+n.hora+' €/h = '+eur(h*n.hora));
+      L.push('· '+n.id+' '+n.nom+': '+h+' h × '+n.hora+' €/h = '+eurCa(h*n.hora));
     });
   }
   L.push('');
-  L.push('TOTAL ORIENTATIU (sense IVA): '+(P.min===P.max?eur(P.min):'de '+P.min.toLocaleString('ca-ES')+' a '+eur(P.max)));
-  if(P.mides.length)L.push('No hi entra: '+P.mides.map(p=>p.nom).join(', ')+' — es pressuposten amb el mapa de cost.');
+  L.push('TOTAL ORIENTATIU (sense IVA): '+(P.min===P.max?eurCa(P.min):'de '+P.min.toLocaleString('ca-ES')+' a '+eurCa(P.max)));
+  if(P.mides.length)L.push('No hi entra: '+P.mides.map(p=>p.nomCa).join(', ')+' — es pressuposten amb el mapa de cost.');
   L.push('');
   L.push('── CONTEXT ──');
   if(v('repte'))L.push('Repte: '+v('repte'));
@@ -631,16 +695,16 @@ $('#doProp').onclick=()=>{
   window.scrollTo({top:0,behavior:'smooth'});
 };
 $('#bCopy').onclick=async()=>{
-  try{ await navigator.clipboard.writeText(resum(actual)); $('#bCopy').textContent='✓ Copiada'; }
-  catch(e){ $('#bCopy').textContent='No s\'ha pogut copiar'; }
-  setTimeout(()=>{$('#bCopy').textContent='📋 Copia-la';},2200);
+  try{ await navigator.clipboard.writeText(resum(actual)); $('#bCopy').textContent=T('pr.b.copiada'); }
+  catch(e){ $('#bCopy').textContent=T('pr.b.nocopia'); }
+  setTimeout(()=>{$('#bCopy').textContent=T('pr.prop.copia');},2200);
 };
 $('#bJson').onclick=()=>{
   const d={
     generat:new Date().toISOString(),
     persona:{nom:v('nom'),rol:v('rol'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
     organitzacio:{tipus:st.org,sector:ORG_SECTOR[st.org]||'',nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
-    paquets:actual.sel.map(p=>({id:p.id,nom:p.nom,mida:p.mida,min:p.min||null,max:p.max||null})),
+    paquets:actual.sel.map(p=>({id:p.id,nom:p.nomCa,mida:p.mida,min:p.min||null,max:p.max||null})),
     hores:$$('#escBody input').map(i=>({nivell:i.dataset.niv,hores:Number(i.value)||0,preuHora:Number(i.dataset.hora)})).filter(x=>x.hores>0),
     total:{min:actual.min,max:actual.max,iva:false},
     context:{repte:v('repte'),termini:$('#termini').value,diners:$('#diners').value,
@@ -688,7 +752,9 @@ ca: {
   'pr.s2.h':'2 · D\'on véns',
   'pr.s2.err':'Tria el tipus d\'organització i escriu el municipi.',
   'pr.s3.h':'3 · Què vols',
+  'pr.s3.sub':'Marca\'n els que t\'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d\'empresa, per a un poble o per a una xarxa d\'entitats. El que canvia és la forma, no el fons.',
   'pr.s3.err':'Marca com a mínim un paquet.',
+  'pr.hores.sub':'Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.',
   'pr.s4.h':'4 · Com i quan',
   'pr.s4.sub':'Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.',
   'pr.seg':'Següent →',
@@ -720,17 +786,69 @@ ca: {
   'pr.prop.copia':'📋 Copia-la',
   'pr.prop.baixa':'⬇ Descarrega-la (JSON)',
   'pr.prop.torna':'↺ Torna-hi',
-  'pr.priv':'Aquest formulari no envia res sol.',
+  'pr.priv':'🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d\'aquí fins que tu premis «Envia\'ns la petició». No hi ha analítica ni seguiment en aquesta pàgina.',
   'pr.mida.part':'Quantes persones hi participaran',
   'pr.mida.part.h':'Marca la diferència més gran del pressupost.',
   'pr.mida.alc':'Alçada de la demostració',
   'pr.mida.alc.h':'L\'alçada és quanta colla cal moure, i és el que fixa el cost.',
   'pr.mida.lloc':'On es fa i a quina distància',
+  'pr.mida.lloc.ph':'p.ex. plaça de la Vila, a 40 min de Barcelona',
+  'pr.tria':'— tria —',
+  'pr.pisos.4':'4 pisos',
+  'pr.pisos.5':'5 pisos',
+  'pr.pisos.6':'6 pisos',
+  'pr.peu':'SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a>',
   'pr.mida.lloc.h':'El desplaçament de l\'equip entra al pressupost al seu preu, sense marge a sobre.',
   'pr.mida.cap':'Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.',
   'pr.filtre.tots':'Tot',
   'pr.filtre.privat':'Empreses i cooperatives',
   'pr.filtre.public':'Administració i entitats',
+  'pr.r.lead':'Per a {q} · {n} · generada el {d}',
+  'pr.r.teva':'la teva organització',
+  'pr.r.paquet':'{n} paquet',
+  'pr.r.paquets':'{n} paquets',
+  'pr.r.de':'De {a} a {b}',
+  'pr.r.sense':'Sense IVA. És una forquilla orientativa: la proposta final la tanca una conversa.',
+  'pr.r.fora':'No hi entren {p}: es pressuposten amb el mapa de cost i el desglossament va a la proposta.',
+  'pr.r.amida':'a mida',
+  'pr.r.metode':'Les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell i les despeses directes van al seu preu de factura, sense marge a sobre. El que separa un nivell del següent és evidència registrada i verificable, no antiguitat.',
+  'pr.r.f.dimensionar':'Dimensionar {p} amb les dades que has donat, i tornar-t\'ho desglossat.',
+  'pr.r.f.conversa':'Una conversa de 45 minuts per ajustar l\'abast: sovint hi sobra alguna cosa.',
+  'pr.r.f.convocatoria':'Mirar el calendari de la convocatòria: la data de justificació canvia el calendari de la feina.',
+  'pr.r.f.partida':'Trobar la partida o la convocatòria que ho pot pagar. Sovint ja existeix i no s\'hi havia mirat.',
+  'pr.r.f.data':'Confirmar la data i reservar equip.',
+  'pr.r.f.condicions':'Condicions de reserva i cancel·lació per escrit abans de signar res.',
+  'pr.b.copiada':'✓ Copiada',
+  'pr.b.nocopia':'No s\'ha pogut copiar',
+  'pr.fam.consultoria':'🕸️ Consultoria',
+  'pr.fam.formacio':'🎓 Formació',
+  'pr.fam.dinamitzacio':'🎪 Producció i dinamització',
+  'pr.fam.digital':'⚙️ Digital i IA',
+  'pr.fam.sos':'🖥️ Al voltant del SOS',
+  'pr.paq.diagnostic-teixit':'Diagnòstic del teixit local',
+  'pr.paq.mapa-organitzacio':'Mapa de valor d\'una organització',
+  'pr.paq.fent-pinya-vna':'Fent pinya amb el mapa de valor',
+  'pr.paq.mapa-comarcal':'Mapa comarcal i assemblea federativa',
+  'pr.paq.impacte':'Mesura d\'impacte i justificació',
+  'pr.paq.persones-cultura':'Diagnòstic de persones i cultura',
+  'pr.paq.gestor':'Programa de Gestor/a',
+  'pr.paq.equip-gestor':'Programa d\'equip gestor',
+  'pr.paq.comunitats-practica':'Comunitats de pràctica',
+  'pr.paq.formacio-equips':'Formació d\'equips',
+  'pr.paq.escola':'La Fàbrica de Superherois',
+  'pr.paq.formar-formadors':'Formació de formadors',
+  'pr.paq.mentoria-directiva':'Mentoria per a equips directius',
+  'pr.paq.comu-diada':'Comú-diada',
+  'pr.paq.fent-pinya':'Taller de castells «Fent Pinya»',
+  'pr.paq.demos':'Demostració castellera',
+  'pr.paq.produccio':'Producció d\'esdeveniments',
+  'pr.paq.posar-en-marxa':'Posada en marxa d\'una dinàmica',
+  'pr.paq.fluxos-ia':'Fluxos amb IA · consultoria i formació',
+  'pr.paq.web-ia':'Web o eina feta amb IA',
+  'pr.paq.transmedia':'Projecte transmèdia',
+  'pr.paq.implantacio':'Implantació i suport',
+  'pr.paq.ia-amb-frens':'IA amb frens · sessió de viabilitat',
+  'pr.paq.contractes':'Contractes intel·ligents · estudi de viabilitat',
   'fo.l.nom':'Nom i cognoms *',
   'fo.l.rol':'El teu paper a la casa',
   'fo.l.mail':'Correu electrònic *',
@@ -857,7 +975,9 @@ es: {
   'pr.s2.h':'2 · De dónde vienes',
   'pr.s2.err':'Elige el tipo de organización y escribe el municipio.',
   'pr.s3.h':'3 · Qué quieres',
+  'pr.s3.sub':'Marca los que te interesen. Se pueden combinar, y a menudo lo que sale es mejor que uno solo: el mismo método —mirar quién sostiene qué con el <a href="vna.html">mapa de valor</a>, y después hacerlo circular— sirve para un equipo de empresa, para un pueblo o para una red de entidades. Lo que cambia es la forma, no el fondo.',
   'pr.s3.err':'Marca como mínimo un paquete.',
+  'pr.hores.sub':'Opcional, y pensado para contratación pública de servicios profesionales. Escribe las horas de cada nivel y el total se calcula solo. Lo que separa un nivel del siguiente es evidencia registrada, no antigüedad — la <a href="../index.html#cost">portada lo explica entero</a>.',
   'pr.s4.h':'4 · Cómo y cuándo',
   'pr.s4.sub':'Las tres cosas que acaban de determinar el presupuesto, y que una página no puede adivinar.',
   'pr.seg':'Siguiente →',
@@ -889,17 +1009,69 @@ es: {
   'pr.prop.copia':'📋 Cópiala',
   'pr.prop.baixa':'⬇ Descárgala (JSON)',
   'pr.prop.torna':'↺ Vuelve',
-  'pr.priv':'Este formulario no envía nada solo.',
+  'pr.priv':'🔒 <strong>Este formulario no envía nada solo.</strong> Todo lo que has escrito vive en tu navegador y no sale de aquí hasta que tú pulses «Envíanos la petición». No hay analítica ni seguimiento en esta página.',
   'pr.mida.part':'Cuántas personas participarán',
   'pr.mida.part.h':'Marca la diferencia más grande del presupuesto.',
   'pr.mida.alc':'Altura de la demostración',
   'pr.mida.alc.h':'La altura es cuánta colla hay que mover, y es lo que fija el coste.',
   'pr.mida.lloc':'Dónde se hace y a qué distancia',
+  'pr.mida.lloc.ph':'p.ej. plaza de la Vila, a 40 min de Barcelona',
+  'pr.tria':'— elige —',
+  'pr.pisos.4':'4 pisos',
+  'pr.pisos.5':'5 pisos',
+  'pr.pisos.6':'6 pisos',
+  'pr.peu':'SOS · Sistema Operativo Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnóstico</a> · <a href="../index.html#cost">El mapa de coste</a>',
   'pr.mida.lloc.h':'El desplazamiento del equipo entra al presupuesto a su precio, sin margen encima.',
   'pr.mida.cap':'Estas preguntas salen cuando pides una actividad con gente, fecha y lugar. Con lo que has elegido ahora, no hacen falta.',
   'pr.filtre.tots':'Todo',
   'pr.filtre.privat':'Empresas y cooperativas',
   'pr.filtre.public':'Administración y entidades',
+  'pr.r.lead':'Para {q} · {n} · generada el {d}',
+  'pr.r.teva':'tu organización',
+  'pr.r.paquet':'{n} paquete',
+  'pr.r.paquets':'{n} paquetes',
+  'pr.r.de':'De {a} a {b}',
+  'pr.r.sense':'Sin IVA. Es una horquilla orientativa: la propuesta final la cierra una conversación.',
+  'pr.r.fora':'No entran {p}: se presupuestan con el mapa de coste y el desglose va a la propuesta.',
+  'pr.r.amida':'a medida',
+  'pr.r.metode':'Las horas salen de los flujos del mapa de valor, cada rol se cobra al precio de su nivel y los gastos directos van a su precio de factura, sin margen encima. Lo que separa un nivel del siguiente es evidencia registrada y verificable, no antigüedad.',
+  'pr.r.f.dimensionar':'Dimensionar {p} con los datos que has dado, y devolvértelo desglosado.',
+  'pr.r.f.conversa':'Una conversación de 45 minutos para ajustar el alcance: a menudo sobra algo.',
+  'pr.r.f.convocatoria':'Mirar el calendario de la convocatoria: la fecha de justificación cambia el calendario del trabajo.',
+  'pr.r.f.partida':'Encontrar la partida o la convocatoria que lo puede pagar. A menudo ya existe y no se había mirado.',
+  'pr.r.f.data':'Confirmar la fecha y reservar equipo.',
+  'pr.r.f.condicions':'Condiciones de reserva y cancelación por escrito antes de firmar nada.',
+  'pr.b.copiada':'✓ Copiada',
+  'pr.b.nocopia':'No se ha podido copiar',
+  'pr.fam.consultoria':'🕸️ Consultoría',
+  'pr.fam.formacio':'🎓 Formación',
+  'pr.fam.dinamitzacio':'🎪 Producción y dinamización',
+  'pr.fam.digital':'⚙️ Digital e IA',
+  'pr.fam.sos':'🖥️ Alrededor del SOS',
+  'pr.paq.diagnostic-teixit':'Diagnóstico del tejido local',
+  'pr.paq.mapa-organitzacio':'Mapa de valor de una organización',
+  'pr.paq.fent-pinya-vna':'Haciendo piña con el mapa de valor',
+  'pr.paq.mapa-comarcal':'Mapa comarcal y asamblea federativa',
+  'pr.paq.impacte':'Medida de impacto y justificación',
+  'pr.paq.persones-cultura':'Diagnóstico de personas y cultura',
+  'pr.paq.gestor':'Programa de Gestor/a',
+  'pr.paq.equip-gestor':'Programa de equipo gestor',
+  'pr.paq.comunitats-practica':'Comunidades de práctica',
+  'pr.paq.formacio-equips':'Formación de equipos',
+  'pr.paq.escola':'La Fábrica de Superhéroes',
+  'pr.paq.formar-formadors':'Formación de formadores',
+  'pr.paq.mentoria-directiva':'Mentoría para equipos directivos',
+  'pr.paq.comu-diada':'Comú-diada',
+  'pr.paq.fent-pinya':'Taller de castells «Fent Pinya»',
+  'pr.paq.demos':'Demostración castellera',
+  'pr.paq.produccio':'Producción de eventos',
+  'pr.paq.posar-en-marxa':'Puesta en marcha de una dinámica',
+  'pr.paq.fluxos-ia':'Flujos con IA · consultoría y formación',
+  'pr.paq.web-ia':'Web o herramienta hecha con IA',
+  'pr.paq.transmedia':'Proyecto transmedia',
+  'pr.paq.implantacio':'Implantación y soporte',
+  'pr.paq.ia-amb-frens':'IA con frenos · sesión de viabilidad',
+  'pr.paq.contractes':'Contratos inteligentes · estudio de viabilidad',
   'fo.l.nom':'Nombre y apellidos *',
   'fo.l.rol':'Tu papel en la casa',
   'fo.l.mail':'Correo electrónico *',
@@ -1046,14 +1218,28 @@ function prAplicaLang(l) {
     var k = el.getAttribute('data-i18n-ph');
     if (t[k] !== undefined) el.setAttribute('placeholder', t[k]);
   });
+  /* Els noms dels nivells de l'escala, que no surten del diccionari sinó del
+     catàleg: la fila la munta el navegador i el seu text no és una clau. */
+  document.querySelectorAll('[data-i18n-niv]').forEach(function (el) {
+    var n = NIVELLS.find(function (x) { return x.id === el.getAttribute('data-i18n-niv'); });
+    if (n) el.textContent = L(n);
+  });
   document.querySelectorAll('.lang-b').forEach(function (b) {
     b.classList.toggle('on', b.getAttribute('data-lang') === l);
   });
+  /* I la proposta, si ja està calculada: qui canvia de llengua llegint-la no
+     l'ha de tornar a demanar. */
+  if (actual) pinta(actual);
 }
 document.querySelectorAll('.lang-b').forEach(function (b) {
   b.addEventListener('click', function () { prAplicaLang(b.getAttribute('data-lang')); });
 });
 prAplicaLang(PR_LANG);
+
+/* Hook per a proves. El que es mira des de fora és el **resum**, que ha de
+   seguir en català amb la pantalla en castellà: sense això, la prova hauria de
+   prémer «copia» i llegir el porta-retalls. */
+window.__PRESSU = { proposta, resum, pinta, prAplicaLang, PR_I18N };
 </script>
 
 </body>

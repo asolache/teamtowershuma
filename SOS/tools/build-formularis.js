@@ -211,28 +211,40 @@ const ROL_NOM={${rols}};`;
    navegador no hagi de tornar a saber-se el catàleg de memòria. */
 const { FAMILIES, PAQUETS, SOS_PAQUETS, NIVELLS } = require('./build-oferta.js');
 
+/* Els noms porten clau. El triador es llegia **sencer en català** amb el
+   castellà posat —vint-i-quatre noms de paquet i quatre capçaleres de família—
+   mentre la proposta que en sortia ja sortia traduïda: triaves en una llengua
+   i et responien en una altra. El castellà el declara `build-oferta.js`, i les
+   claus les escriu `dicPressu()` des d'allà mateix. */
 function blocPaquets() {
-  const cap = f => `<h4 class="pq-fam">${f.ic} ${esc(f.nom)}</h4>`;
+  const cap = f => `<h4 class="pq-fam" data-i18n="pr.fam.${f.id}">${f.ic} ${esc(f.nom)}</h4>`;
   const fila = p => `<label class="pq" data-sector="${p.sector}">` +
     `<input type="checkbox" name="paquet" value="${p.id}"` +
     (p.mida ? ' data-mida="1"' : ` data-min="${p.preuMin}" data-max="${p.preuMax}"`) + '>' +
-    `<span class="pq-n">${esc(p.nom)}</span>` +
-    `<span class="pq-p">${p.mida ? 'a mida' : (p.preuMin === p.preuMax
+    `<span class="pq-n" data-i18n="pr.paq.${p.id}">${esc(p.nom)}</span>` +
+    `<span class="pq-p"${p.mida ? ' data-i18n="pr.r.amida"' : ''}>${p.mida ? 'a mida' : (p.preuMin === p.preuMax
       ? p.preuMin.toLocaleString('ca-ES') + ' €'
       : p.preuMin.toLocaleString('ca-ES') + '–' + p.preuMax.toLocaleString('ca-ES') + ' €')}</span>` +
     `</label>`;
   const fams = FAMILIES.map(f =>
     cap(f) + '\n<div class="pq-g">\n' + PAQUETS.filter(p => p.fam === f.id).map(fila).join('\n') + '\n</div>'
   ).join('\n');
-  return fams + '\n<h4 class="pq-fam">🖥️ Al voltant del SOS</h4>\n<div class="pq-g">\n' +
+  return fams + '\n<h4 class="pq-fam" data-i18n="pr.fam.sos">🖥️ Al voltant del SOS</h4>\n<div class="pq-g">\n' +
     SOS_PAQUETS.map(fila).join('\n') + '\n</div>';
 }
 
-/* L'escala, per calcular al navegador la part contractada per hores. */
+/* L'escala, per calcular al navegador la part contractada per hores.
+
+   Els noms porten el germà castellà: la **proposta** que el navegador munta
+   els escriu, i si només hi anés el català la pantalla es llegiria traduïda i
+   el que en surt, no. El castellà el declara `build-oferta.js`, que és qui
+   declara què es ven. */
 function blocEscala() {
-  const niv = NIVELLS.map(n => `{id:'${n.id}',nom:'${n.nom.replace(/'/g, "\\'")}',hora:${n.hora}}`).join(',');
+  const q = s => String(s == null ? '' : s).replace(/'/g, "\\'");
+  const niv = NIVELLS.map(n =>
+    `{id:'${n.id}',nom:'${q(n.nom)}',nomEs:'${q(n.nomEs || n.nom)}',hora:${n.hora}}`).join(',');
   const noms = PAQUETS.concat(SOS_PAQUETS)
-    .map(p => `'${p.id}':'${p.nom.replace(/'/g, "\\'")}'`).join(',');
+    .map(p => `'${p.id}':{nom:'${q(p.nom)}',nomEs:'${q(p.nomEs || p.nom)}'}`).join(',');
   return `// Generat per SOS/tools/build-formularis.js des del catàleg — no ho editis a mà.
 const NIVELLS=[${niv}];
 const PAQ_NOM={${noms}};`;
@@ -257,18 +269,22 @@ const CAMPS_MIDA = [
 ];
 const midaPer = id => (CAMPS_MIDA.find(c => c.id === id) || { per: [] }).per.join(' ');
 
+/* Les claus hi van: `PRESSU` ja declarava `pr.mida.*` en les dues llengües i
+   **aquest marcatge no en portava cap**, o sigui que el diccionari les tenia i
+   no les llegia ningú. Tres preguntes i tres pistes que es quedaven en català
+   al formulari traduït. */
 function blocMida() {
   return `<div class="grid2">
-<div class="f" data-mida-per="${midaPer('participants')}"><label for="participants">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint">Marca la diferència més gran del pressupost.</div></div>
-<div class="f" data-mida-per="${midaPer('alcada')}"><label for="alcada">Alçada de la demostració</label><select id="alcada" name="alcada">
-<option value="">— tria —</option>
-<option value="4">4 pisos</option>
-<option value="5">5 pisos</option>
-<option value="6">6 pisos</option>
-</select><div class="hint">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
+<div class="f" data-mida-per="${midaPer('participants')}"><label for="participants" data-i18n="pr.mida.part">Quantes persones hi participaran</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 60"><div class="hint" data-i18n="pr.mida.part.h">Marca la diferència més gran del pressupost.</div></div>
+<div class="f" data-mida-per="${midaPer('alcada')}"><label for="alcada" data-i18n="pr.mida.alc">Alçada de la demostració</label><select id="alcada" name="alcada">
+<option value="" data-i18n="pr.tria">— tria —</option>
+<option value="4" data-i18n="pr.pisos.4">4 pisos</option>
+<option value="5" data-i18n="pr.pisos.5">5 pisos</option>
+<option value="6" data-i18n="pr.pisos.6">6 pisos</option>
+</select><div class="hint" data-i18n="pr.mida.alc.h">L'alçada és quanta colla cal moure, i és el que fixa el cost.</div></div>
 </div>
-<div class="f" data-mida-per="${midaPer('lloc')}"><label for="lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
-<p class="hint" id="midaCap" hidden>Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>`;
+<div class="f" data-mida-per="${midaPer('lloc')}"><label for="lloc" data-i18n="pr.mida.lloc">On es fa i a quina distància</label><input type="text" id="lloc" name="lloc" data-i18n-ph="pr.mida.lloc.ph" placeholder="p.ex. plaça de la Vila, a 40 min de Barcelona"><div class="hint" data-i18n="pr.mida.lloc.h">El desplaçament de l'equip entra al pressupost al seu preu, sense marge a sobre.</div></div>
+<p class="hint" id="midaCap" hidden data-i18n="pr.mida.cap">Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.</p>`;
 }
 
 /* La guarda va aquí i no a `check-formularis.js` perquè el que es comprova és
@@ -297,10 +313,14 @@ function blocMida() {
    `build-oferta.js`, que és qui els declara, i el formulari els llegeix d'allà
    amb els seus camps `*Es`.
 
-   ⚠ **El que encara no es tradueix**: el text de la proposta que el JavaScript
-   munta en prémer el botó (`rLead`, `rMetode`, les línies del resum). Viu dins
-   del script de la pàgina i és la pròxima tanda; el formulari, que és el que
-   es llegeix mentre s'omple, sí. */
+   El text de la **proposta** —el que el JavaScript munta en prémer el botó—
+   també hi és des del 03/10/2026. Hi viu i no al script de la pàgina pel
+   mateix motiu: hi surten els noms dels paquets i els nivells de l'escala,
+   que els escriu aquest fitxer des del catàleg.
+
+   ⚠ **El que segueix en català a posta**: el resum en text pla que viatja per
+   correu. No és una pantalla: és el que arriba a la nostra banda, amb els
+   mateixos separadors que els diagnòstics. */
 
 /* ── Les claus dels blocs compartits ──────────────────────────────────────
    Van a part de `PRESSU` perquè les porten **tres** pàgines i no una: el
@@ -359,7 +379,15 @@ const PRESSU = {
   'pr.s2.h': { ca: '2 · D\'on véns', es: '2 · De dónde vienes' },
   'pr.s2.err': { ca: 'Tria el tipus d\'organització i escriu el municipi.', es: 'Elige el tipo de organización y escribe el municipio.' },
   'pr.s3.h': { ca: '3 · Què vols', es: '3 · Qué quieres' },
+  'pr.s3.sub': {
+    ca: 'Marca\'n els que t\'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d\'empresa, per a un poble o per a una xarxa d\'entitats. El que canvia és la forma, no el fons.',
+    es: 'Marca los que te interesen. Se pueden combinar, y a menudo lo que sale es mejor que uno solo: el mismo método —mirar quién sostiene qué con el <a href="vna.html">mapa de valor</a>, y después hacerlo circular— sirve para un equipo de empresa, para un pueblo o para una red de entidades. Lo que cambia es la forma, no el fondo.'
+  },
   'pr.s3.err': { ca: 'Marca com a mínim un paquet.', es: 'Marca como mínimo un paquete.' },
+  'pr.hores.sub': {
+    ca: 'Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.',
+    es: 'Opcional, y pensado para contratación pública de servicios profesionales. Escribe las horas de cada nivel y el total se calcula solo. Lo que separa un nivel del siguiente es evidencia registrada, no antigüedad — la <a href="../index.html#cost">portada lo explica entero</a>.'
+  },
   'pr.s4.h': { ca: '4 · Com i quan', es: '4 · Cómo y cuándo' },
   'pr.s4.sub': {
     ca: 'Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.',
@@ -397,7 +425,13 @@ const PRESSU = {
   'pr.prop.copia': { ca: '📋 Copia-la', es: '📋 Cópiala' },
   'pr.prop.baixa': { ca: '⬇ Descarrega-la (JSON)', es: '⬇ Descárgala (JSON)' },
   'pr.prop.torna': { ca: '↺ Torna-hi', es: '↺ Vuelve' },
-  'pr.priv': { ca: 'Aquest formulari no envia res sol.', es: 'Este formulario no envía nada solo.' },
+  /* La promesa de privacitat, sencera. El valor era només la primera frase i
+     el marcatge no portava clau: la clau existia, no la llegia ningú, i el
+     paràgraf que diu que d'aquí no surt res es quedava en català. */
+  'pr.priv': {
+    ca: '🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d\'aquí fins que tu premis «Envia\'ns la petició». No hi ha analítica ni seguiment en aquesta pàgina.',
+    es: '🔒 <strong>Este formulario no envía nada solo.</strong> Todo lo que has escrito vive en tu navegador y no sale de aquí hasta que tú pulses «Envíanos la petición». No hay analítica ni seguimiento en esta página.'
+  },
   /* Les tres dels camps de mida (`blocMida`), que també els genera aquest
      fitxer i per tant es declaren aquí i no a mitja funció. */
   'pr.mida.part': { ca: 'Quantes persones hi participaran', es: 'Cuántas personas participarán' },
@@ -405,6 +439,18 @@ const PRESSU = {
   'pr.mida.alc': { ca: 'Alçada de la demostració', es: 'Altura de la demostración' },
   'pr.mida.alc.h': { ca: 'L\'alçada és quanta colla cal moure, i és el que fixa el cost.', es: 'La altura es cuánta colla hay que mover, y es lo que fija el coste.' },
   'pr.mida.lloc': { ca: 'On es fa i a quina distància', es: 'Dónde se hace y a qué distancia' },
+  'pr.mida.lloc.ph': {
+    ca: 'p.ex. plaça de la Vila, a 40 min de Barcelona',
+    es: 'p.ej. plaza de la Vila, a 40 min de Barcelona'
+  },
+  'pr.tria': { ca: '— tria —', es: '— elige —' },
+  'pr.pisos.4': { ca: '4 pisos', es: '4 pisos' },
+  'pr.pisos.5': { ca: '5 pisos', es: '5 pisos' },
+  'pr.pisos.6': { ca: '6 pisos', es: '6 pisos' },
+  'pr.peu': {
+    ca: 'SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a>',
+    es: 'SOS · Sistema Operativo Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnóstico</a> · <a href="../index.html#cost">El mapa de coste</a>'
+  },
   'pr.mida.lloc.h': { ca: 'El desplaçament de l\'equip entra al pressupost al seu preu, sense marge a sobre.', es: 'El desplazamiento del equipo entra al presupuesto a su precio, sin margen encima.' },
   'pr.mida.cap': {
     ca: 'Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.',
@@ -412,7 +458,61 @@ const PRESSU = {
   },
   'pr.filtre.tots': { ca: 'Tot', es: 'Todo' },
   'pr.filtre.privat': { ca: 'Empreses i cooperatives', es: 'Empresas y cooperativas' },
-  'pr.filtre.public': { ca: 'Administració i entitats', es: 'Administración y entidades' }
+  'pr.filtre.public': { ca: 'Administració i entitats', es: 'Administración y entidades' },
+
+  /* ── El text de la proposta ─────────────────────────────────────────────
+     El que el navegador munta en prémer el botó. Les que porten un forat
+     —`{q}`, `{n}`, `{d}`, `{p}`— el reben del càlcul: el nom de qui la demana,
+     quants paquets, la data, els paquets sense xifra publicada. El forat es
+     declara aquí perquè la xifra i el nom no són text a traduir. */
+  'pr.r.lead': {
+    ca: 'Per a {q} · {n} · generada el {d}',
+    es: 'Para {q} · {n} · generada el {d}'
+  },
+  'pr.r.teva': { ca: 'la teva organització', es: 'tu organización' },
+  'pr.r.paquet': { ca: '{n} paquet', es: '{n} paquete' },
+  'pr.r.paquets': { ca: '{n} paquets', es: '{n} paquetes' },
+  'pr.r.de': { ca: 'De {a} a {b}', es: 'De {a} a {b}' },
+  'pr.r.sense': {
+    ca: 'Sense IVA. És una forquilla orientativa: la proposta final la tanca una conversa.',
+    es: 'Sin IVA. Es una horquilla orientativa: la propuesta final la cierra una conversación.'
+  },
+  'pr.r.fora': {
+    ca: 'No hi entren {p}: es pressuposten amb el mapa de cost i el desglossament va a la proposta.',
+    es: 'No entran {p}: se presupuestan con el mapa de coste y el desglose va a la propuesta.'
+  },
+  'pr.r.amida': { ca: 'a mida', es: 'a medida' },
+  /* Com s'ha calculat. És la frase que sosté el preu i per això es diu sencera
+     a les dues llengües: qui la llegeix ha de poder discutir-la. */
+  'pr.r.metode': {
+    ca: 'Les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell i les despeses directes van al seu preu de factura, sense marge a sobre. El que separa un nivell del següent és evidència registrada i verificable, no antiguitat.',
+    es: 'Las horas salen de los flujos del mapa de valor, cada rol se cobra al precio de su nivel y los gastos directos van a su precio de factura, sin margen encima. Lo que separa un nivel del siguiente es evidencia registrada y verificable, no antigüedad.'
+  },
+  /* Què falta per tancar-ho. Cap és decoració: cada una surt d'una resposta. */
+  'pr.r.f.dimensionar': {
+    ca: 'Dimensionar {p} amb les dades que has donat, i tornar-t\'ho desglossat.',
+    es: 'Dimensionar {p} con los datos que has dado, y devolvértelo desglosado.'
+  },
+  'pr.r.f.conversa': {
+    ca: 'Una conversa de 45 minuts per ajustar l\'abast: sovint hi sobra alguna cosa.',
+    es: 'Una conversación de 45 minutos para ajustar el alcance: a menudo sobra algo.'
+  },
+  'pr.r.f.convocatoria': {
+    ca: 'Mirar el calendari de la convocatòria: la data de justificació canvia el calendari de la feina.',
+    es: 'Mirar el calendario de la convocatoria: la fecha de justificación cambia el calendario del trabajo.'
+  },
+  'pr.r.f.partida': {
+    ca: 'Trobar la partida o la convocatòria que ho pot pagar. Sovint ja existeix i no s\'hi havia mirat.',
+    es: 'Encontrar la partida o la convocatoria que lo puede pagar. A menudo ya existe y no se había mirado.'
+  },
+  'pr.r.f.data': { ca: 'Confirmar la data i reservar equip.', es: 'Confirmar la fecha y reservar equipo.' },
+  'pr.r.f.condicions': {
+    ca: 'Condicions de reserva i cancel·lació per escrit abans de signar res.',
+    es: 'Condiciones de reserva y cancelación por escrito antes de firmar nada.'
+  },
+  /* Els botons que canvien de text en prémer-los. */
+  'pr.b.copiada': { ca: '✓ Copiada', es: '✓ Copiada' },
+  'pr.b.nocopia': { ca: 'No s\'ha pogut copiar', es: 'No se ha podido copiar' }
 };
 
 /* El diccionari dels blocs compartits: `FORM`, més el que surt de `ORGS` i
@@ -435,10 +535,17 @@ function dicFo(l) {
   return f.join('\n');
 }
 
-/* El del pressupost: el seu propi, i a sobre el compartit. */
+/* El del pressupost: el seu propi, els noms del catàleg, i a sobre el
+   compartit. Els noms surten de `build-oferta.js` i no es declaren aquí: és
+   l'única font del que es ven, i tenir-los en dos llocs voldria dir que un dia
+   el triador oferís un nom i la proposta en digués un altre. */
 function dicPressu(l) {
   const q = x => String(x).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const tria = (o, c) => l === 'es' ? (o[c + 'Es'] || o[c]) : o[c];
   const f = Object.entries(PRESSU).map(([k, v]) => `  '${k}':'${q(v[l])}',`);
+  FAMILIES.forEach(x => f.push(`  'pr.fam.${x.id}':'${q(x.ic + ' ' + tria(x, 'nom'))}',`));
+  f.push(`  'pr.fam.sos':'${q('🖥️ ' + (l === 'es' ? 'Alrededor del SOS' : 'Al voltant del SOS'))}',`);
+  PAQUETS.concat(SOS_PAQUETS).forEach(p => f.push(`  'pr.paq.${p.id}':'${q(tria(p, 'nom'))}',`));
   return f.join('\n') + '\n' + dicFo(l);
 }
 
