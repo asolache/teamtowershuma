@@ -275,6 +275,27 @@ else {
     + 'i surt amb teclat, i la seqüència té atribut, estil i llista');
 }
 
+/* ══ CAP LECTURA DEL DIBUIX PEL COLOR ════════════════════════════════════════
+   «Només el camí del canal» triava els rols **comparant el `stroke` del cercle
+   amb un hex escrit al JavaScript**. El dia que la paleta va passar a clar, la
+   comparació no va trobar cap rol: el botó quedava premut, el dibuix no es
+   movia i **no petava res**. Ho va trobar una prova de navegador.
+
+   El color és una decisió de pell i canvia; el camí, la mena i el pas són
+   dades del mapa i viatgen com a `data-…`. Una lectura que mira el color
+   torna a trencar-se el dia de la pell següent. */
+{
+  const COL = /(getAttribute\(\s*['"](?:stroke|fill)['"]\s*\)|\.style\.(?:stroke|fill)|getPropertyValue\(\s*['"](?:stroke|fill)['"]\s*\))[^;\n]{0,80}(===?|!==?)[^;\n]{0,40}['"]#?[0-9a-fA-F]{3,8}['"]/;
+  const js = (PAG.match(/<script\b[^>]*>([\s\S]*?)<\/script>/g) || []).join('\n');
+  if (COL.test(js)) {
+    bad('una lectura del dibuix compara el color d\'un traç amb un literal: '
+      + 'el dia que canviï la paleta deixarà de trobar res i no petarà. '
+      + 'El camí, la mena i el pas van a `data-cami`, `data-mena` i `data-seq`.');
+  } else if (!/data-cami="/.test(PAG)) {
+    bad('cap node del dibuix porta `data-cami`: el focus per camí no té de què llegir-lo');
+  } else ok('cap lectura del dibuix depèn d\'un color: el camí, la mena i el pas són dades');
+}
+
 /* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════════
    La pàgina tenia **dos** `data-i18n` a tot el fitxer —els del menú generat— i
    cap commutador, i era l'única del lloc que no es podia llegir en castellà.

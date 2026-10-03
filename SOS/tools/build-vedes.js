@@ -160,7 +160,14 @@ function parse(md) {
 
 /* ── La pàgina ────────────────────────────────────────────────────────────── */
 const CSS = `
-:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#9a9aa6;--light:#c7c7d1;--border:#2a2a35;--indigo:#818cf8;--green:#00e676;--purple:#e040fb}
+/* La paleta no es declara aquí: la posa \`build-pell.js\` entre les marques.
+   Escrita a mà, aquesta pàgina es regenerava sencera amb la paleta fosca i
+   **guanyava** a la de la pell —tenia dos \`:root\` i manava el seu—, de manera
+   que era l'única del lloc que es quedava negra sense que res petés. */
+:root{
+/*TT-PELL*/
+/*/TT-PELL*/
+}
 *{box-sizing:border-box}
 /* Sense scroll suau a posta: la pàgina fa 73 vedes, i obrir /vedes#veda-83
    volia dir més d'un segon d'animació travessant-les totes. Un enllaç permanent
@@ -172,13 +179,13 @@ body{margin:0;background:var(--bg);color:var(--text);line-height:1.65;
 a{color:var(--indigo)}
 a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--green);outline-offset:2px;border-radius:4px}
 .skip{position:absolute;left:-9999px}
-.skip:focus{left:1rem;top:1rem;position:fixed;z-index:9;background:var(--green);color:#08120c;padding:.6rem 1rem;border-radius:8px;font-weight:700}
+.skip:focus{left:1rem;top:1rem;position:fixed;z-index:9;background:var(--green);color:#fff;padding:.6rem 1rem;border-radius:8px;font-weight:700}
 header.top{padding:3rem 0 1.6rem;border-bottom:1px solid var(--border)}
 .kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'SF Mono',Monaco,monospace;margin:0}
 h1{font-size:clamp(1.8rem,5.5vw,2.6rem);line-height:1.15;margin:.6rem 0 .8rem}
 .lead{color:var(--light);margin:0 0 1rem;font-size:1.05rem}
 .meta{color:var(--muted);font-size:.85rem;margin:0}
-.tools{position:sticky;top:0;z-index:5;background:rgba(11,11,18,.94);backdrop-filter:blur(8px);
+.tools{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--border);padding:.7rem 0;margin-bottom:1.4rem}
 .tools .wrap{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
 #q{flex:1 1 14rem;min-width:0;background:var(--card);border:1px solid var(--border);color:var(--text);
@@ -193,7 +200,7 @@ nav.idx ol{list-style:none;padding:0;margin:0;columns:2;column-gap:1.6rem}
 nav.idx li{break-inside:avoid;margin:0 0 .18rem}
 nav.idx a{display:flex;gap:.5rem;align-items:baseline;text-decoration:none;color:var(--light);
   font-size:.92rem;line-height:1.4;padding:.12rem .3rem;border-radius:6px}
-nav.idx a:hover{background:var(--card);color:#fff}
+nav.idx a:hover{background:var(--panel);color:var(--text)}
 nav.idx .n{font-family:'SF Mono',Monaco,monospace;font-size:.8rem;color:var(--green);flex:0 0 1.6rem;text-align:right}
 @media(max-width:640px){nav.idx ol{columns:1}}
 article.veda{border-top:1px solid var(--border);padding:2rem 0 .6rem;scroll-margin-top:5rem}
@@ -210,7 +217,7 @@ article.veda li{margin:.45rem 0}
 article.veda h3,article.veda h4{font-size:1rem;margin:1.4rem 0 .3rem;color:var(--light)}
 blockquote{margin:1rem 0;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--purple);color:var(--light);font-style:italic}
 code{font-family:'SF Mono',Monaco,monospace;font-size:.88em;background:rgba(127,127,127,.16);padding:.1em .35em;border-radius:5px}
-strong{color:#fff}
+strong{color:var(--text)}
 /* La taula fa scroll dins del seu embolcall i no arrossega la pàgina. */
 .taula{overflow-x:auto;margin:1rem 0;-webkit-overflow-scrolling:touch}
 .taula table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
@@ -342,7 +349,15 @@ const { posa } = require('./build-nav.js');
 const html = posa(build(), 'vedes.html');
 if (process.argv.includes('--check')) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
-  if (have !== html) {
+  /* La comparació buida el bloc de la pell abans de comparar: aquest generador
+     escriu les marques i **`build-pell.js` les omple després**. Comparant el
+     fitxer lletra per lletra, la guarda demanava tornar a generar la pàgina,
+     i generar-la tornava a buidar la paleta — dues passades que es desfan
+     l'una a l'altra i que no acaben mai. Cada generador només respon del que
+     escriu ell. */
+  const senseP = t => t.replace(/\/\*TT-PELL\*\/[\s\S]*?\/\*\/TT-PELL\*\//,
+    '/*TT-PELL*/\n/*/TT-PELL*/');
+  if (senseP(have) !== senseP(html)) {
     console.error('\n❌ SOS/vedes.html no correspon a SOS/knowledge/codex.md.');
     console.error('   El codex ha canviat i la pàgina no s\'ha tornat a generar.');
     console.error('   Arregla-ho amb:  node SOS/tools/build-vedes.js\n');

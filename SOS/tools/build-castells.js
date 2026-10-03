@@ -108,8 +108,12 @@ const MENES = [
     diuEs: 'Entre crossa y crossa: una mano en cada pilar. Son los únicos que tocan dos áreas a la vez y evitan que se separen.' }
 ];
 /* El vent va de taronja i no de gris: no és farciment, és l'única línia que
-   lliga dues columnes, i el color ho ha de dir abans que el text. */
-const COL_MENA = { primera: '#6366f1', lateral: '#00e676', vent: '#ff9100' };
+   lliga dues columnes, i el color ho ha de dir abans que el text.
+   Els colors vénen de la paleta (`build-pell.js`) i no d'aquí: un traç és un
+   objecte gràfic i necessita 3:1 contra el fons, i els accents vius d'abans
+   —el verd #00e676 feia 1,6:1 sobre paper— no es veien a la pell clara.
+   Declarats un sol cop, el dia que la paleta canviï els dibuixos van amb ella. */
+const COL_MENA = { primera: 'var(--indigo)', lateral: 'var(--green)', vent: 'var(--orange)' };
 
 /* ══ LES CONSTRUCCIONS ═══════════════════════════════════════════════════════
    `baixos` és l'amplada del tronc i és el que mana: d'ell en surten les 4N
@@ -774,7 +778,7 @@ function alcat(f) {
   for (let b = 0; b < f.baixos; b++) {
     for (let pis = 0; pis < f.pisos; pis++) {
       p.push(`<rect class="al-p" x="${(x0 + b * amp - 7).toFixed(1)}" y="${BASE - 14 - pis * 23}" `
-        + `width="14" height="19" rx="4" fill="${b % 2 ? '#00e676' : '#6366f1'}"/>`);
+        + `width="14" height="19" rx="4" fill="${b % 2 ? 'var(--green)' : 'var(--indigo)'}"/>`);
     }
   }
   const yTop = BASE - 14 - (f.pisos - 1) * 23;

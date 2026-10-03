@@ -114,8 +114,18 @@ console.log('\n3 · I si un node s\'encalla');
   await p.waitForTimeout(700);
   const r = await p.evaluate(() => {
     const s = document.querySelector('#mvCeller');
+    /* El color d'un lliurament aturat es llegeix **del token** i no d'un hex
+       escrit aquí. Amb `rgb(74, 74, 85)` a dins, la prova es va quedar
+       vigilant un color que la paleta ja no fa servir: passar la pell a clar
+       la feia caure sense que res de la portada s'hagués trencat. */
+    const apagat = getComputedStyle(document.documentElement)
+      .getPropertyValue('--border-strong').trim();
+    const nrm = c => { const d = document.createElement('i');
+      d.style.color = c; document.body.appendChild(d);
+      const v = getComputedStyle(d).color; d.remove(); return v; };
+    const esperat = nrm(apagat);
     const grisos = [...s.querySelectorAll('.mv-f[data-para]')]
-      .filter(x => getComputedStyle(x).stroke === 'rgb(74, 74, 85)').length;
+      .filter(x => getComputedStyle(x).stroke === esperat).length;
     return { encallat: s.classList.contains('encallat'),
       parats: s.querySelectorAll('.mv-f[data-para]').length,
       total: s.querySelectorAll('.mv-f').length,

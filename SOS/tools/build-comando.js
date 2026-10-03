@@ -574,7 +574,7 @@ const htmlHerois = () => {
   return `<div class="heroes" style="text-align:left">\n` + HEROIS.map(h => {
     const v = vidDe(h.name);
     return `<div class="hcard">\n` +
-      `<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(${hue(h.name)},62%,44%)">${esc(inicials(h.name))}</div>\n` +
+      `<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(${hue(h.name)},62%,32%)">${esc(inicials(h.name))}</div>\n` +
       `<div><div class="hcard-nm">${esc(h.name)}</div><div class="hcard-role">${esc(h.role)}</div></div></div>\n` +
       `<div class="hcard-power">${esc(h.power)}</div>\n` +
       (h.arma ? `<div class="hcard-arma"><span>Superarma</span> ${esc(h.arma)}</div>\n` : '') +

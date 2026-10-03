@@ -9,29 +9,55 @@
 <meta property="og:description" content="El teu personatge no és un avatar inventat: és el que ja fas, amb nom i amb superarma. Fes-te'l, escriu la teva història i entra als crèdits.">
 <meta property="og:type" content="website">
 <style>
-:root{--bg:#0b0b12;--panel:#141420;--card:#1a1a28;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--gold:#ffd700}
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
 *{box-sizing:border-box}
-body{margin:0;background:#0b0b12;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.55}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.55}
 img{max-width:100%}
 
 /* HERO */
-.hero{position:relative;padding:5rem 1.5rem 4rem;text-align:center;background:radial-gradient(ellipse at top,rgba(99,102,241,.2),transparent 60%),radial-gradient(ellipse at bottom right,rgba(224,64,251,.15),transparent 50%),#0b0b12;overflow:hidden}
-.hero::before{content:'MOLEKULON';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22vw;font-weight:900;color:rgba(255,255,255,.02);pointer-events:none;letter-spacing:-.05em;white-space:nowrap}
+.hero{position:relative;padding:5rem 1.5rem 4rem;text-align:center;background:radial-gradient(ellipse at top,rgba(99,102,241,.2),transparent 60%),radial-gradient(ellipse at bottom right,rgba(224,64,251,.15),transparent 50%),var(--bg);overflow:hidden}
+.hero::before{content:'MOLEKULON';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:22vw;font-weight:900;color:rgba(21,19,15,.02);pointer-events:none;letter-spacing:-.05em;white-space:nowrap}
 .hero-inner{max-width:900px;margin:0 auto;position:relative}
 .tag{display:inline-block;background:rgba(99,102,241,.15);color:var(--indigo);padding:.3rem .8rem;border-radius:20px;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1rem}
-.hero h1{font-size:clamp(2rem,6vw,3.8rem);margin:0 0 1rem;line-height:1.05;background:linear-gradient(90deg,#6366f1,#e040fb,#00e676);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.hero h1{font-size:clamp(2rem,6vw,3.8rem);margin:0 0 1rem;line-height:1.05;background:linear-gradient(90deg,var(--indigo),var(--purple),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
 .hero .sub{font-size:clamp(1rem,2.4vw,1.35rem);color:var(--light);max-width:700px;margin:0 auto 2rem}
 .hero .sub strong{color:var(--text)}
 .ctas{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.5rem}
 .cta{padding:.9rem 1.5rem;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;display:inline-flex;align-items:center;gap:.4rem;transition:transform .15s}
 .cta:hover{transform:translateY(-1px)}
-.cta-primary{background:linear-gradient(90deg,#6366f1,#00e676);color:#0b0b12}
-.cta-ghost{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.1)}
+.cta-primary{background:linear-gradient(90deg,var(--indigo),var(--green));color:var(--bg)}
+.cta-ghost{background:rgba(21,19,15,.06);color:var(--text);border:1px solid rgba(21,19,15,.1)}
 
 /* Counter */
-.counter{display:inline-flex;gap:2rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:1.2rem 2rem;margin:2rem 0}
+.counter{display:inline-flex;gap:2rem;background:rgba(21,19,15,.03);border:1px solid rgba(21,19,15,.08);border-radius:12px;padding:1.2rem 2rem;margin:2rem 0}
 .counter .item{text-align:center}
-.counter .n{font-size:2rem;font-weight:800;background:linear-gradient(90deg,#6366f1,#e040fb);-webkit-background-clip:text;background-clip:text;color:transparent}
+.counter .n{font-size:2rem;font-weight:800;background:linear-gradient(90deg,var(--indigo),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
 .counter .l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.15rem}
 
 section{padding:3.5rem 1.5rem;max-width:1100px;margin:0 auto}
@@ -39,7 +65,7 @@ section{padding:3.5rem 1.5rem;max-width:1100px;margin:0 auto}
 /* ── Les portes d'entrada ──────────────────────────────────────────────── */
 .portes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-top:1.8rem}
 .porta{display:block;text-decoration:none;color:inherit;background:var(--card);
-  border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.3rem 1.4rem;
+  border:1px solid rgba(21,19,15,.08);border-radius:14px;padding:1.3rem 1.4rem;
   transition:border-color .15s,transform .15s}
 .porta:hover{border-color:var(--indigo);transform:translateY(-2px)}
 .porta.destacada{grid-column:1/-1;background:linear-gradient(135deg,rgba(99,102,241,.16),rgba(0,230,118,.09));
@@ -65,14 +91,14 @@ section.center{text-align:center}
    Van de costat i no una a sota de l'altra perquè la gràcia és **veure-les
    alhora**: la metàfora sola és un conte i la lectura sola és una consultora
    més. La d'aquesta casa és que són la mateixa cosa. */
-.acte{border-top:1px solid rgba(255,255,255,.08);padding-top:2.2rem;margin-top:2.5rem}
+.acte{border-top:1px solid rgba(21,19,15,.08);padding-top:2.2rem;margin-top:2.5rem}
 .acte-n{font-family:'SF Mono',Monaco,monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--purple)}
 .acte h3{font-size:clamp(1.25rem,2.6vw,1.7rem);margin:.4rem 0 .8rem;line-height:1.2}
 .acte>p{color:var(--light);max-width:70ch;margin:0 0 1.4rem}
 .escenes{display:grid;gap:1rem;margin-top:1.5rem}
-.escena{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
-.escena>div{background:#0b0b12;padding:1.2rem}
+.escena{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(21,19,15,.08);
+  border:1px solid rgba(21,19,15,.08);border-radius:12px;overflow:hidden}
+.escena>div{background:var(--bg);padding:1.2rem}
 .escena .vinyeta{background:linear-gradient(135deg,rgba(224,64,251,.09),rgba(99,102,241,.05))}
 .escena h4{margin:0 0 .5rem;font-size:.98rem}
 .escena p{margin:0;color:var(--light);font-size:.88rem;line-height:1.6}
@@ -91,7 +117,7 @@ section.center{text-align:center}
    es fa: sense l'enllaç del peu, aquesta graella seria l'apartat de valors
    d'una web corporativa. */
 .eixos{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2rem;text-align:left}
-.eix{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.2rem 1.3rem;
+.eix{background:var(--card);border:1px solid rgba(21,19,15,.08);border-radius:14px;padding:1.2rem 1.3rem;
   display:flex;flex-direction:column}
 .eix-ic{font-size:1.5rem;line-height:1}
 .eix-n{font-weight:700;font-size:1.02rem;margin:.45rem 0 .35rem}
@@ -103,11 +129,11 @@ section.center{text-align:center}
    Cada pas obre un mòdul del SOS per la seva ruta. Són els mateixos que hi
    havia escampats per l'app; el que faltava era dir per quin ordre van. */
 .passos{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:1.1rem;margin-top:2rem;text-align:left}
-.pas{background:var(--card);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.5rem 1.3rem 1.2rem;
+.pas{background:var(--card);border:1px solid rgba(21,19,15,.07);border-radius:14px;padding:1.5rem 1.3rem 1.2rem;
   position:relative;display:flex;flex-direction:column}
-.pas-n{position:absolute;top:-15px;left:1.3rem;background:linear-gradient(90deg,#6366f1,#e040fb);
+.pas-n{position:absolute;top:-15px;left:1.3rem;background:linear-gradient(90deg,var(--indigo),var(--purple));
   width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-weight:700;color:#0b0b12}
+  font-weight:700;color:var(--bg)}
 .pas-t{font-weight:700;font-size:1.02rem;margin:.3rem 0 .45rem}
 .pas-d{margin:0 0 1rem;color:var(--light);font-size:.88rem;line-height:1.55;flex:1}
 .pas-d strong{color:var(--text)}
@@ -125,7 +151,7 @@ section.center{text-align:center}
    Una peça sense enllaç no es pinta com una porta: es pinta dient que encara
    no hi és. Una porta que no obre és pitjor que no tenir-la (veda 116). */
 .vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-top:2rem;text-align:left}
-.vid{display:flex;flex-direction:column;background:var(--card);border:1px solid rgba(255,255,255,.08);
+.vid{display:flex;flex-direction:column;background:var(--card);border:1px solid rgba(21,19,15,.08);
   border-radius:14px;padding:1.2rem;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
 a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 .vid-mena{font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.11em;text-transform:uppercase;
@@ -150,8 +176,8 @@ a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 
 /* ── El blog del Comando ──────────────────────────────────────────────────── */
 .posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:.7rem;margin-top:2rem;text-align:left}
-.post{display:flex;gap:.8rem;align-items:flex-start;background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:.95rem 1.1rem;
+.post{display:flex;gap:.8rem;align-items:flex-start;background:rgba(21,19,15,.03);
+  border:1px solid rgba(21,19,15,.07);border-radius:12px;padding:.95rem 1.1rem;
   text-decoration:none;color:inherit;transition:border-color .15s}
 .post:hover{border-color:var(--indigo)}
 .post-ic{font-size:1.3rem;line-height:1.2;flex-shrink:0}
@@ -176,12 +202,12 @@ a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 .hcard-lletra{margin-top:.6rem;padding-left:.6rem;border-left:2px solid rgba(224,64,251,.4);
   font-style:italic;font-size:.79rem;color:var(--light)}
 /* El pont amb la resta de l'eina: què vol dir aquest personatge a un equip. */
-.hcard-vna{margin-top:.7rem;padding-top:.6rem;border-top:1px solid rgba(255,255,255,.08);
+.hcard-vna{margin-top:.7rem;padding-top:.6rem;border-top:1px solid rgba(21,19,15,.08);
   font-size:.79rem;color:var(--green)}
 /* On està documentat el personatge. No és una nota al peu: és la diferència
    entre dir-ho i fer-ho semblar. */
 .hfont{display:inline-block;font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--muted);border:1px solid rgba(255,255,255,.12);
+  text-transform:uppercase;color:var(--muted);border:1px solid rgba(21,19,15,.12);
   border-radius:3px;padding:.1rem .35rem;margin-top:.4rem}
 /* Quan del personatge n'hi ha peça enregistrada, l'etiqueta de la font es
    torna una porta. Només quan n'hi ha: la resta no en tenen cap. */
@@ -201,15 +227,15 @@ a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 .tier{padding:1.2rem 1rem;border-radius:14px;border:2px solid;text-align:center}
 .tier-name{font-weight:700;font-size:1rem;margin:.4rem 0 .1rem}
 .tier-xp{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.t-apr{border-color:#c7c7d1;background:linear-gradient(135deg,#3a3a48,#22222a)}.t-apr .tier-name{color:#c7c7d1}
+.t-apr{border-color:var(--light);background:linear-gradient(135deg,#3a3a48,var(--panel))}.t-apr .tier-name{color:var(--light)}
 .t-brz{border-color:#cd7f32;background:linear-gradient(135deg,#5a3a20,#3a2410)}.t-brz .tier-name{color:#cd7f32}
-.t-plt{border-color:#c0c0c0;background:linear-gradient(135deg,#4a4a58,#2a2a35)}.t-plt .tier-name{color:#c0c0c0}
-.t-or{border-color:#ffd700;background:linear-gradient(135deg,#5a4a10,#3a3006)}.t-or .tier-name{color:#ffd700}
-.t-lgd{border-color:#e040fb;background:linear-gradient(135deg,#4a1055,#28082a)}.t-lgd .tier-name{color:#e040fb}
+.t-plt{border-color:#c0c0c0;background:linear-gradient(135deg,#4a4a58,var(--border))}.t-plt .tier-name{color:#c0c0c0}
+.t-or{border-color:var(--gold);background:linear-gradient(135deg,#5a4a10,#3a3006)}.t-or .tier-name{color:var(--gold)}
+.t-lgd{border-color:var(--purple);background:linear-gradient(135deg,#4a1055,#28082a)}.t-lgd .tier-name{color:var(--purple)}
 
 /* Transmedia */
 .transmedia{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:2rem}
-.tm{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
+.tm{background:var(--card);border:1px solid rgba(21,19,15,.08);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:var(--text);transition:border-color .15s,transform .15s}
 .tm:hover{transform:translateY(-2px);border-color:var(--indigo)}
 .tm .ic{font-size:2rem}
 .tm .n{font-weight:700;margin:.5rem 0 .2rem}
@@ -220,9 +246,9 @@ a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 .final h2{font-size:clamp(1.5rem,4vw,2.5rem);margin:0 0 .5rem}
 .final p{color:var(--light);max-width:600px;margin:0 auto 1.5rem}
 
-footer{text-align:center;color:var(--muted);padding:2rem 1rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05)}
+footer{text-align:center;color:var(--muted);padding:2rem 1rem;font-size:.85rem;border-top:1px solid rgba(21,19,15,.05)}
 footer a{color:var(--indigo);text-decoration:none}
-nav.top{position:sticky;top:0;background:rgba(11,11,18,.85);backdrop-filter:blur(10px);padding:.9rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+nav.top{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(10px);padding:.9rem 1.5rem;border-bottom:1px solid rgba(21,19,15,.05);z-index:10;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
 nav.top .brand{font-weight:700;color:var(--text);text-decoration:none;font-size:.95rem}
 nav.top .brand span{color:var(--indigo)}
 nav.top .links{display:flex;gap:1.2rem;font-size:.9rem}
@@ -234,35 +260,35 @@ nav.top .links a:hover{color:var(--text)}
 <!--SOS-NAV-->
 <style>
 .sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
-  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  padding:.6rem 1rem;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
-.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
-.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-brand{font-weight:700;color:var(--text);text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:var(--green)}
 .sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .sos-nav .sn-g{position:relative}
 .sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
-  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
 .sos-nav .sn-g>summary::-webkit-details-marker{display:none}
-.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
-.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
-.sos-nav .sn-here>summary{color:#f5f5f7}
-.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
-.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
-  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
-  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
-.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
-.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
-.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
-.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
-.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
-.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
-  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
-.sos-nav .sn-cta:hover{background:#4f46e5}
+.sos-nav .sn-g>summary:hover{color:var(--text);background:var(--panel)}
+.sos-nav .sn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.sos-nav .sn-here>summary{color:var(--text);font-weight:600}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:var(--indigo);border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:260px;z-index:70;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.sos-nav .sn-p a:hover{background:var(--panel);color:var(--text)}
+.sos-nav .sn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.sos-nav .sn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.sos-nav .sn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.sos-nav .sn-cta{margin-left:auto;background:var(--indigo);color:#fff;font-weight:600;text-decoration:none;
+  padding:.4rem .85rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{filter:brightness(1.12)}
 @media(max-width:640px){
   .sos-nav{padding:.5rem .7rem;gap:.35rem}
-  .sos-nav .sn-brand{font-size:.82rem}
-  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  .sos-nav .sn-brand{font-size:var(--t0)}
+  .sos-nav .sn-cta{margin-left:auto;padding:.34rem .65rem;font-size:var(--t0)}
   /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
      una barra que ja fa dues línies acaba fora de pantalla. */
   /* En columna, i no en fila que embolica: amb els grups com a germans d'una
@@ -275,7 +301,7 @@ nav.top .links a:hover{color:var(--text)}
      subratllat de banda a banda sembla una separació i no una pista. */
   .sos-nav .sn-here>summary::after{max-width:4.5rem}
   .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
-    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0}
 }
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
@@ -608,7 +634,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <!--CM-HEROIS-->
 <div class="heroes" style="text-align:left">
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(46,62%,44%)">M</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(46,62%,32%)">M</div>
 <div><div class="hcard-nm">Mazinguer</div><div class="hcard-role">Líder estratega i DJ</div></div></div>
 <div class="hcard-power">Coneix el pla i guia la banda. Sense superpoder aparent: l'ego perdut és el seu poder</div>
 <div class="hcard-arma"><span>Superarma</span> La Bomba Disco i els plats de DJ</div>
@@ -617,7 +643,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span> <a class="hfont hfont-go" href="https://on.soundcloud.com/fUxgcrlxAkJT6DV9yx">▶ Tema</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(110,62%,44%)">HM</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(110,62%,32%)">HM</div>
 <div><div class="hcard-nm">Horacio Motomachi</div><div class="hcard-role">El savi que rep el mandat</div></div></div>
 <div class="hcard-power">Coprotagonista de l'encàrrec original. Converteix l'experiència en relat</div>
 <div class="hcard-arma"><span>Superarma</span> La Bomba Disco i els plats de DJ</div>
@@ -626,7 +652,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span> <a class="hfont hfont-go" href="https://youtu.be/3Kf36tpHk98">▶ Videoclip</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(273,62%,44%)">GG</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(273,62%,32%)">GG</div>
 <div><div class="hcard-nm">Guiri-Guay</div><div class="hcard-role">Cuidador i sanador</div></div></div>
 <div class="hcard-power">Curació neuro-rítmica: sana ferides i torna a moure el cervell del grup</div>
 <div class="hcard-arma"><span>Superarma</span> Guitarra acústica country</div>
@@ -635,7 +661,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span> <a class="hfont hfont-go" href="https://youtu.be/JsEAeiQ-fc0">▶ Videoclip</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(318,62%,44%)">P</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(318,62%,32%)">P</div>
 <div><div class="hcard-nm">Purpleman</div><div class="hcard-role">Transmutador</div></div></div>
 <div class="hcard-power">Entra a les tenebres i els gasos tòxics i els torna benestar immediat</div>
 <div class="hcard-arma"><span>Superarma</span> El Rayo Eliminador</div>
@@ -644,7 +670,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(300,62%,44%)">A</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(300,62%,32%)">A</div>
 <div><div class="hcard-nm">Afrodita</div><div class="hcard-role">Motor passional</div></div></div>
 <div class="hcard-power">Holometabolisme: la seva identitat musical li trenca l'armadura que el mantenia alienat</div>
 <div class="hcard-arma"><span>Superarma</span> El ritme Soul Train</div>
@@ -653,7 +679,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(289,62%,44%)">EA</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(289,62%,32%)">EA</div>
 <div><div class="hcard-nm">El Aviador</div><div class="hcard-role">Suport tàctic</div></div></div>
 <div class="hcard-power">Orientació i rescat in extremis: apareix del cel quan l'equip s'ha perdut</div>
 <div class="hcard-arma"><span>Superarma</span> El Bajo Volador</div>
@@ -662,7 +688,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(87,62%,44%)">P</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(87,62%,32%)">P</div>
 <div><div class="hcard-nm">Pigmentón</div><div class="hcard-role">Mapador i dissenyador</div></div></div>
 <div class="hcard-power">Assigna identitats. Capaç d'il·luminar fins i tot els forats negres</div>
 <div class="hcard-arma"><span>Superarma</span> El Güengüentón i el pinzell creador</div>
@@ -671,7 +697,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(40,62%,44%)">LM</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(40,62%,32%)">LM</div>
 <div><div class="hcard-nm">La Medusa Andaluza</div><div class="hcard-role">Connectora · el hub</div></div></div>
 <div class="hcard-power">Sincronització i fusió cultural. És qui dona llum interconnectant tot el grup</div>
 <div class="hcard-arma"><span>Superarma</span> Cables connectors i una ampolla de Jack Daniel's</div>
@@ -680,7 +706,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span> <a class="hfont hfont-go" href="https://youtu.be/5FAvOvi2P30">▶ Videoclip</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(176,62%,44%)">E</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(176,62%,32%)">E</div>
 <div><div class="hcard-nm">Electroplasman</div><div class="hcard-role">Impulsor de recursos</div></div></div>
 <div class="hcard-power">Injecta liquiditat al sistema nerviós central del comando i a les naus que no enlairaven</div>
 <div class="hcard-arma"><span>Superarma</span> La viola · violí electrònic</div>
@@ -689,7 +715,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(314,62%,44%)">EA</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(314,62%,32%)">EA</div>
 <div><div class="hcard-nm">El Anguila</div><div class="hcard-role">Bateria</div></div></div>
 <div class="hcard-power">S'escapoleix de qualsevol lloc: on el grup queda encallat, hi troba l'escletxa</div>
 <div class="hcard-arma"><span>Superarma</span> La bateria i la percussió</div>
@@ -698,7 +724,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic 1</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(295,62%,44%)">B</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(295,62%,32%)">B</div>
 <div><div class="hcard-nm">Barbamuda</div><div class="hcard-role">Segona baixista</div></div></div>
 <div class="hcard-power">Fa supertratges i ensenya des del silenci. No explica: deixa que ho vegis</div>
 <div class="hcard-arma"><span>Superarma</span> El baix i el silenci tàctic</div>
@@ -707,7 +733,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Còmic</span></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(192,62%,44%)">R</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(192,62%,32%)">R</div>
 <div><div class="hcard-nm">Reciclator</div><div class="hcard-role">Fabricant de superarmes</div></div></div>
 <div class="hcard-power">Construeix les superarmes de la banda a partir del que els altres han llençat</div>
 <div class="hcard-arma"><span>Superarma</span> El taller: el que ja existeix i ningú volia. D'allà en surten la Bomba Amor i el Rayo Cagón</div>
@@ -715,7 +741,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Vídeo</span> <a class="hfont hfont-go" href="https://youtu.be/Py44l1WsSO4">▶ Videoclip</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(271,62%,44%)">S</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(271,62%,32%)">S</div>
 <div><div class="hcard-nm">Supergerminador</div><div class="hcard-role">Mestre del germinat</div></div></div>
 <div class="hcard-power">Ensenya a germinar per menjar superaliments. I canta amb la seva rialla</div>
 <div class="hcard-arma"><span>Superarma</span> Les llavors, i la pròpia rialla</div>
@@ -723,7 +749,7 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
 <div><span class="hfont">Vídeo i web pròpia</span> <a class="hfont hfont-go" href="https://youtu.be/RyAkyIp6P10">▶ Videoclip</a></div>
 </div>
 <div class="hcard">
-<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(305,62%,44%)">F</div>
+<div class="hcard-head"><div class="hcard-avatar" style="background:hsl(305,62%,32%)">F</div>
 <div><div class="hcard-nm">Fraktalman</div><div class="hcard-role">Ordre a partir del caos</div></div></div>
 <div class="hcard-power">Converteix el caos en ordre sense aplanar-lo</div>
 <div class="hcard-arma"><span>Superarma</span> La forma que es repeteix a totes les escales</div>
