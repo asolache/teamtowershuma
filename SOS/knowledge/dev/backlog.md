@@ -974,6 +974,26 @@ mateixa classe de defecte que les dues vistes que no es parlaven.
 algú davant amb un projecte seu i que **dibuixi el seu mapa sense que ningú li
 expliqui res**. Si necessita una explicació, el paper i el llapis guanyen.
 
+**La decisió de model que falta abans d'entrar a la MATRIU, i no és d'UI.** El
+primer tram ja fa el gest entre nodes, però a la MATRIU el que hi ha a dins no
+és un node: **cada venture porta el seu `vna:{roles,exchanges}` propi**
+(`newVenture`), amb `uid()` nous. És a dir que el rol «Ateneu» del node i el rol
+«Ateneu» de la venture **són dos identificadors diferents i no hi ha cap aresta
+entre nivells**. El mapa de dins ja existeix; el que no existeix és el lligam.
+
+Per tant, abans d'escriure'n una línia s'ha de dir **què travessa la frontera**:
+un flux que surt del graf de dins *ha d'aparèixer* al de fora, i si hi apareix
+sense regla, la reciprocitat (`vnaAudit`) i les slices (`computeVentureEquity`,
+`computeEquity`) el compten **dues vegades o cap**. És la mateixa pregunta que
+ja queda oberta per a les federacions temàtiques més avall —«com es consolida el
+valor entre nivells sense comptar-lo dues vegades»— i convé contestar-la **una
+sola vegada per als dos casos**, perquè `rollup` cap amunt ja la té resolta per
+al territori i aquí el que canvia és qui és el pare.
+
+*El risc és asimètric i per això va abans: un gest de zoom que no agrada es
+canvia; un ledger que ha comptat doble durant mesos no es pot corregir
+després.*
+
 ---
 
 ### A qui es ven això · del ciutadà al family office
@@ -2232,6 +2252,8 @@ Auditoria completa, defectes corregits i 8 fases pendents a
 ser un repositori d'estructures i passi a ser un servei que es pot coordinar.
 Pendents: F5 finançament i tràmits · F6 formació lligada a l'etapa ·
 F7 seguiment post-graduació · F8 evidències.
+**F9 · el zoom a la MATRIU** és la mateixa feina que la secció del zoom d'aquest
+document, vista des de la MATRIU: hi ha la regla de frontera per decidir.
 
 ### Visió de fons · Catalunya com a estat líquid descentralitzat
 
