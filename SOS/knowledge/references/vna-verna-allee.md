@@ -108,6 +108,17 @@ per comprovar que el mapa és complet i fer aflorar els fluxos principals. Es
 pregunta pel que passa primer en un escenari típic i se segueix el camí;
 després, altres inicis i altres camins habituals.
 
+> ✅ **Des del 03/10/2026 això és una dada i no una explicació.** A
+> `build-mapavalor.js`, cada mapa declara `processos` —**en plural**, que és el
+> que impedeix que es torni un diagrama de processos— i cada sentit de cada
+> parell porta `['procés', pas]`. El celler en té tres: *la visita reservada*
+> (8 passos), *el dia al poble* (4) i *la venda pel canal* (3).
+>
+> La conseqüència que val la pena: **el pols del dibuix ja no reparteix els
+> retards per ordre de declaració** —`i * 0,17 s`, que no és cap ordre— sinó per
+> la seqüència. L'animació va deixar de ser decoració i va passar a ser la
+> passa 4 feta amb el dibuix. I a `/vna` es pot recórrer un procés pas per pas.
+
 > «A l'enginyeria de processos l'objectiu és identificar un únic procés òptim i
 > eliminar la variació. Amb l'anàlisi de la xarxa de valor l'objectiu és
 > optimitzar múltiples vies i aconseguir un resultat consistent **permetent
@@ -117,6 +128,12 @@ després, altres inicis i altres camins habituals.
 *I una observació del guió que val or: **els intangibles sovint no entren a la
 seqüència** perquè passen «tot el temps» o «en qualsevol moment». Això no és un
 problema del mapa — és el que els fa invisibles a qualsevol diagrama de procés.*
+
+> Això també és dada: el valor `seq: 'sempre'`, i una guarda que **només el
+> deixa portar a un intangible**. Un tangible que «passa tot el temps» és un
+> tangible que ningú ha seqüenciat, i la frase que es ven deixaria de ser certa.
+> Al celler n'hi ha **un de sol**, i no és casual que sigui el lloc: *«el lloc
+> que fa que aquell vi sigui d'allà»*. El paisatge no es lliura un dimarts.
 
 ### El pols de la xarxa
 
@@ -177,6 +194,17 @@ Això és el mateix gest que l'eina ja fa al mapa del SOS: els llocs de dins
 surten al centre i clicar-hi els fa el mapa sencer. El zoom de la metodologia i
 el zoom de l'eina són la mateixa idea, i no és casualitat — l'un va sortir de
 l'altre.
+
+> ✅ **I des del 03/10/2026 també a `/vna`.** Dos nodes del celler s'obren i
+> tenen el seu propi mapa: `acollida` —la troballa 3, el node que avui no és de
+> ningú— amb cinc rols, i `vi` amb quatre. Es declaren a `DINS` de
+> `build-mapavalor.js` **sense coordenades**: les reparteix el dibuixant en
+> cercle, perquè obrir un node més hagi de ser fàcil i no una feina de
+> dibuixant.
+>
+> El sostre és aquest d'aquí i és una guarda, no un consell: **cap nivell per
+> sobre de 12 rols**. Si un en passa, el que cal no és una pantalla més gran,
+> és partir-lo.
 
 ## Aplicació a SOS
 Cada nodo (comunitat, projecte, MATRIU) manté un mapa VNA `{roles, exchanges}`. Els indicadors de salut `buildHealth` mesuren reciprocitat, densitat, diversitat i rols aïllats.

@@ -1053,9 +1053,17 @@ const kMena = (id, c) => `ct.m.${id}.${c}`;
    diccionari que no existeix deixa el text tal com és, que és correcte, però
    dir-ho a posta val més que confiar-hi. */
 function blocRols(marca) {
-  const port = (marca || 'TT-ROLS') === 'TT-ROLS';
-  const i18 = k => port ? ` data-i18n="${k}"` : '';
-  const i18h = k => port ? ` data-i18n-html="${k}"` : '';
+  /* ⚠ Les claus s'escriuen **a les dues pàgines** des del 03/10/2026. Abans
+     només a la portada, perquè `/vna` no tenia diccionari: la taula dels rols
+     —onze posicions, el que fan al castell, el que són a una organització i
+     els exemples— es quedava sencera en català a la pàgina que explica el
+     mètode. El castellà de cada camp ja estava declarat i no sortia enlloc.
+
+     Ara `/vna` té diccionari i el bloc d'aquí hi deixa les seves claus: les
+     recull el bucle del final d'aquest fitxer, que llegeix el que s'acaba
+     d'escriure i només hi aboca les que es fan servir. */
+  const i18 = k => ` data-i18n="${k}"`;
+  const i18h = k => ` data-i18n-html="${k}"`;
   const f = [];
   f.push(`<!--${marca || 'TT-ROLS'}-->`);
   f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
@@ -1556,6 +1564,44 @@ if (!fails) DESTINS.forEach(d => {
   } else if (out !== src) writeFileSync(d.f, out);
 });
 if (CHECK && !fails) ok('els blocs de la pinya estan al dia a les dues pàgines');
+
+/* ══ I LES CLAUS QUE AQUEST FITXER DEIXA A `/vna` ════════════════════════════
+   `/vna` té diccionari propi des del 03/10/2026, i l'escriu
+   `build-mapavalor.js`. Però els blocs d'aquí —la planta i els rols— també hi
+   deixen claus, i aquell generador no les coneix: la del títol de la planta
+   es quedava al marcatge sense entrada, i qui llegeix la pàgina en castellà
+   amb un lector de pantalla sentia el dibuix en català.
+
+   No s'hi aboca el diccionari sencer de la portada: serien dues-centes claus
+   que ningú demana, i la guarda de `/vna` les comptaria com a mortes —amb raó.
+   S'hi escriuen **només les que els blocs d'aquesta pàgina fan servir**, i es
+   troben llegint el que s'acaba d'escriure. Així, el dia que un bloc d'aquí hi
+   deixi una clau nova, vindrà sola. */
+if (!fails) {
+  const f = join(ARREL, 'SOS', 'vna.html');
+  if (!existsSync(f)) bad('no existeix SOS/vna.html');
+  else {
+    let src = readFileSync(f, 'utf8'), tocat = false;
+    const meus = new Set();
+    ['VNA-PINYA', 'VNA-ROLS'].forEach(m => {
+      const a = src.indexOf(`<!--${m}-->`), b = src.indexOf(`<!--/${m}-->`);
+      if (a < 0 || b <= a) return;
+      [...src.slice(a, b).matchAll(/data-i18n(?:-html)?="((?:ct|rl)\.[^"]+)"/g)].forEach(x => meus.add(x[1]));
+    });
+    [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+      const a = `/*VNA-CT-I18N-${M}*/`, b = `/*/VNA-CT-I18N-${M}*/`;
+      const x = src.indexOf(a), y = src.indexOf(b);
+      if (x < 0 || y <= x) { bad(`falten les marques ${a} a SOS/vna.html`); return; }
+      const cos = dicCastells(l).split('\n')
+        .filter(li => [...meus].some(k => li.indexOf(`'${k}':`) >= 0)).join('\n');
+      const out = src.slice(0, x + a.length) + '\n' + cos + '\n' + src.slice(y);
+      if (out !== src) { src = out; tocat = true; }
+    });
+    if (CHECK) { if (tocat) bad('les claus de la pinya a /vna no corresponen a la declaració'); }
+    else if (tocat) writeFileSync(f, src);
+    if (!CHECK || !tocat) ok(`${meus.size} clau(s) dels blocs de la pinya, escrites al diccionari de /vna`);
+  }
+}
 
 if (CHECK) {
   console.log(fails ? '\n❌ Arregla-ho amb:  node SOS/tools/build-castells.js' : '\n✅ La pinya quadra.');

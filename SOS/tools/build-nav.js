@@ -116,9 +116,14 @@ const GRUPS = [
      La resta de l'arrel segueix fora, i ara **amb el motiu escrit**
      (`FORA_DEL_MENU_ARREL`): una pàgina publicada i no enllaçada ha de ser una
      decisió, no un oblit. */
+  /* ⚠ `curs_vna.html` —«El laboratori de VNA»— se'n va el 03/10/2026. Era una
+     **segona pàgina sobre el mateix mètode**: la seva pròpia ruta
+     d'aprenentatge, els seus conceptes i enllaços a dues aplicacions de la
+     generació retirada. Dues pàgines sobre el mateix és el pecat que
+     `_redirects` ja documenta d'aquella generació —*un lloc que diu dues
+     coses no en diu cap*— i la pàgina del mètode és `/vna`, que és al grup
+     d'eines i ara el porta sencer. L'adreça té un 301 cap allà. */
   { id: 'casa', lbl: T('La casa', 'La casa'), ic: '🏛', arrel: true, links: [
-    ['curs_vna.html', T('El laboratori de VNA', 'El laboratorio de VNA'),
-      T('El curs d\'anàlisi de xarxes de valor', 'El curso de análisis de redes de valor')],
     ['premsa.html', T('Premsa', 'Prensa'),
       T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')]
   ] },

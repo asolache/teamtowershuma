@@ -44,6 +44,85 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### `/vna` · el llenç, i el constructor que ve després (03/10/2026)
+
+**Fet.** La pàgina del mapa de valor era **explicativa** i ara és el producte.
+El que s'ha mesurat, no el que s'ha fet:
+
+| | Abans | Ara |
+|---|---|---|
+| Mides de lletra per sota de 15 px | **32 al CSS**, la més petita 0,58rem | cap, i hi ha guarda |
+| Etiquetes del graf, renderitzades | 11,5 px | 15,3 px |
+| `data-i18n` a la pàgina | **2** (els del menú) i cap commutador | 342 claus a cada llengua |
+| Transaccions que saben quan passen | 0 | 16 de 16 |
+| Nodes que s'obren | 0 | 2, amb 5 i 4 rols a dins |
+| Pàgines sobre el mateix mètode | 2 (`/vna` i `curs_vna`) | 1 |
+| Pes | sense sostre declarat | 59 KB gzip, sostre de 90 |
+
+Les quatre coses noves —commutar de vista, mirar-se un tros, entrar en un node
+i recórrer un procés— **acaben totes en una classe de CSS**, i cap peta si
+desapareix: el dibuix es queda igual de maco i els botons deixen de fer res. Per
+això `test-vna.mjs` ho compta tot **sobre l'opacitat calculada del navegador** i
+no sobre les classes, i `check-vna.js` exigeix que el marcatge, l'estil i el codi
+hi siguin els tres.
+
+**Tres coses que la feina va trobar i no buscava:**
+
+1. Els `**així**` de les declaracions s'escapaven i sortien literals: el pas 0
+   del procés es publicava dient «es fa \*\*amb zoom\*\*» amb els asteriscs.
+2. `blocRols` escrivia les claus **només a la portada** —`/vna` no tenia
+   diccionari—, de manera que la taula dels onze rols es quedava sencera en
+   català a la pàgina que explica el mètode, amb el castellà ja declarat i
+   sense sortir enlloc.
+3. Les vuit preguntes es van quedar a dos llocs, i al vell el codi escrivia
+   `esc(q)` damunt d'una entrada que havia passat a ser `[ca, es]`: cada
+   pregunta sortia amb les dues llengües seguides i separades per una coma. Ho
+   va trobar la prova de navegador, no cap guarda.
+
+**El que queda obert, i és la fase 2:**
+
+- **El constructor.** Sis passes —l'abast · qui hi ha · els rols · els «must» ·
+  els «extra» · la seqüència i els gomets— que emeten **la forma canònica**
+  `{nodes, parells}`, idèntica a `CELLER` i a `pairs` de `mapFlowsOf`. Si
+  n'emetés una de pròpia tindríem dues qualitats de mapa, que és el que
+  `auditoria-mapes.md` §3 ja va pagar una vegada: quatre fonts, quatre
+  expanders, salut de 13 a 100.
+- **El diagnòstic, declarat un cop.** `vnaAudit` (`SOS/index.html:11051`) ja
+  calcula reciprocitat, densitat, diversitat, rols aïllats, concentració i
+  salut amb els llindars d'`auditoria-mapes.md` §4. **No se'n fa una còpia**:
+  es declara a un `build-vna-nucli.js` i s'escriu als dos fitxers entre
+  marques, amb guarda d'igualtat. A l'app **substitueix** la que ja hi és —zero
+  pes nou— i cal mesurar abans de tocar `SOS/index.html`, que va al 99 % del
+  seu sostre.
+- **El traspàs.** El final del constructor no és un botó de comprar: és la
+  salut amb els punts febles amb nom, i la frase honesta —**el mapa el dibuixa
+  qui hi és, no el consultor**: un mapa fet per una persona sola és una
+  hipòtesi molt bona, i el que el converteix en diagnòstic és la sala. D'aquí
+  l'òptim teòric, l'ajustat i la desviació.
+- **La regla de privacitat, escrita abans del primer client.** Amb una petició
+  de pressupost viatja **la forma** del mapa —quants rols, quants lliuraments,
+  quin percentatge d'intangibles, quina salut— i **mai les etiquetes**. Un mapa
+  honest nomena qui sosté què dins d'una empresa, i això té conseqüències per a
+  persones concretes. És la pregunta oberta de «(b) Mapes de valor privats», i
+  aquesta n'és la resposta per a la pàgina pública.
+
+**I dues coses petites, amb el motiu escrit perquè no siguin un oblit:**
+
+- **El menú va a 11,7–13,6 px.** El genera `build-nav.js` i viu a vint-i-tres
+  pàgines: pujar-li la lletra és un canvi d'allà i toca tot el SOS. El terra de
+  15 px de `/vna` l'exclou a posta, i les dues proves ho diuen.
+- **La colla castellera del final de `/vna` segueix en català.** Els dotze rols
+  són còpia literal de `COLLA_CA` de la portada i `check-vna.js` els compara
+  paraula per paraula (veda 116): traduir-los vol dir traduir-los als dos llocs
+  alhora i tornar a passar la guarda.
+
+**I una que es va veure de passada i no és d'aquesta feina:** `index.html` té
+dos identificadors repetits, `facMail` i `ctaMail`. Un `id` duplicat fa que una
+etiqueta apunti sempre al primer, i això no peta mai. `/vna` ja no en té cap
+—les puntes de fletxa dels dibuixos porten l'identificador del seu SVG des del
+03/10/2026, que abans eren `mvT`/`mvI` fixes i funcionaven de casualitat perquè
+els marcadors són idèntics.
+
 
 ### Molekulon · fet, i el cap solt que queda
 

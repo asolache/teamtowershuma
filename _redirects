@@ -126,6 +126,15 @@
 # mateix que la paret de la portada i ho deia pitjor —amb tres cites que ningú
 # havia dit i xifres sense font—. La paret de `#clients` i el detall de
 # `#trajectoria` ho diuen amb la font de cada nom escrita.
+# `curs_vna` era «Value Network Analysis Lab», 1.654 línies en castellà sobre el
+# mateix mètode que `/vna`: la seva pròpia ruta d'aprenentatge, els seus
+# conceptes i enllaços a dues aplicacions de la generació retirada. Retirada el
+# 03/10/2026, quan `/vna` va passar a portar el mètode sencer —el llenç, les
+# vuit lectures, la seqüència i el zoom— en les dues llengües.
+/curs_vna /vna    301
+/curs_vna/* /vna    301
+/curs_vna.html /vna    301
+
 /clients /#trajectoria    301
 /clients/* /#trajectoria    301
 /clients.html /#trajectoria    301
