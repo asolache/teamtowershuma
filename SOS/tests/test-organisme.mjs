@@ -47,7 +47,8 @@ console.log('\n1 · Les rengles van després de les dues vistes, no abans');
   const r = await p.evaluate(() => {
     const ids = [...document.querySelectorAll('section[id]')].map(s => s.id);
     return { hi: ids.indexOf('rengles'), mapa: ids.indexOf('dues-vistes'),
-             rols: ids.indexOf('rols'), enfoc: ids.indexOf('enfoc') };
+             rols: ids.indexOf('rols'), enfoc: ids.indexOf('enfoc'),
+             decideix: ids.indexOf('decideix') };
   });
   ok(r.hi >= 0, 'la secció hi és');
   /* `#mapaval` s'ha fusionat amb `#rengles` dins de `#dues-vistes`: el graf i
@@ -57,8 +58,17 @@ console.log('\n1 · Les rengles van després de les dues vistes, no abans');
      `#rengles` es queda com la part didàctica —les cinc construccions i les
      variables— i per això va després: ordena una cosa que qui llegeix acaba
      de veure sobre un cas de debò. */
-  ok(r.mapa >= 0 && r.hi === r.mapa + 1,
-    'i va just després de les dues vistes: ordena una cosa que acabes de veure');
+  /* Es mesura **l'ordre i no l'adjacència**. Entre les dues vistes i les
+     rengles hi ha entrat `#decideix` —per a què serveix això, abans d'explicar
+     com es fa—, i una asserció d'adjacència hauria petat per un canvi
+     correcte. El que ha de seguir sent cert és que les rengles van **després**
+     del cas: ordenen una cosa que qui llegeix ja ha vist. */
+  ok(r.mapa >= 0 && r.hi > r.mapa,
+    'i va després de les dues vistes: ordena una cosa que acabes de veure');
+  /* I el que va al mig: primer per a què serveix, després com es fa. Qui
+     decideix una compra no és un metodòleg. */
+  ok(r.decideix > r.mapa && r.decideix < r.hi,
+    'amb «el que decideixes» entre mig: per a què serveix abans que com es fa');
   /* I el vocabulari, l'últim dels tres: els noms ordenen una pinya, i si
      sortissin primer anomenarien posicions que encara no s'han vist. */
   ok(r.rols === r.hi + 1, 'i els rols arquetípics, just darrere');

@@ -228,8 +228,13 @@ const PAQUETS = [
     endusEs: 'El mapa de los intercambios reales, tangibles e intangibles, y dónde se pierde valor sin que lo vea nadie. Método VNA de Verna Allee.',
     valor: 'Es veu qui sosté el que no consta a cap organigrama. És la conversa que evita que, quan aquella persona plegui, l\'equip descobreixi de cop tot el que feia.',
     valorEs: 'Se ve quién sostiene lo que no consta en ningún organigrama. Es la conversación que evita que, cuando esa persona se vaya, el equipo descubra de golpe todo lo que hacía.',
-    perque: 'Puja amb el nombre de rols i de departaments implicats; baixa si el mapa es fa amb un sol equip i no amb tota la casa.',
-    perqueEs: 'Sube con el número de roles y departamentos implicados; baja si el mapa se hace con un solo equipo y no con toda la casa.',
+    /* L'abast és el que decideix el preu, i fins ara no ho deia: en una casa
+       gran **no es fa un sol mapa, es fa amb zoom** —un nivell i els de dins a
+       part— i segons la criticitat de l'anàlisi això vol més d'una sessió. Dir
+       -ho aquí i no a mitja feina és la diferència entre una forquilla i una
+       sorpresa. Precisat per l'Àlvar el 02/10/2026. */
+    perque: 'Puja amb el nombre de rols i de departaments implicats. En una casa gran el mapa es fa amb zoom —un nivell primer i els de dins a part— i segons la criticitat de l\'anàlisi això vol més d\'una sessió: es dimensiona abans de signar. Baixa si el mapa es fa amb un sol equip i no amb tota la casa.',
+    perqueEs: 'Sube con el número de roles y departamentos implicados. En una casa grande el mapa se hace con zoom —un nivel primero y los de dentro aparte— y según la criticidad del análisis eso pide más de una sesión: se dimensiona antes de firmar. Baja si el mapa se hace con un solo equipo y no con toda la casa.',
     diners: 'Pressupost propi de millora o de formació',
     dinersEs: 'Presupuesto propio de mejora o de formación' },
 

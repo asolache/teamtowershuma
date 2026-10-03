@@ -399,6 +399,313 @@ deia pitjor. `/clients` → `/#trajectoria` amb 301.
 
 ---
 
+### Marcom · acords, propostes i el material que no pot ser públic (03/10/2026)
+
+**Demanat per l'Àlvar**, i són tres coses que van juntes perquè totes acaben a
+la mateixa carpeta.
+
+#### 1 · El marc d'acords
+
+Definir **el marc i la forma dels acords** per a les tres bandes amb qui es
+tracta, que avui no estan escrits enlloc:
+
+| Amb qui | Què cal definir |
+|---|---|
+| **Clients** | Què s'entrega, en quin termini, què passa si s'allarga, de qui és el mapa i l'eina després, i com es tanca |
+| **Partners** | Qui factura, com es reparteix, qui signa davant del client, i què passa amb el que un aporta i l'altre reutilitza |
+| **Proveïdors** | El mateix al revés, i les despeses directes al seu preu de factura, que és el que el mapa de cost ja diu |
+
+*El catàleg ja diu què es ven i a quin preu; el que falta és **sota quines
+condicions**. I hi ha una peça que hi encaixa i ja existeix: `SOS/vedes.html`
+—les regles amb el motiu al costat— és exactament la forma que hauria de tenir
+un marc d'acords d'aquesta casa.*
+
+#### 2 · El sistema de propostes, eficient en tokens
+
+Fer una **proposta a mida** a partir de tots els recursos que l'Àlvar posi al
+repositori privat, i fer-ho **sense gastar un context sencer** cada vegada.
+
+El que ja hi ha i s'ha de cosir, no escriure: `build-oferta.js` declara els 24
+paquets amb els seus set camps; `SOS/pressupost.html` ja munta una proposta
+esborrany amb el desglossament; `build-formularis.js` ja genera mitja pàgina
+i ara també el seu diccionari.
+
+**El que falta és l'índex.** La manera eficient en tokens no és llegir tot el
+material a cada proposta: és **tenir un índex declarat** —un fitxer per recurs,
+amb de què va, per a qui serveix i quins paquets l'aprofiten— i llegir **només
+els tres o quatre que toquen**. És el mateix patró que `knowledge/MAPA.md` ja
+fa amb les carpetes.
+
+*Sense l'índex, cada proposta comença per llegir-ho tot i la meitat del context
+se'n va abans d'escriure la primera frase.*
+
+#### 3 · ⚠ On viu el material · **i una cosa que has de decidir tu**
+
+L'Àlvar va dir «guarda-ho al **repo privat**» i va afegir «si per privacitat és
+millor un Drive, al Drive».
+
+> **Aquest repositori és públic.** `asolache/teamtowershuma` té `private: false`.
+> Tot el que s'hi commiteja és visible per qualsevol, i per això **el document
+> de marcom que va passar (l'anàlisi de beneficis del SOS i el guió de l'anunci
+> de televisió) no s'ha desat aquí**.
+
+El que hi ha al document i que **no hauria de ser públic avui**: el guió de
+l'anunci sencer —pla a pla, música, claim final— que és creativitat no estrenada,
+i l'enfocament comercial per audiència. La llista de clients i les xifres de
+trajectòria sí que ja són públiques i amb font, o sigui que aquelles no hi fan
+res de nou.
+
+**Les tres sortides, i la que recomanaria:**
+
+1. **Un repositori privat nou** (`teamtowershuma-marcom`) — el material viu amb
+   el codi, es versiona, i es pot llegir des d'aquí si s'hi dona accés. *És la
+   que recomanaria si el material ha d'alimentar el sistema de propostes: un
+   índex declarat sobre fitxers de text és el que fa la proposta barata en
+   tokens.*
+2. **Un Drive** — millor si hi ha d'entrar gent que no toca git, i si hi haurà
+   documents que no són text (vídeo, maquetes, contractes signats).
+3. **Les dues** — el text i l'índex al repositori privat, els binaris i el que
+   signa gent al Drive.
+
+*Mentre no es decideixi, el document de l'anunci **està només a la conversa**.*
+
+---
+
+### L'exemple del mapa ha de ser genèric, i l'animació del vídeo (03/10/2026)
+
+**Dit per l'Àlvar:** on es parla del **mapa de valor d'un poble** hauria de ser
+**un exemple més genèric**, i el document de l'anunci serveix de **esborrany per
+a l'animació MVP del vídeo final**.
+
+**Què vol dir «més genèric» i on toca.** Avui els dos casos treballats són molt
+concrets: el **celler del Penedès** (`CELLER`) i la **xarxa de TeamTowers**
+(`XARXA`). El del celler funciona bé perquè la tesi és concreta —el marge surt
+de cobrar els intangibles— però *parla d'un sector*, i qui ve d'una altra banda
+ha de traduir-ho.
+
+Les dues maneres de fer-ho genèric, i no són la mateixa:
+
+- **Un tercer cas neutre** —una casa qualsevol amb set rols sense sector— que
+  es pugui reconèixer vingui d'on vingui. Costa un cas més a mantenir.
+- **El mateix cas amb els noms canviables.** El dibuixant ja és `svgMapa(mapa, id)`
+  i pren qualsevol mapa: posar-hi un selector de cas no és feina de dibuix, és
+  feina de declarar-ne un segon. *Aquesta és la barata.*
+
+**L'animació MVP.** El guió de l'anunci ja té el pla que l'MVP ha de fer: *«la
+pantalla es divideix en dues vistes: a l'esquerra un graf de nodes i fletxes, a
+la dreta la pinya amb els mateixos rols»*. **Això ja existeix i es pot gravar
+avui**: és `#dues-vistes` de la portada, amb el pols animat i el botó
+d'encallament. El que falta per a vídeo no és codi — és
+**decidir el cas que surt a càmera** (vegeu el punt de dalt) i gravar-ho.
+
+*El pols animat, de fet, ja ve del guió de sessió d'IKEA —els cors de «el pulso
+de la red de valor»—, o sigui que el que surt a l'anunci i el que es fa a la
+sala són la mateixa cosa. Val la pena que el vídeo ho digui.*
+
+---
+
+### El procés de VNA, explicat com es fa de debò (02/10/2026)
+
+**L'Àlvar va passar dos PDF**: l'article sencer de Pantheon —Antonio
+Blanco-Gracia i Ingrid Astiz, 30/11/2018— i **el guió real de la sessió
+d'IKEA** (19 pàgines). La petició: *«millora la comunicació del procés de VNA,
+sobretot amb les imatges de la pàgina de sos/vna»*.
+
+**El que faltava era la imatge.** La pàgina explicava el mètode i **no ensenyava
+com es fa**. Qui ha de decidir si contracta una sessió vol veure què passarà a
+la sala, i això no ho diu una llista de deu passos.
+
+**El full.** Ara hi ha un dibuix del full de paper d'estrassa tal com queda, i
+tot el que hi surt és del guió real: l'**abast escrit a dalt** amb els noms i
+la data, el rol central al mig i la resta al voltant, els entregables en dos
+colors, els **gomets de satisfacció** i els **cors del pols**.
+
+**Tres coses que el guió porta i nosaltres no teníem:**
+
+1. **Els «must» i els «extra».** És la nostra parella tangible/intangible dita
+   amb les paraules de la sala, i **els colors ja coincidien** (verd i rosa).
+   La diferència de les dues maneres de dir-ho: *tangible/intangible* diu de
+   quina matèria és; ***must/extra* diu si el pots reclamar**. La segona fa
+   saltar la conversa, perquè tothom sap immediatament quins extres està donant
+   i ningú li ha agraït mai.
+2. **Els gomets de satisfacció** (blau satisfet, groc no). És **la capa que
+   converteix un dibuix en un diagnòstic**: un full sense gomets diu què hi ha
+   i no diu on hi ha feina. No en teníem res.
+3. **Les vuit preguntes de l'anàlisi.** El mapa no diu res sol; el que diu
+   alguna cosa és el grup responent-les amb el dibuix al davant.
+
+**I una validació que val la pena dir en veu alta: el pols ve d'allà.** El guió
+té un pas, «el pols de la xarxa de valor», que demana marcar amb un cor **de
+dos a quatre llocs** on cal mirar la salut del flux, amb dues preguntes: *quin
+rol és més essencial per a la supervivència de la xarxa, i què passaria si
+aquella persona la substituís una altra*. El pols animat de la portada i el
+botó «i si aquest node s'encalla?» **són exactament això**, i fins avui ho
+dèiem com si fos una idea de disseny nostra. Ara consta d'on ve.
+
+**Les quatre passes grans.** Els deu passos eren plans i una llista de deu no es
+recorda. El guió els agrupa en quatre —abast, qui convidem, rols i
+transaccions, validar seqüenciant— i aquesta és la forma que es comunica:
+**quatre per recordar, deu per executar**.
+
+**Altres coses que el document aporta i que han entrat al coneixement:**
+8–10 rols per mapa i el sostre pràctic de **12 rols i 50 transaccions a mà**
+(que és, dit d'una altra manera, per què existeix el zoom); els entregables
+**amb noms i no amb verbs**, perquè un entregable és una cosa que es pot
+comprovar si ha arribat; la **seqüència** per validar el mapa i l'observació
+que *els intangibles sovint no hi entren perquè passen «tot el temps»*; la
+**llei de Conway**; i **Kaizen contra Kaikaku** — el VNA va més enllà de la
+millora contínua perquè habilita el salt.
+
+**La guarda i la prova.** `build-mapavalor.js` comprova que el full porti les
+dues menes d'entregable, els gomets, de dos a quatre cors i l'abast escrit —i
+que **cap etiqueta surti de la seva caixa**, que és un defecte d'ofici que es
+va veure mirant el dibuix i no executant res: amb una amplada fixa en sortien
+sis. Provada posant-hi l'amplada fixa: en caça onze. `test-vna.mjs` hi afegeix
+nou assercions, entre elles que el full **té el seu CSS** —el defecte que ja va
+passar amb els polsos.
+
+⚠ **I una fila de `trajectoria.md` que ara és més forta:** el guió **confirma
+l'equip d'IKEA** —Álvaro Solache com a **director del VNA**, Bep Moll a
+comunicació, Antonio Blanco i Sergio Salgado com a consultors i analistes— i
+que l'àmbit d'una de les sessions era **la xarxa de venda i devolucions**.
+*Encara falten els anys.*
+
+**El que queda:** l'article anuncia una segona part amb el cas d'una escola de
+postgrau; no s'ha comprovat si existeix (`pantheon.work` segueix bloquejat pel
+proxy d'aquest entorn).
+
+---
+
+### El pressupost, en dues llengües · i l'abast del VNA (02/10/2026)
+
+**Tres coses demanades per l'Àlvar el mateix dia.**
+
+**1 · El pressupost ja es llegeix en castellà.** `pressupost.html` no tenia
+*cap* mecanisme —ni `data-i18n`, ni `data-ca`, ni botó—, i és la pantalla on
+algú demana un preu. Ara en té: **77 elements amb clau**, tres atributs
+(`data-i18n`, `-html` i **`-ph` per als `placeholder`**, que un diccionari de
+només `textContent` deixa en català sense avisar) i la **tria es recorda**.
+
+El diccionari es declara a **`build-formularis.js`** i no a la pàgina, i és la
+decisió que importa: **mitja pàgina la genera aquell fitxer** —tipus
+d'organització, rols, paquets, camps de mida— i tenir-lo en dos llocs voldria
+dir que un dia divergís una llengua sencera. `ORGS` (12) i `ROLS` (8) tenen ara
+els seus `*Es`; els paquets ja els tenien a `build-oferta.js`, que és qui els
+declara.
+
+*Un defecte que es va veure mirant i que no peta: **l'emoji fora del valor**.
+El marcatge escriu `🏛 Ajuntament` i el diccionari substitueix el `textContent`
+sencer — amb el valor sense emoji, canviar de llengua **esborrava dotze icones**
+de la pantalla.*
+
+`test-i18n-pressupost.mjs` (18 assercions) ho tanca, i inclou la que no és
+òbvia: **traduir no pot trencar el formulari**. Els `value` de les opcions són
+identificadors, no text, i han de seguir sent `curs`, `direccio`, `ajuntament`.
+
+**2 · L'abast del VNA: pas 0.** El procés començava per «qui hi ha a la sala» i
+**no deia a quina escala es mapa**. En una casa gran no es fa un sol mapa: es fa
+**amb zoom** —un nivell primer i els de dins a part—, perquè un mapa de quaranta
+nodes no es llegeix a cap sala i a la sala és on s'ha de llegir. I la
+conseqüència que ha de constar **abans de signar**: *segons la criticitat de
+l'anàlisi, pot caldre més d'una sessió*.
+
+Va a tres llocs, perquè és on es decideix: el pas 0 de `PROCES`
+(`build-mapavalor.js`, ara deu passos), el camp `perque` del paquet
+`mapa-organitzacio` —que és el que explica què fa pujar la forquilla— i la
+secció nova «L'abast» de `references/vna-verna-allee.md`.
+
+*I és el mateix gest que el zoom de l'eina: els llocs de dins surten al centre
+i clicar-hi els fa el mapa sencer. No és casualitat — l'un va sortir de l'altre.*
+
+**3 · La font nova.** «Cómo hacer tu primer análisis de la red de valor»,
+**Pantheon.work, 30/11/2018**, a les fonts de `vna-verna-allee.md`. Pantheon
+aplica el VNA de Verna Allee com a metodologia central i el descriu com un
+exercici **ràpid i no invasiu** que promou una **reflexió col·lectiva** i que
+**destapa els intangibles** —els intercanvis no regulats que marquen la
+diferència quan es genera valor.
+
+⚠ **No s'ha pogut llegir sencer:** `pantheon.work` està bloquejat pel proxy de
+sortida d'aquest entorn. Només consta el que es pot verificar des de fora
+—títol, data, autoria i el marc— i **el pas a pas que proposa l'article no
+s'ha incorporat**, o sigui que les coincidències i diferències amb el nostre
+`PROCES` de deu passos estan sense comparar. **L'Àlvar passarà un document amb
+més detall del flux**: és el que falta per tancar-ho.
+
+*Pantheon.work ja era font d'aquesta casa pel panteó de 12 (`pantheon-12.md`,
+CC BY). Dos documents del mateix lloc, i conviuen bé.*
+
+**El que queda de traduccions:** *(actualitzat el 03/10/2026, vegeu l'entrada
+de sota)* els tres diagnòstics ja no. El que queda és **el text de la proposta
+que el JavaScript munta** en prémer el botó del pressupost (`rLead`, `rMetode`,
+les línies del resum), i els tres forats mesurats de la portada.
+
+---
+
+### Els tres diagnòstics, en les dues llengües (03/10/2026)
+
+Tancament de la meitat que faltava de *«revisa que el form de pressupost i
+diagnòstic i la home surtin ben traduïdes al cat i a l'esp»*.
+
+**El que es va trobar, i que és pitjor que «sense traduir».** Els dos
+formularis de diagnòstic **ja portaven les claus** `data-i18n` dels blocs
+compartits —les escriu `build-formularis.js`, que genera el bloc de «qui ets» i
+el de «d'on véns»— i **no tenien cap diccionari que les llegís**. Les claus hi
+eren, el text es quedava en català, i no petava res. És el mateix defecte de la
+portada vist des de l'altra banda: allà faltava clau, aquí faltava valor.
+
+I `diagnostic.html` —la **primera** pantalla del diagnòstic, la tria de porta—
+no tenia ni claus: qui venia del castellà no arribava ni a triar.
+
+**Com s'ha fet, i on viu cada cosa.**
+
+| Què | On es declara | Per què allà |
+|---|---|---|
+| Les claus `fo.*` dels blocs compartits | `build-formularis.js` (`FORM`) | Les porten **tres** pàgines i han de dir el mateix a totes tres |
+| El text propi de cada pàgina | la pàgina, entre les seves marques | No el genera ningú; no hi ha res a divergir |
+| Objectius, notes i paquets del diagnòstic d'organització | `build-diagnosi-org.js` i el catàleg | És on ja es declaraven, amb `tEs`/`diuEs`/`llegimEs` al costat |
+| Mòduls, serveis, perfils, portes del territori | la pàgina, amb `tEs` al costat de `t` | Catàlegs de la pàgina; partir-los en dos objectes voldria dir indexar dues vegades |
+| El menú | `build-nav.js` | Ja declarava `T(ca, es)` i només escrivia el català a les pàgines del SOS |
+
+**Sis camps dels blocs compartits no tenien clau** —el web, a què us dediqueu,
+el municipi, la comarca i el de mida— i per tant es quedaven en català **també
+al pressupost**, que ja es donava per traduït. Una prova que mira els elements
+*amb clau* que es queden en català no els hi veu mai.
+
+**La tria de llengua vivia en dues claus.** La portada la desa a `tt_lang` i
+els formularis a `sos.lang`: qui triava castellà a `teamtowershuma.com` i
+clicava cap a un formulari se'l trobava en català. Ara es llegeixen les dues i
+s'escriuen les dues.
+
+**El que NO s'ha traduït, a posta:** el **resum en text pla** dels dos
+diagnòstics. No és una pantalla: és el que arriba a la nostra banda i el que
+`crm.html` parteix pels separadors (`── QUI ──`, `── D'ON ──`…). Si canviés de
+llengua amb el botó, el CRM deixaria de trobar les seccions de mitja safata.
+Per això hi ha `catala()`/`cat()`, que llegeixen el diccionari català passi el
+que passi, i una asserció que ho comprova.
+
+**Les guardes.** Dues a `check-formularis.js`, i les dues caçades provant-les:
+
+1. Les quatre pantalles tenen commutador, comparteixen la tria amb la portada, i
+   **cada clau del marcatge existeix als dos diccionaris** (i cap diccionari en
+   té una que l'altre no).
+2. **Cap text de catàleg sense el seu germà castellà.** Es compta: si hi ha vuit
+   perfils amb `lead:` n'hi ha d'haver vuit amb `leadEs:`. Això és el que una
+   prova de navegador no troba, perquè una etiqueta curta com «Banc de temps» no
+   es distingeix de la castellana amb cap expressió regular.
+
+I `SOS/tests/test-i18n-diagnostic.mjs`: 56 assercions que recorren els quatre
+passos dels dos formularis, llegeixen el **resultat** de la pantalla i
+comproven que el resum segueix en català.
+
+**Dues coses trobades mirant, que no petaven.** El títol de cada opció
+(`.opt .o-t`) sortia **negre sobre fons negre** als tres formularis: `.opt` és
+un `<button>` i el navegador hi posa text negre i centrat, el `.o-d` tenia color
+propi i el `.o-t` no. I al territori el nom del servei i la seva descripció
+sortien enganxats —«Diagnòstic territorial2 sessions»— perquè eren dos `span`
+en línia.
+
+---
+
 ### Les dues llengües no arribaven a la meitat de la portada (02/10/2026)
 
 **Demanat per l'Àlvar:** *«revisa que el form de pressupost i diagnòstic i la
@@ -465,6 +772,10 @@ Això no és posar-hi claus: és portar-hi el mecanisme sencer (diccionari, bot�
 `setLang`, i la memòria de la tria) a quatre pàgines autocontingudes, i decidir
 si el diccionari es declara a cada pàgina o es genera des d'un sol lloc —que és
 el que faria `build-formularis.js`, que ja les escriu.
+
+> ✅ **Fet.** El pressupost el 02/10/2026 i els tres diagnòstics el 03/10/2026,
+> amb el diccionari compartit a `build-formularis.js` i el propi de cada pàgina
+> a la pàgina. Vegeu «Els tres diagnòstics, en les dues llengües».
 
 ---
 

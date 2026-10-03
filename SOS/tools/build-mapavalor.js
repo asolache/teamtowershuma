@@ -73,24 +73,62 @@ const NOTACIO = [
    Les tres anàlisis són les de Verna Allee i van pel seu nom. La pàgina ja en
    feia dues —el pas 6 és l'anàlisi d'intercanvi i el 7 la de creació de valor—
    i no les anomenava, de manera que qui buscava el mètode no el reconeixia. */
+/* ══ LES QUATRE FASES ════════════════════════════════════════════════════════
+   Els deu passos de sota estaven **plans**, i una llista de deu coses no es
+   recorda. El guió real d'una sessió —el d'IKEA, i l'article d'on surt el
+   mètode— els agrupa en **quatre passos grans**, i aquesta és la forma que es
+   comunica: quatre per recordar, deu per executar.
+
+   Surten de: Antonio Blanco-Gracia i Ingrid Astiz, «Value Network Analysis:
+   ¿qué es? ¿para qué sirve? ¿cómo hacerlo?» (Pantheon.work, 30/11/2018), i del
+   guió de la sessió d'IKEA, on consten **tal qual** com «Cuatro grandes
+   pasos». Aportats per l'Àlvar el 02/10/2026. */
+const FASES = [
+  { id: 'abast', n: 1, t: 'Definir l\'abast i les fronteres',
+    d: 'De quina activitat parlem i on s\'acaba. És el que decideix si surt un mapa que es llegeix o un de quaranta nodes que no es llegeix a cap sala.' },
+  { id: 'qui', n: 2, t: 'Decidir qui convidem',
+    d: 'Un grup divers de la casa i del seu entorn, o com a mínim gent que conegui qui hi ha a fora. Amb trenta persones es fa en dos o tres grups en paral·lel.' },
+  { id: 'mapa', n: 3, t: 'Identificar els rols i les seves transaccions',
+    d: 'Els noms primer, els rols després, i llavors què s\'intercanvien. Entre 8 i 10 rols, i els que tenen més intercanvis van més al centre.' },
+  { id: 'valida', n: 4, t: 'Validar el mapa seqüenciant transaccions',
+    d: 'En quin ordre passen les coses. No per reduir-ho a un procés lineal, sinó per comprovar que el mapa és complet i fer aflorar els fluxos principals.' }
+];
+
 const PROCES = [
-  { n: 1, t: 'Qui hi ha a la sala', tip: 'preparació',
+  /* ══ L'ABAST, QUE ÉS EL PAS ZERO ═══════════════════════════════════════
+     Hi faltava. El procés començava per «qui hi ha a la sala» i **no deia a
+     quina escala es mapa**, i en una organització gran això no és un detall:
+     un sol mapa de tota la casa surt amb quaranta nodes i no es llegeix a cap
+     sala, que és on s'ha de llegir.
+
+     La manera de fer-ho és la mateixa que l'eina ja fa servir: **zoom**. Es
+     mapa un nivell, i el que hi ha a dins de cada node es mapa a part si cal.
+     Precisat per l'Àlvar el 02/10/2026, i a IKEA és exactament el que es va
+     fer: dos mapes, el de la direcció i el de l'àrea de serveis.
+
+     I la conseqüència que ha de constar abans de signar res: **segons la
+     criticitat de l'anàlisi, pot caldre més d'una sessió**. No és un extra
+     que es descobreix a mitja feina; és el que decideix la mida de l'encàrrec,
+     i per això va al pas 0 i a `perque` del paquet. */
+  { n: 0, fase: 'abast', t: 'L\'abast: a quina escala es mapa', tip: 'preparació',
+    d: 'Si la casa és gran, no es fa un sol mapa: es fa **amb zoom**. Un nivell primer —la direcció, el comitè, el consell— i el que hi ha dins de cada node es mapa a part si la decisió ho demana. Un mapa de quaranta nodes no es llegeix a una sala, i a la sala és on s\'ha de llegir. **Segons la criticitat de l\'anàlisi, això vol més d\'una sessió**, i es diu abans i no a mitges.' },
+  { n: 1, fase: 'qui', t: 'Qui hi ha a la sala', tip: 'preparació',
     d: 'El mapa el dibuixa qui hi és, no el consultor. Si falta un rol a la sala, el seu tros de mapa serà el que algú altre creu que fa — i aquest és el tros que sempre surt malament.' },
-  { n: 2, t: 'Els nodes: rols, no càrrecs', tip: 'dibuix',
+  { n: 2, fase: 'mapa', t: 'Els nodes: rols, no càrrecs', tip: 'dibuix',
     d: 'Es llisten les funcions que algú fa de debò. Surten sempre rols que no consten a cap lloc: qui desencalla, qui recorda com es feia, qui truca quan ningú vol trucar.' },
-  { n: 3, t: 'Les transaccions tangibles', tip: 'dibuix',
+  { n: 3, fase: 'mapa', t: 'Les transaccions tangibles · els «must»', tip: 'dibuix',
     d: 'Qui lliura què a qui, del que es podria facturar. És la part fàcil i la que tothom ja sap, i encara no explica per què la casa funciona.' },
-  { n: 4, t: 'Les transaccions intangibles', tip: 'dibuix',
+  { n: 4, fase: 'mapa', t: 'Les transaccions intangibles · els «extra»', tip: 'dibuix',
     d: 'La mateixa pregunta per al que no consta. Aquí és on apareix la meitat del mapa que no havia vist mai ningú junta.' },
-  { n: 5, t: 'Anàlisi d\'intercanvi', tip: 'anàlisi', allee: true,
+  { n: 5, fase: 'valida', t: 'Anàlisi d\'intercanvi', tip: 'anàlisi', allee: true,
     d: 'Es mira el patró sencer: qui dona i no rep, quins vincles van en un sol sentit, quins nodes estan carregats de més. Un rol amb totes les fletxes sortint no és generós: és el que es cremarà primer.' },
-  { n: 6, t: 'Anàlisi d\'impacte', tip: 'anàlisi', allee: true,
+  { n: 6, fase: 'valida', t: 'Anàlisi d\'impacte', tip: 'anàlisi', allee: true,
     d: 'Node per node: què rep, què li costa rebre-ho i què hi guanya. És la que ensenya si a algú li surt a compte seguir-hi, i la que explica per què hi ha gent que se\'n va sense queixar-se.' },
-  { n: 7, t: 'Anàlisi de creació de valor', tip: 'anàlisi', allee: true,
+  { n: 7, fase: 'valida', t: 'Anàlisi de creació de valor', tip: 'anàlisi', allee: true,
     d: 'Què aporta cada node i què costaria no tenir-lo. És la que troba el valor que ja es produeix i no es cobra — i la que troba la feina que es fa i no aprofita ningú.' },
-  { n: 8, t: 'Els moviments', tip: 'decisió',
+  { n: 8, fase: 'valida', t: 'Els moviments', tip: 'decisió',
     d: 'Tres llistes curtes: què es pot començar a cobrar, què s\'ha de repartir perquè no depengui d\'una persona, i quin vincle s\'ha de reparar abans que caigui. Amb nom i data, o no és una decisió.' },
-  { n: 9, t: 'El mapa queda viu', tip: 'decisió',
+  { n: 9, fase: 'valida', t: 'El mapa queda viu', tip: 'decisió',
     d: 'Es carrega al SOS i és de la casa. Un mapa en un PDF caduca el primer dia que algú canvia de rol; un mapa que es pot editar es torna a mirar d\'aquí a sis mesos.' }
 ];
 
@@ -182,6 +220,314 @@ const CELLER = {
 
    El `return` és el mateix patró que `build-oferta.js`: qui requereix aquest
    fitxer se'n porta les dades i no n'executa ni les guardes ni l'escriptura. */
+/* ══ EL QUE DECIDEIXES AMB EL MAPA ═══════════════════════════════════════════
+   La portada explicava **el mètode** i gairebé no deia **què en treus**. Qui
+   decideix una compra no és un metodòleg: és algú amb un problema i un
+   pressupost, i llegia tres pantalles de com es dibuixa un graf abans de
+   trobar cap frase que parlés de la seva feina.
+
+   Això ho inverteix: primer la decisió que avui es pren a cegues, després el
+   que el mapa hi posa. Cada parella és una situació que es reconeix sense
+   saber res de xarxes de valor.
+
+   ⚠ **Cap d'aquestes files promet un resultat**, i és una decisió: prometre
+   «un 30 % menys de temps d'entrega» seria una xifra sense font, que és el que
+   la casa no fa. El que es promet és **què podràs decidir**, que és comprovable
+   el mateix dia de la sessió. */
+const DECIDEIX = [
+  { cegues: 'Qui és imprescindible de debò, i què passa si plega',
+    cegaEs: 'Quién es imprescindible de verdad, y qué pasa si se va',
+    amb: 'Es veu qui sosté què i quants fils passen per una sola persona. No és una intuïció: es compta al dibuix.',
+    ambEs: 'Se ve quién sostiene qué y cuántos hilos pasan por una sola persona. No es una intuición: se cuenta en el dibujo.' },
+  { cegues: 'Per què les decisions s\'encallen entre dues àrees',
+    cegaEs: 'Por qué las decisiones se atascan entre dos áreas',
+    amb: 'Surt qui toca les dues alhora — i si no hi ha ningú, surt el buit. Un buit es cobreix; una mala relació, no.',
+    ambEs: 'Sale quien toca las dos a la vez — y si no hay nadie, sale el hueco. Un hueco se cubre; una mala relación, no.' },
+  { cegues: 'Quina feina es fa i no l\'aprofita ningú',
+    cegaEs: 'Qué trabajo se hace y no lo aprovecha nadie',
+    amb: 'Cada entregable es puntua: qui el rep n\'està satisfet o no. El que ningú marca és feina que es podria deixar de fer.',
+    ambEs: 'Cada entregable se puntúa: quien lo recibe está satisfecho o no. Lo que nadie marca es trabajo que se podría dejar de hacer.' },
+  { cegues: 'Què esteu donant de franc sense haver-ho decidit',
+    cegaEs: 'Qué estáis dando gratis sin haberlo decidido',
+    amb: 'Els «extra» —el que es dona i ningú pot reclamar— surten al full amb nom. Llavors es decideix: es cobra, es pacta o es deixa de donar.',
+    ambEs: 'Los «extra» —lo que se da y nadie puede reclamar— salen en la hoja con nombre. Entonces se decide: se cobra, se pacta o se deja de dar.' },
+  { cegues: 'Per on començar, quan tot sembla urgent',
+    cegaEs: 'Por dónde empezar, cuando todo parece urgente',
+    amb: 'De dos a quatre punts marcats amb un cor: on cal mirar perquè d\'allà depèn que la resta flueixi.',
+    ambEs: 'De dos a cuatro puntos marcados con un corazón: dónde hay que mirar porque de ahí depende que lo demás fluya.' },
+  { cegues: 'Si el que heu muntat sobreviurà a qui el va muntar',
+    cegaEs: 'Si lo que habéis montado sobrevivirá a quien lo montó',
+    amb: 'El mapa queda a la casa i es pot tornar a mirar d\'aquí a sis mesos. Un PDF caduca el primer dia que algú canvia de rol.',
+    ambEs: 'El mapa se queda en la casa y se puede volver a mirar dentro de seis meses. Un PDF caduca el primer día que alguien cambia de rol.' }
+];
+
+/* ══ PER QUÈ FUNCIONA, I QUÈ HO PROVA ════════════════════════════════════════
+   Tres coses, i van en aquest ordre perquè és l'ordre en què les pregunta qui
+   ha de decidir: què el fa funcionar, de qui és el mètode, i on s'ha fet.
+
+   La fila d'IKEA surt de `trajectoria.md` i del guió de la sessió. La de
+   Pantheon diu el que **ells** diuen de la seva experiència, no el que diem
+   nosaltres de la nostra: la distinció és la diferència entre citar i
+   apropiar-se. */
+const PROVA = [
+  { k: 'Per què funciona',
+    kEs: 'Por qué funciona',
+    t: 'Perquè el dibuixeu vosaltres',
+    tEs: 'Porque lo dibujáis vosotros',
+    d: 'El mapa no el porta el consultor acabat: el fa el grup, amb post-its, dient en veu alta qui dona què a qui. <b>Aquesta conversa és el producte.</b> Un informe es llegeix i s\'arxiva; el que s\'ha dit en veu alta davant de tothom ja no es desdiu, i l\'endemà l\'equip parla amb les mateixes paraules.',
+    dEs: 'El mapa no lo trae el consultor acabado: lo hace el grupo, con post-its, diciendo en voz alta quién da qué a quién. <b>Esa conversación es el producto.</b> Un informe se lee y se archiva; lo que se ha dicho en voz alta delante de todos ya no se desdice, y al día siguiente el equipo habla con las mismas palabras.' },
+  { k: 'De qui és el mètode',
+    kEs: 'De quién es el método',
+    t: 'De Verna Allee, i no nostre',
+    tEs: 'De Verna Allee, y no nuestro',
+    d: 'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) i <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No ens l\'hem inventat i no el venem com a propietari</b>: el pots llegir, el pot facilitar un altre, i el que compres és que surti bé a la primera.',
+    dEs: 'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) y <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No nos lo hemos inventado y no lo vendemos como propietario</b>: lo puedes leer, lo puede facilitar otro, y lo que compras es que salga bien a la primera.' },
+  { k: 'On s\'ha fet',
+    kEs: 'Dónde se ha hecho',
+    t: 'A IKEA, dos mapes',
+    tEs: 'En IKEA, dos mapas',
+    d: 'El de la <b>direcció</b> i el de l\'<b>àrea de serveis</b>, amb l\'Álvaro Solache com a director del VNA. Una de les sessions mapava la xarxa de venda i devolucions. <b>És l\'única entrega de VNA amb client anomenat que tenim</b>, i es diu amb nom perquè es pugui comprovar.',
+    dEs: 'El de <b>dirección</b> y el del <b>área de servicios</b>, con Álvaro Solache como director del VNA. Una de las sesiones mapeaba la red de venta y devoluciones. <b>Es la única entrega de VNA con cliente nombrado que tenemos</b>, y se dice con nombre para que se pueda comprobar.' }
+];
+
+/* ══ COM ÉS UNA SESSIÓ · el full, els post-its i els gomets ══════════════════
+   La pàgina explicava el mètode i **no ensenyava com es fa**. Qui ha de decidir
+   si contracta una sessió vol veure què passarà a la sala, i això no ho diu una
+   llista de passos: ho diu el full.
+
+   Aquest dibuix és el full de paper d'estrassa tal com queda, i tot el que hi
+   surt és del guió real de la sessió d'IKEA i de l'article d'on ve el mètode:
+
+   · **L'abast escrit a dalt**, amb els noms i la data. És el pas 1 i es queda
+     escrit al full perquè a mitja sessió algú sempre pregunta «i això també
+     hi entra?».
+   · **El rol central al mig** i la resta al voltant, més a prop els que tenen
+     més transaccions.
+   · **Els entregables en dos colors**: verd pels **«must»** —el que és
+     contractual i exigible— i rosa pels **«extra»**, el que es dona per
+     construir la relació i que ningú pot reclamar. Es diuen amb **noms, no amb
+     verbs**, perquè un entregable és una cosa que es pot comprovar si ha
+     arribat o no.
+   · **Els gomets de satisfacció**: blau si qui ho rep n'està satisfet, groc si
+     no. Això no és decoració — és la capa que converteix un dibuix en un
+     diagnòstic.
+   · **Els cors del pols**: de dos a quatre llocs on cal mirar què passa per
+     saber si el flux de valor està sa. *I la pregunta que els acompanya: quin
+     rol és més essencial per a la supervivència de la xarxa, i què passaria si
+     aquella persona la substituís una altra.*
+
+   Aportat per l'Àlvar el 02/10/2026 amb el guió de la sessió d'IKEA.
+   `build-castells.js` no hi té res a veure: això és el full, no la pinya. */
+const SESSIO = {
+  abast: 'Àmbit: la xarxa de venda i devolucions',
+  peu: 'Noms dels participants · data',
+  /* Un exemple de full, no el d'un client. Els rols són genèrics a posta: el
+     full que es publica no pot ser el d'una casa concreta. */
+  centre: 'El nostre equip',
+  volta: [
+    { t: 'Qui ven', must: 'la comanda', extra: 'què demana la gent', gomet: 'blau', cor: true },
+    { t: 'Qui entrega', must: 'el lliurament', extra: 'avisar si falla', gomet: 'groc' },
+    { t: 'Qui cobra', must: 'la factura', extra: '' },
+    { t: 'Qui atén', must: 'la devolució', extra: 'el to en què es resol', gomet: 'blau', cor: true },
+    { t: 'Qui compra', must: 'el que paga', extra: 'que torni i ho digui' },
+    { t: 'Qui proveeix', must: 'l\'estoc a temps', extra: 'avisar de la ruptura' }
+  ],
+  llegenda: [
+    { k: 'must', t: '«Must» · verd', d: 'Contractual i exigible: el que es dona per fet que arribarà.' },
+    { k: 'extra', t: '«Extra» · rosa', d: 'El que es dona per construir la relació i que ningú pot reclamar.' },
+    { k: 'blau', t: 'Gomet blau', d: 'Qui ho rep n\'està satisfet.' },
+    { k: 'groc', t: 'Gomet groc', d: 'Qui ho rep no n\'està satisfet. Aquí és on hi ha feina.' },
+    { k: 'cor', t: 'Cor', d: 'De dos a quatre llocs on cal mirar el pols del flux de valor.' }
+  ]
+};
+
+/* ══ LES PREGUNTES DE L'ANÀLISI ══════════════════════════════════════════════
+   Les del guió d'IKEA, tal com es fan a la sala. Van a la pàgina perquè són el
+   que converteix el dibuix en una conversa: **el mapa no diu res sol**, el que
+   diu alguna cosa és qui respon aquestes vuit preguntes mirant-lo. */
+const PREGUNTES = [
+  'Qui és més actiu a la xarxa? Per què?',
+  'Qui és menys actiu? Per què?',
+  'Qui hi hauria de sortir i no hi surt? Per què?',
+  'Quines relacions caldria començar, enfortir o reprendre?',
+  'Tots els entregables aporten valor, o en generen un altre com a resposta?',
+  'Hi ha algun intercanvi dèbil o en risc?',
+  'La xarxa aporta valor a tots els rols?',
+  'Algú rep molt més del que aporta, o aporta molt més del que rep?'
+];
+
+function svgSessio(id) {
+  const W = 640, H = 430, cx = 320, cy = 232, R = 148;
+  const p = [];
+  const n = SESSIO.volta.length;
+  p.push(`<svg id="${id}" class="mv-svg se-svg" viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="${id}T ${id}D">`);
+  p.push(`<title id="${id}T">Com queda el full d'una sessió de mapa de valor</title>`);
+  p.push(`<desc id="${id}D">Un full gran amb l'àmbit escrit a dalt, el rol central al mig i sis rols al voltant. `
+    + `Entre ells, etiquetes verdes pels entregables «must» i roses pels «extra», gomets blaus i grocs de `
+    + `satisfacció, i cors als llocs on cal mirar el pols del flux.</desc>`);
+  // El full
+  p.push(`<rect class="se-full" x="8" y="8" width="${W - 16}" height="${H - 16}" rx="4"/>`);
+  p.push(`<text class="se-abast" x="24" y="34">${esc(SESSIO.abast)}</text>`);
+  p.push(`<text class="se-peu" x="24" y="50">${esc(SESSIO.peu)}</text>`);
+  const pos = SESSIO.volta.map((r, i) => {
+    const a = (-90 + i * 360 / n) * Math.PI / 180;
+    return { ...r, x: cx + R * Math.cos(a) * 1.42, y: cy + R * Math.sin(a) * .82 };
+  });
+  // Les fletxes i les etiquetes, primer: els post-its hi queden a sobre
+  pos.forEach(r => {
+    const dx = r.x - cx, dy = r.y - cy, d = Math.hypot(dx, dy) || 1;
+    const ux = dx / d, uy = dy / d;
+    const x1 = cx + ux * 52, y1 = cy + uy * 24, x2 = r.x - ux * 46, y2 = r.y - uy * 20;
+    p.push(`<line class="se-fl" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`);
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    /* El «must» i l'«extra» del mateix vincle, un a cada banda de la fletxa:
+       és com queden al full, i és el que fa veure que **tot vincle en porta
+       dos** i que sovint l'extra és el que no s'havia dit mai en veu alta.
+
+       L'amplada surt de la llargada del text i no és fixa. Amb una amplada
+       fixa, les etiquetes llargues **sortien de la seva caixa** —el text a
+       sobre del paper i el color a mig camí—, i es va veure mirant el dibuix.
+       El 5 és l'amplada d'un caràcter a 7.5px en monoespaiada, amb marge. */
+    const ample = t => Math.max(58, t.length * 5 + 12);
+    const am = ample(r.must);
+    p.push(`<g class="se-et must"><rect x="${(mx - am / 2).toFixed(1)}" y="${(my - 15).toFixed(1)}" width="${am.toFixed(1)}" height="13" rx="2"/>`
+      + `<text x="${mx.toFixed(1)}" y="${(my - 5.5).toFixed(1)}">${esc(r.must)}</text></g>`);
+    let dreta = am / 2;
+    if (r.extra) {
+      const ae = ample(r.extra);
+      dreta = Math.max(dreta, ae / 2);
+      p.push(`<g class="se-et extra"><rect x="${(mx - ae / 2).toFixed(1)}" y="${(my + 2).toFixed(1)}" width="${ae.toFixed(1)}" height="13" rx="2"/>`
+        + `<text x="${mx.toFixed(1)}" y="${(my + 11.5).toFixed(1)}">${esc(r.extra)}</text></g>`);
+    }
+    /* El gomet, **fora** de l'etiqueta i no a sobre: enganxat al paper al
+       costat de l'entregable que puntua, com al full de debò. */
+    if (r.gomet) p.push(`<circle class="se-go ${r.gomet}" cx="${(mx + dreta + 8).toFixed(1)}" cy="${(my - 8).toFixed(1)}" r="5"/>`);
+  });
+  // El rol central
+  p.push(`<g class="se-po centre"><rect x="${cx - 52}" y="${cy - 22}" width="104" height="44" rx="3"/>`
+    + `<text x="${cx}" y="${cy + 4}">${esc(SESSIO.centre)}</text></g>`);
+  // I els de la volta, amb el seu cor si en té
+  pos.forEach(r => {
+    p.push(`<g class="se-po"><rect x="${(r.x - 46).toFixed(1)}" y="${(r.y - 18).toFixed(1)}" width="92" height="36" rx="3"/>`
+      + `<text x="${r.x.toFixed(1)}" y="${(r.y + 4).toFixed(1)}">${esc(r.t)}</text>`
+      + (r.cor ? `<text class="se-cor" x="${(r.x + 38).toFixed(1)}" y="${(r.y - 12).toFixed(1)}">♥</text>` : '')
+      + '</g>');
+  });
+  p.push('</svg>');
+  return p.join('');
+}
+
+/* Sense les marques: les posa el bucle d'escriptura (`obre + fn() + tanca`).
+   Aquesta funció les escrivia **també**, i com que el bucle conserva el que hi
+   ha després del primer tancament, cada execució n'hi afegia una còpia: el
+   02/10/2026 `vna.html` tenia **dues obertures i tretze tancaments**, i cap
+   marcatge trencat a la vista perquè un comentari HTML repetit no es veu. El
+   que sí que es veia era `--check` en vermell sense dir-ne el motiu. */
+function blocSessio() {
+  const f = [];
+  f.push('<!-- GENERAT per SOS/tools/build-mapavalor.js · no s\'edita a mà -->');
+  f.push('<section class="mv-sec">');
+  f.push('<h2>I com és, a la sala</h2>');
+  f.push('<p class="mv-sub">No es fa amb un programa: es fa amb <b>un full gran, post-its i gomets</b>, '
+    + 'i el programa ve després per mantenir-ho viu. Això és com queda el full — i tot el que hi surt té '
+    + 'un motiu que es pot explicar en una frase.</p>');
+  f.push('<div class="mv-viz gran">');
+  f.push(svgSessio('mvSessio'));
+  f.push('</div>');
+  f.push('<div class="se-leg">' + SESSIO.llegenda.map(l =>
+    `<span class="se-l"><i class="se-i ${l.k}"></i><b>${esc(l.t)}</b> ${esc(l.d)}</span>`).join('') + '</div>');
+  f.push('<p class="mv-nota"><b>Els entregables es diuen amb noms, no amb verbs.</b> «La comanda», no '
+    + '«comandar»; «avisar abans que falli» és una cosa que arriba o no arriba. El criteri és aquest: '
+    + 'un entregable es diu entregable perquè <b>es pot comprovar si ha arribat</b>.</p>');
+  f.push('</section>');
+
+  f.push('<section class="mv-sec">');
+  f.push('<h2>Les quatre passes grans</h2>');
+  f.push(`<p class="mv-sub">${PROCES.length} passos són per executar; <b>quatre són per recordar</b>. `
+    + 'Aquesta és l\'agrupació del guió de sessió, i és la que es fa servir a la sala.</p>');
+  f.push('<ol class="mv-fa">');
+  FASES.forEach(x => {
+    const dins = PROCES.filter(y => y.fase === x.id);
+    f.push(`<li><span class="mv-fn">${x.n}</span><b>${esc(x.t)}</b><p>${esc(x.d)}</p>`
+      + `<span class="mv-fp">${dins.length} ${dins.length === 1 ? 'pas' : 'passos'}: `
+      + dins.map(y => esc(y.t)).join(' · ') + '</span></li>');
+  });
+  f.push('</ol>');
+  f.push('</section>');
+
+  f.push('<section class="mv-sec">');
+  f.push('<h2>I les vuit preguntes que el fan servir</h2>');
+  f.push('<p class="mv-sub">El mapa <b>no diu res sol</b>. El que diu alguna cosa és el grup responent '
+    + 'aquestes vuit preguntes amb el dibuix al davant, i per això la sessió no s\'acaba quan el full '
+    + 'està ple.</p>');
+  f.push('<ul class="mv-pre">' + PREGUNTES.map(q => `<li>${esc(q)}</li>`).join('') + '</ul>');
+  f.push('</section>');
+  return f.join('\n');
+}
+
+/* ══ EL BLOC DEL VALOR · per a qui decideix, no per a qui estudia ════════════
+   Va a la portada i va **alt**: just després de veure què és un mapa de valor
+   i abans d'explicar com es fa. L'ordre importa — qui decideix una compra vol
+   saber què en treu abans de saber com es dibuixa, i fins ara era al revés.
+
+   Les claus van als dos diccionaris de la portada des del primer dia. És la
+   lliçó del 02/10/2026: un bloc generat que es declara en una sola llengua
+   **passa totes les guardes** i deixa mitja secció en català per a qui llegeix
+   en castellà. */
+function blocValor() {
+  const i18 = k => ` data-i18n="${k}"`;
+  const i18h = k => ` data-i18n-html="${k}"`;
+  const f = [];
+  f.push('<div class="vd-wrap fade-up">');
+  f.push('  <table class="vd-t"><thead><tr>'
+    + `<th${i18('vd.cap1')}>El que avui es decideix a ulls clucs</th>`
+    + `<th${i18('vd.cap2')}>El que decideixes amb el mapa al davant</th>`
+    + '</tr></thead><tbody>');
+  DECIDEIX.forEach((d, i) => {
+    f.push(`    <tr><td class="vd-c"${i18(`vd.${i}.c`)}>${esc(d.cegues)}</td>`
+      + `<td class="vd-a"${i18h(`vd.${i}.a`)}>${d.amb}</td></tr>`);
+  });
+  f.push('  </tbody></table>');
+  f.push(`  <p class="vd-avis"${i18h('vd.avis')}>Cap d\'aquestes files promet un resultat amb una xifra. `
+    + 'Prometre «un 30 % menys de temps d\'entrega» seria un número sense d\'on surt, i això aquí no es fa. '
+    + '<b>El que es promet és què podràs decidir</b> — i es comprova el mateix dia de la sessió.</p>');
+  f.push('  <div class="vd-prova">');
+  PROVA.forEach((x, i) => {
+    f.push(`    <div class="vd-p"><div class="vd-pk"${i18(`vd.p${i}.k`)}>${esc(x.k)}</div>`
+      + `<b${i18(`vd.p${i}.t`)}>${esc(x.t)}</b>`
+      + `<p${i18h(`vd.p${i}.d`)}>${x.d}</p></div>`);
+  });
+  f.push('  </div>');
+  f.push('</div>');
+  return f.join('\n');
+}
+
+/* El diccionari d'aquest bloc, per a les dues llengües. */
+function dicValor(l) {
+  const q = x => String(x).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const tria = (o, c, cEs) => l === 'es' ? (o[cEs] || o[c]) : o[c];
+  const f = [];
+  const FIX = {
+    'vd.cap1': { ca: 'El que avui es decideix a ulls clucs', es: 'Lo que hoy se decide a ciegas' },
+    'vd.cap2': { ca: 'El que decideixes amb el mapa al davant', es: 'Lo que decides con el mapa delante' },
+    'vd.avis': {
+      ca: 'Cap d\'aquestes files promet un resultat amb una xifra. Prometre «un 30 % menys de temps d\'entrega» seria un número sense d\'on surt, i això aquí no es fa. <b>El que es promet és què podràs decidir</b> — i es comprova el mateix dia de la sessió.',
+      es: 'Ninguna de estas filas promete un resultado con una cifra. Prometer «un 30 % menos de tiempo de entrega» sería un número sin de dónde sale, y eso aquí no se hace. <b>Lo que se promete es qué podrás decidir</b> — y se comprueba el mismo día de la sesión.'
+    }
+  };
+  Object.entries(FIX).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
+  DECIDEIX.forEach((d, i) => {
+    f.push(`  'vd.${i}.c':'${q(tria(d, 'cegues', 'cegaEs'))}',`);
+    f.push(`  'vd.${i}.a':'${q(tria(d, 'amb', 'ambEs'))}',`);
+  });
+  PROVA.forEach((x, i) => {
+    f.push(`  'vd.p${i}.k':'${q(tria(x, 'k', 'kEs'))}',`);
+    f.push(`  'vd.p${i}.t':'${q(tria(x, 't', 'tEs'))}',`);
+    f.push(`  'vd.p${i}.d':'${q(tria(x, 'd', 'dEs'))}',`);
+  });
+  return f.join('\n');
+}
+
 /* ══ EL SEGON CAS · LA XARXA DE TEAMTOWERS ═══════════════════════════════════
    El mètode no s'aplicava a la casa que el ven. «TeamTowers» sortia a la
    portada com a **reputació** —trenta-dos clients amb font escrita— i no com el
@@ -540,7 +886,7 @@ function blocProces() {
 
   f.push('<section class="mv-sec">');
   f.push('<h2>Com es fa</h2>');
-  f.push(`<p class="mv-sub">Nou passos en ${esc(PAQUET ? PAQUET.dura : '3 sessions')}. Els tres del mig marcats són <b>les tres anàlisis de Verna Allee</b>, que són el mètode i no una manera nostra de mirar-ho.</p>`);
+  f.push(`<p class="mv-sub">${PROCES.length} passos en ${esc(PAQUET ? PAQUET.dura : '3 sessions')}. Els tres del mig marcats són <b>les tres anàlisis de Verna Allee</b>, que són el mètode i no una manera nostra de mirar-ho.</p>`);
   f.push('<ol class="mv-pas">');
   PROCES.forEach(p => {
     f.push(`<li class="${p.tip}${p.allee ? ' allee' : ''}"><span class="mv-pk">${p.tip}</span>` +
@@ -796,9 +1142,44 @@ function blocXarxa() {
 const DESTINS = [
   { f: join(ARREL, 'index.html'), marca: 'TT-MAPAVALOR', fn: blocPortada },
   { f: join(ARREL, 'index.html'), marca: 'TT-XARXA', fn: blocXarxa },
+  { f: join(ARREL, 'index.html'), marca: 'TT-VALOR', fn: blocValor },
   { f: join(SOS, 'vna.html'), marca: 'VNA-PROCES', fn: blocProces },
+  { f: join(SOS, 'vna.html'), marca: 'VNA-SESSIO', fn: blocSessio },
   { f: join(SOS, 'vna.html'), marca: 'VNA-EXEMPLE', fn: blocExemple }
 ];
+/* ── CADA MARCA, UN COP ───────────────────────────────────────────────────
+   El bucle d'escriptura busca `indexOf(obre)` i `indexOf(tanca)`: **el primer**
+   de cada un. Si al fitxer n'hi ha dos, escriu entre el primer parell i deixa
+   la resta intactes, i el bloc generat queda tancat per una marca i seguit de
+   còpies mortes de la mateixa marca.
+
+   Va passar: `blocSessio()` escrivia les seves pròpies marques a més de les
+   que hi posa el bucle, i cada execució n'afegia una. `vna.html` va arribar a
+   dues obertures i tretze tancaments. **No es veia** —un comentari HTML
+   repetit no surt a la pantalla— i el que es veia era `--check` en vermell
+   dient «blocs desactualitzats», que és el pitjor missatge possible: el fitxer
+   estava al dia, el que no quadrava era la seva pròpia escriptura.
+
+   Es compta abans d'escriure, perquè un fitxer amb marques duplicades no es pot
+   arreglar escrivint-hi a sobre. */
+(() => {
+  const dobles = [];
+  [...new Set(DESTINS.map(d => d.f))].forEach(f => {
+    if (!existsSync(f)) return;
+    const txt = readFileSync(f, 'utf8');
+    const nom = f.replace(ARREL + '/', '');
+    DESTINS.filter(d => d.f === f).forEach(d => {
+      const n = (txt.split(`<!--${d.marca}-->`).length - 1);
+      const m = (txt.split(`<!--/${d.marca}-->`).length - 1);
+      if (n !== 1 || m !== 1) dobles.push(`${nom} → ${d.marca}: ${n} obertures i ${m} tancaments`);
+    });
+  });
+  if (dobles.length) {
+    bad('marques repetides, i el generador escriu entre el primer parell:\n    '
+      + dobles.join('\n    ') + '\n    S\'esborren a mà les còpies: deixar-ne una de cada.');
+  }
+})();
+
 let escrits = 0, vells = [];
 const cache = {};
 DESTINS.forEach(d => {
@@ -855,18 +1236,72 @@ DESTINS.forEach(d => {
   else {
     let src = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
     let tocat = false;
-    [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
-      const a = `/*TT-XA-I18N-${M}*/`, b = `/*/TT-XA-I18N-${M}*/`;
-      const x = src.indexOf(a), y = src.indexOf(b);
-      if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
-      const out = src.slice(0, x + a.length) + '\n' + dicXarxa(l) + '\n' + src.slice(y);
-      if (out !== src) { src = out; tocat = true; }
+    [['TT-XA-I18N', dicXarxa], ['TT-VD-I18N', dicValor]].forEach(([marca, fn]) => {
+      [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+        const a = `/*${marca}-${M}*/`, b = `/*/${marca}-${M}*/`;
+        const x = src.indexOf(a), y = src.indexOf(b);
+        if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
+        const out = src.slice(0, x + a.length) + '\n' + fn(l) + '\n' + src.slice(y);
+        if (out !== src) { src = out; tocat = true; }
+      });
     });
     if (tocat) {
       if (CHECK) vells.push('el diccionari de la xarxa');
       else { cache[f] = src; escrits++; }
     }
   }
+}
+
+/* ══ LA GUARDA DEL FULL ══════════════════════════════════════════════════════
+   El dibuix de la sessió és el que ensenya **què passarà a la sala**, i té
+   quatre coses que no són decoració. Cap peta si desapareix: el full seguiria
+   sent maco i diria la meitat.
+
+   · **Les dues menes d'entregable.** Si només hi hagués els «must», el dibuix
+     diria que un mapa de valor és un diagrama de processos — que és
+     exactament el que no és.
+   · **Els gomets.** Són la capa que converteix un dibuix en un diagnòstic: un
+     full sense gomets no diu on hi ha feina.
+   · **Els cors.** De dos a quatre, que és el que diu el guió; un de sol no és
+     un pols i vuit no es miren.
+   · **L'abast escrit a dalt**, que és el pas 1 i el que evita la pregunta de
+     mitja sessió: «i això també hi entra?».
+
+   I una que és d'ofici: **cap etiqueta pot sortir de la seva caixa.** Amb una
+   amplada fixa en sortien sis, i es va veure mirant el dibuix i no executant
+   res. Es comprova amb el mateix càlcul que la dibuixa. */
+{
+  const svg = svgSessio('x');
+  const li = [];
+  const n = c => (svg.match(new RegExp('class="' + c + '"', 'g')) || []).length;
+  if (!/se-et must/.test(svg) || !/se-et extra/.test(svg))
+    li.push('falten les dues menes d\'entregable: sense els «extra» el full diu que això és un diagrama de processos');
+  const gom = (svg.match(/class="se-go /g) || []).length;
+  if (!gom) li.push('cap gomet de satisfacció: un full sense gomets no diu on hi ha feina');
+  const cors = (svg.match(/class="se-cor"/g) || []).length;
+  if (cors < 2 || cors > 4) li.push(`${cors} cors de pols i el guió en diu de dos a quatre`);
+  if (!svg.includes(esc(SESSIO.abast))) li.push('l\'abast no surt escrit al full');
+  /* Les etiquetes dins de la seva caixa. */
+  const fora = [];
+  [...svg.matchAll(/<rect x="([\d.-]+)"[^>]*width="([\d.]+)"[^>]*\/><text x="([\d.-]+)"[^>]*>([^<]*)</g)]
+    .forEach(m => {
+      const x = +m[1], w = +m[2], t = m[4];
+      if (t.length * 5 + 12 > w + .5) fora.push(t);
+    });
+  if (fora.length) li.push(`${fora.length} etiquetes surten de la seva caixa: ${fora.slice(0, 3).join(', ')}`);
+  if (li.length) bad('el full de la sessió: ' + li.join(' · '));
+  else ok(`el full de la sessió: les dues menes d'entregable, ${gom} gomets, ${cors} cors i l'abast escrit`);
+}
+
+/* I les quatre fases han de cobrir tots els passos. Un pas sense fase no surt
+   a l'agrupació i ningú el troba a faltar: la llista de deu segueix sencera i
+   la de quatre en diu nou. */
+{
+  const orfes = PROCES.filter(x => !FASES.some(f => f.id === x.fase));
+  const buides = FASES.filter(f => !PROCES.some(x => x.fase === f.id));
+  if (orfes.length) bad(`${orfes.length} passos sense fase: ${orfes.map(x => x.t).join(', ')}`);
+  else if (buides.length) bad(`${buides.length} fases sense cap pas: ${buides.map(f => f.t).join(', ')}`);
+  else ok(`les ${FASES.length} fases cobreixen els ${PROCES.length} passos, i cap en queda fora`);
 }
 
 if (CHECK) {

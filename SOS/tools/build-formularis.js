@@ -63,21 +63,29 @@ const CHECK = process.argv.includes('--check');
    `ORG_SECTOR` segueixi sent una sola taula. */
 const ORGS = [
   { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'public', fam: ['territori'],
-    t: 'Ajuntament',              d: 'Regidoria, àrea tècnica o servei municipal' },
+    t: 'Ajuntament',              d: 'Regidoria, àrea tècnica o servei municipal',
+    tEs: 'Ayuntamiento', dEs: 'Concejalía, área técnica o servicio municipal' },
   { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'public', fam: ['territori'],
-    t: 'Consell comarcal',        d: 'O mancomunitat de municipis' },
+    t: 'Consell comarcal',        d: 'O mancomunitat de municipis',
+    tEs: 'Consejo comarcal', dEs: 'O mancomunidad de municipios' },
   { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'public', fam: ['territori'],
-    t: 'Entitat o associació',    d: 'AVV, ateneu, casal, banc de temps' },
+    t: 'Entitat o associació',    d: 'AVV, ateneu, casal, banc de temps',
+    tEs: 'Entidad o asociación', dEs: 'AAVV, ateneo, casal, banco de tiempo' },
   { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'privat', fam: ['territori', 'organitzacio'],
-    t: 'Cooperativa o empresa',   d: 'SCCL, SL, projecte econòmic' },
+    t: 'Cooperativa o empresa',   d: 'SCCL, SL, projecte econòmic',
+    tEs: 'Cooperativa o empresa', dEs: 'SCCL, SL, proyecto económico' },
   { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'public', fam: ['territori'],
-    t: 'Grup promotor',           d: 'Encara sense forma jurídica' },
+    t: 'Grup promotor',           d: 'Encara sense forma jurídica',
+    tEs: 'Grupo promotor', dEs: 'Todavía sin forma jurídica' },
   { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'privat', fam: ['territori'],
-    t: 'Entitat d\'acompanyament', d: 'Ateneu Cooperatiu, consultoria ESS' },
+    t: 'Entitat d\'acompanyament', d: 'Ateneu Cooperatiu, consultoria ESS',
+    tEs: 'Entidad de acompañamiento', dEs: 'Ateneu Cooperatiu, consultoría ESS' },
   { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'public', fam: ['territori', 'organitzacio'],
-    t: 'Fundació o finançador',   d: 'Obra social, convocatòries' },
+    t: 'Fundació o finançador',   d: 'Obra social, convocatòries',
+    tEs: 'Fundación o financiador', dEs: 'Obra social, convocatorias' },
   { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tots', fam: ['territori'],
-    t: 'A títol personal',        d: 'Professional o persona interessada' },
+    t: 'A títol personal',        d: 'Professional o persona interessada',
+    tEs: 'A título personal', dEs: 'Profesional o persona interesada' },
 
   /* ── Els del costat de l'organització ──────────────────────────────────
      L'ordre torna a ser per com de sovint truquen, i el primer de la llista
@@ -87,13 +95,17 @@ const ORGS = [
      acabaven triant «cooperativa o empresa» i el diagnòstic els parlava de
      relleu i de governança. */
   { id: 'agencia',       ic: '🎪', c: 'orange', sector: 'privat', fam: ['organitzacio'],
-    t: 'Agència o DMC',           d: 'Ho compres per a un client teu' },
+    t: 'Agència o DMC',           d: 'Ho compres per a un client teu',
+    tEs: 'Agencia o DMC', dEs: 'Lo compras para un cliente tuyo' },
   { id: 'gran',          ic: '🏢', c: 'blue',   sector: 'privat', fam: ['organitzacio'],
-    t: 'Empresa gran',            d: 'Amb departament de formació i pressupost anual' },
+    t: 'Empresa gran',            d: 'Amb departament de formació i pressupost anual',
+    tEs: 'Empresa grande', dEs: 'Con departamento de formación y presupuesto anual' },
   { id: 'pime',          ic: '🔧', c: 'green',  sector: 'privat', fam: ['organitzacio'],
-    t: 'Pime',                    d: 'La decisió la pren qui la dirigeix' },
+    t: 'Pime',                    d: 'La decisió la pren qui la dirigeix',
+    tEs: 'Pyme', dEs: 'La decisión la toma quien la dirige' },
   { id: 'escola',        ic: '🎓', c: 'indigo', sector: 'privat', fam: ['organitzacio'],
-    t: 'Escola de negoci o universitat', d: 'Programa, màster o claustre' }
+    t: 'Escola de negoci o universitat', d: 'Programa, màster o claustre',
+    tEs: 'Escuela de negocio o universidad', dEs: 'Programa, máster o claustro' }
 ];
 
 /* ══ ELS ROLS ═════════════════════════════════════════════════════════════
@@ -106,14 +118,14 @@ const ORGS = [
    direcció, no un guardià de territori. El text lliure segueix existint per a
    qui no s'hi trobi, que és el que sempre passa amb una llista tancada. */
 const ROLS = [
-  { id: 'direccio',   t: 'Direcció general o gerència' },
-  { id: 'persones',   t: 'Direcció de persones o RRHH' },
-  { id: 'innovacio',  t: 'Innovació, estratègia o projectes' },
-  { id: 'organitzacio', t: 'Organització, processos o qualitat' },
-  { id: 'tecnic',     t: 'Tècnic/a de participació, promoció o serveis' },
-  { id: 'politic',    t: 'Càrrec electe o de confiança' },
-  { id: 'coordinacio', t: 'Coordinació d\'equip o de programa' },
-  { id: 'altre',      t: 'Una altra cosa' }
+  { id: 'direccio',   t: 'Direcció general o gerència', tEs: 'Dirección general o gerencia' },
+  { id: 'persones',   t: 'Direcció de persones o RRHH', tEs: 'Dirección de personas o RRHH' },
+  { id: 'innovacio',  t: 'Innovació, estratègia o projectes', tEs: 'Innovación, estrategia o proyectos' },
+  { id: 'organitzacio', t: 'Organització, processos o qualitat', tEs: 'Organización, procesos o calidad' },
+  { id: 'tecnic',     t: 'Tècnic/a de participació, promoció o serveis', tEs: 'Técnico/a de participación, promoción o servicios' },
+  { id: 'politic',    t: 'Càrrec electe o de confiança', tEs: 'Cargo electo o de confianza' },
+  { id: 'coordinacio', t: 'Coordinació d\'equip o de programa', tEs: 'Coordinación de equipo o de programa' },
+  { id: 'altre',      t: 'Una altra cosa', tEs: 'Otra cosa' }
 ];
 
 /* ══ Les pàgines que porten cada bloc ════════════════════════════════════
@@ -135,42 +147,50 @@ const varCol = c => /^#/.test(c) ? c : 'var(--' + c + ')';
    ordenar la proposta i el text lliure evita el problema de sempre, que és
    que qui no s'hi troba escriu qualsevol cosa o se'n va. */
 function blocQui() {
-  const ops = ROLS.map(r => `<option value="${r.id}">${esc(r.t)}</option>`).join('');
+  const ops = ROLS.map(r =>
+    `<option value="${r.id}" data-i18n="fo.rol.${r.id}">${esc(r.t)}</option>`).join('');
   return `<div class="grid2">
-<div class="f"><label for="nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="rol">El teu paper a la casa</label><select id="rol" name="rol">${ops}</select></div>
+<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol">${ops}</select></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
-<div class="f"><label for="tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
 </div>
-<div class="f"><label for="carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>`;
+<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>`;
 }
 
 /* ── Bloc 2 · D'on véns ─────────────────────────────────────────────────── */
 function blocOrg(fam) {
+  /* Les claus del diccionari hi van sempre, i ara **a tots els camps**. Fins
+     el 03/10/2026 sis camps d'aquest bloc no en tenien —el web, a què us
+     dediqueu, el municipi, la comarca i el de mida— i això volia dir que al
+     pressupost, amb el castellà posat, «El vostre web» i «Municipi *» es
+     quedaven en català. No petava res: la prova mira els elements **amb
+     clau** que es queden en català, i un element sense clau no hi surt. */
   const ops = orgsDe(fam).map(o =>
     `<button type="button" class="opt" data-v="${o.id}" data-sector="${o.sector}" style="--c:${varCol(o.c)}">` +
-    `<span class="o-t">${o.ic} ${esc(o.t)}</span><span class="o-d">${esc(o.d)}</span></button>`
+    `<span class="o-t" data-i18n="fo.org.${o.id}.t">${o.ic} ${esc(o.t)}</span>` +
+    `<span class="o-d" data-i18n="fo.org.${o.id}.d">${esc(o.d)}</span></button>`
   ).join('\n');
   return `<div class="f">
-<label>Tipus d'organització *</label>
+<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
 <div class="opts" id="orgType">
 ${ops}
 </div>
 </div>
-<div class="f"><label for="orgNom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
-<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
-<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
-<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
 ${fam === 'organitzacio'
-    ? `<div class="f"><label for="persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" placeholder="p.ex. 45"><div class="hint">De tota l'organització, no només de l'equip que hi entraria.</div></div>`
-    : `<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>`}`;
+    ? `<div class="f"><label for="persones" data-i18n="fo.l.persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" data-i18n-ph="fo.ph.persones" placeholder="p.ex. 45"><div class="hint" data-i18n="fo.h.persones">De tota l'organització, no només de l'equip que hi entraria.</div></div>`
+    : `<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>`}`;
 }
 
 /* ── El sector de cada tipus, per al JavaScript de les dues pàgines ─────── */
@@ -263,6 +283,165 @@ function blocMida() {
   }
 })();
 
+/* ══ EL DICCIONARI DEL PRESSUPOST ════════════════════════════════════════════
+   `pressupost.html` era **només en català**: ni `data-i18n`, ni botó de
+   llengua, `<html lang="ca">` i prou. I és la pantalla on algú demana un preu.
+
+   Es declara aquí i no a la pàgina pel motiu de sempre: la meitat del
+   formulari **la genera aquest fitxer** —els tipus d'organització, els rols,
+   els paquets, els camps de mida— i tenir el diccionari en dos llocs voldria
+   dir que un dia no coincidissin. El que la pàgina té escrit a mà també hi és,
+   i així hi ha **un sol lloc** on es tradueix el formulari.
+
+   Els noms i les forquilles dels paquets no hi són: ja els tradueix
+   `build-oferta.js`, que és qui els declara, i el formulari els llegeix d'allà
+   amb els seus camps `*Es`.
+
+   ⚠ **El que encara no es tradueix**: el text de la proposta que el JavaScript
+   munta en prémer el botó (`rLead`, `rMetode`, les línies del resum). Viu dins
+   del script de la pàgina i és la pròxima tanda; el formulari, que és el que
+   es llegeix mentre s'omple, sí. */
+
+/* ── Les claus dels blocs compartits ──────────────────────────────────────
+   Van a part de `PRESSU` perquè les porten **tres** pàgines i no una: el
+   pressupost i els dos diagnòstics. Abans vivien dins de `PRESSU` amb una
+   nota que deia que al diagnòstic l'atribut no trobaria diccionari «i el text
+   es queda escrit, que és el correcte mentre aquella pàgina sigui
+   monolingüe». Ja no ho és, i per tant les claus s'han de poder escriure als
+   tres llocs sense arrossegar-hi les quaranta del pressupost. */
+const FORM = {
+  'fo.l.nom': { ca: 'Nom i cognoms *', es: 'Nombre y apellidos *' },
+  'fo.l.rol': { ca: 'El teu paper a la casa', es: 'Tu papel en la casa' },
+  'fo.l.mail': { ca: 'Correu electrònic *', es: 'Correo electrónico *' },
+  'fo.l.tel': { ca: 'Telèfon (opcional)', es: 'Teléfono (opcional)' },
+  'fo.l.carrec': { ca: 'Com se\'n diu exactament', es: 'Cómo se llama exactamente' },
+  'fo.ph.carrec': { ca: 'p.ex. tècnica de participació', es: 'p.ej. técnica de participación' },
+  'fo.h.carrec': { ca: 'Opcional. Serveix per adreçar-nos-hi com toca.', es: 'Opcional. Sirve para dirigirnos como toca.' },
+  'fo.l.tipus': { ca: 'Tipus d\'organització *', es: 'Tipo de organización *' },
+  'fo.l.orgnom': { ca: 'Nom de l\'organització', es: 'Nombre de la organización' },
+  'fo.ph.orgnom': { ca: 'deixa-ho en blanc si véns a títol personal', es: 'déjalo en blanco si vienes a título personal' },
+  /* Els sis camps que no tenien clau i es quedaven en català al pressupost. */
+  'fo.l.web': { ca: 'El vostre web', es: 'Vuestra web' },
+  'fo.ph.web': { ca: 'p.ex. exemple.cat', es: 'p.ej. ejemplo.com' },
+  'fo.h.web': { ca: 'Ens estalvia preguntar-vos qui sou. Opcional.', es: 'Nos ahorra preguntaros quiénes sois. Opcional.' },
+  'fo.l.dediqueu': { ca: 'A què us dediqueu', es: 'A qué os dedicáis' },
+  'fo.ph.dediqueu': { ca: 'p.ex. distribució alimentària, 3 centres', es: 'p.ej. distribución alimentaria, 3 centros' },
+  'fo.l.municipi': { ca: 'Municipi *', es: 'Municipio *' },
+  'fo.ph.municipi': { ca: 'p.ex. Torrelles de Foix', es: 'p.ej. Torrelles de Foix' },
+  'fo.l.comarca': { ca: 'Comarca', es: 'Comarca' },
+  'fo.ph.comarca': { ca: 'p.ex. Alt Penedès', es: 'p.ej. Alt Penedès' },
+  'fo.l.persones': { ca: 'Quantes persones sou', es: 'Cuántas personas sois' },
+  'fo.ph.persones': { ca: 'p.ex. 45', es: 'p.ej. 45' },
+  'fo.h.persones': {
+    ca: 'De tota l\'organització, no només de l\'equip que hi entraria.',
+    es: 'De toda la organización, no solo del equipo que entraría.'
+  },
+  'fo.l.poblacio': { ca: 'Població aproximada a què arribeu', es: 'Población aproximada a la que llegáis' },
+  'fo.ph.poblacio': { ca: 'p.ex. 2400', es: 'p.ej. 2400' },
+  'fo.h.poblacio': {
+    ca: 'Habitants del municipi, o persones a qui arriba el vostre projecte.',
+    es: 'Habitantes del municipio, o personas a las que llega vuestro proyecto.'
+  }
+};
+
+const PRESSU = {
+  'pr.h1': { ca: 'Demana pressupost', es: 'Pide presupuesto' },
+  'pr.intro': {
+    ca: 'Tria el que t\'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l\'enviïs.</strong>',
+    es: 'Elige lo que te interesa y sale una <strong>propuesta borrador</strong> con el desglose a la vista: la horquilla de cada paquete, las horas por nivel si lo contratas por horas, y qué falta para cerrarla. <strong>Te la puedes llevar aunque no nos la envíes.</strong>'
+  },
+  'pr.s1.h': { ca: '1 · Qui ets', es: '1 · Quién eres' },
+  'pr.s1.sub': {
+    ca: 'Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.',
+    es: 'Para saber con quién hablamos y cómo dirigirnos. Si ya has hecho el diagnóstico, esto ya debería venir rellenado.'
+  },
+  'pr.s1.err': { ca: 'Cal com a mínim el nom i un correu vàlid.', es: 'Hace falta como mínimo el nombre y un correo válido.' },
+  'pr.s2.h': { ca: '2 · D\'on véns', es: '2 · De dónde vienes' },
+  'pr.s2.err': { ca: 'Tria el tipus d\'organització i escriu el municipi.', es: 'Elige el tipo de organización y escribe el municipio.' },
+  'pr.s3.h': { ca: '3 · Què vols', es: '3 · Qué quieres' },
+  'pr.s3.err': { ca: 'Marca com a mínim un paquet.', es: 'Marca como mínimo un paquete.' },
+  'pr.s4.h': { ca: '4 · Com i quan', es: '4 · Cómo y cuándo' },
+  'pr.s4.sub': {
+    ca: 'Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.',
+    es: 'Las tres cosas que acaban de determinar el presupuesto, y que una página no puede adivinar.'
+  },
+  'pr.seg': { ca: 'Següent →', es: 'Siguiente →' },
+  'pr.enrere': { ca: '← Enrere', es: '← Atrás' },
+  'pr.veure': { ca: 'Veure la proposta →', es: 'Ver la propuesta →' },
+  'pr.repte': { ca: 'Què voleu resoldre, en poques paraules', es: 'Qué queréis resolver, en pocas palabras' },
+  'pr.repte.ph': {
+    ca: 'p.ex. L\'equip directiu ha crescut de 6 a 14 persones en dos anys i les decisions s\'encallen. Volem entendre per què abans de reorganitzar res.',
+    es: 'p.ej. El equipo directivo ha crecido de 6 a 14 personas en dos años y las decisiones se atascan. Queremos entender por qué antes de reorganizar nada.'
+  },
+  'pr.quan': { ca: 'Quan', es: 'Cuándo' },
+  'pr.quan.explorant': { ca: 'Estem explorant, sense presses', es: 'Estamos explorando, sin prisas' },
+  'pr.quan.curs': { ca: 'Aquest curs o semestre', es: 'Este curso o semestre' },
+  'pr.quan.data': { ca: 'Tenim una data concreta', es: 'Tenemos una fecha concreta' },
+  'pr.diners': { ca: 'D\'on sortirien els diners', es: 'De dónde saldría el dinero' },
+  'pr.diners.propi': { ca: 'Pressupost propi', es: 'Presupuesto propio' },
+  'pr.diners.partida': { ca: 'Partida ja assignada', es: 'Partida ya asignada' },
+  'pr.diners.subvencio': { ca: 'D\'una subvenció que hem de demanar', es: 'De una subvención que tenemos que pedir' },
+  'pr.diners.perveure': { ca: 'Encara per veure', es: 'Todavía por ver' },
+  'pr.hores.h': { ca: 'Si ho contracteu per hores', es: 'Si lo contratáis por horas' },
+  'pr.esc.niv': { ca: 'Nivell', es: 'Nivel' },
+  'pr.esc.preu': { ca: 'Preu hora', es: 'Precio hora' },
+  'pr.esc.hores': { ca: 'Hores', es: 'Horas' },
+  'pr.esc.sub': { ca: 'Subtotal', es: 'Subtotal' },
+  'pr.prop.h': { ca: 'Proposta esborrany', es: 'Propuesta borrador' },
+  'pr.prop.total': { ca: 'Total orientatiu · sense IVA', es: 'Total orientativo · sin IVA' },
+  'pr.prop.triat': { ca: 'El que has triat', es: 'Lo que has elegido' },
+  'pr.prop.hores': { ca: 'Contractació per hores', es: 'Contratación por horas' },
+  'pr.prop.metode': { ca: 'Com s\'ha calculat', es: 'Cómo se ha calculado' },
+  'pr.prop.falta': { ca: 'Què falta per tancar-ho', es: 'Qué falta para cerrarlo' },
+  'pr.prop.envia': { ca: '✉ Envia\'ns la petició', es: '✉ Envíanos la petición' },
+  'pr.prop.copia': { ca: '📋 Copia-la', es: '📋 Cópiala' },
+  'pr.prop.baixa': { ca: '⬇ Descarrega-la (JSON)', es: '⬇ Descárgala (JSON)' },
+  'pr.prop.torna': { ca: '↺ Torna-hi', es: '↺ Vuelve' },
+  'pr.priv': { ca: 'Aquest formulari no envia res sol.', es: 'Este formulario no envía nada solo.' },
+  /* Les tres dels camps de mida (`blocMida`), que també els genera aquest
+     fitxer i per tant es declaren aquí i no a mitja funció. */
+  'pr.mida.part': { ca: 'Quantes persones hi participaran', es: 'Cuántas personas participarán' },
+  'pr.mida.part.h': { ca: 'Marca la diferència més gran del pressupost.', es: 'Marca la diferencia más grande del presupuesto.' },
+  'pr.mida.alc': { ca: 'Alçada de la demostració', es: 'Altura de la demostración' },
+  'pr.mida.alc.h': { ca: 'L\'alçada és quanta colla cal moure, i és el que fixa el cost.', es: 'La altura es cuánta colla hay que mover, y es lo que fija el coste.' },
+  'pr.mida.lloc': { ca: 'On es fa i a quina distància', es: 'Dónde se hace y a qué distancia' },
+  'pr.mida.lloc.h': { ca: 'El desplaçament de l\'equip entra al pressupost al seu preu, sense marge a sobre.', es: 'El desplazamiento del equipo entra al presupuesto a su precio, sin margen encima.' },
+  'pr.mida.cap': {
+    ca: 'Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.',
+    es: 'Estas preguntas salen cuando pides una actividad con gente, fecha y lugar. Con lo que has elegido ahora, no hacen falta.'
+  },
+  'pr.filtre.tots': { ca: 'Tot', es: 'Todo' },
+  'pr.filtre.privat': { ca: 'Empreses i cooperatives', es: 'Empresas y cooperativas' },
+  'pr.filtre.public': { ca: 'Administració i entitats', es: 'Administración y entidades' }
+};
+
+/* El diccionari dels blocs compartits: `FORM`, més el que surt de `ORGS` i
+   `ROLS`, que els genera aquest mateix fitxer. El porten les tres pàgines que
+   munten aquests blocs, i per això es genera a part. */
+function dicFo(l) {
+  const q = x => String(x).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const tria = (o, c) => l === 'es' ? (o[c + 'Es'] || o[c]) : o[c];
+  const f = [];
+  Object.entries(FORM).forEach(([k, v]) => f.push(`  '${k}':'${q(v[l])}',`));
+  ORGS.forEach(o => {
+    /* L'emoji va **dins** del valor. Sense ell, canviar de llengua el feia
+       desaparèixer: el marcatge l'escriu al costat del text i el diccionari
+       substitueix el `textContent` sencer. No peta, i la pantalla perd dotze
+       icones a l'altra llengua. */
+    f.push(`  'fo.org.${o.id}.t':'${q(o.ic + ' ' + tria(o, 't'))}',`);
+    f.push(`  'fo.org.${o.id}.d':'${q(tria(o, 'd'))}',`);
+  });
+  ROLS.forEach(r => f.push(`  'fo.rol.${r.id}':'${q(tria(r, 't'))}',`));
+  return f.join('\n');
+}
+
+/* El del pressupost: el seu propi, i a sobre el compartit. */
+function dicPressu(l) {
+  const q = x => String(x).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const f = Object.entries(PRESSU).map(([k, v]) => `  '${k}':'${q(v[l])}',`);
+  return f.join('\n') + '\n' + dicFo(l);
+}
+
 const MARQUES = [
   ['<!--FORM-QUI-->', '<!--/FORM-QUI-->', blocQui],
   ['<!--FORM-ORG-->', '<!--/FORM-ORG-->', blocOrg],
@@ -273,7 +452,19 @@ const MARQUES = [
 const NOMES_PRESSU = [
   ['<!--FORM-PAQUETS-->', '<!--/FORM-PAQUETS-->', blocPaquets],
   ['<!--FORM-MIDA-->', '<!--/FORM-MIDA-->', blocMida],
-  ['/*FORM-ESCALA*/', '/*/FORM-ESCALA*/', blocEscala]
+  ['/*FORM-ESCALA*/', '/*/FORM-ESCALA*/', blocEscala],
+  /* Els dos diccionaris. Van aquí i no a la pàgina perquè mitja pàgina la
+     genera aquest fitxer: tenir-los en dos llocs voldria dir que un dia no
+     coincidissin, i el que divergiria seria una llengua sencera. */
+  ['/*PRESSU-I18N-CA*/', '/*/PRESSU-I18N-CA*/', () => dicPressu('ca')],
+  ['/*PRESSU-I18N-ES*/', '/*/PRESSU-I18N-ES*/', () => dicPressu('es')]
+];
+/* I els dos diagnòstics, que porten els mateixos blocs i per tant les mateixes
+   claus. La resta del seu text és seu i el declaren ells: aquí només hi va el
+   que aquest fitxer genera, que és la regla que evita el diccionari duplicat. */
+const NOMES_DIAG = [
+  ['/*DIAG-I18N-CA*/', '/*/DIAG-I18N-CA*/', () => dicFo('ca')],
+  ['/*DIAG-I18N-ES*/', '/*/DIAG-I18N-ES*/', () => dicFo('es')]
 ];
 
 let desviats = [], faltaven = [];
@@ -282,7 +473,7 @@ for (const { fitxer, fam } of PAGINES) {
   if (!existsSync(cami)) { faltaven.push(fitxer + ' → la pàgina no existeix'); continue; }
   const src = readFileSync(cami, 'utf8');
   let out = src;
-  const seves = MARQUES.concat(fitxer === 'pressupost.html' ? NOMES_PRESSU : []);
+  const seves = MARQUES.concat(fitxer === 'pressupost.html' ? NOMES_PRESSU : NOMES_DIAG);
   for (const [obre, tanca, fn] of seves) {
     const i = out.indexOf(obre), j = out.indexOf(tanca);
     if (i < 0 || j < 0 || j < i) { faltaven.push(fitxer + ' → ' + obre); continue; }
