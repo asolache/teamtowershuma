@@ -417,9 +417,14 @@ function svgSessio(id) {
   return p.join('');
 }
 
+/* Sense les marques: les posa el bucle d'escriptura (`obre + fn() + tanca`).
+   Aquesta funció les escrivia **també**, i com que el bucle conserva el que hi
+   ha després del primer tancament, cada execució n'hi afegia una còpia: el
+   02/10/2026 `vna.html` tenia **dues obertures i tretze tancaments**, i cap
+   marcatge trencat a la vista perquè un comentari HTML repetit no es veu. El
+   que sí que es veia era `--check` en vermell sense dir-ne el motiu. */
 function blocSessio() {
   const f = [];
-  f.push('<!--VNA-SESSIO-->');
   f.push('<!-- GENERAT per SOS/tools/build-mapavalor.js · no s\'edita a mà -->');
   f.push('<section class="mv-sec">');
   f.push('<h2>I com és, a la sala</h2>');
@@ -457,7 +462,6 @@ function blocSessio() {
     + 'està ple.</p>');
   f.push('<ul class="mv-pre">' + PREGUNTES.map(q => `<li>${esc(q)}</li>`).join('') + '</ul>');
   f.push('</section>');
-  f.push('<!--/VNA-SESSIO-->');
   return f.join('\n');
 }
 
@@ -1143,6 +1147,39 @@ const DESTINS = [
   { f: join(SOS, 'vna.html'), marca: 'VNA-SESSIO', fn: blocSessio },
   { f: join(SOS, 'vna.html'), marca: 'VNA-EXEMPLE', fn: blocExemple }
 ];
+/* ── CADA MARCA, UN COP ───────────────────────────────────────────────────
+   El bucle d'escriptura busca `indexOf(obre)` i `indexOf(tanca)`: **el primer**
+   de cada un. Si al fitxer n'hi ha dos, escriu entre el primer parell i deixa
+   la resta intactes, i el bloc generat queda tancat per una marca i seguit de
+   còpies mortes de la mateixa marca.
+
+   Va passar: `blocSessio()` escrivia les seves pròpies marques a més de les
+   que hi posa el bucle, i cada execució n'afegia una. `vna.html` va arribar a
+   dues obertures i tretze tancaments. **No es veia** —un comentari HTML
+   repetit no surt a la pantalla— i el que es veia era `--check` en vermell
+   dient «blocs desactualitzats», que és el pitjor missatge possible: el fitxer
+   estava al dia, el que no quadrava era la seva pròpia escriptura.
+
+   Es compta abans d'escriure, perquè un fitxer amb marques duplicades no es pot
+   arreglar escrivint-hi a sobre. */
+(() => {
+  const dobles = [];
+  [...new Set(DESTINS.map(d => d.f))].forEach(f => {
+    if (!existsSync(f)) return;
+    const txt = readFileSync(f, 'utf8');
+    const nom = f.replace(ARREL + '/', '');
+    DESTINS.filter(d => d.f === f).forEach(d => {
+      const n = (txt.split(`<!--${d.marca}-->`).length - 1);
+      const m = (txt.split(`<!--/${d.marca}-->`).length - 1);
+      if (n !== 1 || m !== 1) dobles.push(`${nom} → ${d.marca}: ${n} obertures i ${m} tancaments`);
+    });
+  });
+  if (dobles.length) {
+    bad('marques repetides, i el generador escriu entre el primer parell:\n    '
+      + dobles.join('\n    ') + '\n    S\'esborren a mà les còpies: deixar-ne una de cada.');
+  }
+})();
+
 let escrits = 0, vells = [];
 const cache = {};
 DESTINS.forEach(d => {

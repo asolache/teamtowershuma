@@ -217,5 +217,81 @@ const dolents = NIVELLS.filter(n => !new RegExp("hora:" + n.hora + "\\b").test(p
 if (!dolents.length) ok(`els ${NIVELLS.length} nivells de l'escala hi són amb el seu preu hora`);
 else bad(`l'escala del formulari no quadra amb la del catàleg (${dolents.map(n => n.id).join(', ')})`);
 
+/* ── 7 · Les quatre pantalles es llegeixen en dues llengües ───────────────
+   Els dos diagnòstics **ja portaven les claus** `data-i18n` dels blocs
+   compartits —les escriu `build-formularis.js`— i **no tenien cap diccionari
+   que les llegís**. Les claus hi eren, el text es quedava en català i no
+   petava res. Aquesta regla mira les tres coses que ho fan possible: que hi
+   hagi commutador, que hi hagi els dos diccionaris, i que **cada clau que el
+   marcatge fa servir existeixi a tots dos**.
+
+   La tercera és la que importa. Una clau que només és al diccionari català no
+   peta: deixa aquell text sense traduir i prou, que és exactament el defecte
+   que es busca. */
+{
+  const PANTALLES = [['tria', TRIA], ['territori', dx], ['organització', org], ['pressupost', pr]];
+  /* Les claus d'un dels dos blocs del diccionari. L'estructura és la mateixa a
+     les quatre pàgines: `var X_I18N = {`, després `ca: {` i després `es: {`. */
+  const clausDe = (src, quin) => {
+    const i = src.search(/var \w+_I18N\s*=\s*\{/);
+    if (i < 0) return null;
+    const ca = src.indexOf('\nca: {', i), es = src.indexOf('\nes: {', i);
+    if (ca < 0 || es < 0 || es < ca) return null;
+    const tros = quin === 'ca' ? src.slice(ca, es) : src.slice(es, src.indexOf('\n};', es));
+    return new Set([...tros.matchAll(/^\s*'([^']+)'\s*:/gm)].map(m => m[1]));
+  };
+  const problemes = [];
+  PANTALLES.forEach(([nom, src]) => {
+    if (!/class="lang-b[^"]*"[^>]*data-lang="ca"/.test(src) || !/data-lang="es"/.test(src))
+      problemes.push(nom + ' → no té commutador de llengua');
+    /* I la tria ha de venir de la portada. La portada la desa a `tt_lang` i
+       aquestes pàgines a `sos.lang`: si només es llegeix la seva, qui tria
+       castellà a `teamtowershuma.com` i clica cap a un formulari se'l troba en
+       català. No peta; només perd la tria en passar d'una banda a l'altra. */
+    if (!/getItem\('tt_lang'\)/.test(src) || !/setItem\('tt_lang'/.test(src))
+      problemes.push(nom + ' → no comparteix la tria de llengua amb la portada (`tt_lang`)');
+    const ca = clausDe(src, 'ca'), es = clausDe(src, 'es');
+    if (!ca || !es) { problemes.push(nom + ' → no s\'hi troben els dos diccionaris'); return; }
+    /* Les claus que el marcatge fa servir. S'hi afegeixen les que només crida
+       el JavaScript? No: aquelles les cobreix la paritat dels dos blocs. */
+    const usades = new Set([...src.matchAll(/data-i18n(?:-html|-ph)?="([^"]+)"/g)].map(m => m[1]));
+    const soles = [...usades].filter(k => !ca.has(k) || !es.has(k));
+    if (soles.length) problemes.push(nom + ' → claus al marcatge sense valor a les dues llengües: '
+      + soles.slice(0, 5).join(', '));
+    const nomesCa = [...ca].filter(k => !es.has(k));
+    const nomesEs = [...es].filter(k => !ca.has(k));
+    if (nomesCa.length) problemes.push(nom + ' → només en català: ' + nomesCa.slice(0, 5).join(', '));
+    if (nomesEs.length) problemes.push(nom + ' → només en castellà: ' + nomesEs.slice(0, 5).join(', '));
+  });
+  if (!problemes.length) ok('les quatre pantalles tenen commutador i els dos diccionaris amb les mateixes claus');
+  else bad('la traducció dels formularis té forats:\n    ' + problemes.join('\n    ')
+    + '\n    — una clau que només és en una llengua deixa aquell text sense traduir i no peta');
+}
+
+/* ── 8 · Cap text de catàleg sense el seu germà castellà ──────────────────
+   El text del **resultat** del diagnòstic no surt del diccionari: surt dels
+   catàlegs —mòduls, serveis, perfils, objectius, paquets—, i allà el castellà
+   va al costat del català (`t`/`tEs`). Afegir-hi una entrada sense el germà no
+   peta: aquella línia es llegeix en català amb el castellà posat.
+
+   Es compta, i prou. Si hi ha vuit perfils amb `lead:` n'hi ha d'haver vuit
+   amb `leadEs:`. Una regla que mirés quina falta hauria de saber-se
+   l'estructura de cada catàleg; comptar no, i troba el mateix defecte. */
+{
+  const PARELLES = ['t', 'd', 'seg', 'title', 'fita', 'lead', 'dur', 'fund', 'nom', 'diu', 'llegim', 'endus'];
+  const compta = (src, k) =>
+    (src.match(new RegExp('\\b' + k + ':[\'\\[]', 'g')) || []).length;
+  const coixos = [];
+  [['territori', dx], ['organització', org]].forEach(([nom, src]) => {
+    PARELLES.forEach(k => {
+      const a = compta(src, k), b = compta(src, k + 'Es');
+      if (a && a !== b) coixos.push(`${nom} → ${a} × \`${k}\` i ${b} × \`${k}Es\``);
+    });
+  });
+  if (!coixos.length) ok('i els catàlegs del resultat porten el castellà al costat de cada text');
+  else bad('text de catàleg sense traducció:\n    ' + coixos.join('\n    ')
+    + '\n    — el formulari es llegiria traduït i el diagnòstic que en surt, no');
+}
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} als formularis.` : '\n✅ Els formularis quadren.');
 process.exit(fails ? 1 : 0);

@@ -634,10 +634,75 @@ més detall del flux**: és el que falta per tancar-ho.
 *Pantheon.work ja era font d'aquesta casa pel panteó de 12 (`pantheon-12.md`,
 CC BY). Dos documents del mateix lloc, i conviuen bé.*
 
-**El que queda de traduccions:** els **tres diagnòstics** (`diagnostic.html` i
-les dues branques) segueixen monolingües, i **el text de la proposta que el
-JavaScript munta** en prémer el botó del pressupost (`rLead`, `rMetode`, les
-línies del resum) també. El formulari —el que es llegeix mentre s'omple— ja no.
+**El que queda de traduccions:** *(actualitzat el 03/10/2026, vegeu l'entrada
+de sota)* els tres diagnòstics ja no. El que queda és **el text de la proposta
+que el JavaScript munta** en prémer el botó del pressupost (`rLead`, `rMetode`,
+les línies del resum), i els tres forats mesurats de la portada.
+
+---
+
+### Els tres diagnòstics, en les dues llengües (03/10/2026)
+
+Tancament de la meitat que faltava de *«revisa que el form de pressupost i
+diagnòstic i la home surtin ben traduïdes al cat i a l'esp»*.
+
+**El que es va trobar, i que és pitjor que «sense traduir».** Els dos
+formularis de diagnòstic **ja portaven les claus** `data-i18n` dels blocs
+compartits —les escriu `build-formularis.js`, que genera el bloc de «qui ets» i
+el de «d'on véns»— i **no tenien cap diccionari que les llegís**. Les claus hi
+eren, el text es quedava en català, i no petava res. És el mateix defecte de la
+portada vist des de l'altra banda: allà faltava clau, aquí faltava valor.
+
+I `diagnostic.html` —la **primera** pantalla del diagnòstic, la tria de porta—
+no tenia ni claus: qui venia del castellà no arribava ni a triar.
+
+**Com s'ha fet, i on viu cada cosa.**
+
+| Què | On es declara | Per què allà |
+|---|---|---|
+| Les claus `fo.*` dels blocs compartits | `build-formularis.js` (`FORM`) | Les porten **tres** pàgines i han de dir el mateix a totes tres |
+| El text propi de cada pàgina | la pàgina, entre les seves marques | No el genera ningú; no hi ha res a divergir |
+| Objectius, notes i paquets del diagnòstic d'organització | `build-diagnosi-org.js` i el catàleg | És on ja es declaraven, amb `tEs`/`diuEs`/`llegimEs` al costat |
+| Mòduls, serveis, perfils, portes del territori | la pàgina, amb `tEs` al costat de `t` | Catàlegs de la pàgina; partir-los en dos objectes voldria dir indexar dues vegades |
+| El menú | `build-nav.js` | Ja declarava `T(ca, es)` i només escrivia el català a les pàgines del SOS |
+
+**Sis camps dels blocs compartits no tenien clau** —el web, a què us dediqueu,
+el municipi, la comarca i el de mida— i per tant es quedaven en català **també
+al pressupost**, que ja es donava per traduït. Una prova que mira els elements
+*amb clau* que es queden en català no els hi veu mai.
+
+**La tria de llengua vivia en dues claus.** La portada la desa a `tt_lang` i
+els formularis a `sos.lang`: qui triava castellà a `teamtowershuma.com` i
+clicava cap a un formulari se'l trobava en català. Ara es llegeixen les dues i
+s'escriuen les dues.
+
+**El que NO s'ha traduït, a posta:** el **resum en text pla** dels dos
+diagnòstics. No és una pantalla: és el que arriba a la nostra banda i el que
+`crm.html` parteix pels separadors (`── QUI ──`, `── D'ON ──`…). Si canviés de
+llengua amb el botó, el CRM deixaria de trobar les seccions de mitja safata.
+Per això hi ha `catala()`/`cat()`, que llegeixen el diccionari català passi el
+que passi, i una asserció que ho comprova.
+
+**Les guardes.** Dues a `check-formularis.js`, i les dues caçades provant-les:
+
+1. Les quatre pantalles tenen commutador, comparteixen la tria amb la portada, i
+   **cada clau del marcatge existeix als dos diccionaris** (i cap diccionari en
+   té una que l'altre no).
+2. **Cap text de catàleg sense el seu germà castellà.** Es compta: si hi ha vuit
+   perfils amb `lead:` n'hi ha d'haver vuit amb `leadEs:`. Això és el que una
+   prova de navegador no troba, perquè una etiqueta curta com «Banc de temps» no
+   es distingeix de la castellana amb cap expressió regular.
+
+I `SOS/tests/test-i18n-diagnostic.mjs`: 56 assercions que recorren els quatre
+passos dels dos formularis, llegeixen el **resultat** de la pantalla i
+comproven que el resum segueix en català.
+
+**Dues coses trobades mirant, que no petaven.** El títol de cada opció
+(`.opt .o-t`) sortia **negre sobre fons negre** als tres formularis: `.opt` és
+un `<button>` i el navegador hi posa text negre i centrat, el `.o-d` tenia color
+propi i el `.o-t` no. I al territori el nom del servei i la seva descripció
+sortien enganxats —«Diagnòstic territorial2 sessions»— perquè eren dos `span`
+en línia.
 
 ---
 
@@ -707,6 +772,10 @@ Això no és posar-hi claus: és portar-hi el mecanisme sencer (diccionari, bot�
 `setLang`, i la memòria de la tria) a quatre pàgines autocontingudes, i decidir
 si el diccionari es declara a cada pàgina o es genera des d'un sol lloc —que és
 el que faria `build-formularis.js`, que ja les escriu.
+
+> ✅ **Fet.** El pressupost el 02/10/2026 i els tres diagnòstics el 03/10/2026,
+> amb el diccionari compartit a `build-formularis.js` i el propi de cada pàgina
+> a la pàgina. Vegeu «Els tres diagnòstics, en les dues llengües».
 
 ---
 

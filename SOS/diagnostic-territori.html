@@ -30,7 +30,11 @@ input[type=text],input[type=email],input[type=tel],input[type=number],select,tex
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
 textarea{min-height:88px;resize:vertical}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
-.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* `color` i `text-align` explícits: `.opt` és un `<button>` i el navegador hi
+   posa text negre i centrat per defecte. El `.o-d` tenia color propi i el
+   `.o-t` no, o sigui que el **títol** de cada opció sortia negre sobre fons
+   negre —illegible— i centrat. No peta i es veu mirant. */
+.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:var(--text);text-align:left;font:inherit}
 .opt:hover{border-color:var(--indigo)}
 .opt.sel{border-color:var(--c,var(--indigo));background:color-mix(in srgb,var(--c,var(--indigo)) 14%,transparent)}
 .opt .o-t{font-weight:600;font-size:.88rem}
@@ -78,8 +82,11 @@ textarea{min-height:88px;resize:vertical}
 .svc:last-child{border-bottom:0}
 .svc-n{font-family:var(--mono);font-size:.68rem;color:var(--green);min-width:26px;padding-top:.15rem;font-weight:700}
 .svc-b{min-width:0}
-.svc-t{font-weight:600;font-size:.9rem}
-.svc-d{font-size:.79rem;color:var(--muted);line-height:1.45}
+/* En bloc: eren dos `span` seguits i el nom del servei i la seva descripció
+   sortien enganxats —«Diagnòstic territorial2 sessions + informe»—, que es veu
+   mirant i no peta enlloc. */
+.svc-t{display:block;font-weight:600;font-size:.9rem}
+.svc-d{display:block;font-size:.79rem;color:var(--muted);line-height:1.45}
 .gapl li{color:var(--orange)}
 .havl li{color:var(--green)}
 .send{background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(99,102,241,.06));border:2px solid var(--green);border-radius:14px;padding:1.5rem 1.7rem;margin-top:1.2rem}
@@ -91,6 +98,15 @@ textarea{min-height:88px;resize:vertical}
 .err.on{display:block}
 footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:.85rem;border-top:1px solid rgba(255,255,255,.05);margin-top:2rem}
 footer a{color:var(--indigo);text-decoration:none}
+
+/* EL COMMUTADOR DE LLENGUA · la mateixa forma als quatre formularis. */
+.lang-sw{display:flex;gap:2px;width:max-content;margin:0 auto 1.1rem;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;padding:2px}
+.lang-b{background:transparent;border:none;color:var(--muted);font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.08em;cursor:pointer;padding:4px 11px;border-radius:5px;
+  transition:background .15s,color .15s}
+.lang-b.on{background:var(--indigo);color:#fff;font-weight:700}
+.lang-b:not(.on):hover{color:var(--text)}
 </style>
 </head>
 <body>
@@ -143,14 +159,20 @@ footer a{color:var(--indigo);text-decoration:none}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b>El laboratori de VNA</b><span>El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b>Premsa</b><span>El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b data-i18n="nv.t.arrel-curs_vna">El laboratori de VNA</b><span data-i18n="nv.d.arrel-curs_vna">El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
 
 <header>
-<h1>Diagnòstic comunitari</h1>
-<p>Explica'ns d'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa d'acompanyament — <strong>l'enviïs o no</strong>.</p>
+<!-- Les dues llengües. Aquest formulari ja portava les claus `fo.*` dels
+     blocs compartits i no tenia diccionari que les llegís. -->
+<div class="lang-sw">
+  <button type="button" class="lang-b on" data-lang="ca">CA</button>
+  <button type="button" class="lang-b" data-lang="es">ES</button>
+</div>
+<h1 data-i18n="dt.h1">Diagnòstic comunitari</h1>
+<p data-i18n-html="dt.intro">Explica'ns d'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa d'acompanyament — <strong>l'enviïs o no</strong>.</p>
 </header>
 
 <main class="wrap">
@@ -163,8 +185,8 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <!-- ── Pas 1 ── -->
 <section class="step" id="s1">
-<h2>1 · Qui ets</h2>
-<p class="sub">Per saber amb qui parlem i com respondre't.</p>
+<h2 data-i18n="dt.s1.h">1 · Qui ets</h2>
+<p class="sub" data-i18n="dt.s1.sub">Per saber amb qui parlem i com respondre't.</p>
 <!--FORM-QUI-->
 <div class="grid2">
 <div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
@@ -176,14 +198,14 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 <div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
-<div class="err" id="e1">Cal com a mínim el nom i un correu vàlid.</div>
-<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2">Següent →</button></div>
+<div class="err" id="e1" data-i18n="dt.e1">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
 <!-- ── Pas 2 ── -->
 <section class="step" id="s2" hidden>
-<h2>2 · D'on véns</h2>
-<p class="sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
+<h2 data-i18n="dt.s2.h">2 · D'on véns</h2>
+<p class="sub" data-i18n="dt.s2.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
 <!--FORM-ORG-->
 <div class="f">
 <label data-i18n="fo.l.tipus">Tipus d'organització *</label>
@@ -200,101 +222,104 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 <div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
-<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
-<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
-<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
-<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
 <!--/FORM-ORG-->
-<div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-go="3">Següent →</button></div>
+<div class="err" id="e2" data-i18n="dt.e2">Tria el tipus d'organització i escriu el municipi.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="1" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="3" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
 <!-- ── Pas 3 ── -->
 <section class="step" id="s3" hidden>
-<h2>3 · Què ja teniu</h2>
-<p class="sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
+<h2 data-i18n="dt.s3.h">3 · Què ja teniu</h2>
+<p class="sub" data-i18n="dt.s3.sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
 <div class="f">
-<label>Recursos disponibles</label>
+<label data-i18n="dt.l.have">Recursos disponibles</label>
+<!-- ELS XIPS. El text de cada un és **la seva etiqueta i prou**: el que
+     viatja és `data-v`, i el resum i el JSON hi van per aquell valor. Per
+     això es poden traduir sense tocar res del que es desa. -->
 <div class="chips" id="have">
-<button type="button" class="chip" data-v="persones">👥 Grup de persones actives</button>
-<button type="button" class="chip" data-v="espai">🏠 Espai físic</button>
-<button type="button" class="chip" data-v="pressupost">💶 Pressupost propi</button>
-<button type="button" class="chip" data-v="tecnic">🧑‍💼 Persona tècnica dedicada</button>
-<button type="button" class="chip" data-v="dinamica">🔄 Dinàmica ja en marxa</button>
-<button type="button" class="chip" data-v="juridic">📜 Forma jurídica constituïda</button>
-<button type="button" class="chip" data-v="dades">📊 Dades del teixit local</button>
-<button type="button" class="chip" data-v="suport">🤝 Suport institucional</button>
-<button type="button" class="chip" data-v="digital">💻 Capacitat digital a l'equip</button>
-<button type="button" class="chip" data-v="xarxa">🕸 Xarxa d'entitats aliades</button>
+<button type="button" class="chip" data-v="persones" data-i18n="dt.have.persones">👥 Grup de persones actives</button>
+<button type="button" class="chip" data-v="espai" data-i18n="dt.have.espai">🏠 Espai físic</button>
+<button type="button" class="chip" data-v="pressupost" data-i18n="dt.have.pressupost">💶 Pressupost propi</button>
+<button type="button" class="chip" data-v="tecnic" data-i18n="dt.have.tecnic">🧑‍💼 Persona tècnica dedicada</button>
+<button type="button" class="chip" data-v="dinamica" data-i18n="dt.have.dinamica">🔄 Dinàmica ja en marxa</button>
+<button type="button" class="chip" data-v="juridic" data-i18n="dt.have.juridic">📜 Forma jurídica constituïda</button>
+<button type="button" class="chip" data-v="dades" data-i18n="dt.have.dades">📊 Dades del teixit local</button>
+<button type="button" class="chip" data-v="suport" data-i18n="dt.have.suport">🤝 Suport institucional</button>
+<button type="button" class="chip" data-v="digital" data-i18n="dt.have.digital">💻 Capacitat digital a l'equip</button>
+<button type="button" class="chip" data-v="xarxa" data-i18n="dt.have.xarxa">🕸 Xarxa d'entitats aliades</button>
 </div>
 </div>
 <div class="f">
-<label>Serveis o projectes que ja teniu en marxa</label>
+<label data-i18n="dt.l.serveis">Serveis o projectes que ja teniu en marxa</label>
 <div class="chips" id="serveis">
-<button type="button" class="chip" data-v="banctemps">⏱ Banc de temps</button>
-<button type="button" class="chip" data-v="biblioteca">📚 Biblioteca de les coses</button>
-<button type="button" class="chip" data-v="energia">⚡ Comunitat energètica</button>
-<button type="button" class="chip" data-v="consum">🥬 Grup de consum</button>
-<button type="button" class="chip" data-v="cures">💗 Xarxa de cures</button>
-<button type="button" class="chip" data-v="habitatge">🏘 Habitatge cooperatiu</button>
-<button type="button" class="chip" data-v="cultura">🎭 Projecte cultural</button>
-<button type="button" class="chip" data-v="ocupacio">💼 Inserció o ocupació</button>
-<button type="button" class="chip" data-v="cap">— Encara cap</button>
+<button type="button" class="chip" data-v="banctemps" data-i18n="dt.sv.banctemps">⏱ Banc de temps</button>
+<button type="button" class="chip" data-v="biblioteca" data-i18n="dt.sv.biblioteca">📚 Biblioteca de les coses</button>
+<button type="button" class="chip" data-v="energia" data-i18n="dt.sv.energia">⚡ Comunitat energètica</button>
+<button type="button" class="chip" data-v="consum" data-i18n="dt.sv.consum">🥬 Grup de consum</button>
+<button type="button" class="chip" data-v="cures" data-i18n="dt.sv.cures">💗 Xarxa de cures</button>
+<button type="button" class="chip" data-v="habitatge" data-i18n="dt.sv.habitatge">🏘 Habitatge cooperatiu</button>
+<button type="button" class="chip" data-v="cultura" data-i18n="dt.sv.cultura">🎭 Projecte cultural</button>
+<button type="button" class="chip" data-v="ocupacio" data-i18n="dt.sv.ocupacio">💼 Inserció o ocupació</button>
+<button type="button" class="chip" data-v="cap" data-i18n="dt.sv.cap">— Encara cap</button>
 </div>
 </div>
-<div class="f"><label for="experiencia">Experiència prèvia en participació o cooperativisme</label>
+<div class="f"><label for="experiencia" data-i18n="dt.l.exp">Experiència prèvia en participació o cooperativisme</label>
 <select id="experiencia" name="experiencia">
-<option value="gens">Cap ni una — comencem de zero</option>
-<option value="poca" selected>Alguna cosa hem fet, sense mètode</option>
-<option value="forca">Força: ja hem portat processos</option>
-<option value="molta">Molta: ho fem habitualment</option>
+<option value="gens" data-i18n="dt.exp.gens">Cap ni una — comencem de zero</option>
+<option value="poca" selected data-i18n="dt.exp.poca">Alguna cosa hem fet, sense mètode</option>
+<option value="forca" data-i18n="dt.exp.forca">Força: ja hem portat processos</option>
+<option value="molta" data-i18n="dt.exp.molta">Molta: ho fem habitualment</option>
 </select></div>
-<div class="nav-btns"><button type="button" class="btn" data-go="2">← Enrere</button><button type="button" class="btn btn-primary" data-go="4">Següent →</button></div>
+<div class="nav-btns"><button type="button" class="btn" data-go="2" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="4" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
 <!-- ── Pas 4 ── -->
 <section class="step" id="s4" hidden>
-<h2>4 · Què us falta</h2>
-<p class="sub">Aquí és on ens dius com et podem ser útils.</p>
+<h2 data-i18n="dt.s4.h">4 · Què us falta</h2>
+<p class="sub" data-i18n="dt.s4.sub">Aquí és on ens dius com et podem ser útils.</p>
 <div class="f">
-<label>Què necessiteu *</label>
+<label data-i18n="dt.l.need">Què necessiteu *</label>
 <div class="chips" id="need">
-<button type="button" class="chip" data-v="diagnostic">🔍 Saber què tenim i què ens falta</button>
-<button type="button" class="chip" data-v="metode">🧭 Un mètode per organitzar-nos</button>
-<button type="button" class="chip" data-v="gent">📣 Més gent implicada</button>
-<button type="button" class="chip" data-v="relleu">🔁 Relleu · no cremar els de sempre</button>
-<button type="button" class="chip" data-v="governanca">🗳 Decidir sense conflictes</button>
-<button type="button" class="chip" data-v="financament">💶 Finançament i subvencions</button>
-<button type="button" class="chip" data-v="juridicN">📜 Saber quina forma jurídica</button>
-<button type="button" class="chip" data-v="equity">🥧 Repartir propietat amb justícia</button>
-<button type="button" class="chip" data-v="impacte">📊 Demostrar el nostre impacte</button>
-<button type="button" class="chip" data-v="formacio">🎓 Formar el nostre equip</button>
-<button type="button" class="chip" data-v="eina">💻 Una eina per gestionar-ho</button>
-<button type="button" class="chip" data-v="mentors">👥 Formar-nos com a mentors</button>
+<button type="button" class="chip" data-v="diagnostic" data-i18n="dt.need.diagnostic">🔍 Saber què tenim i què ens falta</button>
+<button type="button" class="chip" data-v="metode" data-i18n="dt.need.metode">🧭 Un mètode per organitzar-nos</button>
+<button type="button" class="chip" data-v="gent" data-i18n="dt.need.gent">📣 Més gent implicada</button>
+<button type="button" class="chip" data-v="relleu" data-i18n="dt.need.relleu">🔁 Relleu · no cremar els de sempre</button>
+<button type="button" class="chip" data-v="governanca" data-i18n="dt.need.governanca">🗳 Decidir sense conflictes</button>
+<button type="button" class="chip" data-v="financament" data-i18n="dt.need.financament">💶 Finançament i subvencions</button>
+<button type="button" class="chip" data-v="juridicN" data-i18n="dt.need.juridicN">📜 Saber quina forma jurídica</button>
+<button type="button" class="chip" data-v="equity" data-i18n="dt.need.equity">🥧 Repartir propietat amb justícia</button>
+<button type="button" class="chip" data-v="impacte" data-i18n="dt.need.impacte">📊 Demostrar el nostre impacte</button>
+<button type="button" class="chip" data-v="formacio" data-i18n="dt.need.formacio">🎓 Formar el nostre equip</button>
+<button type="button" class="chip" data-v="eina" data-i18n="dt.need.eina">💻 Una eina per gestionar-ho</button>
+<button type="button" class="chip" data-v="mentors" data-i18n="dt.need.mentors">👥 Formar-nos com a mentors</button>
 </div>
 </div>
-<div class="f"><label for="repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
+<div class="f"><label for="repte" data-i18n="dt.l.repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" data-i18n-ph="dt.ph.repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
 <div class="grid2">
-<div class="f"><label for="termini">Termini</label>
+<div class="f"><label for="termini" data-i18n="dt.l.termini">Termini</label>
 <select id="termini" name="termini">
-<option value="explorant">Estem explorant, sense presses</option>
-<option value="curs" selected>Aquest curs / semestre</option>
-<option value="urgent">Urgent — tenim una data</option>
+<option value="explorant" data-i18n="dt.term.explorant">Estem explorant, sense presses</option>
+<option value="curs" selected data-i18n="dt.term.curs">Aquest curs / semestre</option>
+<option value="urgent" data-i18n="dt.term.urgent">Urgent — tenim una data</option>
 </select></div>
-<div class="f"><label for="pressupost">Capacitat pressupostària</label>
+<div class="f"><label for="pressupost" data-i18n="dt.l.pressu">Capacitat pressupostària</label>
 <select id="pressupost" name="pressupost">
-<option value="cap">Cap ara mateix</option>
-<option value="petit" selected>Petita o per determinar</option>
-<option value="mitja">Tenim partida assignada</option>
-<option value="subvencio">Dependrà d'una subvenció</option>
+<option value="cap" data-i18n="dt.pressu.cap">Cap ara mateix</option>
+<option value="petit" selected data-i18n="dt.pressu.petit">Petita o per determinar</option>
+<option value="mitja" data-i18n="dt.pressu.mitja">Tenim partida assignada</option>
+<option value="subvencio" data-i18n="dt.pressu.subvencio">Dependrà d'una subvenció</option>
 </select></div>
 </div>
-<div class="err" id="e4">Marca com a mínim una necessitat.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="3">← Enrere</button><button type="button" class="btn btn-primary" id="doDx">Veure el meu diagnòstic →</button></div>
+<div class="err" id="e4" data-i18n="dt.e4">Marca com a mínim una necessitat.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="3" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" id="doDx" data-i18n="dt.veure">Veure el meu diagnòstic →</button></div>
 </section>
 
 </form>
@@ -308,36 +333,36 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="mt" id="rMetrics"></div>
 </div>
 
-<div class="sec"><h3>✅ Amb què compteu</h3><ul class="havl" id="rHave"></ul></div>
-<div class="sec"><h3>🎯 Què cal desfer</h3><ul class="gapl" id="rGaps"></ul></div>
-<div class="sec"><h3>🧭 El vostre itinerari formatiu</h3><p id="rItinLead"></p><div class="mods" id="rMods"></div><p id="rItinMeta" style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.7rem"></p></div>
-<div class="sec"><h3>🤝 Com us podem acompanyar</h3><div id="rSvcs"></div></div>
-<div class="sec" id="rFundBox"><h3>💶 D'on poden sortir els diners</h3><ul id="rFund"></ul></div>
-<div class="sec"><h3>👣 Primer pas, el faci qui el faci</h3><p id="rNext"></p></div>
-<div class="sec"><h3>🚪 Per on continuar ara mateix</h3>
-<p style="color:var(--light);font-size:.9rem;margin:.2rem 0 .7rem">Sense enviar res i sense donar-te d'alta
+<div class="sec"><h3 data-i18n="dt.r.have">✅ Amb què compteu</h3><ul class="havl" id="rHave"></ul></div>
+<div class="sec"><h3 data-i18n="dt.r.gaps">🎯 Què cal desfer</h3><ul class="gapl" id="rGaps"></ul></div>
+<div class="sec"><h3 data-i18n="dt.r.itin">🧭 El vostre itinerari formatiu</h3><p id="rItinLead"></p><div class="mods" id="rMods"></div><p id="rItinMeta" style="font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:.7rem"></p></div>
+<div class="sec"><h3 data-i18n="dt.r.svcs">🤝 Com us podem acompanyar</h3><div id="rSvcs"></div></div>
+<div class="sec" id="rFundBox"><h3 data-i18n="dt.r.fund">💶 D'on poden sortir els diners</h3><ul id="rFund"></ul></div>
+<div class="sec"><h3 data-i18n="dt.r.next">👣 Primer pas, el faci qui el faci</h3><p id="rNext"></p></div>
+<div class="sec"><h3 data-i18n="dt.r.portes">🚪 Per on continuar ara mateix</h3>
+<p style="color:var(--light);font-size:.9rem;margin:.2rem 0 .7rem" data-i18n-html="dt.r.portes.sub">Sense enviar res i sense donar-te d'alta
 enlloc: aquestes són les eines del SOS que responen al que has marcat, i cadascuna diu <strong>per què és
 aquesta</strong> i no una altra.</p>
 <div id="rPortes"></div></div>
 
 <div class="send">
-<h3>📨 Vols que ho mirem junts?</h3>
-<p>Si ens ho envies, preparem una <strong>sessió exploratòria de 45 minuts sense compromís</strong> amb aquest diagnòstic ja llegit. Si prefereixes quedar-t'ho, també serveix: <strong>és teu</strong>.</p>
+<h3 data-i18n="dt.send.h">📨 Vols que ho mirem junts?</h3>
+<p data-i18n-html="dt.send.p">Si ens ho envies, preparem una <strong>sessió exploratòria de 45 minuts sense compromís</strong> amb aquest diagnòstic ja llegit. Si prefereixes quedar-t'ho, també serveix: <strong>és teu</strong>.</p>
 <div class="send-btns">
-<a class="btn btn-primary" id="bSend" href="#">✉ Envia'ns-ho per correu</a>
-<button type="button" class="btn" id="bCopy">📋 Copia el resum</button>
-<button type="button" class="btn" id="bJson">⬇ Descarrega'l (JSON)</button>
-<a class="btn" href="pressupost.html" id="bPressu">💶 Ara demana el pressupost →</a>
-<button type="button" class="btn" id="bAgain">↺ Refés-lo</button>
+<a class="btn btn-primary" id="bSend" href="#" data-i18n="dt.b.mail">✉ Envia'ns-ho per correu</a>
+<button type="button" class="btn" id="bCopy" data-i18n="dt.b.copia">📋 Copia el resum</button>
+<button type="button" class="btn" id="bJson" data-i18n="dt.b.baixa">⬇ Descarrega'l (JSON)</button>
+<a class="btn" href="pressupost.html" id="bPressu" data-i18n="dt.b.pressu">💶 Ara demana el pressupost →</a>
+<button type="button" class="btn" id="bAgain" data-i18n="dt.b.torna">↺ Refés-lo</button>
 </div>
-<p class="priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns-ho». No hi ha analítica ni seguiment en aquesta pàgina.</p>
+<p class="priv" data-i18n-html="dt.priv">🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d'aquí fins que tu premis «Envia'ns-ho». No hi ha analítica ni seguiment en aquesta pàgina.</p>
 </div>
 </div>
 
 </main>
 
 <footer>
-<p>SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="formacio.html">Guia formativa</a> · Local-first · W3C · Zero servidor</p>
+<p data-i18n-html="dt.peu">SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="formacio.html">Guia formativa</a> · Local-first · W3C · Zero servidor</p>
 </footer>
 
 <script type="module">
@@ -350,6 +375,498 @@ const mailAddr=()=>_U+'@'+_D;
 const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots','agencia':'privat','gran':'privat','pime':'privat','escola':'privat'};
 const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció de persones o RRHH','innovacio':'Innovació, estratègia o projectes','organitzacio':'Organització, processos o qualitat','tecnic':'Tècnic/a de participació, promoció o serveis','politic':'Càrrec electe o de confiança','coordinacio':'Coordinació d\'equip o de programa','altre':'Una altra cosa'};
 /*/FORM-DADES*/
+
+/* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════
+   Aquest formulari ja portava les claus `fo.*` dels blocs compartits —les
+   escriu `build-formularis.js`— i **no tenia cap diccionari que les llegís**:
+   les claus hi eren, el text es quedava en català i no petava res.
+
+   Les dels blocs compartits les genera `build-formularis.js` entre les marques
+   de sota, perquè les porten tres pàgines. Les d'aquesta pàgina es declaren
+   aquí. El text dels catàlegs —mòduls, serveis, perfils, recursos, mancances i
+   portes— porta el castellà **al costat del català** a la seva pròpia
+   declaració de més avall, i no aquí: una etiqueta de mòdul declarada en dos
+   llocs és una etiqueta que un dia dirà dues coses.
+
+   ⚠ El resum en text pla segueix en català a posta: el llegeix `crm.html`. */
+var DT_I18N = {
+ca: {
+/*DIAG-I18N-CA*/
+  'fo.l.nom':'Nom i cognoms *',
+  'fo.l.rol':'El teu paper a la casa',
+  'fo.l.mail':'Correu electrònic *',
+  'fo.l.tel':'Telèfon (opcional)',
+  'fo.l.carrec':'Com se\'n diu exactament',
+  'fo.ph.carrec':'p.ex. tècnica de participació',
+  'fo.h.carrec':'Opcional. Serveix per adreçar-nos-hi com toca.',
+  'fo.l.tipus':'Tipus d\'organització *',
+  'fo.l.orgnom':'Nom de l\'organització',
+  'fo.ph.orgnom':'deixa-ho en blanc si véns a títol personal',
+  'fo.l.web':'El vostre web',
+  'fo.ph.web':'p.ex. exemple.cat',
+  'fo.h.web':'Ens estalvia preguntar-vos qui sou. Opcional.',
+  'fo.l.dediqueu':'A què us dediqueu',
+  'fo.ph.dediqueu':'p.ex. distribució alimentària, 3 centres',
+  'fo.l.municipi':'Municipi *',
+  'fo.ph.municipi':'p.ex. Torrelles de Foix',
+  'fo.l.comarca':'Comarca',
+  'fo.ph.comarca':'p.ex. Alt Penedès',
+  'fo.l.persones':'Quantes persones sou',
+  'fo.ph.persones':'p.ex. 45',
+  'fo.h.persones':'De tota l\'organització, no només de l\'equip que hi entraria.',
+  'fo.l.poblacio':'Població aproximada a què arribeu',
+  'fo.ph.poblacio':'p.ex. 2400',
+  'fo.h.poblacio':'Habitants del municipi, o persones a qui arriba el vostre projecte.',
+  'fo.org.ajuntament.t':'🏛 Ajuntament',
+  'fo.org.ajuntament.d':'Regidoria, àrea tècnica o servei municipal',
+  'fo.org.comarcal.t':'🗺 Consell comarcal',
+  'fo.org.comarcal.d':'O mancomunitat de municipis',
+  'fo.org.entitat.t':'🤝 Entitat o associació',
+  'fo.org.entitat.d':'AVV, ateneu, casal, banc de temps',
+  'fo.org.cooperativa.t':'🚀 Cooperativa o empresa',
+  'fo.org.cooperativa.d':'SCCL, SL, projecte econòmic',
+  'fo.org.grup.t':'🌱 Grup promotor',
+  'fo.org.grup.d':'Encara sense forma jurídica',
+  'fo.org.acompanyament.t':'🎓 Entitat d\'acompanyament',
+  'fo.org.acompanyament.d':'Ateneu Cooperatiu, consultoria ESS',
+  'fo.org.fundacio.t':'💛 Fundació o finançador',
+  'fo.org.fundacio.d':'Obra social, convocatòries',
+  'fo.org.particular.t':'👤 A títol personal',
+  'fo.org.particular.d':'Professional o persona interessada',
+  'fo.org.agencia.t':'🎪 Agència o DMC',
+  'fo.org.agencia.d':'Ho compres per a un client teu',
+  'fo.org.gran.t':'🏢 Empresa gran',
+  'fo.org.gran.d':'Amb departament de formació i pressupost anual',
+  'fo.org.pime.t':'🔧 Pime',
+  'fo.org.pime.d':'La decisió la pren qui la dirigeix',
+  'fo.org.escola.t':'🎓 Escola de negoci o universitat',
+  'fo.org.escola.d':'Programa, màster o claustre',
+  'fo.rol.direccio':'Direcció general o gerència',
+  'fo.rol.persones':'Direcció de persones o RRHH',
+  'fo.rol.innovacio':'Innovació, estratègia o projectes',
+  'fo.rol.organitzacio':'Organització, processos o qualitat',
+  'fo.rol.tecnic':'Tècnic/a de participació, promoció o serveis',
+  'fo.rol.politic':'Càrrec electe o de confiança',
+  'fo.rol.coordinacio':'Coordinació d\'equip o de programa',
+  'fo.rol.altre':'Una altra cosa',
+/*/DIAG-I18N-CA*/
+/*NAV-I18N-CA*/
+  'nv.g.comenca':'🧭 Comença',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.pressupost':'Demana pressupost',
+  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De què va tot això',
+  'nv.t.uneix-te':'Uneix-t\'hi',
+  'nv.d.uneix-te':'El que ja fas al barri, comptat',
+  'nv.g.eines':'🛠 Eines',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Rols i intercanvis d\'un projecte',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grup de consum i compra col·lectiva',
+  'nv.t.energia':'L\'Energia',
+  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
+  'nv.t.habitatge':'L\'Habitatge',
+  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
+  'nv.t.banc-temps':'El Banc de Temps',
+  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
+  'nv.t.biblioteca':'La Biblioteca de les Coses',
+  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El poble sencer i les nou professions',
+  'nv.t.joc':'El joc',
+  'nv.d.joc':'La plaça, a ritme',
+  'nv.g.apren':'🎓 Aprèn',
+  'nv.t.formacio':'Formació',
+  'nv.d.formacio':'16 mòduls, de N0 a N3',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.t.escola':'Escoles',
+  'nv.d.escola':'El SOS a mida d\'aula',
+  'nv.t.vedes':'Les vedes',
+  'nv.d.vedes':'Les regles, amb el motiu al costat',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratori de VNA',
+  'nv.d.arrel-curs_vna':'El curs d\'anàlisi de xarxes de valor',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.g.xarxa':'🏘 Xarxa',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La pel·lícula que farem 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estat líquid',
+  'nv.t.online':'Directori',
+  'nv.d.online':'Qui hi ha, per territori',
+  'nv.totes':'Totes les pàgines',
+  'nv.g.eina':'🖥 L\'eina',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'L\'aplicació sencera, al navegador',
+/*/NAV-I18N-CA*/
+  'dt.h1':'Diagnòstic comunitari',
+  'dt.intro':'Explica\'ns d\'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l\'itinerari formatiu que et toca i una proposta orientativa d\'acompanyament — <strong>l\'enviïs o no</strong>.',
+  'dt.s1.h':'1 · Qui ets',
+  'dt.s1.sub':'Per saber amb qui parlem i com respondre\'t.',
+  'dt.e1':'Cal com a mínim el nom i un correu vàlid.',
+  'dt.s2.h':'2 · D\'on véns',
+  'dt.s2.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
+  'dt.e2':'Tria el tipus d\'organització i escriu el municipi.',
+  'dt.s3.h':'3 · Què ja teniu',
+  'dt.s3.sub':'Gairebé sempre hi ha més del que sembla. Això marca per on començar.',
+  'dt.l.have':'Recursos disponibles',
+  'dt.have.persones':'👥 Grup de persones actives',
+  'dt.have.espai':'🏠 Espai físic',
+  'dt.have.pressupost':'💶 Pressupost propi',
+  'dt.have.tecnic':'🧑‍💼 Persona tècnica dedicada',
+  'dt.have.dinamica':'🔄 Dinàmica ja en marxa',
+  'dt.have.juridic':'📜 Forma jurídica constituïda',
+  'dt.have.dades':'📊 Dades del teixit local',
+  'dt.have.suport':'🤝 Suport institucional',
+  'dt.have.digital':'💻 Capacitat digital a l\'equip',
+  'dt.have.xarxa':'🕸 Xarxa d\'entitats aliades',
+  'dt.l.serveis':'Serveis o projectes que ja teniu en marxa',
+  'dt.sv.banctemps':'⏱ Banc de temps',
+  'dt.sv.biblioteca':'📚 Biblioteca de les coses',
+  'dt.sv.energia':'⚡ Comunitat energètica',
+  'dt.sv.consum':'🥬 Grup de consum',
+  'dt.sv.cures':'💗 Xarxa de cures',
+  'dt.sv.habitatge':'🏘 Habitatge cooperatiu',
+  'dt.sv.cultura':'🎭 Projecte cultural',
+  'dt.sv.ocupacio':'💼 Inserció o ocupació',
+  'dt.sv.cap':'— Encara cap',
+  'dt.l.exp':'Experiència prèvia en participació o cooperativisme',
+  'dt.exp.gens':'Cap ni una — comencem de zero',
+  'dt.exp.poca':'Alguna cosa hem fet, sense mètode',
+  'dt.exp.forca':'Força: ja hem portat processos',
+  'dt.exp.molta':'Molta: ho fem habitualment',
+  'dt.s4.h':'4 · Què us falta',
+  'dt.s4.sub':'Aquí és on ens dius com et podem ser útils.',
+  'dt.l.need':'Què necessiteu *',
+  'dt.need.diagnostic':'🔍 Saber què tenim i què ens falta',
+  'dt.need.metode':'🧭 Un mètode per organitzar-nos',
+  'dt.need.gent':'📣 Més gent implicada',
+  'dt.need.relleu':'🔁 Relleu · no cremar els de sempre',
+  'dt.need.governanca':'🗳 Decidir sense conflictes',
+  'dt.need.financament':'💶 Finançament i subvencions',
+  'dt.need.juridicN':'📜 Saber quina forma jurídica',
+  'dt.need.equity':'🥧 Repartir propietat amb justícia',
+  'dt.need.impacte':'📊 Demostrar el nostre impacte',
+  'dt.need.formacio':'🎓 Formar el nostre equip',
+  'dt.need.eina':'💻 Una eina per gestionar-ho',
+  'dt.need.mentors':'👥 Formar-nos com a mentors',
+  'dt.l.repte':'El repte concret, en poques paraules',
+  'dt.ph.repte':'p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys.',
+  'dt.l.termini':'Termini',
+  'dt.term.explorant':'Estem explorant, sense presses',
+  'dt.term.curs':'Aquest curs / semestre',
+  'dt.term.urgent':'Urgent — tenim una data',
+  'dt.l.pressu':'Capacitat pressupostària',
+  'dt.pressu.cap':'Cap ara mateix',
+  'dt.pressu.petit':'Petita o per determinar',
+  'dt.pressu.mitja':'Tenim partida assignada',
+  'dt.pressu.subvencio':'Dependrà d\'una subvenció',
+  'dt.e4':'Marca com a mínim una necessitat.',
+  'dt.seg':'Següent →',
+  'dt.enrere':'← Enrere',
+  'dt.veure':'Veure el meu diagnòstic →',
+  'dt.m.partida':'punt de partida',
+  'dt.m.acomp':'acompanyament que cal',
+  'dt.m.mods':'mòduls al vostre itinerari',
+  'dt.m.dur':'durada estimada',
+  'dt.r.vostre':'el vostre territori',
+  'dt.r.have':'✅ Amb què compteu',
+  'dt.r.enmarxa':'en marxa',
+  'dt.r.sensebase':'Arribeu sense estructura prèvia — cosa que també vol dir sense inèrcies a desfer.',
+  'dt.r.gaps':'🎯 Què cal desfer',
+  'dt.r.sensegap':'No heu marcat cap necessitat concreta.',
+  'dt.r.itin':'🧭 El vostre itinerari formatiu',
+  'dt.r.itin.lead':'Aquests són els mòduls que us toquen, en ordre. La resta els podeu ignorar:',
+  'dt.r.durada':'Durada estimada',
+  'dt.r.fita':'Fita',
+  'dt.r.svcs':'🤝 Com us podem acompanyar',
+  'dt.r.fund':'💶 D\'on poden sortir els diners',
+  'dt.r.next':'👣 Primer pas, el faci qui el faci',
+  'dt.r.portes':'🚪 Per on continuar ara mateix',
+  'dt.r.portes.sub':'Sense enviar res i sense donar-te d\'alta enlloc: aquestes són les eines del SOS que responen al que has marcat, i cadascuna diu <strong>per què és aquesta</strong> i no una altra.',
+  'dt.next.sensegrup':'Reuniu 3–5 persones que ja hi estiguin disposades i feu un primer mapa de valor entre totes. Sense grup no hi ha res a organitzar, i amb cinc persones ja n\'hi ha prou per començar.',
+  'dt.next.relleu':'Mireu qui sosté què: obriu el SOS, registreu qui aporta i quant durant un mes. El relleu es dissenya amb dades, no amb bona voluntat — i la conversa és molt més fàcil quan les hores són a la taula.',
+  'dt.next.diners':'Munteu el calendari de convocatòries dels propers 12 mesos abans de res. Les hores que ja doneu es poden acreditar com a aportació en espècie, que sovint és el cofinançament que falta.',
+  'dt.next.unadinamica':'Trieu UNA dinàmica per començar — banc de temps o biblioteca de les coses són les que menys friccions tenen — i poseu-la en marxa amb el mapa de valor fet. Una que funcioni val més que tres començades.',
+  'dt.next.mapa':'Feu el mapa de valor del que ja teniu en marxa. Gairebé sempre apareixen fluxos que ningú havia anomenat i rols que no cobreix ningú — i aquí és on hi ha el marge de millora immediat.',
+  'dt.pt.vna.diagnostic':'Perquè has dit que no teniu clar què hi ha ni què falta.',
+  'dt.pt.vna.metode':'Perquè has dit que aneu fent sense mètode: aquest és el mètode.',
+  'dt.pt.vna.cap':'Perquè encara no teniu cap dinàmica en marxa, i tot comença aquí.',
+  'dt.pt.matriu.equity':'Perquè heu de repartir propietat: aquí es recalcula sola i no es negocia.',
+  'dt.pt.matriu.juridic':'Perquè el tipus de projecte decideix la forma jurídica i el repartiment alhora.',
+  'dt.pt.matriu.marxa':'Perquè ja teniu diverses coses en marxa i el que toca és fer-les caminar soles.',
+  'dt.pt.reg.relleu':'Perquè el relleu es dissenya amb dades: qui sosté què, amb hores a la taula.',
+  'dt.pt.reg.impacte':'Perquè demostrar el que aconseguiu és tenir-ho signat, no explicat.',
+  'dt.pt.reg.eina':'Perquè has dit que no teniu cap eina per gestionar-ho.',
+  'dt.pt.compra.consum':'Perquè ja teniu grup de consum i això és l\'eina que li falta.',
+  'dt.pt.compra.diners':'Perquè abans de buscar diners fora, el que es deixa de gastar també compta.',
+  'dt.pt.energia':'Perquè ja teniu comunitat energètica: aquí es veu qui s\'estalvia què de debò, que no és el mateix que el coeficient.',
+  'dt.pt.habitatge':'Perquè ja teniu projecte d\'habitatge: aquí es veu qui queda fora per l\'entrada i qui per la quota, abans de constituir res.',
+  'dt.pt.form.mentors':'Perquè voleu formar altres, i això té itinerari propi.',
+  'dt.pt.form.mods':'Perquè el vostre itinerari són {n} mòduls i val la pena veure\'ls sencers.',
+  'dt.pt.escola':'Perquè des d\'un ajuntament l\'escola sol ser la porta amb menys fricció del territori.',
+  'dt.send.h':'📨 Vols que ho mirem junts?',
+  'dt.send.p':'Si ens ho envies, preparem una <strong>sessió exploratòria de 45 minuts sense compromís</strong> amb aquest diagnòstic ja llegit. Si prefereixes quedar-t\'ho, també serveix: <strong>és teu</strong>.',
+  'dt.b.mail':'✉ Envia\'ns-ho per correu',
+  'dt.b.copia':'📋 Copia el resum',
+  'dt.b.copiat':'✓ Copiat',
+  'dt.b.baixa':'⬇ Descarrega\'l (JSON)',
+  'dt.b.pressu':'💶 Ara demana el pressupost →',
+  'dt.b.torna':'↺ Refés-lo',
+  'dt.priv':'🔒 <strong>Aquest formulari no envia res sol.</strong> Tot el que has escrit viu al teu navegador i no surt d\'aquí fins que tu premis «Envia\'ns-ho». No hi ha analítica ni seguiment en aquesta pàgina.',
+  'dt.peu':'SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="formacio.html">Guia formativa</a> · Local-first · W3C · Zero servidor'
+},
+es: {
+/*DIAG-I18N-ES*/
+  'fo.l.nom':'Nombre y apellidos *',
+  'fo.l.rol':'Tu papel en la casa',
+  'fo.l.mail':'Correo electrónico *',
+  'fo.l.tel':'Teléfono (opcional)',
+  'fo.l.carrec':'Cómo se llama exactamente',
+  'fo.ph.carrec':'p.ej. técnica de participación',
+  'fo.h.carrec':'Opcional. Sirve para dirigirnos como toca.',
+  'fo.l.tipus':'Tipo de organización *',
+  'fo.l.orgnom':'Nombre de la organización',
+  'fo.ph.orgnom':'déjalo en blanco si vienes a título personal',
+  'fo.l.web':'Vuestra web',
+  'fo.ph.web':'p.ej. ejemplo.com',
+  'fo.h.web':'Nos ahorra preguntaros quiénes sois. Opcional.',
+  'fo.l.dediqueu':'A qué os dedicáis',
+  'fo.ph.dediqueu':'p.ej. distribución alimentaria, 3 centros',
+  'fo.l.municipi':'Municipio *',
+  'fo.ph.municipi':'p.ej. Torrelles de Foix',
+  'fo.l.comarca':'Comarca',
+  'fo.ph.comarca':'p.ej. Alt Penedès',
+  'fo.l.persones':'Cuántas personas sois',
+  'fo.ph.persones':'p.ej. 45',
+  'fo.h.persones':'De toda la organización, no solo del equipo que entraría.',
+  'fo.l.poblacio':'Población aproximada a la que llegáis',
+  'fo.ph.poblacio':'p.ej. 2400',
+  'fo.h.poblacio':'Habitantes del municipio, o personas a las que llega vuestro proyecto.',
+  'fo.org.ajuntament.t':'🏛 Ayuntamiento',
+  'fo.org.ajuntament.d':'Concejalía, área técnica o servicio municipal',
+  'fo.org.comarcal.t':'🗺 Consejo comarcal',
+  'fo.org.comarcal.d':'O mancomunidad de municipios',
+  'fo.org.entitat.t':'🤝 Entidad o asociación',
+  'fo.org.entitat.d':'AAVV, ateneo, casal, banco de tiempo',
+  'fo.org.cooperativa.t':'🚀 Cooperativa o empresa',
+  'fo.org.cooperativa.d':'SCCL, SL, proyecto económico',
+  'fo.org.grup.t':'🌱 Grupo promotor',
+  'fo.org.grup.d':'Todavía sin forma jurídica',
+  'fo.org.acompanyament.t':'🎓 Entidad de acompañamiento',
+  'fo.org.acompanyament.d':'Ateneu Cooperatiu, consultoría ESS',
+  'fo.org.fundacio.t':'💛 Fundación o financiador',
+  'fo.org.fundacio.d':'Obra social, convocatorias',
+  'fo.org.particular.t':'👤 A título personal',
+  'fo.org.particular.d':'Profesional o persona interesada',
+  'fo.org.agencia.t':'🎪 Agencia o DMC',
+  'fo.org.agencia.d':'Lo compras para un cliente tuyo',
+  'fo.org.gran.t':'🏢 Empresa grande',
+  'fo.org.gran.d':'Con departamento de formación y presupuesto anual',
+  'fo.org.pime.t':'🔧 Pyme',
+  'fo.org.pime.d':'La decisión la toma quien la dirige',
+  'fo.org.escola.t':'🎓 Escuela de negocio o universidad',
+  'fo.org.escola.d':'Programa, máster o claustro',
+  'fo.rol.direccio':'Dirección general o gerencia',
+  'fo.rol.persones':'Dirección de personas o RRHH',
+  'fo.rol.innovacio':'Innovación, estrategia o proyectos',
+  'fo.rol.organitzacio':'Organización, procesos o calidad',
+  'fo.rol.tecnic':'Técnico/a de participación, promoción o servicios',
+  'fo.rol.politic':'Cargo electo o de confianza',
+  'fo.rol.coordinacio':'Coordinación de equipo o de programa',
+  'fo.rol.altre':'Otra cosa',
+/*/DIAG-I18N-ES*/
+/*NAV-I18N-ES*/
+  'nv.g.comenca':'🧭 Empieza',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.pressupost':'Pide presupuesto',
+  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De qué va todo esto',
+  'nv.t.uneix-te':'Únete',
+  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
+  'nv.g.eines':'🛠 Herramientas',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Roles e intercambios de un proyecto',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grupo de consumo y compra colectiva',
+  'nv.t.energia':'La Energía',
+  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
+  'nv.t.habitatge':'La Vivienda',
+  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
+  'nv.t.banc-temps':'El Banco de Tiempo',
+  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
+  'nv.t.biblioteca':'La Biblioteca de las Cosas',
+  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
+  'nv.t.joc':'El juego',
+  'nv.d.joc':'La plaza, a ritmo',
+  'nv.g.apren':'🎓 Aprende',
+  'nv.t.formacio':'Formación',
+  'nv.d.formacio':'16 módulos, de N0 a N3',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.t.escola':'Escuelas',
+  'nv.d.escola':'El SOS a medida de aula',
+  'nv.t.vedes':'Las vedas',
+  'nv.d.vedes':'Las reglas, con el motivo al lado',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratorio de VNA',
+  'nv.d.arrel-curs_vna':'El curso de análisis de redes de valor',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.g.xarxa':'🏘 Red',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La película que haremos 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estado líquido',
+  'nv.t.online':'Directorio',
+  'nv.d.online':'Quién hay, por territorio',
+  'nv.totes':'Todas las páginas',
+  'nv.g.eina':'🖥 La herramienta',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'La aplicación entera, en el navegador',
+/*/NAV-I18N-ES*/
+  'dt.h1':'Diagnóstico comunitario',
+  'dt.intro':'Cuéntanos de dónde vienes, qué ya tienes y qué te falta. En <strong>3 minutos</strong> tendrás tu punto de partida, el itinerario formativo que te toca y una propuesta orientativa de acompañamiento — <strong>nos la envíes o no</strong>.',
+  'dt.s1.h':'1 · Quién eres',
+  'dt.s1.sub':'Para saber con quién hablamos y cómo responderte.',
+  'dt.e1':'Hace falta como mínimo el nombre y un correo válido.',
+  'dt.s2.h':'2 · De dónde vienes',
+  'dt.s2.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
+  'dt.e2':'Elige el tipo de organización y escribe el municipio.',
+  'dt.s3.h':'3 · Qué ya tenéis',
+  'dt.s3.sub':'Casi siempre hay más de lo que parece. Esto marca por dónde empezar.',
+  'dt.l.have':'Recursos disponibles',
+  'dt.have.persones':'👥 Grupo de personas activas',
+  'dt.have.espai':'🏠 Espacio físico',
+  'dt.have.pressupost':'💶 Presupuesto propio',
+  'dt.have.tecnic':'🧑‍💼 Persona técnica dedicada',
+  'dt.have.dinamica':'🔄 Dinámica ya en marcha',
+  'dt.have.juridic':'📜 Forma jurídica constituida',
+  'dt.have.dades':'📊 Datos del tejido local',
+  'dt.have.suport':'🤝 Apoyo institucional',
+  'dt.have.digital':'💻 Capacidad digital en el equipo',
+  'dt.have.xarxa':'🕸 Red de entidades aliadas',
+  'dt.l.serveis':'Servicios o proyectos que ya tenéis en marcha',
+  'dt.sv.banctemps':'⏱ Banco de tiempo',
+  'dt.sv.biblioteca':'📚 Biblioteca de las cosas',
+  'dt.sv.energia':'⚡ Comunidad energética',
+  'dt.sv.consum':'🥬 Grupo de consumo',
+  'dt.sv.cures':'💗 Red de cuidados',
+  'dt.sv.habitatge':'🏘 Vivienda cooperativa',
+  'dt.sv.cultura':'🎭 Proyecto cultural',
+  'dt.sv.ocupacio':'💼 Inserción u ocupación',
+  'dt.sv.cap':'— Todavía ninguno',
+  'dt.l.exp':'Experiencia previa en participación o cooperativismo',
+  'dt.exp.gens':'Ninguna — empezamos de cero',
+  'dt.exp.poca':'Algo hemos hecho, sin método',
+  'dt.exp.forca':'Bastante: ya hemos llevado procesos',
+  'dt.exp.molta':'Mucha: lo hacemos habitualmente',
+  'dt.s4.h':'4 · Qué os falta',
+  'dt.s4.sub':'Aquí es donde nos dices cómo te podemos ser útiles.',
+  'dt.l.need':'Qué necesitáis *',
+  'dt.need.diagnostic':'🔍 Saber qué tenemos y qué nos falta',
+  'dt.need.metode':'🧭 Un método para organizarnos',
+  'dt.need.gent':'📣 Más gente implicada',
+  'dt.need.relleu':'🔁 Relevo · no quemar a los de siempre',
+  'dt.need.governanca':'🗳 Decidir sin conflictos',
+  'dt.need.financament':'💶 Financiación y subvenciones',
+  'dt.need.juridicN':'📜 Saber qué forma jurídica',
+  'dt.need.equity':'🥧 Repartir propiedad con justicia',
+  'dt.need.impacte':'📊 Demostrar nuestro impacto',
+  'dt.need.formacio':'🎓 Formar a nuestro equipo',
+  'dt.need.eina':'💻 Una herramienta para gestionarlo',
+  'dt.need.mentors':'👥 Formarnos como mentores',
+  'dt.l.repte':'El reto concreto, en pocas palabras',
+  'dt.ph.repte':'p.ej. Tenemos un banco de tiempo con 30 socios pero solo participan 5, y las mismas dos personas lo llevan todo desde hace tres años.',
+  'dt.l.termini':'Plazo',
+  'dt.term.explorant':'Estamos explorando, sin prisas',
+  'dt.term.curs':'Este curso / semestre',
+  'dt.term.urgent':'Urgente — tenemos una fecha',
+  'dt.l.pressu':'Capacidad presupuestaria',
+  'dt.pressu.cap':'Ninguna ahora mismo',
+  'dt.pressu.petit':'Pequeña o por determinar',
+  'dt.pressu.mitja':'Tenemos partida asignada',
+  'dt.pressu.subvencio':'Dependerá de una subvención',
+  'dt.e4':'Marca como mínimo una necesidad.',
+  'dt.seg':'Siguiente →',
+  'dt.enrere':'← Atrás',
+  'dt.veure':'Ver mi diagnóstico →',
+  'dt.m.partida':'punto de partida',
+  'dt.m.acomp':'acompañamiento necesario',
+  'dt.m.mods':'módulos en vuestro itinerario',
+  'dt.m.dur':'duración estimada',
+  'dt.r.vostre':'vuestro territorio',
+  'dt.r.have':'✅ Con qué contáis',
+  'dt.r.enmarxa':'en marcha',
+  'dt.r.sensebase':'Llegáis sin estructura previa — lo que también quiere decir sin inercias que deshacer.',
+  'dt.r.gaps':'🎯 Qué hay que deshacer',
+  'dt.r.sensegap':'No habéis marcado ninguna necesidad concreta.',
+  'dt.r.itin':'🧭 Vuestro itinerario formativo',
+  'dt.r.itin.lead':'Estos son los módulos que os tocan, en orden. El resto los podéis ignorar:',
+  'dt.r.durada':'Duración estimada',
+  'dt.r.fita':'Hito',
+  'dt.r.svcs':'🤝 Cómo os podemos acompañar',
+  'dt.r.fund':'💶 De dónde puede salir el dinero',
+  'dt.r.next':'👣 Primer paso, lo dé quien lo dé',
+  'dt.r.portes':'🚪 Por dónde seguir ahora mismo',
+  'dt.r.portes.sub':'Sin enviar nada y sin darte de alta en ningún sitio: estas son las herramientas del SOS que responden a lo que has marcado, y cada una dice <strong>por qué es esta</strong> y no otra.',
+  'dt.next.sensegrup':'Reunid a 3–5 personas que ya estén dispuestas y haced un primer mapa de valor entre todas. Sin grupo no hay nada que organizar, y con cinco personas ya hay bastante para empezar.',
+  'dt.next.relleu':'Mirad quién sostiene qué: abrid el SOS, registrad quién aporta y cuánto durante un mes. El relevo se diseña con datos, no con buena voluntad — y la conversación es mucho más fácil cuando las horas están en la mesa.',
+  'dt.next.diners':'Montad el calendario de convocatorias de los próximos 12 meses antes de nada. Las horas que ya dais se pueden acreditar como aportación en especie, que a menudo es la cofinanciación que falta.',
+  'dt.next.unadinamica':'Elegid UNA dinámica para empezar — banco de tiempo o biblioteca de las cosas son las que menos fricción tienen — y ponedla en marcha con el mapa de valor hecho. Una que funcione vale más que tres empezadas.',
+  'dt.next.mapa':'Haced el mapa de valor de lo que ya tenéis en marcha. Casi siempre aparecen flujos que nadie había nombrado y roles que no cubre nadie — y ahí es donde está el margen de mejora inmediato.',
+  'dt.pt.vna.diagnostic':'Porque has dicho que no tenéis claro qué hay ni qué falta.',
+  'dt.pt.vna.metode':'Porque has dicho que vais haciendo sin método: este es el método.',
+  'dt.pt.vna.cap':'Porque todavía no tenéis ninguna dinámica en marcha, y todo empieza aquí.',
+  'dt.pt.matriu.equity':'Porque tenéis que repartir propiedad: aquí se recalcula sola y no se negocia.',
+  'dt.pt.matriu.juridic':'Porque el tipo de proyecto decide la forma jurídica y el reparto a la vez.',
+  'dt.pt.matriu.marxa':'Porque ya tenéis varias cosas en marcha y lo que toca es hacerlas caminar solas.',
+  'dt.pt.reg.relleu':'Porque el relevo se diseña con datos: quién sostiene qué, con horas en la mesa.',
+  'dt.pt.reg.impacte':'Porque demostrar lo que conseguís es tenerlo firmado, no contado.',
+  'dt.pt.reg.eina':'Porque has dicho que no tenéis ninguna herramienta para gestionarlo.',
+  'dt.pt.compra.consum':'Porque ya tenéis grupo de consumo y esta es la herramienta que le falta.',
+  'dt.pt.compra.diners':'Porque antes de buscar dinero fuera, lo que se deja de gastar también cuenta.',
+  'dt.pt.energia':'Porque ya tenéis comunidad energética: aquí se ve quién se ahorra qué de verdad, que no es lo mismo que el coeficiente.',
+  'dt.pt.habitatge':'Porque ya tenéis proyecto de vivienda: aquí se ve quién queda fuera por la entrada y quién por la cuota, antes de constituir nada.',
+  'dt.pt.form.mentors':'Porque queréis formar a otros, y eso tiene itinerario propio.',
+  'dt.pt.form.mods':'Porque vuestro itinerario son {n} módulos y vale la pena verlos enteros.',
+  'dt.pt.escola':'Porque desde un ayuntamiento la escuela suele ser la puerta con menos fricción del territorio.',
+  'dt.send.h':'📨 ¿Quieres que lo miremos juntos?',
+  'dt.send.p':'Si nos lo envías, preparamos una <strong>sesión exploratoria de 45 minutos sin compromiso</strong> con este diagnóstico ya leído. Si prefieres quedártelo, también sirve: <strong>es tuyo</strong>.',
+  'dt.b.mail':'✉ Envíanoslo por correo',
+  'dt.b.copia':'📋 Copia el resumen',
+  'dt.b.copiat':'✓ Copiado',
+  'dt.b.baixa':'⬇ Descárgalo (JSON)',
+  'dt.b.pressu':'💶 Ahora pide el presupuesto →',
+  'dt.b.torna':'↺ Rehazlo',
+  'dt.priv':'🔒 <strong>Este formulario no envía nada solo.</strong> Todo lo que has escrito vive en tu navegador y no sale de aquí hasta que tú pulses «Envíanoslo». No hay analítica ni seguimiento en esta página.',
+  'dt.peu':'SOS · Sistema Operativo Social · <a href="../index.html">TeamTowers Humà</a> · <a href="formacio.html">Guía formativa</a> · Local-first · W3C · Cero servidor'
+}
+};
+/* Es llegeixen les dues claus i s'escriuen les dues: la portada desa la tria
+   a `tt_lang` i els formularis a `sos.lang`, i qui triava castellà a la
+   portada i clicava cap aquí es trobava el formulari en català. */
+let DX_LANG='ca';
+try{DX_LANG=localStorage.getItem('sos.lang')||localStorage.getItem('tt_lang')||'ca';}catch(e){}
+/* `T` és el text d'una clau; `L` el d'un camp amb germà castellà (`tEs`). */
+const T=k=>{const d=DT_I18N[DX_LANG]||DT_I18N.ca;return d[k]!==undefined?d[k]:(DT_I18N.ca[k]||'');};
+const L=(o,c)=>!o?'':(DX_LANG==='es'?(o[c+'Es']||o[c]):o[c])||'';
 
 /* ── Estat del formulari ─────────────────────────────────────────── */
 const st={org:'',have:new Set(),serveis:new Set(),need:new Set()};
@@ -422,75 +939,162 @@ $$('[data-go]').forEach(b=>b.onclick=()=>{
 /* ── Catàlegs ─────────────────────────────────────────────────────
    Els itineraris i serveis segueixen knowledge/negoci/formacio-mentoria.md.
    Si allà canvien els públics, aquí s'ha d'actualitzar. */
+/* Cada text porta el seu germà `tEs`. Va així i no amb dos catàlegs sencers
+   perquè el que s'indexa és la clau del mòdul o del servei: partir-ho en dos
+   voldria dir indexar dues vegades i poder quedar-se amb una estructura a
+   mitges. És el mateix patró que el diagnòstic d'organització. */
 const MODULES={
-  m1:'Fonaments SOS',m2:'Identitat i criptografia',m3:'Mapes de valor (VNA)',m4:'Banc de temps i biblioteca',
-  m5:'Governança i Guardians',m6:'MATRIU i Slicing Pie',m7:'Comando i reputació',m8:'Ancoratge públic i IA',
-  m9:'Facilitació de grups',m10:'Comunicació i captació',m11:'Conflictes, cures i relleu',m12:'Finançament i subvencions',
-  m13:'Formes jurídiques',m14:'Mesura d\'impacte',m15:'Dades i RGPD',m16:'Formació de formadors'
+  m1:{t:'Fonaments SOS',tEs:'Fundamentos SOS'},
+  m2:{t:'Identitat i criptografia',tEs:'Identidad y criptografía'},
+  m3:{t:'Mapes de valor (VNA)',tEs:'Mapas de valor (VNA)'},
+  m4:{t:'Banc de temps i biblioteca',tEs:'Banco de tiempo y biblioteca'},
+  m5:{t:'Governança i Guardians',tEs:'Gobernanza y Guardianes'},
+  m6:{t:'MATRIU i Slicing Pie',tEs:'MATRIZ y Slicing Pie'},
+  m7:{t:'Comando i reputació',tEs:'Comando y reputación'},
+  m8:{t:'Ancoratge públic i IA',tEs:'Anclaje público e IA'},
+  m9:{t:'Facilitació de grups',tEs:'Facilitación de grupos'},
+  m10:{t:'Comunicació i captació',tEs:'Comunicación y captación'},
+  m11:{t:'Conflictes, cures i relleu',tEs:'Conflictos, cuidados y relevo'},
+  m12:{t:'Finançament i subvencions',tEs:'Financiación y subvenciones'},
+  m13:{t:'Formes jurídiques',tEs:'Formas jurídicas'},
+  m14:{t:'Mesura d\'impacte',tEs:'Medición de impacto'},
+  m15:{t:'Dades i RGPD',tEs:'Datos y RGPD'},
+  m16:{t:'Formació de formadors',tEs:'Formación de formadores'}
 };
 const SERVICES={
-  S1:['Diagnòstic territorial','2 sessions + informe amb el mapa de valor del vostre teixit.'],
-  S2:['Formació oberta per mòduls','4–8 h per mòdul, en grup. Podeu agafar només els que us toquen.'],
-  S3:['Programa de Gestor/a SOS','~45 h en 3–4 mesos, sobre el vostre territori real. Deixa capacitat instal·lada.'],
-  S4:['Acompanyament de projecte','Sessions quinzenals durant 6–12 mesos mentre poseu la iniciativa en marxa.'],
-  S5:['Formació de formadors','20 h + tutela de 2 casos. Per poder acompanyar altres amb la metodologia.'],
-  S6:['Implantació i suport tècnic','Posada en marxa, sincronització, ancoratge públic i migració de dades.'],
-  S7:['Mesura d\'impacte i justificació','Informe periòdic amb dades verificables per a memòries i justificacions.']
+  S1:{t:'Diagnòstic territorial',tEs:'Diagnóstico territorial',
+    d:'2 sessions + informe amb el mapa de valor del vostre teixit.',
+    dEs:'2 sesiones + informe con el mapa de valor de vuestro tejido.'},
+  S2:{t:'Formació oberta per mòduls',tEs:'Formación abierta por módulos',
+    d:'4–8 h per mòdul, en grup. Podeu agafar només els que us toquen.',
+    dEs:'4–8 h por módulo, en grupo. Podéis coger solo los que os tocan.'},
+  S3:{t:'Programa de Gestor/a SOS',tEs:'Programa de Gestor/a SOS',
+    d:'~45 h en 3–4 mesos, sobre el vostre territori real. Deixa capacitat instal·lada.',
+    dEs:'~45 h en 3–4 meses, sobre vuestro territorio real. Deja capacidad instalada.'},
+  S4:{t:'Acompanyament de projecte',tEs:'Acompañamiento de proyecto',
+    d:'Sessions quinzenals durant 6–12 mesos mentre poseu la iniciativa en marxa.',
+    dEs:'Sesiones quincenales durante 6–12 meses mientras ponéis la iniciativa en marcha.'},
+  S5:{t:'Formació de formadors',tEs:'Formación de formadores',
+    d:'20 h + tutela de 2 casos. Per poder acompanyar altres amb la metodologia.',
+    dEs:'20 h + tutela de 2 casos. Para poder acompañar a otros con la metodología.'},
+  S6:{t:'Implantació i suport tècnic',tEs:'Implantación y soporte técnico',
+    d:'Posada en marxa, sincronització, ancoratge públic i migració de dades.',
+    dEs:'Puesta en marcha, sincronización, anclaje público y migración de datos.'},
+  S7:{t:'Mesura d\'impacte i justificació',tEs:'Medición de impacto y justificación',
+    d:'Informe periòdic amb dades verificables per a memòries i justificacions.',
+    dEs:'Informe periódico con datos verificables para memorias y justificaciones.'}
 };
 const PROFILES={
-  ajuntament:{seg:'Administració local',title:'Ajuntament',itin:['m1','m3','m9','m4','m5','m14','m12'],dur:'3–4 mesos',
+  ajuntament:{seg:'Administració local',segEs:'Administración local',
+    title:'Ajuntament',titleEs:'Ayuntamiento',
+    itin:['m1','m3','m9','m4','m5','m14','m12'],dur:'3–4 mesos',durEs:'3–4 meses',
     fita:'Un mapa de valor validat per la comunitat i una decisió presa i registrada.',
+    fitaEs:'Un mapa de valor validado por la comunidad y una decisión tomada y registrada.',
     svcs:['S1','S3','S4','S7'],
     fund:['Partida municipal de participació ciutadana o desenvolupament local','Subvencions de la Diputació de Barcelona','Convocatòries de la Generalitat en ocupació i cohesió'],
-    lead:'Teniu la legitimitat i sovint el pressupost. El que acostuma a faltar és mètode i que el que es fa no depengui de qui hi és.'},
-  comarcal:{seg:'Administració supramunicipal',title:'Consell comarcal',itin:['m1','m3','m9','m5','m14','m12'],dur:'3–4 mesos',
+    fundEs:['Partida municipal de participación ciudadana o desarrollo local','Subvenciones de la Diputación de Barcelona','Convocatorias de la Generalitat en ocupación y cohesión'],
+    lead:'Teniu la legitimitat i sovint el pressupost. El que acostuma a faltar és mètode i que el que es fa no depengui de qui hi és.',
+    leadEs:'Tenéis la legitimidad y a menudo el presupuesto. Lo que suele faltar es método y que lo que se hace no dependa de quién está.'},
+  comarcal:{seg:'Administració supramunicipal',segEs:'Administración supramunicipal',
+    title:'Consell comarcal',titleEs:'Consejo comarcal',
+    itin:['m1','m3','m9','m5','m14','m12'],dur:'3–4 mesos',durEs:'3–4 meses',
     fita:'Un mapa comarcal i una decisió presa amb pes federatiu entre municipis desiguals.',
+    fitaEs:'Un mapa comarcal y una decisión tomada con peso federativo entre municipios desiguales.',
     svcs:['S1','S3','S6','S7'],
     fund:['Pressupost de cooperació intermunicipal','Diputació · assistència als municipis','Fons europeus de desenvolupament rural'],
-    lead:'La vostra dificultat no és tècnica, és política: que el municipi gran no decideixi per tots. L\'assemblea federativa amb pes √població i correcció Gini està feta exactament per això.'},
-  entitat:{seg:'Teixit associatiu',title:'Entitat o associació',itin:['m1','m4','m9','m11','m10','m14'],dur:'2 mesos',
+    fundEs:['Presupuesto de cooperación intermunicipal','Diputación · asistencia a los municipios','Fondos europeos de desarrollo rural'],
+    lead:'La vostra dificultat no és tècnica, és política: que el municipi gran no decideixi per tots. L\'assemblea federativa amb pes √població i correcció Gini està feta exactament per això.',
+    leadEs:'Vuestra dificultad no es técnica, es política: que el municipio grande no decida por todos. La asamblea federativa con peso √población y corrección Gini está hecha exactamente para eso.'},
+  entitat:{seg:'Teixit associatiu',segEs:'Tejido asociativo',
+    title:'Entitat o associació',titleEs:'Entidad o asociación',
+    itin:['m1','m4','m9','m11','m10','m14'],dur:'2 mesos',durEs:'2 meses',
     fita:'8 socis actius, 15 intercanvis registrats i un relleu identificat.',
+    fitaEs:'8 socios activos, 15 intercambios registrados y un relevo identificado.',
     svcs:['S2','S4'],
     fund:['Subvencions municipals a entitats','Convocatòries de la Diputació','Obra social de fundacions bancàries'],
-    lead:'Sabeu fer-ho: fa temps que ho feu. El que falta és que no depengui sempre dels mateixos i poder demostrar què val el que aporteu.'},
-  cooperativa:{seg:'Economia social i solidària',title:'Cooperativa o projecte econòmic',itin:['m1','m3','m6','m13','m12','m14'],dur:'4–6 mesos',
+    fundEs:['Subvenciones municipales a entidades','Convocatorias de la Diputación','Obra social de fundaciones bancarias'],
+    lead:'Sabeu fer-ho: fa temps que ho feu. El que falta és que no depengui sempre dels mateixos i poder demostrar què val el que aporteu.',
+    leadEs:'Sabéis hacerlo: hace tiempo que lo hacéis. Lo que falta es que no dependa siempre de los mismos y poder demostrar cuánto vale lo que aportáis.'},
+  cooperativa:{seg:'Economia social i solidària',segEs:'Economía social y solidaria',
+    title:'Cooperativa o projecte econòmic',titleEs:'Cooperativa o proyecto económico',
+    itin:['m1','m3','m6','m13','m12','m14'],dur:'4–6 mesos',durEs:'4–6 meses',
     fita:'Una iniciativa a validació amb la propietat repartida i ningú per sobre del 70%.',
+    fitaEs:'Una iniciativa en validación con la propiedad repartida y nadie por encima del 70%.',
     svcs:['S1','S4','S3'],
     fund:['Ateneus Cooperatius — acompanyament finançat','Coop57 i finançament ètic','Ajuts a la incorporació de socis treballadors'],
-    lead:'El moment delicat és repartir propietat entre gent que hi posa coses molt diferents. Slicing Pie ho resol sense negociar-ho: es recalcula sol a cada aportació.'},
-  grup:{seg:'Iniciativa ciutadana',title:'Grup promotor',itin:['m1','m3','m13','m12'],dur:'4–6 setmanes',
+    fundEs:['Ateneus Cooperatius — acompañamiento financiado','Coop57 y financiación ética','Ayudas a la incorporación de socios trabajadores'],
+    lead:'El moment delicat és repartir propietat entre gent que hi posa coses molt diferents. Slicing Pie ho resol sense negociar-ho: es recalcula sol a cada aportació.',
+    leadEs:'El momento delicado es repartir propiedad entre gente que pone cosas muy distintas. Slicing Pie lo resuelve sin negociarlo: se recalcula solo en cada aportación.'},
+  grup:{seg:'Iniciativa ciutadana',segEs:'Iniciativa ciudadana',
+    title:'Grup promotor',titleEs:'Grupo promotor',
+    itin:['m1','m3','m13','m12'],dur:'4–6 setmanes',durEs:'4–6 semanas',
     fita:'Forma jurídica decidida i primera convocatòria identificada.',
+    fitaEs:'Forma jurídica decidida y primera convocatoria identificada.',
     svcs:['S2','S4'],
     fund:['Ateneus Cooperatius per a la constitució','Subvencions municipals a projectes veïnals','Microfinançament comunitari'],
-    lead:'Sou al moment on més projectes moren: molta empenta i cap estructura. La feina ara és decidir la forma i el calendari, no fer-ho tot alhora.'},
-  acompanyament:{seg:'Canal · multiplicador',title:'Entitat d\'acompanyament',itin:['m1','m3','m6','m16','m9','m11','m15'],dur:'6 mesos',
+    fundEs:['Ateneus Cooperatius para la constitución','Subvenciones municipales a proyectos vecinales','Microfinanciación comunitaria'],
+    lead:'Sou al moment on més projectes moren: molta empenta i cap estructura. La feina ara és decidir la forma i el calendari, no fer-ho tot alhora.',
+    leadEs:'Estáis en el momento donde más proyectos mueren: mucho empuje y ninguna estructura. El trabajo ahora es decidir la forma y el calendario, no hacerlo todo a la vez.'},
+  acompanyament:{seg:'Canal · multiplicador',segEs:'Canal · multiplicador',
+    title:'Entitat d\'acompanyament',titleEs:'Entidad de acompañamiento',
+    itin:['m1','m3','m6','m16','m9','m11','m15'],dur:'6 mesos',durEs:'6 meses',
     fita:'Dos casos acompanyats amb evidència, tutelats per un mentor N3.',
+    fitaEs:'Dos casos acompañados con evidencia, tutelados por un mentor N3.',
     svcs:['S5','S6','S3'],
     fund:['Programa propi d\'acompanyament','Conveni amb administració','Formació contínua subvencionada'],
-    lead:'No sou el client final: sou qui pot arribar on nosaltres no arribarem mai. L\'objectiu és que incorporeu la metodologia al servei que ja presteu.'},
-  fundacio:{seg:'Finançament i impacte',title:'Fundació o finançador',itin:['m1','m14','m8'],dur:'3 sessions',
+    fundEs:['Programa propio de acompañamiento','Convenio con administración','Formación continua subvencionada'],
+    lead:'No sou el client final: sou qui pot arribar on nosaltres no arribarem mai. L\'objectiu és que incorporeu la metodologia al servei que ja presteu.',
+    leadEs:'No sois el cliente final: sois quien puede llegar donde nosotros no llegaremos nunca. El objetivo es que incorporéis la metodología al servicio que ya prestáis.'},
+  fundacio:{seg:'Finançament i impacte',segEs:'Financiación e impacto',
+    title:'Fundació o finançador',titleEs:'Fundación o financiador',
+    itin:['m1','m14','m8'],dur:'3 sessions',durEs:'3 sesiones',
     fita:'Un informe d\'impacte verificat i comprovable per un tercer.',
+    fitaEs:'Un informe de impacto verificado y comprobable por un tercero.',
     svcs:['S7','S1'],
     fund:['Pressupost propi de programes','Aliança amb altres finançadors'],
-    lead:'Financeu projectes i us costa demostrar què han provocat més enllà de comptar activitats. Aquí les mètriques surten d\'un registre signat, no d\'una enquesta.'},
-  particular:{seg:'Professional',title:'A títol personal',itin:['m1','m3','m4','m9'],dur:'2–3 mesos',
+    fundEs:['Presupuesto propio de programas','Alianza con otros financiadores'],
+    lead:'Financeu projectes i us costa demostrar què han provocat més enllà de comptar activitats. Aquí les mètriques surten d\'un registre signat, no d\'una enquesta.',
+    leadEs:'Financiáis proyectos y os cuesta demostrar qué han provocado más allá de contar actividades. Aquí las métricas salen de un registro firmado, no de una encuesta.'},
+  particular:{seg:'Professional',segEs:'Profesional',
+    title:'A títol personal',titleEs:'A título personal',
+    itin:['m1','m3','m4','m9'],dur:'2–3 mesos',durEs:'2–3 meses',
     fita:'Nivell N1 amb aportacions reals registrades.',
+    fitaEs:'Nivel N1 con aportaciones reales registradas.',
     svcs:['S2','S3'],
     fund:['Formació contínua per a persones treballadores','Ajuts a l\'autoocupació'],
-    lead:'Comença per fer, no per estudiar. Amb una comunitat real i unes quantes hores registrades ja tindràs més criteri que amb tot el temari.'}
+    fundEs:['Formación continua para personas trabajadoras','Ayudas al autoempleo'],
+    lead:'Comença per fer, no per estudiar. Amb una comunitat real i unes quantes hores registrades ja tindràs més criteri que amb tot el temari.',
+    leadEs:'Empieza por hacer, no por estudiar. Con una comunidad real y unas cuantas horas registradas ya tendrás más criterio que con todo el temario.'}
 };
 /* Necessitats → mòduls que les cobreixen */
 const NEED_MODS={diagnostic:['m3'],metode:['m1','m3'],gent:['m10'],relleu:['m11'],governanca:['m5'],
   financament:['m12'],juridicN:['m13'],equity:['m6'],impacte:['m14'],formacio:['m16'],eina:['m1','m2'],mentors:['m16','m9']};
-const HAVE_LBL={persones:'un grup de persones actives',espai:'espai físic propi',pressupost:'pressupost propi',
-  tecnic:'una persona tècnica dedicada',dinamica:'una dinàmica ja en marxa',juridic:'forma jurídica constituïda',
-  dades:'dades del teixit local',suport:'suport institucional',digital:'capacitat digital a l\'equip',xarxa:'una xarxa d\'entitats aliades'};
-const NEED_GAP={diagnostic:'no teniu clar què hi ha ni què falta al vostre teixit',
-  metode:'aneu fent sense un mètode que us sostingui',gent:'us falta gent implicada',
-  relleu:'tot recau sempre sobre les mateixes persones',governanca:'les decisions costen o generen conflicte',
-  financament:'no teniu clar d\'on sortiran els diners',juridicN:'no sabeu quina forma jurídica us convé',
-  equity:'heu de repartir propietat i no sabeu com fer-ho just',impacte:'no podeu demostrar el que aconseguiu',
-  formacio:'l\'equip necessita formació',eina:'no teniu cap eina per gestionar-ho',mentors:'voleu poder formar altres'};
+const HAVE_LBL={
+  persones:{t:'un grup de persones actives',tEs:'un grupo de personas activas'},
+  espai:{t:'espai físic propi',tEs:'espacio físico propio'},
+  pressupost:{t:'pressupost propi',tEs:'presupuesto propio'},
+  tecnic:{t:'una persona tècnica dedicada',tEs:'una persona técnica dedicada'},
+  dinamica:{t:'una dinàmica ja en marxa',tEs:'una dinámica ya en marcha'},
+  juridic:{t:'forma jurídica constituïda',tEs:'forma jurídica constituida'},
+  dades:{t:'dades del teixit local',tEs:'datos del tejido local'},
+  suport:{t:'suport institucional',tEs:'apoyo institucional'},
+  digital:{t:'capacitat digital a l\'equip',tEs:'capacidad digital en el equipo'},
+  xarxa:{t:'una xarxa d\'entitats aliades',tEs:'una red de entidades aliadas'}
+};
+const NEED_GAP={
+  diagnostic:{t:'no teniu clar què hi ha ni què falta al vostre teixit',tEs:'no tenéis claro qué hay ni qué falta en vuestro tejido'},
+  metode:{t:'aneu fent sense un mètode que us sostingui',tEs:'vais haciendo sin un método que os sostenga'},
+  gent:{t:'us falta gent implicada',tEs:'os falta gente implicada'},
+  relleu:{t:'tot recau sempre sobre les mateixes persones',tEs:'todo recae siempre sobre las mismas personas'},
+  governanca:{t:'les decisions costen o generen conflicte',tEs:'las decisiones cuestan o generan conflicto'},
+  financament:{t:'no teniu clar d\'on sortiran els diners',tEs:'no tenéis claro de dónde saldrá el dinero'},
+  juridicN:{t:'no sabeu quina forma jurídica us convé',tEs:'no sabéis qué forma jurídica os conviene'},
+  equity:{t:'heu de repartir propietat i no sabeu com fer-ho just',tEs:'tenéis que repartir propiedad y no sabéis cómo hacerlo justo'},
+  impacte:{t:'no podeu demostrar el que aconseguiu',tEs:'no podéis demostrar lo que conseguís'},
+  formacio:{t:'l\'equip necessita formació',tEs:'el equipo necesita formación'},
+  eina:{t:'no teniu cap eina per gestionar-ho',tEs:'no tenéis ninguna herramienta para gestionarlo'},
+  mentors:{t:'voleu poder formar altres',tEs:'queréis poder formar a otros'}
+};
 
 /* ── Les portes cap al SOS ─────────────────────────────────────────
    El diagnòstic acabava en un correu: deia què et falta i et deixava allà. Però
@@ -500,50 +1104,57 @@ const NEED_GAP={diagnostic:'no teniu clar què hi ha ni què falta al vostre tei
    Cada porta es tria pel que la persona ha marcat, i porta escrit **per què és
    aquesta**. Una llista de totes les eines no seria una recomanació: seria un
    menú, i el menú ja hi és a dalt. */
+/* `per` torna **una clau**, no una frase: el motiu és el que fa que la porta
+   sigui una recomanació i no un menú, i havia de poder dir-se en les dues
+   llengües sense duplicar la condició que el tria. La frase viu al diccionari
+   de sota amb la resta del text de la pàgina. */
 const PORTES=[
-  {id:'vna',url:'vna.html',t:'🕸 El mapa de valor',
+  {id:'vna',url:'vna.html',t:'🕸 El mapa de valor',tEs:'🕸 El mapa de valor',
    d:'Rols funcionals i intercanvis als dos sentits. És el primer pas de tot i es fa en una tarda.',
+   dEs:'Roles funcionales e intercambios en los dos sentidos. Es el primer paso de todo y se hace en una tarde.',
    si:d=>d.need.includes('diagnostic')||d.need.includes('metode')||!d.serveis.length,
-   per:d=>d.need.includes('diagnostic')?'Perquè has dit que no teniu clar què hi ha ni què falta.'
-        :d.need.includes('metode')?'Perquè has dit que aneu fent sense mètode: aquest és el mètode.'
-        :'Perquè encara no teniu cap dinàmica en marxa, i tot comença aquí.'},
-  {id:'matriu',url:'matriu.html',t:'🌱 La MATRIU',
+   per:d=>d.need.includes('diagnostic')?'dt.pt.vna.diagnostic'
+        :d.need.includes('metode')?'dt.pt.vna.metode':'dt.pt.vna.cap'},
+  {id:'matriu',url:'matriu.html',t:'🌱 La MATRIU',tEs:'🌱 La MATRIZ',
    d:'La incubadora: quatre etapes, tres portes amb criteris i la propietat repartida per aportació real.',
+   dEs:'La incubadora: cuatro etapas, tres puertas con criterios y la propiedad repartida por aportación real.',
    si:d=>d.need.includes('equity')||d.need.includes('juridicN')||d.serveis.length>=2,
-   per:d=>d.need.includes('equity')?'Perquè heu de repartir propietat: aquí es recalcula sola i no es negocia.'
-        :d.need.includes('juridicN')?'Perquè el tipus de projecte decideix la forma jurídica i el repartiment alhora.'
-        :'Perquè ja teniu diverses coses en marxa i el que toca és fer-les caminar soles.'},
-  {id:'registre',url:'index.html',t:'⊞ El registre del SOS',
+   per:d=>d.need.includes('equity')?'dt.pt.matriu.equity'
+        :d.need.includes('juridicN')?'dt.pt.matriu.juridic':'dt.pt.matriu.marxa'},
+  {id:'registre',url:'index.html',t:'⊞ El registre del SOS',tEs:'⊞ El registro del SOS',
    d:'Cada aportació signada per qui la fa i confirmada per l\'altra banda. El rebut val fora de l\'app.',
+   dEs:'Cada aportación firmada por quien la hace y confirmada por la otra parte. El recibo vale fuera de la app.',
    si:d=>d.need.includes('relleu')||d.need.includes('impacte')||d.need.includes('eina'),
-   per:d=>d.need.includes('relleu')?'Perquè el relleu es dissenya amb dades: qui sosté què, amb hores a la taula.'
-        :d.need.includes('impacte')?'Perquè demostrar el que aconseguiu és tenir-ho signat, no explicat.'
-        :'Perquè has dit que no teniu cap eina per gestionar-ho.'},
-  {id:'compra',url:'compra.html',t:'🛒 La Compra',
+   per:d=>d.need.includes('relleu')?'dt.pt.reg.relleu'
+        :d.need.includes('impacte')?'dt.pt.reg.impacte':'dt.pt.reg.eina'},
+  {id:'compra',url:'compra.html',t:'🛒 La Compra',tEs:'🛒 La Compra',
    d:'Grup de consum i compra col·lectiva, amb la comanda agregada i l\'estalvi dit per la seva causa.',
+   dEs:'Grupo de consumo y compra colectiva, con el pedido agregado y el ahorro dicho por su causa.',
    si:d=>d.serveis.includes('consum')||d.need.includes('financament'),
-   per:d=>d.serveis.includes('consum')?'Perquè ja teniu grup de consum i això és l\'eina que li falta.'
-        :'Perquè abans de buscar diners fora, el que es deixa de gastar també compta.'},
+   per:d=>d.serveis.includes('consum')?'dt.pt.compra.consum':'dt.pt.compra.diners'},
   /* Les dues dinàmiques que tenen eina pròpia i no tenien porta: qui deia que
      ja té comunitat energètica o projecte d'habitatge acabava el diagnòstic
      sense que ningú li digués que l'eina d'allò existeix. */
-  {id:'energia',url:'energia.html',t:'⚡ L\'Energia',
+  {id:'energia',url:'energia.html',t:'⚡ L\'Energia',tEs:'⚡ La Energía',
    d:'Comunitat energètica: els coeficients, l\'estalvi real de cada llar i l\'amortització amb el tràmit.',
+   dEs:'Comunidad energética: los coeficientes, el ahorro real de cada hogar y la amortización con el trámite.',
    si:d=>d.serveis.includes('energia'),
-   per:d=>'Perquè ja teniu comunitat energètica: aquí es veu qui s\'estalvia què de debò, que no és el mateix que el coeficient.'},
-  {id:'habitatge',url:'habitatge.html',t:'🏠 L\'Habitatge',
+   per:d=>'dt.pt.energia'},
+  {id:'habitatge',url:'habitatge.html',t:'🏠 L\'Habitatge',tEs:'🏠 La Vivienda',
    d:'Cessió d\'ús: el cost, la porta del 20%, la quota de cada llar i què passa si algú marxa.',
+   dEs:'Cesión de uso: el coste, la puerta del 20%, la cuota de cada hogar y qué pasa si alguien se va.',
    si:d=>d.serveis.includes('habitatge'),
-   per:d=>'Perquè ja teniu projecte d\'habitatge: aquí es veu qui queda fora per l\'entrada i qui per la quota, abans de constituir res.'},
-  {id:'formacio',url:'formacio.html',t:'🎓 La formació',
+   per:d=>'dt.pt.habitatge'},
+  {id:'formacio',url:'formacio.html',t:'🎓 La formació',tEs:'🎓 La formación',
    d:'Setze mòduls de N0 a N3, amb les hores i el nivell de cadascun.',
+   dEs:'Dieciséis módulos de N0 a N3, con las horas y el nivel de cada uno.',
    si:d=>d.need.includes('formacio')||d.need.includes('mentors')||d.mods.length>=5,
-   per:d=>d.need.includes('mentors')?'Perquè voleu formar altres, i això té itinerari propi.'
-        :'Perquè el vostre itinerari són '+d.mods.length+' mòduls i val la pena veure\'ls sencers.'},
-  {id:'escola',url:'escola.html',t:'🏫 El programa d\'escola',
+   per:d=>d.need.includes('mentors')?'dt.pt.form.mentors':'dt.pt.form.mods'},
+  {id:'escola',url:'escola.html',t:'🏫 El programa d\'escola',tEs:'🏫 El programa de escuela',
    d:'El SOS a mida d\'aula, sense cap dada de cap infant.',
+   dEs:'El SOS a medida de aula, sin ningún dato de ningún niño.',
    si:d=>d.org==='ajuntament'||d.org==='comarcal',
-   per:()=>'Perquè des d\'un ajuntament l\'escola sol ser la porta amb menys fricció del territori.'}
+   per:()=>'dt.pt.escola'}
 ];
 /* Tres com a màxim. Sis recomanacions no són una recomanació. */
 function portesDe(d){
@@ -570,47 +1181,64 @@ function diagnose(){
   if(need.includes('eina')&&!svcs.includes('S6'))svcs.push('S6');
   if(need.includes('mentors')&&!svcs.includes('S5'))svcs.push('S5');
   if(need.includes('impacte')&&!svcs.includes('S7'))svcs.push('S7');
-  // Primer pas, honest i petit
-  let next;
-  if(!have.length&&!serveis.length)next='Reuniu 3–5 persones que ja hi estiguin disposades i feu un primer mapa de valor entre totes. Sense grup no hi ha res a organitzar, i amb cinc persones ja n\'hi ha prou per començar.';
-  else if(serveis.length&&need.includes('relleu'))next='Mireu qui sosté què: obriu el SOS, registreu qui aporta i quant durant un mes. El relleu es dissenya amb dades, no amb bona voluntat — i la conversa és molt més fàcil quan les hores són a la taula.';
-  else if(need.includes('financament'))next='Munteu el calendari de convocatòries dels propers 12 mesos abans de res. Les hores que ja doneu es poden acreditar com a aportació en espècie, que sovint és el cofinançament que falta.';
-  else if(!serveis.length)next='Trieu UNA dinàmica per començar — banc de temps o biblioteca de les coses són les que menys friccions tenen — i poseu-la en marxa amb el mapa de valor fet. Una que funcioni val més que tres començades.';
-  else next='Feu el mapa de valor del que ja teniu en marxa. Gairebé sempre apareixen fluxos que ningú havia anomenat i rols que no cobreix ningú — i aquí és on hi ha el marge de millora immediat.';
-  return{P,org:st.org,have,need,serveis,maturity,support,mods,svcs,next};
+  /* Primer pas, honest i petit. La clau i no la frase: canviar de llengua
+     torna a escriure el diagnòstic sense haver-lo de tornar a calcular. */
+  let nextK;
+  if(!have.length&&!serveis.length)nextK='dt.next.sensegrup';
+  else if(serveis.length&&need.includes('relleu'))nextK='dt.next.relleu';
+  else if(need.includes('financament'))nextK='dt.next.diners';
+  else if(!serveis.length)nextK='dt.next.unadinamica';
+  else nextK='dt.next.mapa';
+  return{P,org:st.org,have,need,serveis,maturity,support,mods,svcs,nextK,
+    get next(){return T(nextK);}};
 }
 
 function renderDx(d){
   const {P}=d;
-  $('#rSeg').textContent=P.seg;
-  $('#rTitle').textContent=P.title+' · '+($('#municipi').value.trim()||'el vostre territori');
-  $('#rLead').textContent=P.lead;
+  $('#rSeg').textContent=L(P,'seg');
+  $('#rTitle').textContent=L(P,'title')+' · '+($('#municipi').value.trim()||T('dt.r.vostre'));
+  $('#rLead').textContent=L(P,'lead');
   const cMat=d.maturity>=60?'var(--green)':d.maturity>=30?'var(--orange)':'var(--red)';
   const cSup=d.support>=60?'var(--orange)':'var(--green)';
   $('#rMetrics').innerHTML=
-    '<div class="mt-t"><div class="mt-n" style="color:'+cMat+'">'+d.maturity+'%</div><div class="bar"><div class="bar-f" style="width:'+d.maturity+'%;background:'+cMat+'"></div></div><div class="mt-l">punt de partida</div></div>'+
-    '<div class="mt-t"><div class="mt-n" style="color:'+cSup+'">'+d.support+'%</div><div class="bar"><div class="bar-f" style="width:'+d.support+'%;background:'+cSup+'"></div></div><div class="mt-l">acompanyament que cal</div></div>'+
-    '<div class="mt-t"><div class="mt-n" style="color:var(--indigo)">'+d.mods.length+'</div><div class="mt-l">mòduls al vostre itinerari</div></div>'+
-    '<div class="mt-t"><div class="mt-n" style="color:var(--purple)">'+P.dur+'</div><div class="mt-l">durada estimada</div></div>';
+    '<div class="mt-t"><div class="mt-n" style="color:'+cMat+'">'+d.maturity+'%</div><div class="bar"><div class="bar-f" style="width:'+d.maturity+'%;background:'+cMat+'"></div></div><div class="mt-l">'+T('dt.m.partida')+'</div></div>'+
+    '<div class="mt-t"><div class="mt-n" style="color:'+cSup+'">'+d.support+'%</div><div class="bar"><div class="bar-f" style="width:'+d.support+'%;background:'+cSup+'"></div></div><div class="mt-l">'+T('dt.m.acomp')+'</div></div>'+
+    '<div class="mt-t"><div class="mt-n" style="color:var(--indigo)">'+d.mods.length+'</div><div class="mt-l">'+T('dt.m.mods')+'</div></div>'+
+    '<div class="mt-t"><div class="mt-n" style="color:var(--purple)">'+L(P,'dur')+'</div><div class="mt-l">'+T('dt.m.dur')+'</div></div>';
   $('#rHave').innerHTML=(d.have.length||d.serveis.length)
-    ?d.have.map(h=>'<li>'+HAVE_LBL[h]+'</li>').join('')+d.serveis.map(s=>'<li>'+($('#serveis .chip[data-v="'+s+'"]').textContent.trim())+' en marxa</li>').join('')
-    :'<li>Arribeu sense estructura prèvia — cosa que també vol dir sense inèrcies a desfer.</li>';
-  $('#rGaps').innerHTML=d.need.length?d.need.map(n=>'<li>'+(NEED_GAP[n]||n)+'</li>').join(''):'<li>No heu marcat cap necessitat concreta.</li>';
-  $('#rItinLead').textContent='Aquests són els mòduls que us toquen, en ordre. La resta els podeu ignorar: '+P.fita;
-  $('#rMods').innerHTML=d.mods.map(m=>'<a class="mod" href="formacio.html#'+m+'" target="_blank" rel="noopener">'+m.toUpperCase()+' · '+MODULES[m]+'</a>').join('');
-  $('#rItinMeta').textContent='Durada estimada: '+P.dur+' · Fita: '+P.fita;
-  $('#rSvcs').innerHTML=d.svcs.map(s=>'<div class="svc"><span class="svc-n">'+s+'</span><span class="svc-b"><span class="svc-t">'+SERVICES[s][0]+'</span><span class="svc-d">'+SERVICES[s][1]+'</span></span></div>').join('');
-  $('#rFund').innerHTML=P.fund.map(f=>'<li>'+f+'</li>').join('');
+    ?d.have.map(h=>'<li>'+L(HAVE_LBL[h],'t')+'</li>').join('')
+      +d.serveis.map(s=>'<li>'+T('dt.sv.'+s)+' '+T('dt.r.enmarxa')+'</li>').join('')
+    :'<li>'+T('dt.r.sensebase')+'</li>';
+  $('#rGaps').innerHTML=d.need.length?d.need.map(n=>'<li>'+(L(NEED_GAP[n],'t')||n)+'</li>').join('')
+    :'<li>'+T('dt.r.sensegap')+'</li>';
+  $('#rItinLead').textContent=T('dt.r.itin.lead')+' '+L(P,'fita');
+  $('#rMods').innerHTML=d.mods.map(m=>'<a class="mod" href="formacio.html#'+m+'" target="_blank" rel="noopener">'+m.toUpperCase()+' · '+L(MODULES[m],'t')+'</a>').join('');
+  $('#rItinMeta').textContent=T('dt.r.durada')+': '+L(P,'dur')+' · '+T('dt.r.fita')+': '+L(P,'fita');
+  $('#rSvcs').innerHTML=d.svcs.map(s=>'<div class="svc"><span class="svc-n">'+s+'</span><span class="svc-b"><span class="svc-t">'+L(SERVICES[s],'t')+'</span><span class="svc-d">'+L(SERVICES[s],'d')+'</span></span></div>').join('');
+  $('#rFund').innerHTML=(DX_LANG==='es'?(P.fundEs||P.fund):P.fund).map(f=>'<li>'+f+'</li>').join('');
   $('#rNext').textContent=d.next;
   $('#rPortes').innerHTML='<div class="portes">'+portesDe(d).map(p=>
-    '<a class="porta-c" href="'+p.url+'"><span class="pt">'+p.t+'</span>'+
-    '<span class="pd">'+p.d+'</span><span class="pq">'+p.per(d)+'</span></a>').join('')+'</div>';
+    '<a class="porta-c" href="'+p.url+'"><span class="pt">'+L(p,'t')+'</span>'+
+    '<span class="pd">'+L(p,'d')+'</span><span class="pq">'
+    /* `{n}` és el nombre de mòduls de l'itinerari: la frase es declara amb el
+       forat perquè la xifra la posa el càlcul i no el diccionari. */
+    +T(p.per(d)).replace('{n}',d.mods.length)+'</span></a>').join('')+'</div>';
 }
 
-/* ── Resum en text pla · el que viatja per correu ────────────────── */
+/* ── Resum en text pla · el que viatja per correu ────────────────────────
+   **Sempre en català**, tant si la pantalla està en castellà com si no: no és
+   una pantalla, és el que arriba a la nostra banda, i `crm.html` el parteix
+   pels separadors (`── QUI ──`, `── D'ON ──`…). Si el resum canviés de llengua
+   amb el botó, el CRM deixaria de trobar les seccions de mitja safata.
+
+   Per això aquí no es fa servir `T` ni `L`, sinó `cat()` i `catL()`, que
+   llegeixen el diccionari català i el camp català passi el que passi. Abans
+   `txt()` llegia el text del xip de la pantalla, i amb el castellà posat el
+   resum hauria sortit meitat i meitat. */
+const cat=k=>DT_I18N.ca[k]||'';
+const catL=(o,c)=>!o?'':(o[c]||'');
 function buildSummary(d){
   const L=[],v=id=>$('#'+id).value.trim();
-  const txt=(sel,val)=>{const el=document.querySelector(sel+' [data-v="'+val+'"]');return el?el.textContent.trim():val;};
   L.push('DIAGNÒSTIC COMUNITARI SOS');
   L.push('Generat el '+new Date().toLocaleString('ca'));
   L.push('');
@@ -621,31 +1249,31 @@ function buildSummary(d){
   L.push('Correu: '+v('mail')+(v('tel')?' · Tel: '+v('tel'):''));
   L.push('');
   L.push('── D\'ON ──');
-  L.push('Tipus: '+d.P.title+' ['+d.P.seg+']');
+  L.push('Tipus: '+catL(d.P,'title')+' ['+catL(d.P,'seg')+']');
   if(v('orgNom'))L.push('Organització: '+v('orgNom'));
   L.push('Territori: '+v('municipi')+(v('comarca')?' ('+v('comarca')+')':''));
   if(v('poblacio'))L.push('Població: '+v('poblacio'));
   L.push('');
   L.push('── QUÈ TENEN ──');
-  L.push('Recursos: '+(d.have.length?d.have.map(h=>HAVE_LBL[h]).join(', '):'cap marcat'));
-  L.push('Serveis actius: '+(d.serveis.length?d.serveis.map(s=>txt('#serveis',s)).join(', '):'cap'));
-  L.push('Experiència: '+$('#experiencia').selectedOptions[0].textContent);
+  L.push('Recursos: '+(d.have.length?d.have.map(h=>catL(HAVE_LBL[h],'t')).join(', '):'cap marcat'));
+  L.push('Serveis actius: '+(d.serveis.length?d.serveis.map(s=>cat('dt.sv.'+s)).join(', '):'cap'));
+  L.push('Experiència: '+cat('dt.exp.'+$('#experiencia').value));
   L.push('');
   L.push('── QUÈ NECESSITEN ──');
-  L.push(d.need.length?d.need.map(n=>'· '+NEED_GAP[n]).join('\n'):'· no especificat');
+  L.push(d.need.length?d.need.map(n=>'· '+catL(NEED_GAP[n],'t')).join('\n'):'· no especificat');
   if(v('repte')){L.push('');L.push('Repte concret:');L.push(v('repte'));}
   L.push('');
-  L.push('Termini: '+$('#termini').selectedOptions[0].textContent);
-  L.push('Pressupost: '+$('#pressupost').selectedOptions[0].textContent);
+  L.push('Termini: '+cat('dt.term.'+$('#termini').value));
+  L.push('Pressupost: '+cat('dt.pressu.'+$('#pressupost').value));
   L.push('');
   L.push('── DIAGNÒSTIC ──');
   L.push('Punt de partida: '+d.maturity+'% · Acompanyament necessari: '+d.support+'%');
-  L.push('Itinerari ('+d.P.dur+'): '+d.mods.map(m=>m.toUpperCase()+' '+MODULES[m]).join(' → '));
-  L.push('Fita: '+d.P.fita);
-  L.push('Serveis suggerits: '+d.svcs.map(s=>s+' '+SERVICES[s][0]).join(' · '));
+  L.push('Itinerari ('+catL(d.P,'dur')+'): '+d.mods.map(m=>m.toUpperCase()+' '+catL(MODULES[m],'t')).join(' → '));
+  L.push('Fita: '+catL(d.P,'fita'));
+  L.push('Serveis suggerits: '+d.svcs.map(s=>s+' '+catL(SERVICES[s],'t')).join(' · '));
   L.push('Finançament possible: '+d.P.fund.join(' · '));
   L.push('');
-  L.push('Primer pas: '+d.next);
+  L.push('Primer pas: '+cat(d.nextK));
   return L.join('\n');
 }
 function buildJson(d){
@@ -655,7 +1283,7 @@ function buildJson(d){
     organitzacio:{tipus:st.org,sector:ORG_SECTOR[st.org]||'',perfil:d.P.title,segment:d.P.seg,nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
     te:{recursos:d.have,serveis:d.serveis,experiencia:$('#experiencia').value},
     necessita:{items:d.need,repte:v('repte'),termini:$('#termini').value,pressupost:$('#pressupost').value},
-    diagnostic:{maturity:d.maturity,support:d.support,itinerari:d.mods,durada:d.P.dur,fita:d.P.fita,serveis:d.svcs,financament:d.P.fund,primerPas:d.next}};
+    diagnostic:{maturity:d.maturity,support:d.support,itinerari:d.mods,durada:d.P.dur,fita:d.P.fita,serveis:d.svcs,financament:d.P.fund,primerPas:cat(d.nextK)}};
 }
 
 /* ── Sortida ─────────────────────────────────────────────────────── */
@@ -678,9 +1306,9 @@ $('#doDx').onclick=()=>{
 };
 $('#bCopy').onclick=async()=>{
   const t=buildSummary(current);
-  try{await navigator.clipboard.writeText(t);$('#bCopy').textContent='✓ Copiat';}
-  catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();$('#bCopy').textContent='✓ Copiat';}
-  setTimeout(()=>$('#bCopy').textContent='📋 Copia el resum',2000);
+  try{await navigator.clipboard.writeText(t);$('#bCopy').textContent=T('dt.b.copiat');}
+  catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();$('#bCopy').textContent=T('dt.b.copiat');}
+  setTimeout(()=>$('#bCopy').textContent=T('dt.b.copia'),2000);
 };
 $('#bJson').onclick=()=>{
   const blob=new Blob([JSON.stringify(buildJson(current),null,2)],{type:'application/json'});
@@ -690,8 +1318,30 @@ $('#bJson').onclick=()=>{
 };
 $('#bAgain').onclick=()=>{$('#result').style.display='none';$('#dxForm').style.display='';$('#prog').style.display='';showStep(1);};
 
+/* ── Posar la llengua ──────────────────────────────────────────────────────
+   Tres atributs: `data-i18n` pel text, `data-i18n-html` quan hi ha marcatge a
+   dins i `data-i18n-ph` per als `placeholder`, que es llegeixen igual que una
+   etiqueta i que un diccionari de només `textContent` deixa en català sense
+   que peti res.
+
+   I el resultat, si ja està calculat: qui canvia de llengua llegint el
+   diagnòstic no l'ha de tornar a fer. */
+function dtAplicaLang(l){
+  if(!DT_I18N[l])l='ca';
+  DX_LANG=l;
+  try{localStorage.setItem('sos.lang',l);localStorage.setItem('tt_lang',l);}catch(e){}
+  document.documentElement.lang=l;
+  $$('[data-i18n]').forEach(el=>{const v=T(el.getAttribute('data-i18n'));if(v)el.textContent=v;});
+  $$('[data-i18n-html]').forEach(el=>{const v=T(el.getAttribute('data-i18n-html'));if(v)el.innerHTML=v;});
+  $$('[data-i18n-ph]').forEach(el=>{const v=T(el.getAttribute('data-i18n-ph'));if(v)el.setAttribute('placeholder',v);});
+  $$('.lang-b').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  if(current)renderDx(current);
+}
+$$('.lang-b').forEach(b=>b.onclick=()=>dtAplicaLang(b.dataset.lang));
+dtAplicaLang(DX_LANG);
+
 /* Hook per a proves */
-window.__DX={st,diagnose,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate};
+window.__DX={st,diagnose,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate,dtAplicaLang,DT_I18N,T};
 </script>
 </body>
 </html>

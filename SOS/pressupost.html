@@ -31,7 +31,11 @@ textarea{min-height:88px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
-.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* `color` i `text-align` explícits: `.opt` és un `<button>` i el navegador hi
+   posa text negre i centrat per defecte. El `.o-d` tenia color propi i el
+   `.o-t` no, o sigui que el **títol** de cada opció sortia negre sobre fons
+   negre —illegible— i centrat. No peta i es veu mirant. */
+.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:var(--text);text-align:left;font:inherit}
 .opt:hover{border-color:var(--indigo)}
 .opt.sel{border-color:var(--c,var(--indigo));background:color-mix(in srgb,var(--c,var(--indigo)) 14%,transparent)}
 .opt .o-t{font-weight:600;font-size:.88rem}
@@ -143,7 +147,7 @@ footer a{color:var(--light)}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html" aria-current="page"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b>El laboratori de VNA</b><span>El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b>Premsa</b><span>El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html" aria-current="page"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b data-i18n="nv.t.arrel-curs_vna">El laboratori de VNA</b><span data-i18n="nv.d.arrel-curs_vna">El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
@@ -212,14 +216,14 @@ footer a{color:var(--light)}
 </div>
 <div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
-<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
-<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
-<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
-<div class="f"><label for="poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" placeholder="p.ex. 2400"><div class="hint">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
 <!--/FORM-ORG-->
 <div class="err" id="e2">Tria el tipus d'organització i escriu el municipi.</div>
 <div class="nav-btns"><button type="button" class="btn" data-i18n="pr.enrere" data-go="1">← Enrere</button><button type="button" class="btn btn-primary" data-i18n="pr.seg" data-go="3">Següent →</button></div>
@@ -737,6 +741,21 @@ ca: {
   'fo.l.tipus':'Tipus d\'organització *',
   'fo.l.orgnom':'Nom de l\'organització',
   'fo.ph.orgnom':'deixa-ho en blanc si véns a títol personal',
+  'fo.l.web':'El vostre web',
+  'fo.ph.web':'p.ex. exemple.cat',
+  'fo.h.web':'Ens estalvia preguntar-vos qui sou. Opcional.',
+  'fo.l.dediqueu':'A què us dediqueu',
+  'fo.ph.dediqueu':'p.ex. distribució alimentària, 3 centres',
+  'fo.l.municipi':'Municipi *',
+  'fo.ph.municipi':'p.ex. Torrelles de Foix',
+  'fo.l.comarca':'Comarca',
+  'fo.ph.comarca':'p.ex. Alt Penedès',
+  'fo.l.persones':'Quantes persones sou',
+  'fo.ph.persones':'p.ex. 45',
+  'fo.h.persones':'De tota l\'organització, no només de l\'equip que hi entraria.',
+  'fo.l.poblacio':'Població aproximada a què arribeu',
+  'fo.ph.poblacio':'p.ex. 2400',
+  'fo.h.poblacio':'Habitants del municipi, o persones a qui arriba el vostre projecte.',
   'fo.org.ajuntament.t':'🏛 Ajuntament',
   'fo.org.ajuntament.d':'Regidoria, àrea tècnica o servei municipal',
   'fo.org.comarcal.t':'🗺 Consell comarcal',
@@ -770,6 +789,63 @@ ca: {
   'fo.rol.coordinacio':'Coordinació d\'equip o de programa',
   'fo.rol.altre':'Una altra cosa',
 /*/PRESSU-I18N-CA*/
+/*NAV-I18N-CA*/
+  'nv.g.comenca':'🧭 Comença',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.pressupost':'Demana pressupost',
+  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De què va tot això',
+  'nv.t.uneix-te':'Uneix-t\'hi',
+  'nv.d.uneix-te':'El que ja fas al barri, comptat',
+  'nv.g.eines':'🛠 Eines',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Rols i intercanvis d\'un projecte',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grup de consum i compra col·lectiva',
+  'nv.t.energia':'L\'Energia',
+  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
+  'nv.t.habitatge':'L\'Habitatge',
+  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
+  'nv.t.banc-temps':'El Banc de Temps',
+  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
+  'nv.t.biblioteca':'La Biblioteca de les Coses',
+  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El poble sencer i les nou professions',
+  'nv.t.joc':'El joc',
+  'nv.d.joc':'La plaça, a ritme',
+  'nv.g.apren':'🎓 Aprèn',
+  'nv.t.formacio':'Formació',
+  'nv.d.formacio':'16 mòduls, de N0 a N3',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.t.escola':'Escoles',
+  'nv.d.escola':'El SOS a mida d\'aula',
+  'nv.t.vedes':'Les vedes',
+  'nv.d.vedes':'Les regles, amb el motiu al costat',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratori de VNA',
+  'nv.d.arrel-curs_vna':'El curs d\'anàlisi de xarxes de valor',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.g.xarxa':'🏘 Xarxa',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La pel·lícula que farem 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estat líquid',
+  'nv.t.online':'Directori',
+  'nv.d.online':'Qui hi ha, per territori',
+  'nv.totes':'Totes les pàgines',
+  'nv.g.eina':'🖥 L\'eina',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'L\'aplicació sencera, al navegador',
+/*/NAV-I18N-CA*/
 },
 es: {
 /*PRESSU-I18N-ES*/
@@ -834,6 +910,21 @@ es: {
   'fo.l.tipus':'Tipo de organización *',
   'fo.l.orgnom':'Nombre de la organización',
   'fo.ph.orgnom':'déjalo en blanco si vienes a título personal',
+  'fo.l.web':'Vuestra web',
+  'fo.ph.web':'p.ej. ejemplo.com',
+  'fo.h.web':'Nos ahorra preguntaros quiénes sois. Opcional.',
+  'fo.l.dediqueu':'A qué os dedicáis',
+  'fo.ph.dediqueu':'p.ej. distribución alimentaria, 3 centros',
+  'fo.l.municipi':'Municipio *',
+  'fo.ph.municipi':'p.ej. Torrelles de Foix',
+  'fo.l.comarca':'Comarca',
+  'fo.ph.comarca':'p.ej. Alt Penedès',
+  'fo.l.persones':'Cuántas personas sois',
+  'fo.ph.persones':'p.ej. 45',
+  'fo.h.persones':'De toda la organización, no solo del equipo que entraría.',
+  'fo.l.poblacio':'Población aproximada a la que llegáis',
+  'fo.ph.poblacio':'p.ej. 2400',
+  'fo.h.poblacio':'Habitantes del municipio, o personas a las que llega vuestro proyecto.',
   'fo.org.ajuntament.t':'🏛 Ayuntamiento',
   'fo.org.ajuntament.d':'Concejalía, área técnica o servicio municipal',
   'fo.org.comarcal.t':'🗺 Consejo comarcal',
@@ -867,15 +958,80 @@ es: {
   'fo.rol.coordinacio':'Coordinación de equipo o de programa',
   'fo.rol.altre':'Otra cosa',
 /*/PRESSU-I18N-ES*/
+/*NAV-I18N-ES*/
+  'nv.g.comenca':'🧭 Empieza',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.pressupost':'Pide presupuesto',
+  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De qué va todo esto',
+  'nv.t.uneix-te':'Únete',
+  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
+  'nv.g.eines':'🛠 Herramientas',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Roles e intercambios de un proyecto',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grupo de consumo y compra colectiva',
+  'nv.t.energia':'La Energía',
+  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
+  'nv.t.habitatge':'La Vivienda',
+  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
+  'nv.t.banc-temps':'El Banco de Tiempo',
+  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
+  'nv.t.biblioteca':'La Biblioteca de las Cosas',
+  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
+  'nv.t.joc':'El juego',
+  'nv.d.joc':'La plaza, a ritmo',
+  'nv.g.apren':'🎓 Aprende',
+  'nv.t.formacio':'Formación',
+  'nv.d.formacio':'16 módulos, de N0 a N3',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.t.escola':'Escuelas',
+  'nv.d.escola':'El SOS a medida de aula',
+  'nv.t.vedes':'Las vedas',
+  'nv.d.vedes':'Las reglas, con el motivo al lado',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratorio de VNA',
+  'nv.d.arrel-curs_vna':'El curso de análisis de redes de valor',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.g.xarxa':'🏘 Red',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La película que haremos 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estado líquido',
+  'nv.t.online':'Directorio',
+  'nv.d.online':'Quién hay, por territorio',
+  'nv.totes':'Todas las páginas',
+  'nv.g.eina':'🖥 La herramienta',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'La aplicación entera, en el navegador',
+/*/NAV-I18N-ES*/
 }
 };
+/* LA TRIA VE DE LA PORTADA. La portada la desa a `tt_lang` i aquesta pàgina
+   la desava a `sos.lang`: dues claus al mateix navegador, i qui triava
+   castellà a `teamtowershuma.com` i clicava «Demana pressupost» es trobava el
+   formulari en català. No petava res —cada pàgina feia la seva—, però la tria
+   s'esborrava en passar d'una banda a l'altra.
+
+   Es llegeixen les dues i s'escriuen les dues, i així la tria viatja en els dos
+   sentits sense haver de tocar el commutador de la portada. */
 var PR_LANG = 'ca';
-try { PR_LANG = localStorage.getItem('sos.lang') || 'ca'; } catch (e) {}
+try { PR_LANG = localStorage.getItem('sos.lang') || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
 
 function prAplicaLang(l) {
   if (!PR_I18N[l]) l = 'ca';
   PR_LANG = l;
-  try { localStorage.setItem('sos.lang', l); } catch (e) {}
+  try { localStorage.setItem('sos.lang', l); localStorage.setItem('tt_lang', l); } catch (e) {}
   document.documentElement.lang = l;
   var t = PR_I18N[l];
   document.querySelectorAll('[data-i18n]').forEach(function (el) {

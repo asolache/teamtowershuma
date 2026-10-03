@@ -284,14 +284,21 @@ function nav(pagina) {
   const aqui = h => h === pagina;
   const grup = g => {
     const dins = g.links.some(l => aqui(l[0]));
-    /* Les pàgines del SOS són monolingües i no tenen diccionari: s'hi escriu
-       el català. Qui porta les dues llengües és la portada, i allà el marcatge
-       surt amb `data-i18n` i les claus van als dos diccionaris. */
-    return `<details class="sn-g${dins ? ' sn-here' : ''}"><summary>${g.ic} ${esc(txt(g.lbl, 'ca'))}</summary>` +
-      `<div class="sn-p">` + g.links.map(([h, t, d]) =>
+    /* El marcatge duu la clau **a totes** les pàgines del SOS i el text escrit
+       en català. A les que no tenen diccionari no passa res: una clau sense
+       entrada deixa el text tal com és, que és el correcte. A les que sí que
+       en tenen —els quatre formularis— la barra canvia amb la pàgina.
+
+       Abans la barra es quedava en català sobre un formulari traduït de dalt a
+       baix, i era l'última costura que es veia mirant. */
+    return `<details class="sn-g${dins ? ' sn-here' : ''}"><summary data-i18n="nv.g.${g.id}">${g.ic} ${esc(txt(g.lbl, 'ca'))}</summary>` +
+      `<div class="sn-p">` + g.links.map(([h, t, d]) => {
         /* Des d'una pàgina del SOS, l'arrel és un nivell amunt. */
-        `<a href="${g.arrel ? '../' + h : h}"${!g.arrel && aqui(h) ? ' aria-current="page"' : ''}><b>${esc(txt(t, 'ca'))}</b><span>${esc(txt(d, 'ca'))}</span></a>`
-      ).join('') + `</div></details>`;
+        const id = clauDe(g, h);
+        return `<a href="${g.arrel ? '../' + h : h}"${!g.arrel && aqui(h) ? ' aria-current="page"' : ''}>`
+          + `<b data-i18n="nv.t.${id}">${esc(txt(t, 'ca'))}</b>`
+          + `<span data-i18n="nv.d.${id}">${esc(txt(d, 'ca'))}</span></a>`;
+      }).join('') + `</div></details>`;
   };
   /* El CSS va DINS de les marques. A fora, el bloc de substitució el tornava a
      afegir a cada passada i el fitxer creixia amb una còpia més: el generador
@@ -476,11 +483,35 @@ function posaApp(html) {
 if (CHECK) console.log('\nGuarda del menú · una sola arquitectura a totes les pàgines');
 let tocades = 0;
 
+/* Les pàgines del SOS que **sí que tenen diccionari**: els quatre formularis.
+   Allà, a més del menú, s'hi escriuen les claus del menú als dos diccionaris;
+   a la resta el marcatge porta la clau i el text en català, i no passa res.
+   La llista és explícita perquè una pàgina amb marques i sense diccionari seria
+   un error de muntatge, i val més que ho digui aquí que no pas que es trobi
+   mirant. */
+const AMB_DICCIONARI = ['diagnostic.html', 'diagnostic-org.html',
+  'diagnostic-territori.html', 'pressupost.html'];
+
+/* Les claus del menú als dos diccionaris d'una pàgina del SOS. Mateixa feina
+   que `posaPortada`, amb unes marques que són d'aquestes pàgines. */
+function posaDicSos(html, p) {
+  if (AMB_DICCIONARI.indexOf(p) < 0) return html;
+  let out = html;
+  for (const [M, l] of [['CA', 'ca'], ['ES', 'es']]) {
+    const a = `/*NAV-I18N-${M}*/`, b = `/*/NAV-I18N-${M}*/`;
+    const x = out.indexOf(a), y = out.indexOf(b);
+    if (x < 0 || y <= x) { bad(`${p} hauria de portar les marques ${a} … ${b}`); return out; }
+    out = out.slice(0, x + a.length) + '\n' + diccionari(l) + '\n' + out.slice(y);
+  }
+  return out;
+}
+
 PAGINES.forEach(p => {
   const f = join(SOS, p);
   if (!existsSync(f)) { bad(`${p} és a la llista del menú i no existeix`); return; }
   const html = readFileSync(f, 'utf8');
-  const nou = posa(html, p);
+  let nou = posa(html, p);
+  if (nou !== null) nou = posaDicSos(nou, p);
   if (nou === null) { bad(`${p} no té <body>: no s'hi pot posar el menú`); return; }
   if (CHECK) {
     if (nou === html) return;

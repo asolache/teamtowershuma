@@ -36,6 +36,18 @@ header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:620px}
 .peu{margin-top:1.4rem;font-size:.84rem;color:var(--muted);line-height:1.7}
 .peu a{color:var(--indigo);text-decoration:none}
 .peu a:hover{text-decoration:underline}
+
+/* EL COMMUTADOR DE LLENGUA. Mateixa forma als quatre formularis de la casa
+   —els dos diagnòstics, la tria i el pressupost— perquè qui en recorre dos
+   no ha de tornar a buscar on era. La tria es desa a `sos.lang` i la
+   comparteixen totes quatre. */
+.lang-sw{display:flex;gap:2px;width:max-content;margin:0 auto 1.1rem;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;padding:2px}
+.lang-b{background:transparent;border:none;color:var(--muted);font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.08em;cursor:pointer;padding:4px 11px;border-radius:5px;
+  transition:background .15s,color .15s}
+.lang-b.on{background:var(--indigo);color:#fff;font-weight:700}
+.lang-b:not(.on):hover{color:var(--text)}
 </style>
 </head>
 <body>
@@ -88,14 +100,20 @@ header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:620px}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g sn-here"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b>El laboratori de VNA</b><span>El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b>Premsa</b><span>El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html" aria-current="page"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b data-i18n="nv.t.arrel-curs_vna">El laboratori de VNA</b><span data-i18n="nv.d.arrel-curs_vna">El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
 
 <header>
-<h1>Quin diagnòstic et toca?</h1>
-<p>Els dos es responen en <strong>tres minuts</strong> i te l'endús <strong>l'enviïs o no</strong>. Pregunten coses diferents perquè el que et passa és diferent.</p>
+<!-- Les dues llengües. Aquesta és la primera pantalla del diagnòstic: si es
+     llegeix en català, qui ve del castellà ja no entra ni a triar porta. -->
+<div class="lang-sw">
+  <button type="button" class="lang-b on" data-lang="ca">CA</button>
+  <button type="button" class="lang-b" data-lang="es">ES</button>
+</div>
+<h1 data-i18n="tr.h1">Quin diagnòstic et toca?</h1>
+<p data-i18n-html="tr.intro">Els dos es responen en <strong>tres minuts</strong> i te l'endús <strong>l'enviïs o no</strong>. Pregunten coses diferents perquè el que et passa és diferent.</p>
 </header>
 
 <main class="wrap">
@@ -103,17 +121,17 @@ header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:620px}
 <div class="portes">
   <a class="porta" href="diagnostic-org.html" style="--c:var(--blue)">
     <span class="p-ic">🏢</span>
-    <span class="p-t">Una organització</span>
-    <span class="p-d">Una empresa, una cooperativa, una agència, una escola de negoci o una fundació. Vols que passi alguna cosa amb el teu equip: obrir una jornada, cohesionar-lo, entendre de qui depeneu de debò o que sostingui el que heu muntat.</span>
-    <span class="p-q">Et preguntarem <b>què vols que passi</b>, quina casa sou i quan.</span>
-    <span class="p-cta">Comença →</span>
+    <span class="p-t" data-i18n="tr.org.t">Una organització</span>
+    <span class="p-d" data-i18n="tr.org.d">Una empresa, una cooperativa, una agència, una escola de negoci o una fundació. Vols que passi alguna cosa amb el teu equip: obrir una jornada, cohesionar-lo, entendre de qui depeneu de debò o que sostingui el que heu muntat.</span>
+    <span class="p-q" data-i18n-html="tr.org.q">Et preguntarem <b>què vols que passi</b>, quina casa sou i quan.</span>
+    <span class="p-cta" data-i18n="tr.cta">Comença →</span>
   </a>
   <a class="porta" href="diagnostic-territori.html" style="--c:var(--green)">
     <span class="p-ic">🗺</span>
-    <span class="p-t">Un territori</span>
-    <span class="p-d">Un ajuntament, un consell comarcal, una entitat o un grup promotor. Voleu engegar o endreçar projectes comunitaris: banc de temps, biblioteca de les coses, comunitat energètica, grup de consum.</span>
-    <span class="p-q">Et preguntarem <b>què hi ha ja en marxa</b>, què us falta i amb quins diners.</span>
-    <span class="p-cta">Comença →</span>
+    <span class="p-t" data-i18n="tr.terr.t">Un territori</span>
+    <span class="p-d" data-i18n="tr.terr.d">Un ajuntament, un consell comarcal, una entitat o un grup promotor. Voleu engegar o endreçar projectes comunitaris: banc de temps, biblioteca de les coses, comunitat energètica, grup de consum.</span>
+    <span class="p-q" data-i18n-html="tr.terr.q">Et preguntarem <b>què hi ha ja en marxa</b>, què us falta i amb quins diners.</span>
+    <span class="p-cta" data-i18n="tr.cta">Comença →</span>
   </a>
 </div>
 
@@ -122,15 +140,194 @@ header p{color:var(--light);margin:0 auto;font-size:1.02rem;max-width:620px}
      subvencions i teixit; una organització té pressupost, calendari i un
      equip. Barrejar-ho feia que qui venia d'una empresa hagués de dir el
      nombre d'habitants del seu municipi abans d'arribar enlloc. -->
-<div class="nota">
+<div class="nota" data-i18n-html="tr.nota">
   <b>Si dubtes, tria «una organització».</b> El del territori pregunta pel municipi, per la població i pel teixit associatiu; si això no és el que et preocupa, no és el teu.
 </div>
 
-<p class="peu">
+<p class="peu" data-i18n-html="tr.peu">
   Ja saps què vols i només et falta la xifra? → <a href="pressupost.html">Demana pressupost</a><br>
   Vols veure l'eina abans de res? → <a href="index.html">Obre el SOS</a>
 </p>
 
 </main>
+
+<script>
+/* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════
+   Aquesta pàgina no la genera ningú —són dues portes i una nota— i per això
+   el diccionari viu aquí. Les altres tres el reben del generador perquè allà
+   mitja pàgina és generada; aquí no hi ha res a divergir.
+
+   La tria es desa a `sos.lang`, la mateixa clau que el pressupost i els dos
+   diagnòstics: qui tria castellà a la porta ja no l'ha de tornar a triar. */
+var TR_I18N = {
+ca: {
+/*NAV-I18N-CA*/
+  'nv.g.comenca':'🧭 Comença',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.pressupost':'Demana pressupost',
+  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De què va tot això',
+  'nv.t.uneix-te':'Uneix-t\'hi',
+  'nv.d.uneix-te':'El que ja fas al barri, comptat',
+  'nv.g.eines':'🛠 Eines',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Rols i intercanvis d\'un projecte',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grup de consum i compra col·lectiva',
+  'nv.t.energia':'L\'Energia',
+  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
+  'nv.t.habitatge':'L\'Habitatge',
+  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
+  'nv.t.banc-temps':'El Banc de Temps',
+  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
+  'nv.t.biblioteca':'La Biblioteca de les Coses',
+  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El poble sencer i les nou professions',
+  'nv.t.joc':'El joc',
+  'nv.d.joc':'La plaça, a ritme',
+  'nv.g.apren':'🎓 Aprèn',
+  'nv.t.formacio':'Formació',
+  'nv.d.formacio':'16 mòduls, de N0 a N3',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.t.escola':'Escoles',
+  'nv.d.escola':'El SOS a mida d\'aula',
+  'nv.t.vedes':'Les vedes',
+  'nv.d.vedes':'Les regles, amb el motiu al costat',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratori de VNA',
+  'nv.d.arrel-curs_vna':'El curs d\'anàlisi de xarxes de valor',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.g.xarxa':'🏘 Xarxa',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La pel·lícula que farem 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estat líquid',
+  'nv.t.online':'Directori',
+  'nv.d.online':'Qui hi ha, per territori',
+  'nv.totes':'Totes les pàgines',
+  'nv.g.eina':'🖥 L\'eina',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'L\'aplicació sencera, al navegador',
+/*/NAV-I18N-CA*/
+  'tr.h1': 'Quin diagnòstic et toca?',
+  'tr.intro': 'Els dos es responen en <strong>tres minuts</strong> i te l\'endús <strong>l\'enviïs o no</strong>. Pregunten coses diferents perquè el que et passa és diferent.',
+  'tr.org.t': 'Una organització',
+  'tr.org.d': 'Una empresa, una cooperativa, una agència, una escola de negoci o una fundació. Vols que passi alguna cosa amb el teu equip: obrir una jornada, cohesionar-lo, entendre de qui depeneu de debò o que sostingui el que heu muntat.',
+  'tr.org.q': 'Et preguntarem <b>què vols que passi</b>, quina casa sou i quan.',
+  'tr.terr.t': 'Un territori',
+  'tr.terr.d': 'Un ajuntament, un consell comarcal, una entitat o un grup promotor. Voleu engegar o endreçar projectes comunitaris: banc de temps, biblioteca de les coses, comunitat energètica, grup de consum.',
+  'tr.terr.q': 'Et preguntarem <b>què hi ha ja en marxa</b>, què us falta i amb quins diners.',
+  'tr.cta': 'Comença →',
+  'tr.nota': '<b>Si dubtes, tria «una organització».</b> El del territori pregunta pel municipi, per la població i pel teixit associatiu; si això no és el que et preocupa, no és el teu.',
+  'tr.peu': 'Ja saps què vols i només et falta la xifra? → <a href="pressupost.html">Demana pressupost</a><br>Vols veure l\'eina abans de res? → <a href="index.html">Obre el SOS</a>'
+},
+es: {
+/*NAV-I18N-ES*/
+  'nv.g.comenca':'🧭 Empieza',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.pressupost':'Pide presupuesto',
+  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De qué va todo esto',
+  'nv.t.uneix-te':'Únete',
+  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
+  'nv.g.eines':'🛠 Herramientas',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Roles e intercambios de un proyecto',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grupo de consumo y compra colectiva',
+  'nv.t.energia':'La Energía',
+  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
+  'nv.t.habitatge':'La Vivienda',
+  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
+  'nv.t.banc-temps':'El Banco de Tiempo',
+  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
+  'nv.t.biblioteca':'La Biblioteca de las Cosas',
+  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
+  'nv.t.joc':'El juego',
+  'nv.d.joc':'La plaza, a ritmo',
+  'nv.g.apren':'🎓 Aprende',
+  'nv.t.formacio':'Formación',
+  'nv.d.formacio':'16 módulos, de N0 a N3',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.t.escola':'Escuelas',
+  'nv.d.escola':'El SOS a medida de aula',
+  'nv.t.vedes':'Las vedas',
+  'nv.d.vedes':'Las reglas, con el motivo al lado',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratorio de VNA',
+  'nv.d.arrel-curs_vna':'El curso de análisis de redes de valor',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.g.xarxa':'🏘 Red',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La película que haremos 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estado líquido',
+  'nv.t.online':'Directorio',
+  'nv.d.online':'Quién hay, por territorio',
+  'nv.totes':'Todas las páginas',
+  'nv.g.eina':'🖥 La herramienta',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'La aplicación entera, en el navegador',
+/*/NAV-I18N-ES*/
+  'tr.h1': '¿Qué diagnóstico te toca?',
+  'tr.intro': 'Los dos se responden en <strong>tres minutos</strong> y te lo llevas <strong>nos lo envíes o no</strong>. Preguntan cosas distintas porque lo que te pasa es distinto.',
+  'tr.org.t': 'Una organización',
+  'tr.org.d': 'Una empresa, una cooperativa, una agencia, una escuela de negocio o una fundación. Quieres que pase algo con tu equipo: abrir una jornada, cohesionarlo, entender de quién dependéis de verdad o que sostenga lo que habéis montado.',
+  'tr.org.q': 'Te preguntaremos <b>qué quieres que pase</b>, qué casa sois y cuándo.',
+  'tr.terr.t': 'Un territorio',
+  'tr.terr.d': 'Un ayuntamiento, un consejo comarcal, una entidad o un grupo promotor. Queréis arrancar u ordenar proyectos comunitarios: banco de tiempo, biblioteca de las cosas, comunidad energética, grupo de consumo.',
+  'tr.terr.q': 'Te preguntaremos <b>qué hay ya en marcha</b>, qué os falta y con qué dinero.',
+  'tr.cta': 'Empieza →',
+  'tr.nota': '<b>Si dudas, elige «una organización».</b> El del territorio pregunta por el municipio, por la población y por el tejido asociativo; si eso no es lo que te preocupa, no es el tuyo.',
+  'tr.peu': '¿Ya sabes qué quieres y solo te falta la cifra? → <a href="pressupost.html">Pide presupuesto</a><br>¿Quieres ver la herramienta antes de nada? → <a href="index.html">Abre el SOS</a>'
+}
+};
+/* Es llegeixen les dues claus i s'escriuen les dues: la portada desa la tria a
+   `tt_lang` i els formularis a `sos.lang`, i qui triava castellà a la portada i
+   clicava cap aquí es trobava la pàgina en català. */
+var TR_LANG = 'ca';
+try { TR_LANG = localStorage.getItem('sos.lang') || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
+function trAplicaLang(l) {
+  if (!TR_I18N[l]) l = 'ca';
+  TR_LANG = l;
+  try { localStorage.setItem('sos.lang', l); localStorage.setItem('tt_lang', l); } catch (e) {}
+  document.documentElement.lang = l;
+  var t = TR_I18N[l];
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n-html');
+    if (t[k] !== undefined) el.innerHTML = t[k];
+  });
+  document.querySelectorAll('.lang-b').forEach(function (b) {
+    b.classList.toggle('on', b.getAttribute('data-lang') === l);
+  });
+}
+document.querySelectorAll('.lang-b').forEach(function (b) {
+  b.addEventListener('click', function () { trAplicaLang(b.getAttribute('data-lang')); });
+});
+trAplicaLang(TR_LANG);
+</script>
 </body>
 </html>

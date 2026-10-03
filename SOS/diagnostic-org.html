@@ -30,7 +30,11 @@ input[type=text],input[type=email],input[type=tel],input[type=number],select,tex
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
 textarea{min-height:88px;resize:vertical}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
-.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* `color` i `text-align` explícits: `.opt` és un `<button>` i el navegador hi
+   posa text negre i centrat per defecte. El `.o-d` tenia color propi i el
+   `.o-t` no, o sigui que el **títol** de cada opció sortia negre sobre fons
+   negre —illegible— i centrat. No peta i es veu mirant. */
+.opt{display:flex;flex-direction:column;gap:.15rem;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:var(--text);text-align:left;font:inherit}
 .opt:hover{border-color:var(--indigo)}
 .opt.sel{border-color:var(--c,var(--indigo));background:color-mix(in srgb,var(--c,var(--indigo)) 14%,transparent)}
 .opt .o-t{font-weight:600;font-size:.88rem}
@@ -110,6 +114,15 @@ footer a{color:var(--indigo);text-decoration:none}
 .env-q b{color:var(--light)}
 .env-ok{color:var(--green);font-size:.86rem;margin:.5rem 0 0}
 .env-ko{color:var(--orange);font-size:.86rem;margin:.5rem 0 0}
+
+/* EL COMMUTADOR DE LLENGUA · la mateixa forma als quatre formularis. */
+.lang-sw{display:flex;gap:2px;width:max-content;margin:0 auto 1.1rem;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;padding:2px}
+.lang-b{background:transparent;border:none;color:var(--muted);font-family:var(--mono);
+  font-size:.68rem;letter-spacing:.08em;cursor:pointer;padding:4px 11px;border-radius:5px;
+  transition:background .15s,color .15s}
+.lang-b.on{background:var(--indigo);color:#fff;font-weight:700}
+.lang-b:not(.on):hover{color:var(--text)}
 </style>
 </head>
 <body>
@@ -162,15 +175,23 @@ footer a{color:var(--indigo);text-decoration:none}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g"><summary>🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b>Diagnòstic</b><span>On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b>Demana pressupost</b><span>Tria què vols i en surt la proposta</span></a><a href="intro.html"><b>La intro</b><span>De què va tot això</span></a><a href="uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary>🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b>Mapa de valor</b><span>Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="joc.html"><b>El joc</b><span>La plaça, a ritme</span></a></div></details><details class="sn-g"><summary>🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b>Formació</b><span>16 mòduls, de N0 a N3</span></a><a href="ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b>Escoles</b><span>El SOS a mida d'aula</span></a><a href="vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary>🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b>El laboratori de VNA</b><span>El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b>Premsa</b><span>El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary>🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b>El Comando</b><span>La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b>Molekulon</b><span>Molekulandia, un estat líquid</span></a><a href="online.html"><b>Directori</b><span>Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../curs_vna.html"><b data-i18n="nv.t.arrel-curs_vna">El laboratori de VNA</b><span data-i18n="nv.d.arrel-curs_vna">El curs d'anàlisi de xarxes de valor</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
 
 <header>
-<h1>Diagnòstic d'organització</h1>
-<p>Digue'ns <strong>què vols que passi</strong> i quina casa sou. En <strong>3 minuts</strong> tindràs què t'està passant, què proposaríem i quant dura — <strong>l'enviïs o no</strong>.</p>
-<nav><a href="diagnostic.html">← L'altre diagnòstic</a> · <a href="pressupost.html">Demana pressupost</a> · <a href="index.html">Obre el SOS</a></nav>
+<!-- Les dues llengües. El formulari ja portava les claus `fo.*` dels blocs
+     compartits i no tenia diccionari que les llegís: el text es quedava escrit
+     en català i prou. Ara el diccionari hi és, i el que és d'aquesta pàgina
+     —les preguntes pròpies i el resultat— es declara a baix. -->
+<div class="lang-sw">
+  <button type="button" class="lang-b on" data-lang="ca">CA</button>
+  <button type="button" class="lang-b" data-lang="es">ES</button>
+</div>
+<h1 data-i18n="dx.h1">Diagnòstic d'organització</h1>
+<p data-i18n-html="dx.intro">Digue'ns <strong>què vols que passi</strong> i quina casa sou. En <strong>3 minuts</strong> tindràs què t'està passant, què proposaríem i quant dura — <strong>l'enviïs o no</strong>.</p>
+<nav data-i18n-html="dx.nav"><a href="diagnostic.html">← L'altre diagnòstic</a> · <a href="pressupost.html">Demana pressupost</a> · <a href="index.html">Obre el SOS</a></nav>
 </header>
 
 <main class="wrap">
@@ -182,8 +203,8 @@ footer a{color:var(--indigo);text-decoration:none}
 <form id="dxForm" autocomplete="on">
 
 <section class="step" id="s1">
-<h2>1 · Qui ets</h2>
-<p class="sub">Per poder-te respondre. No es crea cap compte i no surt res d'aquest navegador si tu no ho prems.</p>
+<h2 data-i18n="dx.s1.h">1 · Qui ets</h2>
+<p class="sub" data-i18n="dx.s1.sub">Per poder-te respondre. No es crea cap compte i no surt res d'aquest navegador si tu no ho prems.</p>
 <!--FORM-QUI-->
 <div class="grid2">
 <div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
@@ -195,13 +216,13 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 <div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
-<p class="err" id="e1">Ens falta el nom i un correu que sembli un correu.</p>
-<div class="acts"><span></span><button type="button" class="btn" data-next="2">Següent →</button></div>
+<p class="err" id="e1" data-i18n="dx.e1">Ens falta el nom i un correu que sembli un correu.</p>
+<div class="acts"><span></span><button type="button" class="btn" data-next="2" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <section class="step" id="s2" hidden>
-<h2>2 · Quina casa sou</h2>
-<p class="sub">Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s'escriu la proposta.</p>
+<h2 data-i18n="dx.s2.h">2 · Quina casa sou</h2>
+<p class="sub" data-i18n="dx.s2.sub">Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s'escriu la proposta.</p>
 <!--FORM-ORG-->
 <div class="f">
 <label data-i18n="fo.l.tipus">Tipus d'organització *</label>
@@ -216,22 +237,22 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 <div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
-<div class="f"><label for="web">El vostre web</label><input type="url" id="web" name="web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
-<div class="f"><label for="dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
 </div>
 <div class="grid2">
-<div class="f"><label for="municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required placeholder="p.ex. Torrelles de Foix"></div>
-<div class="f"><label for="comarca">Comarca</label><input type="text" id="comarca" name="comarca" placeholder="p.ex. Alt Penedès"></div>
+<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
 </div>
-<div class="f"><label for="persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" placeholder="p.ex. 45"><div class="hint">De tota l'organització, no només de l'equip que hi entraria.</div></div>
+<div class="f"><label for="persones" data-i18n="fo.l.persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" data-i18n-ph="fo.ph.persones" placeholder="p.ex. 45"><div class="hint" data-i18n="fo.h.persones">De tota l'organització, no només de l'equip que hi entraria.</div></div>
 <!--/FORM-ORG-->
-<p class="err" id="e2">Tria quin tipus d'organització sou i digues on sou.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="1">← Enrere</button><button type="button" class="btn" data-next="3">Següent →</button></div>
+<p class="err" id="e2" data-i18n="dx.e2">Tria quin tipus d'organització sou i digues on sou.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="1" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="3" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <section class="step" id="s3" hidden>
-<h2>3 · Què vols que passi</h2>
-<p class="sub">És la pregunta que decideix tota la resta. Tria la que més s'assembli al que et va portar aquí.</p>
+<h2 data-i18n="dx.s3.h">3 · Què vols que passi</h2>
+<p class="sub" data-i18n="dx.s3.sub">És la pregunta que decideix tota la resta. Tria la que més s'assembli al que et va portar aquí.</p>
 <div class="opts" id="objTipus">
 <!--DX-OBJECTIUS-->
 <button type="button" class="opt" data-v="obrir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎬 Obrir una jornada amb alguna cosa que es recordi</span><span class="o-d">Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.</span></button>
@@ -249,15 +270,15 @@ footer a{color:var(--indigo);text-decoration:none}
 
      Diu clarament que això no entra al càlcul: ho llegim nosaltres. Prometre
      que un text lliure canvia la proposta seria mentir-li a qui l'escriu. -->
-<div class="f" style="margin-top:1rem"><label for="ampliacio">Amplia-ho, o digue'ns si el motiu és un altre</label>
-<textarea id="ampliacio" name="ampliacio" rows="3" placeholder="p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l'equip no s'ha refet de la fusió»"></textarea>
-<div class="hint">Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.</div></div>
-<p class="err" id="e3">Tria què vols que passi.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="2">← Enrere</button><button type="button" class="btn" data-next="4">Següent →</button></div>
+<div class="f" style="margin-top:1rem"><label for="ampliacio" data-i18n="dx.l.ampliacio">Amplia-ho, o digue'ns si el motiu és un altre</label>
+<textarea id="ampliacio" name="ampliacio" rows="3" data-i18n-ph="dx.ph.ampliacio" placeholder="p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l'equip no s'ha refet de la fusió»"></textarea>
+<div class="hint" data-i18n="dx.h.ampliacio">Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.</div></div>
+<p class="err" id="e3" data-i18n="dx.e3">Tria què vols que passi.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="2" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="4" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <section class="step" id="s4" hidden>
-<h2>4 · El que falta per respondre't</h2>
+<h2 data-i18n="dx.s4.h">4 · El que falta per respondre't</h2>
 <p class="sub" id="s4sub"></p>
 
 <!-- LES DUES BRANQUES. Cap organització veu les dues: un acte amb data no té
@@ -265,56 +286,56 @@ footer a{color:var(--indigo);text-decoration:none}
      preguntar-ho tot faria un formulari llarg que no discrimina res. -->
 <div id="qFormat" hidden>
   <div class="grid2">
-    <div class="f"><label for="participants">Quanta gent hi serà</label><input type="number" id="participants" name="participants" min="0" step="1" placeholder="p.ex. 80"></div>
+    <div class="f"><label for="participants" data-i18n="dx.l.participants">Quanta gent hi serà</label><input type="number" id="participants" name="participants" min="0" step="1" data-i18n-ph="dx.ph.participants" placeholder="p.ex. 80"></div>
     <!-- LA DATA, amb el calendari del telèfon. En text lliure hi arribava «al
      març», «2n trimestre» i «14/3» barrejats, i cap dels tres es pot comparar
      amb l'agenda. Si encara no hi ha dia, es deixa en blanc i s'explica al
      camp lliure del pas anterior: val més un buit honest que una data
      inventada que després ningú es creu. -->
-<div class="f"><label for="quan">Quin dia</label><input type="date" id="quan" name="quan"><div class="hint">Si encara no està tancat, deixa-ho en blanc.</div></div>
+<div class="f"><label for="quan" data-i18n="dx.l.quan">Quin dia</label><input type="date" id="quan" name="quan"><div class="hint" data-i18n="dx.h.quan">Si encara no està tancat, deixa-ho en blanc.</div></div>
   </div>
-  <div class="f"><label for="lloc">On</label><input type="text" id="lloc" name="lloc" placeholder="p.ex. hotel a Sitges, sala interior"><div class="hint">Si és a cobert, l'alçada del sostre decideix què s'hi pot fer.</div></div>
-  <div class="f"><label for="dins">Dins d'una jornada o és la jornada</label>
+  <div class="f"><label for="lloc" data-i18n="dx.l.lloc">On</label><input type="text" id="lloc" name="lloc" data-i18n-ph="dx.ph.lloc" placeholder="p.ex. hotel a Sitges, sala interior"><div class="hint" data-i18n="dx.h.lloc">Si és a cobert, l'alçada del sostre decideix què s'hi pot fer.</div></div>
+  <div class="f"><label for="dins" data-i18n="dx.l.dins">Dins d'una jornada o és la jornada</label>
     <select id="dins" name="dins">
-      <option value="dins">És una peça dins d'un programa més llarg</option>
-      <option value="sencera">És la jornada sencera</option>
-      <option value="perveure">Encara s'està decidint</option>
+      <option value="dins" data-i18n="dx.dins.dins">És una peça dins d'un programa més llarg</option>
+      <option value="sencera" data-i18n="dx.dins.sencera">És la jornada sencera</option>
+      <option value="perveure" data-i18n="dx.dins.perveure">Encara s'està decidint</option>
     </select></div>
 </div>
 
 <div id="qDolor" hidden>
-  <div class="f"><label for="provat">Què heu provat que no va quedar</label><textarea id="provat" name="provat" rows="2" placeholder="p.ex. una formació que va agradar molt i al mes ja no la feia servir ningú"></textarea></div>
-  <div class="f"><label for="soste">Qui sosté avui el que no és a cap procediment</label><input type="text" id="soste" name="soste" placeholder="p.ex. la responsable d'operacions i una persona de sistemes"><div class="hint">No cal cap nom: el rol n'hi ha prou.</div></div>
-  <div class="f"><label for="simarxa">I què passaria si aquesta persona marxés demà</label>
+  <div class="f"><label for="provat" data-i18n="dx.l.provat">Què heu provat que no va quedar</label><textarea id="provat" name="provat" rows="2" data-i18n-ph="dx.ph.provat" placeholder="p.ex. una formació que va agradar molt i al mes ja no la feia servir ningú"></textarea></div>
+  <div class="f"><label for="soste" data-i18n="dx.l.soste">Qui sosté avui el que no és a cap procediment</label><input type="text" id="soste" name="soste" data-i18n-ph="dx.ph.soste" placeholder="p.ex. la responsable d'operacions i una persona de sistemes"><div class="hint" data-i18n="dx.h.soste">No cal cap nom: el rol n'hi ha prou.</div></div>
+  <div class="f"><label for="simarxa" data-i18n="dx.l.simarxa">I què passaria si aquesta persona marxés demà</label>
     <select id="simarxa" name="simarxa">
-      <option value="">— tria —</option>
-      <option value="poc">Es notaria, però ens en sortiríem</option>
-      <option value="forca">Perdríem coses que ningú sap com es fan</option>
-      <option value="molt">Hi ha projectes que s'aturarien</option>
+      <option value="" data-i18n="dx.tria">— tria —</option>
+      <option value="poc" data-i18n="dx.simarxa.poc">Es notaria, però ens en sortiríem</option>
+      <option value="forca" data-i18n="dx.simarxa.forca">Perdríem coses que ningú sap com es fan</option>
+      <option value="molt" data-i18n="dx.simarxa.molt">Hi ha projectes que s'aturarien</option>
     </select></div>
 </div>
 
 <div class="grid2">
-  <div class="f"><label for="termini">Per a quan</label>
+  <div class="f"><label for="termini" data-i18n="dx.l.termini">Per a quan</label>
     <select id="termini" name="termini">
-      <option value="explorant">Estem explorant</option>
-      <option value="curs" selected>Aquest curs</option>
-      <option value="data">Ja tenim data</option>
+      <option value="explorant" data-i18n="dx.term.explorant">Estem explorant</option>
+      <option value="curs" selected data-i18n="dx.term.curs">Aquest curs</option>
+      <option value="data" data-i18n="dx.term.data">Ja tenim data</option>
     </select></div>
   <!-- LA PREGUNTA QUE MÉS QUALIFICA, i que avui no es fa enlloc. Qui pot dir
        que sí canvia tant la proposta com el que fem nosaltres després. -->
-  <div class="f"><label for="decideix">Qui pot dir que sí</label>
+  <div class="f"><label for="decideix" data-i18n="dx.l.decideix">Qui pot dir que sí</label>
     <select id="decideix" name="decideix">
-      <option value="">— tria —</option>
-      <option value="jo">Jo mateix/a</option>
-      <option value="jojunt">Jo, amb una altra persona</option>
-      <option value="comite">Un comitè o una direcció</option>
-      <option value="client">El meu client</option>
+      <option value="" data-i18n="dx.tria">— tria —</option>
+      <option value="jo" data-i18n="dx.dec.jo">Jo mateix/a</option>
+      <option value="jojunt" data-i18n="dx.dec.jojunt">Jo, amb una altra persona</option>
+      <option value="comite" data-i18n="dx.dec.comite">Un comitè o una direcció</option>
+      <option value="client" data-i18n="dx.dec.client">El meu client</option>
     </select></div>
 </div>
 
-<p class="err" id="e4">Digue'ns qui pot dir que sí: és el que ens permet preparar-ho bé.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="3">← Enrere</button><button type="button" class="btn" id="doDx">Veure el diagnòstic →</button></div>
+<p class="err" id="e4" data-i18n="dx.e4">Digue'ns qui pot dir que sí: és el que ens permet preparar-ho bé.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="3" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" id="doDx" data-i18n="dx.veure">Veure el diagnòstic →</button></div>
 </section>
 
 </form>
@@ -327,11 +348,11 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="dx-llegim" id="rLlegim"></div>
 <p class="dx-nota-org" id="rNotaOrg"></p>
 
-<h3 style="margin:1.6rem 0 .6rem;font-size:1.05rem">El que proposaríem</h3>
+<h3 style="margin:1.6rem 0 .6rem;font-size:1.05rem" data-i18n="dx.r.proposa">El que proposaríem</h3>
 <div id="rPaq"></div>
 <p class="sub" id="rPreu"></p>
 
-<h3 style="margin:1.4rem 0 .6rem;font-size:1.05rem">El primer pas</h3>
+<h3 style="margin:1.4rem 0 .6rem;font-size:1.05rem" data-i18n="dx.r.primer">El primer pas</h3>
 <p id="rNext"></p>
 
 <!-- L'ENVIAMENT · un acte a part, i dit.
@@ -339,21 +360,21 @@ footer a{color:var(--indigo);text-decoration:none}
      d'aquest navegador. Enviar-lo és una altra cosa i per això és un botó
      propi que diu què s'envia i a on. -->
 <div class="env">
-  <b>Envia'ns-ho i et preparem la proposta</b>
+  <b data-i18n="dx.env.h">Envia'ns-ho i et preparem la proposta</b>
   <div class="acts" style="margin-top:.6rem">
-    <button type="button" class="btn" id="bNet">Envia'ns el diagnòstic</button>
-    <a class="btn btn-g" id="bSend" href="#">O per correu</a>
+    <button type="button" class="btn" id="bNet" data-i18n="dx.env.btn">Envia'ns el diagnòstic</button>
+    <a class="btn btn-g" id="bSend" href="#" data-i18n="dx.env.mail">O per correu</a>
   </div>
-  <p class="env-q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —el teu contacte, la teva organització, què vols que passi i el termini— al formulari del nostre allotjament (Netlify), des d'on ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
-  <p class="env-ok" id="envOk" hidden>Rebut. Et responem en un dia laborable.</p>
+  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —el teu contacte, la teva organització, què vols que passi i el termini— al formulari del nostre allotjament (Netlify), des d'on ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
+  <p class="env-ok" id="envOk" hidden data-i18n="dx.env.ok">Rebut. Et responem en un dia laborable.</p>
   <p class="env-ko" id="envKo" hidden></p>
 </div>
 
 <div class="acts" style="margin-top:1rem">
-  <a class="btn btn-g" href="pressupost.html" id="bPressu">Demana pressupost →</a>
-  <button type="button" class="btn btn-g" id="bCopy">Copia'l</button>
-  <button type="button" class="btn btn-g" id="bJson">Descarrega'l</button>
-  <button type="button" class="btn btn-g" id="bAgain">Torna a començar</button>
+  <a class="btn btn-g" href="pressupost.html" id="bPressu" data-i18n="dx.b.pressu">Demana pressupost →</a>
+  <button type="button" class="btn btn-g" id="bCopy" data-i18n="dx.b.copia">Copia'l</button>
+  <button type="button" class="btn btn-g" id="bJson" data-i18n="dx.b.baixa">Descarrega'l</button>
+  <button type="button" class="btn btn-g" id="bAgain" data-i18n="dx.b.torna">Torna a començar</button>
 </div>
 </div>
 </section>
@@ -384,40 +405,456 @@ const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció 
 /*DX-DADES*/
 // Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
 const OBJECTIUS={
-  'obrir':{t:'Obrir una jornada amb alguna cosa que es recordi',preg:'format',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.',paq:['demos','fent-pinya'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.'},
-  'cohesio':{t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',preg:'format',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',paq:['fent-pinya','fent-pinya-vna','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.'},
-  'mapa':{t:'Entendre com flueix el valor i de qui depenem de debò',preg:'dolor',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',paq:['fent-pinya-vna','mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.'},
-  'sostenir':{t:'Que l\'equip sostingui el que hem muntat quan marxem',preg:'dolor',diu:'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.'},
-  'direccio':{t:'Acompanyar la direcció en una decisió que costa',preg:'dolor',diu:'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.'},
-  'produir':{t:'Produir un esdeveniment sencer',preg:'format',diu:'No volem una activitat dins d\'un programa: volem que algú ens porti la jornada de cap a peus.',paq:['produccio','demos'],despres:['transmedia'],llegim:'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.'}
+  'obrir':{ic:'🎬',t:'Obrir una jornada amb alguna cosa que es recordi',tEs:'Abrir una jornada con algo que se recuerde',preg:'format',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.',diuEs:'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación.',paq:['demos','fent-pinya'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.',llegimEs:'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde.'},
+  'cohesio':{ic:'🤝',t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',tEs:'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',preg:'format',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',diuEs:'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',paq:['fent-pinya','fent-pinya-vna','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',llegimEs:'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'},
+  'mapa':{ic:'🕸️',t:'Entendre com flueix el valor i de qui depenem de debò',tEs:'Entender cómo fluye el valor y de quién dependemos de verdad',preg:'dolor',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',diuEs:'Sabemos quién hay en el organigrama y no sabemos quién sostiene qué. Cuando se va alguien, nos damos cuenta de lo que hacía.',paq:['fent-pinya-vna','mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.',llegimEs:'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es lo que se vende aquí y lo que hace posible todo lo demás.'},
+  'sostenir':{ic:'🧱',t:'Que l\'equip sostingui el que hem muntat quan marxem',tEs:'Que el equipo sostenga lo que hemos montado cuando nos vayamos',preg:'dolor',diu:'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',diuEs:'Hemos hecho proyectos que funcionaban mientras estaba quien los llevaba. Queremos que el siguiente no dependa de una persona.',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.',llegimEs:'Sostener una manera de trabajar es un oficio y se aprende haciéndolo sobre vuestro caso. El cuarto paso del método es que nos vamos, y eso solo es honesto si antes se ha formado a quien se queda.'},
+  'direccio':{ic:'🧭',t:'Acompanyar la direcció en una decisió que costa',tEs:'Acompañar a la dirección en una decisión que cuesta',preg:'dolor',diu:'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',diuEs:'Hay una decisión sobre la mesa —una reorganización, un relevo, una fusión— y falta una mirada de fuera que no venga a vender nada.',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.',llegimEs:'Aquí no se entrega un taller: se entran sesiones con quien decide, con el mapa en la mano y sin público.'},
+  'produir':{ic:'🎪',t:'Produir un esdeveniment sencer',tEs:'Producir un evento entero',preg:'format',diu:'No volem una activitat dins d\'un programa: volem que algú ens porti la jornada de cap a peus.',diuEs:'No queremos una actividad dentro de un programa: queremos que alguien nos lleve la jornada de principio a fin.',paq:['produccio','demos'],despres:['transmedia'],llegim:'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.',llegimEs:'Producción quiere decir guion, proveedores, permisos y gente a pie de calle. Se cotiza a medida porque no hay dos jornadas iguales.'}
 };
 /* Nom, durada i què t'endús de cada paquet, copiats del catàleg pel generador.
    Sense preu a posta: aquest diagnòstic no en diu cap i el preu es parla. */
 const PAQ={
-  'mapa-organitzacio':{nom:'Mapa de valor d\'una organització',dura:'3 sessions · 4-6 setmanes',endus:'El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.'},
-  'fent-pinya-vna':{nom:'Fent pinya amb el mapa de valor',dura:'1 jornada + 2 sessions · 3-5 setmanes',endus:'Els rols de la casa amb nom arquetípic —qui és el baix de cada àrea, qui fa de vent entre dues— i el seu flux de valor en les dues vistes: el mapa i la pinya. Amb la desviació entre el mapa òptim i el que hi ha, i els rols redistribuïts.'},
-  'persones-cultura':{nom:'Diagnòstic de persones i cultura',dura:'3 sessions · 6 setmanes',endus:'On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer.'},
-  'equip-gestor':{nom:'Programa d\'equip gestor',dura:'12 setmanes · 5 rols · ~34 h de mentoria',endus:'Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant.'},
-  'comunitats-practica':{nom:'Comunitats de pràctica',dura:'6 sessions en 3 mesos',endus:'El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.'},
-  'formacio-equips':{nom:'Formació d\'equips',dura:'De mitja jornada a quatre sessions',endus:'Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.'},
-  'formar-formadors':{nom:'Formació de formadors',dura:'20 h + tutela de 2 casos',endus:'Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable.'},
-  'mentoria-directiva':{nom:'Mentoria per a equips directius',dura:'6 mesos · sessió quinzenal d\'1 h per persona',endus:'De tres a sis persones amb responsabilitat d\'equip, cadascuna amb el seu itinerari, treballant sobre un encàrrec real de la casa. Cada competència tanca amb una evidència comprovable, no amb un certificat d\'assistència.'},
-  'fent-pinya':{nom:'Taller de castells «Fent Pinya»',dura:'2 h + 30 min de reflexió',endus:'Un dinamitzador, un mínim de quatre monitors castellers i dos músics, faixes de lloguer, assegurança de responsabilitat civil i material didàctic. Es fa en qualsevol espai de 10×10×5 m, en castellà, català, anglès, alemany o francès.'},
-  'demos':{nom:'Demostració castellera',dura:'Fins a 4 castells per actuació',endus:'Una colla professional aixecant castells de fins a sis pisos: pilars, torres i tres de sis segons l\'alçada contractada.'},
-  'produccio':{nom:'Producció d\'esdeveniments',dura:'D\'una jornada a un festival de diversos dies',endus:'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament.'},
-  'fluxos-ia':{nom:'Fluxos amb IA · consultoria i formació',dura:'4 sessions · 6-8 setmanes',endus:'El mapa dels vostres fluxos amb cadascun marcat: quins es repeteixen igual i es poden automatitzar, quins porten criteri i no s\'han de tocar, i quins són intangibles que no consten enlloc. Amb dos fluxos automatitzats de debò i el criteri de fre escrit.'},
-  'web-ia':{nom:'Web o eina feta amb IA',dura:'4-10 setmanes',endus:'La peça funcionant, els fitxers vostres i sense lligam amb ningú, i les guardes que comproven a cada canvi que segueix dient la veritat: un preu declarat un cop, cap enllaç mort, i les dues llengües sempre iguals.'},
-  'transmedia':{nom:'Projecte transmèdia',dura:'3-6 mesos',endus:'Història, personatges, joc i registre: el model del Comando Molekulon aplicat al vostre encàrrec, amb la condició que acabi en alguna cosa registrada i no en visites.'}
+  'mapa-organitzacio':{nom:'Mapa de valor d\'una organització',nomEs:'Mapa de valor de una organización',dura:'3 sessions · 4-6 setmanes',duraEs:'3 sesiones · 4-6 semanas',endus:'El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.',endusEs:'El mapa de los intercambios reales, tangibles e intangibles, y dónde se pierde valor sin que lo vea nadie. Método VNA de Verna Allee.'},
+  'fent-pinya-vna':{nom:'Fent pinya amb el mapa de valor',nomEs:'Haciendo piña con el mapa de valor',dura:'1 jornada + 2 sessions · 3-5 setmanes',duraEs:'1 jornada + 2 sesiones · 3-5 semanas',endus:'Els rols de la casa amb nom arquetípic —qui és el baix de cada àrea, qui fa de vent entre dues— i el seu flux de valor en les dues vistes: el mapa i la pinya. Amb la desviació entre el mapa òptim i el que hi ha, i els rols redistribuïts.',endusEs:'Los roles de la casa con nombre arquetípico —quién es el baix de cada área, quién hace de vent entre dos— y su flujo de valor en las dos vistas: el mapa y la piña. Con la desviación entre el mapa óptimo y el que hay, y los roles redistribuidos.'},
+  'persones-cultura':{nom:'Diagnòstic de persones i cultura',nomEs:'Diagnóstico de personas y cultura',dura:'3 sessions · 6 setmanes',duraEs:'3 sesiones · 6 semanas',endus:'On es trenca la col·laboració, qui sosté el que no consta enlloc, i què caldria canviar primer.',endusEs:'Dónde se rompe la colaboración, quién sostiene lo que no consta en ningún sitio, y qué habría que cambiar primero.'},
+  'equip-gestor':{nom:'Programa d\'equip gestor',nomEs:'Programa de equipo gestor',dura:'12 setmanes · 5 rols · ~34 h de mentoria',duraEs:'12 semanas · 5 roles · ~34 h de mentoría',endus:'Un equip de cinc a set persones amb els rols repartits i el relleu previst, i la dinàmica funcionant.',endusEs:'Un equipo de cinco a siete personas con los roles repartidos y el relevo previsto, y la dinámica funcionando.'},
+  'comunitats-practica':{nom:'Comunitats de pràctica',nomEs:'Comunidades de práctica',dura:'6 sessions en 3 mesos',duraEs:'6 sesiones en 3 meses',endus:'El mapa del coneixement que ja teniu i un grup que el fa circular sol quan nosaltres marxem.',endusEs:'El mapa del conocimiento que ya tenéis y un grupo que lo hace circular solo cuando nosotros nos vamos.'},
+  'formacio-equips':{nom:'Formació d\'equips',nomEs:'Formación de equipos',dura:'De mitja jornada a quatre sessions',duraEs:'De media jornada a cuatro sesiones',endus:'Lideratge col·laboratiu i gestió del canvi amb metodologia castellera: repartir el pes, avisar abans de cedir i poder dir el que es pensa sense por.',endusEs:'Liderazgo colaborativo y gestión del cambio con metodología castellera: repartir el peso, avisar antes de ceder y poder decir lo que se piensa sin miedo.'},
+  'formar-formadors':{nom:'Formació de formadors',nomEs:'Formación de formadores',dura:'20 h + tutela de 2 casos',duraEs:'20 h + tutela de 2 casos',endus:'Poder formar i acreditar altres, amb el teu recorregut al registre signat i auditable.',endusEs:'Poder formar y acreditar a otros, con tu recorrido en el registro firmado y auditable.'},
+  'mentoria-directiva':{nom:'Mentoria per a equips directius',nomEs:'Mentoría para equipos directivos',dura:'6 mesos · sessió quinzenal d\'1 h per persona',duraEs:'6 meses · sesión quincenal de 1 h por persona',endus:'De tres a sis persones amb responsabilitat d\'equip, cadascuna amb el seu itinerari, treballant sobre un encàrrec real de la casa. Cada competència tanca amb una evidència comprovable, no amb un certificat d\'assistència.',endusEs:'De tres a seis personas con responsabilidad de equipo, cada una con su itinerario, trabajando sobre un encargo real de la casa. Cada competencia cierra con una evidencia comprobable, no con un certificado de asistencia.'},
+  'fent-pinya':{nom:'Taller de castells «Fent Pinya»',nomEs:'Taller de castells «Fent Pinya»',dura:'2 h + 30 min de reflexió',duraEs:'2 h + 30 min de reflexión',endus:'Un dinamitzador, un mínim de quatre monitors castellers i dos músics, faixes de lloguer, assegurança de responsabilitat civil i material didàctic. Es fa en qualsevol espai de 10×10×5 m, en castellà, català, anglès, alemany o francès.',endusEs:'Un dinamizador, un mínimo de cuatro monitores castellers y dos músicos, fajas de alquiler, seguro de responsabilidad civil y material didáctico. Se hace en cualquier espacio de 10×10×5 m, en castellano, catalán, inglés, alemán o francés.'},
+  'demos':{nom:'Demostració castellera',nomEs:'Demostración castellera',dura:'Fins a 4 castells per actuació',duraEs:'Hasta 4 castells por actuación',endus:'Una colla professional aixecant castells de fins a sis pisos: pilars, torres i tres de sis segons l\'alçada contractada.',endusEs:'Una colla profesional levantando castells de hasta seis pisos: pilares, torres y tres de seis según la altura contratada.'},
+  'produccio':{nom:'Producció d\'esdeveniments',nomEs:'Producción de eventos',dura:'D\'una jornada a un festival de diversos dies',duraEs:'De una jornada a un festival de varios días',endus:'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament.',endusEs:'El evento producido entero: proveedores, permisos, montaje, equipo y cierre.'},
+  'fluxos-ia':{nom:'Fluxos amb IA · consultoria i formació',nomEs:'Flujos con IA · consultoría y formación',dura:'4 sessions · 6-8 setmanes',duraEs:'4 sesiones · 6-8 semanas',endus:'El mapa dels vostres fluxos amb cadascun marcat: quins es repeteixen igual i es poden automatitzar, quins porten criteri i no s\'han de tocar, i quins són intangibles que no consten enlloc. Amb dos fluxos automatitzats de debò i el criteri de fre escrit.',endusEs:'El mapa de vuestros flujos con cada uno marcado: cuáles se repiten igual y se pueden automatizar, cuáles llevan criterio y no hay que tocar, y cuáles son intangibles que no constan en ningún sitio. Con dos flujos automatizados de verdad y el criterio de freno escrito.'},
+  'web-ia':{nom:'Web o eina feta amb IA',nomEs:'Web o herramienta hecha con IA',dura:'4-10 setmanes',duraEs:'4-10 semanas',endus:'La peça funcionant, els fitxers vostres i sense lligam amb ningú, i les guardes que comproven a cada canvi que segueix dient la veritat: un preu declarat un cop, cap enllaç mort, i les dues llengües sempre iguals.',endusEs:'La pieza funcionando, los ficheros vuestros y sin atadura con nadie, y las guardas que comprueban en cada cambio que sigue diciendo la verdad: un precio declarado una vez, ningún enlace muerto, y los dos idiomas siempre iguales.'},
+  'transmedia':{nom:'Projecte transmèdia',nomEs:'Proyecto transmedia',dura:'3-6 mesos',duraEs:'3-6 meses',endus:'Història, personatges, joc i registre: el model del Comando Molekulon aplicat al vostre encàrrec, amb la condició que acabi en alguna cosa registrada i no en visites.',endusEs:'Historia, personajes, juego y registro: el modelo del Comando Molekulon aplicado a vuestro encargo, con la condición de que acabe en algo registrado y no en visitas.'}
 };
 const ORG_NOTA={
-  'agencia':'Com que ho compres per a un client teu, la proposta surt amb els idiomes, l\'aforament i l\'espai que necessites per passar-la-hi, i sense res que hagis de traduir.',
-  'gran':'Amb departament de formació, el que sol caldre és que això encaixi amb un pla anual i que es pugui mesurar. Es diu què s\'endú cada persona i què en queda escrit.',
-  'pime':'Decideix qui dirigeix, i sol ser qui menys temps té. La proposta va al gra: què passa, quant dura i què canvia després.',
-  'cooperativa':'A una cooperativa el mapa de valor sol destapar el que ja se sospita: que la propietat i la feina no coincideixen. Es pot mirar, i no s\'ha de mirar el primer dia.',
-  'escola':'Per a un programa o un claustre, això entra com a mòdul amb els seus objectius d\'aprenentatge i la seva avaluació.',
-  'fundacio':'Qui finança sol voler saber què en surt i com es mesura. La proposta inclou què queda per escrit i qui ho pot comprovar.'
+  'agencia':{t:'Com que ho compres per a un client teu, la proposta surt amb els idiomes, l\'aforament i l\'espai que necessites per passar-la-hi, i sense res que hagis de traduir.',tEs:'Como lo compras para un cliente tuyo, la propuesta sale con los idiomas, el aforo y el espacio que necesitas para pasársela, y sin nada que tengas que traducir.'},
+  'gran':{t:'Amb departament de formació, el que sol caldre és que això encaixi amb un pla anual i que es pugui mesurar. Es diu què s\'endú cada persona i què en queda escrit.',tEs:'Con departamento de formación, lo que suele hacer falta es que esto encaje con un plan anual y que se pueda medir. Se dice qué se lleva cada persona y qué queda por escrito.'},
+  'pime':{t:'Decideix qui dirigeix, i sol ser qui menys temps té. La proposta va al gra: què passa, quant dura i què canvia després.',tEs:'Decide quien dirige, y suele ser quien menos tiempo tiene. La propuesta va al grano: qué pasa, cuánto dura y qué cambia después.'},
+  'cooperativa':{t:'A una cooperativa el mapa de valor sol destapar el que ja se sospita: que la propietat i la feina no coincideixen. Es pot mirar, i no s\'ha de mirar el primer dia.',tEs:'En una cooperativa el mapa de valor suele destapar lo que ya se sospecha: que la propiedad y el trabajo no coinciden. Se puede mirar, y no hay que mirarlo el primer día.'},
+  'escola':{t:'Per a un programa o un claustre, això entra com a mòdul amb els seus objectius d\'aprenentatge i la seva avaluació.',tEs:'Para un programa o un claustro, esto entra como módulo con sus objetivos de aprendizaje y su evaluación.'},
+  'fundacio':{t:'Qui finança sol voler saber què en surt i com es mesura. La proposta inclou què queda per escrit i qui ho pot comprovar.',tEs:'Quien financia suele querer saber qué sale de ello y cómo se mide. La propuesta incluye qué queda por escrito y quién lo puede comprobar.'}
 };
 /*/DX-DADES*/
+
+/* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════
+   El formulari ja portava les claus `fo.*` dels blocs compartits —les escriu
+   `build-formularis.js`— i **no tenia cap diccionari que les llegís**: les
+   claus hi eren, el text es quedava en català i no petava res. Això és el
+   defecte que una guarda que compta claus no troba mai.
+
+   Les claus dels blocs compartits les genera `build-formularis.js` entre les
+   marques de sota, perquè les porten tres pàgines i han de dir el mateix a
+   totes tres. Les d'aquesta pàgina es declaren aquí, que és on viuen.
+
+   El text del **resultat** no és aquí: surt de `OBJECTIUS`, `PAQ` i
+   `ORG_NOTA`, que els genera `build-diagnosi-org.js` des del catàleg i des de
+   la seva pròpia declaració, i que porten el castellà al costat del català
+   (`tEs`, `diuEs`, `llegimEs`…). Declarar-lo dues vegades voldria dir que un
+   dia el títol d'un objectiu digués una cosa al botó i una altra al resultat.
+
+   ⚠ **El resum en text pla segueix en català a posta.** El llegeix `crm.html`
+   pels seus separadors (`── QUI ──`, `── D'ON ──`…) i és un contracte entre
+   dues pàgines, no una pantalla: traduir-lo trencaria qui l'ha de llegir. */
+var DX_I18N = {
+ca: {
+/*DIAG-I18N-CA*/
+  'fo.l.nom':'Nom i cognoms *',
+  'fo.l.rol':'El teu paper a la casa',
+  'fo.l.mail':'Correu electrònic *',
+  'fo.l.tel':'Telèfon (opcional)',
+  'fo.l.carrec':'Com se\'n diu exactament',
+  'fo.ph.carrec':'p.ex. tècnica de participació',
+  'fo.h.carrec':'Opcional. Serveix per adreçar-nos-hi com toca.',
+  'fo.l.tipus':'Tipus d\'organització *',
+  'fo.l.orgnom':'Nom de l\'organització',
+  'fo.ph.orgnom':'deixa-ho en blanc si véns a títol personal',
+  'fo.l.web':'El vostre web',
+  'fo.ph.web':'p.ex. exemple.cat',
+  'fo.h.web':'Ens estalvia preguntar-vos qui sou. Opcional.',
+  'fo.l.dediqueu':'A què us dediqueu',
+  'fo.ph.dediqueu':'p.ex. distribució alimentària, 3 centres',
+  'fo.l.municipi':'Municipi *',
+  'fo.ph.municipi':'p.ex. Torrelles de Foix',
+  'fo.l.comarca':'Comarca',
+  'fo.ph.comarca':'p.ex. Alt Penedès',
+  'fo.l.persones':'Quantes persones sou',
+  'fo.ph.persones':'p.ex. 45',
+  'fo.h.persones':'De tota l\'organització, no només de l\'equip que hi entraria.',
+  'fo.l.poblacio':'Població aproximada a què arribeu',
+  'fo.ph.poblacio':'p.ex. 2400',
+  'fo.h.poblacio':'Habitants del municipi, o persones a qui arriba el vostre projecte.',
+  'fo.org.ajuntament.t':'🏛 Ajuntament',
+  'fo.org.ajuntament.d':'Regidoria, àrea tècnica o servei municipal',
+  'fo.org.comarcal.t':'🗺 Consell comarcal',
+  'fo.org.comarcal.d':'O mancomunitat de municipis',
+  'fo.org.entitat.t':'🤝 Entitat o associació',
+  'fo.org.entitat.d':'AVV, ateneu, casal, banc de temps',
+  'fo.org.cooperativa.t':'🚀 Cooperativa o empresa',
+  'fo.org.cooperativa.d':'SCCL, SL, projecte econòmic',
+  'fo.org.grup.t':'🌱 Grup promotor',
+  'fo.org.grup.d':'Encara sense forma jurídica',
+  'fo.org.acompanyament.t':'🎓 Entitat d\'acompanyament',
+  'fo.org.acompanyament.d':'Ateneu Cooperatiu, consultoria ESS',
+  'fo.org.fundacio.t':'💛 Fundació o finançador',
+  'fo.org.fundacio.d':'Obra social, convocatòries',
+  'fo.org.particular.t':'👤 A títol personal',
+  'fo.org.particular.d':'Professional o persona interessada',
+  'fo.org.agencia.t':'🎪 Agència o DMC',
+  'fo.org.agencia.d':'Ho compres per a un client teu',
+  'fo.org.gran.t':'🏢 Empresa gran',
+  'fo.org.gran.d':'Amb departament de formació i pressupost anual',
+  'fo.org.pime.t':'🔧 Pime',
+  'fo.org.pime.d':'La decisió la pren qui la dirigeix',
+  'fo.org.escola.t':'🎓 Escola de negoci o universitat',
+  'fo.org.escola.d':'Programa, màster o claustre',
+  'fo.rol.direccio':'Direcció general o gerència',
+  'fo.rol.persones':'Direcció de persones o RRHH',
+  'fo.rol.innovacio':'Innovació, estratègia o projectes',
+  'fo.rol.organitzacio':'Organització, processos o qualitat',
+  'fo.rol.tecnic':'Tècnic/a de participació, promoció o serveis',
+  'fo.rol.politic':'Càrrec electe o de confiança',
+  'fo.rol.coordinacio':'Coordinació d\'equip o de programa',
+  'fo.rol.altre':'Una altra cosa',
+/*/DIAG-I18N-CA*/
+/*NAV-I18N-CA*/
+  'nv.g.comenca':'🧭 Comença',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.pressupost':'Demana pressupost',
+  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De què va tot això',
+  'nv.t.uneix-te':'Uneix-t\'hi',
+  'nv.d.uneix-te':'El que ja fas al barri, comptat',
+  'nv.g.eines':'🛠 Eines',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Rols i intercanvis d\'un projecte',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grup de consum i compra col·lectiva',
+  'nv.t.energia':'L\'Energia',
+  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
+  'nv.t.habitatge':'L\'Habitatge',
+  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
+  'nv.t.banc-temps':'El Banc de Temps',
+  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
+  'nv.t.biblioteca':'La Biblioteca de les Coses',
+  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El poble sencer i les nou professions',
+  'nv.t.joc':'El joc',
+  'nv.d.joc':'La plaça, a ritme',
+  'nv.g.apren':'🎓 Aprèn',
+  'nv.t.formacio':'Formació',
+  'nv.d.formacio':'16 mòduls, de N0 a N3',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.t.escola':'Escoles',
+  'nv.d.escola':'El SOS a mida d\'aula',
+  'nv.t.vedes':'Les vedes',
+  'nv.d.vedes':'Les regles, amb el motiu al costat',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratori de VNA',
+  'nv.d.arrel-curs_vna':'El curs d\'anàlisi de xarxes de valor',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.g.xarxa':'🏘 Xarxa',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La pel·lícula que farem 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estat líquid',
+  'nv.t.online':'Directori',
+  'nv.d.online':'Qui hi ha, per territori',
+  'nv.totes':'Totes les pàgines',
+  'nv.g.eina':'🖥 L\'eina',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'L\'aplicació sencera, al navegador',
+/*/NAV-I18N-CA*/
+  'dx.h1':'Diagnòstic d\'organització',
+  'dx.intro':'Digue\'ns <strong>què vols que passi</strong> i quina casa sou. En <strong>3 minuts</strong> tindràs què t\'està passant, què proposaríem i quant dura — <strong>l\'enviïs o no</strong>.',
+  'dx.nav':'<a href="diagnostic.html">← L\'altre diagnòstic</a> · <a href="pressupost.html">Demana pressupost</a> · <a href="index.html">Obre el SOS</a>',
+  'dx.s1.h':'1 · Qui ets',
+  'dx.s1.sub':'Per poder-te respondre. No es crea cap compte i no surt res d\'aquest navegador si tu no ho prems.',
+  'dx.e1':'Ens falta el nom i un correu que sembli un correu.',
+  'dx.s2.h':'2 · Quina casa sou',
+  'dx.s2.sub':'Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s\'escriu la proposta.',
+  'dx.e2':'Tria quin tipus d\'organització sou i digues on sou.',
+  'dx.s3.h':'3 · Què vols que passi',
+  'dx.s3.sub':'És la pregunta que decideix tota la resta. Tria la que més s\'assembli al que et va portar aquí.',
+  'dx.l.ampliacio':'Amplia-ho, o digue\'ns si el motiu és un altre',
+  'dx.ph.ampliacio':'p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l\'equip no s\'ha refet de la fusió»',
+  'dx.h.ampliacio':'Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.',
+  'dx.e3':'Tria què vols que passi.',
+  'dx.s4.h':'4 · El que falta per respondre\'t',
+  'dx.s4.format':'Un acte té data, gent i espai, i són les tres coses que decideixen què es pot fer.',
+  'dx.s4.dolor':'Tres preguntes. Són les que fan que el diagnòstic parli de vosaltres i no en general.',
+  'dx.l.participants':'Quanta gent hi serà',
+  'dx.ph.participants':'p.ex. 80',
+  'dx.l.quan':'Quin dia',
+  'dx.h.quan':'Si encara no està tancat, deixa-ho en blanc.',
+  'dx.l.lloc':'On',
+  'dx.ph.lloc':'p.ex. hotel a Sitges, sala interior',
+  'dx.h.lloc':'Si és a cobert, l\'alçada del sostre decideix què s\'hi pot fer.',
+  'dx.l.dins':'Dins d\'una jornada o és la jornada',
+  'dx.dins.dins':'És una peça dins d\'un programa més llarg',
+  'dx.dins.sencera':'És la jornada sencera',
+  'dx.dins.perveure':'Encara s\'està decidint',
+  'dx.l.provat':'Què heu provat que no va quedar',
+  'dx.ph.provat':'p.ex. una formació que va agradar molt i al mes ja no la feia servir ningú',
+  'dx.l.soste':'Qui sosté avui el que no és a cap procediment',
+  'dx.ph.soste':'p.ex. la responsable d\'operacions i una persona de sistemes',
+  'dx.h.soste':'No cal cap nom: el rol n\'hi ha prou.',
+  'dx.l.simarxa':'I què passaria si aquesta persona marxés demà',
+  'dx.simarxa.poc':'Es notaria, però ens en sortiríem',
+  'dx.simarxa.forca':'Perdríem coses que ningú sap com es fan',
+  'dx.simarxa.molt':'Hi ha projectes que s\'aturarien',
+  'dx.l.termini':'Per a quan',
+  'dx.term.explorant':'Estem explorant',
+  'dx.term.curs':'Aquest curs',
+  'dx.term.data':'Ja tenim data',
+  'dx.l.decideix':'Qui pot dir que sí',
+  'dx.dec.jo':'Jo mateix/a',
+  'dx.dec.jojunt':'Jo, amb una altra persona',
+  'dx.dec.comite':'Un comitè o una direcció',
+  'dx.dec.client':'El meu client',
+  'dx.tria':'— tria —',
+  'dx.e4':'Digue\'ns qui pot dir que sí: és el que ens permet preparar-ho bé.',
+  'dx.seg':'Següent →',
+  'dx.enrere':'← Enrere',
+  'dx.veure':'Veure el diagnòstic →',
+  'dx.r.proposa':'El que proposaríem',
+  'dx.r.primer':'El primer pas',
+  'dx.r.teva':'La teva organització',
+  'dx.r.apila':'I quan el mapa hi sigui, això s\'hi pot apilar:',
+  'dx.r.preu':'Aquí no hi ha cap xifra a posta: el preu depèn de la mida i del format, i es parla. Al pressupost hi ha la forquilla de cada paquet.',
+  'dx.next.data':'Teniu data. El primer pas és una trucada de vint minuts per veure si les dates encaixen abans de res més.',
+  'dx.next.client':'Com que decideix el vostre client, us passem la proposta escrita perquè la pugueu presentar tal com està.',
+  'dx.next.comite':'Si ho ha d\'aprovar un comitè, la proposta surt amb el que s\'endú cadascú i què en queda escrit, que és el que sol demanar-se a dins.',
+  'dx.next.base':'El primer pas és una conversa de mitja hora amb el mapa a la mà. Se surt sabent què es faria i en quin ordre.',
+  'dx.env.h':'Envia\'ns-ho i et preparem la proposta',
+  'dx.env.btn':'Envia\'ns el diagnòstic',
+  'dx.env.mail':'O per correu',
+  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —el teu contacte, la teva organització, què vols que passi i el termini— al formulari del nostre allotjament (Netlify), des d\'on ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues.',
+  'dx.env.ok':'Rebut. Et responem en un dia laborable.',
+  'dx.env.enviat':'Enviat ✓',
+  'dx.env.ko':'No s\'ha pogut enviar. Prova «O per correu», que obre el teu programa amb tot escrit — el diagnòstic el tens igualment.',
+  'dx.b.pressu':'Demana pressupost →',
+  'dx.b.copia':'Copia\'l',
+  'dx.b.copiat':'Copiat ✓',
+  'dx.b.nocopia':'No s\'ha pogut copiar',
+  'dx.b.baixa':'Descarrega\'l',
+  'dx.b.torna':'Torna a començar'
+},
+es: {
+/*DIAG-I18N-ES*/
+  'fo.l.nom':'Nombre y apellidos *',
+  'fo.l.rol':'Tu papel en la casa',
+  'fo.l.mail':'Correo electrónico *',
+  'fo.l.tel':'Teléfono (opcional)',
+  'fo.l.carrec':'Cómo se llama exactamente',
+  'fo.ph.carrec':'p.ej. técnica de participación',
+  'fo.h.carrec':'Opcional. Sirve para dirigirnos como toca.',
+  'fo.l.tipus':'Tipo de organización *',
+  'fo.l.orgnom':'Nombre de la organización',
+  'fo.ph.orgnom':'déjalo en blanco si vienes a título personal',
+  'fo.l.web':'Vuestra web',
+  'fo.ph.web':'p.ej. ejemplo.com',
+  'fo.h.web':'Nos ahorra preguntaros quiénes sois. Opcional.',
+  'fo.l.dediqueu':'A qué os dedicáis',
+  'fo.ph.dediqueu':'p.ej. distribución alimentaria, 3 centros',
+  'fo.l.municipi':'Municipio *',
+  'fo.ph.municipi':'p.ej. Torrelles de Foix',
+  'fo.l.comarca':'Comarca',
+  'fo.ph.comarca':'p.ej. Alt Penedès',
+  'fo.l.persones':'Cuántas personas sois',
+  'fo.ph.persones':'p.ej. 45',
+  'fo.h.persones':'De toda la organización, no solo del equipo que entraría.',
+  'fo.l.poblacio':'Población aproximada a la que llegáis',
+  'fo.ph.poblacio':'p.ej. 2400',
+  'fo.h.poblacio':'Habitantes del municipio, o personas a las que llega vuestro proyecto.',
+  'fo.org.ajuntament.t':'🏛 Ayuntamiento',
+  'fo.org.ajuntament.d':'Concejalía, área técnica o servicio municipal',
+  'fo.org.comarcal.t':'🗺 Consejo comarcal',
+  'fo.org.comarcal.d':'O mancomunidad de municipios',
+  'fo.org.entitat.t':'🤝 Entidad o asociación',
+  'fo.org.entitat.d':'AAVV, ateneo, casal, banco de tiempo',
+  'fo.org.cooperativa.t':'🚀 Cooperativa o empresa',
+  'fo.org.cooperativa.d':'SCCL, SL, proyecto económico',
+  'fo.org.grup.t':'🌱 Grupo promotor',
+  'fo.org.grup.d':'Todavía sin forma jurídica',
+  'fo.org.acompanyament.t':'🎓 Entidad de acompañamiento',
+  'fo.org.acompanyament.d':'Ateneu Cooperatiu, consultoría ESS',
+  'fo.org.fundacio.t':'💛 Fundación o financiador',
+  'fo.org.fundacio.d':'Obra social, convocatorias',
+  'fo.org.particular.t':'👤 A título personal',
+  'fo.org.particular.d':'Profesional o persona interesada',
+  'fo.org.agencia.t':'🎪 Agencia o DMC',
+  'fo.org.agencia.d':'Lo compras para un cliente tuyo',
+  'fo.org.gran.t':'🏢 Empresa grande',
+  'fo.org.gran.d':'Con departamento de formación y presupuesto anual',
+  'fo.org.pime.t':'🔧 Pyme',
+  'fo.org.pime.d':'La decisión la toma quien la dirige',
+  'fo.org.escola.t':'🎓 Escuela de negocio o universidad',
+  'fo.org.escola.d':'Programa, máster o claustro',
+  'fo.rol.direccio':'Dirección general o gerencia',
+  'fo.rol.persones':'Dirección de personas o RRHH',
+  'fo.rol.innovacio':'Innovación, estrategia o proyectos',
+  'fo.rol.organitzacio':'Organización, procesos o calidad',
+  'fo.rol.tecnic':'Técnico/a de participación, promoción o servicios',
+  'fo.rol.politic':'Cargo electo o de confianza',
+  'fo.rol.coordinacio':'Coordinación de equipo o de programa',
+  'fo.rol.altre':'Otra cosa',
+/*/DIAG-I18N-ES*/
+/*NAV-I18N-ES*/
+  'nv.g.comenca':'🧭 Empieza',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.pressupost':'Pide presupuesto',
+  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De qué va todo esto',
+  'nv.t.uneix-te':'Únete',
+  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
+  'nv.g.eines':'🛠 Herramientas',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Roles e intercambios de un proyecto',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grupo de consumo y compra colectiva',
+  'nv.t.energia':'La Energía',
+  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
+  'nv.t.habitatge':'La Vivienda',
+  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
+  'nv.t.banc-temps':'El Banco de Tiempo',
+  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
+  'nv.t.biblioteca':'La Biblioteca de las Cosas',
+  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
+  'nv.t.joc':'El juego',
+  'nv.d.joc':'La plaza, a ritmo',
+  'nv.g.apren':'🎓 Aprende',
+  'nv.t.formacio':'Formación',
+  'nv.d.formacio':'16 módulos, de N0 a N3',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.t.escola':'Escuelas',
+  'nv.d.escola':'El SOS a medida de aula',
+  'nv.t.vedes':'Las vedas',
+  'nv.d.vedes':'Las reglas, con el motivo al lado',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-curs_vna':'El laboratorio de VNA',
+  'nv.d.arrel-curs_vna':'El curso de análisis de redes de valor',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.g.xarxa':'🏘 Red',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La película que haremos 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estado líquido',
+  'nv.t.online':'Directorio',
+  'nv.d.online':'Quién hay, por territorio',
+  'nv.totes':'Todas las páginas',
+  'nv.g.eina':'🖥 La herramienta',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'La aplicación entera, en el navegador',
+/*/NAV-I18N-ES*/
+  'dx.h1':'Diagnóstico de organización',
+  'dx.intro':'Dinos <strong>qué quieres que pase</strong> y qué casa sois. En <strong>3 minutos</strong> tendrás qué te está pasando, qué propondríamos y cuánto dura — <strong>nos lo envíes o no</strong>.',
+  'dx.nav':'<a href="diagnostic.html">← El otro diagnóstico</a> · <a href="pressupost.html">Pide presupuesto</a> · <a href="index.html">Abre el SOS</a>',
+  'dx.s1.h':'1 · Quién eres',
+  'dx.s1.sub':'Para poder responderte. No se crea ninguna cuenta y no sale nada de este navegador si tú no lo pulsas.',
+  'dx.e1':'Nos falta el nombre y un correo que parezca un correo.',
+  'dx.s2.h':'2 · Qué casa sois',
+  'dx.s2.sub':'Esto no cambia qué te recomendamos —eso lo decide el paso siguiente—: cambia qué hay que preguntarte y cómo se escribe la propuesta.',
+  'dx.e2':'Elige qué tipo de organización sois y di dónde estáis.',
+  'dx.s3.h':'3 · Qué quieres que pase',
+  'dx.s3.sub':'Es la pregunta que decide todo lo demás. Elige la que más se parezca a lo que te trajo aquí.',
+  'dx.l.ampliacio':'Amplíalo, o dinos si el motivo es otro',
+  'dx.ph.ampliacio':'p.ej. «son las dos cosas a la vez: abrimos una convención, pero lo que nos preocupa de verdad es que el equipo no se ha recuperado de la fusión»',
+  'dx.h.ampliacio':'Opcional. Esto no lo calcula nada: lo leemos nosotros antes de preparar la propuesta, y suele ser lo que la hace acertar.',
+  'dx.e3':'Elige qué quieres que pase.',
+  'dx.s4.h':'4 · Lo que falta para responderte',
+  'dx.s4.format':'Un acto tiene fecha, gente y espacio, y son las tres cosas que deciden qué se puede hacer.',
+  'dx.s4.dolor':'Tres preguntas. Son las que hacen que el diagnóstico hable de vosotros y no en general.',
+  'dx.l.participants':'Cuánta gente habrá',
+  'dx.ph.participants':'p.ej. 80',
+  'dx.l.quan':'Qué día',
+  'dx.h.quan':'Si todavía no está cerrado, déjalo en blanco.',
+  'dx.l.lloc':'Dónde',
+  'dx.ph.lloc':'p.ej. hotel en Sitges, sala interior',
+  'dx.h.lloc':'Si es a cubierto, la altura del techo decide qué se puede hacer.',
+  'dx.l.dins':'Dentro de una jornada o es la jornada',
+  'dx.dins.dins':'Es una pieza dentro de un programa más largo',
+  'dx.dins.sencera':'Es la jornada entera',
+  'dx.dins.perveure':'Todavía se está decidiendo',
+  'dx.l.provat':'Qué habéis probado que no quedó',
+  'dx.ph.provat':'p.ej. una formación que gustó mucho y al mes ya no la usaba nadie',
+  'dx.l.soste':'Quién sostiene hoy lo que no está en ningún procedimiento',
+  'dx.ph.soste':'p.ej. la responsable de operaciones y una persona de sistemas',
+  'dx.h.soste':'No hace falta ningún nombre: con el rol basta.',
+  'dx.l.simarxa':'Y qué pasaría si esa persona se fuera mañana',
+  'dx.simarxa.poc':'Se notaría, pero saldríamos adelante',
+  'dx.simarxa.forca':'Perderíamos cosas que nadie sabe cómo se hacen',
+  'dx.simarxa.molt':'Hay proyectos que se pararían',
+  'dx.l.termini':'Para cuándo',
+  'dx.term.explorant':'Estamos explorando',
+  'dx.term.curs':'Este curso',
+  'dx.term.data':'Ya tenemos fecha',
+  'dx.l.decideix':'Quién puede decir que sí',
+  'dx.dec.jo':'Yo mismo/a',
+  'dx.dec.jojunt':'Yo, con otra persona',
+  'dx.dec.comite':'Un comité o una dirección',
+  'dx.dec.client':'Mi cliente',
+  'dx.tria':'— elige —',
+  'dx.e4':'Dinos quién puede decir que sí: es lo que nos permite prepararlo bien.',
+  'dx.seg':'Siguiente →',
+  'dx.enrere':'← Atrás',
+  'dx.veure':'Ver el diagnóstico →',
+  'dx.r.proposa':'Lo que propondríamos',
+  'dx.r.primer':'El primer paso',
+  'dx.r.teva':'Tu organización',
+  'dx.r.apila':'Y cuando el mapa esté, esto se le puede apilar:',
+  'dx.r.preu':'Aquí no hay ninguna cifra a propósito: el precio depende del tamaño y del formato, y se habla. En el presupuesto está la horquilla de cada paquete.',
+  'dx.next.data':'Tenéis fecha. El primer paso es una llamada de veinte minutos para ver si las fechas encajan antes de nada más.',
+  'dx.next.client':'Como decide vuestro cliente, os pasamos la propuesta escrita para que podáis presentarla tal como está.',
+  'dx.next.comite':'Si lo tiene que aprobar un comité, la propuesta sale con lo que se lleva cada persona y qué queda por escrito, que es lo que suele pedirse dentro.',
+  'dx.next.base':'El primer paso es una conversación de media hora con el mapa en la mano. Se sale sabiendo qué se haría y en qué orden.',
+  'dx.env.h':'Envíanoslo y te preparamos la propuesta',
+  'dx.env.btn':'Envíanos el diagnóstico',
+  'dx.env.mail':'O por correo',
+  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —tu contacto, tu organización, qué quieres que pase y el plazo— al formulario de nuestro alojamiento (Netlify), desde donde nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas.',
+  'dx.env.ok':'Recibido. Te respondemos en un día laborable.',
+  'dx.env.enviat':'Enviado ✓',
+  'dx.env.ko':'No se ha podido enviar. Prueba «O por correo», que abre tu programa con todo escrito — el diagnóstico lo tienes igualmente.',
+  'dx.b.pressu':'Pide presupuesto →',
+  'dx.b.copia':'Cópialo',
+  'dx.b.copiat':'Copiado ✓',
+  'dx.b.nocopia':'No se ha podido copiar',
+  'dx.b.baixa':'Descárgalo',
+  'dx.b.torna':'Vuelve a empezar'
+}
+};
+/* Es llegeixen les dues claus i s'escriuen les dues: la portada desa la tria
+   a `tt_lang` i els formularis a `sos.lang`, i qui triava castellà a la
+   portada i clicava cap aquí es trobava el formulari en català. */
+let DX_LANG='ca';
+try{DX_LANG=localStorage.getItem('sos.lang')||localStorage.getItem('tt_lang')||'ca';}catch(e){}
+/* `T` és el text d'una clau; `L` el d'un camp amb germà castellà (`tEs`). Les
+   dues llegeixen la mateixa variable, i per això no hi pot haver mitja pàgina
+   en una llengua i mitja en l'altra. */
+const T=k=>{const d=DX_I18N[DX_LANG]||DX_I18N.ca;return d[k]!==undefined?d[k]:(DX_I18N.ca[k]||'');};
+const L=(o,c)=>!o?'':(DX_LANG==='es'?(o[c+'Es']||o[c]):o[c])||'';
 
 const st={org:'',obj:''};
 let pas=1,current=null;
@@ -491,9 +928,7 @@ $$('#objTipus .opt').forEach(b=>b.onclick=()=>{
   const preg=b.dataset.preg;
   $('#qFormat').hidden=preg!=='format';
   $('#qDolor').hidden=preg!=='dolor';
-  $('#s4sub').textContent=preg==='format'
-    ?'Un acte té data, gent i espai, i són les tres coses que decideixen què es pot fer.'
-    :'Tres preguntes. Són les que fan que el diagnòstic parli de vosaltres i no en general.';
+  $('#s4sub').textContent=T(preg==='format'?'dx.s4.format':'dx.s4.dolor');
 });
 
 $$('[data-next]').forEach(b=>b.onclick=()=>{if(validate(pas))showStep(Number(b.dataset.next));});
@@ -509,35 +944,37 @@ function diagnose(){
   const dec=$('#decideix').value,term=$('#termini').value;
   /* El primer pas depèn de qui pot dir que sí i de si hi ha data. No és
      decoració: a qui ja té data li sobra un diagnòstic i li falta un calendari. */
-  let next;
-  if(term==='data')next='Teniu data. El primer pas és una trucada de vint minuts per veure si les dates encaixen abans de res més.';
-  else if(dec==='client')next='Com que decideix el vostre client, us passem la proposta escrita perquè la pugueu presentar tal com està.';
-  else if(dec==='comite')next='Si ho ha d\'aprovar un comitè, la proposta surt amb el que s\'endú cadascú i què en queda escrit, que és el que sol demanar-se a dins.';
-  else next='El primer pas és una conversa de mitja hora amb el mapa a la mà. Se surt sabent què es faria i en quin ordre.';
-  return{obj:st.obj,O,org:st.org,paq,despres,next,
+  /* La clau i no el text: el primer pas es torna a escriure en canviar de
+     llengua sense haver de tornar a calcular el diagnòstic. */
+  let nextK;
+  if(term==='data')nextK='dx.next.data';
+  else if(dec==='client')nextK='dx.next.client';
+  else if(dec==='comite')nextK='dx.next.comite';
+  else nextK='dx.next.base';
+  return{obj:st.obj,O,org:st.org,paq,despres,nextK,get next(){return T(nextK);},
     ampliacio:$('#ampliacio').value.trim(),
-    nota:ORG_NOTA[st.org]||'',
+    nota:ORG_NOTA[st.org]||null,
     termini:term,decideix:dec};
 }
 
 function renderDx(d){
   const nomOrg=$('#orgNom').value.trim(),mun=$('#municipi').value.trim();
-  $('#rTitle').textContent=d.O.t;
-  $('#rSeg').textContent=(nomOrg||'La teva organització')+(mun?' · '+mun:'');
+  $('#rTitle').textContent=L(d.O,'t');
+  $('#rSeg').textContent=(nomOrg||T('dx.r.teva'))+(mun?' · '+mun:'');
   /* El títol ja diu l'objectiu; repetir-lo aquí era una línia que no aportava.
      El que hi va és com ho diria qui truca —les seves paraules si n'ha escrit,
      i si no, les de la casella que ha triat. */
-  $('#rLead').textContent=d.ampliacio||d.O.diu||'';
-  $('#rLlegim').textContent=d.O.llegim;
-  $('#rNotaOrg').textContent=d.nota;
+  $('#rLead').textContent=d.ampliacio||L(d.O,'diu');
+  $('#rLlegim').textContent=L(d.O,'llegim');
+  $('#rNotaOrg').textContent=L(d.nota,'t');
   $('#rNotaOrg').style.display=d.nota?'':'none';
-  const fila=(p,seg)=>'<div class="paq-r'+(seg?' seg':'')+'"><div class="pr-n">'+esc(p.nom)+'</div>'+
-    (p.dura?'<div class="pr-m">'+esc(p.dura)+'</div>':'')+
-    (p.endus?'<div class="pr-e">'+esc(p.endus)+'</div>':'')+'</div>';
+  const fila=(p,seg)=>'<div class="paq-r'+(seg?' seg':'')+'"><div class="pr-n">'+esc(L(p,'nom'))+'</div>'+
+    (p.dura?'<div class="pr-m">'+esc(L(p,'dura'))+'</div>':'')+
+    (p.endus?'<div class="pr-e">'+esc(L(p,'endus'))+'</div>':'')+'</div>';
   $('#rPaq').innerHTML=d.paq.map(p=>fila(p,false)).join('')+
-    (d.despres.length?'<p class="sub" style="margin:.8rem 0 .4rem">I quan el mapa hi sigui, això s\'hi pot apilar:</p>'
+    (d.despres.length?'<p class="sub" style="margin:.8rem 0 .4rem">'+esc(T('dx.r.apila'))+'</p>'
       +d.despres.map(p=>fila(p,true)).join(''):'');
-  $('#rPreu').textContent='Aquí no hi ha cap xifra a posta: el preu depèn de la mida i del format, i es parla. Al pressupost hi ha la forquilla de cada paquet.';
+  $('#rPreu').textContent=T('dx.r.preu');
   $('#rNext').textContent=d.next;
 }
 /* `<input type="date">` sempre torna 2026-03-14, hi posi el que hi posi el
@@ -552,7 +989,14 @@ function dataLlegible(v){
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 /* El contracte de text. Els mateixos separadors que el diagnòstic del
-   territori perquè `crm.html` els sap llegir, i dues seccions noves. */
+   territori perquè `crm.html` els sap llegir, i dues seccions noves.
+
+   **Sempre en català**, tant si la pantalla està en castellà com si no: això
+   no és una pantalla, és el que arriba a la nostra banda i el que `crm.html`
+   parteix pels separadors. Si el resum canviés de llengua amb el botó, el CRM
+   deixaria de trobar les seccions de la meitat de les peticions. Per això
+   `catala()` llegeix el diccionari català i no el que hi ha posat. */
+const catala=k=>DX_I18N.ca[k]||'';
 function buildSummary(d){
   const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
   const L=['DIAGNÒSTIC D\'ORGANITZACIÓ · TEAMTOWERS HUMÀ','',
@@ -572,7 +1016,7 @@ function buildSummary(d){
   else L.push('Què han provat: '+v('provat'),'Qui ho sosté: '+v('soste'),
     'Si marxa: '+v('simarxa'));
   L.push('','── QUI DECIDEIX ──','Decideix: '+d.decideix,'Termini: '+d.termini,'',
-    '── DIAGNÒSTIC ──','Primer pas: '+d.next);
+    '── DIAGNÒSTIC ──','Primer pas: '+catala(d.nextK));
   return L.join('\n');
 }
 function buildJson(d){
@@ -587,7 +1031,7 @@ function buildJson(d){
       format:$('#qFormat').hidden?null:{participants:v('participants'),quan:v('quan'),lloc:v('lloc'),dins:v('dins')},
       dolor:$('#qDolor').hidden?null:{provat:v('provat'),soste:v('soste'),simarxa:v('simarxa')}},
     decisio:{quiDecideix:d.decideix,termini:d.termini},
-    diagnostic:{primerPas:d.next}};
+    diagnostic:{primerPas:catala(d.nextK)}};
 }
 
 $('#doDx').onclick=()=>{
@@ -625,17 +1069,17 @@ $('#bNet').onclick=async()=>{
   try{
     const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:cos});
     if(!r.ok)throw new Error(r.status);
-    $('#envOk').hidden=false;$('#bNet').textContent='Enviat ✓';
+    $('#envOk').hidden=false;$('#bNet').textContent=T('dx.env.enviat');
   }catch(e){
     $('#bNet').disabled=false;
     $('#envKo').hidden=false;
-    $('#envKo').textContent='No s\'ha pogut enviar. Prova «O per correu», que obre el teu programa amb tot escrit — el diagnòstic el tens igualment.';
+    $('#envKo').textContent=T('dx.env.ko');
   }
 };
 
 $('#bCopy').onclick=async()=>{
-  try{await navigator.clipboard.writeText(buildSummary(current));$('#bCopy').textContent='Copiat ✓';}
-  catch(e){$('#bCopy').textContent='No s\'ha pogut copiar';}
+  try{await navigator.clipboard.writeText(buildSummary(current));$('#bCopy').textContent=T('dx.b.copiat');}
+  catch(e){$('#bCopy').textContent=T('dx.b.nocopia');}
 };
 $('#bJson').onclick=()=>{
   const b=new Blob([JSON.stringify(buildJson(current),null,2)],{type:'application/json'});
@@ -645,9 +1089,48 @@ $('#bJson').onclick=()=>{
 };
 $('#bAgain').onclick=()=>{location.reload();};
 
+/* ── Posar la llengua ──────────────────────────────────────────────────────
+   Tres atributs i no un: `data-i18n` pel text, `data-i18n-html` quan hi ha
+   marcatge a dins i `data-i18n-ph` per als `placeholder`, que es llegeixen
+   igual que una etiqueta i que un diccionari de només `textContent` deixa en
+   català sense que peti res.
+
+   I dues coses més que no són atributs: **els sis objectius**, que els pinta
+   el generador des de `OBJECTIUS` i per tant es tornen a escriure d'allà, i
+   **el resultat**, si ja està calculat —qui canvia de llengua llegint el
+   diagnòstic no l'ha de tornar a fer. */
+function pintaObjectius(){
+  $$('#objTipus .opt').forEach(b=>{
+    const O=OBJECTIUS[b.dataset.v];if(!O)return;
+    const t=b.querySelector('.o-t'),dd=b.querySelector('.o-d');
+    if(t)t.textContent=(O.ic?O.ic+' ':'')+L(O,'t');
+    if(dd)dd.textContent=L(O,'diu');
+  });
+}
+function dxAplicaLang(l){
+  if(!DX_I18N[l])l='ca';
+  DX_LANG=l;
+  try{localStorage.setItem('sos.lang',l);localStorage.setItem('tt_lang',l);}catch(e){}
+  document.documentElement.lang=l;
+  $$('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');
+    const v=T(k);if(v)el.textContent=v;});
+  $$('[data-i18n-html]').forEach(el=>{const k=el.getAttribute('data-i18n-html');
+    const v=T(k);if(v)el.innerHTML=v;});
+  $$('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph');
+    const v=T(k);if(v)el.setAttribute('placeholder',v);});
+  $$('.lang-b').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  pintaObjectius();
+  /* El subtítol del pas 4 depèn de l'objectiu triat i no d'una clau fixa. */
+  const sel=$('#objTipus .opt.sel');
+  if(sel)$('#s4sub').textContent=T(sel.dataset.preg==='format'?'dx.s4.format':'dx.s4.dolor');
+  if(current)renderDx(current);
+}
+$$('.lang-b').forEach(b=>b.onclick=()=>dxAplicaLang(b.dataset.lang));
+
 llegeixPont();
 showStep(1);
-window.__DXORG={st,diagnose,buildSummary,buildJson,dataLlegible,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate};
+dxAplicaLang(DX_LANG);
+window.__DXORG={st,diagnose,buildSummary,buildJson,dataLlegible,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate,dxAplicaLang,DX_I18N,T};
 </script>
 </body>
 </html>
