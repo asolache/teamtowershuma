@@ -12,7 +12,7 @@
 
    Per pujar un sostre: canvia el número, i explica al commit per què. Aquesta
    fricció és tot el que fa el fitxer, i és tota la seva utilitat. */
-const { readFileSync } = require('node:fs');
+const { readFileSync, existsSync } = require('node:fs');
 const { gzipSync } = require('node:zlib');
 const { join } = require('node:path');
 
@@ -149,6 +149,26 @@ const kb = Math.round(gzipSync(Buffer.from(src)).length / 1024);
 const pct = Math.round(kb / MAX_GZIP_KB * 100);
 if (kb <= MAX_GZIP_KB) ok(`pes ${kb} KB gzip · ${pct} % del sostre (${MAX_GZIP_KB} KB)`);
 else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima, o es puja el sostre a consciència.`);
+
+/* ── 1b · I `/vna`, que des del 03/10/2026 és el producte ──────────────────
+   La pàgina del mapa de valor **no tenia sostre**: 107 KB en cru i ningú
+   mirant-ho. Se li posa ara, amb 59 KB de gzip mesurats, i no el dia que algú
+   se la trobi a 300 KB — que és el que passa sempre amb una pàgina que creix
+   sense que res la compti.
+
+   El marge és per a la fase 2 (el constructor de mapes). Quan s'hi gasti,
+   això ho dirà i es decidirà a consciència, que és l'única cosa que un sostre
+   ha de fer. */
+const MAX_VNA_KB = 90;
+{
+  const f = join(__dirname, '..', 'vna.html');
+  if (!existsSync(f)) bad('no existeix SOS/vna.html');
+  else {
+    const v = Math.round(gzipSync(readFileSync(f)).length / 1024);
+    if (v <= MAX_VNA_KB) ok(`/vna · ${v} KB gzip · ${Math.round(v / MAX_VNA_KB * 100)} % del seu sostre (${MAX_VNA_KB} KB)`);
+    else bad(`/vna · ${v} KB gzip · PASSA el sostre de ${MAX_VNA_KB} KB. El marge era per al constructor de mapes.`);
+  }
+}
 
 // ── 2 · Cap context sense guia ───────────────────────────────────────────
 /* La veda ho diu: «Un context sense entrada a CONTEXT_GUIDES és un context que

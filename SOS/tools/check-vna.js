@@ -197,6 +197,137 @@ else {
   else ok('el zoom: els llocs de dins es dibuixen, diuen què hi trobaràs, s\'obren amb teclat i tenen camí de tornada');
 }
 
+/* ══ EL TERRA TIPOGRÀFIC ═════════════════════════════════════════════════════
+   La pàgina tenia **32 declaracions per sota de 0,8rem** i les més petites a
+   0,58rem —nou píxels i mig— dins de la peça que ven el producte més car de la
+   casa. Es va arreglar mirant-la, i mirant-la és com tornaria a caure: una
+   regla nova amb `font-size:.72rem` no peta, no desquadra res i es llegeix
+   malament només per a qui ja hi veu just.
+
+   Es mesura **el full d'estil de la pàgina**, no el del menú: el menú el
+   genera `build-nav.js` i viu a vint-i-tres pàgines, de manera que pujar-lo és
+   un canvi d'allà i no d'aquí. Hi ha entrada al backlog i el motiu escrit, que
+   és el que distingeix una excepció d'un oblit. */
+{
+  const TERRA = 0.9375;           // 15 px
+  /* El primer bloc d'estil és el de la pàgina; el segon és el del menú, que
+     va dins de les marques `SOS-NAV` i no és d'aquest fitxer. */
+  const estil = (PAG.match(/<style>([\s\S]*?)<\/style>/) || ['', ''])[1];
+  if (!estil) bad('no es troba el full d\'estil de la pàgina: el terra tipogràfic no es pot mesurar');
+  else {
+    const rem = [...estil.matchAll(/font-size:\s*(\.\d+|\d+(?:\.\d+)?)rem/g)]
+      .map(m => parseFloat(m[1])).filter(v => v < TERRA);
+    /* I les mides en píxels, que a la pàgina només les porten els dibuixos:
+       el full de la sessió i la planta. Allà el píxel és **una unitat del
+       dibuix** i la mida de debò depèn de l'escala, de manera que es
+       comproven contra l'amplada mínima que la pàgina els dona. */
+    const px = [...estil.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map(m => parseFloat(m[1]));
+    const min = (estil.match(/\.se-svg\{min-width:(\d+)px\}/) || [0, 620])[1];
+    const petits = px.filter(v => v * (1040 / 640) < 15 && v < 15);
+    if (rem.length) bad(`${pl(rem.length, 'mida de lletra', 'mides de lletra')} per sota de 15 px al CSS `
+      + `de /vna: ${[...new Set(rem)].sort().join('rem, ')}rem — el terra és ${TERRA}rem `
+      + 'i es va posar perquè la pàgina en tenia 32 per sota');
+    else if (petits.length) bad(`${pl(petits.length, 'mida', 'mides')} de dibuix que no arriba a 15 px `
+      + `renderitzada: ${[...new Set(petits)].join('px, ')}px (el full s'ensenya a 1040 px d'ample)`);
+    else ok(`el terra tipogràfic: cap mida per sota de ${TERRA}rem, i les dels dibuixos arriben a 15 px`);
+    void min;
+  }
+}
+
+/* ══ EL LLENÇ · que els quatre gestos facin alguna cosa ══════════════════════
+   Les quatre coses que la pàgina ven —dues vistes, focus, zoom i seqüència—
+   acaben totes en una classe de CSS. **Cap peta si desapareix**: el dibuix es
+   queda igual de maco i els botons deixen de fer res, que és el defecte que
+   aquesta casa ja ha pagat tres vegades (els polsos invisibles, les claus
+   mortes del pressupost, els laterals sense línia).
+
+   Es comprova que el marcatge, l'estil i el codi hi siguin **els tres**: amb
+   dos de tres, la pàgina es publica i no es veu. */
+{
+  const li = [];
+  const hi = (re, q) => { if (!re.test(PAG)) li.push(q); };
+  // 1 · Les dues vistes, i que el commutador les enllaci de debò.
+  hi(/id="lz-mapa"/, 'falta el panell de la vista mapa');
+  hi(/id="lz-castell"/, 'falta el panell de la vista castell');
+  hi(/data-vista="castell"/, 'falta el botó de la vista castell');
+  hi(/querySelectorAll\('\.lz-t'\)/, 'el commutador de vistes no té qui l\'escolti');
+  hi(/pan\.hidden = !on/, 'el commutador no amaga el panell que no toca: dues pestanyes que no canvien res');
+  // 2 · El focus, i el camí de tornada a veure-ho tot.
+  hi(/data-foc=""/, 'falta el botó de «veure-ho tot»: un focus sense sortida és un cul-de-sac');
+  hi(/\.mv-svg\.focus \.mv-n,/, 'falta el CSS del focus: les classes s\'hi posarien i no s\'apagaria res');
+  hi(/function focusNode/, 'els nodes del dibuix no es poden mirar d\'un en un');
+  // 3 · El zoom, amb molla de pa i teclat.
+  hi(/data-tornar/, 'el zoom no té camí de tornada (veda 62)');
+  hi(/class="lz-molla"/, 'falta la molla de pa');
+  hi(/data-dins="/, 'cap node del dibuix s\'obre: el zoom del mètode no hi és');
+  hi(/data-dins="[\w-]+" tabindex="0" role="button"/,
+    'els nodes que s\'obren no són botons: un `g` amb `onclick` i sense `tabindex` només existeix per a qui té ratolí');
+  hi(/class="mv-dinsn"/, 'els nodes que s\'obren no diuen què hi trobaràs abans d\'entrar-hi');
+  hi(/\.mv-obre\{cursor:pointer\}/, 'falta el CSS de `.mv-obre`: els nodes que s\'obren no dirien que es poden clicar');
+  // 4 · La seqüència: l'atribut al dibuix, el CSS que l'encén i el codi.
+  hi(/data-seq="\w+:\d+"/, 'cap fletxa diu en quin pas passa: la passa 4 del mètode torna a ser només text');
+  hi(/data-seq="sempre"/, 'cap lliurament marcat «sempre»: el que no entra a la seqüència és l\'argument del cas');
+  hi(/\.mv-svg\.seq \.mv-f\.pas\{/, 'falta el CSS del recorregut: els passos es marcarien i no es veurien');
+  hi(/class="sq-l"/, 'la seqüència no té llista de passos, i sense llista no es pot recórrer a mà');
+  hi(/prefers-reduced-motion/, 'el recorregut s\'engega sol i no hi ha regla per a qui ha demanat que res no es mogui');
+  if (li.length) bad('el llenç: ' + li.join(' · '));
+  else ok('el llenç: les dues vistes es canvien de debò, el focus apaga i torna, el zoom entra '
+    + 'i surt amb teclat, i la seqüència té atribut, estil i llista');
+}
+
+/* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════════
+   La pàgina tenia **dos** `data-i18n` a tot el fitxer —els del menú generat— i
+   cap commutador, i era l'única del lloc que no es podia llegir en castellà.
+   No petava perquè `check-i18n.js` mira l'app i no aquesta pàgina.
+
+   Dues regles, i la segona és la que troba el que la primera no veu:
+
+   1. **Els dos diccionaris diuen les mateixes claus.** Una clau en un i no en
+      l'altre deixa el català escrit al marcatge, i això es llegeix com si la
+      traducció hi fos.
+   2. **Cap clau òrfena.** Una clau que surt **només als dos diccionaris** i
+      enlloc més del fitxer és morta: ningú la demana. És la regla que al
+      pressupost va trobar-ne divuit. */
+{
+  /* Cada llengua té **dos** blocs: el de `build-mapavalor.js` i el de les
+     claus que `build-castells.js` hi deixa amb la planta i els rols. Llegir-ne
+     només un diria que la meitat de les claus del marcatge no tenen entrada. */
+  const dic = M => {
+    const ks = [];
+    [`VNA-I18N-${M}`, `VNA-CT-I18N-${M}`].forEach(n => {
+      const a = PAG.indexOf(`/*${n}*/`), b = PAG.indexOf(`/*/${n}*/`);
+      if (a < 0 || b <= a) return;
+      [...PAG.slice(a, b).matchAll(/^\s*'([^']+)':/gm)].forEach(m => ks.push(m[1]));
+    });
+    return ks.length ? ks : null;
+  };
+  const ca = dic('CA'), es = dic('ES');
+  if (!ca || !es) bad('no es troben els dos diccionaris de /vna: la pàgina no es pot comprovar');
+  else if (!ca.length) bad('el diccionari català de /vna és buit');
+  else {
+    const li = [];
+    const fa = (a, b, q) => { const f = a.filter(k => !b.includes(k)); if (f.length) li.push(`${f.length} ${q}: ${f.slice(0, 4).join(', ')}`); };
+    fa(ca, es, 'clau(s) sense castellà');
+    fa(es, ca, 'clau(s) sense català');
+    /* La clau que no demana ningú. Es compta quantes vegades surt al fitxer:
+       dues vol dir «una a cada diccionari i cap al marcatge». */
+    const morts = ca.filter(k => (PAG.split(`'${k}'`).length - 1) <= 2
+      && !PAG.includes(`data-i18n="${k}"`) && !PAG.includes(`data-i18n-html="${k}"`)
+      && !PAG.includes(`data-i18n-al="${k}"`));
+    if (morts.length) li.push(`${morts.length} clau(s) que no demana ningú: ${morts.slice(0, 5).join(', ')}`);
+    /* I al revés: una clau al marcatge sense entrada deixa el text escrit a mà
+       i la pàgina es queda mig traduïda sense dir-ho. */
+    const demanades = [...PAG.matchAll(/data-i18n(?:-html|-al)?="([^"]+)"/g)].map(m => m[1])
+      .filter(k => !/^nv\./.test(k));          // les del menú, que són d'un altre diccionari
+    const sense = [...new Set(demanades)].filter(k => !ca.includes(k));
+    if (sense.length) li.push(`${sense.length} clau(s) al marcatge sense entrada: ${sense.slice(0, 5).join(', ')}`);
+    if (!/class="lang-b/.test(PAG)) li.push('no hi ha commutador de llengua');
+    if (!/tt_lang/.test(PAG)) li.push('el commutador no comparteix `tt_lang` amb la resta del lloc');
+    if (li.length) bad('les dues llengües de /vna: ' + li.join(' · '));
+    else ok(`les dues llengües: ${ca.length} claus a cada diccionari, cap òrfena i cap sense entrada`);
+  }
+}
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al mapa de valor.`
   : '\n✅ El mapa de valor i la portada diuen el mateix.');
 process.exit(fails ? 1 : 0);
