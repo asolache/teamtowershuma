@@ -399,6 +399,111 @@ deia pitjor. `/clients` → `/#trajectoria` amb 301.
 
 ---
 
+### Marcom · acords, propostes i el material que no pot ser públic (03/10/2026)
+
+**Demanat per l'Àlvar**, i són tres coses que van juntes perquè totes acaben a
+la mateixa carpeta.
+
+#### 1 · El marc d'acords
+
+Definir **el marc i la forma dels acords** per a les tres bandes amb qui es
+tracta, que avui no estan escrits enlloc:
+
+| Amb qui | Què cal definir |
+|---|---|
+| **Clients** | Què s'entrega, en quin termini, què passa si s'allarga, de qui és el mapa i l'eina després, i com es tanca |
+| **Partners** | Qui factura, com es reparteix, qui signa davant del client, i què passa amb el que un aporta i l'altre reutilitza |
+| **Proveïdors** | El mateix al revés, i les despeses directes al seu preu de factura, que és el que el mapa de cost ja diu |
+
+*El catàleg ja diu què es ven i a quin preu; el que falta és **sota quines
+condicions**. I hi ha una peça que hi encaixa i ja existeix: `SOS/vedes.html`
+—les regles amb el motiu al costat— és exactament la forma que hauria de tenir
+un marc d'acords d'aquesta casa.*
+
+#### 2 · El sistema de propostes, eficient en tokens
+
+Fer una **proposta a mida** a partir de tots els recursos que l'Àlvar posi al
+repositori privat, i fer-ho **sense gastar un context sencer** cada vegada.
+
+El que ja hi ha i s'ha de cosir, no escriure: `build-oferta.js` declara els 24
+paquets amb els seus set camps; `SOS/pressupost.html` ja munta una proposta
+esborrany amb el desglossament; `build-formularis.js` ja genera mitja pàgina
+i ara també el seu diccionari.
+
+**El que falta és l'índex.** La manera eficient en tokens no és llegir tot el
+material a cada proposta: és **tenir un índex declarat** —un fitxer per recurs,
+amb de què va, per a qui serveix i quins paquets l'aprofiten— i llegir **només
+els tres o quatre que toquen**. És el mateix patró que `knowledge/MAPA.md` ja
+fa amb les carpetes.
+
+*Sense l'índex, cada proposta comença per llegir-ho tot i la meitat del context
+se'n va abans d'escriure la primera frase.*
+
+#### 3 · ⚠ On viu el material · **i una cosa que has de decidir tu**
+
+L'Àlvar va dir «guarda-ho al **repo privat**» i va afegir «si per privacitat és
+millor un Drive, al Drive».
+
+> **Aquest repositori és públic.** `asolache/teamtowershuma` té `private: false`.
+> Tot el que s'hi commiteja és visible per qualsevol, i per això **el document
+> de marcom que va passar (l'anàlisi de beneficis del SOS i el guió de l'anunci
+> de televisió) no s'ha desat aquí**.
+
+El que hi ha al document i que **no hauria de ser públic avui**: el guió de
+l'anunci sencer —pla a pla, música, claim final— que és creativitat no estrenada,
+i l'enfocament comercial per audiència. La llista de clients i les xifres de
+trajectòria sí que ja són públiques i amb font, o sigui que aquelles no hi fan
+res de nou.
+
+**Les tres sortides, i la que recomanaria:**
+
+1. **Un repositori privat nou** (`teamtowershuma-marcom`) — el material viu amb
+   el codi, es versiona, i es pot llegir des d'aquí si s'hi dona accés. *És la
+   que recomanaria si el material ha d'alimentar el sistema de propostes: un
+   índex declarat sobre fitxers de text és el que fa la proposta barata en
+   tokens.*
+2. **Un Drive** — millor si hi ha d'entrar gent que no toca git, i si hi haurà
+   documents que no són text (vídeo, maquetes, contractes signats).
+3. **Les dues** — el text i l'índex al repositori privat, els binaris i el que
+   signa gent al Drive.
+
+*Mentre no es decideixi, el document de l'anunci **està només a la conversa**.*
+
+---
+
+### L'exemple del mapa ha de ser genèric, i l'animació del vídeo (03/10/2026)
+
+**Dit per l'Àlvar:** on es parla del **mapa de valor d'un poble** hauria de ser
+**un exemple més genèric**, i el document de l'anunci serveix de **esborrany per
+a l'animació MVP del vídeo final**.
+
+**Què vol dir «més genèric» i on toca.** Avui els dos casos treballats són molt
+concrets: el **celler del Penedès** (`CELLER`) i la **xarxa de TeamTowers**
+(`XARXA`). El del celler funciona bé perquè la tesi és concreta —el marge surt
+de cobrar els intangibles— però *parla d'un sector*, i qui ve d'una altra banda
+ha de traduir-ho.
+
+Les dues maneres de fer-ho genèric, i no són la mateixa:
+
+- **Un tercer cas neutre** —una casa qualsevol amb set rols sense sector— que
+  es pugui reconèixer vingui d'on vingui. Costa un cas més a mantenir.
+- **El mateix cas amb els noms canviables.** El dibuixant ja és `svgMapa(mapa, id)`
+  i pren qualsevol mapa: posar-hi un selector de cas no és feina de dibuix, és
+  feina de declarar-ne un segon. *Aquesta és la barata.*
+
+**L'animació MVP.** El guió de l'anunci ja té el pla que l'MVP ha de fer: *«la
+pantalla es divideix en dues vistes: a l'esquerra un graf de nodes i fletxes, a
+la dreta la pinya amb els mateixos rols»*. **Això ja existeix i es pot gravar
+avui**: és `#dues-vistes` de la portada, amb el pols animat i el botó
+d'encallament. El que falta per a vídeo no és codi — és
+**decidir el cas que surt a càmera** (vegeu el punt de dalt) i gravar-ho.
+
+*El pols animat, de fet, ja ve del guió de sessió d'IKEA —els cors de «el pulso
+de la red de valor»—, o sigui que el que surt a l'anunci i el que es fa a la
+sala són la mateixa cosa. Val la pena que el vídeo ho digui.*
+
+---
+
 ### El procés de VNA, explicat com es fa de debò (02/10/2026)
 
 **L'Àlvar va passar dos PDF**: l'article sencer de Pantheon —Antonio
