@@ -74,20 +74,38 @@ const FAMILIES = [
 ];
 
 /* ══ EL SECTOR ════════════════════════════════════════════════════════════
-   El catàleg parla a dues cases que compren de manera diferent: una empresa
-   decideix i signa, i una administració ha de poder-ho encaixar en una
-   partida i sota un sostre de contractació. Fins ara la portada només parlava
-   a la segona —«per a ajuntaments, consells comarcals i entitats» era la
-   primera línia de la pàgina— i la meitat de l'oferta, la que té vint anys de
-   quilòmetres, quedava fora del que la pàgina deia que venia.
+   El catàleg parla a cases que compren de manera diferent: una empresa decideix
+   i signa, una administració ho ha d'encaixar en una partida i sota un sostre
+   de contractació, i una entitat ho ha de fer passar per una junta amb una
+   subvenció que arriba quan arriba.
 
-   Es declara al paquet i el filtre de la portada el llegeix de l'atribut. Sense
-   JavaScript surten tots, que és el que ha de passar. */
+   **Eren dues portes i una d'elles en guardava dues a dins.** «Públic» ajuntava
+   un ajuntament i una associació, que no tenen el mateix pressupost, no
+   decideixen igual i no compren el mateix. Nou paquets hi queien barrejats, i
+   una tècnica d'entitat havia de deduir si allò anava amb ella.
+
+   **I `sector` ha deixat de ser un valor per ser una llista.** Mentre fos un
+   valor, un paquet amb dos compradors havia de triar-ne un —i perdia l'altre—
+   o dir «tots» —i no deia res. «Una entitat del territori, finançada per
+   l'ajuntament» és administració **i** tercer sector; publicada com a «públic»,
+   amagava la meitat del que deia.
+
+       sector: ['admin', 'tercer']      // abans: sector: 'public'
+
+   **El criteri és qui signa**, i no de qui es parla: el mateix criteri
+   contractual que el mètode fa servir per decidir si un lliurament és tangible.
+   Una cooperativa signa com a empresa; un ateneu o una AFA, com a tercer
+   sector; una escola pública, com a administració.
+
+   Es declara al paquet, el filtre es genera de la declaració i la portada el
+   llegeix de l'atribut. Sense JavaScript surten tots, que és el que ha de
+   passar. */
 const SECTORS = {
-  privat: { lbl: 'Empreses i cooperatives', lblEs: 'Empresas y cooperativas' },
-  public: { lbl: 'Administració i entitats', lblEs: 'Administración y entidades' },
-  tots:   { lbl: 'Els dos', lblEs: 'Los dos' }
+  admin:   { lbl: 'Administració pública', lblEs: 'Administración pública' },
+  tercer:  { lbl: 'Tercer sector',         lblEs: 'Tercer sector' },
+  empresa: { lbl: 'Empresa i cooperativa', lblEs: 'Empresa y cooperativa' }
 };
+const ORDRE_SECTORS = ['admin', 'tercer', 'empresa'];
 
 /* ══ EL PUNT D'ADAPTACIÓ ══════════════════════════════════════════════════
    El camp que fa honesta tota la resta. Un paquet «provat» té els casos per
@@ -199,7 +217,7 @@ const SOSTRE_PUBLIC = 5000;
 const PAQUETS = [
 
   /* ── 1 · Consultoria ─────────────────────────────────────────────────── */
-  { id: 'diagnostic-teixit', sector: 'public', fam: 'consultoria', ve: 'S1', punt: 'adaptacio',
+  { id: 'diagnostic-teixit', sector: ['admin', 'tercer'], fam: 'consultoria', ve: 'S1', punt: 'adaptacio',
     preuMin: 1500, preuMax: 3000, font: 'negoci', publica: true, enllac: '/SOS/vna.html',
     nom: 'Diagnòstic del teixit local',
     nomEs: 'Diagnóstico del tejido local',
@@ -216,7 +234,7 @@ const PAQUETS = [
     diners: 'Catàleg de serveis de la Diputació · partida de participació ciutadana',
     dinersEs: 'Catálogo de servicios de la Diputación · partida de participación ciudadana' },
 
-  { id: 'mapa-organitzacio', sector: 'privat', fam: 'consultoria', ve: 'README', punt: 'provat',
+  { id: 'mapa-organitzacio', sector: ['empresa', 'tercer'], fam: 'consultoria', ve: 'README', punt: 'provat',
     preuMin: 2500, preuMax: 4500, font: 'estimacio', publica: false, enllac: '/SOS/vna.html',
     nom: 'Mapa de valor d\'una organització',
     nomEs: 'Mapa de valor de una organización',
@@ -257,10 +275,10 @@ const PAQUETS = [
      precisament per impedir que una trajectòria avali un producte que encara
      no s'ha entregat mai, que és el que feia el README abans del catàleg.
 
-     `font: 'estimacio'`, pel mateix motiu. I `sector: 'tots'` amb entrada per
+     `font: 'estimacio'`, pel mateix motiu. I els tres sectors amb entrada per
      sota dels 5.000 € perquè una administració ho pugui contractar com a
      contracte menor: sense l'entrada baixa, la guarda ho peta i té raó. */
-  { id: 'fent-pinya-vna', sector: 'tots', fam: 'consultoria', ve: 'README', punt: 'nou',
+  { id: 'fent-pinya-vna', sector: ['admin', 'tercer', 'empresa'], fam: 'consultoria', ve: 'README', punt: 'nou',
     preuMin: 4500, preuMax: 12000, font: 'estimacio', publica: true, enllac: '/SOS/vna.html',
     nom: 'Fent pinya amb el mapa de valor',
     nomEs: 'Haciendo piña con el mapa de valor',
@@ -277,7 +295,7 @@ const PAQUETS = [
     diners: 'Pressupost de formació o de desenvolupament organitzatiu · Fundae a empresa',
     dinersEs: 'Presupuesto de formación o de desarrollo organizativo · Fundae en empresa' },
 
-  { id: 'mapa-comarcal', sector: 'public', fam: 'consultoria', ve: 'S1', punt: 'nou',
+  { id: 'mapa-comarcal', sector: ['admin'], fam: 'consultoria', ve: 'S1', punt: 'nou',
     preuMin: 3500, preuMax: 6000, font: 'negoci', publica: true, enllac: '/SOS/vna.html',
     nom: 'Mapa comarcal i assemblea federativa',
     nomEs: 'Mapa comarcal y asamblea federativa',
@@ -294,7 +312,7 @@ const PAQUETS = [
     diners: 'Pressupost de cooperació intermunicipal',
     dinersEs: 'Presupuesto de cooperación intermunicipal' },
 
-  { id: 'impacte', sector: 'public', fam: 'consultoria', ve: 'S7', punt: 'nou',
+  { id: 'impacte', sector: ['admin', 'tercer'], fam: 'consultoria', ve: 'S7', punt: 'nou',
     preuMin: 600, preuMax: 1500, font: 'negoci', publica: true, enllac: '',
     nom: 'Mesura d\'impacte i justificació',
     nomEs: 'Medida de impacto y justificación',
@@ -311,7 +329,7 @@ const PAQUETS = [
     diners: 'La mateixa partida que ja finança el projecte que es justifica',
     dinersEs: 'La misma partida que ya financia el proyecto que se justifica' },
 
-  { id: 'persones-cultura', sector: 'privat', fam: 'consultoria', ve: 'README', punt: 'provat',
+  { id: 'persones-cultura', sector: ['empresa'], fam: 'consultoria', ve: 'README', punt: 'provat',
     preuMin: 1800, preuMax: 3200, font: 'estimacio', publica: false, enllac: '',
     nom: 'Diagnòstic de persones i cultura',
     nomEs: 'Diagnóstico de personas y cultura',
@@ -329,7 +347,7 @@ const PAQUETS = [
     dinersEs: 'Presupuesto propio de recursos humanos' },
 
   /* ── 2 · Formació ────────────────────────────────────────────────────── */
-  { id: 'gestor', sector: 'public', fam: 'formacio', ve: 'S3', punt: 'nou',
+  { id: 'gestor', sector: ['admin'], fam: 'formacio', ve: 'S3', punt: 'nou',
     preuMin: 1200, preuMax: 2000, font: 'negoci', publica: true, enllac: '/SOS/formacio.html',
     nom: 'Programa de Gestor/a',
     nomEs: 'Programa de Gestor/a',
@@ -346,7 +364,7 @@ const PAQUETS = [
     diners: 'Pla de formació municipal · subvenció de Diputació',
     dinersEs: 'Plan de formación municipal · subvención de Diputación' },
 
-  { id: 'equip-gestor', sector: 'public', fam: 'formacio', ve: 'S3', punt: 'nou',
+  { id: 'equip-gestor', sector: ['admin', 'tercer'], fam: 'formacio', ve: 'S3', punt: 'nou',
     preuMin: 4500, preuMax: 7000, font: 'negoci', publica: true, enllac: '/SOS/formacio.html',
     nom: 'Programa d\'equip gestor',
     nomEs: 'Programa de equipo gestor',
@@ -363,7 +381,7 @@ const PAQUETS = [
     diners: 'Partida de participació · Ateneus Cooperatius',
     dinersEs: 'Partida de participación · Ateneus Cooperatius' },
 
-  { id: 'comunitats-practica', sector: 'privat', fam: 'formacio', ve: 'README', punt: 'provat',
+  { id: 'comunitats-practica', sector: ['admin', 'tercer', 'empresa'], fam: 'formacio', ve: 'README', punt: 'provat',
     preuMin: 3000, preuMax: 5500, font: 'estimacio', publica: false, enllac: '',
     nom: 'Comunitats de pràctica',
     nomEs: 'Comunidades de práctica',
@@ -380,7 +398,7 @@ const PAQUETS = [
     diners: 'Pressupost de formació',
     dinersEs: 'Presupuesto de formación' },
 
-  { id: 'formacio-equips', sector: 'privat', fam: 'formacio', ve: 'README', punt: 'provat',
+  { id: 'formacio-equips', sector: ['empresa'], fam: 'formacio', ve: 'README', punt: 'provat',
     preuMin: 1200, preuMax: 2800, font: 'estimacio', publica: false, enllac: '',
     nom: 'Formació d\'equips',
     nomEs: 'Formación de equipos',
@@ -397,7 +415,7 @@ const PAQUETS = [
     diners: 'Pressupost de formació',
     dinersEs: 'Presupuesto de formación' },
 
-  { id: 'escola', sector: 'public', fam: 'formacio', ve: 'repo', punt: 'nou',
+  { id: 'escola', sector: ['admin', 'tercer'], fam: 'formacio', ve: 'repo', punt: 'nou',
     preuMin: 1800, preuMax: 3200, font: 'estimacio', publica: true, enllac: '/SOS/escola.html',
     nom: 'La Fàbrica de Superherois',
     nomEs: 'La Fábrica de Superhéroes',
@@ -414,7 +432,7 @@ const PAQUETS = [
     diners: 'Pla educatiu d\'entorn · regidoria d\'educació',
     dinersEs: 'Plan educativo de entorno · concejalía de educación' },
 
-  { id: 'formar-formadors', sector: 'tots', fam: 'formacio', ve: 'S5', punt: 'nou',
+  { id: 'formar-formadors', sector: ['tercer', 'empresa'], fam: 'formacio', ve: 'S5', punt: 'nou',
     preuMin: 2000, preuMax: 3500, font: 'negoci', publica: false, enllac: '/SOS/formacio.html',
     nom: 'Formació de formadors',
     nomEs: 'Formación de formadores',
@@ -431,7 +449,7 @@ const PAQUETS = [
     diners: 'Programa propi de l\'Ateneu · formació de professionals',
     dinersEs: 'Programa propio del Ateneu · formación de profesionales' },
 
-  { id: 'mentoria-directiva', sector: 'tots', fam: 'formacio', ve: 'S5', punt: 'nou',
+  { id: 'mentoria-directiva', sector: ['admin', 'tercer', 'empresa'], fam: 'formacio', ve: 'S5', punt: 'nou',
     preuMin: 3500, preuMax: 9000, font: 'estimacio', publica: true,
     enllac: '/SOS/formacio.html',
     nom: 'Mentoria per a equips directius',
@@ -450,7 +468,7 @@ const PAQUETS = [
     dinersEs: 'Plan de formación · Fundae · plan de formación de la administración' },
 
   /* ── 3 · Producció i dinamització ────────────────────────────────────── */
-  { id: 'comu-diada', sector: 'public', fam: 'dinamitzacio', ve: 'repo', punt: 'nou',
+  { id: 'comu-diada', sector: ['admin', 'tercer'], fam: 'dinamitzacio', ve: 'repo', punt: 'nou',
     preuMin: 2200, preuMax: 4500, font: 'estimacio', publica: true, enllac: '',
     nom: 'Comú-diada',
     nomEs: 'Comú-diada',
@@ -478,7 +496,7 @@ const PAQUETS = [
      necessita per saber si li encaixa: rols, hores i nivells del mapa de cost,
      més les despeses directes al seu preu de factura. La secció `#cost` de la
      portada ho explica sencer. */
-  { id: 'fent-pinya', sector: 'tots', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
+  { id: 'fent-pinya', sector: ['admin', 'tercer', 'empresa'], fam: 'dinamitzacio', ve: 'README', punt: 'provat',
     mida: true, font: 'mapa', publica: true, enllac: '',
     nom: 'Taller de castells «Fent Pinya»',
     nomEs: 'Taller de castells «Fent Pinya»',
@@ -495,7 +513,7 @@ const PAQUETS = [
     diners: 'Pressupost de formació, d\'esdeveniment o de festes',
     dinersEs: 'Presupuesto de formación, de evento o de fiestas' },
 
-  { id: 'demos', sector: 'tots', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
+  { id: 'demos', sector: ['admin', 'empresa'], fam: 'dinamitzacio', ve: 'README', punt: 'provat',
     mida: true, font: 'mapa', publica: true, enllac: '',
     nom: 'Demostració castellera',
     nomEs: 'Demostración castellera',
@@ -512,7 +530,7 @@ const PAQUETS = [
     diners: 'Pressupost de l\'esdeveniment o de festes',
     dinersEs: 'Presupuesto del evento o de fiestas' },
 
-  { id: 'produccio', sector: 'tots', fam: 'dinamitzacio', ve: 'README', punt: 'provat',
+  { id: 'produccio', sector: ['admin', 'empresa'], fam: 'dinamitzacio', ve: 'README', punt: 'provat',
     preuMin: 3000, preuMax: 9000, font: 'estimacio', publica: true, enllac: '',
     nom: 'Producció d\'esdeveniments',
     nomEs: 'Producción de eventos',
@@ -529,7 +547,7 @@ const PAQUETS = [
     diners: 'Pressupost de l\'esdeveniment',
     dinersEs: 'Presupuesto del evento' },
 
-  { id: 'posar-en-marxa', sector: 'public', fam: 'dinamitzacio', ve: 'S4', punt: 'adaptacio',
+  { id: 'posar-en-marxa', sector: ['admin', 'tercer'], fam: 'dinamitzacio', ve: 'S4', punt: 'adaptacio',
     preuMin: 2400, preuMax: 5400, font: 'negoci', publica: true, enllac: '/SOS/molekulandia.html',
     nom: 'Posada en marxa d\'una dinàmica',
     nomEs: 'Puesta en marcha de una dinámica',
@@ -547,7 +565,7 @@ const PAQUETS = [
     dinersEs: 'Partida de participación · Ateneus Cooperatius' },
 
   /* ── 4 · Digital i IA ─────────────────────────────────────────────────── */
-  { id: 'fluxos-ia', sector: 'tots', fam: 'digital', ve: 'repo', punt: 'adaptacio',
+  { id: 'fluxos-ia', sector: ['admin', 'tercer', 'empresa'], fam: 'digital', ve: 'repo', punt: 'adaptacio',
     preuMin: 1800, preuMax: 4500, font: 'estimacio', publica: true, enllac: '/SOS/ia.html',
     nom: 'Fluxos amb IA · consultoria i formació',
     nomEs: 'Flujos con IA · consultoría y formación',
@@ -564,7 +582,7 @@ const PAQUETS = [
     diners: 'Pressupost de millora o de formació · partida de digitalització',
     dinersEs: 'Presupuesto de mejora o de formación · partida de digitalización' },
 
-  { id: 'web-ia', sector: 'tots', fam: 'digital', ve: 'repo', punt: 'adaptacio',
+  { id: 'web-ia', sector: ['admin', 'tercer', 'empresa'], fam: 'digital', ve: 'repo', punt: 'adaptacio',
     preuMin: 2500, preuMax: 8000, font: 'estimacio', publica: true, enllac: '/SOS/ia.html',
     nom: 'Web o eina feta amb IA',
     nomEs: 'Web o herramienta hecha con IA',
@@ -581,7 +599,7 @@ const PAQUETS = [
     diners: 'Pressupost de comunicació · partida de digitalització · Next Generation',
     dinersEs: 'Presupuesto de comunicación · partida de digitalización · Next Generation' },
 
-  { id: 'transmedia', sector: 'tots', fam: 'digital', ve: 'repo', punt: 'nou',
+  { id: 'transmedia', sector: ['admin', 'tercer', 'empresa'], fam: 'digital', ve: 'repo', punt: 'nou',
     preuMin: 4000, preuMax: 12000, font: 'estimacio', publica: false, enllac: '/SOS/comando.html',
     nom: 'Projecte transmèdia',
     nomEs: 'Proyecto transmedia',
@@ -608,7 +626,7 @@ const PAQUETS = [
    no la peça —un informe de si val la pena és un entregable real; una eina que
    no existeix, no—, i la fitxa ho diu a la cara. */
 const SOS_PAQUETS = [
-  { id: 'implantacio', sector: 'public', ve: 'S6', punt: 'nou', preuMin: 800, preuMax: 2500,
+  { id: 'implantacio', sector: ['admin', 'tercer'], ve: 'S6', punt: 'nou', preuMin: 800, preuMax: 2500,
     font: 'negoci', publica: true, enllac: '/SOS/',
     nom: 'Implantació i suport',
     nomEs: 'Implantación y soporte',
@@ -625,7 +643,7 @@ const SOS_PAQUETS = [
     diners: 'Partida de digitalització · fons Next Generation',
     dinersEs: 'Partida de digitalización · fondos Next Generation' },
 
-  { id: 'ia-amb-frens', sector: 'tots', ve: 'repo', punt: 'adaptacio', preuMin: 600, preuMax: 1500,
+  { id: 'ia-amb-frens', sector: ['admin', 'tercer', 'empresa'], ve: 'repo', punt: 'adaptacio', preuMin: 600, preuMax: 1500,
     font: 'estimacio', publica: true, enllac: '',
     nom: 'IA amb frens · sessió de viabilitat',
     nomEs: 'IA con frenos · sesión de viabilidad',
@@ -642,7 +660,7 @@ const SOS_PAQUETS = [
     diners: 'Partida de digitalització',
     dinersEs: 'Partida de digitalización' },
 
-  { id: 'contractes', sector: 'tots', ve: 'repo', punt: 'nou', preuMin: 1200, preuMax: 2500,
+  { id: 'contractes', sector: ['admin', 'empresa'], ve: 'repo', punt: 'nou', preuMin: 1200, preuMax: 2500,
     font: 'estimacio', publica: true, enllac: '',
     nom: 'Contractes intel·ligents · estudi de viabilitat',
     nomEs: 'Contratos inteligentes · estudio de viabilidad',
@@ -680,7 +698,7 @@ function fitxa(p) {
   const preu = p.mida
     ? `<strong class="pk-mida"><a href="#cost" data-i18n="pk.mida">A mida · calculat amb el mapa de cost</a></strong>`
     : `<strong>${forq(p)}</strong>`;
-  return `        <article class="paquet" id="pk-${p.id}" data-sector="${p.sector}">
+  return `        <article class="paquet" id="pk-${p.id}" data-sector="${p.sector.join(' ')}">
           <header>
             <h4>${nom}</h4>
             <span class="pk-punt ${pt.cls}" data-i18n="pk.punt.${p.punt}">${esc(pt.lbl)}</span>
@@ -727,10 +745,17 @@ ${seus.map(fitxa).join('\n')}
 function blocFiltre() {
   const bt = (id, lbl, clau, on) =>
     `<button type="button" class="pk-f${on ? ' on' : ''}" data-sec="${id}" data-i18n="${clau}">${esc(lbl)}</button>`;
+  /* Els botons surten de `SECTORS` i no d'una llista escrita aquí. Mentre eren
+     dos escrits a mà, afegir-ne un tercer volia dir recordar-se'n en quatre
+     llocs —la declaració, el botó, el diccionari i la guarda— i oblidar-se'n
+     en un no feia petar res: el sector existia i no tenia manera d'arribar-hi.
+     El comptador diu quants paquets hi cauen, que és el que fa decidir si val
+     la pena travessar aquella porta. */
+  const tots = ORDRE_SECTORS.map(id =>
+    `${bt(id, SECTORS[id].lbl, 'pk.f.' + id, false)}`).join('\n        ');
   return `      <div class="pk-filtre" role="group" aria-label="Filtra per sector">
         ${bt('tot', 'Tot el catàleg', 'pk.f.tot', true)}
-        ${bt('privat', SECTORS.privat.lbl, 'pk.f.privat', false)}
-        ${bt('public', SECTORS.public.lbl, 'pk.f.public', false)}
+        ${tots}
       </div>`;
 }
 
@@ -795,8 +820,8 @@ function diccionari(llengua) {
      canviï el nom d'un sector no hi hagi un botó en català sobre la pàgina
      castellana. */
   files.push(`  ${q('pk.f.tot')}:${q(es ? 'Todo el catálogo' : 'Tot el catàleg')},` +
-             `${q('pk.f.privat')}:${q(es ? SECTORS.privat.lblEs : SECTORS.privat.lbl)},` +
-             `${q('pk.f.public')}:${q(es ? SECTORS.public.lblEs : SECTORS.public.lbl)},` +
+             ORDRE_SECTORS.map(id =>
+               `${q('pk.f.' + id)}:${q(es ? SECTORS[id].lblEs : SECTORS[id].lbl)},`).join('') +
              `${q('pk.mida')}:${q(es ? 'A medida · calculado con el mapa de coste' : 'A mida · calculat amb el mapa de cost')},`);
   /* El mapa de cost: quatre passos, tres nivells i el peu. */
   PASSOS_COST.forEach((p, i) => {
@@ -905,7 +930,7 @@ function posa(src, marques) {
    comptes de copiar-se, i per això aquest fitxer només fa la seva feina quan
    s'executa: si escrivís en carregar-se, requerir-lo des d'una altra eina
    reescriuria la portada de rebot. */
-module.exports = { FAMILIES, SECTORS, PUNTS, FONTS, NIVELLS, PASSOS_COST, PAQUETS, SOS_PAQUETS };
+module.exports = { FAMILIES, SECTORS, ORDRE_SECTORS, PUNTS, FONTS, NIVELLS, PASSOS_COST, PAQUETS, SOS_PAQUETS };
 if (require.main !== module) return;
 
 const src = readFileSync(PORTADA, 'utf8');
@@ -934,8 +959,34 @@ if (trencats.length) {
   process.exit(1);
 }
 
+/* ── Els sectors, abans de generar res ────────────────────────────────────
+   Tres maneres de deixar un paquet sense porta, i cap peta sola:
+
+   · **Un sector que no existeix.** `sector: ['public']` d'abans de la mudança
+     es publicaria amb `data-sector="public"`, el filtre no en tindria botó i
+     aquell paquet no sortiria amb cap tria que no fos «tot el catàleg».
+   · **Una llista buida.** El paquet surt només a «tot el catàleg» i no se
+     sabria mai, perquè la fitxa és correcta i es veu.
+   · **Un sector sense cap paquet.** El botó hi és i, premut, buida la pàgina:
+     una porta que mena a una habitació buida és pitjor que cap porta. */
+const malSec = PAQUETS.concat(SOS_PAQUETS).map(p => {
+  if (!Array.isArray(p.sector) || !p.sector.length) return `${p.id}: sense sector`;
+  const fora = p.sector.filter(x => !SECTORS[x]);
+  return fora.length ? `${p.id}: sector que no existeix (${fora.join(', ')})` : null;
+}).filter(Boolean);
+const buits = ORDRE_SECTORS.filter(id =>
+  !PAQUETS.concat(SOS_PAQUETS).some(p => Array.isArray(p.sector) && p.sector.includes(id)));
+if (malSec.length || buits.length) {
+  if (malSec.length) console.error('✗ Paquets sense porta:\n  ' + malSec.join('\n  '));
+  if (buits.length) console.error('✗ Sectors amb botó i cap paquet a dins: ' + buits.join(', ')
+    + '\n  Una porta que mena a una habitació buida és pitjor que cap porta.');
+  process.exit(1);
+}
+
 const total = PAQUETS.length + SOS_PAQUETS.length;
-const resum = `${total} paquets · ${FAMILIES.length} famílies + el SOS`;
+const compta = ORDRE_SECTORS.map(id =>
+  `${id} ${PAQUETS.concat(SOS_PAQUETS).filter(p => p.sector.includes(id)).length}`).join(' · ');
+const resum = `${total} paquets · ${FAMILIES.length} famílies + el SOS · ${compta}`;
 
 if (CHECK) {
   const desviats = [out === src ? null : 'index.html', outMd === srcMd ? null : 'README.md']

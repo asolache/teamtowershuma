@@ -60,30 +60,36 @@ const CHECK = process.argv.includes('--check');
 
    Dos tipus són dels dos costats a posta —una cooperativa i una fundació
    poden trucar per qualsevol dels dos motius— i això és el que fa que
-   `ORG_SECTOR` segueixi sent una sola taula. */
+   `ORG_SECTOR` segueixi sent una sola taula.
+
+   **El sector és el de qui signa**, el mateix criteri que al catàleg: una
+   cooperativa signa com a empresa encara que faci feina comunitària, i un
+   ateneu o una fundació, com a tercer sector encara que els pagui
+   l'administració. «A títol personal» no és cap de les tres cases i per això
+   val `'tot'`: una persona no té un calaix de paquets, els té tots. */
 const ORGS = [
-  { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'public', fam: ['territori'],
+  { id: 'ajuntament',    ic: '🏛', c: 'indigo', sector: 'admin', fam: ['territori'],
     t: 'Ajuntament',              d: 'Regidoria, àrea tècnica o servei municipal',
     tEs: 'Ayuntamiento', dEs: 'Concejalía, área técnica o servicio municipal' },
-  { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'public', fam: ['territori'],
+  { id: 'comarcal',      ic: '🗺', c: 'indigo', sector: 'admin', fam: ['territori'],
     t: 'Consell comarcal',        d: 'O mancomunitat de municipis',
     tEs: 'Consejo comarcal', dEs: 'O mancomunidad de municipios' },
-  { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'public', fam: ['territori'],
+  { id: 'entitat',       ic: '🤝', c: 'green',  sector: 'tercer', fam: ['territori'],
     t: 'Entitat o associació',    d: 'AVV, ateneu, casal, banc de temps',
     tEs: 'Entidad o asociación', dEs: 'AAVV, ateneo, casal, banco de tiempo' },
-  { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'privat', fam: ['territori', 'organitzacio'],
+  { id: 'cooperativa',   ic: '🚀', c: 'orange', sector: 'empresa', fam: ['territori', 'organitzacio'],
     t: 'Cooperativa o empresa',   d: 'SCCL, SL, projecte econòmic',
     tEs: 'Cooperativa o empresa', dEs: 'SCCL, SL, proyecto económico' },
-  { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'public', fam: ['territori'],
+  { id: 'grup',          ic: '🌱', c: 'blue',   sector: 'tercer', fam: ['territori'],
     t: 'Grup promotor',           d: 'Encara sense forma jurídica',
     tEs: 'Grupo promotor', dEs: 'Todavía sin forma jurídica' },
-  { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'privat', fam: ['territori'],
+  { id: 'acompanyament', ic: '🎓', c: 'purple', sector: 'tercer', fam: ['territori'],
     t: 'Entitat d\'acompanyament', d: 'Ateneu Cooperatiu, consultoria ESS',
     tEs: 'Entidad de acompañamiento', dEs: 'Ateneu Cooperatiu, consultoría ESS' },
-  { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'public', fam: ['territori', 'organitzacio'],
+  { id: 'fundacio',      ic: '💛', c: '#fbbf24', sector: 'tercer', fam: ['territori', 'organitzacio'],
     t: 'Fundació o finançador',   d: 'Obra social, convocatòries',
     tEs: 'Fundación o financiador', dEs: 'Obra social, convocatorias' },
-  { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tots', fam: ['territori'],
+  { id: 'particular',    ic: '👤', c: 'muted',  sector: 'tot', fam: ['territori'],
     t: 'A títol personal',        d: 'Professional o persona interessada',
     tEs: 'A título personal', dEs: 'Profesional o persona interesada' },
 
@@ -94,16 +100,16 @@ const ORGS = [
      espai i idiomes— i el formulari d'avui no en té ni la casella, així que
      acabaven triant «cooperativa o empresa» i el diagnòstic els parlava de
      relleu i de governança. */
-  { id: 'agencia',       ic: '🎪', c: 'orange', sector: 'privat', fam: ['organitzacio'],
+  { id: 'agencia',       ic: '🎪', c: 'orange', sector: 'empresa', fam: ['organitzacio'],
     t: 'Agència o DMC',           d: 'Ho compres per a un client teu',
     tEs: 'Agencia o DMC', dEs: 'Lo compras para un cliente tuyo' },
-  { id: 'gran',          ic: '🏢', c: 'blue',   sector: 'privat', fam: ['organitzacio'],
+  { id: 'gran',          ic: '🏢', c: 'blue',   sector: 'empresa', fam: ['organitzacio'],
     t: 'Empresa gran',            d: 'Amb departament de formació i pressupost anual',
     tEs: 'Empresa grande', dEs: 'Con departamento de formación y presupuesto anual' },
-  { id: 'pime',          ic: '🔧', c: 'green',  sector: 'privat', fam: ['organitzacio'],
+  { id: 'pime',          ic: '🔧', c: 'green',  sector: 'empresa', fam: ['organitzacio'],
     t: 'Pime',                    d: 'La decisió la pren qui la dirigeix',
     tEs: 'Pyme', dEs: 'La decisión la toma quien la dirige' },
-  { id: 'escola',        ic: '🎓', c: 'indigo', sector: 'privat', fam: ['organitzacio'],
+  { id: 'escola',        ic: '🎓', c: 'indigo', sector: 'admin', fam: ['organitzacio'],
     t: 'Escola de negoci o universitat', d: 'Programa, màster o claustre',
     tEs: 'Escuela de negocio o universidad', dEs: 'Programa, máster o claustro' }
 ];
@@ -209,16 +215,35 @@ const ROL_NOM={${rols}};`;
 
    Cada casella porta el sector i la forquilla a l'atribut, perquè el càlcul del
    navegador no hagi de tornar a saber-se el catàleg de memòria. */
-const { FAMILIES, PAQUETS, SOS_PAQUETS, NIVELLS } = require('./build-oferta.js');
+const { FAMILIES, SECTORS, ORDRE_SECTORS, PAQUETS, SOS_PAQUETS, NIVELLS } = require('./build-oferta.js');
 
 /* Els noms porten clau. El triador es llegia **sencer en català** amb el
    castellà posat —vint-i-quatre noms de paquet i quatre capçaleres de família—
    mentre la proposta que en sortia ja sortia traduïda: triaves en una llengua
    i et responien en una altra. El castellà el declara `build-oferta.js`, i les
    claus les escriu `dicPressu()` des d'allà mateix. */
+/* ── El filtre de paquets ──────────────────────────────────────────────────
+   Generat i no escrit a mà, i de **la mateixa declaració** que el del catàleg.
+   Escrits a mà, els tres botons d'aquí deien «Empreses i cooperatives» i
+   «Administració i entitats» quan el catàleg ja parlava de tres sectors: els
+   dos botons no filtraven res perquè cap paquet declarava aquells valors, i la
+   pàgina seguia sent correcta a la vista. Un filtre que no coneix un valor no
+   falla: amaga. */
+function blocPqFiltre() {
+  const bt = (id, lbl, clau, on) =>
+    `<button type="button" class="pq-f${on ? ' on' : ''}" data-sec="${id}" data-i18n="${clau}">${esc(lbl)}</button>`;
+  return [bt('tot', 'Tot', 'pr.filtre.tots', true)]
+    .concat(ORDRE_SECTORS.map(id => bt(id, SECTORS[id].lbl, 'pr.filtre.' + id, false)))
+    .join('\n');
+}
+
 function blocPaquets() {
   const cap = f => `<h4 class="pq-fam" data-i18n="pr.fam.${f.id}">${f.ic} ${esc(f.nom)}</h4>`;
-  const fila = p => `<label class="pq" data-sector="${p.sector}">` +
+  /* `data-sector` és una llista i s'escriu **separada per espais**, com a la
+     portada. Interpolant l'array sense dir-ho, en sortia «admin,tercer» per la
+     conversió automàtica, i el filtre —que parteix per espais— llegia un sol
+     valor inexistent: el paquet no sortia a cap tria. */
+  const fila = p => `<label class="pq" data-sector="${p.sector.join(' ')}">` +
     `<input type="checkbox" name="paquet" value="${p.id}"` +
     (p.mida ? ' data-mida="1"' : ` data-min="${p.preuMin}" data-max="${p.preuMax}"`) + '>' +
     `<span class="pq-n" data-i18n="pr.paq.${p.id}">${esc(p.nom)}</span>` +
@@ -457,8 +482,11 @@ const PRESSU = {
     es: 'Estas preguntas salen cuando pides una actividad con gente, fecha y lugar. Con lo que has elegido ahora, no hacen falta.'
   },
   'pr.filtre.tots': { ca: 'Tot', es: 'Todo' },
-  'pr.filtre.privat': { ca: 'Empreses i cooperatives', es: 'Empresas y cooperativas' },
-  'pr.filtre.public': { ca: 'Administració i entitats', es: 'Administración y entidades' },
+  /* Els noms dels sectors surten de `build-oferta.js` i no es tornen a escriure
+     aquí: el dia que un canviï de nom, el botó del pressupost i el del catàleg
+     han de dir el mateix o la persona es pensa que són dues llistes. */
+  ...Object.fromEntries(ORDRE_SECTORS.map(id =>
+    ['pr.filtre.' + id, { ca: SECTORS[id].lbl, es: SECTORS[id].lblEs }])),
 
   /* ── El text de la proposta ─────────────────────────────────────────────
      El que el navegador munta en prémer el botó. Les que porten un forat
@@ -557,6 +585,7 @@ const MARQUES = [
 /* Els que només té el pressupost. Es declaren a part perquè demanar-los al
    diagnòstic el faria fallar per una marca que allà no té cap sentit. */
 const NOMES_PRESSU = [
+  ['<!--FORM-PQFILTRE-->', '<!--/FORM-PQFILTRE-->', blocPqFiltre],
   ['<!--FORM-PAQUETS-->', '<!--/FORM-PAQUETS-->', blocPaquets],
   ['<!--FORM-MIDA-->', '<!--/FORM-MIDA-->', blocMida],
   ['/*FORM-ESCALA*/', '/*/FORM-ESCALA*/', blocEscala],

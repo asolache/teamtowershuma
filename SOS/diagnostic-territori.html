@@ -236,14 +236,14 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="f">
 <label data-i18n="fo.l.tipus">Tipus d'organització *</label>
 <div class="opts" id="orgType">
-<button type="button" class="opt" data-v="ajuntament" data-sector="public" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
-<button type="button" class="opt" data-v="comarcal" data-sector="public" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
-<button type="button" class="opt" data-v="entitat" data-sector="public" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
-<button type="button" class="opt" data-v="cooperativa" data-sector="privat" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
-<button type="button" class="opt" data-v="grup" data-sector="public" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
-<button type="button" class="opt" data-v="acompanyament" data-sector="privat" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
-<button type="button" class="opt" data-v="fundacio" data-sector="public" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
-<button type="button" class="opt" data-v="particular" data-sector="tots" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
+<button type="button" class="opt" data-v="ajuntament" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" data-sector="tercer" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="empresa" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" data-sector="tercer" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" data-sector="tercer" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="tercer" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" data-sector="tot" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
 </div>
 </div>
 <div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
@@ -398,7 +398,7 @@ const mailAddr=()=>_U+'@'+_D;
 
 /*FORM-DADES*/
 // Generat per SOS/tools/build-formularis.js — no ho editis a mà.
-const ORG_SECTOR={'ajuntament':'public','comarcal':'public','entitat':'public','cooperativa':'privat','grup':'public','acompanyament':'privat','fundacio':'public','particular':'tots','agencia':'privat','gran':'privat','pime':'privat','escola':'privat'};
+const ORG_SECTOR={'ajuntament':'admin','comarcal':'admin','entitat':'tercer','cooperativa':'empresa','grup':'tercer','acompanyament':'tercer','fundacio':'tercer','particular':'tot','agencia':'empresa','gran':'empresa','pime':'empresa','escola':'admin'};
 const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció de persones o RRHH','innovacio':'Innovació, estratègia o projectes','organitzacio':'Organització, processos o qualitat','tecnic':'Tècnic/a de participació, promoció o serveis','politic':'Càrrec electe o de confiança','coordinacio':'Coordinació d\'equip o de programa','altre':'Una altra cosa'};
 /*/FORM-DADES*/
 

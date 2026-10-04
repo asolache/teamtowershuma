@@ -298,32 +298,41 @@
         .pull-quote .pq-bis { margin-top:.9rem; padding-top:.9rem; border-top:1px solid rgba(21,19,15,.09);
             font-size:1rem; color:var(--muted); }
 
-        /* LES DUES BANDES · el mateix patró amb dos vocabularis
-           Va a tota amplada i sota les dues columnes perquè és la conclusió de
-           la secció, no una tercera columna: llegides de costat es veu que és
-           el mateix problema, i per això el mètode pot ser un de sol. */
+        /* LES TRES BANDES · el mateix patró amb tres vocabularis
+           El lead va a tota amplada i sobre les columnes perquè és la conclusió
+           de la secció, no una columna més: llegides de costat es veu que és el
+           mateix problema, i per això el mètode pot ser un de sol. */
         .bandes { margin-top:3.5rem; padding-top:2.5rem; border-top:1px solid var(--border); }
         .bandes-lead { max-width:74ch; margin:0 auto 2rem; text-align:center; font-size:1.05rem;
             line-height:1.75; color:var(--muted); }
         .bandes-lead strong { color:var(--light); font-weight:600; }
-        .bandes-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+        .bandes-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
         .banda { background:var(--bg-panel); border:1px solid var(--border); padding:1.75rem 1.75rem 1.5rem;
             display:flex; flex-direction:column; }
-        .banda:first-child { border-top:2px solid var(--accent-green); }
-        .banda:last-child  { border-top:2px solid var(--accent-indigo); }
+        /* El color va per `data-sec` i no per `:first-child`. Amb la posició, la
+           banda del mig d'un grup de tres es quedava sense color i ningú ho
+           hauria vist petar; i reordenar les columnes els hauria canviat el
+           color sense tocar cap regla. */
+        .banda[data-sec="admin"]   { border-top:2px solid var(--accent-blue); }
+        .banda[data-sec="tercer"]  { border-top:2px solid var(--accent-green); }
+        .banda[data-sec="empresa"] { border-top:2px solid var(--accent-indigo); }
         .banda-k { font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
             color:var(--muted); margin-bottom:1.2rem; }
-        .banda:first-child .banda-k { color:var(--accent-green); }
-        .banda:last-child  .banda-k { color:var(--accent-indigo); }
+        .banda[data-sec="admin"]   .banda-k { color:var(--accent-blue); }
+        .banda[data-sec="tercer"]  .banda-k { color:var(--accent-green); }
+        .banda[data-sec="empresa"] .banda-k { color:var(--accent-indigo); }
         .banda-dl { margin:0 0 1.4rem; flex:1; }
         .banda-dl dt { font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
             color:var(--muted); opacity:.75; }
         .banda-dl dd { margin:.25rem 0 1rem; font-size:.9rem; line-height:1.6; color:var(--light); }
         .banda-dl dd:last-child { margin-bottom:0; }
         .banda-cta { margin-top:auto; font-size:.85rem; font-weight:600; text-decoration:none; color:var(--accent-indigo); }
-        .banda:first-child .banda-cta { color:var(--accent-green); }
+        .banda[data-sec="admin"]  .banda-cta { color:var(--accent-blue); }
+        .banda[data-sec="tercer"] .banda-cta { color:var(--accent-green); }
         .banda-cta:hover { text-decoration:underline; }
-        @media (max-width:760px) { .bandes-grid { grid-template-columns:1fr; } }
+        /* A 1.000 px tres columnes deixen el text a sis paraules per línia i
+           les tres fitxes es llegeixen pitjor que dues: baixen a una. */
+        @media (max-width:1000px) { .bandes-grid { grid-template-columns:1fr; } }
 
         /* TOTES LES PÀGINES · el desplegable que genera SOS/tools/build-nav.js
            de la mateixa arquitectura que el menú del SOS. `<details>` natiu: el
@@ -541,8 +550,23 @@
         @media (max-width:768px) {
             .hero-disc { font-size:.6rem; letter-spacing:.12em; margin:0; }
             .hero-eyebrow.hero-portes { margin-bottom:1rem; }
+            /* Amb la tercera porta, les tres queien en tres línies a 390 px i el
+               botó del dibuix se n'anava 2 px per sota del plec. El que costa
+               l'amplada és el `letter-spacing` —2,3 px per caràcter, 29 px
+               només a «Administració pública»—, i no la lletra: cenyint-lo, en
+               caben dues a la primera línia i el dibuix torna a dins.
+               Es cenyeix i no se'n treu cap: una porta que no es veu a la
+               primera pantalla és una porta que no existeix. */
+            .hero-portes { gap:.35rem .45rem; letter-spacing:.08em; }
         }
-        .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; }
+        /* Amb tres portes, la línia es partia i deixava un «·» penjant al final
+           de la primera: es llegia com dues portes i una, que és just el que
+           aquesta fila ha de deixar de dir. Hi caben les tres seguides traient
+           dues coses que aquí no diuen res —el guió decoratiu de
+           `.hero-eyebrow`, que etiqueta un títol i no una fila d'enllaços, i
+           80 punts de `letter-spacing`. */
+        .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; letter-spacing:.1em; }
+        .hero-portes::before { display:none; }
         .hero-portes a { color:inherit; text-decoration:none;
             border-bottom:1px dashed var(--border); transition:.15s; }
         .hero-portes a:hover { color:var(--accent-green); border-bottom-color:var(--accent-green); }
@@ -1327,10 +1351,18 @@
                      deduir de quin sector som: dues paraules ho diuen, i el
                      titular, a sota, diu d'on ve i què s'endú. -->
                 <p class="hero-disc fade-up" data-i18n="hero.disc">Anàlisi, disseny i desenvolupament de sistemes pels quals flueix el valor</p>
+                <!-- TRES PORTES I NO DUES. «Públic» ajuntava un ajuntament i una
+                     associació: no tenen el mateix pressupost, no decideixen
+                     igual i no compren el mateix, i qui venia d'una entitat
+                     havia de deduir en quin calaix queia. L'ordre és el del
+                     mercat: administració i tercer sector primer, empresa
+                     després —que segueix sent una porta i ja no és la primera. -->
                 <div class="hero-eyebrow hero-portes fade-up">
-                    <a href="#cataleg" data-sec="privat" data-i18n="hero.porta1">Empreses i cooperatives</a>
+                    <a href="#cataleg" data-sec="admin" data-i18n="hero.porta1">Administració pública</a>
                     <span aria-hidden="true">·</span>
-                    <a href="#cataleg" data-sec="public" data-i18n="hero.porta2">Ajuntaments, consells i entitats</a>
+                    <a href="#cataleg" data-sec="tercer" data-i18n="hero.porta2">Tercer sector</a>
+                    <span aria-hidden="true">·</span>
+                    <a href="#cataleg" data-sec="empresa" data-i18n="hero.porta3">Empresa i cooperativa</a>
                 </div>
                 <!-- El titular deia què volem que passi («comunitats que aprenen,
                      emprenen i estalvien») i no d'on surt ni què s'endú qui
@@ -1611,7 +1643,7 @@
       <div class="mv-qr"><b class="mp">7</b><span data-i18n-html="mv.qui.persona">són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera</span></div>
     </div>
     <p class="mv-avis" data-i18n-html="mv.avis">Aquest mapa és un exemple treballat, no el d'un celler concret, i no porta cap xifra: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és <b>on mirar</b>, i quins lliuraments avui se'n van sense cobrar.</p>
-    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html" data-i18n="mv.cta1">Com es fa un mapa, pas a pas →</a><a class="mv-cta" href="#cataleg" data-sec="privat" data-i18n="mv.cta2">El paquet i el preu →</a></div>
+    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html" data-i18n="mv.cta1">Com es fa un mapa, pas a pas →</a><a class="mv-cta" href="#pk-fent-pinya-vna" data-i18n="mv.cta2">El paquet i el preu →</a></div>
   </div>
 </div>
 <!--/TT-MAPAVALOR-->
@@ -1917,12 +1949,12 @@
     <div class="container">
 
         <!-- LES DUES BANDES ────────────────────────────────────────────────
-             El hero obre dues portes i el catàleg filtra per sector; el repte
+             El hero obre tres portes i el catàleg filtra per sector; el repte
              es continuava explicant només per a una. Qui ve del costat privat
              llegia «voluntariat» i «hort comunitari» i concloïa que això no
              anava amb ell — just després que el hero li hagués dit que sí.
 
-             Les dues columnes són el mateix patró amb dos vocabularis, i van
+             Les tres columnes són el mateix patró amb tres vocabularis, i van
              de costat a posta: llegides alhora es veu que és el mateix
              problema, que és el que fa creïble que el mètode sigui un de sol.
              Cada banda acaba a la seva porta del catàleg. -->
@@ -1931,35 +1963,53 @@
              aquí ja sap que té un problema, i el que li falta és veure que el
              patró és el mateix als dos sectors. El que es queda és això. -->
         <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="enfoc.eyebrow">El mateix patró, dos vocabularis</div>
+            <div class="section-eyebrow" data-i18n="enfoc.eyebrow">El mateix patró, tres vocabularis</div>
             <h2 data-i18n-html="enfoc.h2">Es diu diferent, <em>i és el mateix problema</em></h2>
         </div>
         <div class="bandes fade-up">
             <p class="bandes-lead" data-i18n-html="enfoc.b.lead">Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l'organització estigui millor psicosocialment i econòmicament. I es mesura d'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.</p>
+            <!-- Tres columnes i no dues. La del mig és la que no existia: el
+                 contingut de l'antiga «sector públic i comunitari» —voluntàries,
+                 confiança veïnal, actes— era, llegit de prop, el d'una entitat
+                 i no el d'un ajuntament. Es queda al tercer sector, que és d'on
+                 parlava, i l'administració estrena el text que li toca: el
+                 mandat, la memòria del servei i el plec. -->
             <div class="bandes-grid">
-                <div class="banda">
-                    <div class="banda-k" data-i18n="enfoc.b.pub.k">Al sector públic i comunitari</div>
+                <div class="banda" data-sec="admin">
+                    <div class="banda-k" data-i18n="enfoc.b.adm.k">A l'administració pública</div>
                     <dl class="banda-dl">
                         <dt data-i18n="enfoc.b.l1">Qui ho sosté</dt>
-                        <dd data-i18n="enfoc.b.pub.d1">Dues o tres persones voluntàries, sovint les mateixes des del primer dia.</dd>
+                        <dd data-i18n="enfoc.b.adm.d1">Una tècnica i una regidoria, i el projecte canvia de mans cada mandat.</dd>
                         <dt data-i18n="enfoc.b.l2">Què no es veu enlloc</dt>
-                        <dd data-i18n="enfoc.b.pub.d2">Confiança veïnal, favors, coneixement acumulat, reputació al barri. Cap acta ho recull.</dd>
+                        <dd data-i18n="enfoc.b.adm.d2">La relació amb el teixit, qui et torna la trucada, el que es va aprendre de cada edició. Cap memòria ho recull.</dd>
                         <dt data-i18n="enfoc.b.l3">Què passa quan marxen</dt>
-                        <dd data-i18n="enfoc.b.pub.d3">El projecte marxa amb elles, i el següent equip torna a començar de zero.</dd>
+                        <dd data-i18n="enfoc.b.adm.d3">El servei se'n va amb la persona, i el plec següent es torna a escriure des de zero.</dd>
                     </dl>
-                    <a class="banda-cta" href="#cataleg" data-sec="public" data-i18n="enfoc.b.pub.cta">Ajuntaments, consells i entitats →</a>
+                    <a class="banda-cta" href="#cataleg" data-sec="admin" data-i18n="enfoc.b.adm.cta">Administració pública →</a>
                 </div>
-                <div class="banda">
-                    <div class="banda-k" data-i18n="enfoc.b.priv.k">A l'empresa i la cooperativa</div>
+                <div class="banda" data-sec="tercer">
+                    <div class="banda-k" data-i18n="enfoc.b.ter.k">Al tercer sector</div>
                     <dl class="banda-dl">
                         <dt data-i18n="enfoc.b.l1">Qui ho sosté</dt>
-                        <dd data-i18n="enfoc.b.priv.d1">Dues o tres persones clau, i sovint el paper que fan no és a cap organigrama.</dd>
+                        <dd data-i18n="enfoc.b.ter.d1">Dues o tres persones voluntàries, sovint les mateixes des del primer dia.</dd>
                         <dt data-i18n="enfoc.b.l2">Què no es veu enlloc</dt>
-                        <dd data-i18n="enfoc.b.priv.d2">Coneixement tàcit, xarxes informals, qui desencalla les coses de debò. Cap procés ho recull.</dd>
+                        <dd data-i18n="enfoc.b.ter.d2">Confiança veïnal, favors, coneixement acumulat, reputació al barri. Cap acta ho recull.</dd>
                         <dt data-i18n="enfoc.b.l3">Què passa quan marxen</dt>
-                        <dd data-i18n="enfoc.b.priv.d3">Se'n va el que no era a cap procediment, i es descobreix el mes següent.</dd>
+                        <dd data-i18n="enfoc.b.ter.d3">El projecte marxa amb elles, i la junta següent torna a començar de zero.</dd>
                     </dl>
-                    <a class="banda-cta" href="#cataleg" data-sec="privat" data-i18n="enfoc.b.priv.cta">Empreses i cooperatives →</a>
+                    <a class="banda-cta" href="#cataleg" data-sec="tercer" data-i18n="enfoc.b.ter.cta">Tercer sector →</a>
+                </div>
+                <div class="banda" data-sec="empresa">
+                    <div class="banda-k" data-i18n="enfoc.b.emp.k">A l'empresa i la cooperativa</div>
+                    <dl class="banda-dl">
+                        <dt data-i18n="enfoc.b.l1">Qui ho sosté</dt>
+                        <dd data-i18n="enfoc.b.emp.d1">Dues o tres persones clau, i sovint el paper que fan no és a cap organigrama.</dd>
+                        <dt data-i18n="enfoc.b.l2">Què no es veu enlloc</dt>
+                        <dd data-i18n="enfoc.b.emp.d2">Coneixement tàcit, xarxes informals, qui desencalla les coses de debò. Cap procés ho recull.</dd>
+                        <dt data-i18n="enfoc.b.l3">Què passa quan marxen</dt>
+                        <dd data-i18n="enfoc.b.emp.d3">Se'n va el que no era a cap procediment, i es descobreix el mes següent.</dd>
+                    </dl>
+                    <a class="banda-cta" href="#cataleg" data-sec="empresa" data-i18n="enfoc.b.emp.cta">Empresa i cooperativa →</a>
                 </div>
             </div>
         </div>
@@ -2464,8 +2514,9 @@
 
       <div class="pk-filtre" role="group" aria-label="Filtra per sector">
         <button type="button" class="pk-f on" data-sec="tot" data-i18n="pk.f.tot">Tot el catàleg</button>
-        <button type="button" class="pk-f" data-sec="privat" data-i18n="pk.f.privat">Empreses i cooperatives</button>
-        <button type="button" class="pk-f" data-sec="public" data-i18n="pk.f.public">Administració i entitats</button>
+        <button type="button" class="pk-f" data-sec="admin" data-i18n="pk.f.admin">Administració pública</button>
+        <button type="button" class="pk-f" data-sec="tercer" data-i18n="pk.f.tercer">Tercer sector</button>
+        <button type="button" class="pk-f" data-sec="empresa" data-i18n="pk.f.empresa">Empresa i cooperativa</button>
       </div>
 
 <!--/TT-FILTRE-->
@@ -2478,7 +2529,7 @@
           <p data-i18n="pk.fam.consultoria.s">Mirar i decidir amb el mapa a la mà</p>
         </div>
         <div class="pk-graella">
-        <article class="paquet" id="pk-diagnostic-teixit" data-sector="public">
+        <article class="paquet" id="pk-diagnostic-teixit" data-sector="admin tercer">
           <header>
             <h4><a href="/SOS/vna.html" data-i18n="pk.diagnostic-teixit.n">Diagnòstic del teixit local</a></h4>
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
@@ -2497,7 +2548,7 @@
             <p class="pk-perque" data-i18n="pk.diagnostic-teixit.p">Puja amb el nombre d'actors a mapar i amb les sessions de validació amb el teixit; baixa si ja teniu un cens d'entitats fet.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-mapa-organitzacio" data-sector="privat">
+        <article class="paquet" id="pk-mapa-organitzacio" data-sector="empresa tercer">
           <header>
             <h4><a href="/SOS/vna.html" data-i18n="pk.mapa-organitzacio.n">Mapa de valor d'una organització</a></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2516,7 +2567,7 @@
             <p class="pk-perque" data-i18n="pk.mapa-organitzacio.p">Puja amb el nombre de rols i de departaments implicats. En una casa gran el mapa es fa amb zoom —un nivell primer i els de dins a part— i segons la criticitat de l'anàlisi això vol més d'una sessió: es dimensiona abans de signar. Baixa si el mapa es fa amb un sol equip i no amb tota la casa.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-fent-pinya-vna" data-sector="tots">
+        <article class="paquet" id="pk-fent-pinya-vna" data-sector="admin tercer empresa">
           <header>
             <h4><a href="/SOS/vna.html" data-i18n="pk.fent-pinya-vna.n">Fent pinya amb el mapa de valor</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2535,7 +2586,7 @@
             <p class="pk-perque" data-i18n="pk.fent-pinya-vna.p">Puja amb la gent a la jornada —cal colla i monitors per sostenir una estructura— i amb els àmbits a mapar; baixa si la jornada es fa sense estructura castellera i només amb la dinàmica de rols.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-mapa-comarcal" data-sector="public">
+        <article class="paquet" id="pk-mapa-comarcal" data-sector="admin">
           <header>
             <h4><a href="/SOS/vna.html" data-i18n="pk.mapa-comarcal.n">Mapa comarcal i assemblea federativa</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2554,7 +2605,7 @@
             <p class="pk-perque" data-i18n="pk.mapa-comarcal.p">Puja amb el nombre de municipis que hi entren i amb els desplaçaments; per sota de vuit municipis és a la banda baixa i cap sota el sostre de contractació menor.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-impacte" data-sector="public">
+        <article class="paquet" id="pk-impacte" data-sector="admin tercer">
           <header>
             <h4><span data-i18n="pk.impacte.n">Mesura d'impacte i justificació</span></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2573,7 +2624,7 @@
             <p class="pk-perque" data-i18n="pk.impacte.p">Puja amb el nombre de projectes a agregar i amb l'ancoratge permanent si el voleu; el primer informe d'un sol projecte és el mínim.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-persones-cultura" data-sector="privat">
+        <article class="paquet" id="pk-persones-cultura" data-sector="empresa">
           <header>
             <h4><span data-i18n="pk.persones-cultura.n">Diagnòstic de persones i cultura</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2601,7 +2652,7 @@
           <p data-i18n="pk.fam.formacio.s">S'aprèn fent, sobre el vostre cas i no sobre un d'inventat</p>
         </div>
         <div class="pk-graella">
-        <article class="paquet" id="pk-gestor" data-sector="public">
+        <article class="paquet" id="pk-gestor" data-sector="admin">
           <header>
             <h4><a href="/SOS/formacio.html" data-i18n="pk.gestor.n">Programa de Gestor/a</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2620,7 +2671,7 @@
             <p class="pk-perque" data-i18n="pk.gestor.p">Baixa per persona a partir de la tercera del mateix territori; puja si el projecte sobre el qual es treballa encara no existeix i cal muntar-lo.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-equip-gestor" data-sector="public">
+        <article class="paquet" id="pk-equip-gestor" data-sector="admin tercer">
           <header>
             <h4><a href="/SOS/formacio.html" data-i18n="pk.equip-gestor.n">Programa d'equip gestor</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2639,7 +2690,7 @@
             <p class="pk-perque" data-i18n="pk.equip-gestor.p">Entra sota el sostre de contractació menor amb cinc persones i dotze setmanes; puja si l'equip és més gran o si l'acompanyament s'allarga més enllà del trimestre.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-comunitats-practica" data-sector="privat">
+        <article class="paquet" id="pk-comunitats-practica" data-sector="admin tercer empresa">
           <header>
             <h4><span data-i18n="pk.comunitats-practica.n">Comunitats de pràctica</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2658,7 +2709,7 @@
             <p class="pk-perque" data-i18n="pk.comunitats-practica.p">Puja amb el nombre de comunitats que s'engeguen alhora i amb les seus; una sola comunitat en un sol centre és el mínim.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-formacio-equips" data-sector="privat">
+        <article class="paquet" id="pk-formacio-equips" data-sector="empresa">
           <header>
             <h4><span data-i18n="pk.formacio-equips.n">Formació d'equips</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2677,7 +2728,7 @@
             <p class="pk-perque" data-i18n="pk.formacio-equips.p">Mitja jornada és el mínim; puja amb el nombre de sessions i amb el seguiment posterior.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-escola" data-sector="public">
+        <article class="paquet" id="pk-escola" data-sector="admin tercer">
           <header>
             <h4><a href="/SOS/escola.html" data-i18n="pk.escola.n">La Fàbrica de Superherois</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2696,7 +2747,7 @@
             <p class="pk-perque" data-i18n="pk.escola.p">Puja amb el nombre de grups-classe; una sola aula és el mínim i tot el cicle superior d'una escola és la banda alta.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-formar-formadors" data-sector="tots">
+        <article class="paquet" id="pk-formar-formadors" data-sector="tercer empresa">
           <header>
             <h4><a href="/SOS/formacio.html" data-i18n="pk.formar-formadors.n">Formació de formadors</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2715,7 +2766,7 @@
             <p class="pk-perque" data-i18n="pk.formar-formadors.p">Puja amb el nombre de casos tutelats i amb els materials propis que vulgueu; dos casos i els materials de sèrie són el mínim.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-mentoria-directiva" data-sector="tots">
+        <article class="paquet" id="pk-mentoria-directiva" data-sector="admin tercer empresa">
           <header>
             <h4><a href="/SOS/formacio.html" data-i18n="pk.mentoria-directiva.n">Mentoria per a equips directius</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2743,7 +2794,7 @@
           <p data-i18n="pk.fam.dinamitzacio.s">Que passi de debò, i que el dilluns segueixi passant</p>
         </div>
         <div class="pk-graella">
-        <article class="paquet" id="pk-comu-diada" data-sector="public">
+        <article class="paquet" id="pk-comu-diada" data-sector="admin tercer">
           <header>
             <h4><span data-i18n="pk.comu-diada.n">Comú-diada</span></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -2762,7 +2813,7 @@
             <p class="pk-perque" data-i18n="pk.comu-diada.p">Puja amb el nombre d'entitats que s'hi impliquen, amb els espais i amb la producció tècnica; una plaça i quatre entitats és el mínim.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-fent-pinya" data-sector="tots">
+        <article class="paquet" id="pk-fent-pinya" data-sector="admin tercer empresa">
           <header>
             <h4><span data-i18n="pk.fent-pinya.n">Taller de castells «Fent Pinya»</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2781,7 +2832,7 @@
             <p class="pk-perque" data-i18n="pk.fent-pinya.p">El pressupost surt del mapa de cost: dinamitzador, monitors castellers i músics segons el nombre de participants, més faixes, assegurança i desplaçament. S'ensenya desglossat i sense marge amagat.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-demos" data-sector="tots">
+        <article class="paquet" id="pk-demos" data-sector="admin empresa">
           <header>
             <h4><span data-i18n="pk.demos.n">Demostració castellera</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2800,7 +2851,7 @@
             <p class="pk-perque" data-i18n="pk.demos.p">El que el mou és l'alçada, que és quanta colla cal moure, i la distància. Màxim quatre castells per actuació, per qualitat. El pressupost es presenta desglossat: colla, coordinació, desplaçament i assegurança.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-produccio" data-sector="tots">
+        <article class="paquet" id="pk-produccio" data-sector="admin empresa">
           <header>
             <h4><span data-i18n="pk.produccio.n">Producció d'esdeveniments</span></h4>
             <span class="pk-punt pk-provat" data-i18n="pk.punt.provat">Provat</span>
@@ -2819,7 +2870,7 @@
             <p class="pk-perque" data-i18n="pk.produccio.p">Puja amb els dies, els escenaris i el nombre de proveïdors a coordinar. Una jornada d'un sol espai entra sota el sostre de contractació menor; un festival, no.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-posar-en-marxa" data-sector="public">
+        <article class="paquet" id="pk-posar-en-marxa" data-sector="admin tercer">
           <header>
             <h4><a href="/SOS/molekulandia.html" data-i18n="pk.posar-en-marxa.n">Posada en marxa d'una dinàmica</a></h4>
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
@@ -2847,7 +2898,7 @@
           <p data-i18n="pk.fam.digital.s">Automatitzar el que es repeteix, posar valor al que no es veu</p>
         </div>
         <div class="pk-graella">
-        <article class="paquet" id="pk-fluxos-ia" data-sector="tots">
+        <article class="paquet" id="pk-fluxos-ia" data-sector="admin tercer empresa">
           <header>
             <h4><a href="/SOS/ia.html" data-i18n="pk.fluxos-ia.n">Fluxos amb IA · consultoria i formació</a></h4>
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
@@ -2866,7 +2917,7 @@
             <p class="pk-perque" data-i18n="pk.fluxos-ia.p">Puja amb el nombre de fluxos a mapar i amb els que es deixen automatitzats i funcionant; un sol equip i dos fluxos és el mínim.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-web-ia" data-sector="tots">
+        <article class="paquet" id="pk-web-ia" data-sector="admin tercer empresa">
           <header>
             <h4><a href="/SOS/ia.html" data-i18n="pk.web-ia.n">Web o eina feta amb IA</a></h4>
             <span class="pk-punt pk-adapt" data-i18n="pk.punt.adaptacio">En adaptació</span>
@@ -2885,7 +2936,7 @@
             <p class="pk-perque" data-i18n="pk.web-ia.p">Puja amb el nombre de pantalles, amb els idiomes i amb les dades que ha de llegir; una pàgina de presentació amb un idioma és el mínim i una eina amb dades a dins és la banda alta.</p>
           </div>
         </article>
-        <article class="paquet" id="pk-transmedia" data-sector="tots">
+        <article class="paquet" id="pk-transmedia" data-sector="admin tercer empresa">
           <header>
             <h4><a href="/SOS/comando.html" data-i18n="pk.transmedia.n">Projecte transmèdia</a></h4>
             <span class="pk-punt pk-nou" data-i18n="pk.punt.nou">Nou</span>
@@ -3234,7 +3285,7 @@ ca: {
   'pk.font.negoci':'Forquilla del model',
   'pk.font.estimacio':'A validar',
   'pk.lbl.qui':'Per a qui','pk.lbl.dura':'Quant dura','pk.lbl.diners':'Amb quins diners','pk.lbl.valor':'Què t\'aporta',
-  'pk.f.tot':'Tot el catàleg','pk.f.privat':'Empreses i cooperatives','pk.f.public':'Administració i entitats','pk.mida':'A mida · calculat amb el mapa de cost',
+  'pk.f.tot':'Tot el catàleg','pk.f.admin':'Administració pública','pk.f.tercer':'Tercer sector','pk.f.empresa':'Empresa i cooperativa','pk.mida':'A mida · calculat amb el mapa de cost',
   'cm.p1.t':'Es dibuixa la feina com un mapa de valor','cm.p1.d':'Quins rols la fan i quins intercanvis hi ha entre ells. És el mateix mapa que us ensenyem a fer, i el mateix que us quedeu.',
   'cm.p2.t':'Cada rol porta les seves hores','cm.p2.d':'Les hores surten dels fluxos del mapa, no d\'una intuïció. Si un flux no hi és, no es cobra; si hi és, es pot discutir.',
   'cm.p3.t':'Cada rol té el preu del seu nivell','cm.p3.d':'Tres nivells, i el que els separa és evidència verificable al registre. La proposta diu quina persona fa quines hores.',
@@ -3788,7 +3839,7 @@ ca: {
   'cl.s.ajuntament-de-vilafranca':'Administració local','cl.s.junta-de-castilla-y-leon':'Administració autonòmica',
 /*/TT-CL-I18N-CA*/
   'hero.evok':'I la prova que funciona: vint anys entregant-ho',
-  'hero.disc':'Anàlisi, disseny i desenvolupament de sistemes pels quals flueix el valor','hero.porta1':'Empreses i cooperatives','hero.porta2':'Ajuntaments, consells i entitats',
+  'hero.disc':'Anàlisi, disseny i desenvolupament de sistemes pels quals flueix el valor','hero.porta1':'Administració pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa i cooperativa',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
   'ct.a11y.d':'A l\'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.',
@@ -3797,22 +3848,27 @@ ca: {
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
   'hero.cta1':'Diagnostica la teva organització · 3 min','hero.cta2':'Demana pressupost →','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
-  'enfoc.eyebrow':'El mateix patró, dos vocabularis',
+  'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
   'enfoc.b.l1':'Qui ho sosté',
   'enfoc.b.l2':'Què no es veu enlloc',
   'enfoc.b.l3':'Què passa quan marxen',
-  'enfoc.b.pub.k':'Al sector públic i comunitari',
-  'enfoc.b.pub.d1':'Dues o tres persones voluntàries, sovint les mateixes des del primer dia.',
-  'enfoc.b.pub.d2':'Confiança veïnal, favors, coneixement acumulat, reputació al barri. Cap acta ho recull.',
-  'enfoc.b.pub.d3':'El projecte marxa amb elles, i el següent equip torna a començar de zero.',
-  'enfoc.b.pub.cta':'Ajuntaments, consells i entitats →',
-  'enfoc.b.priv.k':'A l\'empresa i la cooperativa',
-  'enfoc.b.priv.d1':'Dues o tres persones clau, i sovint el paper que fan no és a cap organigrama.',
-  'enfoc.b.priv.d2':'Coneixement tàcit, xarxes informals, qui desencalla les coses de debò. Cap procés ho recull.',
-  'enfoc.b.priv.d3':'Se\'n va el que no era a cap procediment, i es descobreix el mes següent.',
-  'enfoc.b.priv.cta':'Empreses i cooperatives →',
+  'enfoc.b.adm.k':'A l\'administració pública',
+  'enfoc.b.adm.d1':'Una tècnica i una regidoria, i el projecte canvia de mans cada mandat.',
+  'enfoc.b.adm.d2':'La relació amb el teixit, qui et torna la trucada, el que es va aprendre de cada edició. Cap memòria ho recull.',
+  'enfoc.b.adm.d3':'El servei se\'n va amb la persona, i el plec següent es torna a escriure des de zero.',
+  'enfoc.b.adm.cta':'Administració pública →',
+  'enfoc.b.ter.k':'Al tercer sector',
+  'enfoc.b.ter.d1':'Dues o tres persones voluntàries, sovint les mateixes des del primer dia.',
+  'enfoc.b.ter.d2':'Confiança veïnal, favors, coneixement acumulat, reputació al barri. Cap acta ho recull.',
+  'enfoc.b.ter.d3':'El projecte marxa amb elles, i la junta següent torna a començar de zero.',
+  'enfoc.b.ter.cta':'Tercer sector →',
+  'enfoc.b.emp.k':'A l\'empresa i la cooperativa',
+  'enfoc.b.emp.d1':'Dues o tres persones clau, i sovint el paper que fan no és a cap organigrama.',
+  'enfoc.b.emp.d2':'Coneixement tàcit, xarxes informals, qui desencalla les coses de debò. Cap procés ho recull.',
+  'enfoc.b.emp.d3':'Se\'n va el que no era a cap procediment, i es descobreix el mes següent.',
+  'enfoc.b.emp.cta':'Empresa i cooperativa →',
   'fp.eyebrow':'Cohesió en acció',
   'fp.h2':'Els Castells:<br><em>una xarxa de valor de 200 anys</em>',
   'rg.eyebrow':'La mateixa casa, vista com un cos',
@@ -3980,7 +4036,7 @@ es: {
   'pk.font.negoci':'Horquilla del modelo',
   'pk.font.estimacio':'A validar',
   'pk.lbl.qui':'Para quién','pk.lbl.dura':'Cuánto dura','pk.lbl.diners':'Con qué dinero','pk.lbl.valor':'Qué te aporta',
-  'pk.f.tot':'Todo el catálogo','pk.f.privat':'Empresas y cooperativas','pk.f.public':'Administración y entidades','pk.mida':'A medida · calculado con el mapa de coste',
+  'pk.f.tot':'Todo el catálogo','pk.f.admin':'Administración pública','pk.f.tercer':'Tercer sector','pk.f.empresa':'Empresa y cooperativa','pk.mida':'A medida · calculado con el mapa de coste',
   'cm.p1.t':'Se dibuja el trabajo como un mapa de valor','cm.p1.d':'Qué roles la hacen y qué intercambios hay entre ellos. Es el mismo mapa que os enseñamos a hacer, y el mismo que os quedáis.',
   'cm.p2.t':'Cada rol lleva sus horas','cm.p2.d':'Las horas salen de los flujos del mapa, no de una intuición. Si un flujo no está, no se cobra; si está, se puede discutir.',
   'cm.p3.t':'Cada rol tiene el precio de su nivel','cm.p3.d':'Tres niveles, y lo que los separa es evidencia verificable en el registro. La propuesta dice qué persona hace qué horas.',
@@ -4534,7 +4590,7 @@ es: {
   'cl.s.ajuntament-de-vilafranca':'Administración local','cl.s.junta-de-castilla-y-leon':'Administración autonómica',
 /*/TT-CL-I18N-ES*/
   'hero.evok':'Y la prueba de que funciona: veinte años entregándolo',
-  'hero.disc':'Análisis, diseño y desarrollo de sistemas por los que fluye el valor','hero.porta1':'Empresas y cooperativas','hero.porta2':'Ayuntamientos, consejos y entidades',
+  'hero.disc':'Análisis, diseño y desarrollo de sistemas por los que fluye el valor','hero.porta1':'Administración pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa y cooperativa',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
   'ct.a11y.d':'A la izquierda, una torre sostenida por cuatro personas. A la derecha, la misma torre sostenida por catorce. Cuando se va una, la primera cae y la segunda aguanta.',
@@ -4543,22 +4599,27 @@ es: {
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
   'hero.cta1':'Diagnostica tu organización · 3 min','hero.cta2':'Pide presupuesto →','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
-  'enfoc.eyebrow':'El mismo patrón, dos vocabularios',
+  'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',
   'enfoc.b.l1':'Quién lo sostiene',
   'enfoc.b.l2':'Qué no se ve en ningún sitio',
   'enfoc.b.l3':'Qué pasa cuando se van',
-  'enfoc.b.pub.k':'En el sector público y comunitario',
-  'enfoc.b.pub.d1':'Dos o tres personas voluntarias, a menudo las mismas desde el primer día.',
-  'enfoc.b.pub.d2':'Confianza vecinal, favores, conocimiento acumulado, reputación en el barrio. Ninguna acta lo recoge.',
-  'enfoc.b.pub.d3':'El proyecto se va con ellas, y el siguiente equipo vuelve a empezar de cero.',
-  'enfoc.b.pub.cta':'Ayuntamientos, consejos y entidades →',
-  'enfoc.b.priv.k':'En la empresa y la cooperativa',
-  'enfoc.b.priv.d1':'Dos o tres personas clave, y a menudo el papel que hacen no está en ningún organigrama.',
-  'enfoc.b.priv.d2':'Conocimiento tácito, redes informales, quién desencalla las cosas de verdad. Ningún proceso lo recoge.',
-  'enfoc.b.priv.d3':'Se va lo que no estaba en ningún procedimiento, y se descubre al mes siguiente.',
-  'enfoc.b.priv.cta':'Empresas y cooperativas →',
+  'enfoc.b.adm.k':'En la administración pública',
+  'enfoc.b.adm.d1':'Una técnica y una concejalía, y el proyecto cambia de manos cada mandato.',
+  'enfoc.b.adm.d2':'La relación con el tejido, quién te devuelve la llamada, lo que se aprendió de cada edición. Ninguna memoria lo recoge.',
+  'enfoc.b.adm.d3':'El servicio se va con la persona, y el siguiente pliego se vuelve a escribir desde cero.',
+  'enfoc.b.adm.cta':'Administración pública →',
+  'enfoc.b.ter.k':'En el tercer sector',
+  'enfoc.b.ter.d1':'Dos o tres personas voluntarias, a menudo las mismas desde el primer día.',
+  'enfoc.b.ter.d2':'Confianza vecinal, favores, conocimiento acumulado, reputación en el barrio. Ninguna acta lo recoge.',
+  'enfoc.b.ter.d3':'El proyecto se va con ellas, y la siguiente junta vuelve a empezar de cero.',
+  'enfoc.b.ter.cta':'Tercer sector →',
+  'enfoc.b.emp.k':'En la empresa y la cooperativa',
+  'enfoc.b.emp.d1':'Dos o tres personas clave, y a menudo el papel que hacen no está en ningún organigrama.',
+  'enfoc.b.emp.d2':'Conocimiento tácito, redes informales, quién desencalla las cosas de verdad. Ningún proceso lo recoge.',
+  'enfoc.b.emp.d3':'Se va lo que no estaba en ningún procedimiento, y se descubre al mes siguiente.',
+  'enfoc.b.emp.cta':'Empresa y cooperativa →',
   'fp.eyebrow':'Cohesión en acción',
   'fp.h2':'Los Castells:<br><em>una red de valor de 200 años</em>',
   'rg.eyebrow':'La misma casa, vista como un cuerpo',
@@ -4813,7 +4874,10 @@ applyLang(currentLang);
     var fitxes = [].slice.call(document.querySelectorAll('.paquet[data-sector]'));
     function filtra(sec) {
         fitxes.forEach(function (a) {
-            a.hidden = !(sec === 'tot' || a.dataset.sector === sec || a.dataset.sector === 'tots');
+            // `data-sector` és una llista: un paquet pot tenir dos compradors i
+            // tres. Comparant la cadena sencera, «admin tercer» no era ni
+            // «admin» ni «tercer» i el paquet desapareixia de les dues portes.
+            a.hidden = !(sec === 'tot' || (a.dataset.sector || '').split(' ').indexOf(sec) >= 0);
         });
         // La família sense cap fitxa visible desapareix amb el seu títol.
         [].slice.call(document.querySelectorAll('.pk-fam')).forEach(function (f) {

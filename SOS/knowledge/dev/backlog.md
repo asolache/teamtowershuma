@@ -44,6 +44,83 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### Les tres portes · el sector deixa de ser un valor (03/10/2026)
+
+**Fet.** «Públic» ajuntava un ajuntament i una associació. No tenen el mateix
+pressupost, no decideixen igual i no compren el mateix, i qui venia d'una
+entitat havia de deduir en quin calaix queia. Ara són tres portes de debò:
+**administració pública · tercer sector · empresa i cooperativa**.
+
+| | Abans | Ara |
+|---|---|---|
+| Portes | 2 (`privat`, `public`) | **3** |
+| `sector` d'un paquet | un valor, o `'tots'` | **una llista** |
+| Paquets amb més d'un comprador declarat | 0 —n'havien de triar un o dir «tots» | **20 de 24** |
+| Paquets per porta | — | admin 17 · tercer 15 · empresa 13 (de 21 a la portada) |
+| Llocs on el filtre s'escrivia a mà | 2 (portada i pressupost) | 0, generats de la declaració |
+
+**El canvi de model és el que compta, no el botó.** Mentre `sector` fos un
+valor, un paquet amb dos compradors havia de triar-ne un —i perdia l'altre— o
+dir «tots» —i no deia res. «Una entitat del territori, finançada per
+l'ajuntament» és administració **i** tercer sector; publicada com a «públic»,
+amagava la meitat del que deia.
+
+```js
+sector: ['admin', 'tercer']      // abans: sector: 'public'
+```
+
+**El criteri és qui signa**, i no de qui es parla — el mateix criteri
+contractual que el mètode fa servir per decidir si un lliurament és tangible.
+Una cooperativa signa com a empresa encara que faci feina comunitària; un
+ateneu o una fundació, com a tercer sector encara que els pagui l'ajuntament.
+
+**Tres maneres de deixar un paquet sense porta, i cap peta sola.** Les tres són
+guarda nova, i les tres s'han provat trencant-les a posta:
+
+1. **Un sector que no existeix** —un `sector: ['public']` que no s'ha mudat—
+   deixa el paquet fora de qualsevol tria que no sigui «tot el catàleg».
+2. **Una llista buida**: el paquet surt sempre i no el filtra res. La fitxa és
+   correcta i es veu, i no hi ha manera d'adonar-se'n mirant la pàgina.
+3. **Un botó sense paquets**: premut, buida la pàgina. Una porta que mena a una
+   habitació buida és pitjor que cap porta.
+
+I dues més, perquè una porta pot existir i no arribar a qui la busca:
+**cada sector ha de tenir porta al hero i banda al repte**, que són els dos
+llocs on algú decideix si això va amb ell. La regla d'abans comptava portes
+—«quatre, dues a cada lloc»— i amb tres sectors un número deixa de dir res:
+amb sis portes podrien ser dues d'un sector repetides i un sector sense cap.
+
+**El que va aparèixer pel camí, i no es buscava:**
+
+- **El filtre del pressupost no coneixia els sectors nous.** Era escrit a mà i
+  deia «Empreses i cooperatives» i «Administració i entitats» quan el catàleg
+  ja parlava de tres. Els dos botons no filtraven res —cap paquet declarava
+  aquells valors— i la pàgina seguia sent correcta a la vista. **Un filtre que
+  no coneix un valor no falla: amaga.** Ara es genera de la mateixa declaració
+  que el del catàleg.
+- **`data-sector` interpolat sense dir-ho** sortia «admin,tercer» per la
+  conversió automàtica d'un array, i el filtre, que parteix per espais, llegia
+  un sol valor inexistent: el paquet desapareixia de les dues portes alhora.
+- **El text del repte parlava d'entitats i es publicava com a administració.**
+  «Voluntàries», «confiança veïnal», «cap acta ho recull» és el que li passa a
+  una entitat, no a un ajuntament. Es queda al tercer sector, que és d'on
+  parlava, i l'administració estrena el text que li toca: el mandat, la memòria
+  del servei i el plec que es torna a escriure des de zero.
+- **El color de les bandes anava per `:first-child`.** Amb tres columnes, la
+  del mig es quedava sense color i no hauria petat res. Va per `data-sec`.
+- **La tercera porta treia el dibuix del hero de la primera pantalla** per 2 px
+  a 390 i el partia en dues línies a sobretaula, amb un «·» penjant al final de
+  la primera — que es llegeix com dues portes i una. El que costava l'amplada
+  era el `letter-spacing` —2,3 px per caràcter— i el guió decoratiu de
+  `.hero-eyebrow`, que etiqueta un títol i no una fila d'enllaços. **No se'n
+  treu cap porta:** una porta que no es veu a la primera pantalla no existeix.
+
+**El que no va en aquest lliurament:** l'endreça —portada de 18 seccions a 7,
+`qui-som.html` i `cataleg.html` amb les seves guardes, el SOS centralitzat a
+`SOS/intro.html` i el menú amb cinc destins— és la fase 3. Va l'última perquè
+és la que pot perdre coses, i quan hi arribem la pell i els sectors ja no es
+mouen.
+
 ### La pell · una paleta, vint-i-quatre pàgines (03/10/2026)
 
 **Fet.** El lloc públic passa a clar i la barra a blanc. El que s'ha mesurat:

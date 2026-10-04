@@ -27,9 +27,12 @@ comarcales, entidades y grupos promotores.
 Cuatro familias: **consultoría**, **formación**, **producción y dinamización**
 y **digital e IA**. Dentro de cada una conviven la versión para organización y
 la versión comunitaria del mismo producto — eso es lo que hace visible la
-adaptación al mercado en vez de esconderla. Se vende a **empresas y
-cooperativas** y a **administración y entidades**: cada paquete declara su
-sector, y la portada deja filtrar por él.
+adaptación al mercado en vez de esconderla. Se vende a **administración
+pública**, **tercer sector** y **empresa y cooperativa**: cada paquete declara
+**la lista** de sus sectores —20 de los 24 tienen más de un comprador—, y
+la portada deja filtrar por ella. Eran dos puertas, y una guardaba dos dentro:
+un ayuntamiento y una asociación no tienen el mismo presupuesto, no deciden
+igual y no compran lo mismo.
 
 Cada paquete dice **para quién es, cuánto dura, qué te llevas, cuánto cuesta,
 con qué dinero se paga y en qué punto está**. Los que van a administración

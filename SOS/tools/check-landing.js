@@ -108,8 +108,11 @@ else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')
    s'endú, quant costa i quantes vegades s'ha fet. Sense les cinc coses, un
    tècnic municipal no ho pot portar a una junta —que era exactament el
    problema dels tretze quadres que hi havia abans. Veda 137. */
-const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)" data-sector="([a-z]+)">([\s\S]*?)<\/article>/g)]
-  .map(m => ({ id: m[1], sector: m[2], html: m[3] }));
+/* `data-sector` és **una llista**: un paquet pot tenir dos compradors o tres.
+   Llegit com un valor —`([a-z]+)`—, «admin tercer» es llegia com a «admin» i
+   la meitat del que diu aquell paquet no arribava a cap comprovació. */
+const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)" data-sector="([a-z ]+)">([\s\S]*?)<\/article>/g)]
+  .map(m => ({ id: m[1], sector: m[2].split(' ').filter(Boolean), html: m[3] }));
 const visible0 = cos.replace(/<!--[\s\S]*?-->/g, '');
 if (!paquets.length) bad('no hi ha cap paquet a la portada: aquesta guarda no pot comprovar res');
 else {
@@ -147,18 +150,53 @@ else {
   if (teCost) ok('el mapa de cost hi és, amb els seus passos i tres nivells d\'escala');
   else bad('el mapa de cost no hi és o li falten passos o nivells — els enllaços «a mida» no van enlloc');
 
-  /* Cada paquet declara a quin sector parla, i n'hi ha dels dos. Si tots
-     diguessin el mateix, el filtre seria un botó que no filtra i la pàgina
-     tornaria a parlar a una sola casa —que és d'on venim. */
-  const sectors = new Set(paquets.map(p => p.sector));
-  const filtre = (cos.match(/class="pk-f[ "]/g) || []).length;
-  if (sectors.has('privat') && sectors.has('public') && filtre >= 3)
-    ok(`${sectors.size} sectors declarats i ${filtre} botons de filtre`);
-  else bad(`el catàleg no parla als dos sectors (${[...sectors].join(', ') || 'cap'}) o no té filtre (${filtre} botons) — la pàgina torna a vendre a una sola casa`);
+  /* ── Cada sector declarat, una porta; cada porta, alguna cosa a dins ──
+     La regla comptava quatre portes i dos sectors amb nom escrit. Amb tres
+     sectors, comptar deixa de servir: el que ha de ser cert és que **cada
+     sector que un paquet declara tingui botó**, i que **cada botó tingui
+     paquets**. Les dues meitats fallen en silenci i de maneres oposades:
+
+     · Un sector sense botó —un `sector: ['public']` que no s'ha mudat— deixa
+       aquell paquet fora de qualsevol tria que no sigui «tot el catàleg».
+     · Un botó sense paquets buida la pàgina quan es prem. Una porta que mena a
+       una habitació buida és pitjor que cap porta.
+
+     I el mínim de tres es queda escrit: el motiu de tot això és que «públic»
+     ajuntava un ajuntament i una entitat. Amb dos sectors, hi hem tornat. */
+  const sectors = new Set(paquets.flatMap(p => p.sector));
+  const botons = new Set([...cos.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)]
+    .map(m => m[1]).filter(x => x !== 'tot'));
+  const senseBoto = [...sectors].filter(x => !botons.has(x));
+  const sensePaquet = [...botons].filter(x => !sectors.has(x));
+  if (sectors.size < 3)
+    bad(`el catàleg només parla a ${pl(sectors.size, 'sector', 'sectors')} (${[...sectors].join(', ') || 'cap'}) — `
+      + 'administració, tercer sector i empresa no compren igual, i ajuntar-ne dos amaga la meitat del que diu un paquet');
+  else if (senseBoto.length)
+    bad(`${pl(senseBoto.length, 'sector declarat sense botó de filtre', 'sectors declarats sense botó de filtre')}: `
+      + `${senseBoto.join(', ')} — aquells paquets no surten amb cap tria que no sigui «tot el catàleg»`);
+  else if (sensePaquet.length)
+    bad(`${pl(sensePaquet.length, 'botó de filtre sense cap paquet', 'botons de filtre sense cap paquet')}: `
+      + `${sensePaquet.join(', ')} — premut, buida la pàgina`);
+  else {
+    const compta = [...botons].map(x => `${x} ${paquets.filter(p => p.sector.includes(x)).length}`).join(' · ');
+    ok(`${sectors.size} sectors, tots amb botó i amb paquets a dins (${compta})`);
+  }
+  /* I un paquet sense cap sector surt sempre i no el filtra res: la fitxa és
+     correcta, es veu, i no hi ha manera d'adonar-se'n mirant la pàgina. */
+  const mut = paquets.filter(p => !p.sector.length);
+  if (mut.length) bad(`${pl(mut.length, 'paquet no diu a qui parla', 'paquets no diuen a qui parla')} `
+    + `(${mostra(mut.map(p => p.id))}) — surt a totes les portes i a cap`);
 
   /* El sostre dels 5.000 €: per sobre, la proposta deixa de ser una decisió
      d'una regidoria i passa a ser un procediment. Només s'aplica als paquets
-     dirigits a administració o entitats; els d'empresa no en tenen. */
+     dirigits a l'administració; els d'empresa i els de tercer sector no en
+     tenen —una entitat no contracta per contracte menor, demana una subvenció.
+
+     **Qui hi cau es llegeix del sector declarat i no del text de «per a qui».**
+     Era un `match` damunt d'una frase lliure —«ajuntament|consell|escola|…»— i
+     això vol dir que reescriure aquella frase treia un paquet del sostre sense
+     que res ho digués: «Consells comarcals i mancomunitats» hi entrava i
+     «Ens supramunicipals» no. El sector és una dada i la frase és prosa. */
   const SOSTRE = 5000;
   /* El que ha de quedar sota el sostre és **l'entrada** de la forquilla: si el
      mínim ja hi passa, aquell paquet no té cap manera d'entrar a una
@@ -166,8 +204,7 @@ else {
      dies no és un contracte menor— sempre que la fitxa digui què l'hi porta,
      cosa que la regla de dalt ja exigeix (`pk-perque`). */
   const cars = paquets.filter(p => {
-    const qui = (p.html.match(/class="pk-dades">[\s\S]*?<dd[^>]*>([^<]*)</) || [])[1] || '';
-    if (!/ajuntament|consell|escola|afa|entitat|administracion|ateneu/i.test(qui)) return false;
+    if (!p.sector.includes('admin')) return false;
     /* Es miren totes les xifres del bloc del preu, no només les que porten el
        símbol al costat: a «De 3.500 a 6.000 €» l'euro només és al final, i
        mirar-hi el mínim per l'€ donava el màxim. */
@@ -176,7 +213,8 @@ else {
       .map(m => Number(m[1].replace(/\./g, ''))).filter(n => n >= 100);
     return nums.length ? Math.min(...nums) > SOSTRE : false;
   });
-  if (!cars.length) ok(`tot paquet per a administració o entitats hi entra per sota dels ${SOSTRE.toLocaleString('ca-ES')} €`);
+  if (!cars.length) ok(`els ${paquets.filter(p => p.sector.includes('admin')).length} paquets per a l'administració `
+    + `hi entren per sota dels ${SOSTRE.toLocaleString('ca-ES')} €`);
   else bad(`${pl(cars.length, 'paquet no té entrada', 'paquets no tenen entrada')} sota el sostre de ${SOSTRE} € (${mostra(cars.map(p => p.id))}) — no hi ha manera de contractar-los com a contracte menor`);
 
   /* Una porta cap a un fitxer que no hi és. Mateixa regla que a Molekulandia. */
@@ -268,16 +306,21 @@ const bloc = (des, fins) => {
 };
 const sensTags = t => t.replace(/<[^>]+>/g, ' ');
 
-const PUBLIC = /ajuntament|consell comarcal|entitat|veïn|comunitari|voluntari|municipal|público|vecin|comunitario|voluntari/i;
+/* Tres vocabularis i no dos. El de «públic» en tenia dos a dins —el plec i
+   l'acta de la junta no són la mateixa casa— i un text que parlés només
+   d'entitats passava la regla com si parlés d'ajuntaments. */
+const ADMIN  = /ajuntament|consell comarcal|mancomunitat|regidor|tècnic municipal|municipal|plec|mandat|ayuntamiento|consejo comarcal|concejal|municipal|pliego|mandato/i;
+const TERCER = /entitat|associaci|fundaci|ateneu|afa |veïn|voluntari|junta|comunitari|entidad|asociaci|fundaci|ateneo|vecin|voluntari|comunitario/i;
 const PRIVAT = /empresa|cooperativa|organigrama|direcció de persones|comitè de direcció|departament|dirección de personas|comité de dirección|departamento/i;
+const SECTORS_TXT = [['administració', ADMIN], ['tercer sector', TERCER], ['empresa', PRIVAT]];
 
 const repte = sensTags(bloc('<section class="enfoc" id="enfoc"', '</section>'));
 if (!repte) bad('no es troba la secció del repte (`#enfoc`)');
 else {
-  const teP = PUBLIC.test(repte), teE = PRIVAT.test(repte);
-  if (teP && teE) ok('el repte s\'explica per als dos sectors, no per a un');
-  else bad(`el repte només parla ${teP ? 'del sector públic i comunitari' : 'de l\'empresa'}: `
-    + 'qui ve de l\'altra porta del hero hi arriba i conclou que això no va amb ell');
+  const callen = SECTORS_TXT.filter(([, re]) => !re.test(repte)).map(([n]) => n);
+  if (!callen.length) ok('el repte s\'explica per als tres sectors, no per a un');
+  else bad(`el repte no parla ${callen.length === 1 ? 'de' : 'de'} ${callen.join(' ni de ')}: `
+    + 'qui ve d\'aquella porta del hero hi arriba i conclou que això no va amb ell');
   /* La frase que uneix les dues bandes. Sense ella, dues columnes de costat
      són dos negocis; amb ella, són un mètode amb dos productes. */
   const pont = /mateix objectiu|mismo objetivo/i.test(repte)
@@ -294,12 +337,25 @@ else {
    no ho hauria vist ningú perquè l'àncora sí que funciona. */
 const portes = [...src.matchAll(/<a[^>]*\sdata-sec="([^"]+)"/g)].map(m => m[1]);
 const filtres = new Set([...src.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)].map(m => m[1]));
-if (portes.length < 4) bad(`només hi ha ${portes.length} portes de sector a la pàgina: el hero i el repte n'han de portar dues cadascun`);
-else {
-  const orfes = [...new Set(portes)].filter(s => !filtres.has(s));
-  if (!orfes.length) ok(`les ${portes.length} portes de sector porten a un filtre que existeix`);
-  else bad(`hi ha portes que demanen un sector que el filtre no té: ${orfes.join(', ')}`);
-}
+/* Comptava portes —«quatre, dues a cada lloc»— i amb tres sectors un número
+   deixa de dir res: amb sis portes podrien ser dues d'un sector repetides i un
+   sector sense cap. El que ha de ser cert és que **cada sector del filtre
+   tingui porta al hero i porta al repte**, que són els dos llocs on algú
+   decideix si això va amb ell. */
+const heroP = new Set([...bloc('<div class="hero-eyebrow hero-portes', '</div>')
+  .matchAll(/data-sec="([^"]+)"/g)].map(m => m[1]));
+const repteP = new Set([...bloc('<div class="bandes-grid">', '</section>')
+  .matchAll(/data-sec="([^"]+)"/g)].map(m => m[1]));
+const senseHero = [...filtres].filter(x => x !== 'tot' && !heroP.has(x));
+const senseRepte = [...filtres].filter(x => x !== 'tot' && !repteP.has(x));
+const portesOrfes = [...new Set(portes)].filter(x => !filtres.has(x));
+if (portesOrfes.length) bad(`hi ha portes que demanen un sector que el filtre no té: ${portesOrfes.join(', ')}`);
+else if (senseHero.length) bad(`${pl(senseHero.length, 'sector sense porta al hero', 'sectors sense porta al hero')}: `
+  + `${senseHero.join(', ')} — qui ve d'aquella casa no es troba a la primera pantalla`);
+else if (senseRepte.length) bad(`${pl(senseRepte.length, 'sector sense banda al repte', 'sectors sense banda al repte')}: `
+  + `${senseRepte.join(', ')} — el repte diu a qui li passa això, i aquell sector no hi surt`);
+else ok(`els ${[...filtres].filter(x => x !== 'tot').length} sectors tenen porta al hero, `
+  + 'banda al repte i filtre al catàleg');
 if (/document\.querySelectorAll\('a\[data-sec\]'\)/.test(src))
   ok('i el filtre les escolta totes, no les d\'un contenidor concret');
 else bad('el filtre s\'enganxa a les portes d\'un contenidor concret: una porta nova en un altre '
@@ -311,10 +367,11 @@ else bad('el filtre s\'enganxa a les portes d\'un contenidor concret: una porta 
 const faqs = [...visible.matchAll(/<details class="faq-item">([\s\S]*?)<\/details>/g)].map(m => sensTags(m[1]));
 if (!faqs.length) bad('no es troba cap objecció');
 else {
-  const pub = faqs.filter(f => PUBLIC.test(f)).length;
-  const pri = faqs.filter(f => PRIVAT.test(f)).length;
-  if (pub && pri) ok(`les ${faqs.length} objeccions cobreixen els dos sectors (${pub} i ${pri})`);
-  else bad(`cap objecció parla ${pub ? 'a una empresa' : 'al sector públic'}: `
+  const cob = SECTORS_TXT.map(([n, re]) => [n, faqs.filter(f => re.test(f)).length]);
+  const nul = cob.filter(([, c]) => !c).map(([n]) => n);
+  if (!nul.length) ok(`les ${faqs.length} objeccions cobreixen els tres sectors (`
+    + cob.map(([n, c]) => `${n} ${c}`).join(' · ') + ')');
+  else bad(`cap objecció parla ${nul.join(' ni ')}: `
     + 'qui hi arriba des d\'aquella porta no en troba ni una que sigui la seva');
 }
 

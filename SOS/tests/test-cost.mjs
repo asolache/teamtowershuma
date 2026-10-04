@@ -34,7 +34,7 @@ const nova = async (js = true) => {
   return { ctx, p, errs };
 };
 
-console.log('\n1 · El hero nomena les dues cases i obre dues portes');
+console.log('\n1 · El hero nomena les tres cases i obre tres portes');
 {
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(() => {
@@ -48,12 +48,13 @@ console.log('\n1 · El hero nomena les dues cases i obre dues portes');
     };
   });
   ok(/empres|cooperativ/i.test(r.eyebrow), 'la primera línia nomena l\'empresa');
-  ok(/ajuntament|administraci/i.test(r.eyebrow), 'i també l\'administració');
+  ok(/administraci/i.test(r.eyebrow), 'i també l\'administració');
+  ok(/tercer sector/i.test(r.eyebrow), 'i el tercer sector, que abans vivia dins de «públic»');
   ok(!/veïnal|vecinal/i.test(r.h1), 'el titular ja no és només comunitari');
-  ok(r.portes.includes('privat') && r.portes.includes('public'),
-    'hi ha una porta per sector');
+  ok(['admin', 'tercer', 'empresa'].every(x => r.portes.includes(x)),
+    `hi ha una porta per sector: ${r.portes.join(', ')}`);
   ok(r.dest.every(h => h === '#cataleg'),
-    'i totes dues porten al catàleg encara que el JavaScript no corri');
+    'i totes tres porten al catàleg encara que el JavaScript no corri');
   ok(r.cta.some(h => /pressupost/.test(h)),
     'i des del hero es pot demanar pressupost sense buscar-lo');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
@@ -67,20 +68,24 @@ console.log('\n2 · El filtre filtra, i no amaga res d\'entrada');
     const vis = () => [...document.querySelectorAll('.paquet')].filter(a => !a.hidden).length;
     const total = document.querySelectorAll('.paquet').length;
     const abans = vis();
-    document.querySelector('.pk-f[data-sec="privat"]').click();
-    const privat = vis();
-    const famsBuides = [...document.querySelectorAll('.pk-fam')]
-      .filter(f => !f.hidden && !f.querySelector('.paquet:not([hidden])')).length;
-    document.querySelector('.pk-f[data-sec="public"]').click();
-    const publica = vis();
+    const per = {};
+    let famsBuides = 0;
+    ['admin', 'tercer', 'empresa'].forEach(sec => {
+      document.querySelector('.pk-f[data-sec="' + sec + '"]').click();
+      per[sec] = vis();
+      famsBuides += [...document.querySelectorAll('.pk-fam')]
+        .filter(f => !f.hidden && !f.querySelector('.paquet:not([hidden])')).length;
+    });
     document.querySelector('.pk-f[data-sec="tot"]').click();
-    return { total, abans, privat, publica, tornen: vis(), famsBuides,
+    return { total, abans, per, tornen: vis(), famsBuides,
       marcat: document.querySelector('.pk-f.on').dataset.sec };
   });
   ok(r.abans === r.total, 'en obrir la pàgina hi són tots els ' + r.total + ' paquets');
-  ok(r.privat > 0 && r.privat < r.total, 'el filtre d\'empresa en deixa menys, i en deixa');
-  ok(r.publica > 0 && r.publica < r.total, 'i el d\'administració també');
-  ok(r.famsBuides === 0, 'cap família es queda amb el títol i la graella buida a sota');
+  Object.entries(r.per).forEach(([sec, n]) =>
+    ok(n > 0 && n < r.total, `el filtre «${sec}» en deixa ${n} de ${r.total}: menys, i en deixa`));
+  ok(new Set(Object.values(r.per)).size > 1,
+    'i els tres no donen el mateix número, que seria no filtrar');
+  ok(r.famsBuides === 0, 'cap família es queda amb el títol i la graella buida a sota, amb cap dels tres');
   ok(r.tornen === r.total && r.marcat === 'tot', 'i «tot el catàleg» els torna');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
