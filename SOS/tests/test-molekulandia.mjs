@@ -208,14 +208,14 @@ console.log('\n6 · La pàgina: pestanyes, menú, mòbil');
   const r = await page.evaluate(() => ({
     tabs: document.querySelectorAll('#tabs button').length,
     pans: document.querySelectorAll('.pan').length,
-    nav: !!document.querySelector('.sos-nav'),
-    aqui: [...document.querySelectorAll('.sos-nav [aria-current]')].map(a => a.getAttribute('href')),
+    nav: !!document.querySelector('.tt-nav'),
+    aqui: [...document.querySelectorAll('.tt-nav [aria-current]')].map(a => a.getAttribute('href')),
     act: document.querySelectorAll('#activitats .tg').length,
     pro: document.querySelectorAll('#prototips .tg').length,
     inputs: document.querySelectorAll('input').length
   }));
   ok(r.tabs === r.pans && r.tabs === 4, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
-  ok(r.nav && r.aqui.indexOf('molekulandia.html') >= 0, 'porta el menú del SOS i s\'hi marca a si mateixa');
+  ok(r.nav && r.aqui.indexOf('/SOS/molekulandia.html') >= 0, 'porta el menú del SOS i s\'hi marca a si mateixa');
   ok(r.act === 14 && r.pro === 6, `el terme ensenya les ${r.act} activitats crítiques i les ${r.pro} formes`);
   ok(r.inputs === 0, 'i no hi ha cap camp on escriure res de ningú: aquí no es demana cap dada');
   await ctx.close();

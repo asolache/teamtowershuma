@@ -70,12 +70,12 @@ await p.goto(PORTADA);
 console.log('\n1 · La pàgina es pot llegir en castellà');
 {
   const abans = await p.evaluate(() => document.querySelector('.hero-desc').textContent.slice(0, 40));
-  await p.click('.lang-btn[data-lang="es"]');
+  await p.click('.lang-b[data-lang="es"]');
   await p.waitForTimeout(400);
   const despres = await p.evaluate(() => ({
     hero: document.querySelector('.hero-desc').textContent.slice(0, 40),
     lang: document.documentElement.lang,
-    actiu: document.querySelector('.lang-btn.active').dataset.lang
+    actiu: document.querySelector('.lang-b.on').dataset.lang
   }));
   ok(despres.actiu === 'es', 'el botó es marca com a actiu');
   ok(despres.hero !== abans, 'i el hero canvia de debò: ' + despres.hero + '…');
@@ -148,7 +148,7 @@ console.log('\n3 · El que es ven, en castellà de dalt a baix');
 /* ── 4 · I tornar al català no deixa res a mitges ────────────────────────── */
 console.log('\n4 · I es pot tornar');
 {
-  await p.click('.lang-btn[data-lang="ca"]');
+  await p.click('.lang-b[data-lang="ca"]');
   await p.waitForTimeout(400);
   const r = await p.evaluate(() => ({
     lang: document.documentElement.lang,
@@ -169,7 +169,7 @@ console.log('\n4 · I es pot tornar');
    claus que hi havia, zero, quadraven perfectament. */
 console.log('\n5 · I cap text de les seccions sense clau');
 {
-  await p.click('.lang-btn[data-lang="es"]');
+  await p.click('.lang-b[data-lang="es"]');
   await p.waitForTimeout(400);
   const sense = await p.evaluate(sCA => {
     const re = new RegExp(sCA, 'i');

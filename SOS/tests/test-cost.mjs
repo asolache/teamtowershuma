@@ -156,8 +156,8 @@ console.log('\n5 · L\'escala hi és amb els seus tres preus hora, i en castell�
     const hores = () => [...document.querySelectorAll('.cm-taula .cm-h')].map(t => t.textContent.trim());
     const ca = hores();
     const acred = [...document.querySelectorAll('.cm-taula tbody td')].map(t => t.textContent.trim());
-    const bes = document.querySelector('.lang-btn[data-lang="es"]') ||
-      [...document.querySelectorAll('.lang-btn')].find(b => /es/i.test(b.textContent));
+    const bes = document.querySelector('.lang-b[data-lang="es"]') ||
+      [...document.querySelectorAll('.lang-b')].find(b => /es/i.test(b.textContent));
     if (bes) bes.click();
     await new Promise(r2 => setTimeout(r2, 60));
     return { ca, es: hores(), acred, capcalera: document.querySelector('#cost h2').textContent };

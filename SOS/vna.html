@@ -95,11 +95,6 @@ b,strong{font-weight:650}
    castellà, i no petava perquè `check-i18n.js` només mira l'app. Comparteix la
    clau `tt_lang` amb la resta del lloc: qui ha triat castellà al pressupost hi
    arriba en castellà. */
-.lang-sw{display:inline-flex;gap:2px;background:var(--pap2);border:1px solid var(--vora);
-  border-radius:9px;padding:2px;margin-left:auto}
-.lang-b{font:inherit;font-size:var(--t0);font-weight:600;cursor:pointer;background:none;border:0;
-  color:var(--tin3);padding:.26rem .6rem;border-radius:7px;line-height:1.2}
-.lang-b.on{background:var(--card);color:var(--tin);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 /* Les etiquetes dels dibuixos s'escriuen un cop per llengua —el salt de línia
    es calcula a la construcció— i és l'atribut `lang` qui decideix quina es veu. */
 .mv-es{display:none}
@@ -568,59 +563,85 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 </style>
 </head>
 <body>
-<!--SOS-NAV-->
+<!--TT-NAV-->
 <style>
-.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
-  padding:.6rem 1rem;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
+   una còpia: hi ha guarda. Només tokens de la pell (build-pell.js), perquè els
+   àlies de les pàgines d'arrel —--white, --accent-indigo, --bg-panel— no
+   existeixen a les 24 del SOS i allà no peten: deixen el text sense color. */
+.tt-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+  padding:.7rem 1.1rem;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);font-size:var(--t0);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
-.sos-nav .sn-brand{font-weight:700;color:var(--text);text-decoration:none;margin-right:.4rem}
-.sos-nav .sn-brand span{color:var(--green)}
-.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
-.sos-nav .sn-g{position:relative}
-.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
+  text-decoration:none;margin-right:.5rem;white-space:nowrap}
+.tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.tt-nav .tn-g{position:relative}
+.tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
   color:var(--light);white-space:nowrap;border:1px solid transparent}
-.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
-.sos-nav .sn-g>summary:hover{color:var(--text);background:var(--panel)}
-.sos-nav .sn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
-.sos-nav .sn-here>summary{color:var(--text);font-weight:600}
-.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:var(--indigo);border-radius:2px;margin-top:.16rem}
-.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:260px;z-index:70;
+.tt-nav .tn-g>summary::-webkit-details-marker{display:none}
+.tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
+.tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.tt-nav .tn-here>summary{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+.tt-nav .tn-p{position:absolute;top:calc(100% + .35rem);left:0;min-width:272px;z-index:110;
   background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
   box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
-.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:var(--light)}
-.sos-nav .sn-p a:hover{background:var(--panel);color:var(--text)}
-.sos-nav .sn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
-.sos-nav .sn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
-.sos-nav .sn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
-.sos-nav .sn-cta{margin-left:auto;background:var(--indigo);color:#fff;font-weight:600;text-decoration:none;
-  padding:.4rem .85rem;border-radius:9px;white-space:nowrap}
-.sos-nav .sn-cta:hover{filter:brightness(1.12)}
-@media(max-width:640px){
-  .sos-nav{padding:.5rem .7rem;gap:.35rem}
-  .sos-nav .sn-brand{font-size:var(--t0)}
-  .sos-nav .sn-cta{margin-left:auto;padding:.34rem .65rem;font-size:var(--t0)}
-  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
-     una barra que ja fa dues línies acaba fora de pantalla. */
-  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
-     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
-     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
-  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
-  .sos-nav .sn-g{position:static}
-  .sos-nav .sn-g>summary{width:100%}
-  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
-     subratllat de banda a banda sembla una separació i no una pista. */
-  .sos-nav .sn-here>summary::after{max-width:4.5rem}
-  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
-    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0}
+.tt-nav .tn-p a{display:block;padding:.44rem .58rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.tt-nav .tn-p a:hover{background:var(--panel);color:var(--text)}
+.tt-nav .tn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.tt-nav .tn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.tt-nav .tn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.tt-nav .tn-lang{display:flex;align-items:center;gap:2px;margin-left:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px}
+.tt-nav .tn-lang .lang-b{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font:inherit;font-size:var(--t0);padding:.16rem .5rem;border-radius:5px}
+.tt-nav .tn-lang .lang-b.on{background:var(--indigo);color:var(--on-accent);font-weight:700}
+.tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
+/* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
+.tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
+  text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-cta:hover{filter:brightness(1.12)}
+@media(max-width:860px){
+  .tt-nav{padding:.42rem .6rem;gap:.25rem}
+  /* La marca baixa al terra —no per sota— perquè la marca, el commutador i
+     l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
+     partia i la barra passava de dues files a tres. */
+  .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
+     El primer intent posava els cinc grups **en columna** a mòbil, oberts
+     sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
+     el dibuix i el botó del hero de la primera pantalla: test-portada.mjs va
+     dir «acaba a 1033 de 844». Una barra no pot costar un quart de pantalla.
+
+     En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
+     d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
+     a sota, que és el que una columna sí que feia. */
+  /* Una sola fila que llisca, i no dues o tres que embolcallen: cinc
+     etiquetes de 15 px no caben en 390 px i embolcallant feien 177 px de
+     barra —tres files—, que és el mateix defecte amb un altre nombre. */
+  .tt-nav .tn-gs{width:100%;order:4;flex-wrap:nowrap;gap:.15rem;overflow-x:auto;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tt-nav .tn-gs::-webkit-scrollbar{display:none}
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-g>summary{padding:.3rem .5rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
+  .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
+    top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
+  .tt-nav .tn-lang{margin-left:auto;order:2}
+  .tt-nav .tn-cta{margin-left:.4rem;order:3;padding:.34rem .65rem}
 }
 </style>
-<nav class="sos-nav" aria-label="Navegació del SOS">
-  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html" aria-current="page"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer un mapa de valor</b><span data-i18n="nv.d.vna-suport">Les sis passes, i deu regles que el revisen</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a><a href="../qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
-  <a class="sn-cta" href="index.html">Obre SOS →</a>
+<nav class="tt-nav" aria-label="Navegació del lloc">
+  <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
+  <div class="tn-gs"><details class="tn-g"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g tn-here"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="tn-p"><a href="/SOS/vna.html" aria-current="page"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer un mapa de valor</b><span data-i18n="nv.d.vna-suport">Les sis passes, i deu regles que el revisen</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="tn-p"><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="tn-p"><a href="/SOS/comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
+  <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
+  <a class="tn-cta" href="/SOS/"><span data-i18n="nv.cta">Obre el SOS</span> →</a>
 </nav>
-<!--/SOS-NAV-->
+<!--/TT-NAV-->
 
 
 
@@ -628,12 +649,6 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 
 <div class="cap-b">
   <span class="cap-k" data-i18n="vn.eyebrow">Anàlisi de xarxes de valor · Verna Allee</span>
-  <!-- El commutador. Comparteix `tt_lang` amb la resta del lloc: qui ha triat
-       castellà al pressupost hi arriba en castellà. -->
-  <div class="lang-sw" role="group" aria-label="Llengua / Idioma">
-    <button type="button" class="lang-b on" data-lang="ca" aria-pressed="true">CA</button>
-    <button type="button" class="lang-b" data-lang="es" aria-pressed="false">ES</button>
-  </div>
 </div>
 
 <h1 data-i18n-html="vn.h1">Qui dona què a qui, <em>i en quin ordre</em></h1>
@@ -1195,6 +1210,67 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
    ════════════════════════════════════════════════════════════════════════════ */
 const VN_I18N = {
   ca: {
+/* Les claus de la barra. Aquesta pàgina és bilingüe i la barra no ho era: qui
+   la posava en castellà llegia el menú sencer en català, i no petava res.
+   Les escriu `build-nav.js` d'una sola declaració, com als quatre formularis. */
+/*NAV-I18N-CA*/
+  'nv.g.comenca':'🧭 Comença',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.pressupost':'Demana pressupost',
+  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De què va tot això',
+  'nv.t.uneix-te':'Uneix-t\'hi',
+  'nv.d.uneix-te':'El que ja fas al barri, comptat',
+  'nv.g.eines':'🛠 Eines',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Rols i intercanvis d\'un projecte',
+  'nv.t.vna-suport':'Fer un mapa de valor',
+  'nv.d.vna-suport':'Les sis passes, i deu regles que el revisen',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grup de consum i compra col·lectiva',
+  'nv.t.energia':'L\'Energia',
+  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
+  'nv.t.habitatge':'L\'Habitatge',
+  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
+  'nv.t.banc-temps':'El Banc de Temps',
+  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
+  'nv.t.biblioteca':'La Biblioteca de les Coses',
+  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El poble sencer i les nou professions',
+  'nv.t.joc':'El joc',
+  'nv.d.joc':'La plaça, a ritme',
+  'nv.g.apren':'🎓 Aprèn',
+  'nv.t.formacio':'Formació',
+  'nv.d.formacio':'16 mòduls, de N0 a N3',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.t.escola':'Escoles',
+  'nv.d.escola':'El SOS a mida d\'aula',
+  'nv.t.vedes':'Les vedes',
+  'nv.d.vedes':'Les regles, amb el motiu al costat',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-cataleg':'El catàleg',
+  'nv.d.arrel-cataleg':'Paquets tancats, amb el preu escrit',
+  'nv.t.arrel-qui-som':'Qui som',
+  'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.g.xarxa':'🏘 Xarxa',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La pel·lícula que farem 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estat líquid',
+  'nv.t.online':'Directori',
+  'nv.d.online':'Qui hi ha, per territori',
+  'nv.cta':'Obre el SOS',
+/*/NAV-I18N-CA*/
 /*VNA-I18N-CA*/
   'vn.eyebrow':'Anàlisi de xarxes de valor · Verna Allee',
   'vn.h1':'Qui dona què a qui, <em>i en quin ordre</em>',
@@ -1711,6 +1787,64 @@ const VN_I18N = {
 /*/VNA-CT-I18N-CA*/
   },
   es: {
+/*NAV-I18N-ES*/
+  'nv.g.comenca':'🧭 Empieza',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.pressupost':'Pide presupuesto',
+  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De qué va todo esto',
+  'nv.t.uneix-te':'Únete',
+  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
+  'nv.g.eines':'🛠 Herramientas',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Roles e intercambios de un proyecto',
+  'nv.t.vna-suport':'Hacer un mapa de valor',
+  'nv.d.vna-suport':'Los seis pasos, y diez reglas que lo revisan',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grupo de consumo y compra colectiva',
+  'nv.t.energia':'La Energía',
+  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
+  'nv.t.habitatge':'La Vivienda',
+  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
+  'nv.t.banc-temps':'El Banco de Tiempo',
+  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
+  'nv.t.biblioteca':'La Biblioteca de las Cosas',
+  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
+  'nv.t.joc':'El juego',
+  'nv.d.joc':'La plaza, a ritmo',
+  'nv.g.apren':'🎓 Aprende',
+  'nv.t.formacio':'Formación',
+  'nv.d.formacio':'16 módulos, de N0 a N3',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.t.escola':'Escuelas',
+  'nv.d.escola':'El SOS a medida de aula',
+  'nv.t.vedes':'Las vedas',
+  'nv.d.vedes':'Las reglas, con el motivo al lado',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-cataleg':'El catálogo',
+  'nv.d.arrel-cataleg':'Paquetes cerrados, con el precio escrito',
+  'nv.t.arrel-qui-som':'Quiénes somos',
+  'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.g.xarxa':'🏘 Red',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La película que haremos 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estado líquido',
+  'nv.t.online':'Directorio',
+  'nv.d.online':'Quién hay, por territorio',
+  'nv.cta':'Abre el SOS',
+/*/NAV-I18N-ES*/
 /*VNA-I18N-ES*/
   'vn.eyebrow':'Análisis de redes de valor · Verna Allee',
   'vn.h1':'Quién da qué a quién, <em>y en qué orden</em>',

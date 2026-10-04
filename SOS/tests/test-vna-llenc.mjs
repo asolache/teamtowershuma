@@ -83,7 +83,7 @@ console.log('\n/vna · el llenç i les vuit lectures');
       /* El menú el genera `build-nav.js` i viu a vint-i-tres pàgines: pujar-li
          la lletra és un canvi d'allà. Hi ha entrada al backlog, i el motiu
          escrit és el que distingeix una excepció d'un oblit. */
-      if (n.closest('.sos-nav')) return;
+      if (n.closest('.tt-nav')) return;
       if (!n.getBoundingClientRect().width) return;
       const fs = parseFloat(getComputedStyle(n).fontSize) * (n.ownerSVGElement ? esc(n) : 1);
       if (fs < 15) out.push([Math.round(fs * 10) / 10, n.textContent.trim().slice(0, 24)]);

@@ -55,12 +55,14 @@ else bad(`només ${frens} frens: sense els quatre, «IA amb frens» és una fras
 /* ── 3 · Cap porta a un lloc que no existeix ──────────────────────────────
    La regla de la casa, i aquí compta doble: la pàgina diu «es pot anar a
    mirar» i qui hi vagi ha de trobar-ho. */
+/* On va una adreça interna es declara a `rutes.js`: la barra única porta rutes
+   absolutes i resoltes contra `SOS/` donaven morts vint-i-sis destins vius. */
+const { fitxerDe } = require('./rutes.js');
 const enllacos = [...visible.matchAll(/href="([^"#][^"]*?)"/g)].map(m => m[1])
   .filter(h => !/^https?:|^mailto:/.test(h));
 const trencats = [...new Set(enllacos)].filter(h => {
-  const net = h.split('#')[0];
-  if (!net) return false;
-  return !existsSync(join(SOS, net));
+  const f = fitxerDe(h, SOS);
+  return f && !existsSync(f);
 });
 if (!enllacos.length) bad('la pàgina no enllaça res: si diu que es pot anar a mirar, ha de portar-hi');
 else if (!trencats.length) ok(`${new Set(enllacos).size} enllaços interns, tots a un fitxer que existeix`);

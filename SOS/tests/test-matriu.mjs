@@ -112,13 +112,13 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
   const mira = async p => {
     const { ctx, page, errs } = await obre(p, 1100, 700);
     const r = await page.evaluate(() => {
-      const n = document.querySelector('.sos-nav');
+      const n = document.querySelector('.tt-nav');
       if (!n) return null;
-      return { grups: [...n.querySelectorAll('.sn-g>summary')].map(s => s.textContent.trim()),
-        destins: [...n.querySelectorAll('.sn-p a')].map(a => a.getAttribute('href')),
-        cta: (n.querySelector('.sn-cta') || {}).textContent || '',
+      return { grups: [...n.querySelectorAll('.tn-g>summary')].map(s => s.textContent.trim()),
+        destins: [...n.querySelectorAll('.tn-p a')].map(a => a.getAttribute('href')),
+        cta: (n.querySelector('.tn-cta') || {}).textContent || '',
         aqui: [...n.querySelectorAll('[aria-current]')].map(a => a.getAttribute('href')),
-        marca: !!n.querySelector('.sn-brand') };
+        marca: !!n.querySelector('.tn-brand') };
     });
     await ctx.close();
     return { r, errs };
@@ -129,9 +129,9 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
     `i els mateixos grups a totes: ${a.r.grups.join(' · ')}`);
   ok(a.r.destins.join('|') === b2.r.destins.join('|'),
     `amb els mateixos ${a.r.destins.length} destins i en el mateix ordre`);
-  ok(/Obre SOS/.test(a.r.cta) && /Obre SOS/.test(c.r.cta),
+  ok(/Obre el SOS/.test(a.r.cta) && /Obre el SOS/.test(c.r.cta),
     'i la mateixa acció principal, sempre al mateix lloc');
-  ok(a.r.aqui.indexOf('matriu.html') >= 0 && b2.r.aqui.indexOf('compra.html') >= 0,
+  ok(a.r.aqui.indexOf('/SOS/matriu.html') >= 0 && b2.r.aqui.indexOf('/SOS/compra.html') >= 0,
     'cada pàgina es marca a si mateixa: se sap on ets sense haver de llegir el títol');
   ok(a.r.marca, 'i la marca porta a la portada des de qualsevol lloc');
   ok(!a.errs.length && !b2.errs.length && !c.errs.length, 'sense errors de pàgina');
@@ -141,7 +141,7 @@ console.log('\n4 · El menú funciona sense JavaScript i a mòbil');
 {
   const { ctx, page, errs } = await obre('matriu.html', 390, 800);
   const r = await page.evaluate(async () => {
-    const g = document.querySelector('.sos-nav .sn-g');
+    const g = document.querySelector('.tt-nav .tn-g');
     /* `open` i no l'alçada: `<details>` amaga el contingut amb un mecanisme
        intern del navegador i mesurar-lo depèn de com el pinti cadascun. El que
        importa és l'estat, que és el que el navegador exposa. */
@@ -149,7 +149,7 @@ console.log('\n4 · El menú funciona sense JavaScript i a mòbil');
     g.querySelector('summary').click();
     await new Promise(r2 => setTimeout(r2, 150));
     const obert = g.open;
-    const alt = g.querySelector('.sn-p').getBoundingClientRect().height;
+    const alt = g.querySelector('.tn-p').getBoundingClientRect().height;
     return { tancat, obert, alt, tag: g.tagName,
       desborda: document.documentElement.scrollWidth > window.innerWidth + 1 };
   });

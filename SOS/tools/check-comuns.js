@@ -116,14 +116,13 @@ else {
 }
 
 // ── 4 · Cap porta morta ──────────────────────────────────────────────────
+/* Les rutes es resolen amb `rutes.js`, que les declara un sol cop: la barra
+   única porta adreces absolutes (`/SOS/vna.html`, `/SOS/`) i això, resolt
+   relatiu al fitxer, donava morts vint-i-sis destins que existeixen tots. */
+const { morts: mortsDe, internes } = require('./rutes.js');
 [['banc-temps.html', BDT], ['biblioteca.html', BIB]].forEach(([nom, txt]) => {
-  const dests = [...new Set([...txt.matchAll(/href="([^"]+)"/g)].map(m => m[1]))]
-    .filter(h => !/^(https?:|mailto:|#)/.test(h));
-  const morts = dests.filter(h => {
-    const f = h.split('#')[0];
-    const cami = f.startsWith('../') ? join(ARREL, f.slice(3)) : join(SOS, f);
-    return !existsSync(cami);
-  });
+  const dests = internes(txt);
+  const morts = mortsDe(txt, SOS);
   if (!morts.length) ok(`els ${dests.length} destins de ${nom} existeixen`);
   else bad(`${pl(morts.length, 'enllaç mort', 'enllaços morts')} a ${nom}: ${morts.join(', ')}`);
 });
