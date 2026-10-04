@@ -124,6 +124,15 @@ const GRUPS = [
      coses no en diu cap*— i la pàgina del mètode és `/vna`, que és al grup
      d'eines i ara el porta sencer. L'adreça té un 301 cap allà. */
   { id: 'casa', lbl: T('La casa', 'La casa'), ic: '🏛', arrel: true, links: [
+    /* ⚠ Les dues pàgines noves de l'endreça (04/10/2026). Eren seccions de la
+       portada —el catàleg sencer i les tres de «qui hi ha darrere»— i ara són
+       pàgines. Si no entressin aquí, serien exactament el que aquest registre
+       existeix per impedir: pàgines publicades a les quals només hi arriba qui
+       en sap l'adreça. */
+    ['cataleg.html', T('El catàleg', 'El catálogo'),
+      T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
+    ['qui-som.html', T('Qui som', 'Quiénes somos'),
+      T('Vint anys, els clients i d\'on ve el mètode', 'Veinte años, los clientes y de dónde viene el método')],
     ['premsa.html', T('Premsa', 'Prensa'),
       T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')]
   ] },
@@ -243,7 +252,11 @@ const A_OBRE = '<!--SOS-EINES-->', A_TANCA = '<!--/SOS-EINES-->';
    seria dir dues vegades el mateix amb dos dissenys—, però sí **el mateix
    desplegable de destins**: qui arriba per la portada no tenia manera
    d'arribar a cap de les pàgines si no les sabia de memòria. */
-const PORTADA = join(ARREL, 'index.html');
+/* Les tres pàgines d'arrel porten el mateix desplegable. Eren una —la
+   portada— fins que l'endreça en va fer tres: amb una sola declarada aquí,
+   `cataleg.html` i `qui-som.html` haurien nascut sense cap manera d'anar
+   enlloc, i la guarda hauria passat en verd perquè mirava la portada. */
+const PORTADES = ['index.html', 'cataleg.html', 'qui-som.html'];
 const P_OBRE = '<!--TT-PAGINES-->', P_TANCA = '<!--/TT-PAGINES-->';
 
 /* ══ LES CLAUS DEL DICCIONARI ════════════════════════════════════════════
@@ -537,16 +550,22 @@ PAGINES.forEach(p => {
   } else if (nou !== html) { writeFileSync(f, nou); tocades++; }
 });
 
-/* I la portada, que tampoc porta la barra però sí el desplegable. */
+/* I les pàgines d'arrel, que tampoc porten la barra però sí el desplegable. */
 {
-  const html = readFileSync(PORTADA, 'utf8');
-  const nou = posaPortada(html);
-  if (nou === null) bad(`index.html de l'arrel no té les marques ${P_OBRE} … ${P_TANCA}: ` +
-    'de la portada no hi hauria manera d\'arribar a cap pàgina');
-  else if (CHECK) {
-    if (nou !== html) bad('index.html de l\'arrel no porta el desplegable declarat, o l\'ha canviat pel seu compte');
-    else ok('i la portada porta el mateix desplegable de destins');
-  } else if (nou !== html) { writeFileSync(PORTADA, nou); tocades++; }
+  let totesBe = true;
+  PORTADES.forEach(nom => {
+    const f = join(ARREL, nom);
+    if (!existsSync(f)) { bad(`no existeix ${nom}`); totesBe = false; return; }
+    const html = readFileSync(f, 'utf8');
+    const nou = posaPortada(html);
+    if (nou === null) {
+      bad(`${nom} no té les marques ${P_OBRE} … ${P_TANCA}: d'aquesta pàgina no hi hauria manera d'arribar a cap altra`);
+      totesBe = false;
+    } else if (CHECK) {
+      if (nou !== html) { bad(`${nom} no porta el desplegable declarat, o l'ha canviat pel seu compte`); totesBe = false; }
+    } else if (nou !== html) { writeFileSync(f, nou); tocades++; }
+  });
+  if (CHECK && totesBe) ok(`i les ${PORTADES.length} pàgines d'arrel porten el mateix desplegable de destins`);
 }
 
 /* ── Cap pàgina publicada i no enllaçada des d'enlloc ──────────────────────

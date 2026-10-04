@@ -24,8 +24,21 @@
 const { readFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
-const APP = process.argv[2] || join(__dirname, '..', '..', 'index.html');
-const src = readFileSync(APP, 'utf8');
+/* ══ TRES PÀGINES, I CADA REGLA MIRA LA SEVA (04/10/2026) ═════════════════
+   **Una secció que marxa s'emporta la seva guarda.** Aquest fitxer vigilava el
+   catàleg, les portes, els clients amb font i els ponts cap al SOS perquè eren
+   a la portada. Amb el catàleg a `cataleg.html` i «qui hi ha darrere» a
+   `qui-som.html`, una regla que es quedés mirant la portada **passaria a verd
+   per absència** — i el dia que algú publiqui un client sense font a la pàgina
+   nova, no petaria res.
+
+   Les regles no s'esborren: es muden. Cada una declara quina pàgina mira. */
+const ARREL = join(__dirname, '..', '..');
+const PAGS = {
+  portada: 'index.html',
+  cataleg: 'cataleg.html',
+  quisom: 'qui-som.html'
+};
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m);
@@ -35,55 +48,73 @@ const mostra = a => a.slice(0, 6).join(', ') + (a.length > 6 ? ` … (+${a.lengt
    ha llegit la sortida de la guarda. Si demana que se la llegeixin, s'escriu bé. */
 const pl = (n, u, m) => `${n} ${n === 1 ? u : m}`;
 
-console.log('\nGuarda de la portada · ' + APP.replace(/^.*\//, ''));
-
-// ── Els diccionaris ──────────────────────────────────────────────────────
-const iCa = src.indexOf('\nca: {'), iEs = src.indexOf('\nes: {');
-const iFi = iEs < 0 ? -1 : src.indexOf('\n};', iEs);
-if (iCa < 0 || iEs < 0 || iFi < 0) {
-  /* Si no es troben, no s'aprova en silenci: es diu que no s'ha pogut mirar.
-     Una guarda que no troba el que mesura ha de cridar, no callar. */
-  bad('no es troben els diccionaris `ca:` i `es:`: aquesta guarda no pot comprovar res');
-  console.log('\n❌ 1 problema.');
-  process.exit(1);
-}
 /* El guionet hi és perquè les claus del catàleg porten l'id del paquet
    (`pk.diagnostic-teixit.n`), i sense ell la guarda no les veia i acusava de
    no estar traduït el que sí que ho estava. */
 const KV = /'([A-Za-z0-9_.-]+)':'(?:[^'\\]|\\.)*'/g;
-const claus = txt => [...txt.matchAll(KV)].map(m => m[1]);
-const ca = claus(src.slice(iCa, iEs));
-const es = claus(src.slice(iEs, iFi));
 
-// ── 1 · Cap clau repetida dins d'un diccionari ───────────────────────────
-for (const [nom, llista] of [['català', ca], ['castellà', es]]) {
-  const vistes = new Set(), dups = new Set();
-  llista.forEach(k => { if (vistes.has(k)) dups.add(k); vistes.add(k); });
-  if (!dups.size) ok(`diccionari ${nom}: ${llista.length} claus, cap repetida`);
-  else bad(`diccionari ${nom}: ${pl(dups.size, 'clau repetida', 'claus repetides')} (${mostra([...dups])}) — la segona guanya i la primera no s'aplica mai`);
+function llegeix(nom, fitxer) {
+  const f = join(ARREL, fitxer);
+  if (!existsSync(f)) { bad(`no existeix ${fitxer}`); return null; }
+  const src = readFileSync(f, 'utf8');
+  const iCa = src.indexOf('\nca: {'), iEs = src.indexOf('\nes: {');
+  const iFi = iEs < 0 ? -1 : src.indexOf('\n};', iEs);
+  if (iCa < 0 || iEs < 0 || iFi < 0) {
+    /* Si no es troben, no s'aprova en silenci: es diu que no s'ha pogut mirar.
+       Una guarda que no troba el que mesura ha de cridar, no callar. */
+    bad(`${fitxer}: no es troben els diccionaris \`ca:\` i \`es:\``);
+    return null;
+  }
+  const claus = txt => [...txt.matchAll(KV)].map(m => m[1]);
+  const cos = src.slice(0, iCa);
+  const ca = claus(src.slice(iCa, iEs)), es = claus(src.slice(iEs, iFi));
+  /* **La meitat es mesura dins del `<body>`**, no del fitxer. `cos` porta la
+     capçalera i setanta mil caràcters de CSS: amb això al numerador, un enllaç
+     a mitja pàgina sortia «a la primera meitat» i un de la primera pantalla
+     podia sortir a la segona segons quant hagués crescut el full d'estil. */
+  const b0 = src.indexOf('<body');
+  const cosVis = b0 < 0 ? cos : cos.slice(b0);
+  return {
+    nom, fitxer, src, cos, cosVis, ca, es, sCa: new Set(ca), sEs: new Set(es),
+    visible0: cos.replace(/<!--[\s\S]*?-->/g, ''),
+    visible: cos.replace(/<!--[\s\S]*?-->/g, '').replace(/<style[\s\S]*?<\/style>/g, '')
+      .replace(/<script[\s\S]*?<\/script>/g, '')
+  };
 }
 
-// ── 2 · Les dues llengües diuen les mateixes coses ───────────────────────
-const sCa = new Set(ca), sEs = new Set(es);
-const nomesCa = [...sCa].filter(k => !sEs.has(k));
-const nomesEs = [...sEs].filter(k => !sCa.has(k));
-if (!nomesCa.length && !nomesEs.length) ok(`les dues llengües cobreixen les mateixes ${sCa.size} claus`);
-else {
-  if (nomesCa.length) bad(`${pl(nomesCa.length, 'clau', 'claus')} sense castellà (${mostra(nomesCa)}) — qui llegeixi en castellà es trobarà aquestes frases en català`);
-  if (nomesEs.length) bad(`${pl(nomesEs.length, 'clau', 'claus')} sense català (${mostra(nomesEs)})`);
-}
+console.log('\nGuarda de les pàgines d\'arrel · ' + Object.values(PAGS).join(' · '));
 
-// ── 3 · Cap clau que no apunti enlloc, cap element sense clau ────────────
-/* Es miren només els atributs del cos, no els que apareixen dins del propi
-   diccionari (n'hi ha que porten HTML amb `data-i18n` a dins). */
-const cos = src.slice(0, iCa);
-const atributs = [...new Set([...cos.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)].map(m => m[1]))];
-const orfes = atributs.filter(k => !sCa.has(k));
-const mortes = [...sCa].filter(k => !atributs.includes(k));
-if (!orfes.length) ok(`${atributs.length} elements traduïbles, tots amb entrada al diccionari`);
-else bad(`${pl(orfes.length, 'element traduïble', 'elements traduïbles')} sense clau al diccionari (${mostra(orfes)}) — es quedarà amb el text escrit a mà`);
-if (!mortes.length) ok('cap clau del diccionari apunta a un element que ja no hi és');
-else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')} res (${mostra(mortes)}) — fan creure que aquell text està cobert`);
+const P = {};
+Object.entries(PAGS).forEach(([k, f]) => { P[k] = llegeix(k, f); });
+if (Object.values(P).some(x => !x)) { console.log(`\n❌ ${pl(fails, 'problema', 'problemes')}.`); process.exit(1); }
+
+// ── 1, 2 i 3 · Els diccionaris, a cada pàgina ────────────────────────────
+/* Les tres avaries del diccionari no són de la portada: són **del disseny**
+   —`applyLang()` reescriu tot element amb `data-i18n` en carregar—, i per tant
+   valen igual a les tres pàgines. Amb la regla mirant-ne una sola, les altres
+   dues podien publicar mitja traducció sense que res digués res. */
+Object.values(P).forEach(p => {
+  for (const [nom, llista] of [['català', p.ca], ['castellà', p.es]]) {
+    const vistes = new Set(), dups = new Set();
+    llista.forEach(k => { if (vistes.has(k)) dups.add(k); vistes.add(k); });
+    if (dups.size) bad(`${p.fitxer} · diccionari ${nom}: ${pl(dups.size, 'clau repetida', 'claus repetides')} (${mostra([...dups])}) — la segona guanya i la primera no s'aplica mai`);
+  }
+  const nomesCa = [...p.sCa].filter(k => !p.sEs.has(k));
+  const nomesEs = [...p.sEs].filter(k => !p.sCa.has(k));
+  if (nomesCa.length) bad(`${p.fitxer}: ${pl(nomesCa.length, 'clau', 'claus')} sense castellà (${mostra(nomesCa)}) — qui llegeixi en castellà es trobarà aquestes frases en català`);
+  if (nomesEs.length) bad(`${p.fitxer}: ${pl(nomesEs.length, 'clau', 'claus')} sense català (${mostra(nomesEs)})`);
+
+  /* Es miren només els atributs del cos, no els que apareixen dins del propi
+     diccionari (n'hi ha que porten HTML amb `data-i18n` a dins). */
+  const atributs = [...new Set([...p.cos.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)].map(m => m[1]))];
+  const orfes = atributs.filter(k => !p.sCa.has(k));
+  const mortes = [...p.sCa].filter(k => !atributs.includes(k));
+  if (orfes.length) bad(`${p.fitxer}: ${pl(orfes.length, 'element traduïble', 'elements traduïbles')} sense clau al diccionari (${mostra(orfes)}) — es quedarà amb el text escrit a mà`);
+  if (mortes.length) bad(`${p.fitxer}: ${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')} res (${mostra(mortes)}) — fan creure que aquell text està cobert`);
+  if (!orfes.length && !mortes.length && !nomesCa.length && !nomesEs.length)
+    ok(`${p.fitxer}: ${p.sCa.size} claus a cada llengua, cap repetida, cap òrfena i cap morta`);
+});
+const { src, cos, cosVis, sCa } = P.portada;
 
 /* ── 3b · Cap color que no existeixi ──────────────────────────────────────
    `var(--accent-red)` en una regla d'aquesta pàgina no peta ni avisa: el
@@ -111,10 +142,15 @@ else bad(`${pl(mortes.length, 'clau que no tradueix', 'claus que no tradueixen')
 /* `data-sector` és **una llista**: un paquet pot tenir dos compradors o tres.
    Llegit com un valor —`([a-z]+)`—, «admin tercer» es llegia com a «admin» i
    la meitat del que diu aquell paquet no arribava a cap comprovació. */
-const paquets = [...cos.matchAll(/<article class="paquet" id="pk-([^"]+)" data-sector="([a-z ]+)">([\s\S]*?)<\/article>/g)]
+/* ⚠ **Aquesta regla ha mudat de pàgina** (04/10/2026). El catàleg eren 40 KB
+   de 575 al mig del recorregut de compra i ara viu a `cataleg.html`. La regla
+   se n'hi va amb ell: deixada mirant la portada, hauria passat a verd per
+   absència i el dia que algú publiqués un paquet sense preu no petaria res. */
+const CAT = P.cataleg;
+const paquets = [...CAT.cos.matchAll(/<article class="paquet" id="pk-([^"]+)" data-sector="([a-z ]+)">([\s\S]*?)<\/article>/g)]
   .map(m => ({ id: m[1], sector: m[2].split(' ').filter(Boolean), html: m[3] }));
-const visible0 = cos.replace(/<!--[\s\S]*?-->/g, '');
-if (!paquets.length) bad('no hi ha cap paquet a la portada: aquesta guarda no pot comprovar res');
+const visible0 = CAT.visible0;
+if (!paquets.length) bad('no hi ha cap paquet a cataleg.html: aquesta guarda no pot comprovar res');
 else {
   const camp = (h, re) => re.test(h);
   /* Set coses, i les dues últimes són les que fan que un preu es pugui
@@ -145,8 +181,8 @@ else {
   /* I la secció on porten ha d'existir de debò, amb els seus passos i la seva
      escala. Un enllaç a `#cost` que no troba res no dona cap error: baixa la
      pàgina fins al final i qui hi clica es pensa que s'ha equivocat. */
-  const teCost = /id="cost"/.test(cos) && (cos.match(/class="cm-pas"/g) || []).length >= 3
-    && (cos.match(/class="cm-niv"/g) || []).length >= 3;
+  const teCost = /id="cost"/.test(CAT.cos) && (CAT.cos.match(/class="cm-pas"/g) || []).length >= 3
+    && (CAT.cos.match(/class="cm-niv"/g) || []).length >= 3;
   if (teCost) ok('el mapa de cost hi és, amb els seus passos i tres nivells d\'escala');
   else bad('el mapa de cost no hi és o li falten passos o nivells — els enllaços «a mida» no van enlloc');
 
@@ -164,7 +200,7 @@ else {
      I el mínim de tres es queda escrit: el motiu de tot això és que «públic»
      ajuntava un ajuntament i una entitat. Amb dos sectors, hi hem tornat. */
   const sectors = new Set(paquets.flatMap(p => p.sector));
-  const botons = new Set([...cos.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)]
+  const botons = new Set([...CAT.cos.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)]
     .map(m => m[1]).filter(x => x !== 'tot'));
   const senseBoto = [...sectors].filter(x => !botons.has(x));
   const sensePaquet = [...botons].filter(x => !sectors.has(x));
@@ -257,7 +293,10 @@ else {
      només a la portada faria petar aquesta guarda per una decisió de negoci que
      es va prendre a posta; no mirar-los enlloc els deixaria desaparèixer sense
      que petés res, que és pitjor. Es miren als dos llocs. */
-  const enHtml = [...src.matchAll(/'pk\.[a-z0-9-]+\.n':'((?:[^'\\]|\\.)*)'/g)]
+  /* I aquí també: els noms dels paquets ja no són al diccionari de la portada
+     sinó al de `cataleg.html`. Llegit de la portada, el conjunt sortia buit i
+     la regla acusava els vint-i-un paquets de no vendre's enlloc. */
+  const enHtml = [...CAT.src.matchAll(/'pk\.[a-z0-9-]+\.n':'((?:[^'\\]|\\.)*)'/g)]
     .map(m => m[1].replace(/\\'/g, "'"));
   const APP_SOS = readFileSync(join(__dirname, '..', 'index.html'), 'utf8');
   const enSos = [...APP_SOS.matchAll(/<div class="pq-h"><b>([^<]+)<\/b>/g)].map(m => m[1].trim());
@@ -299,11 +338,16 @@ else bad(`${pl(dites.length, 'paraula prohibida', 'paraules prohibides')} per la
    Això no peta mai i no ho veu ningú de dins, perquè qui l'ha escrita ja sap
    que el mètode val per als dos. Es comprova sobre **el text visible**, que és
    el que llegeix una persona, i no sobre les intencions del codi. */
-const bloc = (des, fins) => {
-  const i = visible.indexOf(des); if (i < 0) return '';
-  const j = visible.indexOf(fins, i + des.length);
-  return visible.slice(i, j < 0 ? visible.length : j);
-};
+const bloc = (des, fins) => blocDe(visible, des, fins);
+function blocDe(txt, des, fins) {
+  const i = txt.indexOf(des); if (i < 0) return '';
+  const j = txt.indexOf(fins, i + des.length);
+  return txt.slice(i, j < 0 ? txt.length : j);
+}
+/* `/vna` no és una pàgina d'arrel i no té diccionari a `P`, però dues regles
+   d'aquest fitxer hi han mudat: es llegeix sencera i prou. */
+const VNA_F = join(ARREL, 'SOS', 'vna.html');
+const VNA = existsSync(VNA_F) ? readFileSync(VNA_F, 'utf8') : '';
 const sensTags = t => t.replace(/<[^>]+>/g, ' ');
 
 /* Tres vocabularis i no dos. El de «públic» en tenia dos a dins —el plec i
@@ -335,8 +379,11 @@ else {
    `.hero-portes` i el codi les enganxava per aquell contenidor: una porta nova
    en un altre lloc de la pàgina hauria baixat al catàleg **sense filtrar**, i
    no ho hauria vist ningú perquè l'àncora sí que funciona. */
+/* Les portes són a la portada i **els filtres al catàleg**: des de l'endreça
+   viuen a dues pàgines, i una porta que demana un sector que el filtre de
+   l'altra pàgina no té no peta —baixa, i ensenya el catàleg sencer. */
 const portes = [...src.matchAll(/<a[^>]*\sdata-sec="([^"]+)"/g)].map(m => m[1]);
-const filtres = new Set([...src.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)].map(m => m[1]));
+const filtres = new Set([...CAT.src.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"]+)"/g)].map(m => m[1]));
 /* Comptava portes —«quatre, dues a cada lloc»— i amb tres sectors un número
    deixa de dir res: amb sis portes podrien ser dues d'un sector repetides i un
    sector sense cap. El que ha de ser cert és que **cada sector del filtre
@@ -364,8 +411,10 @@ else bad('el filtre s\'enganxa a les portes d\'un contenidor concret: una porta 
 /* Les objeccions. Sis de sis eren municipals —pressupost municipal, tècnic de
    participació, dades del veïnat, contractació menor— i una direcció de
    persones no en trobava cap que fos la seva. */
-const faqs = [...visible.matchAll(/<details class="faq-item">([\s\S]*?)<\/details>/g)].map(m => sensTags(m[1]));
-if (!faqs.length) bad('no es troba cap objecció');
+/* ⚠ **Mudada a `qui-som.html`** (04/10/2026): les objeccions van amb el perfil
+   i la trajectòria, que és on algú va a decidir si es fia. */
+const faqs = [...P.quisom.visible.matchAll(/<details class="faq-item">([\s\S]*?)<\/details>/g)].map(m => sensTags(m[1]));
+if (!faqs.length) bad('no es troba cap objecció a qui-som.html');
 else {
   const cob = SECTORS_TXT.map(([n, re]) => [n, faqs.filter(f => re.test(f)).length]);
   const nul = cob.filter(([, c]) => !c).map(([n]) => n);
@@ -387,8 +436,12 @@ else {
      · **almenys dos destins externs** on algú pugui anar a mirar-ho, i
      · **una sortida per contactar** des d'aquí mateix, que és on la confiança
        és més alta de tota la pàgina i on abans no hi havia res. */
-const fac = (cos.match(/<section class="facilitador"[\s\S]*?<\/section>/) || [''])[0];
-if (!fac) bad('no es troba la secció de qui hi ha darrere');
+/* ⚠ **Mudada a `qui-som.html`** (04/10/2026). És la regla que el pla deia que
+   aquesta endreça podia trencar en silenci: la secció marxa, la regla es queda
+   mirant la portada i passa a verd perquè no hi troba res a comprovar. */
+const QS = P.quisom;
+const fac = (QS.cos.match(/<section class="facilitador"[\s\S]*?<\/section>/) || [''])[0];
+if (!fac) bad('no es troba la secció de qui hi ha darrere a qui-som.html');
 else {
   const fora = [...new Set([...fac.matchAll(/href="(https?:\/\/[^"]+)"/g)].map(m => m[1]))];
   if (fora.length >= 2) ok(`el perfil es pot comprovar a fora: ${fora.length} destins verificables`);
@@ -423,16 +476,22 @@ const TRAJ = join(__dirname, '..', 'knowledge', 'negoci', 'trajectoria.md');
 if (!existsSync(TRAJ)) bad('no hi ha `knowledge/negoci/trajectoria.md`: els noms de client es queden sense font');
 else {
   const font = readFileSync(TRAJ, 'utf8');
-  const noms = [...new Set([...cos.matchAll(/<div class="cl-logos">([\s\S]*?)<\/div>/g)]
+  /* ⚠ Es miren **les tres pàgines**, no la portada (04/10/2026). La graella
+     sencera de clients se'n va a `qui-som.html` i la paret curta es queda a la
+     portada: mirant-ne una sola, l'altra podria publicar un nom sense font. */
+  const deLaPag = p => [...new Set([...p.cos.matchAll(/<div class="cl-logos">([\s\S]*?)<\/div>/g)]
     .flatMap(m => [...m[1].matchAll(/<span(?: class="muted"[^>]*)?>([^<]+)<\/span>/g)]
       .map(x => x[1].trim())))]
     /* El «i +150 empreses…» no és un nom: és la xifra que els resumeix. */
-    .filter(n => !/^i \+|^y \+/.test(n));
-  const orfes = noms.filter(n => !font.includes(n));
-  if (!noms.length) bad('no es troba cap nom de client a la portada: aquesta guarda no pot comprovar res');
-  else if (!orfes.length) ok(`els ${noms.length} clients anomenats tenen font escrita a trajectoria.md`);
-  else bad(`${pl(orfes.length, 'nom de client', 'noms de client')} a la portada sense font al coneixement: `
-    + orfes.join(', ') + ' — un nom d\'empresa és una afirmació sobre un tercer i ha de dir qui ho ha dit i quan');
+    .filter(n => !/^i \+|^y \+/.test(n)).map(n => [p.fitxer, n]);
+  const parells = Object.values(P).flatMap(deLaPag);
+  const noms = [...new Set(parells.map(x => x[1]))];
+  const orfes = parells.filter(([, n]) => !font.includes(n));
+  if (!noms.length) bad('no es troba cap nom de client a cap pàgina d\'arrel: aquesta guarda no pot comprovar res');
+  else if (!orfes.length) ok(`els ${noms.length} clients anomenats a les pàgines d'arrel tenen font escrita a trajectoria.md`);
+  else bad(`${pl(orfes.length, 'nom de client', 'noms de client')} sense font al coneixement: `
+    + orfes.map(([f, n]) => `${n} (${f})`).join(', ')
+    + ' — un nom d\'empresa és una afirmació sobre un tercer i ha de dir qui ho ha dit i quan');
 }
 
 /* ── 7d · El pont cap al SOS no es pot perdre ──────────────────────────────
@@ -449,18 +508,37 @@ else {
 
    Per això es comprova el que ha de seguir sent cert: que hi hagi camí, i que
    sigui a la primera meitat. Un enllaç al peu no és un pont: és una nota. */
-const camins = [...cos.matchAll(/href="\/SOS\/?"/g)].map(m => m.index);
-if (!camins.length) bad("la portada no porta enlloc al SOS — és la prova més forta que té la casa i s'hi ha de poder anar");
-else {
-  const primer = Math.min(...camins);
-  if (primer > cos.length / 2) bad("l'únic camí cap al SOS és a la segona meitat de la pàgina: un enllaç al peu és una nota, no un pont");
-  else ok(`${pl(camins.length, 'camí', 'camins')} cap al SOS, el primer a la primera meitat`);
-  /* I que els ponts segueixin dient què s'hi trobarà. Un botó que només diu
-     «obre el SOS» no és un pont tampoc: no dona cap motiu per travessar-lo. */
-  const diu = /encara que no ens contractis|sense contractar/i.test(cos)
-    && /(projecte de veritat|casos inventats)/i.test(cos);
-  if (diu) ok('i els ponts diuen per què val la pena travessar-los');
-  else bad("els ponts cap al SOS no diuen què s'hi troba: un botó sense motiu no el clica ningú");
+/* ⚠ **La regla canvia amb l'endreça** (04/10/2026). Comptava camins cap a
+   `/SOS/` i demanava que n'hi hagués un a la primera meitat. Amb la portada de
+   divuit seccions a set, comptar deixa de dir res: el que ha de ser cert és
+   que hi hagi **els dos ponts**, i que són dos perquè fan feines diferents.
+
+   · **El pont a la intro** (`/SOS/intro.html`), per a qui encara no sap què és.
+     Qui no ho sap no vol obrir una aplicació: vol saber de què va. Aquella
+     pàgina ja feia aquesta feina i la portada no hi portava —s'hi arribava
+     per la llista de pàgines i prou.
+   · **El pont a l'aplicació** (`/SOS/`), per a qui ja ho sap i vol mirar-la.
+
+   I tots dos han de dir **què s'hi troba**: un botó que diu «obre el SOS» no
+   és un pont, és un botó. */
+const PONTS = [
+  ['la intro', /href="\/SOS\/intro\.html"/g, 'qui encara no sap què és el SOS no vol obrir una aplicació: vol saber de què va'],
+  ["l'aplicació", /href="\/SOS\/?"/g, 'és la prova més forta que té la casa i s\'hi ha de poder anar']
+];
+{
+  const li = [];
+  PONTS.forEach(([nom, re, motiu]) => {
+    const on = [...cosVis.matchAll(re)].map(m => m.index);
+    if (!on.length) li.push(`no hi ha pont cap a ${nom} — ${motiu}`);
+    else if (Math.min(...on) > cosVis.length / 2) li.push(`el pont cap a ${nom} és a la segona meitat de la pàgina: un enllaç al peu és una nota, no un pont`);
+  });
+  /* I que els ponts segueixin dient què s'hi trobarà. */
+  if (!/encara que no ens contractis|sense contractar/i.test(cosVis))
+    li.push('els ponts no diuen que l\'eina existeix encara que no ens contractis, que és el que els fa creïbles');
+  if (!/(el teu projecte|tu proyecto|projecte de veritat|casos inventats)/i.test(cosVis))
+    li.push('els ponts no diuen què s\'hi fa: un botó sense motiu no el clica ningú');
+  if (!li.length) ok('els dos ponts cap al SOS hi són, a la primera meitat, i diuen què s\'hi troba');
+  else li.forEach(bad);
 }
 
 /* ── 7e · Les dues vistes han de ser dues vistes ───────────────────────────
@@ -511,8 +589,11 @@ else {
      I una regla de marca: aquí no hi va cap nom d'empresa. Els nodes són rols;
      els clients tenen la seva paret, amb la font escrita de cada un (regla 10).
      Barrejar-los faria passar per client qualsevol rol dibuixat. */
-  const xarxa = bloc('<section class="xarxa" id="xarxa"', '</section>');
-  if (!xarxa) bad('no es troba el mapa de la xarxa (`#xarxa`)');
+  /* ⚠ **Mudada a `/vna`** (04/10/2026): el mapa de la casa és el mètode aplicat
+     a qui el ven, i el mètode viu allà. La regla se n'hi va; deixada mirant la
+     portada hauria passat a verd per absència. */
+  const xarxa = blocDe(VNA, '<section class="mv-sec" id="xarxa"', '</section>');
+  if (!xarxa) bad('no es troba el mapa de la xarxa (`#xarxa`) a SOS/vna.html');
   else {
     const txt = sensTags(xarxa.replace(/<!--[\s\S]*?-->/g, ''));
     const casa = /qui mapa|qui forma|qui ho fa passar|qui construeix/i.test(txt);
@@ -531,8 +612,10 @@ else {
 
   /* El vocabulari: cada posició ha de dir què és en una casa. Es mira sobre el
      text visible perquè és el que llegeix qui no sap de castells. */
-  const rols = bloc('<section class="rols" id="rols"', '</section>');
-  if (!rols) bad('no es troba el vocabulari de rols (`#rols`)');
+  /* I el vocabulari de rols, que hi era **dues vegades** —portada i `/vna`—
+     des del 03/10/2026. Ara n'hi ha una, i la regla la mira allà. */
+  const rols = blocDe(VNA, '<!--VNA-ROLS-->', '<!--/VNA-ROLS-->');
+  if (!rols) bad('no es troba el vocabulari de rols a SOS/vna.html');
   else {
     const n = (rols.match(/class="rl-p"/g) || []).length;
     const casa = (rols.match(/class="rl-o"/g) || []).length;
@@ -557,10 +640,88 @@ else {
    Es deixa escrit perquè la pròxima persona que vulgui aquesta guarda sàpiga
    que ja es va intentar aquí i per què no hi va. */
 
+/* ── 7g · Cap secció òrfena ───────────────────────────────────────────────
+   **És el defecte que aquesta endreça pot cometre en silenci.** Una secció es
+   talla de la portada i no s'enganxa a la pàgina nova: no peta res, la portada
+   es veu més curta i el contingut senzillament ja no existeix. Les guardes de
+   dalt tampoc el veuen —busquen a la pàgina on la secció hauria de ser, i si
+   no hi és diuen «no la trobo», que és el mateix que diria si mai hi hagués
+   estat.
+
+   Per això es declara **on viu cada secció que s'ha mudat**, i es comprova les
+   dues bandes: que hi sigui allà i que **no** hi sigui a la portada. Una còpia
+   a les dues pàgines és l'altra manera de fer-ho malament: dues versions del
+   mateix text que divergeixen sense que res ho digui. */
+{
+  const MUDADES = {
+    cataleg: ['cataleg', 'cost', 'aprenent', 'glossari'],
+    quisom: ['facilitador', 'relat', 'trajectoria', 'objeccions']
+  };
+  const te = (p, id) => new RegExp(`<section[^>]*id="${id}"`).test(p.cos);
+  const li = [];
+  Object.entries(MUDADES).forEach(([pag, ids]) => ids.forEach(id => {
+    if (!te(P[pag], id)) li.push(`#${id} no és a ${PAGS[pag]} — s'ha perdut pel camí`);
+    if (te(P.portada, id)) li.push(`#${id} segueix a la portada i també és a ${PAGS[pag]}: dues còpies que divergiran`);
+  }));
+  const total = Object.values(MUDADES).flat().length;
+  if (!li.length) ok(`les ${total} seccions mudades són a la seva pàgina nova i cap a la portada`);
+  else li.forEach(bad);
+}
+
+/* ── 7h · La portada porta a les tres pàgines, i a la primera meitat ───────
+   Mateixa regla que el pont cap al SOS i pel mateix motiu: *un enllaç al peu
+   és una nota, no un pont*. I cada camí ha de dir **què s'hi troba**: tres
+   enllaços que diguin «catàleg», «qui som» i «el SOS» són un índex, i un índex
+   no fa travessar res. */
+{
+  const CAMINS = [
+    /* Amb la porta, l'adreça porta el sector (`/cataleg?s=admin`) i amb
+       l'àncora, la secció: el camí és el mateix i el patró ho ha de dir. */
+    ['/cataleg', /href="\/cataleg(?:\.html)?(?:[?#][^"]*)?"/g],
+    ['/qui-som', /href="\/qui-som(?:\.html)?(?:[?#][^"]*)?"/g],
+    ['/SOS/intro.html', /href="\/SOS\/intro\.html"/g]
+  ];
+  /* **El desplegable no compta.** Hi són totes les pàgines del lloc, i per
+     tant la regla passaria sempre: una entrada al menú és un índex, i un
+     índex no fa travessar res. Es mira el cos **sense la barra**. */
+  const senseNav = cosVis.replace(/<nav[\s\S]*?<\/nav>/g, '');
+  const li = [];
+  CAMINS.forEach(([nom, re]) => {
+    const on = [...senseNav.matchAll(re)].map(m => m.index);
+    if (!on.length) li.push(`fora del menú, la portada no porta a ${nom}: una entrada al desplegable és un índex, no un pont`);
+    else if (Math.min(...on) > senseNav.length / 2) li.push(`el camí cap a ${nom} és a la segona meitat: un enllaç al peu és una nota, no un pont`);
+  });
+  if (!li.length) ok(`la portada porta a les ${CAMINS.length} pàgines, i a la primera meitat`);
+  else li.forEach(bad);
+}
+
+/* ── 7i · Cap àncora que no apunti enlloc ─────────────────────────────────
+   L'endreça del 04/10/2026 va deixar **trenta-set** `href="#x"` apuntant a
+   seccions que havien canviat de pàgina: les portes del hero, les tres bandes
+   del repte, el peu sencer. No peta res i no es nota gaire —el navegador es
+   queda on és—, i qui hi clica es pensa que la pàgina no li respon.
+
+   És la cara d'enllaços de «una secció que marxa s'emporta la seva guarda»: se
+   n'emporta també **qui hi portava**. Es mira a les tres pàgines d'arrel. */
+{
+  const li = [];
+  Object.values(P).forEach(p => {
+    const ids = new Set([...p.cos.matchAll(/id="([^"]+)"/g)].map(m => m[1]));
+    const morts = [...new Set([...p.cos.matchAll(/href="#([^"]+)"/g)].map(m => m[1]))]
+      .filter(h => h && !ids.has(h));
+    if (morts.length) li.push(`${p.fitxer}: ${pl(morts.length, 'àncora', 'àncores')} cap a una secció que no hi és (${mostra(morts)})`);
+  });
+  if (!li.length) ok('cap àncora de les tres pàgines apunta a una secció que no hi és');
+  else li.forEach(bad);
+}
+
 // ── 8 · Informatiu ───────────────────────────────────────────────────────
 const seccions = (cos.match(/<section/g) || []).length;
-const detalls = (cos.match(/<details class="faq-item"/g) || []).length;
-console.log(`  · ${seccions} seccions · ${paquets.length} paquets · ${detalls} objeccions · ${Math.round(Buffer.byteLength(src) / 1024)} KB en cru`);
+const detalls = (P.quisom.cos.match(/<details class="faq-item"/g) || []).length;
+const kb = f => Math.round(Buffer.byteLength(P[f].src) / 1024);
+console.log(`  · portada ${seccions} seccions, ${kb('portada')} KB cru`
+  + ` · cataleg ${paquets.length} paquets, ${kb('cataleg')} KB`
+  + ` · qui-som ${detalls} objeccions, ${kb('quisom')} KB`);
 
-console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la portada.` : '\n✅ La portada quadra.');
+console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a les pàgines d'arrel.` : '\n✅ Les tres pàgines d\'arrel quadren.');
 process.exit(fails ? 1 : 0);

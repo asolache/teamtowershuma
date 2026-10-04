@@ -1347,7 +1347,11 @@ function blocPortada() {
        `data-sec="privat"`, que era arbitrari: el mapa de valor es declara per
        als tres sectors, i filtrar-ne un amagava el paquet a qui venia dels
        altres dos. El que vol qui prem «el paquet i el preu» és aquell paquet. */
-    + `<a class="mv-cta" href="#pk-fent-pinya-vna"${i18('cta2')}>El paquet i el preu →</a></div>`);
+    /* L'adreça és absoluta perquè aquest bloc va a dues pàgines —la portada i
+       `/vna`— i el paquet viu a una tercera, `cataleg.html`. Una àncora
+       relativa buscaria la secció a la pàgina on cau i no la trobaria enlloc:
+       el navegador es queda on és i qui hi clica es pensa que no li respon. */
+    + `<a class="mv-cta" href="/cataleg#pk-fent-pinya-vna"${i18('cta2')}>El paquet i el preu →</a></div>`);
   f.push('  </div>');
   f.push('</div>');
   return f.join('\n');
@@ -2113,9 +2117,12 @@ function blocXarxa() {
   return f.join('\n');
 }
 
+/* ⚠ **El mapa de la casa se'n va a `/vna`** (04/10/2026). És el mètode aplicat
+   a qui el ven, que és l'única manera honesta d'ensenyar-lo, i per això va on
+   viu el mètode i no al mig del recorregut de compra. */
 const DESTINS = [
   { f: join(ARREL, 'index.html'), marca: 'TT-MAPAVALOR', fn: blocPortada },
-  { f: join(ARREL, 'index.html'), marca: 'TT-XARXA', fn: blocXarxa },
+  { f: join(SOS, 'vna.html'), marca: 'VNA-XARXA', fn: blocXarxa },
   { f: join(ARREL, 'index.html'), marca: 'TT-VALOR', fn: blocValor },
   { f: join(SOS, 'vna.html'), marca: 'VNA-LLENC', fn: blocLlenc },
   { f: join(SOS, 'vna.html'), marca: 'VNA-LECTURES', fn: blocLectures },
@@ -2211,7 +2218,10 @@ DESTINS.forEach(d => {
   else {
     let src = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
     let tocat = false;
-    [['TT-XA-I18N', dicXarxa], ['TT-VD-I18N', dicValor], ['TT-MV-I18N', dicMapa]].forEach(([marca, fn]) => {
+    /* `TT-XA-I18N` se'n va amb la xarxa: el bloc és a `/vna` i les claus també.
+       Deixades aquí, serien dues-centes claus que no tradueixen res a la
+       portada i el text del dibuix es quedaria en català a `/vna`. */
+    [['TT-VD-I18N', dicValor], ['TT-MV-I18N', dicMapa]].forEach(([marca, fn]) => {
       [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
         const a = `/*${marca}-${M}*/`, b = `/*/${marca}-${M}*/`;
         const x = src.indexOf(a), y = src.indexOf(b);
@@ -2234,6 +2244,22 @@ DESTINS.forEach(d => {
   else {
     let src = cache[f] !== undefined ? cache[f] : readFileSync(f, 'utf8');
     let tocat = false;
+    /* El diccionari de la xarxa, que ara hi viu. */
+    [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
+      const a = `/*VNA-XA-I18N-${M}*/`, b = `/*/VNA-XA-I18N-${M}*/`;
+      const x = src.indexOf(a), y = src.indexOf(b);
+      if (x < 0 || y <= x) { bad(`falten les marques ${a} a SOS/vna.html`); return; }
+      /* I les claus comunes del dibuix —la llegenda, els comptadors— que les
+         escriu `dicMapa`. Sense elles, el «— tangible / - - intangible» del
+         mapa de la casa es quedava en català damunt de la pàgina castellana. */
+      /* Només les claus que el marcatge d'aquesta pàgina demana: `dicMapa`
+         porta també les del mapa del celler de la portada, i escrites senceres
+         serien trenta-dues claus que no tradueixen res aquí. */
+      const vol = new Set([...src.matchAll(/data-i18n(?:-html)?="(mv\.[^"]+)"/g)].map(m => m[1]));
+      const mv = dicMapa(l).split('\n').filter(li => [...vol].some(k => li.indexOf(`'${k}':`) >= 0)).join('\n');
+      const out = src.slice(0, x + a.length) + '\n' + dicXarxa(l) + (mv ? '\n' + mv : '') + '\n' + src.slice(y);
+      if (out !== src) { src = out; tocat = true; }
+    });
     [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
       const a = `/*VNA-I18N-${M}*/`, b = `/*/VNA-I18N-${M}*/`;
       const x = src.indexOf(a), y = src.indexOf(b);

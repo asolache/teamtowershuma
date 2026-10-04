@@ -18,25 +18,32 @@ import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'index.html');
+/* ⚠ **Dues pàgines des de l'endreça** (04/10/2026). El hero i les tres portes
+   són a la portada; el catàleg, el filtre i el mapa de cost han passat a
+   `cataleg.html`. Cada bloc d'aquest fitxer diu quina mira: deixats tots a la
+   portada, la meitat passarien en verd per absència —que és exactament el que
+   el pla de l'endreça deia que podia passar en silenci. */
+const ARREL = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const APP = 'file://' + join(ARREL, 'index.html');
+const CAT = 'file://' + join(ARREL, 'cataleg.html');
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
 
 const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
   process.env.SOS_CHROMIUM ? { executablePath: process.env.SOS_CHROMIUM } : {}));
 
-const nova = async (js = true) => {
+const nova = async (js = true, url = CAT) => {
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 }, javaScriptEnabled: js });
   const p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
-  await p.goto(APP);
-  if (js) await p.waitForSelector('.pk-filtre');
+  await p.goto(url);
+  if (js && url === CAT) await p.waitForSelector('.pk-filtre');
   return { ctx, p, errs };
 };
 
 console.log('\n1 · El hero nomena les tres cases i obre tres portes');
 {
-  const { ctx, p, errs } = await nova();
+  const { ctx, p, errs } = await nova(true, APP);
   const r = await p.evaluate(() => {
     const h = document.querySelector('.hero');
     return {
@@ -53,8 +60,13 @@ console.log('\n1 · El hero nomena les tres cases i obre tres portes');
   ok(!/veïnal|vecinal/i.test(r.h1), 'el titular ja no és només comunitari');
   ok(['admin', 'tercer', 'empresa'].every(x => r.portes.includes(x)),
     `hi ha una porta per sector: ${r.portes.join(', ')}`);
-  ok(r.dest.every(h => h === '#cataleg'),
-    'i totes tres porten al catàleg encara que el JavaScript no corri');
+  /* El catàleg és una pàgina des del 04/10/2026, i per tant les portes són un
+     enllaç de debò i no una àncora. Sense JavaScript porten igualment a la
+     pàgina sencera —i amb el sector a l'adreça, perquè qui ve d'una porta no
+     aterri davant dels vint-i-un paquets. Sense JavaScript surten tots, que és
+     el comportament correcte: el filtre és una millora, no un requisit. */
+  ok(r.dest.every(h => /^\/cataleg(\?s=[a-z]+)?$/.test(h)),
+    'i totes tres porten al catàleg encara que el JavaScript no corri · ' + [...new Set(r.dest)].join(', '));
   ok(r.cta.some(h => /pressupost/.test(h)),
     'i des del hero es pot demanar pressupost sense buscar-lo');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));

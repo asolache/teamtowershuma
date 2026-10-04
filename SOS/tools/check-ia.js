@@ -86,11 +86,16 @@ else if (!muts.length) ok(`els ${digitals.length} paquets de «Digital i IA» s'
 else bad(`${pl(muts.length, 'paquet digital no s\'explica', 'paquets digitals no s\'expliquen')} enlloc (${muts.map(p => p.id).join(', ')})`);
 
 /* ── 5 · El mapa de cost, i que hi sigui ──────────────────────────────────
-   La pàgina remet a `#cost` de la portada. Si la secció desaparegués, el peu
-   diria on es calcula el preu i no portaria a res. */
-if (!/index\.html#cost/.test(src)) bad('la pàgina no diu d\'on surt el preu: ha de portar al mapa de cost');
-else if (/id="cost"/.test(portada)) ok('remet al mapa de cost de la portada, que hi és');
-else bad('remet a #cost de la portada i allà no hi ha cap secció amb aquest id');
+   La pàgina remet a `#cost`. Si la secció desaparegués, el peu diria on es
+   calcula el preu i no portaria a res.
+
+   ⚠ **El mapa de cost va amb el catàleg** des del 04/10/2026, i aquesta regla
+   s'hi ha mudat. Deixada mirant la portada hauria petat per on no tocava:
+   diria que falta la secció quan el que havia canviat era l'adreça. */
+const CATALEG = readFileSync(join(__dirname, '..', '..', 'cataleg.html'), 'utf8');
+if (!/cataleg\.html#cost/.test(src)) bad('la pàgina no diu d\'on surt el preu: ha de portar al mapa de cost');
+else if (/id="cost"/.test(CATALEG)) ok('remet al mapa de cost del catàleg, que hi és');
+else bad('remet a #cost del catàleg i allà no hi ha cap secció amb aquest id');
 
 /* ── 6 · Les paraules que la guia de marca prohibeix ──────────────────────
    Una pàgina que ven IA és on més fàcil és caure-hi. */

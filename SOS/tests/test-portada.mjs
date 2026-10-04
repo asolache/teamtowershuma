@@ -19,7 +19,15 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
 
-const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'index.html');
+/* ⚠ **Tres pàgines des de l'endreça** (04/10/2026). El catàleg i «qui hi ha
+   darrere» eren seccions d'aquesta pàgina i ara són `cataleg.html` i
+   `qui-som.html`. Cada bloc diu quina mira: deixats tots aquí, una tercera
+   part passarien en verd **per absència**, que és el defecte que el pla de
+   l'endreça deia que podia cometre en silenci. */
+const ARREL = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const APP = 'file://' + join(ARREL, 'index.html');
+const CAT = 'file://' + join(ARREL, 'cataleg.html');
+const QS = 'file://' + join(ARREL, 'qui-som.html');
 const { TOTS } = createRequire(import.meta.url)('../tools/build-clients.js');
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
@@ -27,12 +35,12 @@ const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail
 const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
   process.env.SOS_CHROMIUM ? { executablePath: process.env.SOS_CHROMIUM } : {}));
 
-const nova = async (w = 1280, h = 900) => {
+const nova = async (w = 1280, h = 900, url = APP) => {
   const ctx = await b.newContext({ viewport: { width: w, height: h } });
   const p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
-  await p.goto(APP);
-  await p.waitForSelector('#ctBtn');
+  await p.goto(url);
+  if (url === APP) await p.waitForSelector('#ctBtn');
   /* L'idioma es guarda al navegador i aquesta prova el vol conegut. */
   await p.evaluate(() => { try { localStorage.removeItem('tt_lang'); } catch (e) { } });
   return { ctx, p, errs };
@@ -185,7 +193,11 @@ console.log('\n5b · Els clients, sencers i amunt');
   });
   ok(r.hi && r.fitxes === 32, `els 32 clients hi són (${r.fitxes})`);
   ok(r.grups === 5, `en 5 grups (${r.grups}): una multinacional i una diputació no es llegeixen igual`);
-  ok(r.posicio === 0, `i és la primera secció de la pàgina (${r.posicio} de ${r.seccions}): amunt o no serveix`);
+  /* ⚠ **La paret ja no obre la pàgina** (04/10/2026): la tanca. La prova no obre
+     una venda, i qui acaba de llegir què es compra és qui li treu profit; qui
+     encara no sap de què va només hi veia trenta-dos logos. El que ha de
+     seguir sent cert és que **hi és i és sencera**, i que no és al peu. */
+  ok(r.posicio === r.seccions - 1, `i tanca la pàgina (${r.posicio + 1} de ${r.seccions}): la prova tanca la venda, no l'obre`);
   ok(r.agencies, 'les agències i partners hi són, que és el segment que el diagnòstic sap atendre');
   ok(r.font, 'i es diu de quin recorregut vénen els noms');
   await ctx.close();
@@ -266,9 +278,17 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
      que ajuda a fer servir el model viu a l'app. Els dos ponts segueixen a
      l'espina perquè el camí cap al SOS no es pugui perdre —això ho vigila
      `check-landing.js` regla 7d—, però ja no són seccions de contingut. */
-  const ESPINA = ['dues-vistes', 'rengles', 'rols', 'enfoc', 'glossari', 'fentpinya',
-                  'relat', 'com', 'aprenent', 'cataleg', 'cost', 'sos',
-                  'trajectoria', 'objeccions'];
+  /* ⚠ **L'espina de l'endreça** (04/10/2026): set blocs i no catorze. L'ordre
+     és la proposta de valor —el problema, el producte, per a què serveix, com
+     es fa, on anar després, i la prova al final— i el que marxa té la seva
+     pàgina. La llista vella es queda escrita a sota perquè es vegi què se'n
+     va i on, que és el que una llista esborrada no diu. */
+  const ESPINA = ['enfoc', 'dues-vistes', 'decideix', 'com', 'camins', 'clients'];
+  /* On ha anat cada un dels que hi havia:
+       rengles, rols, fentpinya, xarxa  → /SOS/vna.html   (el mètode)
+       glossari, aprenent, cataleg, cost → cataleg.html    (la compra)
+       relat, trajectoria, objeccions   → qui-som.html    (la confiança)
+       sos                              → SOS/intro.html  (la porta del SOS) */
   const pos = id => r.ordre.indexOf(id);
   const falten = ESPINA.filter(id => pos(id) < 0);
   ok(!falten.length, 'l\'espina de la pàgina hi és sencera' + (falten.length ? ': falta ' + falten.join(', ') : ''));
@@ -285,7 +305,7 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
    t'endús, quant costa i quantes vegades s'ha fet. Sense les cinc, un tècnic
    municipal no ho pot portar a una junta. Veda 137. */
 {
-  const { ctx, p } = await nova();
+  const { ctx, p } = await nova(1280, 900, CAT);
   const r = await p.evaluate(() => {
     const eur = t => Number(String(t).replace(/\./g, '').replace(/[^\d]/g, ''));
     const paquets = [...document.querySelectorAll('.paquet')].map(a => ({
@@ -362,10 +382,13 @@ console.log('\n8 · El que encara no existeix, es diu');
 {
   const { ctx, p } = await nova();
   const r = await p.evaluate(() => {
-    const sos = document.querySelector('#sos');
+    /* ⚠ **La banda del SOS se'n va a `SOS/intro.html`** (04/10/2026). A la
+       portada queda el pont, a «els tres camins», i és allà on ha de dir què
+       s'hi troba: que l'eina existeix encara que no ens contractin. */
+    const sos = document.querySelector('.cami[href*="intro"]');
     return {
       txtSos: sos ? sos.textContent.replace(/\s+/g, ' ') : '',
-      lliure: sos ? /gratu|lliure/i.test(sos.textContent) : false,
+      lliure: sos ? /gratu|lliure|no ens contractis/i.test(sos.textContent) : false,
       cos: document.body.textContent.replace(/\s+/g, ' ')
     };
   });
@@ -385,7 +408,7 @@ console.log('\n8 · El que encara no existeix, es diu');
     'els contractes intel·ligents es venen com a estudi, no com a eina');
   ok(/encara no|no est(à|an) constru/i.test(c),
     'i es diu obertament que encara no estan construïts');
-  ok(r.lliure, 'la banda del SOS diu que l\'eina és lliure i funciona sense contractar res');
+  ok(r.lliure, 'el camí cap al SOS diu que l\'eina funciona sense contractar res');
   ok(!/qu[àa]ntic/i.test(r.cos), 'i no es promet res de seguretat quàntica, que no existeix aquí');
   /* La guia de marca prohibeix aquestes: no diuen res i sonen a fullet. */
   const prohibides = ['disruptiu', 'disruptiva', 'solucions innovadores', 'ecosistema disruptiu'];
@@ -412,29 +435,45 @@ console.log('\n9 · Les dues portes porten a dos llocs diferents de debò');
 {
   const { ctx, p } = await nova();
   const SECS = ['admin', 'tercer', 'empresa'];
-  const r = await p.evaluate(secs => {
+  /* ⚠ **Les portes i el filtre viuen a dues pàgines** (04/10/2026): les portes a
+     la portada, el filtre a `cataleg.html`. La porta ja no filtra al moment:
+     **navega amb el sector a l'adreça** (`/cataleg?s=admin`) i el catàleg
+     l'aplica en carregar. Si el sector es perdés pel camí, qui ve d'una porta
+     aterraria davant dels vint-i-un paquets i no petaria res — que és
+     exactament el que les tres portes venen a evitar. */
+  const r = await p.evaluate(() => {
     const q = s => [...document.querySelectorAll(s)];
     const bandes = q('.banda');
-    const visibles = () => q('.paquet[data-sector]').filter(x => !x.hidden)
-      .map(x => x.dataset.sector.split(' '));
-    const porta = s => document.querySelector('.banda-cta[data-sec="' + s + '"]');
-    const tot = visibles().length;
-    const per = {};
-    secs.forEach(s => { const b = porta(s); if (b) { b.click(); per[s] = visibles(); } });
-    /* I una porta del hero, que viu en un altre contenidor: és exactament el
-       lloc pel qual el filtre es va trencar una vegada. */
-    const h = document.querySelector('.hero-portes a[data-sec="admin"]');
-    if (h) h.click();
-    const heroAdmin = visibles().length;
-    const repte = (document.querySelector('#enfoc') || {}).innerText || '';
+    const href = el => el ? el.getAttribute('href') : '';
     return {
       bandes: bandes.length,
       files: bandes.map(x => x.querySelectorAll('.banda-dl dt').length),
       secBandes: bandes.map(x => x.dataset.sec),
-      tot, per, heroAdmin, repte,
-      dobles: q('.paquet[data-sector]').filter(x => x.dataset.sector.split(' ').length > 1).length
+      repte: (document.querySelector('#enfoc') || {}).innerText || '',
+      destins: q('[data-sec]').filter(x => x.tagName === 'A')
+        .map(x => [x.dataset.sec, href(x)])
     };
-  }, SECS);
+  });
+  /* I el que compta: que arribar-hi per aquella adreça canviï el que es veu. */
+  const per = {}; let tot = 0, dobles = 0;
+  {
+    const p2 = await ctx.newPage();
+    await p2.goto(CAT);
+    await p2.waitForTimeout(150);
+    const base = await p2.evaluate(() => ({
+      tot: [...document.querySelectorAll('.paquet')].filter(x => !x.hidden).length,
+      dobles: [...document.querySelectorAll('.paquet[data-sector]')]
+        .filter(x => x.dataset.sector.split(' ').length > 1).length }));
+    tot = base.tot; dobles = base.dobles;
+    for (const sec of SECS) {
+      await p2.goto(CAT + '?s=' + sec);
+      await p2.waitForTimeout(150);
+      per[sec] = await p2.evaluate(() => [...document.querySelectorAll('.paquet')]
+        .filter(x => !x.hidden).map(x => x.dataset.sector.split(' ')));
+    }
+    await p2.close();
+  }
+  Object.assign(r, { tot, per, dobles, heroAdmin: per.admin.length });
   ok(r.bandes === 3, `el repte ensenya les ${r.bandes} bandes del mateix patró, una per sector`);
   ok(SECS.every(s => r.secBandes.includes(s)),
     'i cada banda diu de quin sector és, que és el que li dona el color');
@@ -454,14 +493,20 @@ console.log('\n9 · Les dues portes porten a dos llocs diferents de debò');
   ok(new Set(llistes).size === SECS.length,
     'i les tres portes donen tres llistes diferents, que és el que vol dir filtrar');
   ok(r.dobles > 0, `${r.dobles} paquets tenen més d'un comprador declarat, que és el motiu de la llista`);
-  ok(r.heroAdmin === (r.per.admin || []).length && r.heroAdmin > 0,
-    `i la porta del hero filtra igual que la del repte: ${r.heroAdmin} paquets`);
+  /* I que totes les portes —hero i repte— portin el sector a l'adreça. Una
+     sola que se'l deixés obriria el catàleg sencer i no ho veuria ningú. */
+  const sensS = r.destins.filter(([sec, h]) => sec !== 'tot' && !new RegExp('[?&]s=' + sec).test(h || ''));
+  ok(!sensS.length, `les ${r.destins.length} portes porten el seu sector a l'adreça`
+    + (sensS.length ? ' — sense: ' + sensS.map(x => x[0] + ' → ' + x[1]).join(', ') : ''));
   await ctx.close();
 }
 
-console.log('\n10 · I les objeccions cobreixen els dos costats');
+console.log('\n10 · I les objeccions cobreixen els tres sectors, a qui-som');
+/* ⚠ **Mudades a `qui-som.html`** (04/10/2026): les preguntes que es fan abans
+   de contractar van amb el perfil i la trajectòria, que és on algú va a
+   decidir si es fia. */
 {
-  const { ctx, p } = await nova();
+  const { ctx, p } = await nova(1280, 900, QS);
   /* `textContent` i no `innerText`: un `<details>` tancat no té text visible,
      i llegint-lo amb `innerText` només arriben els titulars. La resposta és
      justament on viu el vocabulari de cada sector. */

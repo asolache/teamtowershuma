@@ -48,12 +48,13 @@
  *   node SOS/tools/build-clients.js            escriu els blocs i el diccionari
  *   node SOS/tools/build-clients.js --check    falla si estan vells o incoherents
  */
-const { readFileSync, writeFileSync } = require('node:fs');
+const { readFileSync, writeFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
 const CHECK = process.argv.includes('--check');
 const HOME_F = join(ARREL, 'index.html');
+const QUISOM_F = join(ARREL, 'qui-som.html');
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m);
@@ -254,19 +255,49 @@ function posaJs(txt, marca, cos) {
   return txt.slice(0, a + o.length) + '\n' + cos + '\n' + txt.slice(b);
 }
 
-const HOME = readFileSync(HOME_F, 'utf8');
-let out = HOME;
-const PASSES = [
-  ['TT-CLIENTS-MUR', () => posa(out, 'TT-CLIENTS-MUR', mur())],
-  ['TT-CLIENTS', () => posa(out, 'TT-CLIENTS', graella())],
-  ['TT-CL-I18N-CA', () => posaJs(out, 'TT-CL-I18N-CA', dicc('ca'))],
-  ['TT-CL-I18N-ES', () => posaJs(out, 'TT-CL-I18N-ES', dicc('es'))]
-];
-for (const [nom, fn] of PASSES) {
-  const r = fn();
-  if (r === null) bad('no es troba el marcador ' + nom + ' a index.html');
-  else out = r;
+/* ── DOS DESTINS, I LA MATEIXA DECLARACIÓ (04/10/2026) ────────────────────
+   La paret curta es queda a la portada —és la prova, i la prova va on es
+   decideix— i **la graella sencera se'n va a `qui-som.html`**, amb la
+   trajectòria i el perfil. Els noms dels clients són la pàgina amb més noms
+   propis del lloc, i tots junts enmig del recorregut de compra no ajuden a
+   decidir: ajuden a confiar, que és una altra pàgina.
+
+   El diccionari va **als dos llocs**: la paret curta també porta claus, i una
+   clau sense entrada deixa el text en català damunt de la pàgina castellana. */
+/* Les claus que el marcatge d'una pàgina demana de debò. */
+function filtraClaus(bloc, pagina) {
+  const vol = new Set([...pagina.matchAll(/data-i18n(?:-html)?="([^"]+)"/g)].map(m => m[1]));
+  return bloc.split('\n').filter(li => {
+    const k = (li.match(/'([\w.-]+)':/) || [])[1];
+    return !k || vol.has(k);
+  }).join('\n');
 }
+
+const DESTINS = [
+  { f: HOME_F, nom: 'index.html', marques: [
+    ['TT-CLIENTS-MUR', mur], ['TT-CL-I18N-CA', () => dicc('ca'), true], ['TT-CL-I18N-ES', () => dicc('es'), true] ] },
+  { f: QUISOM_F, nom: 'qui-som.html', marques: [
+    ['TT-CLIENTS', graella], ['TT-CL-I18N-CA', () => dicc('ca'), true], ['TT-CL-I18N-ES', () => dicc('es'), true] ] }
+];
+const ORIGINALS = {};
+const SORTIDES = {};
+DESTINS.forEach(d => {
+  if (!existsSync(d.f)) { bad(`no existeix ${d.nom}`); return; }
+  const src = readFileSync(d.f, 'utf8');
+  ORIGINALS[d.nom] = src;
+  let t = src;
+  d.marques.forEach(([marca, fn, js]) => {
+    /* El diccionari va **filtrat pel que cada pàgina demana**. Escrit sencer,
+       la portada es quedava amb les trenta-cinc claus de la graella i
+       `qui-som.html` amb les dues de la paret: claus que no tradueixen res i
+       que fan creure que aquell text està cobert. */
+    const cos = js ? filtraClaus(fn(), t) : fn();
+    const r = js ? posaJs(t, marca, cos) : posa(t, marca, cos);
+    if (r === null) bad(`no es troba el marcador ${marca} a ${d.nom}`);
+    else t = r;
+  });
+  SORTIDES[d.nom] = t;
+});
 
 if (!fails) {
   /* ── Les guardes ─────────────────────────────────────────────────────────── */
@@ -329,14 +360,15 @@ if (!fails) {
 }
 
 if (CHECK) {
-  if (!fails && out !== HOME) bad('index.html no correspon a la declaració de build-clients.js');
-  else if (!fails) ok('els blocs de clients estan al dia');
+  const desviats = DESTINS.filter(d => SORTIDES[d.nom] !== undefined && SORTIDES[d.nom] !== ORIGINALS[d.nom]).map(d => d.nom);
+  if (!fails && !desviats.length) ok('els blocs de clients estan al dia a les dues pàgines');
+  else if (!fails) bad(`no corresponen a la declaració de build-clients.js: ${desviats.join(', ')}`);
   console.log(fails ? '\n❌ Arregla-ho amb:  node SOS/tools/build-clients.js' : '\n✅ Els clients quadren.');
   process.exit(fails ? 1 : 0);
 }
 
 if (fails) { console.log('\n❌ No s\'ha escrit res.'); process.exit(1); }
-writeFileSync(HOME_F, out);
-console.log(`\n✅ index.html · paret amb ${TOTS.length} clients en ${GRUPS.length} grups`);
+DESTINS.forEach(d => { if (SORTIDES[d.nom] !== undefined) writeFileSync(d.f, SORTIDES[d.nom]); });
+console.log(`\n✅ ${DESTINS.map(d => d.nom).join(' i ')} · paret amb ${TOTS.length} clients en ${GRUPS.length} grups`);
 
 module.exports = { GRUPS, TOTS };

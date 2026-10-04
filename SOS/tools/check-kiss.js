@@ -159,16 +159,33 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
    El marge és per a la fase 2 (el constructor de mapes). Quan s'hi gasti,
    això ho dirà i es decidirà a consciència, que és l'única cosa que un sostre
    ha de fer. */
-const MAX_VNA_KB = 90;
-{
-  const f = join(__dirname, '..', 'vna.html');
-  if (!existsSync(f)) bad('no existeix SOS/vna.html');
-  else {
-    const v = Math.round(gzipSync(readFileSync(f)).length / 1024);
-    if (v <= MAX_VNA_KB) ok(`/vna · ${v} KB gzip · ${Math.round(v / MAX_VNA_KB * 100)} % del seu sostre (${MAX_VNA_KB} KB)`);
-    else bad(`/vna · ${v} KB gzip · PASSA el sostre de ${MAX_VNA_KB} KB. El marge era per al constructor de mapes.`);
-  }
-}
+/* ── Els sostres de les pàgines públiques ─────────────────────────────────
+   `/vna` el va estrenar el 03/10/2026. **Les tres pàgines d'arrel el tenen des
+   de l'endreça** (04/10/2026), i el motiu és el que el pla va escriure: *si
+   l'endreça no baixa el pes, no hem endreçat: hem mogut.*
+
+   Els sostres es posen **amb el pes del dia que es declaren**, arrodonit cap
+   amunt amb poc marge. Un sostre generós no és un sostre: és una xifra que
+   ningú arribarà a tocar i que, per tant, no dirà mai res.
+
+   `/vna` puja de 90 a 95 KB a posta: hi han arribat les construccions i el
+   mapa de la casa, que eren 90 KB de la portada. No és creixement, és mudança
+   —i el que compta és que **ningú es baixa les quatre**. Abans, qui obria la
+   portada es baixava 141 KB i hi trobava el catàleg sencer i la trajectòria;
+   ara se'n baixa 58 i, si vol el catàleg, 42 més. */
+const SOSTRES = [
+  ['SOS/vna.html', 95, 'el mètode sencer: el llenç, les vuit lectures, les construccions i el mapa de la casa'],
+  ['index.html', 65, 'la portada ven el mapa de valor i porta a les altres tres pàgines'],
+  ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
+  ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions']
+];
+SOSTRES.forEach(([rel, max, que]) => {
+  const f = join(__dirname, '..', '..', rel);
+  if (!existsSync(f)) return bad(`no existeix ${rel}`);
+  const v = Math.round(gzipSync(readFileSync(f)).length / 1024);
+  if (v <= max) ok(`${rel} · ${v} KB gzip · ${Math.round(v / max * 100)} % del seu sostre (${max} KB)`);
+  else bad(`${rel} · ${v} KB gzip · PASSA el sostre de ${max} KB — ${que}`);
+});
 
 // ── 2 · Cap context sense guia ───────────────────────────────────────────
 /* La veda ho diu: «Un context sense entrada a CONTEXT_GUIDES és un context que

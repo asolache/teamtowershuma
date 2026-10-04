@@ -791,9 +791,9 @@ function alcat(f) {
 }
 
 /* ══ EL BLOC ═════════════════════════════════════════════════════════════════ */
-function bloc() {
+function bloc(marca) {
   const f = [];
-  f.push('<!--TT-CASTELLS-->');
+  f.push(`<!--${marca || 'TT-CASTELLS'}-->`);
   f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
   f.push('<div class="ct-wrap fade-up">');
 
@@ -866,7 +866,7 @@ function bloc() {
 
   f.push(`  <p class="ct-avis" data-i18n-html="ct.avis">${FRASES['ct.avis'].ca}</p>`);
   f.push('</div>');
-  f.push('<!--/TT-CASTELLS-->');
+  f.push(`<!--/${marca || 'TT-CASTELLS'}-->`);
   return f.join('\n');
 }
 
@@ -937,10 +937,10 @@ function blocVista() {
 
    El text el compta el generador. Si un dia la xarxa canvia un lliurament, la
    lectura canviarà amb ella o el CI petarà. */
-function blocXarxaPinya() {
+function blocXarxaPinya(marca) {
   const pin = pinyaDeMapa(XARXA);
   const f = [];
-  f.push('<!--TT-XARXA-PINYA-->');
+  f.push(`<!--${marca || 'TT-XARXA-PINYA'}-->`);
   f.push('<!-- GENERAT per SOS/tools/build-castells.js · no s\'edita a mà -->');
   f.push('<div class="cv-grid xp-grid fade-up">');
   f.push('  <div class="cv-viz">');
@@ -963,7 +963,7 @@ function blocXarxaPinya() {
   f.push('    <ul class="cv-ll">' + li.join('') + '</ul>');
   f.push('  </div>');
   f.push('</div>');
-  f.push('<!--/TT-XARXA-PINYA-->');
+  f.push(`<!--/${marca || 'TT-XARXA-PINYA'}-->`);
   return f.join('\n');
 }
 
@@ -1529,13 +1529,22 @@ const FN_SOS = ['metaskill', 'design', 'coord', 'audit', 'exec', 'facil', 'lms',
 })();
 
 /* ══ ESCRIURE O COMPROVAR ════════════════════════════════════════════════════ */
+/* ⚠ **Les construccions se'n van a `/vna`** (04/10/2026). Eren la secció més
+   llarga de la portada —60 KB de 575— i parlen del mètode: quines
+   construccions hi ha, quantes rengles obre cada pinya i què vol dir el vent.
+   La portada ven el mapa de valor i hi porta; el mètode viu a `/vna`.
+
+   `TT-VISTA-CASTELL` es queda: és **la segona vista del mateix dibuix** a
+   `#dues-vistes`, que és el producte, i sense ella la portada ensenyaria mig
+   argument. I `blocRols` deixa d'escriure's a la portada —hi era dues vegades,
+   aquí i a `/vna`, i dues còpies divergeixen. */
+const VNA = join(ARREL, 'SOS', 'vna.html');
 const DESTINS = [
   { f: HOME, marca: 'TT-VISTA-CASTELL', fn: blocVista, nom: 'index.html' },
-  { f: HOME, marca: 'TT-CASTELLS', fn: bloc, nom: 'index.html' },
-  { f: HOME, marca: 'TT-XARXA-PINYA', fn: blocXarxaPinya, nom: 'index.html' },
-  { f: HOME, marca: 'TT-ROLS', fn: blocRols, nom: 'index.html' },
-  { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' },
-  { f: join(ARREL, 'SOS', 'vna.html'), marca: 'VNA-ROLS', fn: blocRols, nom: 'SOS/vna.html' }
+  { f: VNA, marca: 'VNA-CONSTRUCCIONS', fn: bloc, nom: 'SOS/vna.html' },
+  { f: VNA, marca: 'VNA-XARXA-PINYA', fn: blocXarxaPinya, nom: 'SOS/vna.html' },
+  { f: VNA, marca: 'VNA-PINYA', fn: blocVna, nom: 'SOS/vna.html' },
+  { f: VNA, marca: 'VNA-ROLS', fn: blocRols, nom: 'SOS/vna.html' }
 ];
 /* Els diccionaris de la portada. Van abans dels blocs i a part: una clau al
    marcatge sense entrada al diccionari deixa el text escrit a mà —que és
@@ -1545,11 +1554,19 @@ if (!fails) {
   if (!existsSync(f)) bad('no existeix index.html');
   else {
     let src = readFileSync(f, 'utf8'), tocat = false;
+    /* **Només les claus que la portada demana.** Amb les construccions mudades
+       a `/vna` (04/10/2026), escriure el diccionari sencer aquí deixava
+       dues-centes quatre claus que no tradueixen res —i una clau morta fa
+       creure que aquell text està cobert. El que queda a la portada és el
+       dibuix del hero i la segona vista de `#dues-vistes`. */
+    const vol = new Set([...src.matchAll(/data-i18n(?:-html)?="((?:ct|rl|cv|xp)\.[^"]+)"/g)].map(m => m[1]));
     [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
       const a = `/*TT-CT-I18N-${M}*/`, b = `/*/TT-CT-I18N-${M}*/`;
       const x = src.indexOf(a), y = src.indexOf(b);
       if (x < 0 || y <= x) { bad(`falten les marques ${a} a index.html`); return; }
-      const out = src.slice(0, x + a.length) + '\n' + dicCastells(l) + '\n' + src.slice(y);
+      const cos = dicCastells(l).split('\n')
+        .filter(li => { const k = (li.match(/'([\w.-]+)':/) || [])[1]; return !k || vol.has(k); }).join('\n');
+      const out = src.slice(0, x + a.length) + '\n' + cos + '\n' + src.slice(y);
       if (out !== src) { src = out; tocat = true; }
     });
     if (CHECK) { if (tocat) bad('el diccionari dels castells no correspon a la declaració'); }
@@ -1587,10 +1604,14 @@ if (!fails) {
   else {
     let src = readFileSync(f, 'utf8'), tocat = false;
     const meus = new Set();
-    ['VNA-PINYA', 'VNA-ROLS'].forEach(m => {
+    /* Els blocs que viuen a `/vna`. Des de l'endreça (04/10/2026) també hi
+       són les construccions i la planta de la xarxa: amb la llista vella,
+       cent seixanta-quatre claus del marcatge es quedaven sense entrada i el
+       text sortia en català damunt de la pàgina castellana. */
+    ['VNA-PINYA', 'VNA-ROLS', 'VNA-CONSTRUCCIONS', 'VNA-XARXA-PINYA'].forEach(m => {
       const a = src.indexOf(`<!--${m}-->`), b = src.indexOf(`<!--/${m}-->`);
       if (a < 0 || b <= a) return;
-      [...src.slice(a, b).matchAll(/data-i18n(?:-html)?="((?:ct|rl)\.[^"]+)"/g)].forEach(x => meus.add(x[1]));
+      [...src.slice(a, b).matchAll(/data-i18n(?:-html)?="((?:ct|rl|cv|xp)\.[^"]+)"/g)].forEach(x => meus.add(x[1]));
     });
     [['CA', 'ca'], ['ES', 'es']].forEach(([M, l]) => {
       const a = `/*VNA-CT-I18N-${M}*/`, b = `/*/VNA-CT-I18N-${M}*/`;

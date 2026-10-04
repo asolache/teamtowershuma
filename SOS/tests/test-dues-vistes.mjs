@@ -185,21 +185,26 @@ console.log('\n4 · Tocar el cas mou les dues vistes, o no són dues vistes');
 }
 
 /* ── 5 · El vocabulari, i que serveixi a qui no sap de castells ──────────── */
+/* ⚠ **Mudat a `/vna`** (04/10/2026). El vocabulari hi era **dues vegades**
+   —portada i `/vna`— des del 03/10/2026, i dues còpies del mateix text
+   divergeixen sense que res ho digui. L'endreça va esborrar la de la portada i
+   aquesta prova se'n va amb ella: deixada mirant la portada, hauria petat
+   dient que falta el vocabulari quan el que havia canviat era l'adreça. */
 console.log('\n5 · Els rols arquetípics: cada posició, amb la seva traducció');
 {
-  const { ctx, p } = await nova();
+  const { ctx, p } = await nova(VNA);
   const r = await p.evaluate(() => {
-    const pos = [...document.querySelectorAll('#rols .rl-p')];
+    const pos = [...document.querySelectorAll('.rl-p')];
     return {
       quantes: pos.length,
-      grups: document.querySelectorAll('#rols .rl-g').length,
+      grups: document.querySelectorAll('.rl-g').length,
       senseCasa: pos.filter(x => !x.querySelector('.rl-o')
         || x.querySelector('.rl-o').textContent.replace(/A una casa:/, '').trim().length < 40).length,
       senseCastell: pos.filter(x => !x.querySelector('.rl-c')
         || !x.querySelector('.rl-c').textContent.trim()).length,
       senseAport: pos.filter(x => !x.querySelector('.rl-a')).length,
       noms: pos.map(x => x.querySelector('.rl-n').textContent.trim()),
-      text: document.getElementById('rols').innerText
+      text: document.body.innerText
     };
   });
   ok(r.quantes >= 10, `hi ha ${r.quantes} posicions declarades`);
