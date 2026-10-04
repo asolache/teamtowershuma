@@ -110,7 +110,11 @@ const PARAULES = [
    Els projectes propis. Aquí hi arriba «s'aprèn fent» de la portada: no són
    exemples inventats, són els nostres i s'hi pot entrar ara mateix. */
 const MON = [
-  { p: 'comando.html', ic: '🎬', guanya: 'Catorze personatges canònics i el teu és el que ja fas al barri. Els crèdits surten del registre signat.' },
+  /* ⚠ `comando.html` se'n va el 04/10/2026. La tesi dels 150.000, els sis
+     eixos, els catorze herois i els onze vídeos són, a molekulon.org, la
+     portada més `/personatges` més `/musica`: dues pàgines sobre el mateix no
+     en diuen cap, i la que té els mitjans és la seva. Aquí hi queda **el
+     pont**, que és el que una porta ha de tenir. */
   { p: 'molekulandia.html', ic: '🏘', guanya: 'El poble sencer en una pantalla: cada edifici és un tipus de projecte i de cadascun s\'entra a l\'eina que el porta.' },
   { p: 'molekulon.html', ic: '🌀', guanya: 'El mateix SOS amb un món diferent a dins: un estat líquid on el nivell del mig és un tema i no un tros de terra.' },
   { p: 'joc.html', ic: '🎮', guanya: 'La plaça a ritme. La manera més curta d\'entendre per què un castell no l\'aguanta qui hi puja.' },
@@ -169,6 +173,11 @@ function blocMon() {
   f.push('<p class="ob-sub2">El SOS no és només una eina de gestió: porta un món al darrere, i el món és el que fa ' +
     'que la gent hi torni. Tot obert i tot visitable ara mateix.</p>');
   f.push('<div class="pg-grid">' + MON.map(x => fitxa(x, 'w')).join('') + '</div>');
+  /* El pont cap a l'altra casa. Una porta que només porta cap endins és el que
+     la veda 132 compta: «totes les portes portaven cap endins, i cap cap
+     enfora». La història del Comando és canònica allà i aquí hi ha l'eina. */
+  f.push('<p class="ob-sub2" style="margin-top:1rem">La pel·lícula, el còmic, els catorze herois i la banda viuen a la seva pròpia casa: ' +
+    '<a href="https://molekulon.org/" rel="noopener"><b>molekulon.org</b> ↗</a>. Aquí hi ha el que es fa servir.</p>');
   f.push('</section>');
   return f.join('\n');
 }
@@ -224,12 +233,19 @@ const TOTES = MUNTAR.concat(APREN, MON);
        peta mai, i el resultat és el que hi havia: vint-i-una pàgines i una
        porta que no en deia cap. */
 (() => {
-  /* La porta del SOS parla de les pàgines **del SOS**. El menú té també un
-     grup de destins a l'arrel del lloc —els clients, els esdeveniments, el
-     laboratori de VNA— i exigir-los una entrada aquí voldria dir vendre'ls com
-     a eines de l'app, que no ho són. Qui els vigila és `build-nav.js`, amb el
-     seu propi registre de l'arrel. */
-  const alMenu = GRUPS.filter(g => !g.arrel).flatMap(g => g.links.map(l => l[0]));
+  /* La porta del SOS parla de les pàgines **del SOS**. El menú també porta
+     destins a l'arrel del lloc —el catàleg, qui som, la premsa— i, des del
+     04/10/2026, **sis de l'altra casa**: exigir-los una entrada aquí voldria
+     dir vendre'ls com a eines de l'app, que no ho són, i el de molekulon.org
+     no és ni un fitxer nostre. Qui els vigila és `build-nav.js`, amb el seu
+     registre de l'arrel i la guarda de la frontera.
+
+     Abans es filtraven per `g.arrel`, una bandera **del grup**. Amb les cinc
+     portes un mateix grup porta `/SOS/vna.html` i `/cataleg.html`, i la
+     bandera al grup ja no deia la veritat: es filtra enllaç per enllaç. */
+  const ARREL_PAGS = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'];
+  const delSOS = h => !/^https?:/.test(h) && !h.startsWith('/') && ARREL_PAGS.indexOf(h) < 0;
+  const alMenu = GRUPS.flatMap(g => g.links.map(l => l[0])).filter(delSOS);
   const posades = TOTES.map(x => x.p);
   const oblidades = alMenu.filter(p => !posades.includes(p) && !FORA[p]);
   if (oblidades.length) {

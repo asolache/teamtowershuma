@@ -18,9 +18,21 @@
 /sos/online /SOS/online.html    200
 /online /SOS/online.html    200
 
-/SOS/comando /SOS/comando.html    200
-/sos/comando /SOS/comando.html    200
-/comando /SOS/comando.html    200
+# ⚠ EL COMANDO SE'N VA A L'ALTRA CASA (04/10/2026)
+# La tesi dels 150.000, els sis eixos, els catorze herois i els onze vídeos
+# són, a molekulon.org, la portada més /personatges més /musica. Dues pàgines
+# sobre el mateix no en diuen cap, i la que té els mitjans és la seva.
+#
+# És l'ÚNIC 301 d'anada cap allà que no fa bucle, i això s'ha comprovat: el seu
+# `_redirects` (asolache/molekulonorg@f3b7971) envia /molekulandia,
+# /estat-liquid, /escola i /joc CAP AQUÍ, i no porta cap regla /comando. Les
+# quatre primeres NO es poden 301-ar des d'aquí: dos fitxers correctes, cada un
+# al seu repositori, i el navegador donant voltes. Ho diu
+# `SOS/knowledge/negoci/frontera-molekulon.md`, i hi ha guarda.
+/SOS/comando /comando    301
+/sos/comando /comando    301
+/SOS/comando.html https://molekulon.org/    301
+/comando https://molekulon.org/    301
 
 /SOS/vna /SOS/vna.html    200
 /sos/vna /SOS/vna.html    200

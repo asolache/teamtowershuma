@@ -78,6 +78,7 @@ const C = await llegeix('cataleg.html');
   const forma = x => JSON.stringify(x.d.portes);
   ok(forma(A) === forma(V) && forma(A) === forma(C),
     `els mateixos ${A.d.portes.length} grups i els mateixos destins, en el mateix ordre`);
+  ok(A.d.portes.length === 5, `i són cinc portes: ${A.d.portes.map(p => p.lbl).join(' · ')}`);
   ok(A.d.marca === V.d.marca && A.d.cta === V.d.cta,
     `la mateixa marca («${A.d.marca}») i la mateixa acció (${A.d.cta})`);
   ok(A.d.barres === 1 && V.d.barres === 1 && C.d.barres === 1,
@@ -127,8 +128,50 @@ for (const [nom, p, w] of [['sobretaula', 'SOS/vna.html', 1280], ['mòbil', 'SOS
 console.log('\n4 · Des de /vna, la casa és a un clic');
 {
   const dins = V.d.portes.flatMap(g => g.destins);
-  ['/cataleg.html', '/qui-som.html', '/SOS/vna-suport.html'].forEach(h =>
+  ['/cataleg.html', '/qui-som.html', '/SOS/vna-suport.html', '/SOS/'].forEach(h =>
     ok(dins.includes(h), `/vna porta a ${h} des de la barra`));
+}
+
+/* ── 4b · ELS DOS NEGOCIS, SEPARATS ───────────────────────────────────────
+   És la frase que demanava aquest canvi: «estem barrejant coses». Abans el
+   calaix d'eines portava la MATRIU **i** Molekulandia, el d'aprenentatge
+   portava la Fàbrica de Superherois i el de xarxa el Comando. Es mesura sobre
+   la pantalla i no sobre la declaració: quina porta ensenya cada cosa. */
+console.log('\n4b · Molekulandia no és al calaix d\'eines');
+{
+  const porta = h => (V.d.portes.find(g => g.destins.includes(h)) || {}).lbl;
+  const sos = V.d.portes.find(g => /El SOS/.test(g.lbl));
+  const mon = V.d.portes.find(g => /Molekulon/.test(g.lbl));
+  ok(!!sos && !!mon, `hi ha una porta «El SOS» i una «Molekulon» · ${V.d.portes.map(p => p.lbl).join(' | ')}`);
+  ['/SOS/molekulandia.html', '/SOS/molekulon.html', '/SOS/escola.html', '/SOS/joc.html', '/SOS/uneix-te.html']
+    .forEach(h => ok(porta(h) === mon.lbl, `${h} és a «${mon.lbl}» i no a cap altra · surt a «${porta(h)}»`));
+  ['/SOS/matriu.html', '/SOS/banc-temps.html', '/SOS/online.html']
+    .forEach(h => ok(porta(h) === sos.lbl, `${h} és a «${sos.lbl}» · surt a «${porta(h)}»`));
+  /* I el Comando no hi és: la seva adreça fa 301 cap a l'altra casa. */
+  ok(!V.d.portes.flatMap(g => g.destins).some(h => /comando/.test(h)),
+    'i cap destí de la barra porta a comando.html: la seva adreça fa 301 cap a molekulon.org');
+}
+
+/* ── 4c · LA FRONTERA, A LA PANTALLA ──────────────────────────────────────
+   Els sis destins de l'altra casa han de sortir **marcats com a tals**: qui
+   els prem canvia de domini i ho ha de poder veure abans de prémer, no
+   després. I han de ser exactament els sis que la frontera declara. */
+console.log('\n4c · Els destins de l\'altra casa es veuen que ho són');
+{
+  const { readFileSync } = await import('node:fs');
+  const doc = readFileSync(join(ARREL, 'SOS', 'knowledge', 'negoci', 'frontera-molekulon.md'), 'utf8');
+  const declarades = ((doc.match(/MOLEKULON-PAGINES\n([\s\S]*?)```/) || [])[1] || '')
+    .split('\n').map(x => x.trim()).filter(x => x.startsWith('/'));
+  const fora = V.d.portes.flatMap(g => g.destins).filter(h => /^https?:/.test(h));
+  ok(fora.length === declarades.length && fora.length === 6,
+    `${fora.length} destins cap a molekulon.org, els ${declarades.length} que declara la frontera`);
+  const marcats = await V.pg.evaluate(() =>
+    [...document.querySelectorAll('nav.tt-nav .tn-p a')]
+      .filter(a => /^https?:/.test(a.getAttribute('href')))
+      .map(a => ({ h: a.getAttribute('href'), rel: a.rel, avis: !!a.querySelector('.tn-f') })));
+  ok(marcats.length === 6 && marcats.every(x => x.avis),
+    'i tots sis diuen «molekulon.org ↗» abans de prémer-los');
+  ok(marcats.every(x => /noopener/.test(x.rel)), 'i tots sis porten rel="noopener"');
 }
 
 /* ── 5 · El commutador de llengua, només on hi ha diccionari ─────────────

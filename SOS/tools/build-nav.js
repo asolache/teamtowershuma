@@ -60,94 +60,135 @@ const CHECK = process.argv.includes('--check');
    descripció són `{ca, es}` o una cadena quan no hi ha res a traduir (un nom
    propi com «Molekulandia» o «Blog»). */
 const T = (ca, es) => ({ ca, es });
+/* ══ LES CINC PORTES (04/10/2026) ═══════════════════════════════════════════
+   Els cinc grups d'abans —Comença · Eines · Aprèn · La casa · Xarxa— estaven
+   ordenats **pel que era cada cosa per a nosaltres**, i el resultat era que
+   `eines` portava Molekulandia i el joc, `apren` portava la Fàbrica de
+   Superherois i `xarxa` portava el Comando. Des de `/vna`, la MATRIU i
+   Molekulandia eren al mateix calaix: **dos negocis barrejats en un
+   desplegable**, i qui buscava l'un s'havia de llegir l'altre.
+
+   Ara s'ordenen per **la pregunta que es fa qui arriba**: què compro · amb
+   quina eina · com s'aprèn · i l'altre món · qui ho signa.
+
+   ── LES RUTES, PER ENLLAÇ I NO PER GRUP ──────────────────────────────────
+   Hi havia un `arrel: true` **al grup**, perquè tots els seus destins vivien
+   a la raíz. Amb les portes noves un mateix grup porta `/SOS/vna.html` i
+   `/cataleg.html`, i la bandera al grup ja no pot dir la veritat: la decideix
+   `ARREL_PAGS`, enllaç per enllaç. I un destí que comença per `https://` és de
+   l'altra casa.
+
+   ── I LA FRONTERA AMB molekulon.org ──────────────────────────────────────
+   Els sis primers destins de la porta de Molekulon **són d'allà**, i la resta
+   són d'aquí. No és una tria d'estil: l'altra casa té el seu `_redirects`
+   enviant `/molekulandia`, `/estat-liquid`, `/escola` i `/joc` **cap aquí**, i
+   les seves sis pàgines ens enllacen 45 vegades. Un 301 d'anada per a
+   qualsevol d'aquelles quatre faria **un bucle**, amb dos fitxers correctes
+   cada un al seu repositori i el navegador donant voltes. La frontera, amb la
+   revisió llegida, és a `knowledge/negoci/frontera-molekulon.md`. */
+const MOLEKULON = 'https://molekulon.org';
 const GRUPS = [
-  { id: 'comenca', lbl: T('Comença', 'Empieza'), ic: '🧭', links: [
+  /* ══ 1 · QUÈ COMPRO ══════════════════════════════════════════════════ */
+  { id: 'valor', lbl: T('Mapa de valor', 'Mapa de valor'), ic: '🗺', links: [
+    ['vna.html', T('El mètode', 'El método'),
+      T('Què és un mapa de valor, sobre un cas', 'Qué es un mapa de valor, sobre un caso')],
+    /* L'eina i la pàgina que l'explica són dues coses i van juntes: `/vna` diu
+       què és un mapa de valor i `vna-suport` el fa. Separades al menú, qui
+       acaba de llegir el mètode no troba on aplicar-lo. */
+    ['vna-suport.html', T('Fer-ne un', 'Hacer uno'),
+      T('Les sis passes, i deu regles que el revisen', 'Los seis pasos, y diez reglas que lo revisan')],
+    ['cataleg.html', T('El catàleg', 'El catálogo'),
+      T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
+    ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
+      T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
     /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
        pregunta si ets una organització o un territori. Posar-hi els dos
        diagnòstics obligaria a triar abans de saber què els distingeix. */
     ['diagnostic.html', T('Diagnòstic', 'Diagnóstico'),
-      T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')],
-    ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
-      T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
-    ['intro.html', T('La intro', 'La intro'),
-      T('De què va tot això', 'De qué va todo esto')],
-    ['uneix-te.html', T('Uneix-t\'hi', 'Únete'),
-      T('El que ja fas al barri, comptat', 'Lo que ya haces en el barrio, contado')]
+      T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')]
   ] },
-  { id: 'eines', lbl: T('Eines', 'Herramientas'), ic: '🛠', links: [
-    ['vna.html', T('Mapa de valor', 'Mapa de valor'),
-      T('Rols i intercanvis d\'un projecte', 'Roles e intercambios de un proyecto')],
-    /* L'eina i la pàgina que l'explica són dues coses i van juntes: `/vna` diu
-       què és un mapa de valor i `vna-suport` el fa. Separades al menú, qui
-       acaba de llegir el mètode no troba on aplicar-lo. */
-    ['vna-suport.html', T('Fer un mapa de valor', 'Hacer un mapa de valor'),
-      T('Les sis passes, i deu regles que el revisen', 'Los seis pasos, y diez reglas que lo revisan')],
+  /* ══ 2 · AMB QUINA EINA ═══════════════════════════════════════════════
+     L'aplicació i les seves dinàmiques. `online.html` —el directori— ve de
+     `xarxa` i és aquí perquè **és la dinàmica `cens_entitats` de la taula
+     `EINES`**: una pàgina que s'opera, no un món que es llegeix. */
+  { id: 'sos', lbl: T('El SOS', 'El SOS'), ic: '🖥', links: [
+    ['intro.html', T('De què va', 'De qué va'),
+      T('El SOS en setze plans', 'El SOS en dieciséis planos')],
+    ['/SOS/', T('Obre l\'aplicació', 'Abre la aplicación'),
+      T('Sense compte, i les dades al teu aparell', 'Sin cuenta, y los datos en tu dispositivo')],
     ['matriu.html', T('La MATRIU', 'La MATRIU'),
       T('La incubadora: etapes, portes i propietat', 'La incubadora: etapas, puertas y propiedad')],
+    ['banc-temps.html', T('El Banc de Temps', 'El Banco de Tiempo'),
+      T('Una hora val una hora, i el saldo que ho diu', 'Una hora vale una hora, y el saldo que lo dice')],
+    ['biblioteca.html', T('La Biblioteca de les Coses', 'La Biblioteca de las Cosas'),
+      T('Donar o deixar, i què val cada préstec', 'Dar o dejar, y qué vale cada préstamo')],
     ['compra.html', T('La Compra', 'La Compra'),
       T('Grup de consum i compra col·lectiva', 'Grupo de consumo y compra colectiva')],
     ['energia.html', T('L\'Energia', 'La Energía'),
       T('Comunitat energètica i autoconsum compartit', 'Comunidad energética y autoconsumo compartido')],
     ['habitatge.html', T('L\'Habitatge', 'La Vivienda'),
       T('Cessió d\'ús: quota, entrada i sortida', 'Cesión de uso: cuota, entrada y salida')],
-    ['banc-temps.html', T('El Banc de Temps', 'El Banco de Tiempo'),
-      T('Una hora val una hora, i el saldo que ho diu', 'Una hora vale una hora, y el saldo que lo dice')],
-    ['biblioteca.html', T('La Biblioteca de les Coses', 'La Biblioteca de las Cosas'),
-      T('Donar o deixar, i què val cada préstec', 'Dar o dejar, y qué vale cada préstamo')],
-    ['molekulandia.html', 'Molekulandia',
-      T('El poble sencer i les nou professions', 'El pueblo entero y las nueve profesiones')],
-    ['joc.html', T('El joc', 'El juego'),
-      T('La plaça, a ritme', 'La plaza, a ritmo')]
+    ['online.html', T('El directori', 'El directorio'),
+      T('Qui hi ha al territori, què ofereix i què busca', 'Quién hay en el territorio, qué ofrece y qué busca')]
   ] },
-  { id: 'apren', lbl: T('Aprèn', 'Aprende'), ic: '🎓', links: [
-    ['formacio.html', T('Formació', 'Formación'),
-      T('16 mòduls, de N0 a N3', '16 módulos, de N0 a N3')],
+  /* ══ 3 · COM S'APRÈN ═════════════════════════════════════════════════
+     `ia.html` es queda aquí i no a «El SOS»: explica com el SOS fa servir la
+     IA, i explicar no és operar. */
+  { id: 'apren', lbl: T('Formació', 'Formación'), ic: '🎓', links: [
+    ['formacio.html', T('Els 16 mòduls', 'Los 16 módulos'),
+      T('De N0 a N3, i el certificat és teu', 'De N0 a N3, y el certificado es tuyo')],
     ['ia.html', T('Fluxos amb IA', 'Flujos con IA'),
       T('Automatitzar el tangible, valorar l\'intangible', 'Automatizar lo tangible, valorar lo intangible')],
-    ['escola.html', T('Escoles', 'Escuelas'),
-      T('El SOS a mida d\'aula', 'El SOS a medida de aula')],
     ['vedes.html', T('Les vedes', 'Las vedas'),
       T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
     ['blog.html', 'Blog',
       T('Cada capacitat, explicada', 'Cada capacidad, explicada')]
   ] },
-  /* ══ EL GRUP DE L'ARREL ══════════════════════════════════════════════
-     `arrel: true` vol dir que aquests destins **no viuen a `/SOS/`** sinó a la
-     raíz del lloc. Fins avui el menú només sabia nomenar pàgines del SOS, i el
-     resultat és que **cap de les pàgines de l'arrel es podia trobar des de cap
-     lloc**: ni des de la portada, ni des del README, ni des del menú. Pàgines
-     senceres i publicades a les quals només hi arribava qui en sabia l'adreça.
+  /* ══ 4 · I L'ALTRE MÓN ════════════════════════════════════════════════
+     Una sola porta per a tot el Comando, i cada destí **a la casa on és
+     canònic**. Els sis primers són de molekulon.org —hi tenen els mitjans i
+     la història— i els cinc darrers d'aquí, perquè és on l'altra casa els
+     envia. `comando.html` **no hi és**: la tesi dels 150.000, els sis eixos,
+     els catorze herois i els onze vídeos són la portada d'allà més
+     `/personatges` més `/musica`, i dues pàgines sobre el mateix no en diuen
+     cap. La seva adreça fa 301 cap allà, i és l'únic 301 d'anada que no fa
+     bucle —comprovat contra el seu `_redirects`. */
+  { id: 'mon', lbl: 'Molekulon', ic: '🌀', links: [
+    [MOLEKULON + '/', T('El Comando', 'El Comando'),
+      T('La pel·lícula que farem 150.000', 'La película que haremos 150.000')],
+    [MOLEKULON + '/historia', T('La història', 'La historia'),
+      T('Els dos còmics i l\'acte III', 'Los dos cómics y el acto III')],
+    [MOLEKULON + '/personatges', T('Els 14 herois', 'Los 14 héroes'),
+      T('Poder, superarma i què vol dir en un equip', 'Poder, superarma y qué significa en un equipo')],
+    [MOLEKULON + '/peli', T('La pel·lícula', 'La película'),
+      T('El guió de 15 plans, i què falta filmar', 'El guion de 15 planos, y qué falta filmar')],
+    [MOLEKULON + '/musica', T('La banda', 'La banda'),
+      T('Onze videoclips i els directes', 'Once videoclips y los directos')],
+    [MOLEKULON + '/comic', T('El còmic', 'El cómic'),
+      T('Els números publicats i on es compren', 'Los números publicados y dónde se compran')],
+    ['molekulandia.html', 'Molekulandia',
+      T('El poble sencer i les nou professions', 'El pueblo entero y las nueve profesiones')],
+    ['molekulon.html', T('Un estat líquid', 'Un estado líquido'),
+      T('Set federacions, i 19 nodes contra 47', 'Siete federaciones, y 19 nodos contra 47')],
+    ['escola.html', T('La Fàbrica de Superherois', 'La Fábrica de Superhéroes'),
+      T('De 6 a 13 anys, i cap nom real de cap criatura', 'De 6 a 13 años, y ningún nombre real de ninguna criatura')],
+    ['joc.html', T('El joc', 'El juego'),
+      T('La plaça, a ritme', 'La plaza, a ritmo')],
+    ['uneix-te.html', T('Uneix-t\'hi', 'Únete'),
+      T('El que ja fas al barri, comptat', 'Lo que ya haces en el barrio, contado')]
+  ] },
+  /* ══ 5 · QUI HO SIGNA ═════════════════════════════════════════════════
+     ⚠ `curs_vna.html` —«El laboratori de VNA»— se'n va el 03/10/2026. Era una
+     segona pàgina sobre el mateix mètode. L'adreça té un 301 cap a `/vna`.
 
-     La resta de l'arrel segueix fora, i ara **amb el motiu escrit**
+     La resta de l'arrel segueix fora del menú i **amb el motiu escrit**
      (`FORA_DEL_MENU_ARREL`): una pàgina publicada i no enllaçada ha de ser una
      decisió, no un oblit. */
-  /* ⚠ `curs_vna.html` —«El laboratori de VNA»— se'n va el 03/10/2026. Era una
-     **segona pàgina sobre el mateix mètode**: la seva pròpia ruta
-     d'aprenentatge, els seus conceptes i enllaços a dues aplicacions de la
-     generació retirada. Dues pàgines sobre el mateix és el pecat que
-     `_redirects` ja documenta d'aquella generació —*un lloc que diu dues
-     coses no en diu cap*— i la pàgina del mètode és `/vna`, que és al grup
-     d'eines i ara el porta sencer. L'adreça té un 301 cap allà. */
-  { id: 'casa', lbl: T('La casa', 'La casa'), ic: '🏛', arrel: true, links: [
-    /* ⚠ Les dues pàgines noves de l'endreça (04/10/2026). Eren seccions de la
-       portada —el catàleg sencer i les tres de «qui hi ha darrere»— i ara són
-       pàgines. Si no entressin aquí, serien exactament el que aquest registre
-       existeix per impedir: pàgines publicades a les quals només hi arriba qui
-       en sap l'adreça. */
-    ['cataleg.html', T('El catàleg', 'El catálogo'),
-      T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
+  { id: 'casa', lbl: T('Qui som', 'Quiénes somos'), ic: '🏛', links: [
     ['qui-som.html', T('Qui som', 'Quiénes somos'),
       T('Vint anys, els clients i d\'on ve el mètode', 'Veinte años, los clientes y de dónde viene el método')],
     ['premsa.html', T('Premsa', 'Prensa'),
       T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')]
-  ] },
-  { id: 'xarxa', lbl: T('Xarxa', 'Red'), ic: '🏘', links: [
-    ['comando.html', T('El Comando', 'El Comando'),
-      T('La pel·lícula que farem 150.000', 'La película que haremos 150.000')],
-    ['molekulon.html', 'Molekulon',
-      T('Molekulandia, un estat líquid', 'Molekulandia, un estado líquido')],
-    ['online.html', T('Directori', 'Directorio'),
-      T('Qui hi ha, per territori', 'Quién hay, por territorio')]
   ] }
 ];
 /* Llegir una etiqueta en una llengua. Una cadena simple val per a totes dues:
@@ -182,6 +223,18 @@ const EXCEPCIONS = {
    la guia de marca documenta, així que si n'hi ha una ha de ser a posta i amb
    el motiu escrit. */
 const FORA_DEL_MENU = {
+  /* ⚠ `comando.html` surt del menú el 04/10/2026 i la seva adreça fa **301 cap
+     a `molekulon.org/`**. La tesi dels 150.000, els sis eixos, els catorze
+     herois i els onze vídeos són, a l'altra casa, la portada més
+     `/personatges` més `/musica`: *dues pàgines sobre el mateix no en diuen
+     cap*, i la que té els mitjans és la seva.
+
+     **El fitxer es queda per ara**, i això és una veritat a mitges escrita a
+     posta: `build-comando.js` l'escriu, `check-comando.js` el vigila i
+     `SOS/molekulon-data.json` —que l'altre repositori llegeix— surt del mateix
+     generador. Treure la pàgina sense treure-la d'allà deixaria l'altra casa
+     sense dades. Va al backlog com el que és: una feina amb nom, no un oblit. */
+  'comando.html': 'L\'adreça fa 301 cap a molekulon.org/, que és on la pàgina és canònica. El fitxer es queda fins que `build-comando.js` deixi d\'escriure\'l sense deixar d\'exportar `molekulon-data.json`.',
   'crm.html': 'És el CRM privat: hi ha contactes i converses de gent real, i no és una pàgina per passejar-hi. Qui l\'ha de fer servir hi va per l\'adreça.',
   /* Les dues branques del diagnòstic no són pàgines soltes: hi arriba tothom
      per `diagnostic.html`, que és la que pregunta quina et toca. Posar-les al
@@ -310,8 +363,19 @@ const PORTADES = ['index.html', 'cataleg.html', 'qui-som.html'];
 
    El SOS i l'arrel poden tenir un fitxer amb el mateix nom —`ia.html` existeix
    als dos llocs— i per això els de l'arrel porten prefix. Sense ell, les dues
-   entrades compartirien clau i la segona guanyaria en silenci. */
-const clauDe = (g, h) => (g.arrel ? 'arrel-' : '') + h.replace(/\.html$/, '');
+   entrades compartirien clau i la segona guanyaria en silenci.
+
+   I els destins de l'altra casa surten del seu camí: `https://molekulon.org/peli`
+   → `fora-peli`, i l'arrel d'allà → `fora-inici`. Sense prefix, `/historia`
+   xocaria amb un `historia.html` el dia que n'hi hagués un. */
+const clauDe = h => {
+  if (esFora(h)) {
+    const c = h.replace(/^https?:\/\/[^/]+/, '').replace(/^\//, '');
+    return 'fora-' + (c || 'inici');
+  }
+  if (h === '/SOS/') return 'app';
+  return (esArrel(h) ? 'arrel-' : '') + h.replace(/\.html$/, '');
+};
 
 /* El bloc del diccionari d'una llengua, per enganxar entre les marques de la
    portada. Mateix patró que `build-oferta.js`: es declara un cop aquí i
@@ -321,7 +385,7 @@ function diccionari(l) {
   GRUPS.forEach(g => {
     f.push(`  'nv.g.${g.id}':'${esc2(g.ic + ' ' + txt(g.lbl, l))}',`);
     g.links.forEach(([h, t, d]) => {
-      const id = clauDe(g, h);
+      const id = clauDe(h);
       f.push(`  'nv.t.${id}':'${esc2(txt(t, l))}',`);
       f.push(`  'nv.d.${id}':'${esc2(txt(d, l))}',`);
     });
@@ -345,8 +409,18 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 /* L'adreça absoluta d'una pàgina. `index.html` existeix als dos llocs i per
    tant el nom del fitxer sol no identifica res: comparar-los donava la portada
    i l'aplicació per la mateixa pàgina. */
-const hrefDe = (h, arrel) => (arrel ? '/' + h : '/SOS/' + h);
 const ARREL_PAGS = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'];
+/* On va un destí, decidit **per l'enllaç**. Tres formes i cap més: una adreça
+   de l'altra casa es deixa tal com és, una pàgina de l'arrel va a la raíz, i
+   la resta a `/SOS/`. `SOS/index.html` és l'aplicació i no la portada, i per
+   això el grup del SOS la nomena i la portada és `ARREL_PAGS`. */
+const esFora = h => /^https?:/.test(h);
+const esArrel = h => ARREL_PAGS.indexOf(h) >= 0;
+/* Una adreça ja escrita amb `/` al davant es deixa estar: és el cas de
+   `/SOS/`, l'aplicació. `index.html` existeix als dos llocs i no es pot
+   nomenar pel fitxer sense dir quin dels dos —era el forat que feia comparar
+   la portada amb l'app i donar-les per la mateixa pàgina. */
+const hrefDe = h => (esFora(h) || h.startsWith('/')) ? h : (esArrel(h) ? '/' + h : '/SOS/' + h);
 
 /* El selector de llengua surt **només on hi ha diccionari**. A les vint
    pàgines monolingües seria un botó que no fa res, que és pitjor que no
@@ -364,11 +438,10 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html',
   'vna.html'];
 
 function nav(pagina) {
-  const arrel = ARREL_PAGS.indexOf(pagina) >= 0;
-  const jo = hrefDe(pagina, arrel);
-  const aqui = (h, gArrel) => hrefDe(h, gArrel) === jo;
+  const jo = hrefDe(pagina);
+  const aqui = h => hrefDe(h) === jo;
   const grup = g => {
-    const dins = g.links.some(l => aqui(l[0], g.arrel));
+    const dins = g.links.some(l => aqui(l[0]));
     /* El marcatge duu la clau **a totes** les pàgines del SOS i el text escrit
        en català. A les que no tenen diccionari no passa res: una clau sense
        entrada deixa el text tal com és, que és el correcte. A les que sí que
@@ -378,10 +451,16 @@ function nav(pagina) {
        baix, i era l'última costura que es veia mirant. */
     return `<details class="tn-g${dins ? ' tn-here' : ''}"><summary data-i18n="nv.g.${g.id}">${g.ic} ${esc(txt(g.lbl, 'ca'))}</summary>` +
       `<div class="tn-p">` + g.links.map(([h, t, d]) => {
-        const id = clauDe(g, h);
-        return `<a href="${hrefDe(h, g.arrel)}"${aqui(h, g.arrel) ? ' aria-current="page"' : ''}>`
+        const id = clauDe(h);
+        /* Els destins de l'altra casa porten `rel` i una fletxa: qui el prem
+           canvia de domini i ho ha de poder veure abans de prémer, no després.
+           Mateixa pestanya a posta —les dues cases s'enllacen en tots dos
+           sentits i obrir-ne una de nova faria pensar que és un lloc de fora. */
+        const f = esFora(h);
+        return `<a href="${hrefDe(h)}"${f ? ' rel="noopener"' : ''}${aqui(h) ? ' aria-current="page"' : ''}>`
           + `<b data-i18n="nv.t.${id}">${esc(txt(t, 'ca'))}</b>`
-          + `<span data-i18n="nv.d.${id}">${esc(txt(d, 'ca'))}</span></a>`;
+          + `<span data-i18n="nv.d.${id}">${esc(txt(d, 'ca'))}</span>`
+          + (f ? '<i class="tn-f" aria-hidden="true">molekulon.org ↗</i>' : '') + `</a>`;
       }).join('') + `</div></details>`;
   };
   const llengua = AMB_LLENGUA.indexOf(pagina) < 0 ? '' :
@@ -545,8 +624,14 @@ function blocApp() {
        qui hi clica fora de l'app sense avisar. A la barra de les pàgines del
        SOS i al desplegable de la portada sí que hi van, perquè allà la feina
        de la llista és dir **on és tot**. */
-    grups: GRUPS.filter(g => !g.arrel).map(g => ({ lbl: g.lbl, ic: g.ic,
-      links: g.links.filter(l => l[0] !== APP).map(([h, t, d]) => ({ h, t, d })) }))
+    /* Només el que l'aplicació pot obrir: les seves pàgines. Les de l'arrel
+       —el catàleg, qui som, la premsa— i les de l'altra casa no ho són:
+       oferir-les aquí seria vendre màrqueting com a eina i deixaria qui hi
+       clica fora de l'app sense avisar. A la barra sí que hi van, perquè allà
+       la feina de la llista és dir **on és tot**. */
+    grups: GRUPS.map(g => ({ lbl: g.lbl, ic: g.ic,
+      links: g.links.filter(l => !esFora(l[0]) && !esArrel(l[0]) && l[0] !== APP && l[0] !== '/SOS/')
+        .map(([h, t, d]) => ({ h, t, d })) }))
       .filter(g => g.links.length),
     eines: EINES
   };
@@ -579,7 +664,7 @@ function posaApp(html) {
 {
   const { readdirSync } = require('node:fs');
   const arrel = readdirSync(ARREL).filter(f => /\.html$/.test(f)).sort();
-  const alMenu = GRUPS.filter(g => g.arrel).flatMap(g => g.links.map(l => l[0]));
+  const alMenu = GRUPS.flatMap(g => g.links.map(l => l[0])).filter(esArrel);
   const orfes = arrel.filter(f => !alMenu.includes(f) && !FORA_DEL_MENU_ARREL[f]);
   const fantasmes = Object.keys(FORA_DEL_MENU_ARREL).filter(f => !arrel.includes(f));
   if (orfes.length) bad(`${orfes.length} pàgines de l'arrel sense menú ni motiu: ${orfes.join(', ')}`
@@ -732,7 +817,7 @@ if (CHECK) {
   {
     const vist = new Map();
     GRUPS.forEach(g => g.links.forEach(l => {
-      const k = hrefDe(l[0], g.arrel);
+      const k = hrefDe(l[0]);
       vist.set(k, (vist.get(k) || []).concat(g.id));
     }));
     const dobles = [...vist].filter(([, gs]) => gs.length > 1);
@@ -766,6 +851,55 @@ if (CHECK) {
       + ' — el terra del lloc és var(--t0), 15 px, i un rem literal se\'l salta');
   }
 
+  /* ══ LA FRONTERA AMB L'ALTRA CASA ════════════════════════════════════════
+     Les dues regles que impedeixen que la separació dels dos negocis es
+     desfaci pàgina a pàgina, i que el 04/10/2026 va estar a punt de petar en
+     silenci: s'anava a posar un 301 cap a molekulon.org per a `/molekulandia`,
+     i **l'altra casa ja en té un cap aquí**. Dos fitxers correctes, cada un al
+     seu repositori, i el navegador donant voltes. No ho veuria cap guarda
+     d'aquesta casa, perquè la meitat de la regla viu a l'altra.
+
+     La font és `knowledge/negoci/frontera-molekulon.md`, amb la revisió
+     llegida escrita a dins. Un fitxer de prosa és una font pobra, i és la que
+     hi ha: aquest entorn no arriba a l'altre domini i el seu repositori és un
+     altre. El que el fa servir és això: **està llegit per una guarda**, i per
+     tant no pot quedar vell sense que es noti. */
+  {
+    const F = join(SOS, 'knowledge', 'negoci', 'frontera-molekulon.md');
+    if (!existsSync(F)) bad('no existeix knowledge/negoci/frontera-molekulon.md: '
+      + 'la frontera amb l\'altra casa no es pot comprovar, i és on es fa el bucle');
+    else {
+      const doc = readFileSync(F, 'utf8');
+
+      /* 5 · La porta de Molekulon porta a les pàgines que allà existeixen, i a
+         cap altra. Un destí inventat no peta: dona un 404 amb el nostre
+         logotip a la pàgina de l'altra casa. */
+      /* El bloc `MOLEKULON-PAGINES` és una llista a posta, i no la taula de
+         prosa que hi ha a sobre: una guarda que llegeix prosa es creu el que
+         vol, i la primera versió d'això es va deixar cinc de les sis fora
+         perquè una filera de taula no porta els separadors on jo els buscava. */
+      const bloc = (doc.match(/MOLEKULON-PAGINES\n([\s\S]*?)```/) || [])[1] || '';
+      const sevesDoc = bloc.split('\n').map(x => x.trim()).filter(x => x.startsWith('/'));
+      const sevesMenu = GRUPS.flatMap(g => g.links.map(l => l[0])).filter(esFora)
+        .map(h => h.replace(/^https?:\/\/[^/]+/, '') || '/');
+      const inventades = sevesMenu.filter(c => !sevesDoc.includes(c));
+      if (!sevesDoc.length) bad('frontera-molekulon.md no declara cap pàgina de l\'altra casa: la guarda 5 no mira res');
+      else if (!inventades.length) ok(`els ${sevesMenu.length} destins de l'altra casa són dels ${sevesDoc.length} que declara la frontera`);
+      else bad(`la porta de Molekulon porta a pàgines que la frontera no declara: ${inventades.join(', ')}`
+        + ' — un destí inventat no peta: dona un 404 amb el nostre logotip a la casa del veí');
+
+      /* 6 · I cap adreça que ells ens envien pot tornar-se a enviar cap allà.
+         És el bucle, i és l'única d'aquestes guardes que mira `_redirects`. */
+      const seusCapAqui = [...doc.matchAll(/^\/([a-z-]+)\s+https:\/\/teamtowershuma\.com/gm)].map(m => m[1]);
+      const red = readFileSync(join(ARREL, '_redirects'), 'utf8');
+      const bucles = seusCapAqui.filter(c =>
+        new RegExp('^/(?:SOS/|sos/)?' + c + '(?:\\.html)?\\s+https?://(?:www\\.)?molekulon\\.org', 'm').test(red));
+      if (!seusCapAqui.length) bad('frontera-molekulon.md no diu quines adreces ens envia l\'altra casa: la guarda 6 no mira res');
+      else if (!bucles.length) ok(`cap de les ${seusCapAqui.length} adreces que ens envien torna cap allà: cap bucle`);
+      else bad(`bucle de redireccions: ${bucles.map(c => '/' + c).join(', ')} — ells ens hi envien i nosaltres els hi tornem`);
+    }
+  }
+
   const totes = PAGINES.length;
   if (!fails) ok(`les ${totes} pàgines porten exactament el mateix menú`);
   const exc = Object.keys(EXCEPCIONS);
@@ -782,8 +916,12 @@ if (CHECK) {
      lloc, i una adreça que acaba en `/` és l'`index.html` d'aquella carpeta:
      `/SOS/` és un destí viu i comprovar-lo com a fitxer el donava per mort. */
   const fitxerDe = u => join(ARREL, u.replace(/^\//, '').replace(/\/$/, '/index.html'));
-  const morts = GRUPS.flatMap(g => g.links.map(l => hrefDe(l[0], g.arrel)))
-    .concat([CTA[0]])
+  /* Els destins de l'altra casa no es poden comprovar contra el disc —no són
+     nostres— i la política de xarxa d'aquest entorn no hi arriba. El que **sí**
+     es comprova és que siguin exactament les pàgines que `frontera-molekulon.md`
+     diu que allà existeixen: la guarda de la frontera, més avall. */
+  const morts = GRUPS.flatMap(g => g.links.map(l => hrefDe(l[0])))
+    .concat([CTA[0]]).filter(u => !esFora(u))
     .filter(u => !existsSync(fitxerDe(u)));
   if (!morts.length) ok(`i els ${GRUPS.reduce((a, g) => a + g.links.length, 0) + 1} destins existeixen tots`);
   else bad(`el menú porta a pàgines que no hi són: ${morts.join(', ')}`);

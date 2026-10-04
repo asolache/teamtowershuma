@@ -44,6 +44,66 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### Les cinc portes, i la frontera amb l'altra casa (04/10/2026)
+
+**Fet.** La barra ja era una (entrada de sota); el que estava barrejat era
+**què hi havia a dins**. Els grups s'ordenaven pel que era cada cosa per a
+nosaltres, i el resultat és que des de `/vna` la MATRIU i Molekulandia eren al
+mateix calaix.
+
+| | Abans | Ara |
+|---|---|---|
+| Grups | Comença · Eines · Aprèn · La casa · Xarxa | Mapa de valor · El SOS · Formació · Molekulon · Qui som |
+| Pàgines del Comando escampades | 5, en 3 grups diferents | **1 porta** |
+| Destins cap a molekulon.org | 0 | 6, i es veuen que ho són |
+| Banderes de ruta | `arrel: true` **al grup** | per enllaç |
+| Pàgines amb dos negocis al mateix calaix | 3 grups | 0 |
+
+**L'ordre, i per què.** Es va deixar d'ordenar pel que és cada cosa i es va
+passar a ordenar per **la pregunta que es fa qui arriba**: *què compro · amb
+quina eina · com s'aprèn · i l'altre món · qui ho signa*.
+
+**Dues col·locacions que es podrien discutir, amb el motiu escrit al
+generador:** `ia.html` es queda a *Formació* perquè explica com el SOS fa
+servir la IA i explicar no és operar; `online.html` passa de *Xarxa* a *El SOS*
+perquè és la dinàmica `cens_entitats` de la taula `EINES`, una pàgina que
+s'opera i no un món que es llegeix.
+
+**El bucle que gairebé es va publicar.** El pla de setembre
+(`vision/molekulon-org-pla.md` §2.3) deia que `/molekulandia`, `/molekulon` i
+`/escola` passarien a 301 cap a molekulon.org. **L'altra casa ja en té un cap
+aquí**: el seu `_redirects` (`asolache/molekulonorg@f3b7971`) envia
+`/molekulandia`, `/estat-liquid`, `/escola` i `/joc` cap a teamtowershuma.com, i
+les seves sis pàgines ens enllacen **45 vegades**. Dos fitxers correctes, cada
+un al seu repositori, i el navegador donant voltes. **No ho veuria cap guarda
+d'aquesta casa, perquè la meitat de la regla viu a l'altra.**
+
+La frontera de debò és a `negoci/frontera-molekulon.md` i **la llegeixen dues
+guardes**, que és el que impedeix que el fitxer quedi vell sense que es noti:
+
+5. **La porta de Molekulon porta a les sis pàgines que allà existeixen**, i a
+   cap altra. Un destí inventat no peta: dona un 404 amb el nostre logotip a la
+   casa del veí.
+6. **Cap adreça que ells ens envien torna cap allà.** És el bucle, i cobreix
+   les tres variants (`/x`, `/sos/x`, `/SOS/x.html`).
+
+**L'únic que marxa: `/comando`.** La tesi dels 150.000, els sis eixos, els 14
+herois i els 11 vídeos són, allà, la portada més `/personatges` més `/musica`.
+És l'únic 301 d'anada que **no fa bucle**, comprovat contra el seu `_redirects`.
+
+**El que queda obert, i és una veritat a mitges escrita a posta:**
+
+- **`SOS/comando.html` segueix al disc.** L'adreça fa 301, però
+  `build-comando.js` encara escriu la pàgina, `check-comando.js` la vigila i
+  `SOS/molekulon-data.json` —que l'altre repositori llegeix cada dilluns— surt
+  del mateix generador. Treure la pàgina sense deixar de exportar les dades és
+  la feina, i té nom: *`build-comando.js` deixa d'escriure `comando.html` i es
+  queda només amb l'export.* El motiu és a `FORA_DEL_MENU`.
+- **La frontera és un fitxer de prosa amb una revisió escrita a dins**, i no una
+  lectura en viu. Aquest entorn no arriba a l'altre domini i el seu repositori
+  és un altre. El dia que l'altra casa canviï el seu `_redirects`, aquest
+  fitxer queda vell; el que ho fa visible és que **està llegit per una guarda**.
+
 ### Una sola barra, vint-i-set pàgines (04/10/2026)
 
 **Fet.** Hi havia **tres** barres dient la mateixa cosa de tres maneres, i la

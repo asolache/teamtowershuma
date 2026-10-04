@@ -22,6 +22,23 @@
 La regla, en una frase: **l'altra casa té la història; aquesta té el que es fa
 servir i el que es ven.**
 
+### Les seves pàgines, declarades
+
+Això **ho llegeix una guarda** (`build-nav.js --check`), i per això és una
+llista i no prosa: la porta de Molekulon no pot portar a una adreça que allà no
+existeixi. Un destí inventat no peta — dona un **404 amb el nostre logotip a la
+casa del veí**. Llegit de `asolache/molekulonorg@f3b7971`:
+
+```
+MOLEKULON-PAGINES
+/
+/historia
+/personatges
+/peli
+/musica
+/comic
+```
+
 ## El que l'altra casa envia cap aquí
 
 Llegit de `asolache/molekulonorg`, fitxer `_redirects`, revisió `f3b7971`:
