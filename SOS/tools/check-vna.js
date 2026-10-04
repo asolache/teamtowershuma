@@ -117,26 +117,19 @@ else {
    camí els seus extrems, i es demana que **cada node tingui algun extrem a
    tocar**. No diu si l'aresta va on toca —això ho sap qui sap de castells—,
    però sí que no n'hi falta cap. */
-const svg = (PORTADA.match(/<svg id="collaSvg"[\s\S]*?<\/svg>/) || [''])[0];
-if (!svg) bad('no es troba el dibuix de la colla a la portada: aquesta comprovació no pot mirar res');
-else {
-  const nodes = [...svg.matchAll(/data-id="(\w+)"[\s\S]{0,160}?<circle cx="(\d+)"\s+cy="(\d+)" r="(\d+)"/g)]
-    .map(m => ({ id: m[1], x: +m[2], y: +m[3], r: +m[4] }));
-  /* Els extrems de cada camí: el primer `M` i l'últim parell de coordenades.
-     Val tant per a rectes (`L`) com per a corbes (`Q`), que és el que hi ha. */
-  const punts = [];
-  [...svg.matchAll(/<path d="M([\d.]+),([\d.]+)[^"]*?([\d.]+),([\d.]+)"/g)].forEach(m => {
-    punts.push([+m[1], +m[2]], [+m[3], +m[4]]);
-  });
-  if (!nodes.length || !punts.length) bad('no s\'han pogut llegir els nodes o les arestes del dibuix de la portada');
-  else {
-    const aprop = n => punts.some(p => Math.hypot(p[0] - n.x, p[1] - n.y) <= n.r + 14);
-    const solts = nodes.filter(n => !aprop(n));
-    if (!solts.length) ok(`i al dibuix de la portada els ${nodes.length} rols tenen alguna línia que hi arriba`);
-    else bad(`${pl(solts.length, 'rol dibuixat sense cap línia', 'rols dibuixats sense cap línia')} a la portada: `
-      + solts.map(n => n.id).join(', ') + ' — al dibuix són decoració, encara que les dades diguin que no ho són');
-  }
-}
+/* ⚠ **Aquesta comprovació s'ha retirat amb el seu dibuix** (04/10/2026).
+   `collaSvg` era a `#fentpinya`, a la portada, i era **la quarta vista dels
+   mateixos dotze rols**: `/vna` ja en porta la planta (`VNA-PINYA`), la taula
+   (`VNA-ROLS`) i el guió de nou passos (`#colla`). L'endreça el va treure.
+
+   El que aquesta regla vigilava —**cap rol dibuixat sense cap línia que hi
+   arribi**— segueix vigilat allà on viu el dibuix que queda: `build-castells.js`
+   ho comprova sobre la planta, i ho fa per geometria i no per etiquetes, que
+   és el motiu pel qual aquesta regla existia.
+
+   Es deixa escrit i no s'esborra en silenci: una guarda que desapareix sense
+   dir on ha anat la seva feina és una regla que ningú sap si es va decidir o
+   es va perdre. */
 
 /* ══ EL ZOOM · un sol graf i un sol gest ═════════════════════════════════════
    El mapa d'un node es dibuixava sol i **el que hi ha a dins es navegava per
@@ -315,7 +308,10 @@ else {
      només un diria que la meitat de les claus del marcatge no tenen entrada. */
   const dic = M => {
     const ks = [];
-    [`VNA-I18N-${M}`, `VNA-CT-I18N-${M}`].forEach(n => {
+    /* Tres blocs i no dos: amb l'endreça (04/10/2026), el mapa de la xarxa de
+       la casa viu aquí i porta el seu diccionari (`VNA-XA-I18N`). Amb la
+       llista vella, quaranta-set claus seves sortien com a «sense entrada». */
+    [`VNA-I18N-${M}`, `VNA-XA-I18N-${M}`, `VNA-CT-I18N-${M}`].forEach(n => {
       const a = PAG.indexOf(`/*${n}*/`), b = PAG.indexOf(`/*/${n}*/`);
       if (a < 0 || b <= a) return;
       [...PAG.slice(a, b).matchAll(/^\s*'([^']+)':/gm)].forEach(m => ks.push(m[1]));

@@ -40,38 +40,50 @@ const nova = async opts => {
   return { ctx, p };
 };
 
-/* ── 1 · On és, i per què allà ───────────────────────────────────────────── */
-console.log('\n1 · Les rengles van després de les dues vistes, no abans');
+/* ── 1 · On viuen les rengles, i per què allà ────────────────────────────── */
+/* ⚠ **Mudada a `/vna`** (04/10/2026). Les construccions eren la secció més
+   llarga de la portada —60 KB de 575— i parlen **del mètode**: quantes rengles
+   obre cada pinya, què vol dir el vent. La portada ven el mapa de valor i hi
+   porta; el mètode viu on es ven el mètode.
+
+   El que la prova vigilava —**que les rengles vinguin després del cas**— es
+   manté, i ara es mesura allà: a `/vna`, el llenç amb les dues vistes obre la
+   pàgina i les construccions van a sota. Mesurar-ho a la portada hauria estat
+   mesurar una pàgina on ja no hi són, i hauria passat en verd per absència. */
+console.log('\n1 · Les construccions van després del cas, a /vna');
+{
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.waitForTimeout(500);
+  const r = await p.evaluate(() => {
+    const src = document.documentElement.innerHTML;
+    const i = m => src.indexOf(m);
+    return {
+      llenc: i('<!--VNA-LLENC-->'),
+      constr: i('<!--VNA-CONSTRUCCIONS-->'),
+      rols: i('<!--VNA-ROLS-->'),
+      xarxa: i('<!--VNA-XARXA-->'),
+      capAlaPortada: true
+    };
+  });
+  ok(r.constr >= 0, 'les construccions són a /vna');
+  ok(r.llenc >= 0 && r.constr > r.llenc,
+    'i van després del cas: ordenen una cosa que qui llegeix acaba de veure');
+  ok(r.rols >= 0 && r.rols < r.constr,
+    'amb el vocabulari abans: els noms ordenen el que ve després');
+  ok(r.xarxa >= 0 && r.xarxa > r.llenc,
+    'i el mapa de la casa també hi és: el mètode aplicat a qui el ven');
+  await ctx.close();
+}
+
 {
   const { ctx, p } = await nova();
-  const r = await p.evaluate(() => {
-    const ids = [...document.querySelectorAll('section[id]')].map(s => s.id);
-    return { hi: ids.indexOf('rengles'), mapa: ids.indexOf('dues-vistes'),
-             rols: ids.indexOf('rols'), enfoc: ids.indexOf('enfoc'),
-             decideix: ids.indexOf('decideix') };
-  });
-  ok(r.hi >= 0, 'la secció hi és');
-  /* `#mapaval` s'ha fusionat amb `#rengles` dins de `#dues-vistes`: el graf i
-     la planta són dues pestanyes del **mateix cas**, i tenir-los en dues
-     seccions era el que els feia semblar dos dibuixos sense relació.
-
-     `#rengles` es queda com la part didàctica —les cinc construccions i les
-     variables— i per això va després: ordena una cosa que qui llegeix acaba
-     de veure sobre un cas de debò. */
-  /* Es mesura **l'ordre i no l'adjacència**. Entre les dues vistes i les
-     rengles hi ha entrat `#decideix` —per a què serveix això, abans d'explicar
-     com es fa—, i una asserció d'adjacència hauria petat per un canvi
-     correcte. El que ha de seguir sent cert és que les rengles van **després**
-     del cas: ordenen una cosa que qui llegeix ja ha vist. */
-  ok(r.mapa >= 0 && r.hi > r.mapa,
-    'i va després de les dues vistes: ordena una cosa que acabes de veure');
-  /* I el que va al mig: primer per a què serveix, després com es fa. Qui
-     decideix una compra no és un metodòleg. */
-  ok(r.decideix > r.mapa && r.decideix < r.hi,
-    'amb «el que decideixes» entre mig: per a què serveix abans que com es fa');
-  /* I el vocabulari, l'últim dels tres: els noms ordenen una pinya, i si
-     sortissin primer anomenarien posicions que encara no s'han vist. */
-  ok(r.rols === r.hi + 1, 'i els rols arquetípics, just darrere');
+  const fora = await p.evaluate(() =>
+    [...document.querySelectorAll('section[id]')].map(s => s.id)
+      .filter(x => ['rengles', 'rols', 'xarxa', 'fentpinya'].includes(x)));
+  ok(!fora.length, 'i cap de les quatre seccions del mètode es queda a la portada'
+    + (fora.length ? ': ' + fora.join(', ') : ''));
   await ctx.close();
 }
 
@@ -168,7 +180,12 @@ console.log('\n4 · Sense moviment, la informació hi és igual');
 /* ── 5 · Les plantes obren les direccions que els toca ───────────────────── */
 console.log('\n5 · Una pinya de N baixos obre 4N rengles');
 {
-  const { ctx, p } = await nova();
+  /* El triador de construccions viu a `/vna` des del 04/10/2026, amb la secció
+     que el porta. La prova hi va amb ell. */
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.waitForTimeout(400);
   for (const f of FIGURES) {
     await p.click(`.ct-t[data-f="${f.id}"]`);
     const r = await p.evaluate(id => {
@@ -197,7 +214,10 @@ console.log('\n5 · Una pinya de N baixos obre 4N rengles');
 /* ── 6 · La variable es pinta sobre la planta ────────────────────────────── */
 console.log('\n6 · La mateixa planta, pintada per una altra cosa');
 {
-  const { ctx, p } = await nova();
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.waitForTimeout(400);
   for (const v of VARIABLES) {
     await p.click(`.ct-t[data-v="${v.id}"]`);
     const r = await p.evaluate(id => {
@@ -232,7 +252,10 @@ console.log('\n7 · Per què un instrument de setze factors cap en un 4');
   const v = VARIABLES.find(x => x.dims.length === 16);
   ok(!!q && q.baixos === 4, 'un castell de 4 obre 16 rengles: 4 primeres mans, 4 vents i 8 laterals');
   ok(!!v && v.fig === q.id, 'i la variable de setze dimensions hi va a sobre, sense forçar res');
-  const { ctx, p } = await nova();
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.waitForTimeout(400);
   await p.click('.ct-t[data-v="setze"]');
   const r = await p.evaluate(() => ({
     dirs: document.querySelectorAll('#ct-v-setze .pl-l').length,
@@ -251,15 +274,21 @@ console.log('\n8 · Si el JavaScript no arriba, el contingut hi és igual');
   await p.goto(APP);
   const r = await p.evaluate(() => ({
     pols: document.querySelectorAll('.mv-p').length,
-    frase: (document.querySelector('.mv-pu-t') || {}).textContent || '',
+    frase: (document.querySelector('.mv-pu-t') || {}).textContent || '' }));
+  ok(r.pols > 0, 'els polsos són SVG i CSS: circulen sense JavaScript');
+  ok(/radiografia/.test(r.frase), 'la frase ja és escrita a la pàgina');
+  /* Les construccions i la llei van amb la seva secció a `/vna` (04/10/2026),
+     i la regla hi va amb elles: el que ha de seguir sent cert és que **són
+     dibuixades i no generades al navegador**, i això es mesura allà. */
+  const p2 = await ctx.newPage();
+  await p2.goto('file://' + join(DIR, '..', 'vna.html'));
+  const v = await p2.evaluate(() => ({
     plantes: document.querySelectorAll('.pl-svg').length,
     alcats: document.querySelectorAll('.al-svg').length,
     llei: (document.querySelector('.ct-llei') || {}).textContent || '' }));
-  ok(r.pols > 0, 'els polsos són SVG i CSS: circulen sense JavaScript');
-  ok(/radiografia/.test(r.frase), 'la frase ja és escrita a la pàgina');
-  ok(r.plantes >= FIGURES.length && r.alcats === FIGURES.length,
-    `i les ${r.alcats} construccions són dibuixades, no generades al navegador`);
-  ok(/alçada sense guanyar base/.test(r.llei), 'i la llei que lliga les dues vistes també hi és');
+  ok(v.plantes >= FIGURES.length && v.alcats === FIGURES.length,
+    `i les ${v.alcats} construccions són dibuixades a /vna, no generades al navegador`);
+  ok(/alçada sense guanyar base/.test(v.llei), 'i la llei que lliga les dues vistes també hi és');
   await ctx.close();
 }
 
@@ -283,8 +312,11 @@ console.log('\n9 · I la pàgina del mètode, també viva');
       anim: pol && getComputedStyle(pol).animationName,
       play: pol && getComputedStyle(pol).animationPlayState,
       polsos: document.querySelectorAll('.mv-p').length,
-      planta: document.querySelectorAll('.pl-svg').length,
-      rengles: document.querySelectorAll('.pl-l').length,
+      /* Dins de la vista castell del llenç, i no de la pàgina sencera: des de
+         l'endreça (04/10/2026) `/vna` porta també les cinc construccions i la
+         planta de la xarxa, i comptar-les totes mesuraria una altra cosa. */
+      planta: document.querySelectorAll('#lz-castell .pl-svg').length,
+      rengles: document.querySelectorAll('#lz-castell .pl-l').length,
       menes: document.querySelectorAll('.ct-anat li').length };
   });
   ok(r.polsos > 0 && r.anim !== 'none' && r.play === 'running',

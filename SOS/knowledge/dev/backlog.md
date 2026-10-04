@@ -44,6 +44,88 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### L'endreça · una pàgina, una feina (04/10/2026)
+
+**Fet.** La portada feia divuit feines i no en deia cap del tot. Ara en fa una
+—**vendre el mapa de valor**— i porta a les altres tres pàgines.
+
+| | Abans | Ara |
+|---|---|---|
+| Seccions a la portada | **18** | 7 |
+| Pes de la portada | 141 KB gzip · 575 KB cru | **58 KB** · 226 KB |
+| Pàgines d'arrel amb contingut | 1 | 3 |
+| Sostre de pes declarat | cap | 4 pàgines, amb el pes del dia |
+| Regles de CSS que no pinten res | **302** · 37 KB | 0, i hi ha guarda |
+| Àncores cap a una secció que no hi és | **37** | 0, i hi ha guarda |
+| Claus de diccionari que no tradueixen res | **1.078** | 0 |
+
+**On ha anat cada cosa, i per què allà:**
+
+| | Què s'hi emporta | El criteri |
+|---|---|---|
+| **`cataleg.html`** · nou | `#cataleg`, `#cost`, `#aprenent`, `#glossari` | El que decideix una compra quan ja saps que la vols |
+| **`qui-som.html`** · nou | `#facilitador`, `#relat`, `#trajectoria`, `#objeccions` | El que decideix si et fies, que és una altra pregunta |
+| **`/vna`** | `#rengles`, `#rols`, `#xarxa`, `#fentpinya` | El mètode viu on es ven el mètode |
+| **`SOS/intro.html`** | `#sos` | És la porta del SOS; la portada hi porta i prou |
+
+**La regla que decidia tot el risc: una secció que marxa s'emporta la seva
+guarda.** Es van mudar **nou regles** de `check-landing.js` (el catàleg, el
+README, les portes, els clients amb font, el perfil, les objeccions, el mapa de
+la xarxa, el vocabulari de rols, els ponts cap al SOS), una de `check-ia.js` i
+**sis fitxers de prova**. Cap es va esborrar: una guarda que desapareix sense
+dir on ha anat la seva feina és una regla que ningú sap si es va decidir o es va
+perdre. L'única retirada —el dibuix de la colla a `check-vna.js`— porta escrit
+què vigilava i qui ho vigila ara.
+
+**Tres guardes noves, i cada una és un defecte que ja s'havia comès:**
+
+1. **`check-css-arrel.js`** · cap regla de CSS que no pinti res, i cap estil que
+   s'hagi quedat a l'altra pàgina. En van sortir **302 regles mortes i 37 KB**
+   —`.repte-veus`, `.oferta-card`, `.sos-grid`, `.tx-card`— el rastre de
+   seccions retirades en rondes anteriors **sense el seu estil**. Es va provar
+   que no pintaven res amb una captura de pàgina sencera abans i després: 330
+   píxels de diferència de 44 milions, i tots dins d'un SVG animat.
+2. **Cap secció òrfena** (regla 7g): les vuit que es muden han de ser **a la
+   seva pàgina nova i no a la portada**. Que no hi siguin enlloc és el defecte
+   que aquesta endreça podia cometre en silenci, i les altres guardes no el
+   veuen: busquen on la secció hauria de ser, i si no hi és diuen «no la trobo»
+   —el mateix que dirien si mai hi hagués estat.
+3. **Cap àncora cap a enlloc** (regla 7i): l'endreça va deixar **trenta-set**
+   `href="#x"` apuntant a seccions que havien canviat de pàgina. No peta i amb
+   prou feines es nota: el navegador es queda on és i qui hi clica es pensa que
+   la pàgina no li respon.
+
+**El que va aparèixer pel camí, i no es buscava:**
+
+- **El sector es perdia en el salt de pàgina.** Les portes filtraven al moment
+  mentre el catàleg era una secció; amb el catàleg a part, clicar «tercer
+  sector» obria els vint-i-un paquets. Ara el sector viatja a l'adreça
+  (`/cataleg?s=tercer`) i el catàleg l'aplica en carregar. **Sense JavaScript
+  surten tots**, que és l'estat correcte.
+- **El codi de les pestanyes es va quedar a la portada.** Les construccions van
+  marxar a `/vna` i el seu `addEventListener` no: el marcatge hi era, els
+  botons es premien i **no passava res**. Cap error, cap avís, i el panell que
+  es veia sempre era el primer. Ho va trobar `test-organisme.mjs`, no cap
+  guarda de marcatge.
+- **`posa()` duplicava mig fitxer quan les marques es creuaven.** El trasllat
+  de la paret de clients va deixar el tancament **abans** de l'obertura, i
+  `slice(0,a) + cos + slice(b)` amb `b < a` escriu dues vegades tot el que hi ha
+  entremig. La portada va arribar a tenir **tres còpies** del seu cos i el
+  generador seguia dient que tot quadrava.
+- **El peu portava vuit àncores i cinc eren mortes** —`#fentpinya`,
+  `#aprenentatge`, `#beneficis`—, i la barra en portava cinc més que només
+  funcionaven des de la portada. Ara les dues coses són **els cinc destins**, i
+  tots cinc són pàgines.
+- **El diccionari era el 85 % del pes.** 181 KB dels 196 del `<script>`. Cada
+  pàgina es queda **només amb les claus que demana**: 609, 298 i 159.
+
+**El que no s'ha fet, i per què:** la barra segueix sent la de la portada a
+l'arrel i la del SOS a `/SOS/`. Unificar-les visualment és un canvi de disseny
+damunt d'un canvi d'estructura, i barrejar-los faria que un error de l'un
+semblés un error de l'altre — el mateix motiu pel qual la pell va anar sola. El
+que sí que s'ha fet és el que el pla demanava de debò: **la mateixa llista de
+destins a les tres pàgines d'arrel**, generada d'una sola declaració.
+
 ### Les tres portes · el sector deixa de ser un valor (03/10/2026)
 
 **Fet.** «Públic» ajuntava un ajuntament i una associació. No tenen el mateix

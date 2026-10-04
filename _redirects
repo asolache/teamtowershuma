@@ -135,6 +135,24 @@
 /curs_vna/* /vna    301
 /curs_vna.html /vna    301
 
-/clients /#trajectoria    301
-/clients/* /#trajectoria    301
-/clients.html /#trajectoria    301
+/clients /qui-som.html#trajectoria    301
+/clients/* /qui-som.html#trajectoria    301
+/clients.html /qui-som.html#trajectoria    301
+
+# ── LES DUES PÀGINES DE L'ENDREÇA (04/10/2026) ──────────────────────────────
+# El catàleg sencer i «qui hi ha darrere» eren seccions de la portada. Les
+# adreces curtes són les que s'escriuen i les que es diuen en veu alta; el
+# fitxer porta `.html` perquè el lloc és estàtic i no hi ha servidor que ho
+# resolgui. Les dues formes han de portar al mateix lloc o la meitat dels
+# enllaços que algú escrigui a mà donaran un 404.
+/cataleg /cataleg.html    200
+/cataleg/ /cataleg.html    200
+/qui-som /qui-som.html    200
+/qui-som/ /qui-som.html    200
+# I les formes que la gent escriurà igualment.
+/catalogo /cataleg.html    301
+/catàleg /cataleg.html    301
+/quisom /qui-som.html    301
+/qui-som-nosaltres /qui-som.html    301
+
+# La secció `#trajectoria` ja no és a la portada: és a `qui-som.html`.

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- El títol i la descripció es llegeixen a Google abans que la pàgina. Han de
+         dir el que la gent escriu a la caixa de cerca —«banc de temps ajuntament»,
+         «projecte comunitari que no dura»— i no el nom intern del mètode. La versió
+         anterior encapçalava amb «Value Network Analysis»: tres paraules en anglès
+         que ningú del públic objectiu ha buscat mai. -->
+    <title>Qui som · vint anys, els clients i d'on ve el mètode | TeamTowers Humà</title>
+    <meta name="description" content="Qui hi ha darrere de TeamTowers Humà: el perfil professional, la trajectòria des del 1996, els clients amb la seva font, d'on ve el mètode i les preguntes que es fan abans de contractar.">
+    <meta name="author" content="Álvaro Solache · TeamTowers Humà">
+    <link rel="canonical" href="https://teamtowershuma.com/qui-som">
+    <meta property="og:title" content="Qui som · vint anys, els clients i d'on ve el mètode | TeamTowers Humà">
+    <meta property="og:description" content="El perfil, els vint anys, els clients amb font i d'on ve el mètode.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/qui-som">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:locale:alternate" content="es_ES">
+    <meta property="og:site_name" content="TeamTowers Humà">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Qui som · vint anys, els clients i d'on ve el mètode | TeamTowers Humà">
+    <meta name="twitter:description" content="El perfil, els vint anys, els clients amb font i d'on ve el mètode.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+            /* ── ELS NOMS VELLS D'AQUESTA PÀGINA ───────────────────────────
+               La portada fa servir `--bg-dark`, `--white` i `--accent-*` en
+               **631 llocs**. Reanomenar-los aquí seria un canvi de sis-centes
+               línies que no es veu, barrejat amb el canvi de pell, i llavors
+               cap dels dos es podria llegir a la revisió.
+
+               Per això apunten als de la pell i prou. Dos ja no volen dir el
+               que diuen —`--bg-dark` és paper i `--white` és tinta— i això és
+               exactament el motiu pel qual aquest bloc ha de desaparèixer.
+               Entrada oberta al backlog. */
+            --bg-dark:       var(--bg);
+            --bg-panel:      var(--panel);
+            --bg-elevated:   var(--card);
+            --white:         var(--text);
+            --accent-indigo: var(--indigo);
+            --accent-blue:   var(--blue);
+            --accent-purple: var(--purple);
+            --accent-green:  var(--green);
+            --accent-orange: var(--orange);
+            --indigo-dim:    rgba(79,70,229,0.10);
+            --blue-dim:      rgba(0,102,179,0.10);
+            --purple-dim:    rgba(163,24,127,0.10);
+            --green-dim:     rgba(15,122,74,0.10);
+            --orange-dim:    rgba(182,80,10,0.10);
+            --sans: 'Space Grotesk', system-ui, sans-serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body { background: var(--bg-dark); color: var(--white); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--accent-indigo); }
+        body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity:.4; }
+        .container { max-width:1160px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
+        section { position:relative; z-index:1; }
+        /* La barra és fixa: sense això, saltar a una àncora deixava el títol de la
+           secció just a sota i semblava que t'haguessis passat de llarg. */
+        section[id] { scroll-margin-top:100px; }
+
+        /* NAV */
+        nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:1.4rem 2rem; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 97%,transparent),transparent); backdrop-filter:blur(12px); border-bottom:1px solid rgba(21,19,15,0.04); }
+        .nav-logo { font-family:var(--sans); font-size:1.3rem; font-weight:700; letter-spacing:-.02em; color:var(--white); text-decoration:none; white-space:nowrap; }
+        .nav-logo span { color:var(--accent-indigo); }
+        .nav-links { display:flex; align-items:center; gap:1.9rem; list-style:none; }
+        .nav-links a { font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; font-weight:500; white-space:nowrap; }
+        /* Sense això els enllaços es partien per dins —«COM / FUNCIONA», «EL /
+           SOS»— i la barra ocupava tres files a qualsevol portàtil. Partir un
+           enllaç de dues paraules el fa semblar dos enllaços. */
+        .nav-links a:hover { color:var(--white); }
+        .nav-cta { background:transparent!important; border:1px solid var(--accent-indigo)!important; color:var(--accent-indigo)!important; padding:.5rem 1.2rem; border-radius:2px; transition:all .2s!important; }
+        .nav-cta:hover { background:var(--accent-indigo)!important; color:var(--on-accent)!important; }
+        /* Botó de menú · només existeix per sota de 900px, que és on la llista es plega.
+           Reutilitza la MATEIXA <ul class="nav-links">: una sola font d'enllaços, així
+           l'i18n i qualsevol enllaç nou hi funcionen sols. */
+        .nav-burger { display:none; background:transparent; border:1px solid rgba(21,19,15,.14); border-radius:3px; width:44px; height:44px; padding:0; cursor:pointer; align-items:center; justify-content:center; flex-direction:column; gap:5px; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+        .nav-burger:focus-visible { outline:2px solid var(--accent-indigo); outline-offset:2px; }
+        .nav-burger span { display:block; width:18px; height:1.5px; background:var(--white); transition:transform .25s, opacity .2s; }
+        .nav-burger[aria-expanded="true"] span:nth-child(1) { transform:translateY(6.5px) rotate(45deg); }
+        .nav-burger[aria-expanded="true"] span:nth-child(2) { opacity:0; }
+        .nav-burger[aria-expanded="true"] span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg); }
+        .lang-switch { display:flex; align-items:center; gap:2px; background:rgba(21,19,15,0.05); border:1px solid var(--border); border-radius:3px; padding:2px; }
+        .lang-btn { background:transparent; border:none; color:var(--muted); font-family:var(--mono); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; padding:4px 8px; border-radius:2px; transition:all .15s; }
+        .lang-btn.active { background:var(--accent-indigo); color:var(--on-accent); font-weight:700; }
+        .lang-btn:not(.active):hover { color:var(--white); }
+
+        .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
+        /* Les crides repetides enmig de la pàgina. Una franja i no una secció:
+           no té titular perquè no explica res nou, només torna a obrir la porta. */
+        .cta-band { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-panel); }
+        .cta-band p { margin:0; font-size:1rem; color:var(--light); line-height:1.6; max-width:620px; }
+        @media (max-width:768px) {
+            .cta-band .btn-primary { display:block; width:100%; box-sizing:border-box; text-align:center; }
+        }
+
+        /* SECTION HEADERS */
+        .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
+        .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.25rem; }
+        .section-header h2 { font-family:var(--sans); font-size:clamp(2.1rem,4vw,3.2rem); font-weight:700; line-height:1.15; margin-bottom:1.25rem; }
+        .section-header h2 em { font-style:normal; color:var(--accent-blue); }
+        .section-header p { font-size:1rem; color:var(--light); line-height:1.8; }
+
+        /* TOTES LES PÀGINES · el desplegable que genera SOS/tools/build-nav.js
+           de la mateixa arquitectura que el menú del SOS. `<details>` natiu: el
+           navegador ja sap fer un desplegable accessible i amb teclat. */
+        .tt-pagines { position:relative; }
+        .tt-pagines > summary { list-style:none; cursor:pointer; color:var(--muted);
+            font-size:.82rem; padding:.3rem 0; transition:color .2s; white-space:nowrap; }
+        .tt-pagines > summary::-webkit-details-marker { display:none; }
+        .tt-pagines > summary::after { content:' ▾'; font-size:.7em; opacity:.7; }
+        .tt-pagines > summary:hover, .tt-pagines[open] > summary { color:var(--white); }
+        .tp-p { position:absolute; right:0; top:calc(100% + .6rem); z-index:80; width:min(92vw,620px);
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.2rem;
+            background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px;
+            padding:.9rem; box-shadow:0 18px 50px rgba(0,0,0,.6); }
+        .tp-g { min-width:0; }
+        .tp-g-l { font-family:var(--mono); font-size:.62rem; letter-spacing:.12em; text-transform:uppercase;
+            color:var(--muted); padding:.4rem .5rem .25rem; }
+        /* Els enllaços del panell viuen dins de `.nav-links`, que posa
+           majúscules, espaiat de lletra i `white-space:nowrap` a tot `a` per
+           evitar que la barra es parteixi en tres files. Aquí això no val: són
+           frases, no etiquetes de menú, i sense desfer-ho es trepitgen entre
+           columnes. Es desfà explícitament i no amb `!important`. */
+        .nav-links .tp-p a { display:block; padding:.4rem .5rem; border-radius:7px;
+            text-decoration:none; color:inherit; white-space:normal; text-transform:none;
+            letter-spacing:normal; font-size:inherit; }
+        .nav-links .tp-p a:hover { background:var(--bg-panel); }
+        .nav-links .tp-p a b { display:block; font-size:.84rem; font-weight:600; color:var(--white); }
+        .nav-links .tp-p a span { display:block; font-size:.7rem; color:var(--muted); line-height:1.35;
+            overflow-wrap:anywhere; }
+        @media (max-width:900px) { .tp-p { position:static; width:auto; box-shadow:none; margin-top:.5rem; } }
+
+        /* D'ON VE AIXÒ · les quatre baules del relat, en ordre */
+        .relat { padding:8rem 0; background:var(--bg-panel); }
+        .relat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; }
+        .relat-card { background:var(--bg-dark); padding:2.5rem 1.9rem; position:relative; transition:background .2s; }
+        .relat-card:hover { background:var(--bg-elevated); }
+        .relat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background:linear-gradient(90deg,var(--accent-indigo),transparent); }
+        .relat-card:nth-child(2)::before { background:linear-gradient(90deg,var(--accent-blue),transparent); }
+        .relat-card:nth-child(3)::before { background:linear-gradient(90deg,var(--accent-purple),transparent); }
+        .relat-card:nth-child(4)::before { background:linear-gradient(90deg,var(--accent-green),transparent); }
+        .relat-num { font-family:var(--mono); font-size:.65rem; letter-spacing:.2em; color:var(--accent-indigo);
+            margin-bottom:1.1rem; display:block; font-weight:700; }
+        .relat-card:nth-child(2) .relat-num { color:var(--accent-blue); }
+        .relat-card:nth-child(3) .relat-num { color:var(--accent-purple); }
+        .relat-card:nth-child(4) .relat-num { color:var(--accent-green); }
+        .relat-card h3 { font-family:var(--sans); font-size:1.35rem; font-weight:700; margin-bottom:.8rem; }
+        .relat-card p { font-size:.85rem; color:var(--muted); line-height:1.75; margin:0; }
+        .pk-nota { color:var(--muted); font-size:.82rem; line-height:1.75; margin-top:2rem;
+            border-left:2px solid var(--accent-green); padding-left:1rem; }
+        .pk-nota + .pk-nota { margin-top:1rem; }
+        .mv-p.i { stroke:var(--accent-purple); stroke-width:3; stroke-dasharray:5 95; }
+        @keyframes mv-flueix { to { stroke-dashoffset:0; } }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        /* FACILITADOR */
+        .facilitador { padding:8rem 0; background:var(--bg-panel); }
+        .facilitador-inner { max-width:820px; margin:0 auto; text-align:center; }
+        .facilitador-inner h3 { font-family:var(--sans); font-size:2rem; font-weight:700; margin-bottom:.5rem; }
+        .facilitador-role { font-family:var(--mono); font-size:.72rem; letter-spacing:.15em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:2rem; }
+        .facilitador-inner p { color:var(--light); line-height:1.85; font-size:1rem; margin-bottom:1.25rem; }
+        /* La frase de posició: més gran que el cos i alineada al centre, perquè
+           és l'única cosa d'aquesta secció que es llegeix sempre. */
+        .facilitador-inner .fac-lead { font-size:1.15rem; line-height:1.7; color:var(--white); max-width:700px; margin:0 auto 2.5rem; }
+        .facilitador-inner .fac-lead strong { color:var(--accent-blue); font-weight:600; }
+        .fac-trams { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); text-align:left; }
+        .fac-tram { background:var(--bg-panel); padding:1.5rem 1.4rem; }
+        .fac-tram-k { font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:.7rem; }
+        .facilitador-inner .fac-tram p { font-size:.88rem; line-height:1.7; margin:0; }
+        /* L'enllaç del Comando quedava blau fosc sobre fons fosc i no es veia:
+           un enllaç que ningú distingeix del text és un enllaç que no existeix. */
+        .fac-tram a { color:var(--accent-blue); text-decoration:none; border-bottom:1px solid rgba(0,176,255,.4); }
+        /* ELS TRES NIVELLS. Van en tres columnes i no en graella com els
+           trams: són una escala —estratègic, tàctic, operatiu— i llegir-los
+           en ordre és la meitat del que diuen. El verd els separa dels trams,
+           que són indi: una cosa és des d'on ha fet l'ofici i l'altra, a
+           quina altura. */
+        .fac-nivells { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1px; background:var(--border); border:1px solid var(--border);
+            text-align:left; margin-top:1px; }
+        .fac-niv { background:var(--bg-panel); padding:1.3rem 1.4rem; }
+        .fac-niv-k { font-family:var(--mono); font-size:.66rem; letter-spacing:.13em;
+            text-transform:uppercase; color:var(--accent-green); margin-bottom:.6rem; }
+        .facilitador-inner .fac-niv p { font-size:.84rem; line-height:1.7; margin:0; color:var(--muted); }
+        .facilitador-inner .fac-niv p strong { color:var(--light); font-weight:600; }
+        .fac-tram a:hover { border-color:var(--accent-blue); }
+        /* La franja de comprovació. Els enllaços són el contingut, no un adorn:
+           es marquen amb subratllat perquè es vegi que se'n pot tirar. */
+        .fac-prova { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:.5rem 1.2rem; margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border); }
+        .fac-prova span { font-family:var(--mono); font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); }
+        .fac-prova a { font-size:.82rem; color:var(--light); text-decoration:none; border-bottom:1px solid rgba(99,102,241,.45); padding-bottom:1px; transition:color .2s,border-color .2s; }
+        .fac-prova a:hover { color:var(--accent-blue); border-color:var(--accent-blue); }
+        .cl-font { font-size:.78rem; color:var(--muted); line-height:1.6; margin:.7rem 0 0; max-width:640px; }
+        .cl-font strong { color:var(--light); font-weight:600; }
+        .cl-font a { color:var(--accent-blue); text-decoration:none; border-bottom:1px solid rgba(0,176,255,.35); }
+        .facilitador-inner .fac-titol { font-size:.85rem; color:var(--muted); line-height:1.7; margin:1.5rem auto 0; max-width:640px; }
+        .fac-titol strong { color:var(--light); font-weight:600; }
+        .facilitador-inner .fac-cta { font-size:.9rem; color:var(--muted); margin:1.6rem 0 0; }
+        .fac-cta a { color:var(--accent-blue); text-decoration:none; border-bottom:1px solid currentColor; }
+        .facilitador-tags { display:flex; justify-content:center; flex-wrap:wrap; gap:.6rem; margin-top:1.5rem; }
+        .facilitador-tags span { font-size:.72rem; font-family:var(--mono); padding:.4rem .9rem; border-radius:20px; background:var(--indigo-dim); color:var(--accent-indigo); border:1px solid rgba(99,102,241,0.25); }
+
+        /* CLIENTS / TRAJECTÒRIA */
+        .clients { padding:8rem 0; }
+        .cl-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-top:3rem; }
+        .cl-stat { text-align:center; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1rem; }
+        .cl-stat .n { font-family:var(--sans); font-size:2rem; font-weight:700; color:var(--accent-blue); line-height:1; }
+        .cl-stat .l { font-size:.78rem; color:var(--muted); margin-top:.5rem; line-height:1.4; }
+        .cl-groups { margin-top:3.25rem; display:flex; flex-direction:column; gap:1.75rem; }
+        .cl-group-lbl { font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-indigo); margin-bottom:.9rem; }
+        .cl-logos { display:flex; flex-wrap:wrap; gap:.7rem 1.6rem; align-items:baseline; }
+        .cl-logos span { font-family:var(--sans); font-size:1.05rem; font-weight:600; color:var(--light); letter-spacing:.01em; }
+        .cl-logos .muted { color:var(--muted); font-size:.88rem; font-weight:400; }
+        .cl-projects { display:grid; grid-template-columns:repeat(auto-fit,minmax(258px,1fr)); gap:1rem; margin-top:3.5rem; }
+        .cl-proj { background:var(--bg-panel); border:1px solid var(--border); border-radius:12px; padding:1.6rem 1.4rem; border-top:2px solid var(--accent-green); }
+        .cl-proj .pj-tag { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-green); margin-bottom:.6rem; }
+        .cl-proj h3 { font-size:1.15rem; font-weight:700; margin-bottom:.5rem; }
+        .cl-proj p { font-size:.85rem; color:var(--muted); line-height:1.6; }
+        .cl-proj a { display:inline-block; margin-top:.8rem; font-family:var(--mono); font-size:.72rem; color:var(--accent-blue); text-decoration:none; }
+        .cl-proj a:hover { color:var(--accent-indigo); }
+
+        /* CTA FINAL */
+        .cta-final { padding:10rem 0; text-align:center; position:relative; overflow:hidden; }
+        .cta-final::before { content:'SOS'; position:absolute; font-family:var(--sans); font-size:26vw; font-weight:700; color:rgba(99,102,241,0.03); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap; }
+        .cta-final h2 { font-family:var(--sans); font-size:clamp(2.3rem,5vw,4.6rem); font-weight:700; line-height:1.12; margin-bottom:1.5rem; position:relative; }
+        .cta-final h2 em { font-style:normal; color:var(--accent-blue); }
+        .cta-final .actions { position:relative; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+        /* FOOTER */
+        footer { padding:3rem 0; border-top:1px solid var(--border); }
+        .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--white); }
+        .footer-logo span { color:var(--accent-indigo); }
+        .footer-copy { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.08em; }
+        .footer-links { display:flex; flex-wrap:wrap; justify-content:center; gap:.9rem 2rem; list-style:none; }
+        .footer-links a { font-size:.78rem; color:var(--muted); text-decoration:none; transition:color .2s; }
+        .footer-links a:hover { color:var(--accent-indigo); }
+
+        /* ANIMATIONS */
+        .fade-up { opacity:1; transform:translateY(0); transition:opacity .7s ease,transform .7s ease; }
+        .fade-up.animate { opacity:0; transform:translateY(24px); }
+        .fade-up.animate.visible { opacity:1; transform:translateY(0); }
+
+        /* RESPONSIVE */
+        /* El plegable arrenca a 1340px i no a 900. Els enllaços ocupaven 1283px
+           i el nav només plegava per sota de 900: entre mig, l'últim quedava
+           tallat fora de pantalla i ningú ho havia mesurat. Amb «Com funciona»
+           el contingut passa a 1400px, així que el llindar ha de pujar. */
+        /* La barra de dalt necessita 1340px per cabre en una fila; les reixes de
+           contingut, no. Anaven juntes en un sol media query i això deixava el
+           hero en una sola columna a qualsevol portàtil de 1280px: la imatge
+           queia per sota del plec i la primera pantalla es feia el doble de
+           llarga. Són dos problemes diferents i ara tenen dos llindars. */
+        @media (max-width:1080px) {
+            .relat-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:1340px) {
+            /* La llista deixa de ser una fila i passa a ser un panell desplegable.
+               Abans es feia display:none sense cap alternativa, i des del mòbil
+               no s'arribava a cap secció ni a cap pàgina del SOS. */
+            .nav-burger { display:flex; }
+            .nav-links { display:none; position:absolute; top:100%; left:0; right:0; flex-direction:column; align-items:stretch; gap:0; padding:.5rem 0 1rem; background:color-mix(in srgb,var(--bg) 98%,transparent); backdrop-filter:blur(14px); border-bottom:1px solid rgba(21,19,15,.07); max-height:calc(100dvh - 100%); overflow-y:auto; }
+            nav.nav-open .nav-links { display:flex; }
+            .nav-links li { width:100%; }
+            .nav-links a { display:flex; align-items:center; min-height:48px; padding:0 2rem; font-size:.85rem; letter-spacing:.1em; }
+            .nav-links a:active { background:rgba(21,19,15,.05); }
+            .nav-cta { margin:.7rem 2rem 0; justify-content:center; padding:.9rem 1.2rem!important; }
+            .lang-switch { display:flex !important; }
+        }
+        @media (max-width:600px) { .relat-grid { gap:1px; } }
+
+        /* ── Objeccions ──────────────────────────────────────────────────────
+           <details> nadiu: funciona sense JavaScript, el navegador ja el fa
+           accessible amb teclat i el cercador n'indexa el contingut plegat. */
+        .faq-list { max-width:820px; margin:3rem auto 0; border-top:1px solid var(--border); }
+        .faq-item { border-bottom:1px solid var(--border); }
+        .faq-item summary { cursor:pointer; list-style:none; padding:1.35rem 2.5rem 1.35rem 0; font-size:1rem; font-weight:600; color:var(--white); position:relative; min-height:44px; display:flex; align-items:center; transition:color .2s; }
+        .faq-item summary::-webkit-details-marker { display:none; }
+        .faq-item summary::after { content:'+'; position:absolute; right:.4rem; top:50%; transform:translateY(-50%); font-family:var(--mono); font-size:1.3rem; color:var(--accent-indigo); transition:transform .2s; }
+        .faq-item[open] summary::after { content:'−'; }
+        .faq-item summary:hover { color:var(--accent-indigo); }
+        .faq-item summary:focus-visible { outline:2px solid var(--accent-indigo); outline-offset:3px; }
+        .faq-a { padding:0 2.5rem 1.5rem 0; font-size:.92rem; color:var(--light); line-height:1.75; }
+        .faq-a strong { color:var(--white); }
+        .faq-nota { max-width:820px; margin:2rem auto 0; font-family:var(--mono); font-size:.72rem; color:var(--muted); line-height:1.75; padding:1.2rem; border:1px solid var(--border); background:var(--bg-panel); }
+        .faq-nota span { color:var(--accent-orange); }
+        @media (max-width:600px) {
+            .faq-item summary { font-size:.95rem; }
+            /* El nom de la casa i el selector d'idioma quedaven enganxats: cinc
+               píxels entre «Humà» i «CA» es llegeixen com un error d'impressió. */
+            .nav-logo { font-size:1.1rem; }
+        }
+    
+        /* ── LA CAPÇALERA D'UNA PÀGINA INTERIOR ──────────────────────────────
+           Les pàgines noves de l'endreça no tenen hero: comencen per la feina.
+           El que sí que necessiten és aire a dalt —la barra és enganxada i sense
+           coixí es menja el títol— i un camí de tornada, que una pàgina interior
+           sense sortida és un cul-de-sac (veda 62). */
+        .pg-cap { padding:7rem 0 2.5rem; border-bottom:1px solid var(--border); }
+        .pg-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em;
+            text-transform:uppercase; color:var(--accent-indigo); margin:0 0 .9rem; }
+        .pg-cap h1 { font-size:clamp(2rem,4.5vw,3.1rem); line-height:1.1; margin:0 0 1.1rem; letter-spacing:-.02em; }
+        .pg-cap h1 em { font-style:normal; color:var(--accent-indigo); }
+        .pg-lead { max-width:68ch; font-size:1.05rem; line-height:1.7; color:var(--light); margin:0 0 1.4rem; }
+        .pg-lead strong { color:var(--text); font-weight:600; }
+        .pg-tornar { margin:0; font-family:var(--mono); font-size:.8rem; }
+        .pg-tornar a { color:var(--muted); text-decoration:none; border-bottom:1px dashed var(--border); }
+        .pg-tornar a:hover { color:var(--text); }
+        @media (max-width:768px) { .pg-cap { padding:5rem 0 2rem; } }
+            /* La primera secció va just després de la capçalera de la pàgina, i les
+           seccions porten el coixí que tenien quan n'hi havia divuit seguides:
+           de sobre, un forat de vuit rems entre el titular i la primera cosa. */
+        .pg-cap + section { padding-top:2.5rem; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-logo">Team<span>Towers</span> Humà</a>
+    <div style="display:flex;align-items:center;gap:1.5rem;">
+        <ul class="nav-links" id="navLinks">
+            <!-- ELS CINC DESTINS ────────────────────────────────────────────
+                 La barra portava cinc àncores a seccions de la mateixa pàgina
+                 —«Com funciona», «D'on ve», «S'aprèn fent»—, i per tant des
+                 d'una pàgina que no fos la portada no portava enlloc. Ara són
+                 **els cinc destins del lloc**, i tots cinc són pàgines: el
+                 mateix menú val a les tres pàgines d'arrel.
+                 El desplegable queda per a la resta. -->
+            <li><a href="/SOS/vna.html" data-i18n="nav.vna">Mapa de valor</a></li>
+            <li><a href="/cataleg" data-i18n="nav.cataleg">El catàleg</a></li>
+            <li><a href="/SOS/formacio.html" data-i18n="nav.formacio">Formació</a></li>
+            <li><a href="/SOS/intro.html" data-i18n="nav.sos">El SOS</a></li>
+            <li><a href="/qui-som" data-i18n="nav.quisom">Qui som</a></li>
+            <li class="nav-pag"><!--TT-PAGINES-->
+<details class="tt-pagines">
+  <summary data-i18n="nv.totes">Totes les pàgines</summary>
+  <div class="tp-p">
+      <div class="tp-g">
+        <div class="tp-g-l" data-i18n="nv.g.comenca">🧭 Comença</div>
+        <a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a>
+        <a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a>
+        <a href="/SOS/intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a>
+        <a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l" data-i18n="nv.g.eines">🛠 Eines</div>
+        <a href="/SOS/vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a>
+        <a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a>
+        <a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a>
+        <a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a>
+        <a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a>
+        <a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a>
+        <a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a>
+        <a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a>
+        <a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l" data-i18n="nv.g.apren">🎓 Aprèn</div>
+        <a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a>
+        <a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a>
+        <a href="/SOS/escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a>
+        <a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a>
+        <a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l" data-i18n="nv.g.casa">🏛 La casa</div>
+        <a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a>
+        <a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a>
+        <a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l" data-i18n="nv.g.xarxa">🏘 Xarxa</div>
+        <a href="/SOS/comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a>
+        <a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a>
+        <a href="/SOS/online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a>
+      </div>
+      <div class="tp-g">
+        <div class="tp-g-l" data-i18n="nv.g.eina">🖥 L'eina</div>
+        <a href="/SOS/"><b data-i18n="nv.t.sos">El SOS</b><span data-i18n="nv.d.sos">L'aplicació sencera, al navegador</span></a>
+      </div>
+  </div>
+</details>
+<!--/TT-PAGINES--></li>
+            <li><a href="/SOS/" target="_blank" rel="noopener" class="nav-cta" data-i18n="nav.demo">Viu-ho →</a></li>
+        </ul>
+        <div class="lang-switch" style="flex-shrink:0;">
+            <button class="lang-btn active" data-lang="ca">CA</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+        </div>
+        <button class="nav-burger" id="navBurger" aria-label="Obre el menú" aria-expanded="false" aria-controls="navLinks">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- LA CAPÇALERA DE LA PÀGINA ─────────────────────────────────────────────
+     «Qui hi ha darrere» ocupava tres seccions enmig del recorregut de compra,
+     que és on menys serveix i on més talla. Aquí té la pàgina sencera, i és on
+     viu tot el que es pot comprovar: el perfil, els vint anys i els clients
+     amb la seva font. -->
+<section class="pg-cap">
+    <div class="container">
+        <p class="pg-eyebrow" data-i18n="qs.eyebrow">Qui som</p>
+        <h1 data-i18n-html="qs.h1">Qui hi ha darrere, <em>i què es pot comprovar</em></h1>
+        <p class="pg-lead" data-i18n-html="qs.lead">Una persona, vint anys de quilòmetres i una llista de clients que es pot contrastar un per un. Aquí hi ha també <strong>d'on ve el mètode</strong> i les preguntes que es fan abans de contractar.</p>
+        <p class="pg-tornar"><a href="/" data-i18n="pg.tornar">← Tornar a la portada</a></p>
+    </div>
+</section>
+
+<!-- SOBRE EL FACILITADOR -->
+<section class="facilitador" id="facilitador">
+    <div class="container">
+        <div class="facilitador-inner fade-up">
+            <!-- L'eyebrow deia «Qui hi ha darrere» i el títol de la pàgina ja ho
+                 diu: quan una secció passa a ser una pàgina, la seva capçalera
+                 i la de la pàgina són la mateixa cosa. -->
+            <h3>Álvaro Solache</h3>
+            <div class="facilitador-role" data-i18n="fac.role">Psicòleg social · Consultor estratègic sistèmic · Penedès</div>
+            <!-- La frase de posició, i no la primera línia del currículum. Qui
+                 llegeix aquesta secció no ve a saber on ha treballat: ve a
+                 decidir si se'n pot refiar per al seu problema. La frase ha de
+                 respondre això i la resta ha de ser comprovable. -->
+            <p class="fac-lead" data-i18n-html="fac.lead">No arriba de fora a explicar-vos com organitzar-vos. <strong>S'ha assegut al vostre costat de la taula</strong>: dirigint persones dins d'una empresa, mapant fluxos de valor com a consultor i muntant projectes comunitaris que encara funcionen.</p>
+            <!-- Quatre trams i no quatre feines: el mateix ofici mirat des de
+                 quatre llocs. En graella i no en prosa perquè qui decideix
+                 escaneja, i quatre paràgrafs seguits no es llegeixen mai. -->
+            <div class="fac-trams">
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t1.k">Direcció de persones · 1996–2005</div>
+                    <p data-i18n-html="fac.t1.d">Nou anys dins de direccions de persones abans de vendre'n res: <strong>Manpower</strong>, <strong>Myrurgia</strong>, <strong>InfoJobs</strong>, <strong>Foment del Treball</strong> —on va portar el grup de benchmarking del Fòrum de RRHH— i <strong>GEC–UOC</strong>.</p>
+                </div>
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t2.k">Consultoria sistèmica</div>
+                    <p data-i18n-html="fac.t2.d"><strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. <strong>Director de projectes de consultoria a Pantheon Work des del 2019</strong>, on va cocrear la metodologia: venda, planificació, producció i formació. <strong>A IKEA, dues vegades</strong> —la mateixa casa que ja havia fet Fent Pinya—, amb el pla estratègic organitzatiu i de RRHH: el mètode que ven aquesta pàgina no és una idea, és una entrega repetida.</p>
+                </div>
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t3.k">Emprenedoria social</div>
+                    <p data-i18n-html="fac.t3.d">Cofundador i product owner de <strong>comunitats.org</strong> (2010–2015), xarxa d'intercanvi de coneixement per temps, amb la UOC, La Salle, la Universitat de Lleó i l'Agència de Desenvolupament Econòmic de Castella i Lleó. I project manager del programari de les <strong>Biblioteques de les Coses</strong> (Rescoio, 2019–2020) — la mateixa dinàmica que avui és una eina del SOS.</p>
+                </div>
+                <div class="fac-tram">
+                    <div class="fac-tram-k" data-i18n="fac.t4.k">TeamTowers i Fent Pinya · des del 2005</div>
+                    <p data-i18n-html="fac.t4.d">CEO i fundador. El taller <strong>el va crear el seu soci Fèlix Miret</strong> a Vilafranca; junts l'han portat a més de <strong>150 organitzacions</strong> i <strong>60.000 participants</strong>. Hi ha format <strong>equips directius</strong> d'IKEA, Novartis, Vodafone i Telefónica. Ha fet classe a <strong>EADA</strong>, ha estat team coach i professor a <strong>Mondragon Team Academy</strong> (2016–2017), i professor de <strong>Web 3.0 i pensament sistèmic</strong> al SAE Institute (2021–2023) i d'innovació digital a Complot (2023–2024). I ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, per als 27 pobles de l'Alt Penedès i els 6 del Garraf.</p>
+                </div>
+            </div>
+            <!-- ELS TRES NIVELLS. La secció llistava quatre trams —quatre
+                 llocs des d'on ha fet el mateix ofici— i no deia **a quina
+                 altura** treballa a cada un. Qui compra consultoria pregunta
+                 justament això: si qui ve sap dissenyar el sistema, convertir-lo
+                 en projectes i fer-ho a la sala, o només una de les tres.
+
+                 Cada nivell porta on consta, i tot surt del CV del 03/10/2026,
+                 recollit a `knowledge/negoci/trajectoria.md` §1 quater. Sense
+                 l'exemple al costat, això seria una llista d'adjectius. -->
+            <div class="fac-nivells">
+                <div class="fac-niv">
+                    <div class="fac-niv-k" data-i18n="fac.n1.k">Estratègic</div>
+                    <p data-i18n-html="fac.n1.d">Dissenyar el sistema abans que hi hagi feina. <strong>Director estratègic de RRHH a GEC–UOC</strong> (2002–2005), amb el pla de la Universitat Oberta implantat, i el <strong>pla estratègic organitzatiu i de RRHH d'IKEA</strong>.</p>
+                </div>
+                <div class="fac-niv">
+                    <div class="fac-niv-k" data-i18n="fac.n2.k">Tàctic</div>
+                    <p data-i18n-html="fac.n2.d">Convertir-ho en projectes que algú pugui portar. Direcció de projectes de consultoria, <strong>product owner</strong> i <strong>project manager de programari</strong>, i currículums formatius d'innovació digital i blockchain.</p>
+                </div>
+                <div class="fac-niv">
+                    <div class="fac-niv-k" data-i18n="fac.n3.k">Operatiu</div>
+                    <p data-i18n-html="fac.n3.d">Fer-ho a la sala i a peu de planta. Selecció per a la <strong>planta d'HP</strong>, programes formatius a Myrurgia, team coach a Mondragon i <strong>la facilitació del taller</strong>, que segueix fent ell.</p>
+                </div>
+            </div>
+            <!-- La titulació. La línia de sota el nom deia «psicòleg social»
+                 i la pàgina no deia mai d'on: una professió declarada sense
+                 títol ni casa és una etiqueta. I el postgrau del 96 en eines
+                 telemàtiques per a la cooperació explica per què tot això no
+                 és una reconversió recent. -->
+            <p class="fac-titol" data-i18n-html="fac.titol"><strong>Llicenciat en Psicologia Social</strong> per la Universitat de Barcelona (1996), amb postgraus en <strong>eines telemàtiques per a la cooperació</strong> (1996) i en <strong>gestió de la formació a les organitzacions</strong> (1999).</p>
+            <div class="facilitador-tags">
+                <span data-i18n="fac.tag1">Psicologia social i comunitària</span>
+                <span data-i18n="fac.tag2">Value Network Analysis</span>
+                <span data-i18n="fac.tag3">Direcció de persones</span>
+                <span data-i18n="fac.tag4">Facilitació Fent Pinya</span>
+                <span data-i18n="fac.tag5">Web3 i contractes intel·ligents</span>
+            </div>
+            <!-- El que faltava de debò: una manera de comprovar-ho. Una secció
+                 «qui hi ha darrere» sense cap enllaç a fora demana confiança i
+                 no en dona cap prova, i la portada no enllaçava enlloc la seva
+                 pàgina professional. L'article d'*El Periódico* és prova social
+                 amb data i mitjà, que val més que un testimoni sense nom. -->
+            <div class="fac-prova">
+                <span data-i18n="fac.prova.k">Comprova-ho</span>
+                <a href="https://alvarosolache.netlify.app/" target="_blank" rel="noopener" data-i18n="fac.prova.web">Pàgina professional</a>
+                <a href="https://linkedin.com/in/alvarosolache" target="_blank" rel="noopener">LinkedIn</a>
+                <a href="https://www.elperiodico.com/es/sociedad/20070121/castells-integradores-5420703" target="_blank" rel="noopener" data-i18n="fac.prova.premsa">«Castells integradors» · El Periódico, 2007</a>
+            </div>
+            <p class="fac-cta" data-i18n-html="fac.cta">Si el que has llegit encaixa amb el que tens sobre la taula, <a id="facMail" class="js-mail" href="#">escriu-li directament</a>. Contesta ell.</p>
+        </div>
+    </div>
+</section>
+<!-- EL CAS TREBALLAT ────────────────────────────────────────────────────────
+     Generat per `SOS/tools/build-mapavalor.js`, que declara el celler un sol
+     cop i l'escriu aquí i a `/SOS/vna.html`. Dues còpies del mateix mapa
+     divergirien a la primera correcció i ningú ho veuria: un mapa dibuixat no
+     peta mai.
+
+     El cas no porta cap xifra d'euros, i és una guarda i no un descuit: no
+     tenim els números d'aquell celler i un marge inventat per il·lustrar-ne un
+     de real és exactament el que la guia de marca prohibeix. El que el
+     generador sí que compta són les fletxes, que les té. -->
+<section class="relat" id="relat">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="relat.eyebrow">D'on ve això</div>
+            <h2 data-i18n-html="relat.h2">Vint anys aixecant castells, <em>i el mateix problema a dins</em></h2>
+            <p data-i18n="relat.intro">Un castell no l'aguanta qui hi puja. Una organització tampoc. El que va començar sent una experiència per a equips d'empresa va acabar sent un mètode per mirar qui sosté què —i una eina per no perdre-ho de vista.</p>
+        </div>
+        <div class="relat-grid fade-up">
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n1">01 · La persona</span>
+                <h3 data-i18n="relat.t1">Álvaro Solache</h3>
+                <p data-i18n="relat.p1">Psicòleg social. Va ser responsable de RRHH d'InfoJobs, va dirigir la formació a la UOC–GEC i va dinamitzar el grup de benchmarking de direccions de persones al Fòrum de RRHH de Foment del Treball. Des del Penedès, i sempre la mateixa feina: que un grup de gent que no s'ha triat aguanti el pes junt.</p>
+            </div>
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n2">02 · L'ofici</span>
+                <h3 data-i18n="relat.t2">Psicologia de grups i desenvolupament de comunitats</h3>
+                <p data-i18n="relat.p2">Els grups no es trenquen per falta de mètode: es trenquen per falta de gent, per conflictes que ningú tracta i per no saber com sostenir-se. Passa igual en un projecte de barri i en un departament, i les dues coses s'estudien i es treballen.</p>
+            </div>
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n3">03 · El mètode</span>
+                <h3 data-i18n="relat.t3">TeamTowers</h3>
+                <p data-i18n="relat.p3">Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee, i va començar amb equips d'empresa.</p>
+            </div>
+            <div class="relat-card">
+                <span class="relat-num" data-i18n="relat.n4">04 · Al territori</span>
+                <h3 data-i18n="relat.t4">TeamTowers Humà</h3>
+                <p data-i18n="relat.p4">El mateix mètode portat a l'organització i al territori, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s'ha après.</p>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- TRAJECTÒRIA I CONFIANÇA -->
+<section class="clients" id="trajectoria">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="cl.eyebrow">Trajectòria i confiança</div>
+            <h2 data-i18n-html="cl.h2">20 anys teixint <em>equips i comunitats</em></h2>
+            <p data-i18n="cl.intro">Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals. Les xifres de sota són del catàleg comercial de TeamTowers 2026, i cadascuna diu d'on surt.</p>
+        </div>
+        <div class="cl-stats fade-up">
+            <div class="cl-stat"><div class="n">2005</div><div class="l" data-i18n="cl.s1">TeamTowers · experiències castelleres des de</div></div>
+            <div class="cl-stat"><div class="n">60.000+</div><div class="l" data-i18n="cl.s2">Persones formades en col·laboració i confiança</div></div>
+            <div class="cl-stat"><div class="n">150+</div><div class="l" data-i18n="cl.s3">Empreses i organitzacions acompanyades</div></div>
+            <div class="cl-stat"><div class="n">2009</div><div class="l" data-i18n="cl.s4">Primer banc de temps de la ciutat de León</div></div>
+        </div>
+        <!--TT-CLIENTS-->
+        <!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
+        <div class="cl-groups fade-up">
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.empreses">Empreses</div>
+                <div class="cl-logos"><span>IKEA</span><span>Telefónica</span><span>BBVA</span><span>Novartis</span><span>Porsche</span><span>la Caixa</span><span>Vodafone</span><span>Orange</span><span>Mercedes</span><span>Zurich</span><span>UPS</span><span>InfoJobs</span><span>John Deere</span><span>Softonic</span><span class="muted" data-i18n="cl.emp">i +150 empreses en formació i cohesió d'equips</span></div>
+                <p class="cl-font" data-i18n-html="cl.font">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió. <strong>A IKEA, a més, dos mapes de valor: el de la direcció i el de l'àrea de serveis.</strong></p>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.universitats">Universitats</div>
+                <div class="cl-logos"><span>UB</span><span>UAB</span><span>La Salle</span><span>UOC</span><span>UPC</span><span>Universidad de León</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.escoles">Escoles de negoci</div>
+                <div class="cl-logos"><span>ESADE</span><span>IESE</span><span>EADA</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.agencies">Agències i partners</div>
+                <div class="cl-logos"><span>Laeski</span><span>We Barcelona</span><span>Kivicom</span><span>Box de Ideas</span><span>Voxel</span><span>Unit Elements</span></div>
+            </div>
+            <div>
+                <div class="cl-group-lbl" data-i18n="cl.g.public">Sector públic</div>
+                <div class="cl-logos"><span>Diputació de Barcelona</span><span>Ajuntament de Vilafranca</span><span>Junta de Castilla y León</span></div>
+            </div>
+        </div>
+<!--/TT-CLIENTS-->
+        <div class="cl-projects fade-up">
+            <div class="cl-proj">
+                <div class="pj-tag" data-i18n="cl.p1.tag">Software comunitari</div>
+                <h3>Comunitats.org</h3>
+                <p data-i18n="cl.p1.d">Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.</p>
+                <a href="https://comunitats.org" target="_blank" rel="noopener">comunitats.org ↗</a>
+            </div>
+            <div class="cl-proj">
+                <div class="pj-tag" data-i18n="cl.p2.tag">Projecte pioner · 2009</div>
+                <h3 data-i18n="cl.p2.n">Banc de Temps de León</h3>
+                <p data-i18n="cl.p2.d">El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.</p>
+            </div>
+            <div class="cl-proj">
+                <div class="pj-tag" data-i18n="cl.p3.tag">Desenvolupament comunitari</div>
+                <h3 data-i18n="cl.p3.n">Fent Pinya &amp; VNA</h3>
+                <p data-i18n="cl.p3.d">Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d'ajuntaments, cooperatives i ateneus del territori.</p>
+            </div>
+        </div>
+        <!-- Els vint anys són certs i són un actiu. El que no són és la prova
+             del producte comunitari, que és més nou i té menys quilòmetres. Fer
+             passar l'una per l'altra seria la trampa més fàcil d'aquesta
+             pàgina, i per això el catàleg marca cada paquet amb el seu punt. -->
+        <p class="pk-nota" data-i18n-html="cl.honest"><strong>D'on ve cada prova.</strong> Les xifres de dalt són de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> i del taller Fent Pinya: 60.000 persones i 150 organitzacions des del 2005, i una millora del 30-50 % en cohesió d'equip <em>segons les enquestes internes posteriors a l'esdeveniment</em> — no és un estudi extern i es diu. La línia comunitària és més nova i té menys quilòmetres: per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.</p>
+    </div>
+</section>
+<section class="objeccions" id="objeccions" style="border-top:1px solid var(--border);background:var(--bg-panel);">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="faq.eyebrow">Abans de trucar</div>
+            <h2 data-i18n-html="faq.h2">El que ens pregunten <em>sempre</em></h2>
+            <p data-i18n="faq.intro">Les vuit de veritat —les del sector públic i les de l'empresa—, amb la resposta que donaríem a la primera reunió.</p>
+        </div>
+        <div class="faq-list fade-up">
+            <details class="faq-item">
+                <summary data-i18n="faq.q1">Quant costa?</summary>
+                <div class="faq-a" data-i18n-html="faq.a1"><strong>L'eina, res: és gratuïta i te la pots endur.</strong> El que es paga és l'acompanyament, i en la majoria de casos no surt del pressupost municipal sinó de fons que ja existeixen —el catàleg de la Diputació de Barcelona, els Ateneus Cooperatius, els fons Leader de desenvolupament rural o els Next Generation. Al diagnòstic de 3 minuts et diem quina via encaixa amb el teu cas i què cal per justificar-la. Si cap no encaixa, també t'ho direm.</div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q2">Quanta feina li caurà al personal tècnic?</summary>
+                <div class="faq-a" data-i18n-html="faq.a2">Dues sessions per fer el mapa i <strong>una reunió al mes</strong> mentre allò camina. Res més. Si al final la feina de sostenir el projecte acaba sobre la taula del tècnic de participació, hem fallat: precisament veníem a evitar-ho.</div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q3">On queden les dades de la gent?</summary>
+                <div class="faq-a" data-i18n-html="faq.a3">Al navegador de qui les escriu. <strong>L'eina no té cap servidor central nostre i no demana crear cap compte</strong>, així que no hi ha cap base de dades de veïns a casa d'un tercer. Quan un projecte vol ensenyar què fa cap enfora, el que surt és agregat i sense noms —«al poble hi ha 14 ofertes de cuina», mai qui les fa.</div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q4">Quedem lligats a vosaltres?</summary>
+                <div class="faq-a" data-i18n-html="faq.a4">No, i està fet expressament perquè no pugueu. El programa és obert i funciona sense nosaltres, les dades s'exporten en un fitxer que és vostre, i el pas 4 del mètode és formar gent del poble perquè ho porti. <strong>Si al cap d'un any encara ens necessiteu, la feina ha sortit malament.</strong></div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q6">Com se signa això, administrativament?</summary>
+                <div class="faq-a" data-i18n-html="faq.a6">Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.</div>
+            </details>
+            <!-- Les dues del costat privat. Fins ara les sis objeccions eren
+                 totes municipals —pressupost municipal, tècnic de participació,
+                 dades del veïnat, contractació menor— i una direcció de
+                 persones no en trobava cap que fos la seva. La segona no és
+                 còmoda i per això hi és: un mapa honest ensenya qui sosté què,
+                 i qui ho llegeix té gent a càrrec. -->
+            <details class="faq-item">
+                <summary data-i18n="faq.q7">Som una empresa. Com es contracta i d'on surt el pressupost?</summary>
+                <div class="faq-a" data-i18n-html="faq.a7">Directament, i sense el sostre dels 5.000 € que ens posem al sector públic: allà existeix per encaixar en una contractació menor, i a una empresa no pinta res. El pressupost surt de <a href="/cataleg#cost">la mateixa suma que podeu refer</a> —hores dels fluxos del mapa, cada rol al preu del seu nivell, despeses a preu de factura—, i sovint <strong>no surt de formació</strong> sinó del pressupost de l'àrea que té el problema. Si teniu crèdit de formació bonificada, part hi encaixa i us direm quina part.</div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q8">Un mapa així ensenya qui sosté què. I si això perjudica algú?</summary>
+                <div class="faq-a" data-i18n-html="faq.a8">És la pregunta bona, i la resposta ha de ser abans de començar. <strong>El mapa no és una avaluació de rendiment i no s'entrega com si ho fos:</strong> el que en surt són fluxos i càrregues —«aquest node depèn d'una sola persona»—, no rànquings de gent. Ho acordem per escrit a la proposta: qui veu què, què és agregat i què no surt de la sala. Si el que es busca és material per decidir acomiadaments, no és la nostra feina i ho direm a la primera reunió.</div>
+            </details>
+            <details class="faq-item">
+                <summary data-i18n="faq.q5">Ja tenim una app de participació. Això no és el mateix?</summary>
+                <div class="faq-a" data-i18n-html="faq.a5">No, i sovint són compatibles. Les eines de participació serveixen per <strong>recollir</strong>: propostes, vots, pressupostos participatius. Això altre serveix per <strong>sostenir</strong> el dia a dia d'un projecte que ja s'ha decidit —qui fa què, qui hi ha posat hores, qui entra ara. Si el que ja teniu ho fa, t'ho direm i no et vendrem res.</div>
+            </details>
+        </div>
+        <p class="faq-nota fade-up" data-i18n-html="faq.nota"><span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn de vosaltres, no de l'eina—, ni fem enquestes massives. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn del poble, no de l'eina—, ni fem enquestes massives al veïnat. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</p>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <div class="footer-inner">
+            <div class="footer-logo">Team<span>Towers</span> Humà</div>
+            <ul class="footer-links">
+                <!-- EL PEU, I ELS CINC DESTINS ──────────────────────────────
+                     Portava vuit àncores a seccions de la portada, i l'endreça
+                     en va deixar cinc apuntant a seccions que ja no hi són:
+                     `#fentpinya`, `#aprenentatge`, `#beneficis`… Un enllaç
+                     mort al peu no peta i no es nota —el navegador es queda on
+                     és—, i qui hi clica es pensa que la pàgina no li respon.
+                     Ara són **els cinc destins**, i tots són pàgines. -->
+                <li><a href="/SOS/vna.html" data-i18n="peu.vna">Mapa de valor</a></li>
+                <li><a href="/cataleg" data-i18n="peu.cataleg">El catàleg</a></li>
+                <li><a href="/SOS/formacio.html" data-i18n="peu.formacio">Formació</a></li>
+                <li><a href="/SOS/intro.html" data-i18n="peu.sos">El SOS</a></li>
+                <li><a href="/qui-som" data-i18n="peu.quisom">Qui som</a></li>
+            </ul>
+            <p class="footer-copy">© 2026 TeamTowers Humà · Força · Equilibri · Valor · Seny</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+var T = {
+ca: {
+  'nav.vna':'Mapa de valor',
+  'nav.cataleg':'El catàleg',
+  'nav.formacio':'Formació',
+  'nav.sos':'El SOS',
+  'nav.quisom':'Qui som',
+  'peu.vna':'Mapa de valor',
+  'peu.cataleg':'El catàleg',
+  'peu.formacio':'Formació',
+  'peu.sos':'El SOS',
+  'peu.quisom':'Qui som',
+  'qs.eyebrow':'Qui som',
+  'qs.h1':'Qui hi ha darrere, <em>i què es pot comprovar</em>',
+  'qs.lead':'Una persona, vint anys de quilòmetres i una llista de clients que es pot contrastar un per un. Aquí hi ha també <strong>d\'on ve el mètode</strong> i les preguntes que es fan abans de contractar.',
+  'pg.tornar':'← Tornar a la portada',
+
+/*TT-NAV-I18N-CA*/
+  'nv.g.comenca':'🧭 Comença',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.pressupost':'Demana pressupost',
+  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De què va tot això',
+  'nv.t.uneix-te':'Uneix-t\'hi',
+  'nv.d.uneix-te':'El que ja fas al barri, comptat',
+  'nv.g.eines':'🛠 Eines',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Rols i intercanvis d\'un projecte',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grup de consum i compra col·lectiva',
+  'nv.t.energia':'L\'Energia',
+  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
+  'nv.t.habitatge':'L\'Habitatge',
+  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
+  'nv.t.banc-temps':'El Banc de Temps',
+  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
+  'nv.t.biblioteca':'La Biblioteca de les Coses',
+  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El poble sencer i les nou professions',
+  'nv.t.joc':'El joc',
+  'nv.d.joc':'La plaça, a ritme',
+  'nv.g.apren':'🎓 Aprèn',
+  'nv.t.formacio':'Formació',
+  'nv.d.formacio':'16 mòduls, de N0 a N3',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.t.escola':'Escoles',
+  'nv.d.escola':'El SOS a mida d\'aula',
+  'nv.t.vedes':'Les vedes',
+  'nv.d.vedes':'Les regles, amb el motiu al costat',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-cataleg':'El catàleg',
+  'nv.d.arrel-cataleg':'Paquets tancats, amb el preu escrit',
+  'nv.t.arrel-qui-som':'Qui som',
+  'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.g.xarxa':'🏘 Xarxa',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La pel·lícula que farem 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estat líquid',
+  'nv.t.online':'Directori',
+  'nv.d.online':'Qui hi ha, per territori',
+  'nv.totes':'Totes les pàgines',
+  'nv.g.eina':'🖥 L\'eina',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'L\'aplicació sencera, al navegador',
+/*/TT-NAV-I18N-CA*/
+
+
+
+
+  'faq.q6':'Com se signa això, administrativament?',
+  'faq.a6':'Cada paquet del catàleg porta el preu tancat i tots els que van a administració pública queden <strong>per sota dels 5.000 €</strong>. Amb la proposta i el pressupost a la mà, la contractació menor ho resol sense obrir un expedient llarg. Si el que necessiteu és més gran, es parteix en fases o es planteja com un contracte de serveis: us diem quina via us convé abans de fer-vos perdre el temps.',
+  'faq.q7':'Som una empresa. Com es contracta i d\'on surt el pressupost?',
+  'faq.a7':'Directament, i sense el sostre dels 5.000 € que ens posem al sector públic: allà existeix per encaixar en una contractació menor, i a una empresa no pinta res. El pressupost surt de <a href="/cataleg#cost">la mateixa suma que podeu refer</a> —hores dels fluxos del mapa, cada rol al preu del seu nivell, despeses a preu de factura—, i sovint <strong>no surt de formació</strong> sinó del pressupost de l\'àrea que té el problema. Si teniu crèdit de formació bonificada, part hi encaixa i us direm quina part.',
+  'faq.q8':'Un mapa així ensenya qui sosté què. I si això perjudica algú?',
+  'faq.a8':'És la pregunta bona, i la resposta ha de ser abans de començar. <strong>El mapa no és una avaluació de rendiment i no s\'entrega com si ho fos:</strong> el que en surt són fluxos i càrregues —«aquest node depèn d\'una sola persona»—, no rànquings de gent. Ho acordem per escrit a la proposta: qui veu què, què és agregat i què no surt de la sala. Si el que es busca és material per decidir acomiadaments, no és la nostra feina i ho direm a la primera reunió.',
+  'cl.honest':'<strong>D\'on ve cada prova.</strong> Les xifres de dalt són de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> i del taller Fent Pinya: 60.000 persones i 150 organitzacions des del 2005, i una millora del 30-50 % en cohesió d\'equip <em>segons les enquestes internes posteriors a l\'esdeveniment</em> — no és un estudi extern i es diu. La línia comunitària és més nova i té menys quilòmetres: per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.',
+  'relat.eyebrow':'D\'on ve això',
+  'relat.h2':'Vint anys aixecant castells, <em>i el mateix problema a dins</em>',
+  'relat.intro':'Un castell no l\'aguanta qui hi puja. Una organització tampoc. El que va començar sent una experiència per a equips d\'empresa va acabar sent un mètode per mirar qui sosté què —i una eina per no perdre-ho de vista.',
+  'relat.n1':'01 · La persona',
+  'relat.t1':'Álvaro Solache',
+  'relat.p1':'Psicòleg social. Va ser responsable de RRHH d\'InfoJobs, va dirigir la formació a la UOC–GEC i va dinamitzar el grup de benchmarking de direccions de persones al Fòrum de RRHH de Foment del Treball. Des del Penedès, i sempre la mateixa feina: que un grup de gent que no s\'ha triat aguanti el pes junt.',
+  'relat.n2':'02 · L\'ofici',
+  'relat.t2':'Psicologia de grups i desenvolupament de comunitats',
+  'relat.p2':'Els grups no es trenquen per falta de mètode: es trenquen per falta de gent, per conflictes que ningú tracta i per no saber com sostenir-se. Passa igual en un projecte de barri i en un departament, i les dues coses s\'estudien i es treballen.',
+  'relat.n3':'03 · El mètode',
+  'relat.t3':'TeamTowers',
+  'relat.p3':'Els castells com a experiència, i el mapa de xarxa de valor com a diagnòstic: dibuixar qui dona què a qui, incloent-hi els favors, la informació i la confiança que no apunta ningú. És el mètode VNA de Verna Allee, i va començar amb equips d\'empresa.',
+  'relat.n4':'04 · Al territori',
+  'relat.t4':'TeamTowers Humà',
+  'relat.p4':'El mateix mètode portat a l\'organització i al territori, amb el catàleg sencer: consultoria, formació, i producció i dinamització. I una eina gratuïta perquè quan marxem no marxi amb nosaltres el que s\'ha après.','nav.demo':'Viu-ho →',
+  /*TT-CL-I18N-CA*/
+  'cl.font':'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dos mapes de valor: el de la direcció i el de l\'àrea de serveis.</strong>',
+  'cl.emp':'i +150 empreses en formació i cohesió d\'equips',
+  'cl.g.empreses':'Empreses','cl.g.universitats':'Universitats','cl.g.escoles':'Escoles de negoci','cl.g.agencies':'Agències i partners','cl.g.public':'Sector públic',
+/*/TT-CL-I18N-CA*/
+  'fac.role':'Psicòleg social · Consultor estratègic sistèmic · Penedès',
+  'fac.lead':'No arriba de fora a explicar-vos com organitzar-vos. <strong>S\'ha assegut al vostre costat de la taula</strong>: dirigint persones dins d\'una empresa, mapant fluxos de valor com a consultor i muntant projectes comunitaris que encara funcionen.',
+  'fac.t1.k':'Direcció de persones · 1996–2005',
+  'fac.t1.d':'Nou anys dins de direccions de persones abans de vendre\'n res: <strong>Manpower</strong>, <strong>Myrurgia</strong>, <strong>InfoJobs</strong>, <strong>Foment del Treball</strong> —on va portar el grup de benchmarking del Fòrum de RRHH— i <strong>GEC–UOC</strong>.',
+  'fac.t2.k':'Consultoria sistèmica',
+  'fac.t2.d':'<strong>Value Network Analysis</strong>, el mètode de Verna Allee per fer visibles els fluxos de valor tangible i intangible. <strong>Director de projectes de consultoria a Pantheon Work des del 2019</strong>, on va cocrear la metodologia: venda, planificació, producció i formació. <strong>A IKEA, dues vegades</strong> —la mateixa casa que ja havia fet Fent Pinya—, amb el pla estratègic organitzatiu i de RRHH: el mètode que ven aquesta pàgina no és una idea, és una entrega repetida.',
+  'fac.t3.k':'Emprenedoria social',
+  'fac.t3.d':'Cofundador i product owner de <strong>comunitats.org</strong> (2010–2015), xarxa d\'intercanvi de coneixement per temps, amb la UOC, La Salle, la Universitat de Lleó i l\'Agència de Desenvolupament Econòmic de Castella i Lleó. I project manager del programari de les <strong>Biblioteques de les Coses</strong> (Rescoio, 2019–2020) — la mateixa dinàmica que avui és una eina del SOS.',
+  'fac.t4.k':'TeamTowers i Fent Pinya · des del 2005',
+  'fac.t4.d':'CEO i fundador. El taller <strong>el va crear el seu soci Fèlix Miret</strong> a Vilafranca; junts l\'han portat a més de <strong>150 organitzacions</strong> i <strong>60.000 participants</strong>. Hi ha format <strong>equips directius</strong> d\'IKEA, Novartis, Vodafone i Telefónica. Ha fet classe a <strong>EADA</strong>, ha estat team coach i professor a <strong>Mondragon Team Academy</strong> (2016–2017), i professor de <strong>Web 3.0 i pensament sistèmic</strong> al SAE Institute (2021–2023) i d\'innovació digital a Complot (2023–2024). I ha creat el <a href="/SOS/comando.html">Comando Molekulon</a>, per als 27 pobles de l\'Alt Penedès i els 6 del Garraf.',
+  'fac.n1.k':'Estratègic',
+  'fac.n1.d':'Dissenyar el sistema abans que hi hagi feina. <strong>Director estratègic de RRHH a GEC–UOC</strong> (2002–2005), amb el pla de la Universitat Oberta implantat, i el <strong>pla estratègic organitzatiu i de RRHH d\'IKEA</strong>.',
+  'fac.n2.k':'Tàctic',
+  'fac.n2.d':'Convertir-ho en projectes que algú pugui portar. Direcció de projectes de consultoria, <strong>product owner</strong> i <strong>project manager de programari</strong>, i currículums formatius d\'innovació digital i blockchain.',
+  'fac.n3.k':'Operatiu',
+  'fac.n3.d':'Fer-ho a la sala i a peu de planta. Selecció per a la <strong>planta d\'HP</strong>, programes formatius a Myrurgia, team coach a Mondragon i <strong>la facilitació del taller</strong>, que segueix fent ell.',
+  'fac.titol':'<strong>Llicenciat en Psicologia Social</strong> per la Universitat de Barcelona (1996), amb postgraus en <strong>eines telemàtiques per a la cooperació</strong> (1996) i en <strong>gestió de la formació a les organitzacions</strong> (1999).',
+  'fac.prova.k':'Comprova-ho','fac.prova.web':'Pàgina professional','fac.prova.premsa':'«Castells integradors» · El Periódico, 2007',
+  'fac.cta':'Si el que has llegit encaixa amb el que tens sobre la taula, <a id="facMail" class="js-mail" href="#">escriu-li directament</a>. Contesta ell.',
+  'fac.tag1':'Psicologia social i comunitària','fac.tag2':'Value Network Analysis','fac.tag3':'Direcció de persones','fac.tag4':'Facilitació Fent Pinya','fac.tag5':'Web3 i contractes intel·ligents',
+  'cl.eyebrow':'Trajectòria i confiança',
+  'cl.h2':'20 anys teixint <em>equips i comunitats</em>',
+  'cl.intro':'Del món corporatiu a la innovació social: una metodologia provada amb universitats, administracions públiques, empreses i projectes comunitaris reals. Les xifres de sota són del catàleg comercial de TeamTowers 2026, i cadascuna diu d\'on surt.',
+  'cl.s1':'TeamTowers · experiències castelleres des de','cl.s2':'Persones que han passat pel taller Fent Pinya','cl.s3':'Empreses i organitzacions acompanyades','cl.s4':'Primer banc de temps de la ciutat de León',
+  'cl.p1.tag':'Software comunitari','cl.p1.d':'Banc de temps i xarxa de coneixement. Una plataforma que empreses i organitzacions lloguen per crear la seva pròpia economia del temps i dinamitzar la seva comunitat.',
+  'cl.p2.tag':'Projecte pioner · 2009','cl.p2.n':'Banc de Temps de León','cl.p2.d':'El primer banc de temps de la ciutat: intercanvi de serveis mesurat en hores, sense diners, teixint confiança i suport mutu entre veïns.',
+  'cl.p3.tag':'Desenvolupament comunitari','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodologia pròpia de cohesió castellera i mapeig de xarxes de valor, avui al servei d\'ajuntaments, cooperatives i ateneus del territori.',
+  'faq.eyebrow':'Abans de trucar',
+  'faq.h2':'El que ens pregunten <em>sempre</em>',
+  'faq.intro':'Les vuit de veritat —les del sector públic i les de l\'empresa—, amb la resposta que donaríem a la primera reunió.',
+  'faq.q1':'Quant costa?',
+  'faq.a1':'<strong>Cada paquet del catàleg porta el preu escrit</strong>, i l\'eina no en té: és gratuïta i te la pots endur. El que es paga és l\'acompanyament, i en la majoria de casos no surt del pressupost municipal sinó de fons que ja existeixen —el catàleg de la Diputació de Barcelona, els Ateneus Cooperatius, els fons Leader de desenvolupament rural o els Next Generation. Cada paquet diu quina via li encaixa. Al diagnòstic de 3 minuts ho concretem al teu cas, i si cap no encaixa, també t\'ho direm.',
+  'faq.q2':'Quanta feina li caurà al personal tècnic?',
+  'faq.a2':'Dues sessions per fer el mapa i <strong>una reunió al mes</strong> mentre allò camina. Res més. Si al final la feina de sostenir el projecte acaba sobre la taula del tècnic de participació, hem fallat: precisament veníem a evitar-ho.',
+  'faq.q3':'On queden les dades de la gent?',
+  'faq.a3':'Al navegador de qui les escriu. <strong>L\'eina no té cap servidor central nostre i no demana crear cap compte</strong>, així que no hi ha cap base de dades de veïns a casa d\'un tercer. Quan un projecte vol ensenyar què fa cap enfora, el que surt és agregat i sense noms —«al poble hi ha 14 ofertes de cuina», mai qui les fa.',
+  'faq.q4':'Quedem lligats a vosaltres?',
+  'faq.a4':'No, i està fet expressament perquè no pugueu. El programa és obert i funciona sense nosaltres, les dades s\'exporten en un fitxer que és vostre, i el pas 4 del mètode és formar gent del poble perquè ho porti. <strong>Si al cap d\'un any encara ens necessiteu, la feina ha sortit malament.</strong>',
+  'faq.q5':'Ja tenim una app de participació. Això no és el mateix?',
+  'faq.a5':'No, i sovint són compatibles. Les eines de participació serveixen per <strong>recollir</strong>: propostes, vots, pressupostos participatius. Això altre serveix per <strong>sostenir</strong> el dia a dia d\'un projecte que ja s\'ha decidit —qui fa què, qui hi ha posat hores, qui entra ara. Si el que ja teniu ho fa, t\'ho direm i no et vendrem res.',
+  'faq.nota':'<span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn de vosaltres, no de l\'eina—, ni fem enquestes massives. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.',
+},
+es: {
+  'nav.vna':'Mapa de valor',
+  'nav.cataleg':'El catálogo',
+  'nav.formacio':'Formación',
+  'nav.sos':'El SOS',
+  'nav.quisom':'Quiénes somos',
+  'peu.vna':'Mapa de valor',
+  'peu.cataleg':'El catálogo',
+  'peu.formacio':'Formación',
+  'peu.sos':'El SOS',
+  'peu.quisom':'Quiénes somos',
+  'qs.eyebrow':'Quiénes somos',
+  'qs.h1':'Quién hay detrás, <em>y qué se puede comprobar</em>',
+  'qs.lead':'Una persona, veinte años de kilómetros y una lista de clientes que se puede contrastar uno por uno. Aquí está también <strong>de dónde viene el método</strong> y las preguntas que se hacen antes de contratar.',
+  'pg.tornar':'← Volver a la portada',
+
+/*TT-NAV-I18N-ES*/
+  'nv.g.comenca':'🧭 Empieza',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.pressupost':'Pide presupuesto',
+  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.intro':'La intro',
+  'nv.d.intro':'De qué va todo esto',
+  'nv.t.uneix-te':'Únete',
+  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
+  'nv.g.eines':'🛠 Herramientas',
+  'nv.t.vna':'Mapa de valor',
+  'nv.d.vna':'Roles e intercambios de un proyecto',
+  'nv.t.matriu':'La MATRIU',
+  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
+  'nv.t.compra':'La Compra',
+  'nv.d.compra':'Grupo de consumo y compra colectiva',
+  'nv.t.energia':'La Energía',
+  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
+  'nv.t.habitatge':'La Vivienda',
+  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
+  'nv.t.banc-temps':'El Banco de Tiempo',
+  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
+  'nv.t.biblioteca':'La Biblioteca de las Cosas',
+  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
+  'nv.t.molekulandia':'Molekulandia',
+  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
+  'nv.t.joc':'El juego',
+  'nv.d.joc':'La plaza, a ritmo',
+  'nv.g.apren':'🎓 Aprende',
+  'nv.t.formacio':'Formación',
+  'nv.d.formacio':'16 módulos, de N0 a N3',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.t.escola':'Escuelas',
+  'nv.d.escola':'El SOS a medida de aula',
+  'nv.t.vedes':'Las vedas',
+  'nv.d.vedes':'Las reglas, con el motivo al lado',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.g.casa':'🏛 La casa',
+  'nv.t.arrel-cataleg':'El catálogo',
+  'nv.d.arrel-cataleg':'Paquetes cerrados, con el precio escrito',
+  'nv.t.arrel-qui-som':'Quiénes somos',
+  'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.g.xarxa':'🏘 Red',
+  'nv.t.comando':'El Comando',
+  'nv.d.comando':'La película que haremos 150.000',
+  'nv.t.molekulon':'Molekulon',
+  'nv.d.molekulon':'Molekulandia, un estado líquido',
+  'nv.t.online':'Directorio',
+  'nv.d.online':'Quién hay, por territorio',
+  'nv.totes':'Todas las páginas',
+  'nv.g.eina':'🖥 La herramienta',
+  'nv.t.sos':'El SOS',
+  'nv.d.sos':'La aplicación entera, en el navegador',
+/*/TT-NAV-I18N-ES*/
+
+
+
+
+  'faq.q6':'¿Cómo se firma esto, administrativamente?',
+  'faq.a6':'Cada paquete del catálogo lleva el precio cerrado y todos los que van a administración pública quedan <strong>por debajo de los 5.000 €</strong>. Con la propuesta y el presupuesto en la mano, la contratación menor lo resuelve sin abrir un expediente largo. Si lo que necesitáis es más grande, se parte en fases o se plantea como un contrato de servicios: os decimos qué vía os conviene antes de haceros perder el tiempo.',
+  'faq.q7':'Somos una empresa. ¿Cómo se contrata y de dónde sale el presupuesto?',
+  'faq.a7':'Directamente, y sin el techo de los 5.000 € que nos ponemos en el sector público: allí existe para encajar en una contratación menor, y en una empresa no pinta nada. El presupuesto sale de <a href="/cataleg#cost">la misma suma que podéis rehacer</a> —horas de los flujos del mapa, cada rol al precio de su nivel, gastos a precio de factura—, y a menudo <strong>no sale de formación</strong> sino del presupuesto del área que tiene el problema. Si tenéis crédito de formación bonificada, parte encaja y os diremos qué parte.',
+  'faq.q8':'Un mapa así enseña quién sostiene qué. ¿Y si eso perjudica a alguien?',
+  'faq.a8':'Es la pregunta buena, y la respuesta tiene que estar antes de empezar. <strong>El mapa no es una evaluación de desempeño y no se entrega como si lo fuera:</strong> lo que sale son flujos y cargas —«este nodo depende de una sola persona»—, no rankings de gente. Lo acordamos por escrito en la propuesta: quién ve qué, qué es agregado y qué no sale de la sala. Si lo que se busca es material para decidir despidos, no es nuestro trabajo y lo diremos en la primera reunión.',
+  'cl.honest':'<strong>De dónde viene cada prueba.</strong> Las cifras de arriba son de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> y del taller Fent Pinya: 60.000 personas y 150 organizaciones desde 2005, y una mejora del 30-50 % en cohesión de equipo <em>según las encuestas internas posteriores al evento</em> — no es un estudio externo y se dice. La línea comunitaria es más nueva y tiene menos kilómetros: por eso en el catálogo cada paquete dice si está <em>probado</em>, <em>en adaptación</em> o es <em>nuevo</em>, en vez de usar estos números como si lo demostraran todo.',
+  'relat.eyebrow':'De dónde viene esto',
+  'relat.h2':'Veinte años levantando castells, <em>y el mismo problema dentro</em>',
+  'relat.intro':'Un castell no lo aguanta quien sube. Una organización tampoco. Lo que empezó siendo una experiencia para equipos de empresa acabó siendo un método para mirar quién sostiene qué —y una herramienta para no perderlo de vista.',
+  'relat.n1':'01 · La persona',
+  'relat.t1':'Álvaro Solache',
+  'relat.p1':'Psicólogo social. Fue responsable de RRHH de InfoJobs, dirigió la formación en la UOC–GEC y dinamizó el grupo de benchmarking de direcciones de personas en el Foro de RRHH de Foment del Treball. Desde el Penedès, y siempre el mismo trabajo: que un grupo de gente que no se ha elegido aguante el peso junto.',
+  'relat.n2':'02 · El oficio',
+  'relat.t2':'Psicología de grupos y desarrollo de comunidades',
+  'relat.p2':'Los grupos no se rompen por falta de método: se rompen por falta de gente, por conflictos que nadie trata y por no saber cómo sostenerse. Pasa igual en un proyecto de barrio y en un departamento, y las dos cosas se estudian y se trabajan.',
+  'relat.n3':'03 · El método',
+  'relat.t3':'TeamTowers',
+  'relat.p3':'Los castells como experiencia, y el mapa de red de valor como diagnóstico: dibujar quién da qué a quién, incluyendo los favores, la información y la confianza que no apunta nadie. Es el método VNA de Verna Allee, y empezó con equipos de empresa.',
+  'relat.n4':'04 · En el territorio',
+  'relat.t4':'TeamTowers Humà',
+  'relat.p4':'El mismo método llevado a la organización y al territorio, con el catálogo entero: consultoría, formación, y producción y dinamización. Y una herramienta gratuita para que cuando nos vayamos no se vaya con nosotros lo aprendido.','nav.demo':'Verlo en vivo →',
+  /*TT-CL-I18N-ES*/
+  'cl.font':'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos mapas de valor: el de la dirección y el del área de servicios.</strong>',
+  'cl.emp':'y +150 empresas en formación y cohesión de equipos',
+  'cl.g.empreses':'Empresas','cl.g.universitats':'Universidades','cl.g.escoles':'Escuelas de negocio','cl.g.agencies':'Agencias y partners','cl.g.public':'Sector público',
+/*/TT-CL-I18N-ES*/
+  'fac.role':'Psicólogo social · Consultor estratégico sistémico · Penedès',
+  'fac.lead':'No llega de fuera a explicaros cómo organizaros. <strong>Se ha sentado a vuestro lado de la mesa</strong>: dirigiendo personas dentro de una empresa, mapeando flujos de valor como consultor y montando proyectos comunitarios que todavía funcionan.',
+  'fac.t1.k':'Dirección de personas · 1996–2005',
+  'fac.t1.d':'Nueve años dentro de direcciones de personas antes de vender nada: <strong>Manpower</strong>, <strong>Myrurgia</strong>, <strong>InfoJobs</strong>, <strong>Foment del Treball</strong> —donde llevó el grupo de benchmarking del Foro de RRHH— y <strong>GEC–UOC</strong>.',
+  'fac.t2.k':'Consultoría sistémica',
+  'fac.t2.d':'<strong>Value Network Analysis</strong>, el método de Verna Allee para hacer visibles los flujos de valor tangible e intangible. <strong>Director de proyectos de consultoría en Pantheon Work desde 2019</strong>, donde cocreó la metodología: venta, planificación, producción y formación. <strong>En IKEA, dos veces</strong> —la misma casa que ya había hecho Fent Pinya—, con el plan estratégico organizativo y de RRHH: el método que vende esta página no es una idea, es una entrega repetida.',
+  'fac.t3.k':'Emprendimiento social',
+  'fac.t3.d':'Cofundador y product owner de <strong>comunitats.org</strong> (2010–2015), red de intercambio de conocimiento por tiempo, con la UOC, La Salle, la Universidad de León y la Agencia de Desarrollo Económico de Castilla y León. Y project manager del software de las <strong>Bibliotecas de las Cosas</strong> (Rescoio, 2019–2020) — la misma dinámica que hoy es una herramienta del SOS.',
+  'fac.t4.k':'TeamTowers y Fent Pinya · desde 2005',
+  'fac.t4.d':'CEO y fundador. El taller <strong>lo creó su socio Fèlix Miret</strong> en Vilafranca; juntos lo han llevado a más de <strong>150 organizaciones</strong> y <strong>60.000 participantes</strong>. Allí ha formado <strong>equipos directivos</strong> de IKEA, Novartis, Vodafone y Telefónica. Ha dado clase en <strong>EADA</strong>, ha sido team coach y profesor en <strong>Mondragon Team Academy</strong> (2016–2017), y profesor de <strong>Web 3.0 y pensamiento sistémico</strong> en SAE Institute (2021–2023) y de innovación digital en Complot (2023–2024). Y ha creado el <a href="/SOS/comando.html">Comando Molekulon</a>, para los 27 pueblos del Alt Penedès y los 6 del Garraf.',
+  'fac.n1.k':'Estratégico',
+  'fac.n1.d':'Diseñar el sistema antes de que haya trabajo. <strong>Director estratégico de RRHH en GEC–UOC</strong> (2002–2005), con el plan de la Universitat Oberta implantado, y el <strong>plan estratégico organizativo y de RRHH de IKEA</strong>.',
+  'fac.n2.k':'Táctico',
+  'fac.n2.d':'Convertirlo en proyectos que alguien pueda llevar. Dirección de proyectos de consultoría, <strong>product owner</strong> y <strong>project manager de software</strong>, y currículos formativos de innovación digital y blockchain.',
+  'fac.n3.k':'Operativo',
+  'fac.n3.d':'Hacerlo en la sala y a pie de planta. Selección para la <strong>planta de HP</strong>, programas formativos en Myrurgia, team coach en Mondragon y <strong>la facilitación del taller</strong>, que sigue haciendo él.',
+  'fac.titol':'<strong>Licenciado en Psicología Social</strong> por la Universidad de Barcelona (1996), con postgrados en <strong>herramientas telemáticas para la cooperación</strong> (1996) y en <strong>gestión de la formación en las organizaciones</strong> (1999).',
+  'fac.prova.k':'Compruébalo','fac.prova.web':'Página profesional','fac.prova.premsa':'«Castells integradors» · El Periódico, 2007',
+  'fac.cta':'Si lo que has leído encaja con lo que tienes sobre la mesa, <a id="facMail" class="js-mail" href="#">escríbele directamente</a>. Contesta él.',
+  'fac.tag1':'Psicología social y comunitaria','fac.tag2':'Value Network Analysis','fac.tag3':'Dirección de personas','fac.tag4':'Facilitación Fent Pinya','fac.tag5':'Web3 y contratos inteligentes',
+  'cl.eyebrow':'Trayectoria y confianza',
+  'cl.h2':'20 años tejiendo <em>equipos y comunidades</em>',
+  'cl.intro':'Del mundo corporativo a la innovación social: una metodología probada con universidades, administraciones públicas, empresas y proyectos comunitarios reales. Las cifras de abajo son del catálogo comercial de TeamTowers 2026, y cada una dice de dónde sale.',
+  'cl.s1':'TeamTowers · experiencias castelleras desde','cl.s2':'Personas que han pasado por el taller Fent Pinya','cl.s3':'Empresas y organizaciones acompañadas','cl.s4':'Primer banco de tiempo de la ciudad de León',
+  'cl.p1.tag':'Software comunitario','cl.p1.d':'Banco de tiempo y red de conocimiento. Una plataforma que empresas y organizaciones alquilan para crear su propia economía del tiempo y dinamizar su comunidad.',
+  'cl.p2.tag':'Proyecto pionero · 2009','cl.p2.n':'Banco de Tiempo de León','cl.p2.d':'El primer banco de tiempo de la ciudad: intercambio de servicios medido en horas, sin dinero, tejiendo confianza y apoyo mutuo entre vecinos.',
+  'cl.p3.tag':'Desarrollo comunitario','cl.p3.n':'Fent Pinya & VNA','cl.p3.d':'Metodología propia de cohesión castellera y mapeo de redes de valor, hoy al servicio de ayuntamientos, cooperativas y ateneos del territorio.',
+  'faq.eyebrow':'Antes de llamar',
+  'faq.h2':'Lo que nos preguntan <em>siempre</em>',
+  'faq.intro':'Las ocho de verdad —las del sector público y las de la empresa—, con la respuesta que daríamos en la primera reunión.',
+  'faq.q1':'¿Cuánto cuesta?',
+  'faq.a1':'<strong>Cada paquete del catálogo lleva el precio escrito</strong>, y la herramienta no tiene: es gratuita y te la puedes llevar. Lo que se paga es el acompañamiento, y en la mayoría de casos no sale del presupuesto municipal sino de fondos que ya existen —el catálogo de la Diputación de Barcelona, los Ateneus Cooperatius, los fondos Leader de desarrollo rural o los Next Generation. Cada paquete dice qué vía le encaja. En el diagnóstico de 3 minutos lo concretamos a tu caso, y si ninguna encaja, también te lo diremos.',
+  'faq.q2':'¿Cuánto trabajo le va a caer al personal técnico?',
+  'faq.a2':'Dos sesiones para hacer el mapa y <strong>una reunión al mes</strong> mientras aquello anda. Nada más. Si al final el trabajo de sostener el proyecto acaba sobre la mesa del técnico de participación, hemos fallado: precisamente veníamos a evitarlo.',
+  'faq.q3':'¿Dónde quedan los datos de la gente?',
+  'faq.a3':'En el navegador de quien los escribe. <strong>La herramienta no tiene ningún servidor central nuestro y no pide crear ninguna cuenta</strong>, así que no hay ninguna base de datos de vecinos en casa de un tercero. Cuando un proyecto quiere enseñar qué hace hacia fuera, lo que sale es agregado y sin nombres —«en el pueblo hay 14 ofertas de cocina», nunca quién las hace.',
+  'faq.q4':'¿Quedamos atados a vosotros?',
+  'faq.a4':'No, y está hecho a propósito para que no podáis. El programa es abierto y funciona sin nosotros, los datos se exportan en un fichero que es vuestro, y el paso 4 del método es formar a gente del pueblo para que lo lleve. <strong>Si al cabo de un año todavía nos necesitáis, el trabajo ha salido mal.</strong>',
+  'faq.q5':'Ya tenemos una app de participación. ¿No es lo mismo?',
+  'faq.a5':'No, y a menudo son compatibles. Las herramientas de participación sirven para <strong>recoger</strong>: propuestas, votos, presupuestos participativos. Esto otro sirve para <strong>sostener</strong> el día a día de un proyecto que ya se ha decidido —quién hace qué, quién ha puesto horas, quién entra ahora. Si lo que ya tenéis lo hace, te lo diremos y no te venderemos nada.',
+  'faq.nota':'<span>→</span> Lo que <strong>no</strong> hacemos: ni gestionamos el proyecto por vosotros, ni garantizamos que la gente participe —eso depende de vosotros, no de la herramienta—, ni hacemos encuestas masivas. Y no dinamizamos nada que no tenga al menos tres personas dispuestas a sostenerlo.',
+  }
+};
+
+// Tooltips Castellers en CA
+var COLLA_CA = {
+baixos:     {title:'Baixos — Àncora de Terra',        t:'Tangible: transmet tota la compressió estructural al terra',            i:'Intangible: seguretat psicològica per a cada nivell superior — la certesa que la base aguanta'},
+crosses:    {title:'Crosses — Suport Axil·lar',       t:'Tangible: evita que els Baixos s\'enfonsin sota càrrega axial',         i:'Intangible: micro-ajustos a través del tacte — sense paraules, només senyals de pressió'},
+contraforts:{title:'Contraforts — Pressió Posterior', t:'Tangible: absorbeix la pressió posterior per mantenir l\'alineació',    i:'Intangible: confiança cega — no poden veure la torre, només sentir-la'},
+mans:       {title:'Mans — Estabilitzadors de Maluc', t:'Tangible: empenyen cap amunt i estabilitzen els pisos superiors',       i:'Intangible: calma distribuïda — si les Mans són fermes, la confiança puja'},
+laterals:   {title:'Laterals — Guardes Laterals',     t:'Tangible: eviten l\'oscil·lació lateral de tota l\'estructura',         i:'Intangible: lectura de risc en temps real — senten micro-oscil·lacions abans que siguin visibles'},
+segons:     {title:'Segons — 2n Pis',                 t:'Tangible: distribueixen el pes geomètricament; ofereixen plataforma d\'espatlles', i:'Intangible: confiança biomecànica cap amunt — si els segons tremolen, el pànic es propaga'},
+tercos:     {title:'Terços — 3r Pis',                 t:'Tangible: ancorats pel folre en castells complexos',                   i:'Intangible: enfocament cognitiu — cada esglaó estreny l\'atenció al pur equilibri'},
+dosos:      {title:'Dosos — Base de la Corona',       t:'Tangible: ofereixen la plataforma física final per a l\'Acotxador',    i:'Intangible: ancora emocional — últim contacte humà abans del cim'},
+acotxador:  {title:'Acotxador — Pont de Seguretat',   t:'Tangible: ofereix la superfície dorsal per al pas final de l\'Enxaneta', i:'Intangible: empatia en alçada — el contacte visual redueix l\'ansietat vertiginosa'},
+enxaneta:   {title:'Enxaneta — L\'Àpex',              t:'Tangible: aixeca el braç (l\'aleta) — valida la càrrega estructuralment', i:'Intangible: catarsi col·lectiva — allibera la tensió de tota la xarxa simultàniament'},
+cap:        {title:'Cap de Colla — Director',         t:'Tangible: ordres operacionals precises, senyals de temps',              i:'Intangible: visió macroscòpica + autoritat distribuïda en castells complexos'},
+musics:     {title:'Músics — Rellotge de Xarxa',      t:'Tangible: telemetria acústica — la melodia assenyala la fase exacta de l\'Enxaneta als Baixos', i:'Intangible: estat de flux grupal — el ritme sincronitza respiració, enfocament i motivació'}
+};
+
+var COLLA_ES = {
+baixos:     {title:'Baixos — Ancla de Tierra',       t:'Tangible: transmite toda la compresión estructural al suelo',            i:'Intangible: seguridad psicológica para cada nivel superior — la certeza de que la base aguanta'},
+crosses:    {title:'Crosses — Soporte Axilar',       t:'Tangible: evita que los Baixos se hundan bajo carga axial',              i:'Intangible: microajustes a través del tacto — sin palabras, solo señales de presión'},
+contraforts:{title:'Contraforts — Presión Trasera',  t:'Tangible: absorbe la presión trasera para mantener la alineación',       i:'Intangible: confianza ciega — no pueden ver la torre, solo sentirla'},
+mans:       {title:'Mans — Estabilizadores de Cadera',t:'Tangible: empujan hacia arriba y estabilizan el glúteo de los pisos superiores', i:'Intangible: calma distribuida — si los Mans están firmes, la confianza sube'},
+laterals:   {title:'Laterals — Guardas Laterales',   t:'Tangible: previenen la oscilación lateral de toda la estructura',        i:'Intangible: lectura de riesgo en tiempo real — sienten micro-oscilaciones antes de que sean visibles'},
+segons:     {title:'Segons — 2° Piso',               t:'Tangible: distribuyen el peso geométricamente; ofrecen plataforma de hombros', i:'Intangible: confianza biomecánica hacia arriba — si los segundos tiemblan, el pánico se propaga'},
+tercos:     {title:'Terços — 3er Piso',              t:'Tangible: anclados por el folre en castillos complejos',                 i:'Intangible: enfoque cognitivo — cada peldaño estrecha la atención al puro equilibrio'},
+dosos:      {title:'Dosos — Base de la Corona',      t:'Tangible: ofrecen la plataforma física final para el Acotxador',         i:'Intangible: ancla emocional — último contacto humano antes de la cima'},
+acotxador:  {title:'Acotxador — Puente de Seguridad',t:'Tangible: ofrece la superficie dorsal para el paso final del Enxaneta',  i:'Intangible: empatía en altura — el contacto visual reduce la ansiedad vertiginosa'},
+enxaneta:   {title:'Enxaneta — El Ápice',            t:'Tangible: levanta el brazo (la aleta) — valida la carga estructuralmente', i:'Intangible: catarsis colectiva — libera la tensión de toda la red simultáneamente'},
+cap:        {title:'Cap de Colla — Director',        t:'Tangible: comandos operacionales precisos, señales de tiempo',           i:'Intangible: visión macroscópica + autoridad distribuida en castillos complejos'},
+musics:     {title:'Músics — Reloj de Red',          t:'Tangible: telemetría acústica — la melodía señala la fase exacta del Enxaneta a los Baixos', i:'Intangible: estado de flujo grupal — el ritmo sincroniza respiración, enfoque y motivación'}
+};
+
+var currentLang = localStorage.getItem('tt_lang') || 'ca';
+
+function applyLang(l) {
+    currentLang = l;
+    localStorage.setItem('tt_lang', l);
+    document.documentElement.lang = l;
+    var t = T[l] || T['ca'];
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n');
+        if (t[k] !== undefined) el.textContent = t[k];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+        var k = el.getAttribute('data-i18n-html');
+        if (t[k] !== undefined) el.innerHTML = t[k];
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(b) {
+        b.classList.toggle('active', b.getAttribute('data-lang') === l);
+    });
+}
+
+document.querySelectorAll('.lang-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { applyLang(this.getAttribute('data-lang')); });
+});
+
+applyLang(currentLang);
+
+// ── Correu ofuscat ────────────────────────────────────────────────────────────
+// Muntat en temps d'execució perquè no viatgi en clar dins de l'HTML.
+(function () {
+    var u = 'asolache', d = 'mac' + '.' + 'com';
+    function wire() {
+        /* Dos enllaços de correu i pujant: el de la crida final i el del perfil.
+           Amb `getElementById` el segon es quedava amb `href="#"` i no obria
+           res — un enllaç que no fa res al lloc on algú ja s'ha convençut. */
+        document.querySelectorAll('.js-mail, #ctaMail').forEach(function (a) {
+            a.href = 'mailto:' + u + '@' + d + '?subject=' +
+                encodeURIComponent('Repte comunitari — parlem-ne');
+        });
+    }
+    wire();
+    // applyLang reescriu el bloc: cal tornar-hi després de cada canvi d'idioma.
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+        b.addEventListener('click', function () { setTimeout(wire, 0); });
+    });
+})();
+
+// ── Menú mòbil ────────────────────────────────────────────────────────────────
+// Per sota de 900px la llista d'enllaços es plega en un panell. Fins ara es
+// feia display:none sense alternativa: des del mòbil no s'arribava a cap secció
+// ni a cap pàgina del SOS. Es reutilitza la mateixa <ul>, així no hi ha dues
+// llistes d'enllaços per mantenir ni dos jocs de claus i18n.
+(function () {
+    var navEl = document.querySelector('nav');
+    var burger = document.getElementById('navBurger');
+    var links = document.getElementById('navLinks');
+    if (!navEl || !burger || !links) return;
+
+    function setOpen(open) {
+        navEl.classList.toggle('nav-open', open);
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.setAttribute('aria-label', open ? 'Tanca el menú' : 'Obre el menú');
+    }
+    burger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setOpen(!navEl.classList.contains('nav-open'));
+    });
+    // Triar un enllaç tanca: en una sola pàgina amb àncores, si no, el panell
+    // et tapa justament la secció a la qual acabes de saltar.
+    links.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setOpen(false);
+    });
+    document.addEventListener('click', function (e) {
+        if (navEl.classList.contains('nav-open') && !navEl.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && navEl.classList.contains('nav-open')) { setOpen(false); burger.focus(); }
+    });
+    // En tornar a pantalla ampla el panell ja no aplica: netegem l'estat perquè
+    // aria-expanded no quedi mentint sobre una llista que torna a ser una fila.
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 900 && navEl.classList.contains('nav-open')) setOpen(false);
+    });
+})();
+
+// ── Fade-up observer ──────────────────────────────────────────────────────────
+document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('animate'); });
+if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+            if (entry.isIntersecting) { entry.target.classList.add('visible'); io.unobserve(entry.target); }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(function(el){ io.observe(el); });
+    /* La barra fixa de mòbil: surt quan la crida del hero ja no es veu i
+       s'amaga quan la crida final entra a pantalla, perquè no hi hagi mai dues
+       crides iguals a la vista alhora. */
+    var sticky = document.getElementById('ctaSticky');
+    var heroActs = document.querySelector('.hero-actions');
+    var finalActs = document.querySelector('.cta-final .actions');
+    if (sticky && heroActs && finalActs) {
+        /* Qualsevol crida que ja sigui a pantalla —la del hero, les franges
+           del mig o la final— amaga la barra: mai dues iguals a la vista. */
+        var crides = [heroActs, finalActs].concat([].slice.call(document.querySelectorAll('.cta-band')));
+        var aLaVista = new Set();
+        var pinta = function(){ sticky.hidden = aLaVista.size > 0; };
+        var cio = new IntersectionObserver(function(es){
+            es.forEach(function(e){ if (e.isIntersecting) aLaVista.add(e.target); else aLaVista.delete(e.target); });
+            pinta();
+        });
+        crides.forEach(function(el){ cio.observe(el); });
+    }
+} else {
+    document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('visible'); });
+}
+
+var tooltip  = document.getElementById('collaTooltip');
+var tTitle   = document.getElementById('collaTooltipTitle');
+var tT       = document.getElementById('collaTooltipT');
+var tI       = document.getElementById('collaTooltipI');
+var svgEl    = document.getElementById('collaSvg');
+
+document.querySelectorAll('.colla-node').forEach(function(node) {
+    node.addEventListener('mouseenter', function(e) {
+        var id   = this.dataset.id;
+        var data = (currentLang === 'es' && COLLA_ES[id]) ? COLLA_ES[id] : COLLA_CA[id];
+        if (!data) return;
+        tTitle.textContent = data.title;
+        tT.textContent     = data.t;
+        tI.textContent     = data.i;
+        tooltip.style.display = 'block';
+        var circle = this.querySelector('circle');
+        if (circle) { circle.style.filter = 'brightness(1.4)'; circle.setAttribute('stroke-width','3'); }
+    });
+    node.addEventListener('mousemove', function(e) {
+        var rect = svgEl.parentElement.getBoundingClientRect();
+        var x = e.clientX - rect.left + 14;
+        var y = e.clientY - rect.top  - 10;
+        if (x + 230 > rect.width) x = e.clientX - rect.left - 244;
+        tooltip.style.left = x + 'px';
+        tooltip.style.top  = y + 'px';
+    });
+    node.addEventListener('mouseleave', function() {
+        tooltip.style.display = 'none';
+        var circle = this.querySelector('circle');
+        if (circle) { circle.style.filter = ''; circle.removeAttribute('stroke-width'); }
+    });
+});
+
+</script>
+</body>
+</html>

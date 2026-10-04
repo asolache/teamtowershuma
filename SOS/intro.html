@@ -129,6 +129,21 @@ button:focus-visible{outline:2px solid var(--retol);outline-offset:2px}
   font-size:.84rem;line-height:1.7}
 .peu a{color:var(--clar)}
 .peu strong{color:var(--clar);font-weight:600}
+
+/* ── QUÈ ÉS EL SOS ─────────────────────────────────────────────────────────
+   Ve de la portada i es queda amb la pell d'aquesta pàgina: aquí hi ha un
+   escenari negre a sobre (és un guió de pel·lícula) i a sota, paper. */
+.que-es{max-width:1000px;margin:3.5rem auto 0;padding:2.5rem 1rem 0;border-top:1px solid var(--border)}
+.que-es h2{font-size:var(--t4);line-height:1.15;margin:0 0 .9rem;color:var(--text)}
+.que-es h2 strong{color:var(--indigo);font-weight:inherit}
+.que-es>p{max-width:68ch;font-size:var(--t1);line-height:1.7;color:var(--light);margin:0 0 2rem}
+.qe-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.qe-c{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem;display:flex;flex-direction:column}
+.qe-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem}
+.qe-c p{font-size:var(--t0);line-height:1.65;color:var(--light);margin:0 0 1rem;flex:1}
+.qe-c p b{color:var(--text);font-weight:650}
+.qe-cta{font-size:var(--t0);font-weight:600;color:var(--indigo);text-decoration:none}
+.qe-cta:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -181,7 +196,7 @@ button:focus-visible{outline:2px solid var(--retol);outline-offset:2px}
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">
   <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
-  <div class="sn-gs"><details class="sn-g sn-here"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html" aria-current="page"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
+  <div class="sn-gs"><details class="sn-g sn-here"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html" aria-current="page"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a><a href="../qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
   <a class="sn-cta" href="index.html">Obre SOS →</a>
 </nav>
 <!--/SOS-NAV-->
@@ -213,6 +228,47 @@ button:focus-visible{outline:2px solid var(--retol);outline-offset:2px}
 </p>
 
 <div class="avis" id="avisSo"></div>
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     QUÈ ÉS EL SOS, I QUÈ T'ENDUS SENSE CONTRACTAR RES
+     Ve de la portada (04/10/2026). Allà era una secció al mig del recorregut
+     de compra i aquí és el que toca: aquesta pàgina és **la porta del SOS**,
+     i qui hi arriba ve a saber de què va. La portada hi porta i prou.
+
+     La frase que obre el bloc no és un detall del producte: que l'eina
+     existeixi encara que no ens contractin és el que fa creïble tota la
+     resta, i per això va primer i va sencera. -->
+<section class="que-es" id="que-es">
+  <h2>El SOS existeix <strong>encara que no ens contractis</strong></h2>
+  <p>És gratuït i obert: s'obre al navegador, sense compte, i les dades es queden
+  al dispositiu de qui les escriu. No venem el programa — venem l'acompanyament. I
+  si l'acompanyament no et convenç, l'eina i el que hi hagis après te'ls quedes
+  igualment.</p>
+  <div class="qe-g">
+    <div class="qe-c">
+      <div class="qe-k">L'eina i la formació</div>
+      <p>Mapes de valor, banc de temps, biblioteca de les coses, compra col·lectiva,
+      energia, habitatge i el registre que ho acredita. Amb setze mòduls de N0 a N3
+      i cada capacitat explicada: <b>s'aprèn fent-ho sobre el teu projecte</b>, no
+      sobre un cas inventat.</p>
+      <a class="qe-cta" href="index.html">Obre'l i mira-te'l →</a>
+    </div>
+    <div class="qe-c">
+      <div class="qe-k">El Comando Molekulon · el relat</div>
+      <p>Una pel·lícula i un món per explicar l'economia del valor a qui no hi entra
+      per un informe: a una aula, a una assemblea, a una barra de bar. <b>El guió,
+      els personatges i el material són oberts.</b></p>
+      <a class="qe-cta" href="comando.html">Mira de què va →</a>
+    </div>
+    <div class="qe-c">
+      <div class="qe-k">I si et quedes amb ganes</div>
+      <p>El mètode que hi ha a sota és el <b>mapa de valor</b>: qui dona què a qui,
+      també els favors i la confiança. Es pot fer en una sessió amb l'equip sencer.</p>
+      <a class="qe-cta" href="vna.html">Com es fa un mapa, pas a pas →</a>
+    </div>
+  </div>
+</section>
+
 
 <div class="peu">
 <p><strong>Una sola pel·lícula muntada dues vegades.</strong> Els setze plans, la durada i els rètols

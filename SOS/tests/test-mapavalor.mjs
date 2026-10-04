@@ -28,23 +28,26 @@ const port = await p1.evaluate(() => {
   const mv = document.querySelector('#dues-vistes');
   return {
     ids,
-    /* El cas obre la pàgina. Era `fentpinya` qui l'obria, i llavors el que
-       es comprava semblava la trajectòria i no el producte: el mapa no sortia
-       fins a la quarta pantalla.
+    /* ⚠ **L'ordre canvia amb l'endreça** (04/10/2026). El cas ja no obre la
+       pàgina: obre **el repte**, i el mapa ve just després. Qui arriba no ve a
+       comprar un mapa —ve amb un problema—, i el dibuix ensenyat abans del
+       problema és bonic i no es demana.
 
-       `#mapaval` ja no és una secció: el graf és la primera pestanya de
-       `#dues-vistes`, amb la planta de la mateixa casa a la segona. */
-    primer: ids.indexOf('dues-vistes') === 1,
-    abansDelRepte: ids.indexOf('dues-vistes') < ids.indexOf('enfoc'),
-    castellDespres: ids.indexOf('fentpinya') > ids.indexOf('dues-vistes'),
+       El que segueix sent cert, i és el que es comprova: el producte és a la
+       **primera meitat** i no a la quarta pantalla, que és d'on venia.
+       `#fentpinya` i els castells ja no són a la portada: viuen a `/vna`, i
+       la portada hi porta. */
+    primer: ids.indexOf('dues-vistes') <= 1,
+    desDelRepte: ids.indexOf('enfoc') === 0 && ids.indexOf('dues-vistes') === 1,
+    capCastell: ids.indexOf('fentpinya') < 0 && ids.indexOf('rengles') < 0,
     nodes: mv ? mv.querySelectorAll('.mv-n').length : 0,
     fletxes: mv ? mv.querySelectorAll('.mv-svg path[marker-end]').length : 0,
     text: mv ? mv.innerText : ''
   };
 });
-ok(port.abansDelRepte, 'el cas va abans del repte: primer es veu què venem');
-ok(port.primer, 'i és la primera secció després del mur de clients: el producte obre la pàgina');
-ok(port.castellDespres, 'i els castells van a sota: són d\'on ve el mètode, no el mètode');
+ok(port.desDelRepte, 'el repte obre la pàgina i el mapa ve just després: primer el problema, després la resposta');
+ok(port.primer, 'i el producte és a la primera meitat, no a la quarta pantalla');
+ok(port.capCastell, 'i els castells ja no són a la portada: viuen a /vna, que és on viu el mètode');
 ok(port.nodes === 7, `el mapa del celler porta ${port.nodes} nodes`);
 ok(port.fletxes === 16, `i ${port.fletxes} transaccions dibuixades, una per lliurament`);
 

@@ -22,7 +22,7 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html index.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html
 
       # La portada de l'arrel és per on entra tothom i no la comprovava res.
       # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
@@ -30,6 +30,14 @@ jobs:
       # castellà, i no ho veu ningú. Igual amb una clau escrita dues vegades.
       - name: Guarda de la portada (i18n de l'arrel)
         run: node SOS/tools/check-landing.js
+
+      # Una secció que marxa s'emporta el seu CSS. Si no, el que es queda no
+      # peta, no es veu i no pinta res: només pesa. A l'endreça del 04/10/2026
+      # en van sortir 302 regles mortes i 37 KB. I l'error contrari, que és el
+      # car: un bloc que es muda sense el seu estil surt pla, i això només ho
+      # veu qui obri aquella pàgina.
+      - name: Guarda del CSS de l'arrel (cap regla morta, cap bloc sense estil)
+        run: node SOS/tools/check-css-arrel.js
 
       # `check-landing.js` només mira la portada, i les pàgines de l'arrel són
       # d'una maqueta anterior: publicaven tres cites atribuïdes a càrrecs de

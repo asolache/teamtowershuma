@@ -43,7 +43,15 @@ const { readFileSync, writeFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
-const PORTADA = join(ARREL, 'index.html');
+/* ── EL CATÀLEG JA NO VIU A LA PORTADA (04/10/2026) ───────────────────────
+   Eren 40 KB de 575, i la secció més llarga del lloc, al mig del recorregut de
+   compra. El criteri és «una pàgina, una feina»: la portada ven el mapa de
+   valor i **hi porta**; el catàleg sencer —amb el mapa de cost, el que s'aprèn
+   fent i el glossari— té pàgina pròpia.
+
+   El generador només canvia d'adreça. El que escriu, les marques i les guardes
+   són les mateixes: una secció que es muda s'emporta qui l'escriu. */
+const PORTADA = join(ARREL, 'cataleg.html');
 const README = join(ARREL, 'README.md');
 const CHECK = process.argv.includes('--check');
 
@@ -989,7 +997,7 @@ const compta = ORDRE_SECTORS.map(id =>
 const resum = `${total} paquets · ${FAMILIES.length} famílies + el SOS · ${compta}`;
 
 if (CHECK) {
-  const desviats = [out === src ? null : 'index.html', outMd === srcMd ? null : 'README.md']
+  const desviats = [out === src ? null : 'cataleg.html', outMd === srcMd ? null : 'README.md']
     .filter(Boolean);
   if (!desviats.length) { console.log(`✅ El catàleg al dia · ${resum}`); process.exit(0); }
   console.error('❌ El catàleg no correspon al que hi ha declarat: ' + desviats.join(', '));
@@ -999,4 +1007,4 @@ if (CHECK) {
 
 writeFileSync(PORTADA, out);
 writeFileSync(README, outMd);
-console.log(`✅ index.html i README.md · ${resum}`);
+console.log(`✅ cataleg.html i README.md · ${resum}`);

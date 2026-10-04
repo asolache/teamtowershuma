@@ -217,7 +217,9 @@ es un HTML autocontenido que se puede abrir con `file://`.
 
 ```
 teamtowershuma/
-├── index.html          # La portada (bilingüe CA/ES)
+├── index.html          # La portada: vende el mapa de valor y lleva a las otras tres
+├── cataleg.html        # El catálogo entero, con el mapa de coste
+├── qui-som.html        # Veinte años, los clientes con fuente y de dónde viene el método
 ├── SOS/                # La aplicación y las páginas: una por cosa
 │   ├── index.html      # El SOS
 │   ├── tools/          # Las guardas que petan en CI cuando una promesa deja de ser cierta
@@ -235,13 +237,14 @@ Lo que se declara una vez se escribe en todas partes, y el CI falla si se ha
 desviado:
 
 ```bash
-node SOS/tools/build-oferta.js        # el catálogo → portada + este README
+node SOS/tools/build-oferta.js        # el catálogo → cataleg.html + este README
 node SOS/tools/build-formularis.js    # los bloques compartidos → diagnóstico + presupuesto
 node SOS/tools/build-geo.js           # los municipios de la app → el directorio
 node SOS/tools/build-nav.js           # el menú → todas las páginas
 node SOS/tools/build-vedes.js         # el codex → SOS/vedes.html
 node SOS/tools/build-mapa.js          # el árbol → MAPA.md
-node SOS/tools/check-landing.js       # la portada: diccionarios y catálogo
+node SOS/tools/check-landing.js       # las tres páginas raíz: diccionarios, catálogo y puertas
+node SOS/tools/check-css-arrel.js     # ninguna regla de CSS que no pinte nada, ningún bloque sin estilo
 node SOS/tools/check-formularis.js    # los formularios: no envían nada solos
 node SOS/tools/check-nick.js          # el nick no identifica; por el relé solo pasa cifrado
 node SOS/tests/run.mjs                # la regresión entera

@@ -108,8 +108,12 @@ const FORA_DE_LA_PELL = {
   'premsa.html': 'Pàgina de la generació anterior, amb paleta pròpia. Es refà o es retira a l\'endreça.'
 };
 
+/* Les pàgines de l'arrel es llegeixen del directori i no d'una llista escrita:
+   `cataleg.html` i `qui-som.html` van néixer el 04/10/2026 i, amb una llista a
+   mà, haurien nascut sense pell i amb la guarda verda. El que sí que és
+   explícit és qui en queda fora, i per què. */
 const PAGINES = [].concat(
-  ['index.html'],
+  readdirSync(ARREL).filter(f => /\.html$/.test(f)),
   readdirSync(SOS).filter(f => /\.html$/.test(f)).map(f => 'SOS/' + f)
 ).filter(f => !FORA_DE_LA_PELL[f]).sort();
 
