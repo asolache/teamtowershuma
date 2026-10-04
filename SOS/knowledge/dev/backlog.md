@@ -44,6 +44,71 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### El mòdul de suport al mapa de valor (04/10/2026)
+
+**Fet, com a prototip.** El mètode era prosa en tres fitxers i un prompt que no
+el portava. Ara és **una declaració que s'executa**, i d'ella en surten quatre
+coses que no poden divergir.
+
+| | Abans | Ara |
+|---|---|---|
+| Les deu regles | prosa a `for-ai/mapa-de-valor.md` | `test(mapa) → {ok, diu}`, executables |
+| Qui les comprova | ningú | la consola, la guarda i la prova, amb **el mateix codi** |
+| El `system` de `suggest_map` | «entre 5 i 8 rols i entre 6 i 12 intercanvis» | el mètode sencer, construït de les regles |
+| On es fa un mapa | enlloc | `SOS/vna-suport.html`, per `file://` i sense enviar res |
+| El que una sessió deixa escrit | res | `knowledge/vna/casos/`, amb guarda |
+
+**El forat que tanca.** El backlog ho tenia obert des del 03/10/2026:
+*«`aiPlanValueFlows()` i `aiSuggestMap()` criden l'API amb la demanda, el
+territori, el tipus de projecte i els noms dels prototips — i cap coneixement
+del mètode.»* El `system` d'aquell intent ara es genera de les mateixes regles
+que comproven la resposta. Si es declaressin a part, el dia que una canviï
+l'altra es quedaria i tindríem **un model complint una llista que ja no és la
+llista**.
+
+**Per què una declaració i no quatre documents.** Una regla en prosa no comprova
+res: el dia que una proposta en trenqui una, el text no s'assabenta. Escrites a
+`build-vna-suport.js` són funcions, i llavors la consola les corre mentre
+s'escriu el mapa, la guarda les corre al CI i el prompt les cita **amb les
+mateixes paraules**. Millorar el mètode passa a ser editar un fitxer.
+
+**El que el fa millorar i no només existir: `knowledge/vna/`.** Cada mapa real
+hi deixa un cas amb **què ha ensenyat** —secció obligatòria, i hi ha guarda: *un
+cas que només guarda el mapa és un fitxer, no coneixement*— i el que es repeteix
+en dos casos puja a `patrons.md`. El skill diu de llegir-lo abans d'una sessió i
+d'escriure-hi després. Sense això, un mòdul de suport és una plantilla.
+
+`patrons.md` **neix buit a posta**: escriure-hi patrons abans de tenir casos
+seria inventar-los, que és el mateix error que una xifra sense font.
+
+**Les tres coses que es van decidir i es podrien discutir:**
+
+1. **La consola no crida cap API ni demana cap clau.** Prepara el text exacte
+   —amb el mètode, el mapa que ja hi ha i el que avui no compleix— i qui el fa
+   servir decideix on el porta. Així es pot donar a un client sense donar-li res
+   nostre, i la resposta torna per dalt, on les mateixes deu regles la revisen
+   abans que entri enlloc.
+2. **Set regles són dures i tres toves.** Una proposta que en trenqui una de
+   dura **no s'ensenya com a mapa**: s'ensenya el que li falta. Les toves avisen,
+   perquè la densitat i la concentració són senyals i no errors.
+3. **L'exemple de la consola deixa una tova oberta** —densitat al 33 %— i no
+   s'arregla. Un exemple que ho passés tot ensenyaria que l'eina sempre diu que
+   sí.
+
+**El que queda obert:**
+
+- **Enganxar la resposta de la IA a la consola.** Avui es copia a mà al camp que
+  toca. Un camp «enganxa aquí el JSON» que validi i ompli les sis caselles és
+  mitja hora i és el següent pas natural.
+- **Les tres anàlisis són preguntes, no taules.** L'anàlisi d'impacte i la de
+  creació de valor tenen columnes a l'article; aquí surten com a llista. Omplir-les
+  demana una taula per transacció, i això ja és el constructor de la fase 2 de
+  `/vna` —que segueix obert.
+- **`vnaAudit` de l'app i `revisa()` del mòdul mesuren coses que s'encavalquen**
+  (reciprocitat, densitat, concentració) amb dues implementacions. Avui no
+  divergeixen perquè els llindars són els mateixos; el dia que un canviï, sí. La
+  segona declaració s'ha d'eliminar, i la que mana és la del mòdul.
+
 ### L'endreça · una pàgina, una feina (04/10/2026)
 
 **Fet.** La portada feia divuit feines i no en deia cap del tot. Ara en fa una

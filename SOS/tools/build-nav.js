@@ -77,6 +77,11 @@ const GRUPS = [
   { id: 'eines', lbl: T('Eines', 'Herramientas'), ic: '🛠', links: [
     ['vna.html', T('Mapa de valor', 'Mapa de valor'),
       T('Rols i intercanvis d\'un projecte', 'Roles e intercambios de un proyecto')],
+    /* L'eina i la pàgina que l'explica són dues coses i van juntes: `/vna` diu
+       què és un mapa de valor i `vna-suport` el fa. Separades al menú, qui
+       acaba de llegir el mètode no troba on aplicar-lo. */
+    ['vna-suport.html', T('Fer un mapa de valor', 'Hacer un mapa de valor'),
+      T('Les sis passes, i deu regles que el revisen', 'Los seis pasos, y diez reglas que lo revisan')],
     ['matriu.html', T('La MATRIU', 'La MATRIU'),
       T('La incubadora: etapes, portes i propietat', 'La incubadora: etapas, puertas y propiedad')],
     ['compra.html', T('La Compra', 'La Compra'),
@@ -158,7 +163,7 @@ const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.htm
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
-  'uneix-te.html', 'vedes.html', 'vna.html'];
+  'uneix-te.html', 'vedes.html', 'vna.html', 'vna-suport.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */

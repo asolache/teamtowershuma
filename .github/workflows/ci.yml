@@ -59,6 +59,14 @@ jobs:
       - name: Guarda del programa d'escola
         run: node SOS/tools/check-escola.js
 
+      # El mòdul de suport al mapa de valor: les sis passes, les deu regles i les
+      # tres anàlisis es declaren un sol cop i van a quatre llocs —la consola,
+      # el skill, el `system` de l'intent `suggest_map` i el contracte. Quatre
+      # còpies d'una llista divergeixen en silenci, i el dia que passi tindríem
+      # un model complint una llista que ja no és la llista.
+      - name: Guarda del mòdul de suport al mapa de valor
+        run: node SOS/tools/build-vna-suport.js --check
+
       # La colla castellera surt a dos llocs: la portada i el mapa de valor.
       # Són dues còpies deliberades, i per això mateix poden divergir en
       # silenci — que és exactament el que va passar amb els herois.

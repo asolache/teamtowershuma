@@ -71,7 +71,12 @@ const MUNTAR = [
   { p: 'matriu.html', ic: '🌱',
     guanya: 'Una idea sap en quina etapa és i què li falta per passar a la següent, en comptes d\'anar fent fins que s\'encalla.' },
   { p: 'vna.html', ic: '🕸',
-    guanya: 'El mapa de qui sosté què, amb els favors i la confiança que no compta ningú. És el pas que va abans de tots els altres.' }
+    guanya: 'El mapa de qui sosté què, amb els favors i la confiança que no compta ningú. És el pas que va abans de tots els altres.' },
+  /* La pàgina explica el mètode; aquesta el fa. Van juntes aquí pel mateix
+     motiu que al menú: qui acaba d'entendre què és un mapa de valor ha de
+     trobar on fer-ne un, i no a la pàgina següent. */
+  { p: 'vna-suport.html', ic: '🧭',
+    guanya: 'Les sis passes amb deu regles que revisen el mapa mentre s\'escriu, i el text que se li dona a una IA perquè ajudi amb el mètode i no només amb la forma.' }
 ];
 
 /* Els beneficis que no són d'una dinàmica sinó del conjunt. Venien de la

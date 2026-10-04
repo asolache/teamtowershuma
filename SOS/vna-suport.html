@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suport al mapa de valor · les sis passes, les deu regles i les tres anàlisis</title>
+<meta name="description" content="La consola per fer un mapa de valor amb el mètode VNA de Verna Allee: les sis passes, deu regles que es comproven soles i les tres anàlisis. Funciona al navegador, sense compte i sense enviar res.">
+<meta name="author" content="Álvaro Solache · TeamTowers Humà">
+<meta name="theme-color" content="#fbfaf7">
+<style>
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);line-height:1.6;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:var(--t1)}
+.w{max-width:1180px;margin:0 auto;padding:0 1.2rem}
+h1,h2,h3{line-height:1.2;margin:0}
+a{color:var(--indigo)}
+code{font-family:var(--mono);font-size:var(--t0);background:var(--panel);padding:.1rem .3rem;border-radius:4px}
+
+/* ── La capçalera ────────────────────────────────────────────────────────── */
+.cap{padding:3rem 0 2rem;border-bottom:1px solid var(--border)}
+.cap .k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);margin:0 0 .7rem}
+.cap h1{font-size:var(--t5);letter-spacing:-.02em}
+.cap h1 em{font-style:normal;color:var(--indigo)}
+.cap p{max-width:70ch;color:var(--light);margin:.9rem 0 0}
+.cap b{color:var(--text)}
+
+/* ── La graella de treball ───────────────────────────────────────────────── */
+.g{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:2rem;padding:2rem 0 4rem;align-items:start}
+@media(max-width:980px){.g{grid-template-columns:1fr}}
+.pan{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.pan+.pan{margin-top:1.1rem}
+.pan h2{font-size:var(--t3);margin-bottom:.3rem}
+.pan>p.s{color:var(--muted);font-size:var(--t0);margin:0 0 1rem}
+
+label{display:block;font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);margin:.9rem 0 .3rem}
+input,textarea,select{width:100%;font:inherit;font-size:var(--t0);color:var(--text);background:var(--bg);
+  border:1px solid var(--border);border-radius:8px;padding:.55rem .7rem}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px;border-color:var(--indigo)}
+textarea{min-height:5.5rem;resize:vertical;line-height:1.55}
+.hint{font-size:var(--t0);color:var(--muted);margin:.35rem 0 0;line-height:1.5}
+.btn{font:inherit;font-size:var(--t0);font-weight:600;cursor:pointer;border-radius:9px;
+  padding:.5rem .95rem;border:1px solid var(--border);background:var(--bg);color:var(--text)}
+.btn:hover{border-color:var(--indigo)}
+.btn.pri{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn.pri:hover{filter:brightness(1.1)}
+.btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+
+/* ── Les sis passes ──────────────────────────────────────────────────────── */
+ol.passes{list-style:none;margin:0;padding:0;counter-reset:p}
+.pa{display:flex;gap:.85rem;padding:.9rem 0;border-top:1px solid var(--border)}
+.pa:first-child{border-top:0}
+.pa-n{flex:0 0 1.9rem;height:1.9rem;border-radius:50%;background:var(--panel);color:var(--indigo);
+  font-family:var(--mono);font-weight:700;display:grid;place-items:center;font-size:var(--t0)}
+.pa b{display:block;font-size:var(--t1)}
+.pa p{margin:.25rem 0 0;font-size:var(--t0);color:var(--light)}
+.pa p.pa-p{color:var(--muted)}
+.pa code{display:inline-block;margin-top:.35rem}
+.pa.fet .pa-n{background:var(--green);color:var(--on-accent)}
+
+/* ── Les deu regles ──────────────────────────────────────────────────────── */
+ul.regles{list-style:none;margin:0;padding:0}
+.rg{display:grid;grid-template-columns:1.6rem 1fr auto;gap:.5rem .6rem;align-items:center;
+  padding:.5rem 0;border-top:1px solid var(--border)}
+.rg:first-child{border-top:0}
+.rg-n{font-family:var(--mono);font-size:var(--t0);color:var(--muted);text-align:right}
+.rg b{font-weight:600;font-size:var(--t0)}
+.rg-k{font-family:var(--mono);font-size:var(--t0);padding:.1rem .4rem;border-radius:4px}
+.rg-k.dur{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red)}
+.rg-k.tou{background:var(--panel);color:var(--muted)}
+.rg-d{grid-column:2/4;font-size:var(--t0);color:var(--light);line-height:1.5}
+.rg[data-estat=be] .rg-n{color:var(--green)}
+.rg[data-estat=be] .rg-d{color:var(--muted)}
+.rg[data-estat=mal] .rg-n{color:var(--red);font-weight:700}
+.rg[data-estat=mal] .rg-d{color:var(--text)}
+
+.vered{display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;border-radius:10px;margin-bottom:1rem;font-size:var(--t0)}
+.vered.be{background:color-mix(in srgb,var(--green) 10%,transparent);color:var(--green)}
+.vered.mal{background:color-mix(in srgb,var(--red) 10%,transparent);color:var(--red)}
+.vered b{font-size:var(--t2)}
+
+/* ── Les tres anàlisis ───────────────────────────────────────────────────── */
+.an{padding:1rem 0;border-top:1px solid var(--border)}
+.an:first-child{border-top:0}
+.an h3{font-size:var(--t2)}
+.an-s{color:var(--muted);font-size:var(--t0);margin:.2rem 0 .6rem}
+.an-c,.an-q{margin:.4rem 0 0;padding-left:1.1rem;font-size:var(--t0);color:var(--light);line-height:1.6}
+.an-c li{color:var(--muted)}
+
+/* ── La taula de parells ─────────────────────────────────────────────────── */
+.tp{width:100%;border-collapse:collapse;font-size:var(--t0);margin-top:.6rem}
+.tp th{text-align:left;font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;padding:.3rem .4rem;border-bottom:1px solid var(--border)}
+.tp td{padding:.35rem .4rem;border-bottom:1px solid var(--border);vertical-align:top}
+.tp .m{font-family:var(--mono);font-size:var(--t0);padding:.05rem .35rem;border-radius:4px;white-space:nowrap}
+.tp .m.t{background:color-mix(in srgb,var(--blue) 12%,transparent);color:var(--blue)}
+.tp .m.i{background:color-mix(in srgb,var(--purple) 12%,transparent);color:var(--purple)}
+.buit{color:var(--muted);font-size:var(--t0);padding:1rem 0;text-align:center}
+
+pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:.8rem;
+  overflow:auto;font-family:var(--mono);font-size:var(--t0);line-height:1.5;margin:.6rem 0 0;max-height:22rem}
+.peu{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--muted);font-size:var(--t0)}
+.peu a{color:var(--light)}
+</style>
+</head>
+<body>
+
+<!--SOS-NAV-->
+<style>
+.sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
+  padding:.6rem 1rem;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.sos-nav .sn-brand{font-weight:700;color:var(--text);text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:var(--green)}
+.sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.sos-nav .sn-g{position:relative}
+.sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
+.sos-nav .sn-g>summary::-webkit-details-marker{display:none}
+.sos-nav .sn-g>summary:hover{color:var(--text);background:var(--panel)}
+.sos-nav .sn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.sos-nav .sn-here>summary{color:var(--text);font-weight:600}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:var(--indigo);border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:260px;z-index:70;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.sos-nav .sn-p a:hover{background:var(--panel);color:var(--text)}
+.sos-nav .sn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.sos-nav .sn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.sos-nav .sn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.sos-nav .sn-cta{margin-left:auto;background:var(--indigo);color:#fff;font-weight:600;text-decoration:none;
+  padding:.4rem .85rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{filter:brightness(1.12)}
+@media(max-width:640px){
+  .sos-nav{padding:.5rem .7rem;gap:.35rem}
+  .sos-nav .sn-brand{font-size:var(--t0)}
+  .sos-nav .sn-cta{margin-left:auto;padding:.34rem .65rem;font-size:var(--t0)}
+  /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
+     una barra que ja fa dues línies acaba fora de pantalla. */
+  /* En columna, i no en fila que embolica: amb els grups com a germans d'una
+     fila flexible, obrir-ne un el feia créixer i els altres se li posaven al
+     costat, mig amagats. En columna, obrir empeny cap avall i prou. */
+  .sos-nav .sn-gs{width:100%;order:3;flex-direction:column;align-items:stretch;gap:.1rem}
+  .sos-nav .sn-g{position:static}
+  .sos-nav .sn-g>summary{width:100%}
+  /* La marca del grup on ets no ha de fer de línia divisòria: a mòbil, un
+     subratllat de banda a banda sembla una separació i no una pista. */
+  .sos-nav .sn-here>summary::after{max-width:4.5rem}
+  .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0}
+}
+</style>
+<nav class="sos-nav" aria-label="Navegació del SOS">
+  <a class="sn-brand" href="../index.html">TeamTowers <span>Humà</span></a>
+  <div class="sn-gs"><details class="sn-g"><summary data-i18n="nv.g.comenca">🧭 Comença</summary><div class="sn-p"><a href="diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="intro.html"><b data-i18n="nv.t.intro">La intro</b><span data-i18n="nv.d.intro">De què va tot això</span></a><a href="uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="sn-g sn-here"><summary data-i18n="nv.g.eines">🛠 Eines</summary><div class="sn-p"><a href="vna.html"><b data-i18n="nv.t.vna">Mapa de valor</b><span data-i18n="nv.d.vna">Rols i intercanvis d'un projecte</span></a><a href="vna-suport.html" aria-current="page"><b data-i18n="nv.t.vna-suport">Fer un mapa de valor</b><span data-i18n="nv.d.vna-suport">Les sis passes, i deu regles que el revisen</span></a><a href="matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.apren">🎓 Aprèn</summary><div class="sn-p"><a href="formacio.html"><b data-i18n="nv.t.formacio">Formació</b><span data-i18n="nv.d.formacio">16 mòduls, de N0 a N3</span></a><a href="ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="escola.html"><b data-i18n="nv.t.escola">Escoles</b><span data-i18n="nv.d.escola">El SOS a mida d'aula</span></a><a href="vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.casa">🏛 La casa</summary><div class="sn-p"><a href="../cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a><a href="../qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="../premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details><details class="sn-g"><summary data-i18n="nv.g.xarxa">🏘 Xarxa</summary><div class="sn-p"><a href="comando.html"><b data-i18n="nv.t.comando">El Comando</b><span data-i18n="nv.d.comando">La pel·lícula que farem 150.000</span></a><a href="molekulon.html"><b data-i18n="nv.t.molekulon">Molekulon</b><span data-i18n="nv.d.molekulon">Molekulandia, un estat líquid</span></a><a href="online.html"><b data-i18n="nv.t.online">Directori</b><span data-i18n="nv.d.online">Qui hi ha, per territori</span></a></div></details></div>
+  <a class="sn-cta" href="index.html">Obre SOS →</a>
+</nav>
+<!--/SOS-NAV-->
+
+<header class="cap"><div class="w">
+  <p class="k">Suport al mapa de valor</p>
+  <h1>Les sis passes, <em>i deu regles que es comproven soles</em></h1>
+  <p>Això no és un formulari: és <b>el mètode de Verna Allee convertit en una eina</b>.
+  Escrius el mapa, i les deu regles el revisen mentre l'escrius. El que diu una
+  regla no és una opinió — és un error que ja es va cometre, i per això està
+  escrit amb el que el va fer visible.</p>
+  <p><b>No envia res.</b> Tot passa al navegador de qui hi és. Si vols ajuda d'una
+  IA, la consola et dona el text exacte que se li ha de donar perquè encerti — i
+  la seva resposta passa per les mateixes deu regles abans d'entrar.</p>
+</div></header>
+
+<main class="w g">
+
+  <div>
+    <!-- ── EL MAPA ─────────────────────────────────────────────────────────
+         Un sol camp de text i no vint caselles. Qui fa una sessió no omple un
+         formulari: escriu el que la sala diu, i l'eina ho llegeix. Un formulari
+         amb vint caselles obliga a saber la forma abans de saber el contingut. -->
+    <section class="pan">
+      <h2>El mapa</h2>
+      <p class="s">S'escriu i es revisa alhora. Res surt d'aquesta pàgina.</p>
+
+      <label for="abast">1 · L'abast</label>
+      <input id="abast" placeholder="De quina activitat parlem i on s'acaba">
+      <p class="hint">En una frase que es pugui repetir. És la passa que evita la
+      pregunta de mitja sessió: «i això també hi entra?».</p>
+
+      <label for="rols">2 · Els rols, un per línia</label>
+      <textarea id="rols" placeholder="Qui fa el vi&#10;Qui rep i explica&#10;El visitant"></textarea>
+      <p class="hint">Pel que <b>fan</b>, no pel càrrec. Entre sis i dotze.</p>
+
+      <label for="parells">3 i 4 · Els parells, un per línia</label>
+      <textarea id="parells" placeholder="Qui fa el vi | Qui rep i explica | t | el vi i el celler obert | i | saber què pregunta qui ve" style="min-height:9rem"></textarea>
+      <p class="hint">Sis camps separats per <code>|</code>: <b>de</b>, <b>a</b>,
+      la mena d'anada (<code>t</code> o <code>i</code>), <b>què</b> va, la mena de
+      tornada i <b>què</b> torna. Les dues bandes sempre: escriure el retorn
+      obliga a pensar-lo.</p>
+
+      <label for="processos">5 · Els processos, un per línia</label>
+      <textarea id="processos" placeholder="visita | La visita | Del primer contacte al comiat&#10;canal | El canal | De la comanda al cobrament"></textarea>
+      <p class="hint">Tres camps: <code>id</code>, nom i què hi passa. <b>En
+      plural</b>: un sol procés és el senyal que s'ha fet l'exercici equivocat.</p>
+
+      <label for="seq">5 · La seqüència, una per línia</label>
+      <textarea id="seq" placeholder="Qui fa el vi→Qui rep i explica | visita | 1&#10;Qui rep i explica→Qui fa el vi | sempre"></textarea>
+      <p class="hint">Qui lliura a qui, en quin procés i en quin pas. El que passa
+      tot el temps es marca <code>sempre</code> — i <b>només un intangible</b> ho
+      pot ser: un tangible sense pas és un tangible que ningú ha seqüenciat.</p>
+
+      <label for="troballes">6 · Les troballes, una per línia</label>
+      <textarea id="troballes" placeholder="Hi ha un node que no és de ningú | Qui fa la visita no està assignat, i si plega s'atura la meitat del que es cobra"></textarea>
+      <p class="hint">Dos camps: què s'ha vist i què s'atura si passa. Un rol que
+      <b>no existeix</b> no es dibuixa: es diu aquí.</p>
+
+      <div class="btns">
+        <button class="btn pri" id="btExemple" type="button">Omple'l amb el cas del celler</button>
+        <button class="btn" id="btBuida" type="button">Buida-ho</button>
+      </div>
+    </section>
+
+    <!-- ── LES SIS PASSES ─────────────────────────────────────────────────── -->
+    <section class="pan">
+      <h2>Les sis passes</h2>
+      <p class="s">L'ordre no és decoratiu. Es van marcant soles.</p>
+      <ol class="passes" id="passes">
+<!--VS-PASSES-->
+<li class="pa" data-pas="abast"><span class="pa-n">1</span><div><b>Posar la frontera</b><p>Dir de quina activitat parlem i on s'acaba. En una frase que es pugui repetir.</p><p class="pa-p">Sense frontera el mapa creix fins als quaranta nodes i ja no es llegeix a una sala.</p><code>abast</code></div></li>
+<li class="pa" data-pas="rols"><span class="pa-n">2</span><div><b>Posar els rols</b><p>Qui participa, dit pel que **fa** i no pel càrrec. Entre sis i dotze —els mateixos que compta la regla 2.</p><p class="pa-p">Amb càrrecs surt un organigrama amb fletxes, que és el que ja es té i no explica res.</p><code>roles</code></div></li>
+<li class="pa" data-pas="parells"><span class="pa-n">3</span><div><b>Posar el que es lliura, en parelles</b><p>Per cada vincle, què va de A a B i què torna de B a A, i de quina mena és cada cosa.</p><p class="pa-p">Escriure el retorn obliga a pensar-lo. Un mapa on algú només dona és un mapa fals.</p><code>pairs</code></div></li>
+<li class="pa" data-pas="intangibles"><span class="pa-n">4</span><div><b>Fer sortir els intangibles</b><p>Preguntar pel que s'ofereix i no es factura: avisos, favors, coneixement, accés, confiança.</p><p class="pa-p">És la meitat invisible, i és l'única cosa que aquest mètode veu i un diagrama de procés no.</p><code>pairs (mena intangible)</code></div></li>
+<li class="pa" data-pas="seq"><span class="pa-n">5</span><div><b>Seqüenciar les transaccions</b><p>Dir en quin procés i en quin pas passa cada transacció. I marcar «sempre» el que passa tot el temps.</p><p class="pa-p">Validar el mapa seqüenciant-lo és el que destapa els passos que ningú fa i els que fa tothom.</p><code>processos, seq</code></div></li>
+<li class="pa" data-pas="analisi"><span class="pa-n">6</span><div><b>Fer les tres anàlisis</b><p>Intercanvi, impacte i creació de valor. Tres preguntes diferents sobre el mateix dibuix.</p><p class="pa-p">Un mapa sense anàlisi és un dibuix. El producte és la conversió: quin intangible es pot negociar.</p><code>troballes</code></div></li>
+<!--/VS-PASSES-->
+      </ol>
+    </section>
+  </div>
+
+  <div>
+    <!-- ── EL VEREDICTE ───────────────────────────────────────────────────── -->
+    <section class="pan">
+      <h2>Què hi diuen les regles</h2>
+      <p class="s">Deu regles. Les <b>dures</b> aturen; les toves avisen.</p>
+      <div class="vered" id="vered" hidden></div>
+      <ul class="regles" id="regles">
+<!--VS-REGLES-->
+<li class="rg" data-regla="abast"><span class="rg-n">1</span><b>Hi ha un abast escrit</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="rols"><span class="rg-n">2</span><b>Entre 6 i 12 rols</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="menes"><span class="rg-n">3</span><b>Com a mínim un terç de transaccions intangibles</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="reciprocitat"><span class="rg-n">4</span><b>Tot vincle és recíproc</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="solts"><span class="rg-n">5</span><b>Cap rol solt</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="densitat"><span class="rg-n">6</span><b>Densitat ≥ 40 %</b><span class="rg-k tou">tova</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="concentracio"><span class="rg-n">7</span><b>Cap rol concentra més del 40 %</b><span class="rg-k tou">tova</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="xifres"><span class="rg-n">8</span><b>Cap xifra que no es pugui refer</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="noms"><span class="rg-n">9</span><b>Cap nom propi de persona ni d'empresa</b><span class="rg-k dur">dura</span><span class="rg-d"></span></li>
+<li class="rg" data-regla="processos"><span class="rg-n">10</span><b>Més d'un procés, i el que passa «sempre» marcat</b><span class="rg-k tou">tova</span><span class="rg-d"></span></li>
+<!--/VS-REGLES-->
+      </ul>
+    </section>
+
+    <!-- ── EL QUE S'HA ESCRIT ─────────────────────────────────────────────── -->
+    <section class="pan">
+      <h2>El que s'ha escrit</h2>
+      <p class="s">La forma canònica, la mateixa que llegeix el SOS.</p>
+      <div id="taula"></div>
+      <div class="btns">
+        <button class="btn" id="btJson" type="button">Copia el JSON</button>
+        <button class="btn" id="btPrompt" type="button">Copia el que se li dona a la IA</button>
+      </div>
+      <pre id="sortida" hidden></pre>
+    </section>
+
+    <!-- ── LES TRES ANÀLISIS ──────────────────────────────────────────────── -->
+    <section class="pan">
+      <h2>I les tres anàlisis</h2>
+      <p class="s">Tres preguntes diferents sobre el mateix dibuix.</p>
+<!--VS-ANALISIS-->
+<section class="an"><h3>Anàlisi d'intercanvi</h3><p class="an-s">Sobre el patró sencer.</p><ul class="an-q"><li>Hi ha lògica en com es mou el valor, o hi ha trossos que no s'expliquen?</li><li>Les dues menes són sanes, o en domina una?</li><li>Hi ha vincles morts, dèbils, culs-de-sac o colls d'ampolla?</li><li>S'optimitza el sistema sencer, o hi ha rols que hi guanyen a costa d'altres?</li></ul></section>
+<section class="an"><h3>Anàlisi d'impacte</h3><p class="an-s">Sobre cada transacció <b>rebuda</b>.</p><ul class="an-c"><li>Què genera</li><li>Què costa (temps, diners, competència, relacions)</li><li>Quin benefici dona (ingrés, capacitat actual, capacitat futura)</li><li>Com el valora qui el rep (−2…+2)</li></ul><ul class="an-q"><li>La darrera columna és el gomet del full: blau si qui ho rep n'està satisfet, groc si no.</li></ul></section>
+<section class="an"><h3>Anàlisi de creació de valor</h3><p class="an-s">Sobre cada transacció <b>donada</b>.</p><ul class="an-c"><li>Quins actius s'hi fan servir</li><li>Què costa</li><li>Quin risc té</li><li>Com hi afegim valor</li><li>Cost i risc contra benefici</li></ul><ul class="an-q"><li>I la pregunta que les lliga, que és el producte: <b>quin intangible que la casa ja produeix i regala es pot convertir en una forma negociable?</b></li></ul></section>
+<!--/VS-ANALISIS-->
+    </section>
+  </div>
+
+</main>
+
+<footer class="peu"><div class="w">
+  <p>El mètode és de <b>Verna Allee</b>, «Value Network Analysis and value conversion
+  of tangible and intangible assets», <i>Journal of Intellectual Capital</i> 9(1),
+  2008. Les regles 6 a 10 són d'aquesta casa i estan mesurades: els llindars
+  <b>no són seus</b> —l'article diu que «la recerca encara no ha determinat quines
+  són les proporcions ideals»— i atribuir-los-hi seria inventar una xifra.</p>
+  <p><a href="vna.html">Com es fa un mapa, pas a pas →</a> ·
+  <a href="index.html">Obre el SOS →</a></p>
+</div></footer>
+
+<script>
+'use strict';
+/*VS-MOTOR*/
+/* GENERAT per SOS/tools/build-vna-suport.js · no s'edita a mà */
+const REGLES=[
+{id:"abast",n:1,dur:true,de:"mètode",t:"Hi ha un abast escrit",test:m => ({ ok: !!(m.abast && m.abast.trim().length >= 12),
+      diu: m.abast ? 'L\'abast hi és' : 'Falta dir de quina activitat parlem i on s\'acaba' })},
+{id:"rols",n:2,dur:true,de:"mètode",t:"Entre 6 i 12 rols",test:m => { const n = (m.roles || []).length;
+      return { ok: n >= 6 && n <= 12,
+        diu: n < 6 ? `Només ${n} rols: amb menys de sis, el mapa no ensenya cap patró`
+          : n > 12 ? `${n} rols: per sobre de dotze no es llegeix a una sala. Parteix-lo per nivells i digues quin dibuixes`
+            : `${n} rols` }; }},
+{id:"menes",n:3,dur:true,de:"mètode",t:"Com a mínim un terç de transaccions intangibles",test:m => { const f = fluxos(m), i = f.filter(x => x.mena === 'intangible').length;
+      const pct = f.length ? Math.round(i * 100 / f.length) : 0;
+      return { ok: f.length > 0 && pct >= 33,
+        diu: !f.length ? 'No hi ha cap transacció'
+          : pct >= 33 ? `${i} de ${f.length} intangibles (${pct} %)`
+            : `Només ${pct} % d'intangibles: això és un diagrama de processos, no un mapa de valor` }; }},
+{id:"reciprocitat",n:4,dur:true,de:"mètode",t:"Tot vincle és recíproc",test:m => { const mal = (m.pairs || []).filter(p => !p[2] || !p[3] || !p[4] || !p[5]);
+      return { ok: !mal.length,
+        diu: mal.length ? `${mal.length} vincle(s) a mitges: ${mal.slice(0, 3).map(p => p[0] + ' ↔ ' + p[1]).join(', ')}. Si de debò va en un sol sentit, digues-ho com a troballa`
+          : `${(m.pairs || []).length} vincles, tots amb anada i tornada` }; }},
+{id:"solts",n:5,dur:true,de:"mètode",t:"Cap rol solt",test:m => { const t = tocats(m), s = (m.roles || []).filter(r => !t.has(r));
+      return { ok: !s.length,
+        diu: s.length ? `${s.length} rol(s) sense cap lliurament: ${s.join(', ')}. Un rol que no dona ni rep és una decoració`
+          : 'Tots els rols donen i reben' }; }},
+{id:"densitat",n:6,dur:false,de:"la casa",t:"Densitat ≥ 40 %",test:m => { const n = (m.roles || []).length, max = n * (n - 1) / 2;
+      const d = max ? Math.round((m.pairs || []).length * 100 / max) : 0;
+      return { ok: d >= 40, diu: `${d} % dels vincles possibles` + (d < 40 ? ' — per sota del 40 %, el mapa encara té regions que no s\'han preguntat' : '') }; }},
+{id:"concentracio",n:7,dur:false,de:"la casa",t:"Cap rol concentra més del 40 %",test:m => { const f = fluxos(m), g = {};
+      f.forEach(x => { g[x.de] = (g[x.de] || 0) + 1; g[x.a] = (g[x.a] || 0) + 1; });
+      let qui = null, max = 0;
+      Object.entries(g).forEach(([k, v]) => { if (v > max) { max = v; qui = k; } });
+      const pct = f.length ? Math.round(max * 100 / (f.length * 2)) : 0;
+      return { ok: pct <= 40,
+        diu: qui ? `${qui}: ${pct} %` + (pct > 40 ? ' — una xarxa on tot passa pel nucli és fràgil encara que sigui recíproca' : '') : 'Sense transaccions' }; }},
+{id:"xifres",n:8,dur:true,de:"la casa",t:"Cap xifra que no es pugui refer",test:m => { const mal = textos(m).filter(t => /\d+\s*(€|euros?|%)/i.test(t) || /\b\d{3,}\b/.test(t));
+      return { ok: !mal.length,
+        diu: mal.length ? `${mal.length} xifra(es) al text: «${mal[0].slice(0, 44)}». El mapa diu on mirar; els números els posa la casa amb els seus`
+          : 'Cap xifra inventada' }; }},
+{id:"noms",n:9,dur:true,de:"la casa",t:"Cap nom propi de persona ni d'empresa",test:m => { const mal = [...(m.roles || []), ...textos(m)]
+      .filter(t => /\b(S\.?L\.?|S\.?A\.?|SCCL|S\.?C\.?C\.?L)\b/.test(t) || /\b[A-ZÀ-Ú][a-zà-ú]+ [A-ZÀ-Ú][a-zà-ú]+\b/.test(t));
+      return { ok: !mal.length,
+        diu: mal.length ? `Sembla que hi ha un nom propi: «${mal[0].slice(0, 44)}». Els rols es diuen pel que fan`
+          : 'Cap nom propi' }; }},
+{id:"processos",n:10,dur:false,de:"la casa",t:"Més d'un procés, i el que passa «sempre» marcat",test:m => { const p = (m.processos || []).length;
+      const s = Object.values(m.seq || {}).filter(v => v === 'sempre');
+      const mal = Object.entries(m.seq || {}).filter(([k, v]) => v === 'sempre'
+        && (fluxos(m).find(f => f.clau === k) || {}).mena === 'tangible');
+      return { ok: p >= 2 && !mal.length,
+        diu: p < 2 ? 'Un sol procés: el senyal que s\'ha fet l\'exercici equivocat. Optimitzar múltiples vies no és trobar-ne una d\'òptima'
+          : mal.length ? `${mal.length} tangible(s) marcat(s) «sempre»: un tangible sense pas és un tangible que ningú ha seqüenciat`
+            : `${p} processos i ${s.length} lliurament(s) que passen tot el temps` }; }}
+];
+const fluxos=function fluxos(m) {
+  return (m.pairs || []).flatMap(p => [
+    { de: p[0], a: p[1], mena: p[2], q: p[3], clau: p[0] + '→' + p[1] },
+    { de: p[1], a: p[0], mena: p[4], q: p[5], clau: p[1] + '→' + p[0] }
+  ]).filter(f => f.mena && f.q);
+};
+const tocats=function tocats(m) { const s = new Set(); fluxos(m).forEach(f => { s.add(f.de); s.add(f.a); }); return s; };
+const textos=function textos(m) {
+  return [m.abast || '', ...fluxos(m).map(f => f.q),
+    ...(m.processos || []).map(p => (p.nom || '') + ' ' + (p.d || '')),
+    ...(m.troballes || []).map(t => (t.t || '') + ' ' + (t.d || ''))].filter(Boolean);
+};
+const revisa=function revisa(m) {
+  const r = REGLES.map(g => Object.assign({ id: g.id, n: g.n, t: g.t, dur: g.dur, de: g.de }, g.test(m || {})));
+  return { regles: r, passa: r.filter(x => x.dur).every(x => x.ok),
+    dures: r.filter(x => x.dur && !x.ok).length, toves: r.filter(x => !x.dur && !x.ok).length };
+};
+const SYSTEM_PROMPT="Ets qui acompanya una sessió de mapa de valor amb el mètode de Verna Allee\n(Value Network Analysis). Proposes un esborrany perquè una sala el validi:\nno decideixes res. Escrius en la llengua de qui t'ho demana.\n\nUN MAPA DE VALOR ÉS UN GRAF DE ROLS QUE S'INTERCANVIEN ENTREGABLES.\nTres elements i no més:\n· Rol — el que algú FA. No un càrrec, no una persona, no un departament.\n· Transacció — va d'un rol a un altre i té direcció.\n· Entregable — la cosa que viatja, dita amb NOM i no amb verb, i el criteri\n  és que es pugui comprovar si ha arribat.\n\nTANGIBLE O INTANGIBLE ES DECIDEIX PEL CONTRACTE, NO PER LA MATÈRIA.\nTangible és el que avui algú pot reclamar: comanda, servei, factura, informe\nprevist al contracte. Intangible és el que s'espera i no s'exigeix: un avís,\nun favor, coneixement de procés, accés, reputació, confiança, un consell.\nEl mateix informe és tangible si el contracte el preveu i intangible si es\ndona de franc per mantenir la relació.\n\nLES REGLES QUE LA TEVA PROPOSTA HA DE COMPLIR:\n1. Hi ha un abast escrit.\n2. Entre 6 i 12 rols.\n3. Com a mínim un terç de transaccions intangibles.\n4. Tot vincle és recíproc.\n5. Cap rol solt.\n6. Densitat ≥ 40 %.\n7. Cap rol concentra més del 40 %.\n8. Cap xifra que no es pugui refer.\n9. Cap nom propi de persona ni d'empresa.\n10. Més d'un procés, i el que passa «sempre» marcat.\n\nI TRES COSES QUE NO SÓN NEGOCIABLES:\n· Si un rol necessari no existeix a la casa, AIXÒ ÉS LA TROBALLA: digues\n  «aquest node avui no és de ningú». No el dibuixis com si hi fos.\n· Si el que et demanen no cap en dotze rols, no ampliïs el mapa: proposa\n  partir-lo per nivells i digues quin nivell estàs dibuixant.\n· Cada rol i cada transacció s'han de poder esborrar sense que la resta es\n  trenqui. És un esborrany per validar.";
+/*/VS-MOTOR*/
+
+/* ── Llegir el que s'ha escrit ────────────────────────────────────────────
+   El text mana sobre la forma: es parteix pel separador i el que falti queda
+   buit, perquè **un forat visible es corregeix i una invenció no la troba
+   ningú**. Cap línia es descarta en silenci. */
+const $ = s => document.querySelector(s);
+const linies = t => (t || '').split('\n').map(x => x.trim()).filter(Boolean);
+const mena = x => /^i/i.test((x || '').trim()) ? 'intangible' : 'tangible';
+
+function llegeix() {
+  const m = { abast: $('#abast').value.trim(), roles: linies($('#rols').value) };
+  m.pairs = linies($('#parells').value).map(l => {
+    const c = l.split('|').map(x => x.trim());
+    return [c[0] || '', c[1] || '', c[2] ? mena(c[2]) : '', c[3] || '', c[4] ? mena(c[4]) : '', c[5] || ''];
+  });
+  m.processos = linies($('#processos').value).map(l => {
+    const c = l.split('|').map(x => x.trim());
+    return { id: c[0] || '', nom: c[1] || '', d: c[2] || '' };
+  });
+  m.seq = {};
+  linies($('#seq').value).forEach(l => {
+    const c = l.split('|').map(x => x.trim());
+    if (!c[0]) return;
+    m.seq[c[0]] = (c[1] || '').toLowerCase() === 'sempre' ? 'sempre' : [c[1] || '', Number(c[2] || 1)];
+  });
+  m.troballes = linies($('#troballes').value).map(l => {
+    const c = l.split('|').map(x => x.trim());
+    return { t: c[0] || '', d: c[1] || '' };
+  });
+  return m;
+}
+
+/* ── Pintar ───────────────────────────────────────────────────────────────
+   El veredicte abans que la llista. Qui mira això vol saber si pot continuar,
+   no llegir deu línies per deduir-ho. */
+function pinta() {
+  const m = llegeix(), r = revisa(m);
+
+  const v = $('#vered');
+  v.hidden = false;
+  v.className = 'vered ' + (r.passa ? 'be' : 'mal');
+  v.innerHTML = r.passa
+    ? '<b>✓</b><span>Cap regla dura trencada' + (r.toves ? ' · ' + r.toves + ' avís(os)' : '') + '. Aquest mapa es pot portar a una sala.</span>'
+    : '<b>✗</b><span>' + r.dures + ' regla(es) dura(es) trencada(es). <b>Això encara no s\'ensenya com a mapa</b>: s\'ensenya el que li falta.</span>';
+
+  r.regles.forEach(x => {
+    const li = document.querySelector('.rg[data-regla="' + x.id + '"]');
+    if (!li) return;
+    li.dataset.estat = x.ok ? 'be' : 'mal';
+    li.querySelector('.rg-d').textContent = x.diu;
+  });
+
+  /* Les passes: una passa és feta quan **el que havia de quedar escrit hi és**,
+     no quan algú diu que l'ha fet. */
+  const fet = {
+    abast: !!m.abast, rols: m.roles.length >= 6,
+    parells: m.pairs.length > 0,
+    intangibles: fluxos(m).some(f => f.mena === 'intangible'),
+    seq: m.processos.length >= 2 && Object.keys(m.seq).length > 0,
+    analisi: m.troballes.length > 0
+  };
+  Object.entries(fet).forEach(([k, b]) => {
+    const li = document.querySelector('.pa[data-pas="' + k + '"]');
+    if (li) li.classList.toggle('fet', b);
+  });
+
+  pintaTaula(m);
+  window.__VS = { mapa: m, revisio: r };   // hook per a les proves
+}
+
+function pintaTaula(m) {
+  const f = fluxos(m), box = $('#taula');
+  if (!f.length) { box.innerHTML = '<p class="buit">Encara no hi ha cap transacció.</p>'; return; }
+  const seq = c => {
+    const s = m.seq[c];
+    if (!s) return '—';
+    return s === 'sempre' ? 'sempre' : (s[0] || '?') + ' ' + (s[1] || '');
+  };
+  box.innerHTML = '<table class="tp"><thead><tr><th>De</th><th>A</th><th>Mena</th><th>Què</th><th>Quan</th></tr></thead><tbody>'
+    + f.map(x => '<tr><td>' + esc(x.de) + '</td><td>' + esc(x.a) + '</td>'
+      + '<td><span class="m ' + (x.mena === 'intangible' ? 'i' : 't') + '">' + x.mena + '</span></td>'
+      + '<td>' + esc(x.q) + '</td><td>' + esc(seq(x.clau)) + '</td></tr>').join('')
+    + '</tbody></table>';
+}
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/* ── El que se li dona a una IA ───────────────────────────────────────────
+   Es construeix aquí i no s'envia des d'aquí: aquesta pàgina no té clau ni en
+   vol. El que fa és deixar-ho a punt perquè qui tingui l'eina que sigui li ho
+   pugui donar — i llavors enganxar la resposta a dalt, on les mateixes deu
+   regles la revisaran abans que entri enlloc. */
+function promptDeTreball() {
+  const m = llegeix();
+  const hi = [];
+  hi.push(SYSTEM_PROMPT, '', '═══ EL QUE TENIM ═══', '');
+  hi.push('Abast: ' + (m.abast || '(encara no escrit — demana\'l abans de res)'));
+  if (m.roles.length) hi.push('Rols que la casa ja fa servir: ' + m.roles.join(', '));
+  const f = fluxos(m);
+  if (f.length) {
+    hi.push('', 'El que ja hi ha al mapa (proposa CANVIS, no un de nou):');
+    f.forEach(x => hi.push('  ' + x.de + ' → ' + x.a + ' [' + x.mena + '] ' + x.q));
+  }
+  if (m.processos.length) hi.push('', 'Processos: ' + m.processos.map(p => p.nom || p.id).join(', '));
+  if (m.troballes.length) hi.push('', 'Troballes ja vistes: ' + m.troballes.map(t => t.t).join(' · '));
+  const r = revisa(m);
+  const mal = r.regles.filter(x => !x.ok);
+  if (mal.length) {
+    hi.push('', '═══ EL QUE AVUI NO COMPLEIX ═══', '');
+    mal.forEach(x => hi.push((x.dur ? '[dura] ' : '[avís] ') + x.n + '. ' + x.t + ' — ' + x.diu));
+  }
+  hi.push('', '═══ LA FORMA DE LA RESPOSTA ═══', '',
+    'Torna NOMÉS aquest JSON, sense text a fora:', '',
+    JSON.stringify({
+      abast: 'De quina activitat parlem i on s\'acaba',
+      roles: ['Qui ven', 'Qui entrega'],
+      pairs: [['Qui ven', 'Qui entrega', 'tangible', 'la comanda amb el que s\'ha promès',
+        'intangible', 'avisar si no arribarà a temps']],
+      processos: [{ id: 'venda', nom: 'La venda', d: 'Del primer contacte al cobrament' }],
+      seq: { 'Qui ven→Qui entrega': ['venda', 1] },
+      troballes: [{ t: 'Hi ha un node que no és de ningú', d: 'Per què, i què s\'atura si s\'encalla' }]
+    }, null, 2));
+  return hi.join('\n');
+}
+
+function ensenya(txt) {
+  const p = $('#sortida');
+  p.hidden = false; p.textContent = txt;
+  /* `navigator.clipboard` no existeix per `file://` a tots els navegadors, i un
+     botó que diu «copiat» quan no ha copiat res és pitjor que no tenir-lo: el
+     text queda a la vista i es pot seleccionar igualment. */
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).catch(() => {});
+  }
+  p.scrollIntoView({ block: 'nearest' });
+}
+
+/* ── El cas del celler ────────────────────────────────────────────────────
+   És el mateix que `CELLER` a `build-mapavalor.js`, escrit a mà aquí a posta i
+   retallat: aquesta pàgina ha de funcionar per `file://` sense carregar res.
+   Serveix per veure com es llegeix un mapa que compleix, no per copiar-lo. */
+const EXEMPLE = {
+  abast: 'El que passa des que algú es planteja venir al celler fins que marxa i ho explica',
+  rols: ['Qui fa el vi', 'Qui rep i explica', 'El visitant', 'El poble', 'La vinya i el veïnat',
+    'El distribuïdor', 'L\'operador de luxe'],
+  parells: [
+    'Qui fa el vi | Qui rep i explica | t | el vi, la verema i el celler obert | i | saber què pregunta i què paga qui ve',
+    'Qui rep i explica | El visitant | t | la visita, el tast i el relat de la casa | i | la confiança de qui ha estat aquí',
+    'El visitant | El poble | t | el que es gasta al bar i a la botiga | i | parlar-ne quan torna a casa',
+    'El poble | Qui rep i explica | i | el lloc que fa que aquell vi sigui d\'allà | t | que el camí i la plaça estiguin cuidats',
+    'La vinya i el veïnat | Qui fa el vi | t | la vinya treballada i els camins oberts | i | saber què aguanta cada vessant',
+    'El distribuïdor | Qui fa el vi | t | la comanda i el pagament | i | què es mou i què no al seu canal',
+    'L\'operador de luxe | Qui rep i explica | t | el grup i el pagament per persona | i | què demana un client que paga més'
+  ],
+  processos: ['visita | La visita | Del primer contacte fins que marxa',
+    'poble | El dia al poble | El que passa fora del celler',
+    'canal | La venda pel canal | De la comanda al cobrament'],
+  seq: ['Qui fa el vi→Qui rep i explica | visita | 1',
+    'Qui rep i explica→El visitant | visita | 2',
+    'El visitant→El poble | poble | 1',
+    'El poble→Qui rep i explica | sempre',
+    'Qui fa el vi→La vinya i el veïnat | sempre',
+    'La vinya i el veïnat→Qui fa el vi | poble | 2',
+    'El distribuïdor→Qui fa el vi | canal | 1',
+    'Qui fa el vi→El distribuïdor | canal | 2',
+    'L\'operador de luxe→Qui rep i explica | visita | 3',
+    'Qui rep i explica→L\'operador de luxe | visita | 4',
+    'El visitant→Qui rep i explica | sempre',
+    'Qui rep i explica→Qui fa el vi | sempre'],
+  troballes: [
+    'Hi ha un node que no és de ningú | Qui rep i explica no està assignat a ningú, i si plega s\'atura la meitat del que es cobra',
+    'El poble dona i no rep | El que fa que aquell vi sigui d\'allà no el paga ningú, i es pot convertir en una forma negociable'
+  ]
+};
+function omple() {
+  $('#abast').value = EXEMPLE.abast;
+  $('#rols').value = EXEMPLE.rols.join('\n');
+  $('#parells').value = EXEMPLE.parells.join('\n');
+  $('#processos').value = EXEMPLE.processos.join('\n');
+  $('#seq').value = EXEMPLE.seq.join('\n');
+  $('#troballes').value = EXEMPLE.troballes.join('\n');
+  pinta();
+}
+
+['abast', 'rols', 'parells', 'processos', 'seq', 'troballes']
+  .forEach(id => $('#' + id).addEventListener('input', pinta));
+$('#btExemple').addEventListener('click', omple);
+$('#btBuida').addEventListener('click', () => {
+  ['abast', 'rols', 'parells', 'processos', 'seq', 'troballes'].forEach(id => { $('#' + id).value = ''; });
+  $('#sortida').hidden = true;
+  pinta();
+});
+$('#btJson').addEventListener('click', () => ensenya(JSON.stringify(llegeix(), null, 2)));
+$('#btPrompt').addEventListener('click', () => ensenya(promptDeTreball()));
+
+pinta();
+window.__VS_API = { llegeix, revisa, fluxos, promptDeTreball, omple, EXEMPLE };
+</script>
+</body>
+</html>
