@@ -26,6 +26,14 @@
 /sos/vna /SOS/vna.html    200
 /vna /SOS/vna.html    200
 
+# `/vna` explica el mètode; `/vna-suport` el fa. Van una al costat de l'altra
+# perquè qui acaba de llegir què és un mapa de valor ha de poder-ne fer un
+# sense tornar al menú.
+/SOS/vna-suport /SOS/vna-suport.html    200
+/sos/vna-suport /SOS/vna-suport.html    200
+/vna-suport /SOS/vna-suport.html    200
+/fer-un-mapa /SOS/vna-suport.html    301
+
 /SOS/intro /SOS/intro.html    200
 /sos/intro /SOS/intro.html    200
 /intro /SOS/intro.html    200

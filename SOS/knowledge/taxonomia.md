@@ -108,6 +108,7 @@ aquesta llista i res més.
 - `SOS/knowledge/for-ai` · saber · El contracte de treball per a una IA que hi contribueix
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
+- `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
 - `SOS/prompts` · saber · Un fitxer per intent d'IA: el que se li demana, versionat
 - `SOS/tools` · prova · Les guardes que peten al CI quan una promesa deixa de ser certa
 - `SOS/tests` · prova · Playwright contra les pàgines de debò, per `file://`
