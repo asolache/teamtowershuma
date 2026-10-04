@@ -318,37 +318,50 @@ function nav(pagina) {
 
 /* El CSS va amb el menú i dins de les marques: si visqués al `<style>` de cada
    pàgina, tornaríem a tenir catorze còpies que divergeixen. */
+/* ── LA BARRA, BLANCA (03/10/2026) ────────────────────────────────────────
+   Era fosca —`rgba(11,11,18,.96)` amb el text a #c7c7d1— perquè totes les
+   pàgines ho eren. Ara el lloc públic és de paper i una barra negra a sobre
+   seria l'única cosa fosca de la pantalla.
+
+   **Res de color escrit a mà**: tot ve de la pell (`build-pell.js`), que és
+   qui declara la paleta un sol cop per a les vint-i-quatre pàgines. Els
+   colors literals que hi havia aquí —#f5f5f7, #c7c7d1, #141420, #6366f1—
+   són exactament els que feien impossible canviar la pell sense tocar
+   fitxer per fitxer.
+
+   I les mides pugen al terra del lloc: anaven a .85rem, .73rem i .8rem, que
+   renderitzades són 13,6, 11,7 i 12,8 px. `--t0` són 15. */
 const CSS = `<style>
 .sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
-  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  padding:.6rem 1rem;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
-.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
-.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-brand{font-weight:700;color:var(--text);text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:var(--green)}
 .sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .sos-nav .sn-g{position:relative}
 .sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
-  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
 .sos-nav .sn-g>summary::-webkit-details-marker{display:none}
-.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
-.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
-.sos-nav .sn-here>summary{color:#f5f5f7}
-.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
-.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
-  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
-  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
-.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
-.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
-.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
-.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
-.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
-.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
-  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
-.sos-nav .sn-cta:hover{background:#4f46e5}
+.sos-nav .sn-g>summary:hover{color:var(--text);background:var(--panel)}
+.sos-nav .sn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.sos-nav .sn-here>summary{color:var(--text);font-weight:600}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:var(--indigo);border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:260px;z-index:70;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.sos-nav .sn-p a:hover{background:var(--panel);color:var(--text)}
+.sos-nav .sn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.sos-nav .sn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.sos-nav .sn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.sos-nav .sn-cta{margin-left:auto;background:var(--indigo);color:#fff;font-weight:600;text-decoration:none;
+  padding:.4rem .85rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{filter:brightness(1.12)}
 @media(max-width:640px){
   .sos-nav{padding:.5rem .7rem;gap:.35rem}
-  .sos-nav .sn-brand{font-size:.82rem}
-  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  .sos-nav .sn-brand{font-size:var(--t0)}
+  .sos-nav .sn-cta{margin-left:auto;padding:.34rem .65rem;font-size:var(--t0)}
   /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
      una barra que ja fa dues línies acaba fora de pantalla. */
   /* En columna, i no en fila que embolica: amb els grups com a germans d'una
@@ -361,7 +374,7 @@ const CSS = `<style>
      subratllat de banda a banda sembla una separació i no una pista. */
   .sos-nav .sn-here>summary::after{max-width:4.5rem}
   .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
-    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0}
 }
 </style>`;
 

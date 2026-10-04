@@ -7,7 +7,33 @@
 <title>CRM privat · TeamTowers Humà</title>
 <meta name="description" content="Seguiment privat de diagnòstics i contactes. Les dades es queden en aquest navegador i no viatgen a cap servidor.">
 <style>
-:root{--bg:#050507;--panel:#0a0a0f;--card:#111118;--text:#f5f5f7;--muted:#82828d;--light:#c7c7d1;--border:rgba(255,255,255,.07);--indigo:#6366f1;--green:#00e676;--orange:#ff9100;--purple:#e040fb;--red:#ff5252;--blue:#00b0ff;--mono:'JetBrains Mono',SFMono-Regular,Menlo,monospace}
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;line-height:1.6}
 .wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.2rem 4rem}
@@ -52,8 +78,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--indigo)}
 .b-ok{color:var(--green);border-color:var(--green)}
 .l-body{font-size:.83rem;color:var(--light);line-height:1.5;margin:.4rem 0}
 .l-body em{color:var(--muted);font-style:normal}
-.l-body a{color:var(--indigo,#6366f1)}
-.pt-alt{color:#00e676}.pt-mitja{color:#ff9100}.pt-baix{color:#82828d}
+.l-body a{color:var(--indigo,var(--indigo))}
+.pt-alt{color:var(--green)}.pt-mitja{color:var(--orange)}.pt-baix{color:var(--muted)}
 .l-row{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.5rem}
 .l-row select,.l-row input{flex:1;min-width:130px}
 .empty{text-align:center;padding:3rem 1rem;color:var(--muted)}
@@ -71,35 +97,35 @@ footer a{color:var(--indigo);text-decoration:none}
 <!--SOS-NAV-->
 <style>
 .sos-nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;
-  padding:.55rem 1rem;background:rgba(11,11,18,.96);backdrop-filter:blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.09);font-size:.85rem;
+  padding:.6rem 1rem;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
-.sos-nav .sn-brand{font-weight:700;color:#f5f5f7;text-decoration:none;margin-right:.4rem}
-.sos-nav .sn-brand span{color:#00e676}
+.sos-nav .sn-brand{font-weight:700;color:var(--text);text-decoration:none;margin-right:.4rem}
+.sos-nav .sn-brand span{color:var(--green)}
 .sos-nav .sn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .sos-nav .sn-g{position:relative}
 .sos-nav .sn-g>summary{list-style:none;cursor:pointer;padding:.34rem .6rem;border-radius:8px;
-  color:#c7c7d1;white-space:nowrap;border:1px solid transparent}
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
 .sos-nav .sn-g>summary::-webkit-details-marker{display:none}
-.sos-nav .sn-g>summary:hover{color:#f5f5f7;background:rgba(255,255,255,.06)}
-.sos-nav .sn-g[open]>summary{background:rgba(255,255,255,.08);color:#f5f5f7;border-color:rgba(255,255,255,.12)}
-.sos-nav .sn-here>summary{color:#f5f5f7}
-.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:#6366f1;border-radius:2px;margin-top:.16rem}
-.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:250px;z-index:70;
-  background:#141420;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:.35rem;
-  box-shadow:0 14px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:.1rem}
-.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:#c7c7d1}
-.sos-nav .sn-p a:hover{background:rgba(99,102,241,.16);color:#f5f5f7}
-.sos-nav .sn-p a[aria-current]{background:rgba(99,102,241,.22);color:#f5f5f7}
-.sos-nav .sn-p b{display:block;font-size:.85rem;font-weight:600;color:#f5f5f7}
-.sos-nav .sn-p span{display:block;font-size:.73rem;color:#82828d;line-height:1.35}
-.sos-nav .sn-cta{margin-left:auto;background:#6366f1;color:#fff;font-weight:600;text-decoration:none;
-  padding:.36rem .8rem;border-radius:9px;white-space:nowrap}
-.sos-nav .sn-cta:hover{background:#4f46e5}
+.sos-nav .sn-g>summary:hover{color:var(--text);background:var(--panel)}
+.sos-nav .sn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.sos-nav .sn-here>summary{color:var(--text);font-weight:600}
+.sos-nav .sn-here>summary::after{content:'';display:block;height:2px;background:var(--indigo);border-radius:2px;margin-top:.16rem}
+.sos-nav .sn-p{position:absolute;top:calc(100% + .3rem);left:0;min-width:260px;z-index:70;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.sos-nav .sn-p a{display:block;padding:.42rem .55rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.sos-nav .sn-p a:hover{background:var(--panel);color:var(--text)}
+.sos-nav .sn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.sos-nav .sn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.sos-nav .sn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.sos-nav .sn-cta{margin-left:auto;background:var(--indigo);color:#fff;font-weight:600;text-decoration:none;
+  padding:.4rem .85rem;border-radius:9px;white-space:nowrap}
+.sos-nav .sn-cta:hover{filter:brightness(1.12)}
 @media(max-width:640px){
   .sos-nav{padding:.5rem .7rem;gap:.35rem}
-  .sos-nav .sn-brand{font-size:.82rem}
-  .sos-nav .sn-cta{margin-left:auto;padding:.32rem .6rem;font-size:.8rem}
+  .sos-nav .sn-brand{font-size:var(--t0)}
+  .sos-nav .sn-cta{margin-left:auto;padding:.34rem .65rem;font-size:var(--t0)}
   /* A mòbil el panell no flota: s'obre a sota i empeny. Un panell absolut en
      una barra que ja fa dues línies acaba fora de pantalla. */
   /* En columna, i no en fila que embolica: amb els grups com a germans d'una
@@ -112,7 +138,7 @@ footer a{color:var(--indigo);text-decoration:none}
      subratllat de banda a banda sembla una separació i no una pista. */
   .sos-nav .sn-here>summary::after{max-width:4.5rem}
   .sos-nav .sn-p{position:static;min-width:0;margin:.2rem 0 .3rem .5rem;box-shadow:none;
-    border-left:2px solid rgba(99,102,241,.5);border-radius:0 10px 10px 0}
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0}
 }
 </style>
 <nav class="sos-nav" aria-label="Navegació del SOS">

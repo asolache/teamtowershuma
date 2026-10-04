@@ -44,6 +44,107 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### La pell · una paleta, vint-i-quatre pàgines (03/10/2026)
+
+**Fet.** El lloc públic passa a clar i la barra a blanc. El que s'ha mesurat:
+
+| | Abans | Ara |
+|---|---|---|
+| Declaracions de la paleta | **29 còpies**, 3 jocs de noms | 1, a `build-pell.js` |
+| Derives silencioses | `--card` amb 4 valors, `--bg` 2, `--border` 3 | cap, i hi ha guarda |
+| Text per sota d'AA (4,5:1) | — | **0** a 24 pàgines, mesurat al navegador |
+| Text **dins dels dibuixos** per sota d'AA | **13** | 0 |
+| Colors escrits dins dels dibuixos | **237 traços** amb els accents vells | 0 |
+| Barres de navegació | 2 declaracions, una fosca i una clara | 1 |
+
+**La causa real del problema no era el color: era que la paleta estava copiada.**
+Les derives —`--card` amb quatre valors— no volien dir res: són el rastre de
+vint-i-tres pàgines escrites copiant la del costat. Mentre fos així, qualsevol
+canvi de pell demanava editar vint-i-nou blocs i confiar a no deixar-se'n cap.
+
+**Quatre coses que es van trobar mesurant i no mirant:**
+
+1. **`build-vedes.js` escrivia la seva pròpia paleta** i guanyava a la de la
+   pell —la pàgina tenia dos `:root` i manava el seu—, de manera que hauria
+   estat l'única del lloc que es quedava negra sense que res petés. I la guarda
+   no la veia perquè buscava els tokens **a principi de línia** i aquella anava
+   tota en una sola. Les dues coses, arreglades.
+2. **`--white` servia per a dues feines**: el text de la pàgina i el text
+   **damunt** d'un accent ple. Sobre fosc les dues volien el mateix color;
+   sobre paper es parteixen, i els botons van quedar a 3:1. D'aquí
+   **`--on-accent`**.
+3. **Tres accents no arribaven a AA sobre un fons tenyit** —una etiqueta de
+   color sobre el seu propi to—, que és just on es fan servir. `--blue`,
+   `--green` i `--orange` es van enfosquir amb el número al costat.
+4. **La intro té un escenari negre a posta** —és un guió de pel·lícula— i la
+   passada automàtica hi va girar els vels: les etiquetes del pla van quedar en
+   tinta damunt de negre, invisibles. Els colors d'aquell escenari es queden
+   brillants, amb el motiu escrit.
+5. **La mesura deia «0 per sota d'AA» i es deixava els dibuixos.** Caminava els
+   nodes de text de l'HTML i no entrava als `<svg>`. Dins hi havia `fill="#00e676"`
+   escrit a mà —1,6:1 sobre paper— i tretze textos entre 2,1 i 3,1:1. El que
+   fallava no era la pell: era **la comprovació**. Amb els SVG inclosos, i
+   component l'opacitat acumulada i el `<rect>` de fons de cada dibuix, surten
+   zero.
+
+**Els colors ja no van escrits dins dels dibuixos.** Els 237 traços passen a
+`var(--…)`: l'atribut `stroke` d'un SVG en línia accepta una variable, i així el
+dibuix hereta la paleta de la pàgina on cau. Dues conseqüències mesurades:
+
+- **Les opacitats tenien un sòl implícit.** Un accent de la paleta nova
+  necessita **op ≥ 0,66** per arribar als 3:1 que demana un objecte gràfic, i
+  **≥ 0,85** per als 4,5:1 d'un text. Les fletxes del mapa anaven a 0,50 i 0,42
+  —2,4:1 i 2,2:1 sobre paper— i les etiquetes del dibuix de la colla, a 0,45.
+  Pugen a 0,72 / 0,70 i a 1.
+- **El que es queda per sota a posta**: els fils de fons de la planta (op 0,13),
+  els anells guia i les vores de `--border`. Són decoració i la norma els
+  exclou; pujar-los taparia el dibuix que expliquen.
+
+**I el que la pell va fer caure sense fer-ho petar: una lectura del dibuix que
+mirava el color.** «Només el camí del canal», a `/vna`, triava els rols
+**comparant el `stroke` del cercle amb un hex escrit al JavaScript**. Canviada
+la paleta, la comparació no trobava cap rol: el botó quedava premut, el dibuix
+no es movia i no petava res. Ara el camí viatja com a `data-cami`, igual que
+`data-mena` i `data-seq`, i `check-vna.js` té una regla nova —provada trencant
+les dues meitats a posta— que no deixa que cap lectura torni a dependre d'un
+color. **El color és una decisió de pell i canvia; el camí és una dada del
+mapa.**
+
+**`build-vedes.js --check` es menjava la cua.** Comparava el fitxer lletra per
+lletra, i `build-pell.js` li omple el bloc de la paleta **després**. La guarda
+demanava regenerar, i regenerar tornava a buidar la paleta: dues passades que es
+desfan l'una a l'altra. Ara la comparació buida el bloc de la pell a les dues
+bandes —**cada generador només respon del que escriu ell**— i segueix veient
+qualsevol altre canvi (provat trencant la pàgina a posta).
+
+**I una pregunta de disseny que es deixa oberta a posta:** a `/vna` hi queda
+**un escenari negre** —el guió de nou passos de la colla castellera (`#colla`,
+el llenç `#llenc`)—, enmig d'una pàgina de paper. És el mateix cas que
+`SOS/intro.html`: una escena animada, amb els seus accents brillants que sobre
+el negre compleixen AA. No s'ha tocat perquè girar-lo no és canviar tokens,
+és tornar a dibuixar l'escena, i perquè la decisió —si una pàgina editorial pot
+tenir un escenari o no— és de disseny i no d'accessibilitat.
+
+**I una decisió:** **l'aplicació (`SOS/index.html`) es queda fosca.** És una
+altra superfície —una eina que s'obre cada dia, no una pàgina que es llegeix un
+cop—, té barra pròpia i va al 99 % del seu sostre de pes. Consta a
+`FORA_DE_LA_PELL` amb el motiu, igual que `joc.html` i `premsa.html`.
+
+#### El següent: el terra tipogràfic, que és **4.500**
+
+Mesurat al navegador a les 24 pàgines: **4.500 fragments de text per sota de
+15 px**, de 10,2 px amunt. `/vna` ja el té (`--t0`) i la resta no.
+
+**No va en aquest lliurament a posta.** No és un canvi de token: són centenars
+de `font-size` escrits un per un —`.78rem`, `.73rem`, `.82rem`— i pujar-los mou
+la maqueta de cada pàgina: botons que es parteixen, targetes que es reordenen,
+taules que surten. Barrejar-ho amb la pell hauria fet que no es pogués revisar
+cap de les dues coses.
+
+Els pitjors: `vedes.html` (1.187, dels quals 149 són el número de cada veda),
+`molekulon.html` (75), `uneix-te.html` (69). La guarda existeix a
+`check-vna.js` i el que falta és **generalitzar-la**, una pàgina cada cop.
+
 ### `/vna` · el llenç, i el constructor que ve després (03/10/2026)
 
 **Fet.** La pàgina del mapa de valor era **explicativa** i ara és el producte.
@@ -81,6 +182,14 @@ hi siguin els tres.
 
 **El que queda obert, i és la fase 2:**
 
+- **Les etiquetes del full de sessió es trepitgen.** A `blocSessio`, el «must» i
+  l'«extra» van al **punt mig** del vincle, i l'amplada surt del text: els rols
+  de l'esquerra i de la dreta queden a poca distància horitzontal del centre
+  —`1,42·R` d'ample contra `0,82·R` d'alt— i una etiqueta de 160 unitats no hi
+  cap. «Avisar de la ruptura» entra dins del post-it central. Ve d'abans de la
+  pell i es va veure mirant el dibuix, no mesurant: el contrast hi és, el que
+  falla és on cau la caixa. L'arregla qui toqui la geometria del full, no qui
+  toqui el color.
 - **El constructor.** Sis passes —l'abast · qui hi ha · els rols · els «must» ·
   els «extra» · la seqüència i els gomets— que emeten **la forma canònica**
   `{nodes, parells}`, idèntica a `CELLER` i a `pairs` de `mapFlowsOf`. Si

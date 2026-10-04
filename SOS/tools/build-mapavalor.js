@@ -178,8 +178,11 @@ const CELLER = {
   titolSvgEs: 'Mapa de valor de una bodega del Penedès',
   descSvg: 'Set rols i setze lliuraments. A l\'esquerra el distribuïdor, amb qui tot el que es lliura és tangible. A la dreta l\'operador de luxe i el visitant, on la meitat del que es lliura és intangible.',
   descSvgEs: 'Siete roles y dieciséis entregas. A la izquierda el distribuidor, con quien todo lo que se entrega es tangible. A la derecha el operador de lujo y el visitante, donde la mitad de lo que se entrega es intangible.',
-  /* El color diu de quin camí és cada node. El que no hi surt va d'indi. */
-  colors: { canal: '#82828d', visitant: '#00e676' },
+  /* El color diu de quin camí és cada node. El que no hi surt va d'indi.
+     Vénen de la paleta (`build-pell.js`) i no d'aquí: el traç d'un cercle és un
+     objecte gràfic i necessita 3:1 contra el fons, i el verd viu d'abans
+     —#00e676, 1,6:1 sobre paper— desapareixia a la pell clara. */
+  colors: { canal: 'var(--muted)', visitant: 'var(--green)' },
   una: 'El mateix vi, el mateix poble i la mateixa família. El que canvia és qui rep què — i sobretot, quins lliuraments es paguen.',
   unaEs: 'El mismo vino, el mismo pueblo y la misma familia. Lo que cambia es quién recibe qué — y sobre todo, qué entregas se pagan.',
   /* ══ ELS PROCESSOS · la passa 4 del mètode, com a dada ════════════════════
@@ -357,7 +360,7 @@ const DINS = {
     descSvgEs: 'Cinco roles dentro del nodo que hoy no es de nadie: quien coge el teléfono, quien lleva la agenda, quien hace la visita, quien da de comer y quien lo cuenta fuera. Diez entregas, y la mitad no se factura.',
     una: 'El node que la casa no té assignat, obert. Són cinc feines, no una — i avui les fa qui pot.',
     unaEs: 'El nodo que la casa no tiene asignado, abierto. Son cinco trabajos, no uno — y hoy los hace quien puede.',
-    colors: { nucli: '#00e676' },
+    colors: { nucli: 'var(--green)' },
     nodes: [
       { id: 'tel', nom: 'Qui agafa el telèfon', nomEs: 'Quién coge el teléfono', cami: 'nucli',
         d: 'La primera veu de la casa. Qui decideix, sense saber-ho, si aquella trucada acaba en visita.',
@@ -407,7 +410,7 @@ const DINS = {
     descSvgEs: 'Cuatro roles dentro del nodo que todo el mundo da por entendido: quien trabaja la viña, quien hace el vino en la bodega, quien decide el corte y la crianza, y quien lleva los papeles. Ocho entregas.',
     una: 'El node que ningú pregunta, obert. Quatre rols, i el que es diuen entre ells decideix l\'any que ve.',
     unaEs: 'El nodo que nadie pregunta, abierto. Cuatro roles, y lo que se dicen entre ellos decide el año que viene.',
-    colors: { nucli: '#6366f1' },
+    colors: { nucli: 'var(--indigo)' },
     nodes: [
       { id: 'vinya', nom: 'Qui treballa la vinya', nomEs: 'Quién trabaja la viña', cami: 'nucli',
         d: 'Poda, tracta i decideix el dia de verema de cada vessant. És qui sap coses que no s\'escriuen enlloc.',
@@ -846,7 +849,7 @@ const XARXA = {
   titolSvgEs: 'Mapa de valor de la red de TeamTowers',
   descSvg: 'Set rols i setze lliuraments. A l\'esquerra i al centre, els quatre oficis de la casa: qui mapa, qui forma, qui ho fa passar i qui construeix la peça. A la dreta, les agències, les empreses i les institucions.',
   descSvgEs: 'Siete roles y dieciséis entregas. A la izquierda y en el centro, los cuatro oficios de la casa: quién mapea, quién forma, quién lo hace pasar y quién construye la pieza. A la derecha, las agencias, las empresas y las instituciones.',
-  colors: { casa: '#6366f1', fora: '#00e676', canal: '#82828d' },
+  colors: { casa: 'var(--indigo)', fora: 'var(--green)', canal: 'var(--muted)' },
   nodes: [
     { id: 'mapa', nom: 'Qui mapa el valor', nomEs: 'Quién mapea el valor', x: 320, y: 58, cami: 'casa',
       d: 'Dibuixa qui dona què a qui, també el que no es factura. És el node del qual pengen tots els altres oficis de la casa.',
@@ -1111,8 +1114,8 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau, dins) {
      convingui mantenir. */
   const mT = `${id}-T`, mI = `${id}-I`;
   p.push('<defs>' +
-    `<marker id="${mT}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#00b0ff"/></marker>` +
-    `<marker id="${mI}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e040fb"/></marker>` +
+    `<marker id="${mT}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--blue)"/></marker>` +
+    `<marker id="${mI}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--purple)"/></marker>` +
     '</defs>');
   // Les fletxes primer, perquè els nodes hi quedin a sobre i el text es llegeixi.
   /* Els polsos van a part i a sota de tot: són el mateix camí dibuixat una
@@ -1150,7 +1153,11 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau, dins) {
     const atr = ` data-mena="${tang ? 't' : 'i'}"`
       + (f.seq ? ` data-seq="${f.seq === 'sempre' ? 'sempre' : f.seq[0] + ':' + f.seq[1]}"` : '');
     p.push(`<path class="mv-f" d="${cam}" fill="none" ` +
-      `stroke="${tang ? '#00b0ff' : '#e040fb'}" stroke-width="${tang ? 2 : 1.6}" opacity="${tang ? .5 : .42}"` +
+      /* L'opacitat era .5 i .42, que sobre la pell fosca d'abans encara es veia.
+         Sobre paper feia 2,4:1 i 2,2:1, i una fletxa és un objecte gràfic: en
+         necessita 3. Amb l'accent més fluix de la paleta el llindar és .66, i
+         per sota d'això la fletxa hi és i no es veu. */
+      `stroke="${tang ? 'var(--blue)' : 'var(--purple)'}" stroke-width="${tang ? 2 : 1.6}" opacity="${tang ? .72 : .7}"` +
       `${tang ? '' : ' stroke-dasharray="6 7"'}${para}${atr} marker-end="url(#${tang ? mT : mI})">` +
       `<title${i18('f' + i)}>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})</title></path>`);
     // El retard reparteix els polsos, i l'ordre és el de la seqüència (`ordreSeq`).
@@ -1159,7 +1166,7 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau, dins) {
   });
   p.push('<g class="mv-pols" aria-hidden="true">' + camins.join('') + '</g>');
   mapa.nodes.forEach(n => {
-    const col = COL[n.cami] || '#6366f1';
+    const col = COL[n.cami] || 'var(--indigo)';
     const perd = PERDUA.find(x => x.id === n.id);
     const marca = n.id === encN ? ' data-para="1"'
       : (perd && perd.pct >= .5 ? ' data-sec="1"' : '');
@@ -1176,7 +1183,13 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau, dins) {
       ? ` data-dins="${n.id}" tabindex="0" role="button"`
         + ` aria-label="${esc(n.nom)} — obre el mapa de dins, ${sub.nodes.length} rols"`
       : '';
-    p.push(`<g class="mv-n${sub ? ' mv-obre' : ''}" data-id="${n.id}"${marca}${obre}>`);
+    /* `data-cami` i no el color del traç. La pàgina triava els rols d'un camí
+       **comparant `stroke` amb un hex escrit al JavaScript**, i el dia que la
+       paleta va canviar la comparació no va trobar res: el botó «només el camí
+       del canal» deixava de fer res i no petava res. El camí és una dada del
+       mapa i ha de viatjar com a dada, igual que `data-mena` i `data-seq`. */
+    const cami = n.cami ? ` data-cami="${esc(n.cami)}"` : '';
+    p.push(`<g class="mv-n${sub ? ' mv-obre' : ''}" data-id="${n.id}"${cami}${marca}${obre}>`);
     /* El farciment i el color del text **els posa el CSS de cada pàgina**, i no
        van escrits aquí. Eren `fill="#141420"` i `fill="#f5f5f7"`: el mateix
        dibuix va a la portada, que és fosca, i a `/vna`, que des d'avui és
