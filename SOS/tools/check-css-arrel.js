@@ -40,12 +40,23 @@ const ok = m => console.log('  ✓ ' + m);
 const pl = (n, u, p) => `${n} ${n === 1 ? u : p}`;
 const mostra = l => l.slice(0, 6).join(', ') + (l.length > 6 ? `, i ${l.length - 6} més` : '');
 
-/* ── Llegir el full d'estil i el marcatge ────────────────────────────────── */
+/* ── Llegir el full d'estil i el marcatge ──────────────────────────────────
+   **Tots** els `<style>` de la pàgina, i no el primer. Aquesta guarda llegia
+   només el del `<head>`, i el 04/10/2026 la barra única va passar a portar el
+   seu CSS **dins del seu bloc generat, al cos** —que és el que impedeix que
+   torni a haver-hi vint-i-set còpies que divergeixen. Amb un sol `<style>`
+   llegit, les classes de la barra sortien «usades i estilades en una altra
+   pàgina»: la guarda acusava precisament el patró que la casa fa servir.
+
+   I el CSS es treu del cos abans de buscar-hi classes: `.lang-b.on{…}` dins
+   d'un `<style>` no és marcatge, i comptar-lo com a tal fa que una regla es
+   doni per viva només perquè s'ha escrit. */
 function parteix(src) {
-  const a = src.indexOf('<style>');
-  const b = src.indexOf('</style>', a);
-  if (a < 0 || b < 0) return null;
-  return { css: src.slice(a + 7, b), cos: src.slice(src.indexOf('<body'), src.lastIndexOf('</body>')) };
+  if (src.indexOf('<style>') < 0) return null;
+  const css = [...src.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m => m[1]).join('\n');
+  const cos = src.slice(src.indexOf('<body'), src.lastIndexOf('</body>'))
+    .replace(/<style>[\s\S]*?<\/style>/g, '');
+  return { css, cos };
 }
 
 /* Les regles, una per una. Es camina caràcter a caràcter i no amb una

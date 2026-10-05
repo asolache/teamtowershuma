@@ -374,13 +374,17 @@ else bad(`la pàgina no porta a ${faltenMod.map(([, q]) => q).join(', ')} — to
    d'una pàgina que no és la que buscava, i això no ho veu mai qui l'ha escrit
    perquè ell ja sap on volia anar. Veda 116. */
 const { existsSync } = require('node:fs');
+/* On va una adreça interna es declara a `rutes.js` i no aquí: la barra única
+   del 04/10/2026 porta rutes absolutes, i resoltes relatives al fitxer
+   donaven morts vint-i-sis destins que existeixen tots. */
+const { fitxerDe } = require('./rutes.js');
 const dests = [...new Set([...PAG.matchAll(/href="([^"]+)"/g)].map(m => m[1]))]
   .filter(h => !/^(https?:|mailto:|#)/.test(h));
 const morts = [];
 dests.forEach(h => {
   const [fitxer, anc] = h.split('#');
-  const cami = fitxer.startsWith('../') ? join(ARREL, fitxer.slice(3)) : join(ARREL, 'SOS', fitxer);
-  if (!existsSync(cami)) { morts.push(`${h} (no existeix ${fitxer})`); return; }
+  const cami = fitxerDe(fitxer, join(ARREL, 'SOS'));
+  if (!cami || !existsSync(cami)) { morts.push(`${h} (no existeix ${fitxer})`); return; }
   if (!anc) return;
   if (anc.startsWith('/')) {
     const r = anc.slice(1).split('/')[0];

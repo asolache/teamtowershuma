@@ -44,6 +44,131 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### Les cinc portes, i la frontera amb l'altra casa (04/10/2026)
+
+**Fet.** La barra ja era una (entrada de sota); el que estava barrejat era
+**què hi havia a dins**. Els grups s'ordenaven pel que era cada cosa per a
+nosaltres, i el resultat és que des de `/vna` la MATRIU i Molekulandia eren al
+mateix calaix.
+
+| | Abans | Ara |
+|---|---|---|
+| Grups | Comença · Eines · Aprèn · La casa · Xarxa | Mapa de valor · El SOS · Formació · Molekulon · Qui som |
+| Pàgines del Comando escampades | 5, en 3 grups diferents | **1 porta** |
+| Destins cap a molekulon.org | 0 | 6, i es veuen que ho són |
+| Banderes de ruta | `arrel: true` **al grup** | per enllaç |
+| Pàgines amb dos negocis al mateix calaix | 3 grups | 0 |
+
+**L'ordre, i per què.** Es va deixar d'ordenar pel que és cada cosa i es va
+passar a ordenar per **la pregunta que es fa qui arriba**: *què compro · amb
+quina eina · com s'aprèn · i l'altre món · qui ho signa*.
+
+**Dues col·locacions que es podrien discutir, amb el motiu escrit al
+generador:** `ia.html` es queda a *Formació* perquè explica com el SOS fa
+servir la IA i explicar no és operar; `online.html` passa de *Xarxa* a *El SOS*
+perquè és la dinàmica `cens_entitats` de la taula `EINES`, una pàgina que
+s'opera i no un món que es llegeix.
+
+**El bucle que gairebé es va publicar.** El pla de setembre
+(`vision/molekulon-org-pla.md` §2.3) deia que `/molekulandia`, `/molekulon` i
+`/escola` passarien a 301 cap a molekulon.org. **L'altra casa ja en té un cap
+aquí**: el seu `_redirects` (`asolache/molekulonorg@f3b7971`) envia
+`/molekulandia`, `/estat-liquid`, `/escola` i `/joc` cap a teamtowershuma.com, i
+les seves sis pàgines ens enllacen **45 vegades**. Dos fitxers correctes, cada
+un al seu repositori, i el navegador donant voltes. **No ho veuria cap guarda
+d'aquesta casa, perquè la meitat de la regla viu a l'altra.**
+
+La frontera de debò és a `negoci/frontera-molekulon.md` i **la llegeixen dues
+guardes**, que és el que impedeix que el fitxer quedi vell sense que es noti:
+
+5. **La porta de Molekulon porta a les sis pàgines que allà existeixen**, i a
+   cap altra. Un destí inventat no peta: dona un 404 amb el nostre logotip a la
+   casa del veí.
+6. **Cap adreça que ells ens envien torna cap allà.** És el bucle, i cobreix
+   les tres variants (`/x`, `/sos/x`, `/SOS/x.html`).
+
+**L'únic que marxa: `/comando`.** La tesi dels 150.000, els sis eixos, els 14
+herois i els 11 vídeos són, allà, la portada més `/personatges` més `/musica`.
+És l'únic 301 d'anada que **no fa bucle**, comprovat contra el seu `_redirects`.
+
+**El que queda obert, i és una veritat a mitges escrita a posta:**
+
+- **`SOS/comando.html` segueix al disc.** L'adreça fa 301, però
+  `build-comando.js` encara escriu la pàgina, `check-comando.js` la vigila i
+  `SOS/molekulon-data.json` —que l'altre repositori llegeix cada dilluns— surt
+  del mateix generador. Treure la pàgina sense deixar de exportar les dades és
+  la feina, i té nom: *`build-comando.js` deixa d'escriure `comando.html` i es
+  queda només amb l'export.* El motiu és a `FORA_DEL_MENU`.
+- **La frontera és un fitxer de prosa amb una revisió escrita a dins**, i no una
+  lectura en viu. Aquest entorn no arriba a l'altre domini i el seu repositori
+  és un altre. El dia que l'altra casa canviï el seu `_redirects`, aquest
+  fitxer queda vell; el que ho fa visible és que **està llegit per una guarda**.
+
+### Una sola barra, vint-i-set pàgines (04/10/2026)
+
+**Fet.** Hi havia **tres** barres dient la mateixa cosa de tres maneres, i la
+tercera no la vigilava ningú.
+
+| | Abans | Ara |
+|---|---|---|
+| Components de barra | 3 (el `<nav>` d'arrel, el desplegable, la del SOS) | 1 |
+| Qui escriu la barra d'arrel | **ningú · escrita a mà a tres fitxers** | `build-nav.js` |
+| Modes de ruta | 2 (`../x.html` i `/SOS/x.html`) | 1, absoluta |
+| Línies de JS per obrir el menú | ~50, a tres fitxers | 0 · `<details>` natiu |
+| Textos de la barra sota 15 px | 6 (12,5 · 10,4 · 9,9 · 11,2 · 13,4 · 11,2) | 0 |
+| Commutadors de llengua a la mateixa pantalla | 2 als quatre formularis | 1 |
+| Pàgines bilingües amb la barra en català | 1 (`/vna`) | 0 |
+
+**El que no petava i era fals.** El CSS de la barra d'arrel feia servir
+`var(--white)`, `var(--accent-indigo)` i `var(--bg-panel)`, que són **àlies
+declarats només a les tres pàgines d'arrel**. Escrit a una pàgina del SOS no
+peta: deixa el text sense color, i això només ho veu qui obri aquella pàgina.
+Ara la barra només pot fer servir tokens de la pell, i hi ha guarda —
+`build-pell.js` exporta `PELL` per a això.
+
+**Les quatre guardes noves** (totes provades trencant-les a posta):
+
+1. **Cap pàgina declara la seva barra.** Es reconeix per les classes de les tres
+   substituïdes o per un `<nav>` amb més d'un desplegable. No es prohibeix
+   qualsevol `<nav>`: un índex de pàgina i una molla de pa en són i han de ser-ho.
+2. **Cap destí a dues portes.**
+3. **Només tokens de la pell.**
+4. **Cap mida escrita a mà**: la barra era d'on sortia l'excepció del terra.
+
+**El que va aparèixer pel camí:**
+
+· **Tres guardes resolien els `href` relatius al fitxer** —`check-comuns.js`,
+  `check-comando.js`, `check-ia.js`— i amb les rutes absolutes van declarar
+  morts **26 destins que existeixen tots**. Tres còpies d'un resolutor de rutes
+  que s'han de posar d'acord: ara és `SOS/tools/rutes.js`.
+· **`check-css-arrel.js` llegia només el primer `<style>`.** La barra porta el
+  seu CSS dins del bloc generat, al cos, i la guarda acusava precisament el
+  patró que la casa fa servir per no tenir vint-i-set còpies.
+· **Un `regex` de rang es va endur CSS viu.** Tallant «del comentari fins a la
+  regla de més avall», a `index.html` els dos extrems no eren adjacents: se'n
+  va anar `.hero-note`, `.cta-mail`, `.btn-primary`, `.passos`, `.proves`… i a
+  `qui-som.html` el `.faq-item` sencer. **Cap guarda de CSS ho veu** —esborrar
+  no deixa regles mortes— i ho va trobar `test-endreca.mjs`, que mesura la
+  pantalla. Es va refer esborrant **per regla i pel seu selector**.
+· **La barra de mòbil feia 177 px** amb els cinc grups en columna, i treia el
+  dibuix del hero de la primera pantalla a 390 px («acaba a 1033 de 844»). En
+  una fila que llisca fa 92 px. *Una barra no pot costar un quart de pantalla.*
+· **Vuit fitxers de prova vigilaven la barra per les seves classes i pels seus
+  valors.** Mudats, no esborrats: `.sos-nav` ja no deia la veritat —no era la
+  barra del SOS, era la del lloc— i una prova que mira una classe que no hi és
+  no peta amb el motiu, peta amb un `null`.
+
+**El que queda obert:**
+
+- **`--sans` no és token de la pell.** La barra declara la seva pila de lletres
+  a dins del bloc; `Space Grotesk` només es carrega a 5 de les 27 pàgines, i a
+  les altres 22 la barra cau a la pila del sistema. Pujar la lletra a la pell
+  és el següent pas i no s'ha fet aquí per no barrejar-lo amb l'estructura.
+- **La fase B: una sola arquitectura.** Els grups segueixen sent els d'avui
+  —`eines` porta Molekulandia i el joc, `apren` porta l'escola, `xarxa` porta el
+  Comando—, que és la barreja dels dos negocis. Les cinc portes i la frontera
+  amb l'altra casa són a `negoci/frontera-molekulon.md`.
+
 ### El mòdul de suport al mapa de valor (04/10/2026)
 
 **Fet, com a prototip.** El mètode era prosa en tres fitxers i un prompt que no

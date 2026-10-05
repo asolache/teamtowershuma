@@ -96,6 +96,14 @@ const PELL = [
   ['--t5', 'clamp(2.1rem,6vw,3.5rem)', '']
 ];
 
+/* La paleta s'exporta perquè és **la llista dels tokens que existeixen**, i
+   des del 04/10/2026 la barra única la necessita: el seu CSS va a vint-i-set
+   pàgines i un token que la pell no declari no peta enlloc —deixa el text
+   sense color. Comprovar-ho demana aquesta llista, i una segona còpia d'ella
+   divergiria el primer dia que s'hi afegís un color. */
+module.exports = { PELL };
+if (require.main !== module) return;
+
 /* ══ QUI LA PORTA, I QUI NO ══════════════════════════════════════════════════
    La llista és explícita a posta: afegir una pàgina ha de ser una decisió que
    inclogui dir de quin color és. */

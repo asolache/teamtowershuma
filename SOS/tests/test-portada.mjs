@@ -151,7 +151,7 @@ for (const [w, h] of [[1280, 900], [1440, 900], [390, 844]]) {
 console.log('\n5 · També en castellà');
 {
   const { ctx, p } = await nova();
-  await p.click('.lang-btn[data-lang="es"]');
+  await p.click('.lang-b[data-lang="es"]');
   await p.waitForTimeout(200);
   const r = await p.evaluate(() => {
     const hero = document.querySelector('.hero');
@@ -204,7 +204,7 @@ console.log('\n5b · Els clients, sencers i amunt');
 }
 {
   const { ctx, p } = await nova();
-  await p.click('.lang-btn[data-lang="es"]');
+  await p.click('.lang-b[data-lang="es"]');
   await p.waitForTimeout(200);
   /* Es compara amb la declaració de debò i no amb una llista d'aquí: una còpia
      escrita a la prova envelliria sola i donaria verd sobre el que ja no hi és. */

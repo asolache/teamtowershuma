@@ -189,8 +189,8 @@ console.log('\n6 · La pàgina: pestanyes, menú i el que promet a la primera pa
     const txt = document.body.textContent.replace(/\s+/g, ' ');
     return { tabs: document.querySelectorAll('#tabs button').length,
       pans: document.querySelectorAll('.pan').length,
-      nav: !!document.querySelector('.sos-nav'),
-      aqui: [...document.querySelectorAll('.sos-nav [aria-current]')].map(a => a.getAttribute('href')),
+      nav: !!document.querySelector('.tt-nav'),
+      aqui: [...document.querySelectorAll('.tt-nav [aria-current]')].map(a => a.getAttribute('href')),
       files: document.querySelectorAll('#tTensio tbody tr').length,
       minMarcat: document.querySelectorAll('#tTensio tr.min').length,
       noCompra: /Aquí no es compra res/.test(txt),
@@ -199,7 +199,7 @@ console.log('\n6 · La pàgina: pestanyes, menú i el que promet a la primera pa
       dispositiu: /viu al navegador d'aquest dispositiu/.test(txt) };
   });
   ok(r.tabs === r.pans && r.tabs === 8, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
-  ok(r.nav && r.aqui.indexOf('habitatge.html') >= 0,
+  ok(r.nav && r.aqui.indexOf('/SOS/habitatge.html') >= 0,
     'porta el menú del SOS i s\'hi marca a si mateixa');
   ok(r.files >= 12 && r.minMarcat === 1,
     `el recorregut de l'aportació té ${r.files} punts i n'hi ha un de marcat com a mínim d'exclusió`);
