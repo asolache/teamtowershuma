@@ -213,7 +213,7 @@ console.log('\n7 · Com està feta');
   ok(A.d.posicio === 'sticky' && V.d.posicio === 'sticky',
     'sticky a les dues: cap pàgina ha de compensar-la amb un buit a dalt');
   const { readFileSync } = await import('node:fs');
-  const ambScript = [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html'].filter(p => {
+  const ambScript = [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'].filter(p => {
     const f = join(ARREL, PAGINES.includes(p) ? 'SOS' : '', p);
     const s = readFileSync(f, 'utf8');
     return /navBurger|nav-open|querySelector\('nav'\)/.test(s);
@@ -225,7 +225,7 @@ console.log('\n7 · Com està feta');
 /* ── 8 · Sense errors a cap pàgina amb barra ─────────────────────────────── */
 console.log('\n8 · El fre');
 {
-  const totes = PAGINES.map(p => 'SOS/' + p).concat(['index.html', 'cataleg.html', 'qui-som.html']);
+  const totes = PAGINES.map(p => 'SOS/' + p).concat(['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']);
   const dolentes = [];
   for (const p of totes) {
     const { pg, d, errs } = await llegeix(p);

@@ -26,12 +26,11 @@ const ARREL = join(__dirname, '..', '..');
    `home-nova.html`, `finances.html`, `ia.html` i `premsa.html` són maquetes
    anteriors que no es publiquen des del menú: entrarien amb centenars de
    troballes i cap d'elles seria feina d'avui. */
-const PAGINES = ['index.html', 'cataleg.html', 'qui-som.html'];
+const PAGINES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'];
 const FORA = {
   'home-nova.html': 'maqueta alternativa, fora del menú i de la pell',
   'finances.html': 'pàgina interna, no enllaçada des del menú',
-  'ia.html': 'pàgina interna, no enllaçada des del menú',
-  'premsa.html': 'dossier de premsa, maqueta pròpia'
+  'ia.html': 'pàgina interna, no enllaçada des del menú'
 };
 
 let fails = 0;
