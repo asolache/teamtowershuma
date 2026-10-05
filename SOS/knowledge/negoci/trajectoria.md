@@ -242,6 +242,17 @@ de 2026**.
 | Consultoria sistèmica de TeamTowers | `teamtowers.eu/colla` |
 | El taller Fent Pinya | `teamtowers.eu/pinya` |
 | Castells i integració, *El Periódico* (2007) | `elperiodico.com/es/sociedad/20070121/castells-integradores-5420703` |
+| *The Wall Street Journal* · team building escalant el cap | `wsj.com/lifestyle/workplace/the-corporate-team-building-exercise-where-you-have-to-climb-on-the-boss-2dc8a5b8` |
+| *The Jerusalem Post* · suplement In Jerusalem | `jpost.com/local-israel/in-jerusalem/article-9341` |
+| *Shareable* · The Castells of Catalonia | `shareable.net/the-castells-of-catalonia-inside-the-incredible-art-of-human-towers/` |
+| *La Vanguardia* (24/04/2013) · El tiempo es el valor más preciado | `lavanguardia.com/internet/20130424/54371495571/el-tiempo-es-el-valor-mas-preciado-en-el-mercado-del-conocimiento.html` |
+| *TVE · Para Todos La 2* · coloqui aprenentatge col·laboratiu | `rtve.es/play/videos/para-todos-la-2/para-todos-2-coloquio-aprendizaje-colaborativo/3119095/` |
+| *TV3* · vídeo a YouTube | `youtube.com/watch?v=sCCeygsjzZI` |
+| *20 minutos* · notícia 997348 | `20minutos.es/noticia/997348/0/` |
+| *Diario de León* (05/01/2012) · Trepar en horas de trabajo | `diariodeleon.es/leon/120105/1167049/trepar-horas-trabajo.html` |
+
+> Les nou de premsa les va donar l'Àlvar el **5 d'octubre de 2026**; són les
+> úniques que surten a `premsa.html`. Dates només on l'URL les porta.
 
 > Un article de premsa del 2007 sobre castells i integració és **prova social
 > amb data i mitjà**, que val infinitament més que un testimoni sense nom. La
