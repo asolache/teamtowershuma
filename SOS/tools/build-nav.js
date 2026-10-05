@@ -205,7 +205,7 @@ const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
-const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
+const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
@@ -214,6 +214,17 @@ const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.htm
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */
 const EXCEPCIONS = {
+  /* ⚠ `comando.html` **ja no se serveix**: les tres seves adreces fan 301 cap a
+     molekulon.org (04/10/2026). Però el fitxer no és brossa i no es pot
+     esborrar: `build-comando.js` el llegeix per comprovar que cada pla del
+     guió cita de debò la història publicada —és l'única font d'aquell relat— i
+     del mateix generador surt `molekulon-data.json`, que l'altre repositori
+     baixa cada dilluns.
+
+     O sigui que ha deixat de ser **una pàgina** i ha passat a ser **una font**.
+     Posar-li la barra seria mantenir un menú a una pantalla que ningú pot
+     obrir, i el dia que algú el mirés es creuria que és una pàgina viva. */
+  'comando.html': 'Ja no se serveix: les seves adreces fan 301 cap a molekulon.org. El fitxer es queda perquè `build-comando.js` l\'hi llegeix l\'ancoratge al canon i n\'exporta `molekulon-data.json`. És una font, no una pàgina.',
   'index.html': 'És l\'aplicació i té la seva pròpia barra, amb cerca, accions i sessió.',
   'joc.html': 'És una pantalla de joc completa; un menú a sobre en trencaria el ritme.'
 };

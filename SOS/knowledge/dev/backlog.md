@@ -93,12 +93,21 @@ herois i els 11 vídeos són, allà, la portada més `/personatges` més `/music
 
 **El que queda obert, i és una veritat a mitges escrita a posta:**
 
-- **`SOS/comando.html` segueix al disc.** L'adreça fa 301, però
-  `build-comando.js` encara escriu la pàgina, `check-comando.js` la vigila i
-  `SOS/molekulon-data.json` —que l'altre repositori llegeix cada dilluns— surt
-  del mateix generador. Treure la pàgina sense deixar de exportar les dades és
-  la feina, i té nom: *`build-comando.js` deixa d'escriure `comando.html` i es
-  queda només amb l'export.* El motiu és a `FORA_DEL_MENU`.
+- **~~`build-comando.js` deixa d'escriure `comando.html`~~ · resolt d'una altra
+  manera (05/10/2026), perquè la feina estava mal plantejada.** Jo havia escrit
+  que calia deixar d'escriure la pàgina i quedar-se amb l'export. Llegint el
+  generador, **la pàgina també és una entrada**: la línia 443 la llegeix sencera
+  i comprova que **cada pla del guió cita de debò la història publicada** —és
+  l'única font d'aquell relat, i no és a cap `.md`. Esborrar-la trencaria
+  l'ancoratge al canon, que és precisament la guarda que impedeix que un guió
+  s'inventi un detall que sona bé.
+
+  El que sí que era cert és que **mantenim una pàgina que ningú pot obrir**: les
+  seves tres adreces fan 301 i, tot i això, `build-nav.js` li escrivia la barra
+  i `build-pell.js` la pintava. Ha deixat de ser **una pàgina** i ha passat a
+  ser **una font**: fora de `PAGINES` i de la pell, amb el motiu escrit a
+  `EXCEPCIONS` i a `FORA_DE_LA_PELL`, i la barra treta del fitxer (−10,9 KB).
+  El generador segueix escrivint-la i llegint-la, que és el que ha de fer.
 - **La frontera és un fitxer de prosa amb una revisió escrita a dins**, i no una
   lectura en viu. Aquest entorn no arriba a l'altre domini i el seu repositori
   és un altre. El dia que l'altra casa canviï el seu `_redirects`, aquest

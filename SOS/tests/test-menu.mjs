@@ -225,6 +225,7 @@ console.log('\n7 · Com està feta');
 /* ── 8 · Sense errors a cap pàgina amb barra ─────────────────────────────── */
 console.log('\n8 · El fre');
 {
+  const { readFileSync } = await import('node:fs');
   const totes = PAGINES.map(p => 'SOS/' + p).concat(['index.html', 'cataleg.html', 'qui-som.html']);
   const dolentes = [];
   for (const p of totes) {
@@ -235,8 +236,17 @@ console.log('\n8 · El fre');
   }
   ok(!dolentes.length, `les ${totes.length} pàgines amb barra: una barra i cap error de JS`
     + (dolentes.length ? ' — ' + dolentes.slice(0, 3).join(' · ') : ''));
-  ok(Object.keys(EXCEPCIONS).length === 2,
-    `i les ${Object.keys(EXCEPCIONS).length} excepcions declarades segueixen sense barra, amb el motiu escrit`);
+  /* Les excepcions no es compten: es comprova que **cap d'elles porti barra** i
+     que totes tinguin el motiu escrit. Comptar-les feia que afegir-ne una de
+     legítima petés amb «3 no és 2», que no diu res del defecte que importa.
+     `comando.html` n'és la tercera des del 05/10/2026: ja no se serveix. */
+  const ambBarra = Object.keys(EXCEPCIONS).filter(p => {
+    const f = join(ARREL, 'SOS', p);
+    return readFileSync(f, 'utf8').includes('<nav class="tt-nav"');
+  });
+  ok(!ambBarra.length && Object.keys(EXCEPCIONS).every(p => EXCEPCIONS[p].length > 30),
+    `i les ${Object.keys(EXCEPCIONS).length} excepcions no porten barra i diuen per què`
+    + (ambBarra.length ? ' — en porten: ' + ambBarra.join(', ') : ''));
 }
 
 await A.pg.close(); await V.pg.close(); await C.pg.close();
