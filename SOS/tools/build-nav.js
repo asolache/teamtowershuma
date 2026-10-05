@@ -354,7 +354,7 @@ const A_OBRE = '<!--SOS-EINES-->', A_TANCA = '<!--/SOS-EINES-->';
    Des del 04/10/2026 porten **la barra sencera** i no un desplegable a part:
    tenir-ne una de pròpia era dir dues vegades el mateix amb dos dissenys, i la
    seva no la vigilava ningú. */
-const PORTADES = ['index.html', 'cataleg.html', 'qui-som.html'];
+const PORTADES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'];
 
 /* ══ LES CLAUS DEL DICCIONARI ════════════════════════════════════════════
    La clau surt del nom del fitxer, que és l'únic identificador que un destí ja
@@ -430,7 +430,7 @@ const hrefDe = h => (esFora(h) || h.startsWith('/')) ? h : (esArrel(h) ? '/' + h
    les de la portada (`.lang-btn` / `.active`): hi havia dues implementacions
    del mateix commutador i la dels formularis ja la llegeix el seu JS. Una
    sola, i la portada s'hi adapta. */
-const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html',
+const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html',
   'diagnostic.html', 'diagnostic-org.html', 'diagnostic-territori.html', 'pressupost.html',
   /* `/vna` és bilingüe des del 03/10/2026 —264 claus— i la barra no ho era: qui
      la posava en castellà llegia el menú sencer en català, i la pàgina seguia

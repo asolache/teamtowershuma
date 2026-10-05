@@ -169,6 +169,11 @@
 /cataleg/ /cataleg.html    200
 /qui-som /qui-som.html    200
 /qui-som/ /qui-som.html    200
+# I la premsa, que es va refer amb la mateixa pell el 05/10/2026 i sortia
+# al menú sense adreça curta.
+/premsa /premsa.html    200
+/premsa/ /premsa.html    200
+/prensa /premsa.html    301
 # I les formes que la gent escriurà igualment.
 /catalogo /cataleg.html    301
 /catàleg /cataleg.html    301
