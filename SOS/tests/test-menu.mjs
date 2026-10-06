@@ -98,26 +98,69 @@ console.log('\n2 · El color no depèn de la pàgina');
 }
 
 /* ── 3 · Les portes s'obren, i a mòbil també ────────────────────────────── */
-console.log('\n3 · Prémer');
-for (const [nom, p, w] of [['sobretaula', 'SOS/vna.html', 1280], ['mòbil', 'SOS/vna.html', 390]]) {
+console.log('\n3 · Prémer, sense que la prova faci l\'scroll per tu');
+/* ── PER QUÈ AIXÒ ES MESURA AIXÍ ──────────────────────────────────────────
+   La primera versió feia `pg.click('.tn-g:nth-of-type(N) > summary')`, i
+   **Playwright fa l'scroll fins a l'element abans de prémer-lo**. Passava en
+   verd mentre a 360 px només es veien **dues portes de cinc**: les altres tres
+   eren fora de pantalla, dins d'una fila que lliscava sense cap senyal. La
+   prova arribava a una porta que una persona no pot trobar.
+
+   Ara no es fa servir cap selector amb scroll automàtic: només es prem el que
+   **ja es veu**, comprovant amb `elementFromPoint` que no hi hagi res aliè al
+   damunt. Si una porta no s'assoleix sense lliscar res, això peta. */
+for (const [nom, p, w] of [['sobretaula', 'SOS/vna.html', 1280],
+  ['mòbil estret', 'index.html', 360], ['mòbil', 'index.html', 390],
+  ['mòbil ample', 'SOS/vna.html', 414], ['tauleta', 'SOS/formacio.html', 768]]) {
   const { pg, d } = await llegeix(p, w);
-  const obertes = [];
-  for (let i = 0; i < d.portes.length; i++) {
-    await pg.click(`.tn-g:nth-of-type(${i + 1}) > summary`);
-    await pg.waitForTimeout(90);
-    const r = await pg.evaluate(i => {
-      const g = document.querySelectorAll('.tn-g')[i];
-      const a = g.querySelector('.tn-p a');
-      if (!a) return { ok: false };
-      const b = a.getBoundingClientRect();
-      /* Visible i clicable: amplada i alçada reals, i dins de la finestra. */
-      return { ok: b.width > 20 && b.height > 8 && b.left >= 0 && b.right <= innerWidth + 1 };
-    }, i);
-    if (r.ok) obertes.push(i);
-    await pg.click(`.tn-g:nth-of-type(${i + 1}) > summary`);
-  }
-  ok(obertes.length === d.portes.length,
-    `${nom} (${w}px): les ${d.portes.length} portes s'obren i els enllaços es poden prémer (${obertes.length}/${d.portes.length})`);
+  /* L'alçada **tancada**, abans d'obrir res: amb el menú obert la barra creix
+     a posta, i mesurar-la al final deia 280 px d'una barra que en fa 94. */
+  const altTancada = await pg.evaluate(() =>
+    Math.round(document.querySelector('.tt-nav').getBoundingClientRect().height));
+
+  const r = await pg.evaluate(() => {
+    /* Visible de debò i sense res aliè al damunt. `elementFromPoint` pot
+       tornar un avantpassat —el `<nav>` hi pinta la seva pròpia capa— i això
+       no és «tapat»: el que es busca és que no hi hagi res **d'una altra
+       branca** a sobre. */
+    const vist = e => {
+      const c = e.getBoundingClientRect();
+      if (!(c.height > 4 && c.top >= 0 && c.bottom <= innerHeight)) return 'fora de pantalla';
+      const dalt = document.elementFromPoint(c.left + c.width / 2, c.top + c.height / 2);
+      if (!dalt) return 'res al punt';
+      return (dalt === e || e.contains(dalt) || dalt.contains(e)) ? null
+        : 'tapat per ' + dalt.tagName;
+    };
+    const nav = document.querySelector('.tt-nav');
+    const ms = nav.querySelector('.tn-ms');
+    const ambBoto = ms && getComputedStyle(ms).display !== 'none';
+    /* A mòbil hi ha un pas abans: «Menú». Ha de veure's d'entrada. */
+    let errBoto = null;
+    if (ambBoto) { errBoto = vist(ms); if (!errBoto) ms.click(); }
+    const portes = [...document.querySelectorAll('.tn-g > summary')].map(sm => {
+      const t = sm.textContent.trim().slice(0, 14);
+      let per = vist(sm);
+      if (per) return { t, ok: false, per };
+      sm.click();
+      const g = sm.parentElement, a = g.querySelector('.tn-p a');
+      per = g.open ? (a ? vist(a) : 'cap enllaç al panell') : 'no s\'obre';
+      sm.click();
+      return { t, ok: !per, per };
+    });
+    return { ambBoto, errBoto, portes,
+      desborda: document.documentElement.scrollWidth > innerWidth + 1 };
+  });
+
+  if (r.ambBoto) ok(!r.errBoto, `${nom} (${w}px): «Menú» es veu i es pot prémer${r.errBoto ? ' — ' + r.errBoto : ''}`);
+  else ok(true, `${nom} (${w}px): les portes surten en línia, sense desplegable`);
+  const bones = r.portes.filter(x => x.ok);
+  ok(bones.length === r.portes.length,
+    `${nom} (${w}px): les ${r.portes.length} portes s'assoleixen sense lliscar res i el seu panell es pot clicar`
+    + (bones.length === r.portes.length ? '' : ` — ${r.portes.filter(x => !x.ok).map(x => x.t + ': ' + x.per).join(' · ')}`));
+  /* I que la barra tancada no es mengi la pantalla: era de 177 px amb les
+     portes en columna sempre obertes, i treia el hero de la primera pantalla. */
+  ok(altTancada <= 100, `${nom} (${w}px): la barra tancada fa ${altTancada} px`);
+  ok(!r.desborda, `${nom} (${w}px): i no desborda de costat`);
   await pg.close();
 }
 
@@ -213,13 +256,28 @@ console.log('\n7 · Com està feta');
   ok(A.d.posicio === 'sticky' && V.d.posicio === 'sticky',
     'sticky a les dues: cap pàgina ha de compensar-la amb un buit a dalt');
   const { readFileSync } = await import('node:fs');
-  const ambScript = [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html'].filter(p => {
+  /* El menú de mòbil **sí** que porta script des del 05/10/2026, i és a posta:
+     cinc portes no caben en una barra curta a 360 px, i les tres maneres de
+     fer-ho sense JavaScript es van mesurar i cap aguantava —la columna sempre
+     oberta treia el hero de la primera pantalla, la fila que lliscava amagava
+     dues portes de cinc, i el `<details>` que les embolcallava es pintava i no
+     es podia clicar a sobretaula. El que es vigila, doncs, no és que no hi
+     hagi script: és que **n'hi hagi un de sol, dins del bloc generat**, i cap
+     rastre del burger que hi havia abans. */
+  const dolentes = [];
+  for (const p of [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html']) {
     const f = join(ARREL, PAGINES.includes(p) ? 'SOS' : '', p);
-    const s = readFileSync(f, 'utf8');
-    return /navBurger|nav-open|querySelector\('nav'\)/.test(s);
-  });
-  ok(!ambScript.length, 'i cap pàgina porta el script del menú de mòbil'
-    + (ambScript.length ? ': ' + ambScript.join(', ') : ''));
+    const src = readFileSync(f, 'utf8');
+    if (/navBurger|nav-open/.test(src)) dolentes.push(p + ' (rastre del burger)');
+    const i = src.indexOf('<!--TT-NAV-->'), j = src.indexOf('<!--/TT-NAV-->');
+    const bloc = i >= 0 && j > i ? src.slice(i, j) : '';
+    const fora = (i < 0 ? src : src.slice(0, i) + src.slice(j));
+    const n = (bloc.match(/<script>/g) || []).length;
+    if (n !== 1) dolentes.push(`${p} (${n} scripts al bloc)`);
+    if (/\.tn-ms|dataset\.menu/.test(fora)) dolentes.push(p + ' (toca el menú des de fora del bloc)');
+  }
+  ok(!dolentes.length, 'un sol script del menú per pàgina, dins del bloc generat, i cap rastre del burger'
+    + (dolentes.length ? ': ' + dolentes.slice(0, 3).join(', ') : ''));
 }
 
 /* ── 8 · Sense errors a cap pàgina amb barra ─────────────────────────────── */
