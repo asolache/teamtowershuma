@@ -117,8 +117,7 @@ const FORA_DE_LA_PELL = {
   'SOS/joc.html': 'És una pantalla de joc a pantalla completa, amb la seva pròpia atmosfera.',
   'home-nova.html': 'Esborrany de redisseny amb `noindex`. El genera `build-vitrina.js`.',
   'finances.html': 'Eina interna de comptes.',
-  'ia.html': 'Prova d\'assistent. La pàgina pública és `/SOS/ia.html`.',
-  'premsa.html': 'Pàgina de la generació anterior, amb paleta pròpia. Es refà o es retira a l\'endreça.'
+  'ia.html': 'Prova d\'assistent. La pàgina pública és `/SOS/ia.html`.'
 };
 
 /* Les pàgines de l'arrel es llegeixen del directori i no d'una llista escrita:

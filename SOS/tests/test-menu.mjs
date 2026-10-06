@@ -263,9 +263,13 @@ console.log('\n7 · Com està feta');
      dues portes de cinc, i el `<details>` que les embolcallava es pintava i no
      es podia clicar a sobretaula. El que es vigila, doncs, no és que no hi
      hagi script: és que **n'hi hagi un de sol, dins del bloc generat**, i cap
-     rastre del burger que hi havia abans. */
+     rastre del burger que hi havia abans.
+
+     `premsa.html` hi entra: des del #190 porta la pell i la barra com la
+     resta, i una pàgina amb barra que la prova no mira és una barra sense
+     vigilància. */
   const dolentes = [];
-  for (const p of [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html']) {
+  for (const p of [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']) {
     const f = join(ARREL, PAGINES.includes(p) ? 'SOS' : '', p);
     const src = readFileSync(f, 'utf8');
     if (/navBurger|nav-open/.test(src)) dolentes.push(p + ' (rastre del burger)');
@@ -284,7 +288,8 @@ console.log('\n7 · Com està feta');
 console.log('\n8 · El fre');
 {
   const { readFileSync } = await import('node:fs');
-  const totes = PAGINES.map(p => 'SOS/' + p).concat(['index.html', 'cataleg.html', 'qui-som.html']);
+  const totes = PAGINES.map(p => 'SOS/' + p)
+    .concat(['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']);
   const dolentes = [];
   for (const p of totes) {
     const { pg, d, errs } = await llegeix(p);
