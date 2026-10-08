@@ -9,6 +9,12 @@
 Una sesión, individual o de equipo, que encadena tres cosas que en el catálogo
 van por separado:
 
+0. **Antes, el borrador.** El material del cliente (web, catálogo, documentos,
+   audio transcrito) pasa por la IA con el encargo que prepara el bloque «0» de
+   `SOS/vna-suport.html`. La respuesta se carga en la consola, pasa por las diez
+   reglas y deja una lista de dudas para la sala. Con el mapa revisado, el botón
+   «Copia l'encàrrec de la web» prepara para Claude Code el esqueleto de la web y
+   el cerebro (`cerebro/`, `CLAUDE.md`). La sesión revisa; no empieza de cero.
 1. **Mapa de valor** con el método VNA de Verna Allee (los seis pasos de
    `SOS/vna-suport.html`), recortado a lo que cabe en una hora.
 2. **Flujo de valor → arquitectura web.** Cada rol es una puerta, cada

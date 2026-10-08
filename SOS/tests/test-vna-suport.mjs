@@ -148,6 +148,33 @@ console.log('\n5 · La pàgina i Node revisen igual');
     + (difs.length ? ' — difereixen: ' + difs.map(d => d.id).join(', ') : ''));
 }
 
+/* ── 5b · L'esborrany des del material ──────────────────────────────────
+   El que importa és la tornada: una resposta embolicada com la torna un model
+   ha d'acabar als sis camps i passar per les mateixes regles, i una resposta
+   que no es llegeix no ha de tocar res. */
+console.log('\n5b · L\'esborrany des del material');
+{
+  const abans = await p.evaluate(() => window.__VS.mapa);
+  const enc = await p.evaluate(() => window.__VS_API.encarrecMaterial());
+  ok(enc.includes('"dubtes"') && /forat/.test(enc), 'l\'encàrrec demana dubtes en comptes d\'invencions');
+  await p.click('#btBuida');
+  await p.fill('#resposta', 'Aquí el tens:\n```json\n' + JSON.stringify(Object.assign({}, abans,
+    { dubtes: ['Qui obre el celler en festius?'] })) + '\n```\nEspero que serveixi.');
+  await p.click('#btCarrega');
+  await p.waitForTimeout(150);
+  const r = await p.evaluate(() => ({ m: window.__VS.mapa, v: window.__VS.revisio,
+    d: document.querySelectorAll('#dubtes li').length, est: document.getElementById('preEstat').textContent }));
+  ok(JSON.stringify(r.m) === JSON.stringify(abans), 'la resposta embolicada torna exactament el mateix mapa');
+  ok(r.v.passa && r.d === 1, `i passa per les regles, amb la pregunta a la vista · ${r.est}`);
+  await p.fill('#resposta', 'no hi ha cap JSON aquí');
+  await p.click('#btCarrega');
+  const r2 = await p.evaluate(() => ({ m: window.__VS.mapa, est: document.getElementById('preEstat').textContent }));
+  ok(JSON.stringify(r2.m) === JSON.stringify(abans) && /No s'ha pogut/.test(r2.est), 'una resposta que no es llegeix no toca res');
+  const web = await p.evaluate(() => window.__VS_API.encarrecWeb());
+  ok(web.includes('"pairs"') && /CRM/.test(web) && /CLAUDE\.md/.test(web),
+    'l\'encàrrec de la web porta el mapa, el CLAUDE.md i la regla del CRM');
+}
+
 /* ── 6 · Sense errors, i sense res que surti ────────────────────────────── */
 console.log('\n6 · El fre');
 {

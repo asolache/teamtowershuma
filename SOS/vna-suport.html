@@ -72,6 +72,7 @@ textarea{min-height:5.5rem;resize:vertical;line-height:1.55}
 .btn.pri{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
 .btn.pri:hover{filter:brightness(1.1)}
 .btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+#dubtes{padding-left:1.2rem}
 
 /* ── Les sis passes ──────────────────────────────────────────────────────── */
 ol.passes{list-style:none;margin:0;padding:0;counter-reset:p}
@@ -230,6 +231,41 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
          Un sol camp de text i no vint caselles. Qui fa una sessió no omple un
          formulari: escriu el que la sala diu, i l'eina ho llegeix. Un formulari
          amb vint caselles obliga a saber la forma abans de saber el contingut. -->
+    <!-- ── 0 · L'ESBORRANY DES DEL MATERIAL ─────────────────────────────────
+         La sessió és per revisar, no per pensar des de zero. Abans d'entrar, el
+         que el client ja té —la web, el catàleg, documents, la transcripció
+         d'un àudio— passa per una IA amb les mateixes deu regles, i a la sala
+         s'hi arriba amb un esborrany i amb les preguntes que el material no
+         contesta. La pàgina segueix sense clau: prepara l'encàrrec i llegeix la
+         resposta, i el que entra passa per les regles abans de res. -->
+    <section class="pan" id="pre">
+      <h2>0 · L'esborrany, abans de la sessió</h2>
+      <p class="s">Del material del client a un mapa per revisar. Res surt d'aquesta pàgina.</p>
+
+      <label for="material">El material, si el vols enganxar</label>
+      <textarea id="material" placeholder="El text de la web, el catàleg, notes d'una trucada, la transcripció d'un àudio…"></textarea>
+      <p class="hint">També el pots adjuntar a la IA i deixar això buit. <b>Sense dades
+      personals ni contractes</b>: el mapa parla de rols, i això va al CRM.</p>
+      <div class="btns">
+        <button class="btn pri" id="btEncarrec" type="button">Copia l'encàrrec per a la IA</button>
+      </div>
+
+      <label for="resposta">La resposta de la IA</label>
+      <textarea id="resposta" placeholder='{ "abast": "…", "roles": […], "pairs": […], "dubtes": […] }'></textarea>
+      <p class="hint">El JSON tal com torni, encara que porti text o <code>```</code> al
+      voltant. O un fitxer <code>.json</code> desat abans.</p>
+      <div class="btns">
+        <button class="btn pri" id="btCarrega" type="button">Carrega l'esborrany</button>
+        <button class="btn" id="btFitxer" type="button">Obre un fitxer .json</button>
+        <input id="fitxer" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p class="hint" id="preEstat" role="status"></p>
+      <div id="dubtesBloc" hidden>
+        <p class="hint"><b>Per preguntar a la sala</b></p>
+        <ul id="dubtes" class="hint"></ul>
+      </div>
+    </section>
+
     <section class="pan">
       <h2>El mapa</h2>
       <p class="s">S'escriu i es revisa alhora. Res surt d'aquesta pàgina.</p>
@@ -319,6 +355,7 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
       <div class="btns">
         <button class="btn" id="btJson" type="button">Copia el JSON</button>
         <button class="btn" id="btPrompt" type="button">Copia el que se li dona a la IA</button>
+        <button class="btn" id="btWeb" type="button">Copia l'encàrrec de la web</button>
       </div>
       <pre id="sortida" hidden></pre>
     </section>
@@ -603,6 +640,124 @@ function omple() {
   pinta();
 }
 
+/* ── 0 · L'esborrany des del material ────────────────────────────────────
+   Dos encàrrecs i un lector. El primer demana a la IA un mapa a partir del que
+   el client ja té; el lector el posa als sis camps i el passa per les regles;
+   el segon, amb el mapa revisat, demana a Claude Code l'esquelet de la web i
+   el cervell del projecte. Cap dels tres envia res. */
+function encarrecMaterial() {
+  const mat = $('#material').value.trim();
+  return [SYSTEM_PROMPT, '',
+    '═══ L\'ENCÀRREC ═══', '',
+    'Abans d\'una sessió de mapa de valor. Llegeix el material del client i proposa',
+    'l\'esborrany del mapa perquè a la sessió es REVISI, no es pensi des de zero.',
+    '· Tot el que proposis és hipòtesi: la sala ho confirma o ho esborra.',
+    '· Si el material no diu una cosa, no l\'omplis: posa-la a "dubtes" com a',
+    '  pregunta curta per fer a la sala. Val més un forat que una invenció.',
+    '· Els intangibles són el que el material menys diu: proposa\'n i pregunta\'ls.',
+    '· Ni noms de persona ni d\'empresa, ni xifres: rols pel que fan.',
+    '· Escriu en la llengua del material.', '',
+    '═══ EL MATERIAL ═══', '',
+    mat || '(Va adjunt a aquest missatge: web, catàleg, documents o la transcripció d\'un àudio.)', '',
+    '═══ LA FORMA DE LA RESPOSTA ═══', '',
+    'Torna NOMÉS aquest JSON, sense text a fora:', '',
+    JSON.stringify({
+      abast: 'De quina activitat parlem i on s\'acaba',
+      roles: ['Qui ven', 'Qui entrega'],
+      pairs: [['Qui ven', 'Qui entrega', 'tangible', 'la comanda amb el que s\'ha promès',
+        'intangible', 'avisar si no arribarà a temps']],
+      processos: [{ id: 'venda', nom: 'La venda', d: 'Del primer contacte al cobrament' }],
+      seq: { 'Qui ven→Qui entrega': ['venda', 1] },
+      troballes: [{ t: 'Hi ha un node que no és de ningú', d: 'Per què, i què s\'atura si s\'encalla' }],
+      dubtes: ['Qui atén el client quan alguna cosa surt malament?']
+    }, null, 2)].join('\n');
+}
+
+/* La resposta d'un model sol venir embolicada: text abans, ```json, text
+   després. Es busca l'objecte i prou. I s'accepta també la forma de línies de
+   l'exemple, perquè un fitxer desat a mà no hagi de ser canònic. */
+function llegeixResposta(txt) {
+  const t = String(txt || '');
+  const i = t.indexOf('{'), j = t.lastIndexOf('}');
+  if (i < 0 || j <= i) throw new Error('No hi ha cap objecte JSON');
+  return JSON.parse(t.slice(i, j + 1));
+}
+const menaCurta = x => /^i/i.test(x || '') ? 'i' : x ? 't' : '';
+const linia = x => Array.isArray(x) ? x.join(' | ') : String(x);
+function carrega(o) {
+  const roles = o.roles || o.rols || [];
+  const pairs = o.pairs || o.parells || [];
+  const seq = o.seq || {};
+  $('#abast').value = o.abast || '';
+  $('#rols').value = roles.join('\n');
+  $('#parells').value = pairs.map(p => typeof p === 'string' ? p
+    : [p[0], p[1], menaCurta(p[2]), p[3], menaCurta(p[4]), p[5]].map(x => x || '').join(' | ')).join('\n');
+  $('#processos').value = (o.processos || []).map(p => typeof p === 'string' ? p
+    : [p.id, p.nom, p.d].map(x => x || '').join(' | ')).join('\n');
+  $('#seq').value = (Array.isArray(seq) ? seq : Object.entries(seq).map(([k, v]) =>
+    v === 'sempre' ? k + ' | sempre' : k + ' | ' + linia(v))).join('\n');
+  $('#troballes').value = (o.troballes || []).map(x => typeof x === 'string' ? x
+    : [x.t, x.d].map(y => y || '').join(' | ')).join('\n');
+  const d = o.dubtes || [];
+  $('#dubtes').innerHTML = '';
+  d.forEach(q => { const li = document.createElement('li'); li.textContent = q; $('#dubtes').appendChild(li); });
+  $('#dubtesBloc').hidden = !d.length;
+  pinta();
+  const r = window.__VS.revisio;
+  $('#preEstat').textContent = 'Esborrany carregat: ' + roles.length + ' rols i ' + pairs.length + ' vincles. '
+    + (r.passa ? 'Cap regla dura trencada' : r.dures + ' regla/es dura/es per revisar a la sala')
+    + (d.length ? ', i ' + d.length + ' pregunta/es.' : '.');
+}
+function carregaText(txt) {
+  try { carrega(llegeixResposta(txt)); }
+  catch (e) { $('#preEstat').textContent = 'No s\'ha pogut llegir: ' + e.message + '. No s\'ha tocat res.'; }
+}
+
+/* ── De mapa a web ─────────────────────────────────────────────────────────
+   L'encàrrec per a Claude Code dins del repositori del client: el cervell en
+   Markdown, les regles al CLAUDE.md i l'esquelet de la web que es llegeix des
+   del mapa. Ningú escriu una web des de zero a la sessió: es revisa aquesta. */
+function encarrecWeb() {
+  const m = llegeix(), r = revisa(m);
+  return ['Treballes dins del repositori d\'un client, amb Claude Code. Publica a Netlify des de',
+    'GitHub. Aquest és el seu mapa de valor (mètode de Verna Allee), revisat amb deu regles' +
+    (r.passa ? '.' : ' — ATENCIÓ: encara té ' + r.dures + ' regla/es dura/es oberta/es; marca-ho a decisions.md.'), '',
+    '```json', JSON.stringify(m, null, 2), '```', '',
+    '═══ 1 · EL CERVELL DEL PROJECTE ═══',
+    '· cerebro/mapa-de-valor.json — el JSON de dalt, tal qual.',
+    '· cerebro/mapa-de-valor.md — l\'abast, els rols, una taula de transaccions (de, a, mena, què)',
+    '  i les troballes, llegible per una persona.',
+    '· cerebro/flujo-de-valor.md — el procés que ha de guiar la web. Proposa\'n un i marca\'l',
+    '  [PER CONFIRMAR].',
+    '· cerebro/decisiones.md — cada decisió amb data i motiu. Comença per les d\'aquest encàrrec.',
+    '· CLAUDE.md — les regles del projecte: HTML semàntic W3C sense frameworks, accessible',
+    '  (WCAG AA), mobile-first, dades estructurades Schema.org en JSON-LD, una branca i un PR',
+    '  per canvi. I la regla del cervell: al repositori va el que es podria penjar en un',
+    '  tauler; dades personals, contractes, preus pactats i claus van al CRM, mai aquí.', '',
+    '═══ 2 · LA WEB, LLEGIDA DES DEL MAPA ═══',
+    '· index.html: l\'abast dit amb paraules del client, i el flux de valor com a recorregut principal.',
+    '· Cada rol de fora (qui compra, qui fa servir, qui recomana) és una porta: una secció o pàgina.',
+    '  Els rols de dins van a «qui som».',
+    '· Cada tangible que el negoci rep d\'un rol és una acció: formulari, reserva, compra.',
+    '· Cada intangible que el negoci dona és contingut que fa confiança: com treballem, casos.',
+    '· Les troballes són el primer que la web ha de resoldre.',
+    '· netlify.toml amb publish = "." i res més.', '',
+    '═══ EL QUE NO ES FA ═══',
+    '· Ni xifres, ni testimonis, ni noms que el mapa no porti: un forat [PER CONFIRMAR] i prou.',
+    '· Ni dependències: HTML, CSS i, si cal, JS natiu.', '',
+    'Acaba amb la llista del que ha quedat [PER CONFIRMAR], per revisar-ho a la sessió.'].join('\n');
+}
+
+$('#btEncarrec').addEventListener('click', () => ensenya(encarrecMaterial()));
+$('#btCarrega').addEventListener('click', () => carregaText($('#resposta').value));
+$('#fitxer').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  f.text().then(t => { $('#resposta').value = t; carregaText(t); });
+});
+$('#btFitxer').addEventListener('click', () => $('#fitxer').click());
+$('#btWeb').addEventListener('click', () => ensenya(encarrecWeb()));
+
 ['abast', 'rols', 'parells', 'processos', 'seq', 'troballes']
   .forEach(id => $('#' + id).addEventListener('input', pinta));
 $('#btExemple').addEventListener('click', omple);
@@ -615,7 +770,8 @@ $('#btJson').addEventListener('click', () => ensenya(JSON.stringify(llegeix(), n
 $('#btPrompt').addEventListener('click', () => ensenya(promptDeTreball()));
 
 pinta();
-window.__VS_API = { llegeix, revisa, fluxos, promptDeTreball, omple, EXEMPLE };
+window.__VS_API = { llegeix, revisa, fluxos, promptDeTreball, omple, EXEMPLE,
+  encarrecMaterial, llegeixResposta, carrega, encarrecWeb };
 </script>
 </body>
 </html>
