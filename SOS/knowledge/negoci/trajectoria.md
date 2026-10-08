@@ -328,3 +328,19 @@ enllaç que s'obre a fora.
 > **El que segueix pendent i no és de codi:** no hi ha **fotografia**. En una
 > secció que va de fiar-se d'una persona, una cara fa més que un paràgraf, i és
 > l'única peça que aquí no es pot inventar.
+
+## 6 · Les webs fetes amb el mètode «mapa de valor i web»
+
+Les primeres webs fetes amb la metodologia de [`mapa-web.md`](mapa-web.md):
+mapa de valor primer, web amb IA després i el coneixement al repositori.
+**Font: l'Álvaro, al fil del projecte, el 08/10/2026.** Des d'aquí no s'han
+pogut obrir (la xarxa d'aquest entorn no hi arriba), o sigui que de cada una
+només es diu el que ell va dir; la descripció la posa ell quan la validi.
+
+| Web | El que se'n sap |
+|---|---|
+| [eventspenedes.com](https://eventspenedes.com) | Projecte fet amb el mètode |
+| [labodegadesara.com](https://labodegadesara.com) | Projecte fet amb el mètode |
+| [teamtowers.eu](https://www.teamtowers.eu) | La consultora |
+| [teamtowershuma.com](https://teamtowershuma.com) | Aquest repositori: diverses versions de l'app i del SOS. Alguna feia servir APIs de diverses IA, i el resultat no el va convèncer |
+| [molekulon.org](https://molekulon.org) | El Comando i la línia Molekulon |

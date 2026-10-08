@@ -163,6 +163,11 @@
         .etiqueta { align-self: flex-start; font-family: var(--mono); font-size: .8rem; letter-spacing: .05em; padding: .15rem .6rem; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); }
         .nota { margin-top: 1.4rem; font-size: var(--t0); color: var(--muted); max-width: 80ch; }
 
+        .projectes { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-top: 1.8rem; }
+        .projectes li { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; }
+        .projectes a { font-weight: 600; font-size: var(--t1); }
+        .projectes span { display: block; font-size: var(--t0); color: var(--light); margin-top: .3rem; }
+
         .futur { border-left: 4px solid var(--purple); padding: .2rem 0 .2rem 1.2rem; max-width: 70ch; color: var(--light); }
 
         details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
@@ -185,6 +190,7 @@
             <ul>
                 <li><a href="#metodo">Método</a></li>
                 <li><a href="#cerebro">El cerebro</a></li>
+                <li><a href="#proyectos">Proyectos</a></li>
                 <li><a href="#precios">Precios</a></li>
                 <li><a href="#preguntas">Preguntas</a></li>
             </ul>
@@ -334,6 +340,21 @@
                 </ul>
             </div>
         </div>
+    </div>
+</section>
+
+<section id="proyectos" aria-labelledby="t-proyectos">
+    <div class="container">
+        <p class="eyebrow">Hecho con este método</p>
+        <h2 id="t-proyectos">Los primeros <em>proyectos</em></h2>
+        <p class="lead">Webs que empezaron por un mapa de valor y se construyeron con IA, con el conocimiento del proyecto en su repositorio.</p>
+        <ul class="projectes">
+            <li><a href="https://eventspenedes.com" rel="noopener">eventspenedes.com</a></li>
+            <li><a href="https://labodegadesara.com" rel="noopener">labodegadesara.com</a></li>
+            <li><a href="https://www.teamtowers.eu" rel="noopener">teamtowers.eu</a><span>La consultora</span></li>
+            <li><a href="https://teamtowershuma.com" rel="noopener">teamtowershuma.com</a><span>Varias versiones de la app y del SOS, algunas con APIs de varias IA: de ahí sale lo que funciona y lo que no</span></li>
+            <li><a href="https://molekulon.org" rel="noopener">molekulon.org</a><span>El Comando</span></li>
+        </ul>
     </div>
 </section>
 
