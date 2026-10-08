@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- BORRADOR · no se indexa hasta que Álvaro valide textos y precios. -->
+    <meta name="robots" content="noindex, follow">
+    <title>Mapa de valor y web en una hora | TeamTowers</title>
+    <meta name="description" content="Una sesión para hacer el mapa de valor de tu negocio con el método de Verna Allee y, en una hora más, publicar una web que lo sigue y que guarda el conocimiento del proyecto en tu propio repositorio. Con Claude Code, GitHub y Netlify.">
+    <meta name="author" content="Álvaro Solache · TeamTowers">
+    <link rel="canonical" href="https://teamtowershuma.com/mapa-web/">
+    <meta property="og:title" content="Mapa de valor y web en una hora | TeamTowers">
+    <meta property="og:description" content="Tu negocio dibujado como red de valor, y una web que nace de ese mapa y aprende con él.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/mapa-web/">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="TeamTowers">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Mapa de valor y web en una hora",
+      "serviceType": "Value Network Analysis y desarrollo web con IA",
+      "provider": {
+        "@type": "Organization",
+        "name": "TeamTowers",
+        "url": "https://teamtowershuma.com/",
+        "founder": { "@type": "Person", "name": "Álvaro Solache" }
+      },
+      "areaServed": "ES",
+      "availableLanguage": ["es", "ca"],
+      "description": "Sesión individual o grupal para dibujar la red de valor de un negocio, convertir su flujo de valor en la arquitectura de una web y publicarla con Claude Code, GitHub y Netlify, dejando el conocimiento del proyecto en Markdown dentro del repositorio.",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Formatos",
+        "itemListElement": [
+          { "@type": "Offer", "name": "Sesión individual", "price": "390", "priceCurrency": "EUR", "description": "Precio orientativo sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Taller de equipo", "price": "1200", "priceCurrency": "EUR", "description": "Precio orientativo sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Acompañamiento de tres meses", "price": "1400", "priceCurrency": "EUR", "description": "Precio orientativo sin IVA. Borrador." }
+        ]
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            /* La piel de teamtowershuma.com (build-pell.js), copiada a mano:
+               esta carpeta queda fuera del generador mientras sea borrador. */
+            --bg: #fbfaf7;
+            --panel: #f4f1ea;
+            --card: #ffffff;
+            --text: #15130f;
+            --light: #4a463e;
+            --muted: #5e594d;
+            --border: #ddd7c8;
+            --border-strong: #cac3b0;
+            --indigo: #4f46e5;
+            --blue: #005795;
+            --purple: #a3187f;
+            --green: #0c6640;
+            --orange: #9c4408;
+            --gold: #8a6000;
+            --on-accent: #ffffff;
+            --sans: 'Space Grotesk', system-ui, sans-serif;
+            --mono: 'JetBrains Mono', 'SF Mono', Monaco, Consolas, monospace;
+            --t0: .9375rem;
+            --t1: 1.0625rem;
+            --t2: 1.25rem;
+            --t3: clamp(1.3rem, 2.4vw, 1.65rem);
+            --t4: clamp(1.75rem, 4vw, 2.6rem);
+            --t5: clamp(2.1rem, 6vw, 3.5rem);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        a { color: var(--blue); }
+        a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+        .container { max-width: 1160px; margin: 0 auto; padding: 0 2rem; }
+        @media (max-width: 600px) { .container { padding: 0 1rem; } }
+        .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        .salta { position: absolute; left: -9999px; top: 0; background: var(--indigo); color: var(--on-accent); padding: .6rem 1rem; z-index: 200; }
+        .salta:focus { left: 1rem; top: 1rem; }
+
+        /* Cabecera mínima: el menú único del sitio se genera con build-nav.js y
+           esta página aún no está dada de alta en él. */
+        .cab { position: sticky; top: 0; z-index: 100; background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .cab .container { display: flex; align-items: center; gap: 1rem; min-height: 56px; flex-wrap: wrap; }
+        .marca { font-weight: 700; font-size: var(--t1); color: var(--text); text-decoration: none; letter-spacing: -.02em; }
+        .marca span { color: var(--indigo); }
+        .cab ul { list-style: none; display: flex; gap: .2rem 1.1rem; flex-wrap: wrap; margin-left: auto; font-size: var(--t0); }
+        .cab ul a { color: var(--light); text-decoration: none; }
+        .cab ul a:hover { color: var(--text); }
+        @media (max-width: 700px) { .cab ul { margin-left: 0; width: 100%; padding-bottom: .5rem; } }
+
+        .borrador { background: #fff4d6; border-bottom: 1px solid #e8d49a; color: var(--text); font-size: var(--t0); padding: .55rem 0; }
+        .borrador strong { color: var(--orange); }
+
+        .eyebrow { font-family: var(--mono); font-size: var(--t0); letter-spacing: .18em; text-transform: uppercase; color: var(--indigo); margin-bottom: .9rem; }
+        h1 { font-size: var(--t5); line-height: 1.1; letter-spacing: -.02em; margin-bottom: 1.2rem; }
+        h1 em, h2 em { font-style: normal; color: var(--indigo); }
+        h2 { font-size: var(--t4); line-height: 1.15; letter-spacing: -.01em; margin-bottom: 1rem; }
+        h3 { font-size: var(--t2); line-height: 1.3; margin-bottom: .5rem; }
+        .lead { max-width: 66ch; font-size: var(--t1); color: var(--light); margin-bottom: 1.6rem; }
+        .lead strong { color: var(--text); }
+        section { padding: 4.5rem 0; border-bottom: 1px solid var(--border); }
+        section.alt { background: var(--panel); }
+        .intro { padding: 3.5rem 0 4rem; }
+        p + p { margin-top: .8rem; }
+
+        .accions { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .btn { display: inline-flex; align-items: center; min-height: 44px; padding: .7rem 1.4rem; border-radius: 10px; font-size: var(--t0); font-weight: 600; text-decoration: none; }
+        .btn-primary { background: var(--indigo); color: var(--on-accent); }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-ghost { border: 1px solid var(--border-strong); color: var(--text); background: var(--card); }
+        .btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); }
+
+        .triada { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.2rem; list-style: none; }
+        .triada li { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem 1.3rem; }
+        .triada b { display: block; font-size: var(--t1); }
+        .triada span { font-size: var(--t0); color: var(--light); }
+        @media (max-width: 760px) { .triada { grid-template-columns: 1fr; } }
+
+        .passos { counter-reset: pas; list-style: none; display: grid; gap: 1rem; margin-top: 2rem; }
+        .passos > li { counter-increment: pas; position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.3rem 1.4rem 1.3rem 4.2rem; }
+        .passos > li::before { content: counter(pas); position: absolute; left: 1.3rem; top: 1.25rem; width: 2rem; height: 2rem; border-radius: 50%; background: var(--indigo); color: var(--on-accent); font-family: var(--mono); font-weight: 700; display: grid; place-items: center; }
+        .passos .dura { font-family: var(--mono); font-size: var(--t0); color: var(--muted); }
+        .passos p { color: var(--light); font-size: var(--t0); margin-top: .3rem; }
+
+        .taula-wrap { overflow-x: auto; margin-top: 1.8rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+        table { width: 100%; border-collapse: collapse; font-size: var(--t0); min-width: 560px; }
+        caption { text-align: left; padding: 1rem 1.2rem 0; color: var(--muted); font-size: var(--t0); }
+        th, td { text-align: left; padding: .85rem 1.2rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        thead th { font-family: var(--mono); font-size: .85rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+        tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+        .tg { color: var(--blue); font-weight: 600; }
+        .in { color: var(--purple); font-weight: 600; }
+
+        .dues { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+        @media (max-width: 760px) { .dues { grid-template-columns: 1fr; } }
+        .caixa { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.4rem; }
+        .caixa ul { padding-left: 1.2rem; color: var(--light); font-size: var(--t0); }
+        .caixa li + li { margin-top: .35rem; }
+        .caixa.repo { border-top: 4px solid var(--green); }
+        .caixa.crm { border-top: 4px solid var(--orange); }
+        pre { font-family: var(--mono); font-size: .85rem; line-height: 1.6; background: var(--text); color: #f4f1ea; border-radius: 12px; padding: 1.2rem 1.3rem; overflow-x: auto; margin-top: 1.6rem; }
+        pre .c { color: #b9b2a0; }
+
+        .preus { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; align-items: stretch; }
+        @media (max-width: 900px) { .preus { grid-template-columns: 1fr; } }
+        .preu { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: .8rem; }
+        .preu.destacat { border: 2px solid var(--indigo); }
+        .preu .per { font-size: var(--t0); color: var(--muted); }
+        .preu .xifra { font-size: var(--t4); font-weight: 700; line-height: 1; }
+        .preu .xifra small { font-size: var(--t0); font-weight: 500; color: var(--muted); }
+        .preu ul { padding-left: 1.2rem; font-size: var(--t0); color: var(--light); flex: 1; }
+        .preu li + li { margin-top: .3rem; }
+        .etiqueta { align-self: flex-start; font-family: var(--mono); font-size: .8rem; letter-spacing: .05em; padding: .15rem .6rem; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); }
+        .nota { margin-top: 1.4rem; font-size: var(--t0); color: var(--muted); max-width: 80ch; }
+
+        .futur { border-left: 4px solid var(--purple); padding: .2rem 0 .2rem 1.2rem; max-width: 70ch; color: var(--light); }
+
+        details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
+        details + details { margin-top: .7rem; }
+        summary { cursor: pointer; font-weight: 600; }
+        details p { margin-top: .6rem; color: var(--light); font-size: var(--t0); }
+
+        footer { padding: 3rem 0; font-size: var(--t0); color: var(--muted); }
+        footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+        footer a { color: var(--muted); }
+    </style>
+</head>
+<body>
+<a class="salta" href="#contingut">Saltar al contenido</a>
+
+<header class="cab">
+    <div class="container">
+        <a class="marca" href="/">Team<span>Towers</span></a>
+        <nav aria-label="Secciones de esta página">
+            <ul>
+                <li><a href="#metodo">Método</a></li>
+                <li><a href="#cerebro">El cerebro</a></li>
+                <li><a href="#precios">Precios</a></li>
+                <li><a href="#preguntas">Preguntas</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="borrador" role="note"><p class="container"><strong>Borrador.</strong> Textos y precios pendientes de validar. Esta página no se indexa todavía.</p></div>
+
+<main id="contingut">
+
+<section class="intro" aria-labelledby="t-intro">
+    <div class="container">
+        <p class="eyebrow">Servicio · Mapa de valor + web</p>
+        <h1 id="t-intro">Tu negocio como <em>red de valor</em>, y una web que nace de ese mapa en una hora</h1>
+        <p class="lead">Dibujamos juntos quién da qué a quién en tu negocio, con el método de <strong>Verna Allee</strong>. De ese flujo de valor sale la estructura de tu web, que publicamos en directo con <strong>Claude Code, GitHub y Netlify</strong>. Y mientras se construye, el repositorio se convierte en el <strong>cerebro del proyecto</strong>: lo que sabes de tu negocio, escrito y versionado, no en la cabeza de quien te hizo la web.</p>
+        <div class="accions">
+            <a class="btn btn-primary js-mail" href="/qui-som">Reservar una sesión</a>
+            <a class="btn btn-ghost" href="#metodo">Cómo funciona</a>
+        </div>
+        <h2 class="sr">Lo que te llevas</h2>
+        <ul class="triada">
+            <li><b>Un mapa de valor</b><span>Roles, intercambios tangibles e intangibles, y dónde se atasca el valor.</span></li>
+            <li><b>Una web publicada</b><span>HTML semántico W3C, accesible, en tu dominio o en uno de Netlify.</span></li>
+            <li><b>Un repositorio tuyo</b><span>Con el mapa, las decisiones y las instrucciones para seguir trabajando con IA.</span></li>
+        </ul>
+    </div>
+</section>
+
+<section id="metodo" class="alt" aria-labelledby="t-metodo">
+    <div class="container">
+        <p class="eyebrow">El método</p>
+        <h2 id="t-metodo">Primero el mapa. <em>Luego la web.</em></h2>
+        <p class="lead">Una web que se hace sin mapa copia el organigrama o la competencia. Una web que se hace desde el mapa enseña a cada persona lo que va a recibir de ti y le pide lo que necesitas de ella.</p>
+        <ol class="passos">
+            <li>
+                <h3>Poner la frontera <span class="dura">· 15 min</span></h3>
+                <p>De qué actividad hablamos y dónde acaba, en una frase que se pueda repetir. Sin frontera el mapa crece hasta los cuarenta nodos y ya no se lee.</p>
+            </li>
+            <li>
+                <h3>Dibujar la red de valor <span class="dura">· 45 min</span></h3>
+                <p>Entre seis y doce roles, dichos por lo que hacen y no por el cargo. Los intercambios tangibles (lo que se entrega y se paga) y los intangibles (confianza, conocimiento, reputación), que son los que casi nunca se escriben. Usamos la <a href="/SOS/vna-suport.html">consola de mapa de valor</a> del SOS, que revisa el mapa con diez reglas mientras se escribe.</p>
+            </li>
+            <li>
+                <h3>Elegir el flujo de valor <span class="dura">· 10 min</span></h3>
+                <p>De toda la red, el recorrido que más importa ahora: el que trae a tu cliente, el que lo retiene o el que hoy se pierde. Ese recorrido es el guion de la web.</p>
+            </li>
+            <li>
+                <h3>Construir la web en directo <span class="dura">· 60 min</span></h3>
+                <p>Con Claude Code, a partir del mapa. Creamos tu repositorio en GitHub, lo conectamos a Netlify y cada cambio aceptado se publica solo. Ves cómo se pide un cambio, cómo se revisa y cómo se deshace.</p>
+            </li>
+            <li>
+                <h3>Dejar escrito el cerebro <span class="dura">· 20 min</span></h3>
+                <p>El mapa, el flujo, las decisiones y un <code>CLAUDE.md</code> con las reglas de tu proyecto, en Markdown dentro del repositorio. Cualquier IA que trabaje después en tu web empieza leyendo eso.</p>
+            </li>
+        </ol>
+
+        <div class="taula-wrap">
+            <table>
+                <caption>Cómo se traduce el mapa en la web</caption>
+                <thead>
+                    <tr><th scope="col">En el mapa</th><th scope="col">En la web</th><th scope="col">Ejemplo</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th scope="row">Un rol</th><td>Una puerta: página o sección para esa audiencia</td><td>«Para centros educativos», «Para familias»</td></tr>
+                    <tr><th scope="row"><span class="tg">Intercambio tangible</span></th><td>Una acción: formulario, reserva, compra, descarga</td><td>Pedir presupuesto, reservar plaza</td></tr>
+                    <tr><th scope="row"><span class="in">Intercambio intangible</span></th><td>Contenido que da confianza: casos, método, quién está detrás</td><td>Cómo trabajamos, qué ha pasado en otros proyectos</td></tr>
+                    <tr><th scope="row">El flujo de valor elegido</th><td>El recorrido principal y su llamada a la acción</td><td>De la portada a la reserva en tres pasos</td></tr>
+                    <tr><th scope="row">Un atasco del mapa</th><td>Lo primero que la web tiene que resolver</td><td>Nadie sabe a quién preguntar: una página de contacto por rol</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section id="cerebro" aria-labelledby="t-cerebro">
+    <div class="container">
+        <p class="eyebrow">El cerebro del proyecto</p>
+        <h2 id="t-cerebro">Tu web es también <em>tu memoria</em></h2>
+        <p class="lead">El mismo repositorio que publica la web guarda el conocimiento de tu negocio en archivos Markdown: legibles por personas, por buscadores y por cualquier IA. Con estándares abiertos (HTML semántico del W3C, datos estructurados de Schema.org) para que no dependa de ninguna herramienta concreta, tampoco de nosotros.</p>
+
+        <div class="dues">
+            <div class="caixa repo">
+                <h3>Va al repositorio</h3>
+                <ul>
+                    <li>El mapa de valor y sus versiones</li>
+                    <li>Roles, procesos y flujos de trabajo</li>
+                    <li>Decisiones tomadas y el motivo</li>
+                    <li>Textos, guías y preguntas frecuentes</li>
+                    <li>Las reglas para la IA (<code>CLAUDE.md</code>)</li>
+                </ul>
+            </div>
+            <div class="caixa crm">
+                <h3>Se queda en tu CRM</h3>
+                <ul>
+                    <li>Datos personales de clientes y contactos</li>
+                    <li>Contratos, precios pactados y facturas</li>
+                    <li>Conversaciones comerciales</li>
+                    <li>Contraseñas y claves de acceso, nunca en el repositorio</li>
+                    <li>Cualquier cosa que no publicarías en un tablón</li>
+                </ul>
+            </div>
+        </div>
+
+<figure>
+<figcaption class="sr">Estructura de ejemplo del repositorio</figcaption>
+<pre><code>tu-negocio/
+├── index.html            <span class="c"># la web: HTML semántico W3C</span>
+├── servicios/            <span class="c"># una puerta por rol del mapa</span>
+├── CLAUDE.md             <span class="c"># cómo trabaja la IA en este proyecto</span>
+├── cerebro/
+│   ├── mapa-de-valor.md  <span class="c"># roles e intercambios</span>
+│   ├── flujo-de-valor.md <span class="c"># el recorrido que guía la web</span>
+│   ├── decisiones.md     <span class="c"># qué se decidió y por qué</span>
+│   └── personas.md       <span class="c"># roles y responsabilidades, sin datos privados</span>
+└── netlify.toml          <span class="c"># cada cambio aceptado se publica solo</span></code></pre>
+</figure>
+    </div>
+</section>
+
+<section class="alt" aria-labelledby="t-formacio">
+    <div class="container">
+        <p class="eyebrow">La formación</p>
+        <h2 id="t-formacio">No te hacemos la web. <em>Aprendes a hacerla.</em></h2>
+        <p class="lead">La sesión es también una clase práctica de desarrollo con IA. Al salir sabes:</p>
+        <div class="dues">
+            <div class="caixa">
+                <h3>Trabajar con la IA</h3>
+                <ul>
+                    <li>Pedir un cambio con contexto y criterio de aceptación</li>
+                    <li>Escribir las reglas de tu proyecto para que la IA las siga</li>
+                    <li>Comprobar lo que la IA hace en vez de creérselo</li>
+                    <li>Usar Claude Code o, por API, otros modelos</li>
+                </ul>
+            </div>
+            <div class="caixa">
+                <h3>Las buenas prácticas</h3>
+                <ul>
+                    <li>Ramas, cambios revisables y cómo volver atrás</li>
+                    <li>HTML semántico, accesibilidad y datos estructurados</li>
+                    <li>Publicación continua con Netlify</li>
+                    <li>Qué se escribe en el repositorio y qué no</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="precios" aria-labelledby="t-precios">
+    <div class="container">
+        <p class="eyebrow">Precios · borrador</p>
+        <h2 id="t-precios">Tres formatos, <em>el mismo método</em></h2>
+        <p class="lead">Para una persona que lleva su negocio, para un equipo que necesita ponerse de acuerdo sobre cómo crea valor, o para quien quiere seguir avanzando con alguien al lado.</p>
+        <div class="preus">
+            <article class="preu" aria-labelledby="p1">
+                <span class="etiqueta">Nuevo · a validar</span>
+                <h3 id="p1">Sesión individual</h3>
+                <p class="per">Una persona o un negocio pequeño · unas 2 h 30 min, en remoto o presencial</p>
+                <p class="xifra">390 € <small>sin IVA</small></p>
+                <ul>
+                    <li>Mapa de valor y flujo de valor</li>
+                    <li>Web publicada en Netlify</li>
+                    <li>Repositorio en tu cuenta de GitHub con la carpeta del cerebro</li>
+                    <li>Una revisión de 30 min a las dos semanas</li>
+                </ul>
+            </article>
+            <article class="preu destacat" aria-labelledby="p2">
+                <span class="etiqueta">Nuevo · a validar</span>
+                <h3 id="p2">Taller de equipo</h3>
+                <p class="per">De 4 a 12 personas · media jornada (4 h)</p>
+                <p class="xifra">1.200 € <small>sin IVA</small></p>
+                <ul>
+                    <li>Mapa de valor hecho entre todo el equipo</li>
+                    <li>Web publicada y repositorio compartido</li>
+                    <li>Cada persona hace al menos un cambio real en la web</li>
+                    <li>Guía de buenas prácticas para el equipo</li>
+                </ul>
+            </article>
+            <article class="preu" aria-labelledby="p3">
+                <span class="etiqueta">Nuevo · a validar</span>
+                <h3 id="p3">Acompañamiento</h3>
+                <p class="per">Después de cualquiera de los dos · 3 meses</p>
+                <p class="xifra">1.400 € <small>sin IVA</small></p>
+                <ul>
+                    <li>Seis sesiones de 1 h, una cada dos semanas</li>
+                    <li>Revisión de tus cambios en el repositorio</li>
+                    <li>El mapa se actualiza con lo que vaya pasando</li>
+                    <li>Conectar la web con tus procesos: formularios, reservas, CRM</li>
+                </ul>
+            </article>
+        </div>
+        <p class="nota">Precios orientativos para 2026, sin IVA. No incluyen dominio ni la suscripción a la IA, que van a nombre del cliente para que todo sea suyo; GitHub y Netlify tienen planes gratuitos suficientes para empezar. Para un proyecto más grande, el catálogo tiene la <a href="/cataleg.html">web o herramienta hecha con IA</a> de cuatro a diez semanas.</p>
+    </div>
+</section>
+
+<section class="alt" aria-labelledby="t-futur">
+    <div class="container">
+        <p class="eyebrow">Lo que viene</p>
+        <h2 id="t-futur">Un cerebro <em>en tu propio ordenador</em></h2>
+        <p class="futur">La siguiente fase es que el cerebro del proyecto pueda consultarse con un modelo de lenguaje que corre en local, sin que nada salga de tu equipo. Como todo está en Markdown y en estándares abiertos, el paso no obliga a rehacer nada. Lo estamos preparando y todavía no lo ofrecemos.</p>
+    </div>
+</section>
+
+<section id="preguntas" aria-labelledby="t-preguntes">
+    <div class="container">
+        <p class="eyebrow">Preguntas</p>
+        <h2 id="t-preguntes">Lo que suele preguntarse</h2>
+        <details>
+            <summary>¿De verdad hay una web en una hora?</summary>
+            <p>Hay una web publicada, sencilla y bien hecha, que sigue tu mapa. No es la web definitiva: es la primera versión de algo que tú ya sabes cambiar. Lo que hace posible la hora es haber hecho antes el mapa.</p>
+        </details>
+        <details>
+            <summary>¿Necesito saber programar?</summary>
+            <p>No. Necesitas saber explicar tu negocio, que es lo que hacemos en el mapa. La sesión te enseña a pedir cambios a la IA y a comprobarlos.</p>
+        </details>
+        <details>
+            <summary>¿De quién es la web?</summary>
+            <p>Tuya. El repositorio, la cuenta de Netlify y el dominio se crean a tu nombre. Si un día dejas de trabajar con nosotros, no pierdes nada.</p>
+        </details>
+        <details>
+            <summary>¿Qué pasa con la información confidencial?</summary>
+            <p>No entra en el repositorio. Los datos personales, los contratos y las conversaciones comerciales se quedan en tu CRM. En la sesión dejamos escrita esa regla para que la IA también la cumpla.</p>
+        </details>
+        <details>
+            <summary>¿Qué es un mapa de valor?</summary>
+            <p>Un dibujo de los roles de tu negocio y de lo que se dan entre ellos, tangible e intangible, según el método de análisis de redes de valor de Verna Allee. Tienes un <a href="/SOS/vna.html">ejemplo sobre un caso real</a>.</p>
+        </details>
+    </div>
+</section>
+
+<section aria-labelledby="t-contacte">
+    <div class="container">
+        <h2 id="t-contacte">¿Empezamos por <em>tu mapa</em>?</h2>
+        <p class="lead">Escríbenos con dos líneas sobre tu negocio y si serías tú solo o un equipo. Contesta Álvaro.</p>
+        <div class="accions">
+            <a class="btn btn-primary js-mail" href="/qui-som">Escribir a Álvaro</a>
+            <a class="btn btn-ghost" href="/SOS/vna-suport.html">Probar la consola de mapa de valor</a>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <div class="container">
+        <span>Team<b>Towers</b> · Força · Equilibri · Valor · Seny</span>
+        <a href="/">Volver a la portada</a>
+    </div>
+</footer>
+
+<script>
+// Correo montado en tiempo de ejecución, igual que en el resto del sitio.
+// Sin JavaScript el botón lleva a /qui-som, donde está el contacto.
+(function () {
+    var u = 'asolache', d = 'mac' + '.' + 'com';
+    document.querySelectorAll('.js-mail').forEach(function (a) {
+        a.href = 'mailto:' + u + '@' + d + '?subject=' + encodeURIComponent('Mapa de valor y web en una hora');
+    });
+})();
+</script>
+</body>
+</html>
