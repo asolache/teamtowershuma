@@ -67,6 +67,12 @@ jobs:
       - name: Guarda del mòdul de suport al mapa de valor
         run: node SOS/tools/build-vna-suport.js --check
 
+      # El motor de l'editor del mapa (model, text, arbre, desviació i
+      # diagnòstic) es prova en Node pur: és l'única guarda de l'editor que corre
+      # aquí, perquè Playwright no hi corre.
+      - name: Motor de l'editor del mapa de valor
+        run: node SOS/tests/test-vna-motor.mjs
+
       # La colla castellera surt a dos llocs: la portada i el mapa de valor.
       # Són dues còpies deliberades, i per això mateix poden divergir en
       # silenci — que és exactament el que va passar amb els herois.
