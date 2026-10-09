@@ -65,13 +65,23 @@ const props = await p.evaluate(() => {
   return out;
 });
 const ids = Object.keys(props);
-ok(ids.length === 6, `${ids.length} objectius`);
+ok(ids.length >= 6 && ids[0] === 'operatiu', `${ids.length} objectius, el primer el negoci operatiu`);
 const firmes = new Set(ids.map(k => props[k].paq.join('+')));
 ok(firmes.size === ids.length,
   `${firmes.size} propostes diferents de ${ids.length} objectius: la segmentació decideix alguna cosa`);
 const orfes = ids.flatMap(k => props[k].paq.concat(props[k].despres)).filter(x => !CATALEG.includes(x));
 ok(orfes.length === 0, 'i cap proposta apunta a un paquet que no és al catàleg de debò'
   + (orfes.length ? ' · ' + orfes.join(', ') : ''));
+
+/* Els titulars dels grups també canvien de llengua: els pinta la pàgina des
+   de `GRUPS`, i un titular que es quedés en català no petaria. */
+const titulars = await p.evaluate(() => {
+  window.__DXORG.dxAplicaLang('es');
+  const es = [...document.querySelectorAll('#objTipus .opts-g')].map(g => g.textContent);
+  window.__DXORG.dxAplicaLang('ca');
+  return es;
+});
+ok(titulars[0] === 'Tu negocio operativo', 'els titulars de les caselles es tradueixen · ' + titulars.join(' / '));
 
 /* ── 3 · Les preguntes que s'obren ──────────────────────────────────────── */
 console.log('\n3 · No es pregunta res que no canviï la resposta');
@@ -199,6 +209,33 @@ console.log('\n5b · El que es tria es veu');
   ok(marca.org.canvia && marca.org.sel, 'el tipus d\'organització es marca i es veu');
   ok(marca.obj.canvia && marca.obj.sel, 'i l\'objectiu també');
   await v.close();
+}
+
+/* ── 5d · Al mòbil, com una app ─────────────────────────────────────────── */
+console.log('\n5d · Al mòbil');
+{
+  const m = await b.newPage({ viewport: { width: 390, height: 844 } });
+  m.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await m.goto(url('diagnostic-org.html'));
+  await m.waitForFunction(() => window.__DXORG);
+  const r = await m.evaluate(() => {
+    const out = { amples: [] };
+    const mira = () => out.amples.push(document.documentElement.scrollWidth);
+    mira();
+    document.querySelector('#objTipus .opt[data-v="web"]').click();
+    window.__DXORG.showStep(2); mira();
+    const bar = document.querySelector('#s2 .acts');
+    out.enganxat = getComputedStyle(bar).position === 'sticky';
+    out.plegats = ['web', 'comarca', 'persones'].every(id => !!document.querySelector('#' + id).closest('details.mes'));
+    out.municipiVisible = !document.querySelector('#municipi').closest('details');
+    out.capcalera = getComputedStyle(document.querySelector('header')).display;
+    return out;
+  });
+  ok(r.amples.every(w => w <= 390), 'cap pas fa scroll de costat · ' + r.amples.join(', ') + ' px');
+  ok(r.enganxat, 'el botó d\'avançar queda enganxat a baix, a l\'abast del polze');
+  ok(r.plegats && r.municipiVisible, 'el que és opcional es plega i el que cal respondre es veu');
+  ok(r.capcalera === 'none', 'i a partir del pas 2 la capçalera deixa lloc al formulari');
+  await m.close();
 }
 
 /* ── 5c · La data s'escull, i es llegeix ────────────────────────────────── */
