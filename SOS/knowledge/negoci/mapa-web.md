@@ -77,8 +77,8 @@ de una sesión, la tabla «Del mapa a la web» (la regla queda en una frase del 
   solo para quien compra.», el porqué de ahora (una IA hace webs correctas que se
   parecen) y, al lado, el menú de ejemplo «tu web» con la puerta de cada rol
   (visible también en móvil). Debajo, la tríada sin jerga y una franja de prueba
-  (VNA de Verna Allee · VNA para IKEA con Pantheon Work, «A validar» · más de 20
-  años con equipos).
+  (VNA de Verna Allee · consultoría con el método en Pantheon Work desde 2019 ·
+  más de 20 años con equipos).
 - **Nombre de Álvaro.** Sale en la bio, en los chips de los pasos y en «Lo hace una
   persona (hoy, Álvaro)». En el resto, «una persona» o TeamTowers: la oferta no
   debe leerse como trabajo de un autónomo ni cerrar la puerta a agencias y
@@ -291,8 +291,8 @@ Entre corchetes, el tiempo de Álvaro (estimación a medir).
   consentimiento explícito, nombrar al proveedor (Anthropic) en una política de
   privacidad, que hoy no existe en el sitio, sin afirmar condiciones de uso sin
   comprobarlas, y consentimiento para grabar la sesión.
-- IKEA va en una línea de texto, sin logo, sin atribuir resultados y con sello
-  «A validar». Faltan los años y el permiso.
+- IKEA no sale en esta página: el caso no se publica (decidido por Álvaro el
+  09/10/2026). El nombre solo va en las listas de clientes.
 - El recuadro «Lo aplicamos primero en casa» sale de una revisión del catálogo
   con la guía de estilo (`cataleg-teamtowers-2026.md` §2.5), no de un VNA formal.
   En la página lleva el sello «A validar».
@@ -310,7 +310,8 @@ Entre corchetes, el tiempo de Álvaro (estimación a medir).
    del acompañamiento.
 5. Publicar o no la franja de mantenimiento (Guardas 35 €, Cerebro al día 120 €).
 6. Una línea validada para eventspenedes.com y labodegadesara.com.
-7. IKEA: los años y el permiso para usarlo en una página de venta.
+7. ~~IKEA: los años y el permiso para usarlo en una página de venta.~~ Decidido
+   el 09/10/2026: solo el nombre en las listas de clientes, el caso no.
 8. El recuadro «Lo aplicamos primero en casa».
 9. La mención a las seis agencias que llevan Fent Pinya y las condiciones de
    partner.

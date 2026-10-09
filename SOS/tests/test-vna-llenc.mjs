@@ -144,7 +144,7 @@ console.log('\n/vna · el llenç i les vuit lectures');
 
 /* ══ 4 · EL ZOOM · un node conté un mapa ═════════════════════════════════════
    El de la metodologia i no un gest de pinça: *«en una casa gran no es mapa tot
-   en un sol dibuix: es fa amb zoom»*, i a IKEA van ser dos mapes.
+   en un sol dibuix: es fa amb zoom»*.
 
    Tres coses, i cap es veu mirant la pantalla: que el dibuix que es veu sigui
    **un altre**, que hi hagi camí de tornada, i que els comandaments del mapa

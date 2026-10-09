@@ -293,9 +293,8 @@ mitja feina — és el que decideix la mida de l'encàrrec, i per això surt al 
 del procés (`PROCES` a `build-mapavalor.js`) i al camp `perque` del paquet
 `mapa-organitzacio`.
 
-**Precisat per l'Àlvar el 02/10/2026**, i a IKEA és exactament el que es va fer:
-**dos mapes, el de la direcció i el de l'àrea de serveis** (fila a
-`SOS/knowledge/negoci/trajectoria.md`).
+**Precisat per l'Àlvar el 02/10/2026**: en una casa gran, primer un nivell i
+després, si cal, el de dins d'un node.
 
 Això és el mateix gest que l'eina ja fa al mapa del SOS: els llocs de dins
 surten al centre i clicar-hi els fa el mapa sencer. El zoom de la metodologia i
@@ -338,7 +337,7 @@ Fins avui aquesta fila deia «l'original» i citava **dos llibres que no havia
 llegit ningú d'aquesta casa**: *The Future of Knowledge* (2003) i *Value
 Networks and the True Nature of Collaboration* (2011). Seguien sent certs com a
 referència i eren una cita de biblioteca, no una font: tot el que la casa sabia
-del mètode venia de l'article de Pantheon i del guió d'IKEA, que són pràctica i
+del mètode venia de l'article de Pantheon i del guió d'una sessió real, que són pràctica i
 no el text de l'autora. Ara hi ha el text, i els dos llibres queden on els
 toca: **lectura de fons, pendent**.
 
@@ -353,12 +352,11 @@ Aportat per l'Àlvar el 02/10/2026 **en PDF**, i llegit sencer: d'aquí surten
 les quatre passes, els «must» i els «extra», els gomets, la seqüència i la llei
 de Conway.
 
-**El guió de la sessió d'IKEA** (19 pàgines), aportat per l'Àlvar el
-02/10/2026. És el guió real amb què es va facilitar, i d'aquí surten
+**El guió d'una sessió real amb un equip de direcció** (19 pàgines), aportat
+per l'Àlvar el 02/10/2026. És el guió amb què es va facilitar, i d'aquí surten
 l'agrupació en quatre passes grans, els cors del pols i les vuit preguntes de
-l'anàlisi. L'equip hi consta: **Álvaro Solache com a director del VNA**, Bep
-Moll a comunicació i marca, i Antonio Blanco i Sergio Salgado com a consultors
-i analistes de VNA. *L'àmbit de la sessió era la xarxa de venda i devolucions.*
+l'anàlisi. El client i el detall del cas no es publiquen (decidit per l'Àlvar el
+09/10/2026).
 
 Pantheon aplica el VNA de Verna Allee com a **metodologia central** i el
 descriu com un exercici **ràpid i no invasiu** que dona informació completa

@@ -102,8 +102,12 @@ const GRUPS = [
        la llista de l'app, com les de l'arrel: és una pàgina de venda. */
     ['/mapa-web/', T('Mapa i web en una hora', 'Mapa y web en una hora'),
       T('El servei: el mapa del teu negoci i la web, en una sessió', 'El servicio: el mapa de tu negocio y la web, en una sesión')],
+    /* El prototip de serveis connectables, també en esborrany i `noindex`:
+       la pila per rol, el catàleg de serveis i el cost real de l'IA. */
+    ['/conecta/', T('Serveis connectables', 'Servicios conectables'),
+      T('La teva web amb la teva IA, el CRM i els cobraments', 'Tu web con tu IA, el CRM y los cobros')],
     ['cataleg.html', T('El catàleg', 'El catálogo'),
-      T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
+      T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
     ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
       T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
     /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
@@ -204,8 +208,14 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    Absolutes a posta. Fins avui la barra del SOS deia `../index.html` i el
    desplegable de la portada `/SOS/x.html`: **dos modes de ruta** per a la
    mateixa llista, i per això eren dos blocs de codi. Amb rutes absolutes el
-   mateix marcatge val a l'arrel i a `/SOS/`, i la barra pot ser una. */
-const CTA = ['/SOS/', T('Obre el SOS', 'Abre el SOS')];
+   mateix marcatge val a l'arrel i a `/SOS/`, i la barra pot ser una.
+
+   ── L'acció és el diagnòstic (09/10/2026) ──────────────────────────────────
+   Deia «Obre el SOS». La guia de marca (§9) posa el diagnòstic com a crida
+   principal perquè és l'única que torna alguna cosa sense demanar res, i és
+   el primer pas del camí de client a `/sos/`, a la portada i a l'embut
+   (`build-embut.js`). L'aplicació no es perd: és al grup «El SOS» del menú. */
+const CTA = ['/SOS/diagnostic.html', T('Fes el diagnòstic', 'Haz el diagnóstico')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
