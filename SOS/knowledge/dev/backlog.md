@@ -44,6 +44,42 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### Ensenyar a l'Àlvar a integrar-se amb l'automatització del pla (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** que li ensenyem a connectar-se amb els serveis
+d'automatització que el pla d'estratègia preveu (la fase «API i agents»), alineat
+amb l'estratègia.
+
+**El que preveu el pla** (el detall és al repositori privat d'estratègia):
+
+- una API amb els recursos del mapa: mapes, rols, lliuraments, transaccions,
+  diagnòstic i cervell per rol;
+- avisos (webhooks) quan passa alguna cosa: una transacció nova, un rol sense
+  reciprocitat, una desviació entre el real i l'ideal, el cervell d'un rol
+  actualitzat;
+- un servidor MCP perquè un agent (Claude o un altre) llegeixi i escrigui el
+  mapa;
+- una clau per rol, de manera que cadascú només toca el que és seu.
+
+**Avui** no hi ha cap d'aquestes peces: el SOS és estàtic i l'editor del mapa
+exporta i importa JSON. El CRM ja apunta un webhook com a idea.
+
+**El que es demana:** una guia pas a pas, escrita per a qui no programa cada
+dia, amb tres nivells:
+
+1. **Ara mateix:** exportar el mapa de l'editor en JSON i portar-lo a una eina
+   d'automatització o a Claude.
+2. **Quan hi hagi API i webhooks:** rebre un avís quan es registra una
+   transacció i fer-hi alguna cosa (un correu, una fila al CRM, una tasca).
+3. **Quan hi hagi MCP:** demanar a un agent «què li falta al rol X» i que ho
+   llegeixi del mapa.
+
+Cada nivell es prova sobre el pilot 1 (teamtowershuma), i la guia creix amb
+cada peça de la fase.
+
+**Com es tanca:** l'Àlvar fa ell sol el nivell 1 amb la guia, i el nivell 2 en
+quan l'API existeixi, amb una integració que funcioni de debò.
+
 ### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar:** «treure els preus de tot el catàleg i traduir-los a
@@ -235,12 +271,21 @@ herois i els 11 vídeos són, allà, la portada més `/personatges` més `/music
 
 **El que queda obert, i és una veritat a mitges escrita a posta:**
 
-- **`SOS/comando.html` segueix al disc.** L'adreça fa 301, però
-  `build-comando.js` encara escriu la pàgina, `check-comando.js` la vigila i
-  `SOS/molekulon-data.json` —que l'altre repositori llegeix cada dilluns— surt
-  del mateix generador. Treure la pàgina sense deixar de exportar les dades és
-  la feina, i té nom: *`build-comando.js` deixa d'escriure `comando.html` i es
-  queda només amb l'export.* El motiu és a `FORA_DEL_MENU`.
+- **~~`build-comando.js` deixa d'escriure `comando.html`~~ · resolt d'una altra
+  manera (05/10/2026), perquè la feina estava mal plantejada.** Jo havia escrit
+  que calia deixar d'escriure la pàgina i quedar-se amb l'export. Llegint el
+  generador, **la pàgina també és una entrada**: la línia 443 la llegeix sencera
+  i comprova que **cada pla del guió cita de debò la història publicada** —és
+  l'única font d'aquell relat, i no és a cap `.md`. Esborrar-la trencaria
+  l'ancoratge al canon, que és precisament la guarda que impedeix que un guió
+  s'inventi un detall que sona bé.
+
+  El que sí que era cert és que **mantenim una pàgina que ningú pot obrir**: les
+  seves tres adreces fan 301 i, tot i això, `build-nav.js` li escrivia la barra
+  i `build-pell.js` la pintava. Ha deixat de ser **una pàgina** i ha passat a
+  ser **una font**: fora de `PAGINES` i de la pell, amb el motiu escrit a
+  `EXCEPCIONS` i a `FORA_DE_LA_PELL`, i la barra treta del fitxer (−10,9 KB).
+  El generador segueix escrivint-la i llegint-la, que és el que ha de fer.
 - **La frontera és un fitxer de prosa amb una revisió escrita a dins**, i no una
   lectura en viu. Aquest entorn no arriba a l'altre domini i el seu repositori
   és un altre. El dia que l'altra casa canviï el seu `_redirects`, aquest

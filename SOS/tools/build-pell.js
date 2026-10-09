@@ -108,6 +108,11 @@ if (require.main !== module) return;
    La llista és explícita a posta: afegir una pàgina ha de ser una decisió que
    inclogui dir de quin color és. */
 const FORA_DE_LA_PELL = {
+  /* Ja no se serveix —les seves adreces fan 301 cap a molekulon.org— i per tant
+     no té color a triar: ha passat de pàgina a font del canon que
+     `build-comando.js` llegeix. Pintar-la seria mantenir una paleta per a una
+     pantalla que ningú pot obrir. */
+  'SOS/comando.html': 'Ja no se serveix: 301 cap a molekulon.org. Es queda com a font de l\'ancoratge al canon de `build-comando.js`.',
   'SOS/index.html': 'És l\'aplicació i no una pàgina: s\'obre cada dia, té barra pròpia i va al 99 % del seu sostre de pes. Fosca a posta.',
   'SOS/joc.html': 'És una pantalla de joc a pantalla completa, amb la seva pròpia atmosfera.',
   'home-nova.html': 'Esborrany de redisseny amb `noindex`. El genera `build-vitrina.js`.',
