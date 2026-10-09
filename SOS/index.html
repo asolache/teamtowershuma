@@ -205,9 +205,28 @@ a{color:var(--blue);text-decoration:none}
 .ob-pain .px{color:var(--red);font-weight:700;font-size:.8rem}
 .ob-pain .pv{grid-column:2;color:var(--green);font-size:.8rem;line-height:1.45}
 /* Home · 3 camins d'entrada */
-.ob-paths{display:grid;grid-template-columns:repeat(3,1fr);gap:.85rem;margin-bottom:1.5rem;text-align:left}
+.ob-paths{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem;margin-bottom:1.5rem;text-align:left}
 .ob-path{display:flex;flex-direction:column;gap:.35rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;font:inherit;color:var(--text);transition:border-color .14s,transform .14s,background .14s}
 .ob-path:hover{transform:translateY(-3px)}
+/* El funnel: la porta de client ocupa tota la fila i porta la seva ruta */
+.ob-path.p0{grid-column:1/-1;cursor:default;border:1px solid rgba(0,230,118,.4);border-top:3px solid var(--green);background:linear-gradient(135deg,rgba(0,230,118,.07),transparent 55%),var(--bg-panel);padding:1.3rem 1.3rem 1.2rem}
+.ob-path.p0:hover{transform:none}
+.ob-path.p0 .op-t{font-size:1.3rem}
+.ob-path.p0 .op-d{font-size:.86rem;color:var(--light);max-width:70ch;flex:none}
+.ob-path .op-k{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.ob-path.p0 .op-k{color:var(--green)}.ob-path.p1 .op-k{color:var(--purple)}.ob-path.p2 .op-k{color:var(--indigo)}
+.op-r{list-style:none;counter-reset:or;display:grid;gap:.35rem;margin:.4rem 0 .2rem;font-size:.76rem;line-height:1.45;color:var(--muted)}
+.op-r li{counter-increment:or;display:grid;grid-template-columns:auto 1fr;gap:0 .45rem}
+.op-r li::before{content:counter(or);font-family:var(--mono);font-size:.62rem;color:var(--indigo);border:1px solid var(--border-strong);border-radius:50%;width:1.25rem;height:1.25rem;display:inline-flex;align-items:center;justify-content:center;grid-row:span 2}
+.op-r li b{color:var(--white);font-weight:600;display:block}
+.ob-path.p0 .op-r{grid-template-columns:repeat(5,1fr);gap:.6rem;margin:.7rem 0 .9rem}
+.ob-path.p0 .op-r li::before{color:var(--green);border-color:rgba(0,230,118,.4)}
+.op-acc{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.op-cta-b{background:var(--green);color:#03140a;font-weight:700;font-size:.86rem;border-radius:8px;padding:.6rem 1.1rem}
+.op-cta-b:hover{background:var(--white)}
+.op-cta-l{font-family:var(--mono);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;color:var(--green)}
+.ob-path.p1,.ob-path.p2{grid-column:span 1;text-align:left;align-items:stretch}
+@media(max-width:860px){.ob-path.p0 .op-r{grid-template-columns:1fr}}
 .ob-path.p1{border-top:3px solid var(--purple)}
 .ob-path.p1:hover{border-color:var(--purple);background:linear-gradient(180deg,rgba(224,64,251,.08),transparent)}
 .ob-path.p2{border-top:3px solid var(--indigo)}
@@ -1326,24 +1345,55 @@ a{color:var(--blue);text-decoration:none}
          Ara la pàgina va de més concret a més explicat —entra, o mira per on
          entraries, i si encara dubtes, aquí sota hi ha què s'hi guanya— i
          l'argumentari segueix sencer per a qui el necessiti. -->
-    <div class="ob-paths">
+    <!-- EL FUNNEL · TRES MANERES D'ENTRAR (09/10/2026) ──────────────────
+         L'Àlvaro ho va demanar així: «el SOS és el funnel per a clients»,
+         i s'hi entra de tres maneres —com a client, com a usuari i com a
+         gestor de node—. Cada porta diu a qui parla, què s'hi aconsegueix i
+         el camí que fa segons l'ús que se'n vulgui fer, en el llenguatge del
+         SOS (rols, lliuraments, mapa real i ideal, node).
+
+         La de client va primer i és la gran perquè és la que ven: tracta qui
+         hi arriba com un client premium i li ensenya l'oferta com una
+         experiència, no com una llista de preus. Cap xifra en euros: es
+         pressuposta per fluxos. «Vull explorar» no és una manera d'entrar
+         sinó de mirar, i baixa a la tira d'enllaços. -->
+    <div class="ob-paths" aria-label="Tres maneres d'entrar">
+      <div class="ob-path p0">
+        <span class="op-k">Com a client</span>
+        <span class="op-t">Vull el meu negoci operatiu</span>
+        <span class="op-d">Per a una direcció, una pime o una cooperativa que vol el mapa de valor funcionant cada dia. Nosaltres posem la sala i el criteri; el SOS, la feina que abans costava setmanes.</span>
+        <ol class="op-r">
+          <li><b>Diagnòstic</b> On sou, en 3 minuts i sense parlar amb ningú.</li>
+          <li><b>Esborrany del mapa</b> Fet amb el material que ja teniu.</li>
+          <li><b>La sala</b> L'equip dibuixa el mapa real i l'ideal i marca les zones calentes.</li>
+          <li><b>El sistema</b> Cervell per rol, web de xarxa, eines de cada rol i avisos.</li>
+          <li><b>Sistema viu</b> 30 dies d'acompanyament i, si voleu, evolució contínua.</li>
+        </ol>
+        <span class="op-acc"><a class="op-cta-b" href="diagnostic.html">Comença pel diagnòstic →</a><a class="op-cta-l" href="#obOferta">Què inclou</a></span>
+      </div>
       <button class="ob-path p1" id="obHero">
-        <span class="op-ic">🦸</span>
+        <span class="op-k">Com a usuari</span>
         <span class="op-t">Sóc una persona</span>
-        <span class="op-d">Crea el teu perfil, tria el teu rol i descobreix amb qui pots col·laborar al teu territori.</span>
+        <span class="op-d">Per a qui forma part d'un equip, una entitat o un barri i vol que el que aporta consti.</span>
+        <ol class="op-r">
+          <li><b>Perfil</b> Sense compte ni correu.</li>
+          <li><b>Rol</b> Tries el teu i veus només la teva part.</li>
+          <li><b>Lliuraments</b> Què dones, què reps i què tens pendent.</li>
+          <li><b>Certificat</b> El que fas queda al teu registre, i és teu.</li>
+        </ol>
         <span class="op-cta">Crea el meu perfil →</span>
       </button>
       <button class="ob-path p2" id="obLocate">
-        <span class="op-ic">📍</span>
-        <span class="op-t">Tinc una organització o un projecte</span>
-        <span class="op-d">Ubica'l i el SOS et munta el mapa de valor, els rols i el tauler de cadascun.</span>
-        <span class="op-cta">Ubica el projecte →</span>
-      </button>
-      <button class="ob-path p3" id="obExplore">
-        <span class="op-ic">🗺</span>
-        <span class="op-t">Vull explorar</span>
-        <span class="op-d">Carrega l'esquelet de Catalunya i navega comarques, municipis i entitats reals.</span>
-        <span class="op-cta">Explora Catalunya →</span>
+        <span class="op-k">Com a gestor de node</span>
+        <span class="op-t">Porto un projecte o un territori</span>
+        <span class="op-d">Per a qui coordina una entitat, una xarxa o un projecte i el vol muntar pel seu compte.</span>
+        <ol class="op-r">
+          <li><b>Node</b> L'ubiques i el SOS en munta l'estructura.</li>
+          <li><b>Mapa de valor</b> Rols i lliuraments, amb l'editor.</li>
+          <li><b>Tauler</b> Qui fa què, i les decisions que queden escrites.</li>
+          <li><b>Comptes</b> Hores, objectes, € i intangibles, en un sol fons.</li>
+        </ol>
+        <span class="op-cta">Munta el meu node →</span>
       </button>
     </div>
 
@@ -1508,7 +1558,7 @@ a{color:var(--blue);text-decoration:none}
 <!--/SOS-MON-->
 
 <!--SOS-PAQUETS-->
-<section class="ob-sec">
+<section class="ob-sec" id="obOferta">
 <h2>I si el voleu muntat i funcionant</h2>
 <p class="ob-sub2">L'eina és lliure i funciona sense nosaltres: això no és una versió de prova. El que es contracta és <b>no haver de descobrir sols com es munta</b>, i un criteri humà a la sala que cap sistema substitueix.</p>
 <a class="ob-op" href="/#operatiu"><span class="ob-op-k">La proposta</span><b>El teu negoci operatiu</b><span class="ob-op-d">Dos mapes dibuixats amb l'equip —el de la direcció i el de l'àrea on el valor s'encalla—, el cervell del projecte ordenat per rol, la web de xarxa, les eines de cada rol i 30 dies d'acompanyament. Surts amb el negoci funcionant, no amb un informe.</span><span class="ob-op-cta">Què inclou →</span></a>
@@ -1522,6 +1572,7 @@ a{color:var(--blue);text-decoration:none}
 <!--/SOS-PAQUETS-->
 
     <div class="ob-secondary">
+      <button class="ob-link" id="obExplore">🗺 Explora Catalunya</button>
       <button class="ob-link" id="obDir">🌐 Directori d'entitats</button>
       <a class="ob-link" href="diagnostic.html">🔍 Diagnòstic en 3 min</a>
       <a class="ob-link" href="formacio.html">🎓 Guia formativa · 16 mòduls</a>

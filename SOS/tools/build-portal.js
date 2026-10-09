@@ -198,7 +198,7 @@ function blocMon() {
    es diu què és en una línia i es posen al costat els tres serveis que es
    contracten al voltant de l'eina. */
 function blocPaquets() {
-  const f = ['<section class="ob-sec">'];
+  const f = ['<section class="ob-sec" id="obOferta">'];
   f.push('<h2>I si el voleu muntat i funcionant</h2>');
   f.push('<p class="ob-sub2">L\'eina és lliure i funciona sense nosaltres: això no és una versió de prova. ' +
     'El que es contracta és <b>no haver de descobrir sols com es munta</b>, i un criteri humà a la sala que cap sistema substitueix.</p>');
