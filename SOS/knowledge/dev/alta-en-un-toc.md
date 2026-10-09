@@ -32,7 +32,7 @@ compte (o «sense compte»), connecta el que ja fas servir, el primer que rebrà
 i el primer que et demanarem.
 
 **El botó «Descarrega web.json»** dona tot això en un fitxer (`tt-web-1`).
-És el que llegirà la plantilla de la web del pas 3.
+És el que llegeix el generador de la web del pas 3.
 
 Una porta buida no s'amaga: diu que casa no li dona res ni en rep res. És una
 troballa del mapa, no un error de la web.
@@ -74,21 +74,72 @@ Dos tocs més, i tot és seu des del primer minut.
 3. Un formulari curt li demana la clau de la IA, si vol fer-la servir directament
    (vegeu el punt 4). Va a les variables de Netlify, mai al codi.
 
-## 3 · Per fer: la plantilla que llegeix `web.json`
+## 3 · Fet: la web de debò, des del mapa
 
-Un repositori plantilla amb:
+L'Àlvar ho va posar per davant de tot (09/10/2026): des del mapa, o des de
+qualsevol vista del graf, s'ha de poder fer la web del client. Amb bones
+pràctiques W3C, integrable per API, fent servir els correus i la mateixa web
+com a base de dades, DRY radical, al mínim cost i cap a la permaweb.
 
-- Un generador que fa una pàgina per porta i les pàgines «Serveis» i
-  «Per a l'equip», a partir de `web.json`. Així el SOS ja treballa: HTML
-  estàtic, sense dependències.
-- Els formularis de cada porta («Què ens dones») passen a ser
-  [formularis de Netlify](guia-zoho-nivell2.md). Si el client té un CRM, entren
-  al CRM sols, com ja fa el diagnòstic.
-- **Els comptes** només per als rols de la llista `alta`. Hi ha d'haver un
-  proveïdor d'accés: per defecte, Supabase Auth, que ja fem servir i té pla
-  gratuït.
-- `CLAUDE.md` i una carpeta de memòria, perquè qualsevol sessió de Claude Code
-  sàpiga les regles del client des del primer moment.
+**On és:** a la pestanya Web, el botó **«Descarrega la web (.zip)»**. Hi ha
+tres camps opcionals: el nom, el correu on arriben els formularis i la
+llengua (català o castellà). Des de Node fa el mateix:
+
+```bash
+node SOS/tools/web-del-mapa.js mapa.json carpeta/ --nom "El celler" --correu hola@exemple.cat --llengua es
+```
+
+`mapa.json` és el que dona «Copia el JSON» a l'editor, o el `web.json` de la
+pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
+
+**Què hi ha dins:**
+
+| Fitxer | Per a què |
+|---|---|
+| `index.html` | La portada: una porta per a cadascú i els serveis en JSON-LD (`Organization` amb `makesOffer`) |
+| `<rol>.html` | Una per porta: què et donem, què ens dones, la benvinguda i el formulari |
+| `serveis.html` | Els processos amb els passos (`ItemList` de `Service`) |
+| `equip.html` | El que passa a dins. No surt al menú i porta `noindex` |
+| `gracies.html` | On va el formulari quan s'envia |
+| `estil.css` | Un sol full d'estil, amb mode fosc |
+| `web.json` | Les dades de la web, enllaçades des de cada pàgina |
+| `permaweb.json` | L'empremta SHA-256 de cada fitxer |
+
+**Com compleix el que es va demanar:**
+
+- **Una sola font.** El mapa dona `web.json`, i `web.json` dona la web. Els
+  HTML no es toquen a mà: es canvia el mapa i es torna a generar. El botó i
+  `web-del-mapa.js` fan servir el mateix codi, el bloc `VS-SITE` de l'editor.
+  Una prova comprova que les dues sortides són idèntiques byte a byte.
+- **La web és la base de dades.** Cada pàgina porta les seves dades en
+  JSON-LD de schema.org. Un cercador, una IA o una altra web les llegeix sense
+  API, i `web.json` hi és per a qui ho vulgui sencer.
+- **El correu és la safata d'entrada.** Cada porta amb relació té un
+  formulari de Netlify Forms, i cada enviament arriba per correu. Si es
+  connecta el CRM ([nivell 2](guia-zoho-nivell2.md)), també hi entra sol. Si
+  la porta té compte, el botó diu «Demana el teu compte»: l'alta comença per
+  correu fins que hi hagi un proveïdor d'accés (per defecte, Supabase Auth).
+- **Cost zero de servidor.** HTML i CSS estàtics. Cap JavaScript i cap
+  dependència: l'únic `<script>` de cada pàgina és el JSON-LD.
+- **W3C.** Passa `html-validate` amb les regles recomanades sense cap error.
+  Cada pàgina té `lang`, `charset`, `viewport`, un enllaç per saltar al
+  contingut, `header`, `nav`, `main` i `footer` i `aria-current` al menú. Els
+  camps tenen etiqueta, el focus és visible i els objectius fan 44 px.
+- **Cap a la permaweb.** Tots els enllaços són relatius, i la web funciona igual
+  des del disc, des de Netlify o des d'IPFS. El zip és determinista: el mateix
+  mapa dona sempre els mateixos bytes. `permaweb.json` permet comprovar el que
+  s'ha publicat.
+
+**Per publicar-la:** arrossega la carpeta a Netlify (Netlify Drop) o puja-la al
+repositori del client. Netlify en detecta els formularis sol.
+
+**Pendent:**
+
+- Publicar a IPFS o Arweave des del mateix botó. Demana una cartera, i la clau
+  ha de ser a la cartera de qui signa, mai al repositori.
+- Els comptes de debò, per als rols de la llista `alta`.
+- `CLAUDE.md` i una carpeta de memòria dins del zip, per al repositori del
+  client.
 
 ## 4 · La IA, pagada per ús
 
@@ -131,9 +182,10 @@ l'organització a un projecte, i què li cal per entrar-hi.
 ## 7 · L'ordre
 
 1. ✓ El mapa dona la web (`web.json`).
-2. La plantilla que llegeix `web.json` i el camí B: el botó de Netlify
-   funciona sense que hàgim de guardar cap permís.
-3. Stripe Checkout en mode de prova i la funció que verifica l'avís.
-4. El camí A: crear el repositori i el lloc. Això demana tokens de servei
+2. ✓ La web de debò, en un zip o des de Node (`web-del-mapa.js`).
+3. El repositori plantilla i el camí B: el botó de Netlify funciona sense que
+   hàgim de guardar cap permís.
+4. Stripe Checkout en mode de prova i la funció que verifica l'avís.
+5. El camí A: crear el repositori i el lloc. Això demana tokens de servei
    de l'Àlvar.
-5. Els crèdits d'IA, quan l'Àlvar hagi decidit el marge.
+6. Els crèdits d'IA, quan l'Àlvar hagi decidit el marge.

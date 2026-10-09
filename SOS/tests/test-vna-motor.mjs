@@ -692,5 +692,57 @@ console.log('\nM22 · La web que surt del mapa (VS-WEB)');
   ok(new Set(xi).size === xi.length && xi.filter(x => x === 'inici').length === 1, 'un rol que es diu com una pàgina fixa no la trepitja');
 }
 
+console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite, zipFitxers, crc32, ambPermaweb };')();
+  const web = S.webDelMapa(celler()), abans = J(web);
+  const site = S.webASite(web, { nom: 'Celler <prova>', correu: 'hola@exemple.cat' });
+  const f = r => (site.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  const rutes = site.fitxers.map(x => x.ruta);
+  ok(J(web) === abans, 'no toca web.json');
+  ok(rutes.includes('index.html') && web.portes.every(p => rutes.includes(p.id + '.html')) && ['serveis.html', 'equip.html', 'gracies.html', 'estil.css', 'web.json'].every(r => rutes.includes(r)),
+    'una pàgina per porta, més inici, serveis, equip, gràcies, l\'estil i web.json');
+  const pags = site.fitxers.filter(x => x.tipus === 'text/html');
+  ok(pags.every(x => /^<!DOCTYPE html>\n<html lang="ca">/.test(x.cos) && /<meta charset="utf-8">/.test(x.cos) && /name="viewport"/.test(x.cos) && /<main id="contingut">/.test(x.cos) && /class="salta" href="#contingut"/.test(x.cos)),
+    'cada pàgina: llengua, charset, viewport, salt al contingut i <main>');
+  ok(pags.every(x => (x.cos.match(/<script/g) || []).length === 1 && /<script type="application\/ld\+json">/.test(x.cos)), 'cap JavaScript: l\'únic <script> és el JSON-LD');
+  ok(pags.every(x => { const m = x.cos.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/); try { return JSON.parse(m[1])['@context'] === 'https://schema.org'; } catch (e) { return false; } }),
+    'la web és la base de dades: cada pàgina porta JSON-LD de schema.org que es pot llegir');
+  ok(!/Celler <prova>/.test(f('index.html')) && /Celler &lt;prova&gt;/.test(f('index.html')), 'el text del mapa s\'escapa');
+  ok(/<a href="el-visitant.html" aria-current="page">/.test(f('el-visitant.html')) && !/href="\//.test(pags.map(x => x.cos).join('')), 'el menú marca la pàgina i tots els enllaços són relatius (permaweb i disc)');
+  ok(!/href="equip.html"/.test(f('index.html')) && /name="robots" content="noindex"/.test(f('equip.html')), 'la pàgina de l\'equip no surt al menú ni als cercadors');
+  const fv = f('el-visitant.html');
+  ok(/<form name="porta-el-visitant" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">/.test(fv) && /name="form-name" value="porta-el-visitant"/.test(fv),
+    'el formulari de la porta va a Netlify Forms (i d\'allà al correu)');
+  ok(/<label for="porta-el-visitant-correu">/.test(fv) && /id="porta-el-visitant-correu" name="correu" type="email"/.test(fv) && /Demana el teu compte/.test(fv), 'camps amb etiqueta, i qui té compte el demana aquí');
+  ok(/mailto:hola@exemple.cat/.test(fv) && !/<form/.test(f('el-distribuidor.html')), 'el correu, a la vista; i una porta buida no té formulari');
+  ok(!/mailto/.test(S.webASite(web, { correu: 'no és un correu' }).fitxers.map(x => x.cos).join('')), 'un correu que no ho és no s\'hi posa');
+  const es = S.webASite(web, { llengua: 'es' }).fitxers.find(x => x.ruta === 'el-visitant.html').cos;
+  ok(/<html lang="es">/.test(es) && /Qué te damos/.test(es) && /Crea tu cuenta/.test(es), 'també en castellà');
+  ok(J(JSON.parse(f('web.json'))) === abans, 'web.json va dins, igual');
+  ok(S.crc32(new TextEncoder().encode('123456789')) === 0xCBF43926, 'el CRC-32 del zip és el de l\'estàndard');
+  const z = S.zipFitxers(site.fitxers), z2 = S.zipFitxers(S.webASite(S.webDelMapa(celler()), { nom: 'Celler <prova>', correu: 'hola@exemple.cat' }).fitxers);
+  ok(Buffer.compare(Buffer.from(z), Buffer.from(z2)) === 0, 'el zip és determinista: el mateix mapa, els mateixos bytes');
+  const dv = new DataView(z.buffer), fi = z.length - 22, n = dv.getUint16(fi + 10, true);
+  let q = dv.getUint32(fi + 16, true), llegits = [];
+  for (let i = 0; i < n; i++) {
+    const ln = dv.getUint16(q + 28, true), off = dv.getUint32(q + 42, true), mida = dv.getUint32(q + 20, true), crc = dv.getUint32(q + 16, true);
+    const nom = new TextDecoder().decode(z.slice(q + 46, q + 46 + ln)), dades = z.slice(off + 30 + dv.getUint16(off + 26, true), off + 30 + dv.getUint16(off + 26, true) + mida);
+    llegits.push(dv.getUint32(off, true) === 0x04034b50 && S.crc32(dades) === crc && new TextDecoder().decode(dades) === f(nom) ? nom : null);
+    q += 46 + ln;
+  }
+  ok(dv.getUint32(fi, true) === 0x06054b50 && n === site.fitxers.length && llegits.every(Boolean), 'el zip es llegeix sencer: cada fitxer, amb el seu CRC');
+  const { createHash } = await import('node:crypto');
+  const pw = await S.ambPermaweb(site, async b => createHash('sha256').update(b).digest('hex'));
+  const man = JSON.parse(pw.find(x => x.ruta === 'permaweb.json').cos);
+  ok(man.formato === 'tt-permaweb-1' && man.fitxers.length === site.fitxers.length && man.fitxers.every(x => x.sha256 === createHash('sha256').update(f(x.ruta)).digest('hex')),
+    'permaweb.json: l\'empremta SHA-256 de cada fitxer, comprovable');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
+  const des = await cli.genera(EXEMPLE, { nom: 'Celler <prova>', correu: 'hola@exemple.cat' });
+  ok(J(des.filter(x => x.ruta !== 'permaweb.json')) === J(site.fitxers) && J(des.find(x => x.ruta === 'permaweb.json')) === J(pw.find(x => x.ruta === 'permaweb.json')),
+    'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web: un sol codi');
+  ok(J(await cli.genera(JSON.parse(f('web.json')), { nom: 'Celler <prova>', correu: 'hola@exemple.cat' })) === J(des), 'i també la fa a partir d\'un web.json');
+}
+
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

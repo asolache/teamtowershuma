@@ -983,6 +983,15 @@ console.log('\n7D · La web que surt del mapa');
   const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#edWebJson')]);
   const j = JSON.parse(readFileSync(await dl.path(), 'utf8'));
   ok(dl.suggestedFilename() === 'web.json' && j.formato === 'tt-web-1' && j.casa.length === 2 && Array.isArray(j.alta), 'Descarrega web.json amb el format tt-web-1 i la casa triada');
+  await p.fill('#edWebNom', 'Celler de prova');
+  await p.fill('#edWebCorreu', 'hola@exemple.cat');
+  await p.selectOption('#edWebLlengua', 'es');
+  const [dz] = await Promise.all([p.waitForEvent('download'), p.click('#edWebZip')]);
+  const z = readFileSync(await dz.path()), zs = z.toString('latin1');
+  ok(dz.suggestedFilename() === 'celler-de-prova.zip' && zs.startsWith('PK') && zs.includes('permaweb.json') && zs.includes('<html lang="es">') && zs.includes('mailto:hola@exemple.cat'),
+    'Descarrega la web (.zip): les pàgines en la llengua triada, el correu i permaweb.json');
+  await p.click('#edPanWeb [data-web-pag="serveis"]');
+  ok(await p.evaluate(() => document.querySelector('#edWebNom').value) === 'Celler de prova', 'el nom es manté en tornar a pintar');
   await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
 }
 
