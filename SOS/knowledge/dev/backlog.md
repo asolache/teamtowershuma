@@ -44,7 +44,53 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
-### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (demanat 09/10/2026)
+### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «treure els preus de tot el catàleg i traduir-los a
+costos d'IA, amb el model adequat a cada tasca i optimitzat pel SOS».
+
+**Avui** hi ha forquilles en euros a `cataleg.html` (cada paquet, en català i
+castellà), a `SOS/pressupost.html` (`data-min` i `data-max` de la calculadora), a
+`SOS/diagnostic-org.html`, a la taula del `README.md` i a l'àncora de preu de
+`/mapa-web/`.
+
+**El que es demana:** cap forquilla en euros al catàleg públic. En lloc seu, com
+es calcula: el cost de la IA de cada flux de valor (amb el model petit on n'hi
+ha prou i el gran només on cal; el SOS tria i aprèn quin), més les hores
+d'acompanyament, **desglossat per fluxos**. La calculadora deixa de sumar
+forquilles i ensenya aquest desglossament.
+
+**Com es tanca:** cap «€» als paquets de `cataleg.html` ni a la calculadora,
+amb una guarda que ho comprovi a cada canvi; els tests de la portada i del
+catàleg en verd. Les xifres reals de cost per model surten dels pilots, no
+s'inventen.
+
+### Què es diu d'IKEA en públic (demanat 09/10/2026)
+
+**L'Àlvar ha dit «treu-ho»** a la pregunta de què es pot dir d'IKEA en públic.
+Avui IKEA surt als logos de clients (`index.html`, `qui-som.html`,
+`SOS/tools/build-clients.js`, que té una guarda que exigeix que hi sigui), a
+l'aval de `/mapa-web/`, als textos de `SOS/vna.html` i a `ia.html`. Les fotos ja
+estan decidides: només pixelades i fora de la web.
+
+**Pendent:** confirmar si «treu-ho» vol dir treure IKEA de tota la web pública o
+només deixar d'ensenyar el cas. Fins que es confirmi no es toca res públic.
+
+### Els tres primers pilots del paquet nou (decidit 09/10/2026)
+
+**Decidit per l'Àlvar:** el primer pilot és **teamtowershuma mateix**; després
+dos més. El preu, l'abast i qui són viuen al repositori privat d'estratègia, no
+aquí.
+
+**El que es demana a cada pilot:** provar la solució i la resta del model de
+negoci; tot **desglossat per fluxos**; i provar el «sistema viu» com a quota
+recurrent, buscant que la feina de l'Àlvar s'automatitzi tant com es pugui amb
+la millora contínua del SOS.
+
+**Com es tanca:** els tres pilots fets, amb les hores i el cost d'IA de cada
+flux apuntats, i el que se n'aprengui escrit com a veda.
+
+### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar**, per a la UX de l'editor de `SOS/vna-suport.html`. Són
 dues peces i no depenen l'una de l'altra.
@@ -90,6 +136,24 @@ posició**, amb ratolí o tàctil.
 
 **Com es tanca:** les dues coses provades al navegador (Playwright) amb ratolí
 i amb tàctil simulat, i a `test-vna-suport.mjs` les assercions que ho comproven.
+
+**Fet (09/10/2026).** El que s'ha mesurat:
+
+- **El vol** (`preparaVol`, `volFalco`): una còpia del mapa de fora s'acosta al
+  rol i s'apaga, i el de dins creix des d'ell (460 ms); en pujar, al revés. El
+  camí, la selecció i l'arbre canvien a l'instant, com abans: el vol només és
+  dibuix. Els rols sense `dins` i «menys moviment» fan el fos d'abans. En passar
+  per sobre o enfocar un rol amb flux a dins, l'anell i el «+N rols» es tornen
+  indigo. El vol comença amb el gest d'entrar; si es vol en passar-hi per sobre,
+  és una petició nova.
+- **Arrossegar** a la tira del flux: ratolí a 6 px; dit després de mantenir
+  350 ms quiet, perquè lliscar encara desplaci. Al mig d'un pas, «alhora»; a la
+  vora, abans o després; a la resta del carril, al final; a «Sempre» o «Sense
+  pas», allà. Tot passa per `opPas`, `opSempre` i `opTreuPas`, i per tant es
+  desfà. Esc ho cancel·la; Alt+fletxes continua sent el camí del teclat. La tira
+  no es refà mentre s'arrossega.
+- `test-vna-suport.mjs`: 18 assercions noves (163 en total), amb ratolí i amb
+  tocs reals per CDP. `test-vna-motor.mjs` segueix a 205.
 
 ---
 
