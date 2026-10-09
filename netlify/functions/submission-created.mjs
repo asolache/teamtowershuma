@@ -82,7 +82,7 @@ export function config(env) {
 }
 
 /* Un enviament, de cap a peus. `fetchFn` i `env` s'injecten per als tests. */
-export async function processa(body, env, fetchFn = fetch) {
+export async function processa(body, env, fetchFn = globalThis.fetch) {
   let ev;
   try { ev = JSON.parse(body || '{}'); } catch (e) { return { estat: 'ignorat', motiu: 'cos que no és JSON' }; }
   const p = ev.payload || {};
