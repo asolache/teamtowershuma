@@ -44,52 +44,41 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
-### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (demanat 09/10/2026)
+### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (09/10/2026)
 
-**Demanat per l'Àlvar**, per a la UX de l'editor de `SOS/vna-suport.html`. Són
-dues peces i no depenen l'una de l'altra.
+**Fet.** Demanat per l'Àlvar per a la UX de `SOS/vna-suport.html`. Les dues
+peces, provades al navegador amb ratolí, amb tàctil de debò (esdeveniments
+tàctils del Chromium, no simulats a mà) i amb teclat.
 
-**1 · El vol de falcó en entrar a un rol que té flux a dins.** Avui entrar a un
-rol amb xarxa pròpia (doble clic, `E`, tocar) canvia de mapa amb un fos de
-0,22 s (`ed-fon`): el mapa de fora desapareix i el de dins apareix, i qui mira
-perd on era. La vista de falcó (`posaFalco`) ja existeix, però és un
-commutador estàtic, no un moviment.
+| | Abans | Ara |
+|---|---|---|
+| Entrar a un rol amb flux a dins | fos de 0,22 s: el mapa de fora desapareix | **vol**: el de fora s'acosta al rol i s'apaga, el de dins en creix (0,42 s) |
+| Pujar | el mateix fos | el de dins s'encongeix cap al seu rol i el de fora torna |
+| Veure que s'hi pot entrar | anell puntejat | i a més lupa (`zoom-in`) i anell índigo en passar-hi o enfocar-lo |
+| Canviar l'ordre d'un pas | treure'l i tornar-lo a clicar, o Alt+fletxes | **arrossegar-lo** amb ratolí o amb el dit, o Alt+fletxes |
+| Assercions a `test-vna-suport.mjs` | 145 | 162 |
 
-El que es demana és **el vol**: la càmera s'acosta al rol, les etiquetes
-s'apaguen pel camí com a la vista de falcó, i el mapa de dins creix des de la
-posició del rol fins a omplir el llenç. En pujar (`↑ Puja`, `Alt`+`↑`), el
-mateix al revés: el mapa de dins s'encongeix fins al seu rol i el de fora torna
-a tenir etiquetes.
+**Les decisions, i per què:**
+- **El vol és només imatge.** L'estat (`LLOC.cami`, la selecció, l'arbre)
+  canvia de cop com abans, i el que vola és una còpia del dibuix que es deixa.
+  Desfer, el teclat i les proves no esperen cap animació; la prova comprova
+  que el lloc ja ha canviat a mig vol i que entrar i pujar deixa l'arbre
+  idèntic.
+- **El vol comença amb el gest d'entrar** (doble clic, `E`, «Entra»), no amb
+  el pas del ratolí: el ratolí només ensenya que s'hi pot entrar. Si l'Àlvar el
+  vol en passar-hi per sobre, és un canvi petit.
+- **Amb el dit, cal mantenir-lo premut** (0,38 s) abans d'agafar la fitxa.
+  Si no, la tira del flux no es podria fer córrer lliscant, que és el gest
+  natural en una llista horitzontal. Lliscar de seguida no agafa res, i la
+  prova ho comprova.
+- **On cau:** al mig d'un pas, «alhora»; a la vora o entre dos, en aquella
+  posició; després de l'últim o en un procés buit, al final; a «Sense pas», li
+  treu el pas. Sempre amb `opPas` o `opTreuPas`, i Desfés ho torna.
+- **Sense moviment** (`prefers-reduced-motion` o el mode quiet): no vola, i el
+  canvi de nivell és el fos d'ara.
 
-- **Només als rols que tenen `dins`.** Un rol sense flux a dins no vola: diu
-  que encara no en té, com ara.
-- **Abans d'entrar, s'ha de veure que s'hi pot entrar.** En passar-hi per sobre
-  (o en enfocar-lo amb el teclat), el rol ensenya que té un flux a dins. El vol
-  comença amb el gest d'entrar, no amb el pas del ratolí; si l'Àlvar volia dir
-  que el vol comenci en passar-hi per sobre, es decideix abans de fer-lo.
-- **Sense moviment per a qui no en vol.** Amb `prefers-reduced-motion` o el mode
-  quiet, el canvi segueix sent el fos d'ara.
-- **La guarda:** el vol no pot canviar el que hi ha al mapa. Entrar i pujar ha
-  de deixar `LLOC.cami`, la selecció i l'arbre igual que avui (`test-vna-motor.mjs`).
-
-**2 · Ordenar el flux arrossegant, amb ratolí o amb el dit.** Avui l'ordre del
-flux es fa clicant els intercanvis un darrere l'altre en el mode de passos
-(`opPas`, «final» o «alhora»), i per canviar-lo cal treure el pas i tornar-lo a
-posar. El que es demana és **agafar un pas i deixar-lo anar en una altra
-posició**, amb ratolí o tàctil.
-
-- **La mateixa operació que ja hi ha.** Arrossegar no és un model nou: acaba
-  cridant les operacions de `MODEL` (`opPas`, `opTreuPas`), perquè desfer, les
-  regles i el diagnòstic segueixin funcionant igual.
-- **Tàctil de debò.** El llenç ja fa servir `pointerdown` i el pessic de dos
-  dits; arrossegar un pas no pot xocar amb el pessic ni amb moure un rol.
-- **Teclat.** Qui no fa servir ratolí ha de poder moure el pas amunt i avall
-  amb tecles (WCAG 2.1.1).
-- **Deixar-lo sobre un altre pas el posa «alhora»**, que ja és un estat del
-  model; deixar-lo entre dos el posa en aquella posició.
-
-**Com es tanca:** les dues coses provades al navegador (Playwright) amb ratolí
-i amb tàctil simulat, i a `test-vna-suport.mjs` les assercions que ho comproven.
+**El que queda obert:** les molles (saltar dos nivells de cop) i la Llista
+segueixen amb el fos; arrossegar cap a «∞ Sempre» no fa res (es marca amb `S`).
 
 ---
 
