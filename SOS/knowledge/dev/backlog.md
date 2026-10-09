@@ -82,6 +82,12 @@ Amazon i els que interessin al 90 % dels clients i dels seus rols.
    farà petar la pàgina fins que s'actualitzi, i és el que volem.
 2. **Nivell 2:** una funció a Netlify que rep el formulari i escriu al CRM.
    Comença pel flux «Cada formulari entra al CRM», amb Zoho al pilot 1.
+   **Escrit (09/10/2026):** `netlify/functions/submission-created.mjs` passa
+   el *Diagnòstic d'organització* a lead de Zoho. Netlify la crida sola a cada
+   enviament verificat. Sense claus no fa res; té mode prova i fa servir el
+   permís mínim (només crear leads). Al registre no hi va cap dada personal.
+   Test sense xarxa a la CI: `test-zoho-nivell2.mjs`. **Falta que l'Àlvar hi
+   posi les claus** seguint `guia-zoho-nivell2.md`, i provar-ho de debò.
 3. **Programes de partner** (Zoho, Stripe, HubSpot, Holded…): quins n'hi ha i
    què paguen. Les xifres van al repositori privat, no aquí.
 4. **La quota del Sistema viu,** que es decideix amb els pilots.

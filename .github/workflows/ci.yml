@@ -319,6 +319,12 @@ jobs:
       - name: Els serveis connectables i el cost de l'IA diuen la veritat
         run: node SOS/tools/check-conecta.js
 
+      # El primer flux de nivell 2: el formulari del web entra a Zoho CRM sol.
+      # Es prova amb un `fetch` fals, sense xarxa: que sense claus no faci res,
+      # que el lead porti el que toca i que el registre no porti cap dada personal.
+      - name: Flux de nivell 2 · formulari → Zoho CRM
+        run: node SOS/tests/test-zoho-nivell2.mjs
+
       # Els municipis surten de les taules de l'app, que és qui les fa servir
       # per construir l'arbre de territoris. Dues llistes divergirien i la que
       # es quedaria enrere seria la del directori, que ningú manté.
