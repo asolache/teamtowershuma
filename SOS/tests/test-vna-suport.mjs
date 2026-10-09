@@ -992,6 +992,8 @@ console.log('\n7D · La web que surt del mapa');
   const z = readFileSync(await dz.path()), zs = z.toString('latin1');
   ok(dz.suggestedFilename() === 'celler-de-prova.zip' && zs.startsWith('PK') && zs.includes('permaweb.json') && zs.includes('<html lang="es">') && zs.includes('mailto:hola@exemple.cat'),
     'Descarrega la web (.zip): les pàgines en la llengua triada, el correu i permaweb.json');
+  ok(['cerebro/mapa-real.json', 'cerebro/roles/', 'cerebro/decisiones.md', 'CLAUDE.md', 'LEEME.md', 'netlify.toml', '404.html', 'robots.txt'].every(r => zs.includes(r)) && zs.includes('"abast"'),
+    'i és el repositori del client: el cervell del projecte, les regles i la configuració de Netlify');
   await p.click('#edPanWeb [data-web-pag="serveis"]');
   ok(await p.evaluate(() => document.querySelector('#edWebNom').value) === 'Celler de prova', 'el nom es manté en tornar a pintar');
   await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
