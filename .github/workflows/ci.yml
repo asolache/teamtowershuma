@@ -250,6 +250,8 @@ jobs:
       # les coses si es mouen a cada pantalla.
       - name: Guarda del menú (una sola arquitectura)
         run: node SOS/tools/build-nav.js --check
+      - name: Guarda de l'embut (per on començar a les pàgines públiques)
+        run: node SOS/tools/build-embut.js --check
 
       # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
       # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una

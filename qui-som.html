@@ -276,7 +276,39 @@
            seccions porten el coixí que tenien quan n'hi havia divuit seguides:
            de sobre, un forat de vuit rems entre el titular i la primera cosa. */
         .pg-cap + section { padding-top:2.5rem; }
-    </style>
+    /*TT-EMBUT-CSS*/
+/* GENERAT per SOS/tools/build-embut.js · l'embut «Per on començar» */
+.emb{padding:4rem 1.25rem;border-top:1px solid var(--border);background:var(--panel)}
+.emb-in{max-width:1080px;margin:0 auto}
+.emb-k{font-family:var(--mono);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
+.emb h2{font-size:var(--t4);line-height:1.15;margin:0 0 .8rem;color:var(--text)}
+.emb h2 em{font-style:normal;color:var(--indigo)}
+.emb-d{font-size:var(--t1);line-height:1.6;color:var(--light);max-width:62ch;margin:0 0 1.8rem}
+.emb-portes{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.emb-p{display:flex;flex-direction:column;gap:.45rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.25rem;color:var(--text);text-decoration:none}
+a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
+.emb-c{grid-column:1/-1;border-color:var(--green);border-top-width:3px}
+.emb-pk{font-family:var(--mono);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo)}
+.emb-c .emb-pk{color:var(--green)}
+.emb-pt{font-size:var(--t2);font-weight:700;line-height:1.3;margin:0;color:var(--text)}
+.emb-pd{font-size:var(--t0);line-height:1.6;color:var(--light);margin:0;max-width:72ch}
+.emb-pa{font-size:var(--t0);font-weight:600;color:var(--indigo);margin-top:auto;padding-top:.3rem}
+.emb-r{list-style:none;counter-reset:emb;display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;margin:.6rem 0 .4rem;padding:0}
+.emb-r li{counter-increment:emb;font-size:var(--t0);line-height:1.5;color:var(--muted);border-top:2px solid var(--green);padding-top:.5rem}
+.emb-r li b{display:block;color:var(--text)}
+.emb-r li b::before{content:counter(emb) " · ";font-family:var(--mono);font-weight:400;color:var(--green)}
+.emb-acc{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin:.6rem 0 0}
+.emb-cta{display:inline-flex;align-items:center;min-height:44px;padding:.6rem 1.2rem;border-radius:8px;background:var(--green);color:var(--on-accent);font-weight:700;text-decoration:none;touch-action:manipulation}
+.emb-cta:hover,.emb-cta:focus-visible{background:var(--text)}
+.emb-sec{display:inline-flex;align-items:center;min-height:44px;color:var(--indigo);font-weight:600}
+.emb-n,.emb-peu{font-size:var(--t0);line-height:1.6;color:var(--muted);margin:0}
+.emb-n a{color:var(--indigo)}
+.emb-peu{margin-top:1.2rem}
+.emb a:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+@media(max-width:860px){.emb-r{grid-template-columns:1fr}}
+@media(max-width:620px){.emb-portes{grid-template-columns:1fr}.emb-cta{width:100%;justify-content:center}}
+/*/TT-EMBUT-CSS*/
+</style>
 </head>
 <body>
 
@@ -652,10 +684,54 @@
                 <div class="faq-a" data-i18n-html="faq.a5">No, i sovint són compatibles. Les eines de participació serveixen per <strong>recollir</strong>: propostes, vots, pressupostos participatius. Això altre serveix per <strong>sostenir</strong> el dia a dia d'un projecte que ja s'ha decidit —qui fa què, qui hi ha posat hores, qui entra ara. Si el que ja teniu ho fa, t'ho direm i no et vendrem res.</div>
             </details>
         </div>
-        <p class="faq-nota fade-up" data-i18n-html="faq.nota"><span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn de vosaltres, no de l'eina—, ni fem enquestes massives. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn del poble, no de l'eina—, ni fem enquestes massives al veïnat. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</p>
+        <p class="faq-nota fade-up" data-i18n-html="faq.nota"><span>→</span> El que <strong>no</strong> fem: ni gestionem el projecte per vosaltres, ni garantim que la gent hi participi —això depèn de vosaltres, no de l'eina—, ni fem enquestes massives. I no dinamitzem res que no tingui almenys tres persones disposades a sostenir-ho.</p>
     </div>
 </section>
 
+<!--TT-EMBUT-->
+<!-- GENERAT per SOS/tools/build-embut.js · no s'edita a mà. Les tres portes
+     són les de /sos/, i el botó principal és el diagnòstic perquè és l'únic
+     que dona alguna cosa abans de demanar res (guia de marca §9). -->
+<section class="emb" id="per-on-comencar" aria-labelledby="emb-t">
+  <div class="emb-in">
+    <p class="emb-k" data-i18n="emb.k">Per on començar</p>
+    <h2 id="emb-t" data-i18n-html="emb.h">Primer veus on ets. <em>Després decideixes.</em></h2>
+    <p class="emb-d" data-i18n="emb.d">No et demanem res fins que t'hem tornat alguna cosa. Hi ha tres portes, segons el que vulguis fer.</p>
+    <div class="emb-portes">
+      <div class="emb-p emb-c">
+        <span class="emb-pk" data-i18n="emb.c.k">Com a client</span>
+        <h3 class="emb-pt" data-i18n="emb.c.t">Vull el meu negoci operatiu</h3>
+        <p class="emb-pd" data-i18n="emb.c.d">Per a una direcció, una pime o una cooperativa que vol el seu mapa de valor funcionant cada dia, no un informe. La sala i el criteri els posen persones; la feina que abans costava setmanes, el sistema.</p>
+        <ol class="emb-r">
+          <li><b data-i18n="emb.c.1t">Diagnòstic</b> <span data-i18n="emb.c.1d">On sou, en 3 minuts i sense parlar amb ningú.</span></li>
+          <li><b data-i18n="emb.c.2t">Esborrany del mapa</b> <span data-i18n="emb.c.2d">Gratuït, fet amb el material que ja teniu.</span></li>
+          <li><b data-i18n="emb.c.3t">La sala</b> <span data-i18n="emb.c.3d">L'equip dibuixa el mapa real i l'ideal, i marca on s'encalla el valor.</span></li>
+          <li><b data-i18n="emb.c.4t">El sistema</b> <span data-i18n="emb.c.4d">Cervell per rol, web de xarxa, les eines de cada rol i els avisos.</span></li>
+          <li><b data-i18n="emb.c.5t">Sistema viu</b> <span data-i18n="emb.c.5d">El mapa real es compara sol amb l'ideal, i avisa.</span></li>
+        </ol>
+        <p class="emb-acc">
+          <a class="emb-cta" href="/SOS/diagnostic.html" data-i18n="emb.c.a">Fes el diagnòstic en 3 min →</a>
+          <a class="emb-sec" href="/SOS/pressupost.html" data-i18n="emb.c.b">Ja sé què vull: demana pressupost</a>
+        </p>
+        <p class="emb-n" data-i18n-html="emb.c.n">Es pressuposta per fluxos: hores i cost de la IA, <a href="/cataleg.html#cost">desglossats</a>.</p>
+      </div>
+      <a class="emb-p" href="/SOS/">
+        <span class="emb-pk" data-i18n="emb.u.k">Com a usuari</span>
+        <span class="emb-pt" data-i18n="emb.u.t">Formo part d'un equip o d'un barri</span>
+        <span class="emb-pd" data-i18n="emb.u.d">Tries el teu rol i veus què dones, què reps i què tens pendent. El que fas queda al teu registre, i és teu.</span>
+        <span class="emb-pa" data-i18n="emb.u.a">Crea el meu perfil →</span>
+      </a>
+      <a class="emb-p" href="/SOS/">
+        <span class="emb-pk" data-i18n="emb.n.k">Com a gestor de node</span>
+        <span class="emb-pt" data-i18n="emb.n.t">Porto un projecte o un territori</span>
+        <span class="emb-pd" data-i18n="emb.n.d">Muntes el node pel teu compte: el mapa de valor, el tauler de qui fa què i uns comptes que sumen hores, objectes, euros i intangibles.</span>
+        <span class="emb-pa" data-i18n="emb.n.a">Munta el meu node →</span>
+      </a>
+    </div>
+    <p class="emb-peu" data-i18n="emb.peu">El SOS s'obre al navegador, sense compte i sense quota, i les dades es queden al teu aparell.</p>
+  </div>
+</section>
+<!--/TT-EMBUT-->
 <footer>
     <div class="container">
         <div class="footer-inner">
@@ -765,6 +841,36 @@ ca: {
   'nv.cta':'Obre el SOS',
   'nv.menu':'Menú',
 /*/TT-NAV-I18N-CA*/
+/*TT-EMBUT-I18N-CA*/
+  'emb.k':'Per on començar',
+  'emb.h':'Primer veus on ets. <em>Després decideixes.</em>',
+  'emb.d':'No et demanem res fins que t\'hem tornat alguna cosa. Hi ha tres portes, segons el que vulguis fer.',
+  'emb.c.k':'Com a client',
+  'emb.c.t':'Vull el meu negoci operatiu',
+  'emb.c.d':'Per a una direcció, una pime o una cooperativa que vol el seu mapa de valor funcionant cada dia, no un informe. La sala i el criteri els posen persones; la feina que abans costava setmanes, el sistema.',
+  'emb.c.1t':'Diagnòstic',
+  'emb.c.1d':'On sou, en 3 minuts i sense parlar amb ningú.',
+  'emb.c.2t':'Esborrany del mapa',
+  'emb.c.2d':'Gratuït, fet amb el material que ja teniu.',
+  'emb.c.3t':'La sala',
+  'emb.c.3d':'L\'equip dibuixa el mapa real i l\'ideal, i marca on s\'encalla el valor.',
+  'emb.c.4t':'El sistema',
+  'emb.c.4d':'Cervell per rol, web de xarxa, les eines de cada rol i els avisos.',
+  'emb.c.5t':'Sistema viu',
+  'emb.c.5d':'El mapa real es compara sol amb l\'ideal, i avisa.',
+  'emb.c.a':'Fes el diagnòstic en 3 min →',
+  'emb.c.b':'Ja sé què vull: demana pressupost',
+  'emb.c.n':'Es pressuposta per fluxos: hores i cost de la IA, <a href="/cataleg.html#cost">desglossats</a>.',
+  'emb.u.k':'Com a usuari',
+  'emb.u.t':'Formo part d\'un equip o d\'un barri',
+  'emb.u.d':'Tries el teu rol i veus què dones, què reps i què tens pendent. El que fas queda al teu registre, i és teu.',
+  'emb.u.a':'Crea el meu perfil →',
+  'emb.n.k':'Com a gestor de node',
+  'emb.n.t':'Porto un projecte o un territori',
+  'emb.n.d':'Muntes el node pel teu compte: el mapa de valor, el tauler de qui fa què i uns comptes que sumen hores, objectes, euros i intangibles.',
+  'emb.n.a':'Munta el meu node →',
+  'emb.peu':'El SOS s\'obre al navegador, sense compte i sense quota, i les dades es queden al teu aparell.',
+/*/TT-EMBUT-I18N-CA*/
 
 
 
@@ -922,6 +1028,36 @@ es: {
   'nv.cta':'Abre el SOS',
   'nv.menu':'Menú',
 /*/TT-NAV-I18N-ES*/
+/*TT-EMBUT-I18N-ES*/
+  'emb.k':'Por dónde empezar',
+  'emb.h':'Primero ves dónde estás. <em>Después decides.</em>',
+  'emb.d':'No te pedimos nada hasta que te hemos devuelto algo. Hay tres puertas, según lo que quieras hacer.',
+  'emb.c.k':'Como cliente',
+  'emb.c.t':'Quiero mi negocio operativo',
+  'emb.c.d':'Para una dirección, una pyme o una cooperativa que quiere su mapa de valor funcionando cada día, no un informe. La sala y el criterio los ponen personas; el trabajo que antes costaba semanas, el sistema.',
+  'emb.c.1t':'Diagnóstico',
+  'emb.c.1d':'Dónde estáis, en 3 minutos y sin hablar con nadie.',
+  'emb.c.2t':'Borrador del mapa',
+  'emb.c.2d':'Gratuito, hecho con el material que ya tenéis.',
+  'emb.c.3t':'La sala',
+  'emb.c.3d':'El equipo dibuja el mapa real y el ideal, y marca dónde se atasca el valor.',
+  'emb.c.4t':'El sistema',
+  'emb.c.4d':'Cerebro por rol, web de red, las herramientas de cada rol y los avisos.',
+  'emb.c.5t':'Sistema vivo',
+  'emb.c.5d':'El mapa real se compara solo con el ideal, y avisa.',
+  'emb.c.a':'Haz el diagnóstico en 3 min →',
+  'emb.c.b':'Ya sé lo que quiero: pide presupuesto',
+  'emb.c.n':'Se presupuesta por flujos: horas y coste de la IA, <a href="/cataleg.html#cost">desglosados</a>.',
+  'emb.u.k':'Como usuario',
+  'emb.u.t':'Formo parte de un equipo o de un barrio',
+  'emb.u.d':'Eliges tu rol y ves qué das, qué recibes y qué tienes pendiente. Lo que haces queda en tu registro, y es tuyo.',
+  'emb.u.a':'Crea mi perfil →',
+  'emb.n.k':'Como gestor de nodo',
+  'emb.n.t':'Llevo un proyecto o un territorio',
+  'emb.n.d':'Montas el nodo por tu cuenta: el mapa de valor, el tablero de quién hace qué y unas cuentas que suman horas, objetos, euros e intangibles.',
+  'emb.n.a':'Monta mi nodo →',
+  'emb.peu':'El SOS se abre en el navegador, sin cuenta y sin cuota, y los datos se quedan en tu dispositivo.',
+/*/TT-EMBUT-I18N-ES*/
 
 
 
