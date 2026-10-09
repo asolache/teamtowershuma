@@ -89,6 +89,9 @@ des de Node, amb el mateix codi (bloc `VS-SITE`). HTML W3C validat i sense
 JavaScript, JSON-LD a cada pàgina (la web és la base de dades), formularis
 de Netlify que arriben per correu, zip determinista i `permaweb.json` amb
 l'empremta SHA-256 de cada fitxer. Vint proves al motor.
+El zip ja és el repositori del client: `mapa.json` (la font), `CLAUDE.md`
+(les regles), `netlify.toml` amb CSP, la 404, `robots.txt` i, amb l'adreça
+definitiva, el sitemap, `canonical` i Open Graph.
 Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.

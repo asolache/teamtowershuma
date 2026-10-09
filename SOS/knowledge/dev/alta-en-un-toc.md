@@ -82,11 +82,11 @@ pràctiques W3C, integrable per API, fent servir els correus i la mateixa web
 com a base de dades, DRY radical, al mínim cost i cap a la permaweb.
 
 **On és:** a la pestanya Web, el botó **«Descarrega la web (.zip)»**. Hi ha
-tres camps opcionals: el nom, el correu on arriben els formularis i la
-llengua (català o castellà). Des de Node fa el mateix:
+quatre camps opcionals: el nom, el correu on arriben els formularis,
+l'adreça definitiva i la llengua (català o castellà). Des de Node fa el mateix:
 
 ```bash
-node SOS/tools/web-del-mapa.js mapa.json carpeta/ --nom "El celler" --correu hola@exemple.cat --llengua es
+node SOS/tools/web-del-mapa.js mapa.json carpeta/ --nom "El celler" --correu hola@exemple.cat --url https://elceller.example --llengua es
 ```
 
 `mapa.json` és el que dona «Copia el JSON» a l'editor, o el `web.json` de la
@@ -104,6 +104,12 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
 | `estil.css` | Un sol full d'estil, amb mode fosc |
 | `web.json` | Les dades de la web, enllaçades des de cada pàgina |
 | `permaweb.json` | L'empremta SHA-256 de cada fitxer |
+| `404.html` | La pàgina que no hi és, amb `noindex` |
+| `mapa.json` | **La font.** El mapa que ha fet la web: l'editor el torna a obrir igual |
+| `CLAUDE.md` | Les regles per a qui hi treballa, persona o IA: no s'edita a mà, cap clau al repositori, cada canvi en una PR |
+| `LLEGEIX.md` | Com publicar-la (`LEEME.md` si és en castellà) |
+| `netlify.toml` | Publica la carpeta, amb capçaleres de seguretat: CSP sense scripts i formularis només a la mateixa web |
+| `robots.txt` i `sitemap.xml` | El sitemap, només si es dona l'adreça definitiva. Llavors cada pàgina porta també `canonical` i Open Graph |
 
 **Com compleix el que es va demanar:**
 
@@ -138,8 +144,8 @@ repositori del client. Netlify en detecta els formularis sol.
 - Publicar a IPFS o Arweave des del mateix botó. Demana una cartera, i la clau
   ha de ser a la cartera de qui signa, mai al repositori.
 - Els comptes de debò, per als rols de la llista `alta`.
-- `CLAUDE.md` i una carpeta de memòria dins del zip, per al repositori del
-  client.
+- ✓ El zip ja és el repositori del client: `mapa.json`, `CLAUDE.md`,
+  `netlify.toml`, la 404, `robots.txt` i, amb l'adreça, el sitemap.
 
 ## 4 · La IA, pagada per ús
 

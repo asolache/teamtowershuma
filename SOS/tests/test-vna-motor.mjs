@@ -753,10 +753,36 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
     'permaweb.json: l\'empremta SHA-256 de cada fitxer, comprovable');
   const { createRequire } = await import('node:module');
   const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
-  const des = await cli.genera(EXEMPLE, { nom: 'Celler <prova>', correu: 'hola@exemple.cat' });
-  ok(J(des.filter(x => x.ruta !== 'permaweb.json')) === J(site.fitxers) && J(des.find(x => x.ruta === 'permaweb.json')) === J(pw.find(x => x.ruta === 'permaweb.json')),
-    'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web: un sol codi');
-  ok(J(await cli.genera(JSON.parse(f('web.json')), { nom: 'Celler <prova>', correu: 'hola@exemple.cat' })) === J(des), 'i també la fa a partir d\'un web.json');
+  const op = { nom: 'Celler <prova>', correu: 'hola@exemple.cat' };
+  const des = await cli.genera(EXEMPLE, op);
+  const sha = async b => createHash('sha256').update(b).digest('hex');
+  const ambMapa = await S.ambPermaweb(S.webASite(web, Object.assign({ mapa: M.exporta(M.importa(EXEMPLE).arbre) }, op)), sha);
+  ok(J(des) === J(ambMapa), 'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web, mapa.json inclòs: un sol codi');
+  ok(J(await cli.genera(JSON.parse(f('web.json')), op)) === J(pw), 'i també la fa a partir d\'un web.json (sense mapa.json: no en porta)');
+}
+
+console.log('\nM25 · El zip ja és el repositori del client');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const web = S.webDelMapa(celler()), mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const s0 = S.webASite(web, {}), s1 = S.webASite(web, { url: 'https://celler.example/', mapa, llengua: 'es', nom: 'Celler' });
+  const f = (s, r) => (s.fitxers.find(x => x.ruta === r) || {}).cos;
+  ok(['404.html', 'robots.txt', 'netlify.toml', 'CLAUDE.md', 'LLEGEIX.md'].every(r => f(s0, r)) && !f(s0, 'sitemap.xml') && !f(s0, 'mapa.json'),
+    'sempre: 404, robots.txt, netlify.toml, CLAUDE.md i com publicar-la; sense adreça ni mapa, ni sitemap ni mapa.json');
+  ok(!/canonical|og:url|Sitemap:/.test(s0.fitxers.map(x => x.cos).join('')), 'sense adreça, res d\'absolut: segueix funcionant des del disc i la permaweb');
+  ok(J(JSON.parse(f(s1, 'mapa.json'))) === J(mapa) && J(M.exporta(M.importa(JSON.parse(f(s1, 'mapa.json'))).arbre)) === J(mapa), 'mapa.json és la font, i l\'editor la torna a obrir igual');
+  ok(/<link rel="canonical" href="https:\/\/celler\.example\/el-visitant\.html">/.test(f(s1, 'el-visitant.html')) && /<link rel="canonical" href="https:\/\/celler\.example\/">/.test(f(s1, 'index.html'))
+    && /property="og:title" content="El visitant"/.test(f(s1, 'el-visitant.html')), 'amb adreça: canonical i Open Graph a cada pàgina');
+  const sm = f(s1, 'sitemap.xml');
+  ok(/^<\?xml/.test(sm) && (sm.match(/<loc>/g) || []).length === 1 + web.portes.length + 1 && !/equip|gracies|404/.test(sm) && /Sitemap: https:\/\/celler\.example\/sitemap\.xml/.test(f(s1, 'robots.txt')),
+    'el sitemap porta les pàgines públiques i prou, i robots.txt l\'anuncia');
+  ok(!/canonical/.test(S.webASite(web, { url: 'http://insegur.example' }).fitxers.map(x => x.cos).join('')) && !/canonical/.test(S.webASite(web, { url: 'https://x" onload="y' }).fitxers.map(x => x.cos).join('')),
+    'una adreça que no és https, o que porta cometes, no s\'hi posa');
+  const toml = f(s0, 'netlify.toml');
+  ok(/publish = "\."/.test(toml) && /default-src 'none'/.test(toml) && /form-action 'self'/.test(toml) && /frame-ancestors 'none'/.test(toml) && /nosniff/.test(toml),
+    'netlify.toml: publica la carpeta i tanca la porta (CSP sense scripts, formularis a la mateixa web)');
+  ok(/No s'edita a mà/.test(f(s0, 'CLAUDE.md')) && /mapa\.json/.test(f(s0, 'CLAUDE.md')) && /Cap clau al repositori/.test(f(s0, 'CLAUDE.md')), 'CLAUDE.md diu les regles: el mapa és la font i cap clau al repositori');
+  ok(/No se edita a mano/.test(f(s1, 'CLAUDE.md')) && f(s1, 'LEEME.md') && !f(s1, 'LLEGEIX.md') && /^# Celler/.test(f(s1, 'LEEME.md')), 'en castellà, CLAUDE.md i LEEME.md també');
+  ok(/<meta name="robots" content="noindex">/.test(f(s0, '404.html')) && /href="index.html"/.test(f(s0, '404.html')), 'la 404 no s\'indexa i torna a l\'inici');
 }
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));

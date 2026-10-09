@@ -3796,6 +3796,21 @@ const SITE_TXT = {
     escriu: 'Escriu-nos', nom: 'Nom', correu: 'Correu electrònic', missatge: 'Missatge', envia: 'Envia', alta: 'Demana el teu compte',
     tambe: 'També ens pots escriure a', gracies: 'Gràcies', rebut: 'Ho hem rebut. Et respondrem per correu.', torna: 'Torna a l\'inici',
     peu: 'Feta a partir del mapa de valor.', dades: 'Les dades d\'aquesta web', buida: 'Encara no hi ha res entre nosaltres i aquest rol.',
+    noHi: 'Aquesta pàgina no hi és', noHiD: 'Potser ha canviat de nom quan ha canviat el mapa.',
+    claude: ['# {nom} · regles per a qui hi treballa, persona o IA', '',
+      'Aquesta web surt del mapa de valor. **No s\'edita a mà.**', '',
+      '- **La font és `mapa.json`.** Per canviar la web, canvia el mapa a l\'editor del mapa de valor del SOS (pestanya Web) o, des del repositori de TeamTowers, amb `node SOS/tools/web-del-mapa.js mapa.json carpeta/`. Després, substitueix-ho tot.',
+      '- **HTML i CSS estàtics, sense JavaScript.** Cada pàgina porta les seves dades en JSON-LD (schema.org), i `web.json` les té totes.',
+      '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
+      '- **Els formularis són de Netlify Forms** i arriben per correu. Cap dada personal es desa aquí.',
+      '- **Permaweb.** `permaweb.json` té l\'empremta SHA-256 de cada fitxer. Si un fitxer no hi quadra, la web no és la que va sortir del mapa.',
+      '- **Cada canvi, en una PR.** Netlify en publica una vista prèvia, i qui decideix la mira abans d\'acceptar-la.'],
+    llegeix: ['# {nom}', '', 'Web feta a partir del mapa de valor.', '', '## Publicar-la', '',
+      '- **Ara mateix:** arrossega la carpeta a https://app.netlify.com/drop.',
+      '- **Amb historial:** puja-la a un repositori de GitHub i connecta\'l a Netlify (Add new site › Import an existing project). El `netlify.toml` ja hi és.',
+      '- **A la permaweb:** puja la carpeta a IPFS o Arweave i comprova-la amb `permaweb.json`.', '',
+      '## Els formularis', '', 'Netlify els detecta sols en publicar. Perquè t\'arribin per correu: Netlify › Site configuration › Notifications › Form submission notifications.', '',
+      '## Canviar-la', '', 'Canvia el mapa i torna a generar la web: ho explica `CLAUDE.md`.'],
     pas: { coneix: ['Coneix-nos', 'Què et donem i què et demanem.'], compte: ['Crea el teu compte', 'Amb un compte veus el que és teu i en dius la teva.'],
       'sense-compte': ['Sense compte', 'Llegir i escriure\'ns n\'hi ha prou.'], connecta: ['Connecta el que ja fas servir', ''],
       primer: ['El primer que rebràs', ''], demanem: ['El primer que et demanarem', ''] },
@@ -3806,6 +3821,21 @@ const SITE_TXT = {
     escriu: 'Escríbenos', nom: 'Nombre', correu: 'Correo electrónico', missatge: 'Mensaje', envia: 'Enviar', alta: 'Pide tu cuenta',
     tambe: 'También puedes escribirnos a', gracies: 'Gracias', rebut: 'Lo hemos recibido. Te responderemos por correo.', torna: 'Volver al inicio',
     peu: 'Hecha a partir del mapa de valor.', dades: 'Los datos de esta web', buida: 'Todavía no hay nada entre nosotros y este rol.',
+    noHi: 'Esta página no existe', noHiD: 'Quizá cambió de nombre cuando cambió el mapa.',
+    claude: ['# {nom} · reglas para quien trabaja en ella, persona o IA', '',
+      'Esta web sale del mapa de valor. **No se edita a mano.**', '',
+      '- **La fuente es `mapa.json`.** Para cambiar la web, cambia el mapa en el editor del mapa de valor del SOS (pestaña Web) o, desde el repositorio de TeamTowers, con `node SOS/tools/web-del-mapa.js mapa.json carpeta/`. Después, sustitúyelo todo.',
+      '- **HTML y CSS estáticos, sin JavaScript.** Cada página lleva sus datos en JSON-LD (schema.org), y `web.json` los tiene todos.',
+      '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
+      '- **Los formularios son de Netlify Forms** y llegan por correo. Ningún dato personal se guarda aquí.',
+      '- **Permaweb.** `permaweb.json` tiene la huella SHA-256 de cada fichero. Si un fichero no cuadra, la web no es la que salió del mapa.',
+      '- **Cada cambio, en una PR.** Netlify publica una vista previa, y quien decide la mira antes de aceptarla.'],
+    llegeix: ['# {nom}', '', 'Web hecha a partir del mapa de valor.', '', '## Publicarla', '',
+      '- **Ahora mismo:** arrastra la carpeta a https://app.netlify.com/drop.',
+      '- **Con historial:** súbela a un repositorio de GitHub y conéctalo a Netlify (Add new site › Import an existing project). El `netlify.toml` ya está.',
+      '- **En la permaweb:** sube la carpeta a IPFS o Arweave y compruébala con `permaweb.json`.', '',
+      '## Los formularios', '', 'Netlify los detecta solos al publicar. Para que te lleguen por correo: Netlify › Site configuration › Notifications › Form submission notifications.', '',
+      '## Cambiarla', '', 'Cambia el mapa y vuelve a generar la web: lo explica `CLAUDE.md`.'],
     pas: { coneix: ['Conócenos', 'Qué te damos y qué te pedimos.'], compte: ['Crea tu cuenta', 'Con una cuenta ves lo tuyo y das tu opinión.'],
       'sense-compte': ['Sin cuenta', 'Basta con leer y escribirnos.'], connecta: ['Conecta lo que ya usas', ''],
       primer: ['Lo primero que recibirás', ''], demanem: ['Lo primero que te pediremos', ''] },
@@ -3841,6 +3871,10 @@ function webASite(web, opts) {
   const correu = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(o.correu || '') ? o.correu : '';
   const nom = String(o.nom || (web.casa || [])[0] || web.titol || 'La web').trim();
   const ruta = id => (id === 'inici' ? 'index.html' : id + '.html');
+  /* Amb l'adreça definitiva, cada pàgina diu quina és la seva (canonical i
+     Open Graph) i surt el sitemap. Sense, tot segueix sent relatiu. */
+  const url = /^https:\/\/[^\s"<>]+$/.test(o.url || '') ? o.url.replace(/\/*$/, '/') : '';
+  const abs = r => url + (r === 'index.html' ? '' : r);
   const ld = x => '<script type="application/ld+json">' + JSON.stringify(Object.assign({ '@context': 'https://schema.org' }, x)).replace(/</g, '\\u003c') + '<\/script>';
   const llista = (a, f) => (a.length ? '<ul>' + a.map(f).join('') + '</ul>' : '');
   const lli = (x, cap) => '<li>' + e(x.q) + (cap ? ' <small>' + e(cap) + '</small>' : '') + '</li>';
@@ -3849,6 +3883,8 @@ function webASite(web, opts) {
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
     + '<meta name="description" content="' + e(web.titol || nom) + '">\n' + (extra || '')
+    + (url ? '<link rel="canonical" href="' + e(abs(ruta(id))) + '">\n<meta property="og:type" content="website">\n<meta property="og:title" content="' + e(titol) + '">\n'
+      + '<meta property="og:description" content="' + e(web.titol || nom) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
     + '<link rel="stylesheet" href="estil.css">\n<link rel="alternate" type="application/json" href="web.json" title="' + e(L.dades) + '">\n'
     + ld(dades) + '\n</head>\n<body>\n<a class="salta" href="#contingut">' + e(L.salta) + '</a>\n'
     + '<header>\n<p class="marca"><a href="index.html">' + e(nom) + '</a></p>\n<nav aria-label="' + e(L.menu) + '"><ul>'
@@ -3909,6 +3945,25 @@ function webASite(web, opts) {
     { '@type': 'WebPage', name: L.gracies }, '<meta name="robots" content="noindex">\n'));
   posa('estil.css', SITE_CSS, 'text/css');
   posa('web.json', JSON.stringify(web, null, 2) + '\n', 'application/json');
+  /* El que fa del zip un repositori: la font, les regles, com publicar-lo i
+     la configuració de Netlify. */
+  posa('404.html', pagina('404', L.noHi, '<p>' + e(L.noHiD) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
+    { '@type': 'WebPage', name: L.noHi }, '<meta name="robots" content="noindex">\n'));
+  const publiques = ['index.html'].concat((web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : []);
+  posa('robots.txt', 'User-agent: *\nAllow: /\nDisallow: /equip.html\n' + (url ? 'Sitemap: ' + url + 'sitemap.xml\n' : ''), 'text/plain');
+  if (url) posa('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + publiques.map(r => '<url><loc>' + e(abs(r)) + '</loc></url>\n').join('') + '</urlset>\n', 'application/xml');
+  posa('netlify.toml', [
+    '# La web surt del mapa de valor: no s\'edita a mà (vegeu CLAUDE.md).',
+    '[build]', '  publish = "."', '',
+    '[[headers]]', '  for = "/*"', '  [headers.values]',
+    '    Content-Security-Policy = "default-src \'none\'; style-src \'self\'; img-src \'self\' data:; form-action \'self\'; base-uri \'none\'; frame-ancestors \'none\'"',
+    '    X-Content-Type-Options = "nosniff"', '    Referrer-Policy = "strict-origin-when-cross-origin"',
+    '    Permissions-Policy = "camera=(), microphone=(), geolocation=()"', ''].join('\n'), 'text/plain');
+  if (o.mapa) posa('mapa.json', JSON.stringify(o.mapa, null, 2) + '\n', 'application/json');
+  const md = a => a.join('\n').replace(/\{nom\}/g, nom) + '\n';
+  posa('CLAUDE.md', md(L.claude), 'text/markdown');
+  posa(llengua === 'es' ? 'LEEME.md' : 'LLEGEIX.md', md(L.llegeix), 'text/markdown');
   return { nom, llengua, fitxers };
 }
 
@@ -4315,7 +4370,7 @@ function creaLlenc() {
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
     cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
-    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webLlengua: 'ca'
+    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca'
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -6237,9 +6292,10 @@ function creaLlenc() {
     h += '<h4>La web de debò</h4><div class="ed-web-dades">'
       + '<label>Nom de la web <input type="text" id="edWebNom" value="' + escA(S.webNom) + '" placeholder="' + escA(web.casa[0] || '') + '"></label>'
       + '<label>Correu on arriben els formularis <input type="email" id="edWebCorreu" value="' + escA(S.webCorreu) + '" placeholder="hola@exemple.cat"></label>'
+      + '<label>Adreça definitiva, si ja la tens <input type="url" id="edWebUrl" value="' + escA(S.webUrl) + '" placeholder="https://"></label>'
       + '<label>Llengua <select id="edWebLlengua"><option value="ca"' + (S.webLlengua === 'es' ? '' : ' selected') + '>Català</option><option value="es"' + (S.webLlengua === 'es' ? ' selected' : '') + '>Castellà</option></select></label></div>'
       + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button></div>'
-      + '<p>HTML i CSS estàtics, sense JavaScript: una pàgina per porta, els formularis que arriben per correu (Netlify Forms), les dades a cada pàgina en JSON-LD i <code>permaweb.json</code> amb l\'empremta de cada fitxer. S\'arrossega a Netlify i ja és publicada.</p>';
+      + '<p>HTML i CSS estàtics, sense JavaScript: una pàgina per porta, els formularis que arriben per correu (Netlify Forms), les dades a cada pàgina en JSON-LD i <code>permaweb.json</code> amb l\'empremta de cada fitxer. El zip ja és el repositori del client: porta el mapa (<code>mapa.json</code>), les regles (<code>CLAUDE.md</code>) i el <code>netlify.toml</code>. S\'arrossega a Netlify i ja és publicada.</p>';
     posaHTML(p, h);
   }
   function webPagina(web, pag) {
@@ -6270,7 +6326,7 @@ function creaLlenc() {
   /* La web, en un zip. L'empremta SHA-256 la fa el navegador; si no pot
      (un context sense crypto.subtle), la web surt igual i ho diu. */
   async function baixaWeb() {
-    const { web } = webAra(), site = webASite(web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua });
+    const { web } = webAra(), site = webASite(web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE) });
     let fitxers = site.fitxers, nota = '';
     try {
       fitxers = await ambPermaweb(site, async b => [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map(x => x.toString(16).padStart(2, '0')).join(''));
@@ -6284,6 +6340,7 @@ function creaLlenc() {
   $('#edPanWeb').addEventListener('input', e => {
     if (e.target.id === 'edWebNom') S.webNom = e.target.value;
     if (e.target.id === 'edWebCorreu') S.webCorreu = e.target.value;
+    if (e.target.id === 'edWebUrl') S.webUrl = e.target.value;
   });
   $('#edPanWeb').addEventListener('change', e => {
     if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; return; }
