@@ -314,10 +314,30 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-grav.g-nota{color:var(--indigo);background:color-mix(in srgb,var(--indigo) 8%,transparent)}
 .ed-tipus{font-family:var(--mono);font-size:var(--t0);color:var(--muted)}
 
+/* ── La web que surt del mapa ── */
+.ed-web-casa{display:flex;flex-wrap:wrap;gap:.25rem .6rem;margin:.3rem 0 .6rem}
+.ed-web-casa label{display:inline-flex;align-items:center;gap:.35rem;margin:0;min-height:44px;font:inherit;font-size:var(--t0);text-transform:none;letter-spacing:0;color:var(--text)}
+.ed-web{border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;background:var(--bg);margin:.5rem 0}
+.ed-web-barra{display:flex;align-items:center;gap:.3rem;padding:.35rem .6rem;background:var(--panel);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.72rem;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ed-web-barra i{flex:none;width:7px;height:7px;border-radius:50%;background:var(--border-strong)}
+.ed-web-menu{display:flex;flex-wrap:wrap;gap:.2rem;padding:.4rem .45rem;border-bottom:1px solid var(--border);background:var(--card)}
+.ed-web-menu button{font:inherit;font-size:.8rem;min-height:44px;min-width:44px;padding:.2rem .55rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--light);cursor:pointer}
+.ed-web-menu button[aria-current=page]{background:var(--text);border-color:var(--text);color:var(--bg)}
+.ed-web-pag{padding:.6rem .75rem .8rem}
+.ed-web-pag h5{font-size:var(--t1);margin:.1rem 0 .4rem}
+.ed-web-pag h6{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:400;margin:.7rem 0 .25rem}
+.ed-pan .ed-web-pag ul,.ed-pan .ed-web-pag ol{margin:0;padding-left:1.1rem;list-style:disc}
+.ed-pan .ed-web-pag ol{list-style:decimal}
+.ed-web-pag li{margin:.15rem 0;line-height:1.45;color:var(--light)}
+.ed-web-pag li b{color:var(--text);font-weight:600}
+.ed-web-buit{color:var(--orange)!important}
+.ed-web-xips{display:flex;flex-wrap:wrap;gap:.25rem}
+.ed-web-xips a{display:inline-flex;align-items:center;min-height:44px;font-size:.75rem;padding:.1rem .7rem;border-radius:999px;border:1px solid var(--border);text-decoration:none}
+.ed-web-fila{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
 /* ── L'inspector ── */
 .ed-insp{background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;
   max-height:calc(clamp(460px,62vh,720px) + 6.2rem)}
-.ed-tabs{display:flex;background:var(--panel);border-bottom:1px solid var(--border);padding:3px 3px 0;gap:2px}
+.ed-tabs{display:flex;background:var(--panel);border-bottom:1px solid var(--border);padding:3px 3px 0;gap:2px;overflow-x:auto;scrollbar-width:none}
 .ed-tabs button{flex:1 1 auto;font:inherit;font-size:var(--t0);font-weight:600;min-height:42px;padding:.3rem .35rem;border:1px solid transparent;border-bottom:0;
   border-radius:9px 9px 0 0;background:transparent;color:var(--light);cursor:pointer;white-space:nowrap}
 .ed-tabs button[aria-selected=true]{background:var(--card);border-color:var(--border);color:var(--text);margin-bottom:-1px}
@@ -951,6 +971,7 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
           <button type="button" role="tab" id="edTabAfe" aria-selected="false" aria-controls="edPanAfe" tabindex="-1">Afegeix</button>
           <button type="button" role="tab" id="edTabLli" aria-selected="false" aria-controls="edPanLli" tabindex="-1">Llista</button>
           <button type="button" role="tab" id="edTabDia" aria-selected="false" aria-controls="edPanDia" tabindex="-1">Diagnòstic</button>
+          <button type="button" role="tab" id="edTabWeb" aria-selected="false" aria-controls="edPanWeb" tabindex="-1">Web</button>
         </div>
         <button type="button" class="ed-pendents" id="edPendents" hidden></button>
         <div class="ed-pan" role="tabpanel" id="edPanSel" aria-labelledby="edTabSel"></div>
@@ -1000,6 +1021,7 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
         </div>
         <div class="ed-pan" role="tabpanel" id="edPanLli" aria-labelledby="edTabLli" hidden></div>
         <div class="ed-pan" role="tabpanel" id="edPanDia" aria-labelledby="edTabDia" hidden></div>
+        <div class="ed-pan" role="tabpanel" id="edPanWeb" aria-labelledby="edTabWeb" hidden></div>
       </section>
     </div>
 
@@ -3523,6 +3545,102 @@ function creaModel(dep) {
 }
 /*/VS-MODEL*/
 
+/*VS-WEB*/
+/* ── La web que surt del mapa ──────────────────────────────────────────────
+ * Demanat per l'Àlvar (09/10/2026): que mentre es dibuixa el mapa es vegi la
+ * web que en surt, amb el menú, les pàgines, el contingut i els serveis, i que
+ * ja hi siguin l'alta, la integració i la benvinguda de cada rol.
+ *
+ * És una funció pura del mapa —no llegeix el DOM—, i per això la prova el
+ * motor a la CI. Les regles, escrites aquí perquè són decisions:
+ *
+ *  · **Una porta per rol que no és de casa.** «De casa» són els rols que fan
+ *    la web: per defecte, el que més lliuraments té. Els altres de casa van a
+ *    «Per a l'equip».
+ *  · **El contingut d'una porta és el mapa, no un text de farciment.** «Què et
+ *    donem» són els lliuraments de casa cap a aquell rol, i «Què ens dones», els
+ *    seus cap a casa. Si no n'hi ha, la pàgina ho diu: és una troballa.
+ *  · **La benvinguda surt de la seqüència.** El primer que rebrà és el primer
+ *    lliurament de casa en l'ordre dels processos.
+ *  · **El compte només quan hi ha relació d'anada i tornada.** Qui només
+ *    llegeix no ha de donar-se d'alta.
+ *  · **Els serveis són els processos**, amb els passos en ordre.
+ *  · **Les connexions es proposen per paraules del mapa,** i se'n diu la
+ *    paraula: és una pista, no una dada. */
+const WEB_CONNEXIONS = [
+  { cat: 'crm',     nom: 'CRM',               re: /client|contact|consult|pressupost|presupuest|lead|comercial|venda|venta/i },
+  { cat: 'cobros',  nom: 'Cobraments',        re: /cobr|pag|factur|diner|dinero|preu|precio|quota|cuota/i },
+  { cat: 'venta',   nom: 'Botiga',            re: /comand|pedid|botig|tiend|compra|producte|producto|catàleg|catálogo/i },
+  { cat: 'oficina', nom: 'Agenda',            re: /cita|reserv|visit|agenda|calendari|calendario|grup|grupo/i },
+  { cat: 'comunica',nom: 'Missatges',         re: /avís|aviso|avisar|butllet|bolet|notícia|noticia|difus|relat|explica|parlar|hablar/i },
+  { cat: 'web',     nom: 'Dades pròpies',     re: /estoc|stock|inventari|magatzem|almac|registre|registro|dades|datos/i }
+];
+function webDelMapa(m, opts) {
+  const o = opts || {};
+  const roles = (m.roles || []).filter(Boolean);
+  const fl = [];
+  (m.pairs || []).forEach(p => {
+    if (!p[0] || !p[1]) return;
+    if (p[3]) fl.push({ de: p[0], a: p[1], mena: p[2] || '', q: p[3] });
+    if (p[5]) fl.push({ de: p[1], a: p[0], mena: p[4] || '', q: p[5] });
+  });
+  const seq = m.seq || {}, procs = (m.processos || []).filter(p => p && (p.id || p.nom));
+  const ordreProc = {}; procs.forEach((p, i) => { ordreProc[p.id] = i; });
+  /* L'ordre en què passen les coses: primer el que té pas dins d'un procés,
+     pel procés i el pas; després el que passa «sempre»; al final, la resta. */
+  const pes = f => {
+    const s = seq[f.de + '→' + f.a];
+    if (Array.isArray(s) && s[0] in ordreProc) return ordreProc[s[0]] * 1000 + (Number(s[1]) || 0);
+    return s === 'sempre' ? 900000 : 990000;
+  };
+  const enOrdre = a => a.map((f, i) => [f, i]).sort((x, y) => pes(x[0]) - pes(y[0]) || x[1] - y[1]).map(x => x[0]);
+  const compta = r => fl.filter(f => f.de === r || f.a === r).length;
+  let casa = (o.casa || []).filter(r => roles.includes(r));
+  if (!casa.length && roles.length) casa = [roles.reduce((a, r) => (compta(r) > compta(a) ? r : a), roles[0])];
+  const esCasa = r => casa.includes(r);
+  const slug = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'pagina';
+  const usats = {};
+  const id = s => { let b = slug(s), k = b, n = 2; while (usats[k]) k = b + '-' + n++; usats[k] = 1; return k; };
+  id('inici'); id('serveis'); id('equip');
+  const connexions = text => WEB_CONNEXIONS.map(c => { const x = text.match(c.re); return x ? { cat: c.cat, nom: c.nom, per: x[0].toLowerCase() } : null; }).filter(Boolean);
+
+  const portes = roles.filter(r => !esCasa(r)).map(r => {
+    const rep = enOrdre(fl.filter(f => f.a === r && esCasa(f.de)));
+    const dona = enOrdre(fl.filter(f => f.de === r && esCasa(f.a)));
+    const xarxa = enOrdre(fl.filter(f => (f.de === r || f.a === r) && !esCasa(f.de) && !esCasa(f.a)));
+    const compte = rep.length > 0 && dona.length > 0;
+    const con = connexions([r].concat(rep.map(f => f.q), dona.map(f => f.q)).join(' · '));
+    const benvinguda = [{ pas: 'coneix', t: 'Coneix-nos', d: 'La porta «' + r + '»: què et donem i què et demanem.' }];
+    benvinguda.push(compte
+      ? { pas: 'compte', t: 'Crea el teu compte', d: 'Hi ha anada i tornada: amb un compte veus el que és teu i en dius la teva.' }
+      : { pas: 'sense-compte', t: 'Sense compte', d: 'La relació va en un sol sentit: llegir i escriure\'ns n\'hi ha prou.' });
+    if (con.length) benvinguda.push({ pas: 'connecta', t: 'Connecta el que ja fas servir', d: con.map(c => c.nom).join(', ') + '.' });
+    if (rep[0]) benvinguda.push({ pas: 'primer', t: 'El primer que rebràs', d: rep[0].q });
+    if (dona[0]) benvinguda.push({ pas: 'demanem', t: 'El primer que et demanarem', d: dona[0].q });
+    return { id: id(r), rol: r, rep, dona, xarxa, compte, connexions: con, benvinguda,
+      buida: !rep.length && !dona.length };
+  });
+  const serveis = procs.map(p => {
+    const passos = Object.keys(seq).filter(k => Array.isArray(seq[k]) && seq[k][0] === p.id)
+      .map(k => { const [de, a] = k.split('→'); const f = fl.find(x => x.de === de && x.a === a); return { de, a, q: f ? f.q : '', n: Number(seq[k][1]) || 0 }; })
+      .sort((x, y) => x.n - y.n);
+    return { id: id(p.nom || p.id), proc: p.id, nom: p.nom || p.id, d: p.d || '', passos };
+  });
+  const sempre = Object.keys(seq).filter(k => seq[k] === 'sempre').map(k => { const [de, a] = k.split('→'); const f = fl.find(x => x.de === de && x.a === a); return { de, a, q: f ? f.q : '' }; });
+  const menu = [{ id: 'inici', t: 'Inici' }].concat(portes.map(p => ({ id: p.id, t: p.rol, rol: p.rol })));
+  if (serveis.length) menu.push({ id: 'serveis', t: 'Serveis' });
+  menu.push({ id: 'equip', t: 'Per a l\'equip' });
+  return {
+    formato: 'tt-web-1',
+    titol: m.abast || '',
+    casa, menu, portes, serveis, sempre,
+    equip: { rols: casa, intern: enOrdre(fl.filter(f => esCasa(f.de) && esCasa(f.a))) },
+    alta: portes.filter(p => p.compte).map(p => p.rol)
+  };
+}
+/*/VS-WEB*/
+
 /*VS-CTRL*/
 /* ── L'editor: l'estat, la sincronia amb els sis camps, els nivells i el desat ──
  * La veritat és un arbre en memòria (ARBRE). Els sis camps són la vista del
@@ -3886,7 +4004,8 @@ function creaLlenc() {
     resalta: null, recorre: null, filtre: 'tot', vistaBuida: null, quiet: false, mode: 'visual', tab: 'sel',
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
-    cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false
+    cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
+    webCasa: null, webPag: 'inici'
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -5563,7 +5682,7 @@ function creaLlenc() {
   $('#edPopSol').addEventListener('click', () => accio('pop-sol'));
 
   /* ── L'inspector ───────────────────────────────────────────────────────── */
-  const TABS = { sel: ['edTabSel', 'edPanSel'], afe: ['edTabAfe', 'edPanAfe'], lli: ['edTabLli', 'edPanLli'], dia: ['edTabDia', 'edPanDia'] };
+  const TABS = { sel: ['edTabSel', 'edPanSel'], afe: ['edTabAfe', 'edPanAfe'], lli: ['edTabLli', 'edPanLli'], dia: ['edTabDia', 'edPanDia'], web: ['edTabWeb', 'edPanWeb'] };
   function posaTab(t) {
     tancaPop(); tancaNom();
     S.tab = TABS[t] ? t : 'sel';
@@ -5591,6 +5710,7 @@ function creaLlenc() {
     if (S.tab === 'sel') pintaInspector();
     else if (S.tab === 'afe') pintaAfegeix();
     else if (S.tab === 'lli') pintaLlista();
+    else if (S.tab === 'web') pintaWeb();
     else pintaDiag();
   }
   const opt = (v, t, s) => '<option value="' + escA(v) + '"' + (s ? ' selected' : '') + '>' + esc_(t) + '</option>';
@@ -5785,6 +5905,76 @@ function creaLlenc() {
     };
     return '<ul class="ed-nivells">' + rec(arrel, [], '') + '</ul>';
   }
+
+  /* ── La web que surt del mapa (VS-WEB) ──────────────────────────────── */
+  function webAra() {
+    const vista = LLOC.vista === 'ideal' && ARBRE.ideal ? 'ideal' : 'real';
+    const m = MODEL.llegeixTextos(ARBRE[vista].t);
+    return { vista, web: webDelMapa(m, { casa: S.webCasa || [] }), roles: m.roles };
+  }
+  const webLli = (f, cap) => '<li><b>' + esc_(f.q) + '</b>' + (cap ? ' <small>' + esc_(cap) + '</small>' : '') + '</li>';
+  function pintaWeb() {
+    const p = $('#edPanWeb'), { vista, web, roles } = webAra();
+    if (!web.menu.some(x => x.id === S.webPag)) S.webPag = 'inici';
+    let h = '<h3>La web que surt del mapa</h3><p>Es refà cada cop que canvies el mapa' + (vista === 'ideal' ? ', i ara surt de l\'<b>ideal</b>' : '') + '. Una porta per a cada rol que no és de casa.</p>';
+    if (!roles.length) { posaHTML(p, h + '<p>Afegeix un rol i en sortirà la primera porta.</p>'); return; }
+    h += '<h4>Qui és de casa</h4><div class="ed-web-casa" role="group" aria-label="Rols de casa: fan la web i no hi tenen porta">'
+      + roles.map(r => '<label><input type="checkbox" data-web-casa="' + escA(r) + '"' + (web.casa.includes(r) ? ' checked' : '') + '>' + esc_(r) + '</label>').join('') + '</div>';
+    const pag = S.webPag;
+    h += '<div class="ed-web"><div class="ed-web-barra"><i></i><i></i><i></i><span>' + esc_(curt(web.titol || 'la teva web', 46)) + '</span></div>'
+      + '<nav class="ed-web-menu" aria-label="El menú de la web">' + web.menu.map(x => '<button type="button" data-web-pag="' + escA(x.id) + '"' + (x.id === pag ? ' aria-current="page"' : '') + '>' + esc_(x.t) + '</button>').join('') + '</nav>'
+      + '<div class="ed-web-pag" id="edWebPag" aria-live="polite">' + webPagina(web, pag) + '</div></div>';
+    h += '<div class="ed-web-fila"><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button></div>'
+      + '<p>El <code>web.json</code> és el que llegeix qui construeix la web, persona o IA: el menú, les pàgines i el procés de benvinguda de cada rol.</p>';
+    posaHTML(p, h);
+  }
+  function webPagina(web, pag) {
+    if (pag === 'inici') {
+      return '<h5>' + esc_(web.titol || 'Inici') + '</h5><h6>Una porta per a cadascú</h6><ul>'
+        + web.portes.map(x => '<li><b>' + esc_(x.rol) + '</b> · ' + pl(x.rep.length, 'cosa que rep', 'coses que rep') + ', ' + pl(x.dona.length, 'que dona', 'que dona') + (x.compte ? ' · amb compte' : '') + '</li>').join('') + '</ul>'
+        + (web.alta.length ? '<h6>Alta</h6><p>Es donen d\'alta: ' + web.alta.map(esc_).join(', ') + '. Els altres llegeixen i escriuen sense compte.</p>' : '');
+    }
+    if (pag === 'serveis') {
+      return '<h5>Serveis</h5>' + web.serveis.map(sv => '<h6>' + esc_(sv.nom) + '</h6>' + (sv.d ? '<p>' + esc_(sv.d) + '</p>' : '')
+        + (sv.passos.length ? '<ol>' + sv.passos.map(x => '<li><b>' + esc_(x.q || '?') + '</b> <small>' + esc_(x.de) + ' → ' + esc_(x.a) + '</small></li>').join('') + '</ol>' : '<p class="ed-web-buit">Encara sense passos: seqüencia el procés.</p>')).join('')
+        + (web.sempre.length ? '<h6>Tot el temps</h6><ul>' + web.sempre.map(x => webLli(x, x.de + ' → ' + x.a)).join('') + '</ul>' : '');
+    }
+    if (pag === 'equip') {
+      return '<h5>Per a l\'equip</h5><p>' + web.equip.rols.map(esc_).join(', ') + '.</p>'
+        + (web.equip.intern.length ? '<h6>El que passa a dins</h6><ul>' + web.equip.intern.map(x => webLli(x, x.de + ' → ' + x.a)).join('') + '</ul>' : '');
+    }
+    const x = web.portes.find(q => q.id === pag);
+    if (!x) return '';
+    return '<h5>' + esc_(x.rol) + '</h5>'
+      + (x.buida ? '<p class="ed-web-buit">Aquesta porta és buida: casa no li dona res ni en rep res. És una troballa del mapa.</p>' : '')
+      + (x.rep.length ? '<h6>Què et donem</h6><ul>' + x.rep.map(f => webLli(f, f.mena)).join('') + '</ul>' : '')
+      + (x.dona.length ? '<h6>Què ens dones</h6><ul>' + x.dona.map(f => webLli(f, f.mena)).join('') + '</ul>' : '')
+      + (x.xarxa.length ? '<h6>Amb la resta de la xarxa</h6><ul>' + x.xarxa.map(f => webLli(f, f.de + ' → ' + f.a)).join('') + '</ul>' : '')
+      + '<h6>La benvinguda</h6><ol>' + x.benvinguda.map(b => '<li data-pas="' + escA(b.pas) + '"><b>' + esc_(b.t) + '</b> ' + esc_(b.d) + '</li>').join('') + '</ol>'
+      + (x.connexions.length ? '<h6>Es connecta amb</h6><div class="ed-web-xips">' + x.connexions.map(c => '<a href="../conecta/#catalogo" title="Per la paraula «' + escA(c.per) + '» del mapa">' + esc_(c.nom) + '</a>').join('') + '</div>' : '');
+  }
+  $('#edPanWeb').addEventListener('change', e => {
+    const c = e.target.closest('[data-web-casa]');
+    if (!c) return;
+    const { web } = webAra(), r = c.getAttribute('data-web-casa');
+    let casa = web.casa.slice();
+    casa = c.checked ? casa.concat([r]) : casa.filter(x => x !== r);
+    S.webCasa = casa;
+    pintaWeb();
+    const q = $('#edPanWeb [data-web-casa="' + CSS.escape(r) + '"]'); if (q) q.focus();
+  });
+  $('#edPanWeb').addEventListener('click', e => {
+    const b = e.target.closest('[data-web-pag]');
+    if (b) { S.webPag = b.getAttribute('data-web-pag'); pintaWeb(); const q = $('#edPanWeb [data-web-pag="' + CSS.escape(S.webPag) + '"]'); if (q) q.focus(); return; }
+    if (e.target.closest('#edWebJson')) {
+      const { web } = webAra();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(web, null, 2)], { type: 'application/json' }));
+      a.download = 'web.json'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      avis('S\'ha descarregat web.json');
+    }
+  });
 
   /* ── El diagnòstic ─────────────────────────────────────────────────────── */
   function troballesVista() {
