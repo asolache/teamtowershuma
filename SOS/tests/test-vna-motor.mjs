@@ -809,5 +809,23 @@ console.log('\nM26 · El cervell del projecte, com el preveu el pla (cerebro/)')
   ok(/cerebro\/mapa-real\.json/.test(f('CLAUDE.md')) && /Van al CRM/.test(f('CLAUDE.md')), 'CLAUDE.md apunta al cervell i diu què va al CRM');
 }
 
+console.log('\nM27 · L\'índex del cervell: cada document amb el seu tema i la seva capa');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre), web = S.webDelMapa(celler());
+  const st = S.webASite(web, { mapa, nom: 'Celler' }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos;
+  const ix = JSON.parse(f('cerebro/indice.json')), md = f('CEREBRO.md'), per = r => ix.entradas.find(x => x.ruta === r);
+  ok(!S.webASite(web, {}).fitxers.some(x => /^(CEREBRO\.md|cerebro\/indice\.json)$/.test(x.ruta)), 'sense mapa no hi ha cervell, ni índex');
+  const fora = ['404.html', 'estil.css', 'robots.txt', 'netlify.toml', 'cerebro/indice.json', 'CEREBRO.md'];
+  ok(st.fitxers.filter(x => !fora.includes(x.ruta)).every(x => per(x.ruta)) && ix.entradas.every(x => f(x.ruta)), 'cada document hi és, i cada entrada és un fitxer de debò');
+  ok(per('index.html').capa === 'publica' && per('serveis.html').capa === 'publica' && per('equip.html').capa === 'enllac' && per('gracies.html').capa === 'enllac',
+    'la web indexable és pública; equip i gràcies, que no s\'indexen, van per enllaç');
+  ok(ix.entradas.filter(x => /^cerebro\/|\.md$/.test(x.ruta)).every(x => x.capa === 'equip') && per('cerebro/decisiones.md').tema === 'decisions' && per('cerebro/mapa-real.json').tema === 'mapa',
+    'el que només viu al repositori és de l\'equip, cada cosa al seu tema');
+  ok(per('cerebro/roles/qui-rep-i-explica.md').titol === 'Qui rep i explica' && per('l-operador-de-luxe.html').titol === 'L\'operador de luxe', 'el títol surt del document, sense entitats HTML');
+  ok(/^# Cervell · Celler/.test(md) && /## Rols[\s\S]*\| \[Qui rep i explica\]\(cerebro\/roles\/qui-rep-i-explica\.md\) \| equip \|/.test(md) && /No s'edita a mà/.test(md), 'CEREBRO.md: per tema, amb l\'enllaç i la capa');
+  const es = S.webASite(web, { mapa, nom: 'Celler', llengua: 'es' }), fe = r => (es.fitxers.find(x => x.ruta === r) || {}).cos;
+  ok(/^# Cerebro · Celler/.test(fe('CEREBRO.md')) && /por enlace/.test(fe('CEREBRO.md')) && /CEREBRO\.md/.test(fe('CLAUDE.md')) && /CEREBRO\.md/.test(f('CLAUDE.md')), 'en castellà també, i CLAUDE.md hi apunta');
+}
+
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

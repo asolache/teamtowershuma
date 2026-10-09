@@ -94,7 +94,9 @@ El zip ja és el repositori del client, en sincronia amb el pla d'estratègia
 a `cerebro/` (mapa real i ideal, una fitxa per rol, per lliurament i per
 procés, i `decisiones.md`), `CLAUDE.md` amb les regles, `netlify.toml` amb
 CSP, la 404, `robots.txt` i, amb l'adreça definitiva, el sitemap, `canonical`
-i Open Graph. Següent del pla: el registre viu de transaccions (fase 2).
+i Open Graph. El cervell porta el seu índex (`CEREBRO.md` i `cerebro/indice.json`):
+cada document amb tema i capa (pública, per enllaç, equip), el mateix model que
+el d'Events Penedès. Següent del pla: el registre viu de transaccions (fase 2).
 Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.

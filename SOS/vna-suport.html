@@ -3805,10 +3805,15 @@ const SITE_TXT = {
       qui: 'Qui el produeix', perA: 'Qui el rep', tipus: 'Tipus', flux: 'Al flux', tangible: 'tangible', intangible: 'intangible',
       dec: 'Decisions', decD: 'El que s\'acorda i per què. Una entrada per decisió, amb la data. És l\'únic fitxer que s\'escriu a mà: en regenerar la web, conserva el que ja tens i afegeix-hi només les troballes noves.',
       trob: 'Troballes del mapa, per decidir', senseP: 'Encara sense passos.' },
+    idx: { titol: 'Cervell · {nom}', generat: 'Índex generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
+      intro: 'Tots els documents del projecte, per tema. **Pública**: la web que troba qualsevol. **Per enllaç**: pàgines que no s\'indexen i es donen a qui toca. **Equip**: el que només viu al repositori.',
+      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web',
+      temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', regles: 'Regles' },
+      capes: { publica: 'pública', enllac: 'per enllaç', equip: 'equip' } },
     claude: ['# {nom} · regles per a qui hi treballa, persona o IA', '',
       'Aquesta web surt del mapa de valor. **No s\'edita a mà.**', '',
       '- **La font és `cerebro/mapa-real.json`** (i `cerebro/mapa-ideal.json`, si n\'hi ha). Per canviar la web, canvia el mapa a l\'editor del mapa de valor del SOS (pestanya Web) o, des del repositori de TeamTowers, amb `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Després, substitueix-ho tot.',
-      '- **El cervell del projecte és `cerebro/`**, i surt del mateix mapa: una fitxa per rol (`roles/`), una per lliurament (`entregables/`), una per procés (`procesos/`) i `decisiones.md`. `decisiones.md` s\'escriu a mà i es conserva en regenerar; la resta es regenera.',
+      '- **El cervell del projecte és `cerebro/`**, i surt del mateix mapa: una fitxa per rol (`roles/`), una per lliurament (`entregables/`), una per procés (`procesos/`) i `decisiones.md`. `decisiones.md` s\'escriu a mà i es conserva en regenerar; la resta es regenera. L\'índex de tot, per tema i per capa (pública, per enllaç, equip), és `CEREBRO.md`.',
       '- **Què no va aquí:** dades personals, preus pactats i contractes. Van al CRM.',
       '- **HTML i CSS estàtics, sense JavaScript.** Cada pàgina porta les seves dades en JSON-LD (schema.org), i `web.json` les té totes.',
       '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
@@ -3838,10 +3843,15 @@ const SITE_TXT = {
       qui: 'Quién lo produce', perA: 'Quién lo recibe', tipus: 'Tipo', flux: 'En el flujo', tangible: 'tangible', intangible: 'intangible',
       dec: 'Decisiones', decD: 'Lo que se acuerda y por qué. Una entrada por decisión, con la fecha. Es el único fichero que se escribe a mano: al regenerar la web, conserva el que ya tienes y añade solo los hallazgos nuevos.',
       trob: 'Hallazgos del mapa, por decidir', senseP: 'Todavía sin pasos.' },
+    idx: { titol: 'Cerebro · {nom}', generat: 'Índice generado del mapa de valor. No se edita a mano: se regenera con la web.',
+      intro: 'Todos los documentos del proyecto, por tema. **Pública**: la web que encuentra cualquiera. **Por enlace**: páginas que no se indexan y se dan a quien toca. **Equipo**: lo que solo vive en el repositorio.',
+      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web',
+      temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', regles: 'Reglas' },
+      capes: { publica: 'pública', enllac: 'por enlace', equip: 'equipo' } },
     claude: ['# {nom} · reglas para quien trabaja en ella, persona o IA', '',
       'Esta web sale del mapa de valor. **No se edita a mano.**', '',
       '- **La fuente es `cerebro/mapa-real.json`** (y `cerebro/mapa-ideal.json`, si lo hay). Para cambiar la web, cambia el mapa en el editor del mapa de valor del SOS (pestaña Web) o, desde el repositorio de TeamTowers, con `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Después, sustitúyelo todo.',
-      '- **El cerebro del proyecto es `cerebro/`**, y sale del mismo mapa: una ficha por rol (`roles/`), una por entregable (`entregables/`), una por proceso (`procesos/`) y `decisiones.md`. `decisiones.md` se escribe a mano y se conserva al regenerar; el resto se regenera.',
+      '- **El cerebro del proyecto es `cerebro/`**, y sale del mismo mapa: una ficha por rol (`roles/`), una por entregable (`entregables/`), una por proceso (`procesos/`) y `decisiones.md`. `decisiones.md` se escribe a mano y se conserva al regenerar; el resto se regenera. El índice de todo, por tema y por capa (pública, por enlace, equipo), es `CEREBRO.md`.',
       '- **Qué no va aquí:** datos personales, precios pactados y contratos. Van al CRM.',
       '- **HTML y CSS estáticos, sin JavaScript.** Cada página lleva sus datos en JSON-LD (schema.org), y `web.json` los tiene todos.',
       '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
@@ -4024,7 +4034,54 @@ function webASite(web, opts) {
   const md = a => a.join('\n').replace(/\{nom\}/g, nom) + '\n';
   posa('CLAUDE.md', md(L.claude), 'text/markdown');
   posa(llengua === 'es' ? 'LEEME.md' : 'LLEGEIX.md', md(L.llegeix), 'text/markdown');
+  if (o.mapa) indexCervell(fitxers, nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
   return { nom, llengua, fitxers };
+}
+
+/* L'índex del cervell: cada document del repositori amb el seu tema i la seva
+   capa. Pública és la web que s'indexa; per enllaç, les pàgines noindex que es
+   donen a qui toca; equip, el que només viu al repositori. Surt dels fitxers
+   que ja hi ha, així que no pot dir res que no hi sigui. És el mateix model que
+   el cervell d'Events Penedès (cerebro/indice.json + CEREBRO.md). */
+const IDX_TEMES = ['web', 'mapa', 'rols', 'lliuraments', 'processos', 'decisions', 'regles'];
+const IDX_CAPES = ['publica', 'enllac', 'equip'];
+function indexCervell(fitxers, nom, T) {
+  const ent = [];
+  const titol = f => {
+    if (/^cerebro\/mapa-real\.json$/.test(f.ruta)) return T.real;
+    if (/^cerebro\/mapa-ideal\.json$/.test(f.ruta)) return T.ideal;
+    if (f.ruta === 'web.json') return T.dades;
+    const m = /^# (.+)$/m.exec(f.cos) || /<h1>([^<]*)<\/h1>/.exec(f.cos);
+    return m ? m[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"') : f.ruta;
+  };
+  const classifica = r => r === '404.html' ? null
+    : /\.html$/.test(r) || r === 'web.json' ? ['web', null]
+    : /^cerebro\/mapa-(real|ideal)\.json$/.test(r) ? ['mapa', 'equip']
+    : /^cerebro\/roles\//.test(r) ? ['rols', 'equip']
+    : /^cerebro\/entregables\//.test(r) ? ['lliuraments', 'equip']
+    : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
+    : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
+    : /^(CLAUDE|LLEGEIX|LEEME)\.md$/.test(r) ? ['regles', 'equip'] : null;
+  fitxers.forEach(f => {
+    const c = classifica(f.ruta);
+    if (!c) return;
+    const capa = c[1] || (/<meta name="robots" content="noindex">/.test(f.cos) ? 'enllac' : 'publica');
+    ent.push({ ruta: f.ruta, titol: titol(f), tema: c[0], capa });
+  });
+  const json = { proyecto: nom, temas: IDX_TEMES.map(id => ({ id, nombre: T.temes[id] })), capas: IDX_CAPES.map(id => ({ id, nombre: T.capes[id] })), entradas: ent };
+  const cel = s => String(s).replace(/\|/g, '\\|');
+  const md = ['# ' + T.titol.replace('{nom}', nom), '', '> ' + T.generat, '', T.intro, ''];
+  IDX_TEMES.forEach(t => {
+    const seves = ent.filter(x => x.tema === t);
+    if (!seves.length) return;
+    md.push('## ' + T.temes[t], '', '| ' + T.doc + ' | ' + T.capa + ' |', '| --- | --- |');
+    IDX_CAPES.forEach(c => seves.filter(x => x.capa === c).forEach(x => md.push('| [' + cel(x.titol) + '](' + x.ruta + ') | ' + T.capes[c] + ' |')));
+    md.push('');
+  });
+  return [
+    { ruta: 'cerebro/indice.json', tipus: 'application/json', cos: JSON.stringify(json, null, 2) + '\n' },
+    { ruta: 'CEREBRO.md', tipus: 'text/markdown', cos: md.join('\n') }
+  ];
 }
 
 /* Un zip sense compressió (STORE): prou per a una web petita, sense cap
