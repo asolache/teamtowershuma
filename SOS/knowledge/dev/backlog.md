@@ -62,7 +62,7 @@ veure el flux concret, real i optimitzat.
 
 **Les decisions, i per què:**
 - **Els patrons es calculen del nivell on ets** (`DIAG.patrons`, funció pura,
-  provada al CI a M23). Entrar dins d'un rol dona els patrons del seu flux:
+  provada al CI a M24). Entrar dins d'un rol dona els patrons del seu flux:
   així cada nivell de la web es treballa igual.
 - **«Mostra el fil» no és cap troballa**: la targeta no ofereix «escriu-ho» a
   les troballes, perquè és una lectura de la casa, no una regla del mètode.
@@ -82,6 +82,14 @@ de casa; compte només amb anada i tornada; la benvinguda surt de la seqüència
 els serveis són els processos; les connexions es proposen per paraules del
 mapa. Descarrega `web.json` (`tt-web-1`). Funció pura `webDelMapa` (bloc
 `VS-WEB`), amb vint proves al motor, que corre a la CI.
+
+**Fet, i prioritat de l'Àlvar:** la web de debò surt del mapa. El botó
+«Descarrega la web (.zip)» de la pestanya Web, o `SOS/tools/web-del-mapa.js`
+des de Node, amb el mateix codi (bloc `VS-SITE`). HTML W3C validat i sense
+JavaScript, JSON-LD a cada pàgina (la web és la base de dades), formularis
+de Netlify que arriben per correu, zip determinista i `permaweb.json` amb
+l'empremta SHA-256 de cada fitxer. Vint proves al motor.
+Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.
 Camí A: ho tenim nosaltres, amb porta de sortida. Camí B: «Deploy to Netlify»

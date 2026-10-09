@@ -334,6 +334,9 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-web-xips{display:flex;flex-wrap:wrap;gap:.25rem}
 .ed-web-xips a{display:inline-flex;align-items:center;min-height:44px;font-size:.75rem;padding:.1rem .7rem;border-radius:999px;border:1px solid var(--border);text-decoration:none}
 .ed-web-fila{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.ed-web-dades{display:grid;gap:.5rem;margin:.3rem 0 .2rem}
+.ed-web-dades label{display:grid;gap:.2rem;margin:0}
+.ed-web-dades input,.ed-web-dades select{font:inherit;min-height:44px;padding:.35rem .55rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--card);color:var(--text)}
 /* ── L'inspector ── */
 .ed-insp{background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;
   max-height:calc(clamp(460px,62vh,720px) + 6.2rem)}
@@ -3760,6 +3763,193 @@ function webDelMapa(m, opts) {
   };
 }
 /*/VS-WEB*/
+/*VS-SITE*/
+/* ── De web.json a la web de debò ──────────────────────────────────────────
+ * Demanat per l'Àlvar (09/10/2026): que des del mapa es pugui fer la web del
+ * client, amb bones pràctiques W3C, integrable per API, fent servir els correus
+ * i la mateixa web com a base de dades, DRY radical i al mínim cost, i que
+ * tendeixi a la permaweb.
+ *
+ * Com ho complim, i per què:
+ *
+ *  · **Una sola font.** La web surt de `web.json`, i `web.json` surt del mapa.
+ *    Cap HTML es toca a mà: es canvia el mapa i es torna a generar. El mateix
+ *    codi el fan servir l'editor (el botó) i Node (`SOS/tools/web-del-mapa.js`).
+ *  · **La web és la base de dades.** Cada pàgina porta les seves dades en
+ *    JSON-LD (schema.org): qualsevol màquina —un cercador, una IA, una altra
+ *    web— les llegeix sense API. I `web.json` va al costat, enllaçat.
+ *  · **El correu és la safata d'entrada.** Els formularis són de Netlify Forms:
+ *    cada enviament arriba per correu i, si hi ha CRM, al CRM (nivell 2). Sense
+ *    Netlify, l'adreça de correu de la pàgina fa la mateixa feina.
+ *  · **Cost zero de servidor.** HTML i CSS estàtics, sense JavaScript, sense
+ *    dependències i sense res que s'hagi de mantenir.
+ *  · **Permaweb.** Els enllaços són relatius i el zip és determinista (sempre
+ *    els mateixos bytes per al mateix mapa). `permaweb.json` en dona l'empremta
+ *    SHA-256 de cada fitxer: el que es puja a IPFS o Arweave es pot comprovar.
+ *  · **W3C.** `lang`, `charset`, `viewport`, enllaç per saltar al contingut,
+ *    `header`/`nav`/`main`/`footer`, `aria-current`, etiquetes als camps,
+ *    focus visible, mode fosc i objectius de 44 px. */
+const SITE_TXT = {
+  ca: { inici: 'Inici', serveis: 'Serveis', equip: 'Per a l\'equip', salta: 'Salta al contingut', menu: 'Menú',
+    donem: 'Què et donem', dones: 'Què ens dones', xarxa: 'Amb la resta de la xarxa', benvinguda: 'La benvinguda',
+    connecta: 'Es connecta amb', perCadascu: 'Una porta per a cadascú', sempre: 'Tot el temps', dins: 'El que passa a dins',
+    escriu: 'Escriu-nos', nom: 'Nom', correu: 'Correu electrònic', missatge: 'Missatge', envia: 'Envia', alta: 'Demana el teu compte',
+    tambe: 'També ens pots escriure a', gracies: 'Gràcies', rebut: 'Ho hem rebut. Et respondrem per correu.', torna: 'Torna a l\'inici',
+    peu: 'Feta a partir del mapa de valor.', dades: 'Les dades d\'aquesta web', buida: 'Encara no hi ha res entre nosaltres i aquest rol.',
+    pas: { coneix: ['Coneix-nos', 'Què et donem i què et demanem.'], compte: ['Crea el teu compte', 'Amb un compte veus el que és teu i en dius la teva.'],
+      'sense-compte': ['Sense compte', 'Llegir i escriure\'ns n\'hi ha prou.'], connecta: ['Connecta el que ja fas servir', ''],
+      primer: ['El primer que rebràs', ''], demanem: ['El primer que et demanarem', ''] },
+    cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' } },
+  es: { inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo', salta: 'Saltar al contenido', menu: 'Menú',
+    donem: 'Qué te damos', dones: 'Qué nos das', xarxa: 'Con el resto de la red', benvinguda: 'La bienvenida',
+    connecta: 'Se conecta con', perCadascu: 'Una puerta para cada uno', sempre: 'Todo el tiempo', dins: 'Lo que pasa dentro',
+    escriu: 'Escríbenos', nom: 'Nombre', correu: 'Correo electrónico', missatge: 'Mensaje', envia: 'Enviar', alta: 'Pide tu cuenta',
+    tambe: 'También puedes escribirnos a', gracies: 'Gracias', rebut: 'Lo hemos recibido. Te responderemos por correo.', torna: 'Volver al inicio',
+    peu: 'Hecha a partir del mapa de valor.', dades: 'Los datos de esta web', buida: 'Todavía no hay nada entre nosotros y este rol.',
+    pas: { coneix: ['Conócenos', 'Qué te damos y qué te pedimos.'], compte: ['Crea tu cuenta', 'Con una cuenta ves lo tuyo y das tu opinión.'],
+      'sense-compte': ['Sin cuenta', 'Basta con leer y escribirnos.'], connecta: ['Conecta lo que ya usas', ''],
+      primer: ['Lo primero que recibirás', ''], demanem: ['Lo primero que te pediremos', ''] },
+    cat: { crm: 'CRM', cobros: 'Cobros', venta: 'Tienda', oficina: 'Agenda', comunica: 'Mensajes', web: 'Datos propios' } }
+};
+const SITE_CSS = [
+  ':root{color-scheme:light dark;--bg:#fbfaf7;--fg:#1d1b18;--mut:#5d584f;--lin:#d9d4ca;--acc:#4338ca}',
+  '@media (prefers-color-scheme:dark){:root{--bg:#161512;--fg:#f1eee8;--mut:#b4ada1;--lin:#3a362f;--acc:#a5b4fc}}',
+  '*{box-sizing:border-box}',
+  'body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}',
+  'a{color:var(--acc)}',
+  ':focus-visible{outline:3px solid var(--acc);outline-offset:2px}',
+  '.salta{position:absolute;left:-999px}.salta:focus{left:1rem;top:1rem;background:var(--bg);padding:.5rem}',
+  'header,main,footer{max-width:46rem;margin:0 auto;padding:1rem}',
+  'header{border-bottom:1px solid var(--lin)}',
+  '.marca{margin:0 0 .5rem;font-weight:700}.marca a{color:inherit;text-decoration:none}',
+  'nav ul{display:flex;flex-wrap:wrap;gap:.35rem;list-style:none;margin:0;padding:0}',
+  'nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;padding:0 .8rem;border:1px solid var(--lin);border-radius:999px;text-decoration:none;color:var(--fg)}',
+  'nav a[aria-current=page]{background:var(--fg);color:var(--bg);border-color:var(--fg)}',
+  'h1{font-size:1.7rem;line-height:1.2;margin:.5rem 0 1rem}h2{font-size:1.15rem;margin:1.6rem 0 .5rem}',
+  'li{margin:.25rem 0}small{color:var(--mut)}',
+  'form{display:grid;gap:.75rem;margin-top:.5rem}',
+  'label{display:grid;gap:.25rem;font-weight:600}',
+  'input,textarea,button{font:inherit;min-height:44px;padding:.5rem .7rem;border:1px solid var(--lin);border-radius:8px;background:var(--bg);color:var(--fg)}',
+  'button{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600;cursor:pointer;justify-self:start}',
+  '.ocult{display:none}',
+  'footer{border-top:1px solid var(--lin);color:var(--mut);font-size:.9rem}'
+].join('\n') + '\n';
+
+function webASite(web, opts) {
+  const o = opts || {}, L = SITE_TXT[o.llengua] || SITE_TXT.ca, llengua = SITE_TXT[o.llengua] ? o.llengua : 'ca';
+  const e = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const correu = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(o.correu || '') ? o.correu : '';
+  const nom = String(o.nom || (web.casa || [])[0] || web.titol || 'La web').trim();
+  const ruta = id => (id === 'inici' ? 'index.html' : id + '.html');
+  const ld = x => '<script type="application/ld+json">' + JSON.stringify(Object.assign({ '@context': 'https://schema.org' }, x)).replace(/</g, '\\u003c') + '<\/script>';
+  const llista = (a, f) => (a.length ? '<ul>' + a.map(f).join('') + '</ul>' : '');
+  const lli = (x, cap) => '<li>' + e(x.q) + (cap ? ' <small>' + e(cap) + '</small>' : '') + '</li>';
+  const menu = (web.menu || []).filter(x => x.id !== 'equip');
+  const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+    + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
+    + '<meta name="description" content="' + e(web.titol || nom) + '">\n' + (extra || '')
+    + '<link rel="stylesheet" href="estil.css">\n<link rel="alternate" type="application/json" href="web.json" title="' + e(L.dades) + '">\n'
+    + ld(dades) + '\n</head>\n<body>\n<a class="salta" href="#contingut">' + e(L.salta) + '</a>\n'
+    + '<header>\n<p class="marca"><a href="index.html">' + e(nom) + '</a></p>\n<nav aria-label="' + e(L.menu) + '"><ul>'
+    + menu.map(x => '<li><a href="' + ruta(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : x.t) + '</a></li>').join('')
+    + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(titol) + '</h1>\n' + cos + '\n</main>\n'
+    + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (correu ? ' · <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>' : '') + '</p>\n</footer>\n</body>\n</html>\n';
+  const formulari = p => {
+    const f = 'porta-' + p.id, demana = p.dona[0] ? p.dona[0].q : '';
+    return '<h2 id="escriu">' + e(L.escriu) + '</h2>\n<form name="' + f + '" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">\n'
+      + '<input type="hidden" name="form-name" value="' + f + '">\n<input type="hidden" name="rol" value="' + e(p.rol) + '">\n'
+      + '<p class="ocult"><label>No omplis això <input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label></p>\n'
+      + '<label for="' + f + '-nom">' + e(L.nom) + '</label><input id="' + f + '-nom" name="nom" type="text" autocomplete="name" required>\n'
+      + '<label for="' + f + '-correu">' + e(L.correu) + '</label><input id="' + f + '-correu" name="correu" type="email" autocomplete="email" required>\n'
+      + '<label for="' + f + '-msg">' + e(L.missatge) + (demana ? ' <small>' + e(demana) + '</small>' : '') + '</label><textarea id="' + f + '-msg" name="missatge" rows="4"></textarea>\n'
+      + '<button type="submit">' + e(p.compte ? L.alta : L.envia) + '</button>\n</form>'
+      + (correu ? '\n<p>' + e(L.tambe) + ' <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>.</p>' : '');
+  };
+  const fitxers = [];
+  const posa = (r, cos, tipus) => fitxers.push({ ruta: r, tipus: tipus || 'text/html', cos });
+  const servei = sv => ({ '@type': 'Service', name: sv.nom, description: sv.d || undefined, provider: { '@type': 'Organization', name: nom } });
+
+  posa('index.html', pagina('inici', nom,
+    (web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + '<h2>' + e(L.perCadascu) + '</h2>\n'
+      + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(p.rol) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>'),
+    { '@type': 'Organization', name: nom, description: web.titol || undefined,
+      makesOffer: (web.serveis || []).map(sv => ({ '@type': 'Offer', itemOffered: servei(sv) })) }));
+  (web.portes || []).forEach(p => {
+    const con = p.connexions.map(c => L.cat[c.cat] || c.nom);
+    const passos = p.benvinguda.map(b => {
+      const t = L.pas[b.pas] || [b.t, b.d], d = b.pas === 'connecta' ? con.join(', ') + '.' : t[1] || b.d;
+      return '<li><strong>' + e(t[0]) + '.</strong> ' + e(d) + '</li>';
+    });
+    posa(ruta(p.id), pagina(p.id, p.rol,
+      (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
+        + (p.rep.length ? '<h2>' + e(L.donem) + '</h2>\n' + llista(p.rep, f => lli(f)) + '\n' : '')
+        + (p.dona.length ? '<h2>' + e(L.dones) + '</h2>\n' + llista(p.dona, f => lli(f)) + '\n' : '')
+        + (p.xarxa.length ? '<h2>' + e(L.xarxa) + '</h2>\n' + llista(p.xarxa, f => lli(f, f.de + ' → ' + f.a)) + '\n' : '')
+        + '<h2>' + e(L.benvinguda) + '</h2>\n<ol>' + passos.join('') + '</ol>\n'
+        + (con.length ? '<h2>' + e(L.connecta) + '</h2>\n' + llista(con, c => '<li>' + e(c) + '</li>') + '\n' : '')
+        + (p.buida ? '' : formulari(p)),
+      { '@type': 'WebPage', name: p.rol, audience: { '@type': 'Audience', audienceType: p.rol },
+        mainEntity: { '@type': 'ItemList', itemListElement: p.rep.map((f, i) => ({ '@type': 'ListItem', position: i + 1, name: f.q })) } }));
+  });
+  if ((web.serveis || []).length) {
+    posa('serveis.html', pagina('serveis', L.serveis,
+      web.serveis.map(sv => '<h2>' + e(sv.nom) + '</h2>\n' + (sv.d ? '<p>' + e(sv.d) + '</p>\n' : '')
+        + (sv.passos.length ? '<ol>' + sv.passos.map(x => lli(x, x.de + ' → ' + x.a)).join('') + '</ol>' : '')).join('\n')
+        + ((web.sempre || []).length ? '\n<h2>' + e(L.sempre) + '</h2>\n' + llista(web.sempre, x => lli(x, x.de + ' → ' + x.a)) : ''),
+      { '@type': 'ItemList', name: L.serveis, itemListElement: web.serveis.map((sv, i) => ({ '@type': 'ListItem', position: i + 1, item: servei(sv) })) }));
+  }
+  /* L'equip no és per al públic: hi és perquè la web sencera surti del mapa,
+     però els cercadors no la indexen i el menú no la mostra. */
+  posa('equip.html', pagina('equip', L.equip,
+    '<p>' + e((web.equip.rols || []).join(', ')) + '</p>\n'
+      + (web.equip.intern.length ? '<h2>' + e(L.dins) + '</h2>\n' + llista(web.equip.intern, x => lli(x, x.de + ' → ' + x.a)) : ''),
+    { '@type': 'WebPage', name: L.equip }, '<meta name="robots" content="noindex">\n'));
+  posa('gracies.html', pagina('gracies', L.gracies, '<p>' + e(L.rebut) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
+    { '@type': 'WebPage', name: L.gracies }, '<meta name="robots" content="noindex">\n'));
+  posa('estil.css', SITE_CSS, 'text/css');
+  posa('web.json', JSON.stringify(web, null, 2) + '\n', 'application/json');
+  return { nom, llengua, fitxers };
+}
+
+/* Un zip sense compressió (STORE): prou per a una web petita, sense cap
+   dependència, i determinista —data fixa— perquè el mateix mapa doni sempre
+   els mateixos bytes. */
+const CRC_T = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipFitxers(fitxers) {
+  const enc = new TextEncoder(), parts = [], cent = [];
+  let off = 0;
+  const cap = (n, cb) => { const a = new Uint8Array(n), v = new DataView(a.buffer); cb(v); return a; };
+  fitxers.forEach(f => {
+    const nom = enc.encode(f.ruta), dades = typeof f.cos === 'string' ? enc.encode(f.cos) : f.cos, crc = crc32(dades);
+    const loc = cap(30, v => { v.setUint32(0, 0x04034b50, true); v.setUint16(4, 20, true); v.setUint16(6, 0x0800, true); v.setUint16(8, 0, true);
+      v.setUint16(10, 0, true); v.setUint16(12, 0x21, true); v.setUint32(14, crc, true); v.setUint32(18, dades.length, true); v.setUint32(22, dades.length, true);
+      v.setUint16(26, nom.length, true); v.setUint16(28, 0, true); });
+    cent.push(cap(46, v => { v.setUint32(0, 0x02014b50, true); v.setUint16(4, 20, true); v.setUint16(6, 20, true); v.setUint16(8, 0x0800, true);
+      v.setUint16(10, 0, true); v.setUint16(12, 0, true); v.setUint16(14, 0x21, true); v.setUint32(16, crc, true); v.setUint32(20, dades.length, true);
+      v.setUint32(24, dades.length, true); v.setUint16(28, nom.length, true); v.setUint32(42, off, true); }), nom);
+    parts.push(loc, nom, dades);
+    off += 30 + nom.length + dades.length;
+  });
+  const midaC = cent.reduce((s, a) => s + a.length, 0);
+  const fi = cap(22, v => { v.setUint32(0, 0x06054b50, true); v.setUint16(8, fitxers.length, true); v.setUint16(10, fitxers.length, true);
+    v.setUint32(12, midaC, true); v.setUint32(16, off, true); });
+  const tot = parts.concat(cent, [fi]), out = new Uint8Array(tot.reduce((s, a) => s + a.length, 0));
+  let p = 0; tot.forEach(a => { out.set(a, p); p += a.length; });
+  return out;
+}
+/* L'empremta de cada fitxer, per a la permaweb. `digest(bytes) → Promise<hex>`
+   s'injecta: al navegador és crypto.subtle i a Node, node:crypto. */
+async function ambPermaweb(site, digest) {
+  const enc = new TextEncoder();
+  const fitxers = [];
+  for (const f of site.fitxers) { const b = enc.encode(f.cos); fitxers.push({ ruta: f.ruta, bytes: b.length, sha256: await digest(b) }); }
+  const manifest = { formato: 'tt-permaweb-1', nom: site.nom, fitxers,
+    nota: 'Empremta SHA-256 de cada fitxer. El que es publica a IPFS, Arweave o qualsevol altre lloc es pot comprovar amb aquesta llista.' };
+  return site.fitxers.concat([{ ruta: 'permaweb.json', tipus: 'application/json', cos: JSON.stringify(manifest, null, 2) + '\n' }]);
+}
+/*/VS-SITE*/
 
 /*VS-CTRL*/
 /* ── L'editor: l'estat, la sincronia amb els sis camps, els nivells i el desat ──
@@ -4125,7 +4315,7 @@ function creaLlenc() {
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
     cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
-    webCasa: null, webPag: 'inici'
+    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webLlengua: 'ca'
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -6044,8 +6234,12 @@ function creaLlenc() {
     h += '<div class="ed-web"><div class="ed-web-barra"><i></i><i></i><i></i><span>' + esc_(curt(web.titol || 'la teva web', 46)) + '</span></div>'
       + '<nav class="ed-web-menu" aria-label="El menú de la web">' + web.menu.map(x => '<button type="button" data-web-pag="' + escA(x.id) + '"' + (x.id === pag ? ' aria-current="page"' : '') + '>' + esc_(x.t) + '</button>').join('') + '</nav>'
       + '<div class="ed-web-pag" id="edWebPag" aria-live="polite">' + webPagina(web, pag) + '</div></div>';
-    h += '<div class="ed-web-fila"><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button></div>'
-      + '<p>El <code>web.json</code> és el que llegeix qui construeix la web, persona o IA: el menú, les pàgines i el procés de benvinguda de cada rol.</p>';
+    h += '<h4>La web de debò</h4><div class="ed-web-dades">'
+      + '<label>Nom de la web <input type="text" id="edWebNom" value="' + escA(S.webNom) + '" placeholder="' + escA(web.casa[0] || '') + '"></label>'
+      + '<label>Correu on arriben els formularis <input type="email" id="edWebCorreu" value="' + escA(S.webCorreu) + '" placeholder="hola@exemple.cat"></label>'
+      + '<label>Llengua <select id="edWebLlengua"><option value="ca"' + (S.webLlengua === 'es' ? '' : ' selected') + '>Català</option><option value="es"' + (S.webLlengua === 'es' ? ' selected' : '') + '>Castellà</option></select></label></div>'
+      + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button></div>'
+      + '<p>HTML i CSS estàtics, sense JavaScript: una pàgina per porta, els formularis que arriben per correu (Netlify Forms), les dades a cada pàgina en JSON-LD i <code>permaweb.json</code> amb l\'empremta de cada fitxer. S\'arrossega a Netlify i ja és publicada.</p>';
     posaHTML(p, h);
   }
   function webPagina(web, pag) {
@@ -6073,7 +6267,26 @@ function creaLlenc() {
       + '<h6>La benvinguda</h6><ol>' + x.benvinguda.map(b => '<li data-pas="' + escA(b.pas) + '"><b>' + esc_(b.t) + '</b> ' + esc_(b.d) + '</li>').join('') + '</ol>'
       + (x.connexions.length ? '<h6>Es connecta amb</h6><div class="ed-web-xips">' + x.connexions.map(c => '<a href="../conecta/#catalogo" title="Per la paraula «' + escA(c.per) + '» del mapa">' + esc_(c.nom) + '</a>').join('') + '</div>' : '');
   }
+  /* La web, en un zip. L'empremta SHA-256 la fa el navegador; si no pot
+     (un context sense crypto.subtle), la web surt igual i ho diu. */
+  async function baixaWeb() {
+    const { web } = webAra(), site = webASite(web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua });
+    let fitxers = site.fitxers, nota = '';
+    try {
+      fitxers = await ambPermaweb(site, async b => [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map(x => x.toString(16).padStart(2, '0')).join(''));
+    } catch (x) { nota = ', sense permaweb.json (aquest navegador no fa l\'empremta)'; }
+    const a = document.createElement('a'), nomZip = (site.nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'web') + '.zip';
+    a.href = URL.createObjectURL(new Blob([zipFitxers(fitxers)], { type: 'application/zip' }));
+    a.download = nomZip; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    avis('S\'ha descarregat ' + nomZip + ': ' + pl(fitxers.length, 'fitxer', 'fitxers') + nota);
+  }
+  $('#edPanWeb').addEventListener('input', e => {
+    if (e.target.id === 'edWebNom') S.webNom = e.target.value;
+    if (e.target.id === 'edWebCorreu') S.webCorreu = e.target.value;
+  });
   $('#edPanWeb').addEventListener('change', e => {
+    if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; return; }
     const c = e.target.closest('[data-web-casa]');
     if (!c) return;
     const { web } = webAra(), r = c.getAttribute('data-web-casa');
@@ -6086,6 +6299,7 @@ function creaLlenc() {
   $('#edPanWeb').addEventListener('click', e => {
     const b = e.target.closest('[data-web-pag]');
     if (b) { S.webPag = b.getAttribute('data-web-pag'); pintaWeb(); const q = $('#edPanWeb [data-web-pag="' + CSS.escape(S.webPag) + '"]'); if (q) q.focus(); return; }
+    if (e.target.closest('#edWebZip')) { baixaWeb(); return; }
     if (e.target.closest('#edWebJson')) {
       const { web } = webAra();
       const a = document.createElement('a');
