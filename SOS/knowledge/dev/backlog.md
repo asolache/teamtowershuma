@@ -94,7 +94,9 @@ El zip ja és el repositori del client, en sincronia amb el pla d'estratègia
 a `cerebro/` (mapa real i ideal, una fitxa per rol, per lliurament i per
 procés, i `decisiones.md`), `CLAUDE.md` amb les regles, `netlify.toml` amb
 CSP, la 404, `robots.txt` i, amb l'adreça definitiva, el sitemap, `canonical`
-i Open Graph.
+i Open Graph. El cervell porta el seu índex (`CEREBRO.md` i `cerebro/indice.json`):
+cada document amb tema i capa (pública, per enllaç, equip), el mateix model que
+el d'Events Penedès.
 **Fet, fase 2 del pla:** el registre viu. La web porta `registre.html`
 (Netlify Forms) per anotar cada lliurament entre rols. El CSV es llegeix a la
 pestanya Web o amb `SOS/tools/llegeix-registre.js` (mateix codi, bloc

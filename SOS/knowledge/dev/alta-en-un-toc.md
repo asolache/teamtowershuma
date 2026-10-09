@@ -106,6 +106,7 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
 | `permaweb.json` | L'empremta SHA-256 de cada fitxer |
 | `404.html` | La pàgina que no hi és, amb `noindex` |
 | `cerebro/` | **El cervell del projecte**, amb l'estructura que fixa el pla d'estratègia: `mapa-real.json` (la font, que l'editor torna a obrir igual) i `mapa-ideal.json` si n'hi ha, una fitxa per rol (`roles/`), per lliurament (`entregables/`) i per procés (`procesos/`), i `decisiones.md`, l'únic que s'escriu a mà |
+| `CEREBRO.md` i `cerebro/indice.json` | **L'índex del cervell**: cada document amb el seu tema (la web, el mapa, rols, lliuraments, processos, decisions, regles) i la seva capa: pública (la web que s'indexa), per enllaç (les pàgines `noindex`) i equip (el que només viu al repositori). El mateix model que el cervell d'Events Penedès |
 | `CLAUDE.md` | Les regles per a qui hi treballa, persona o IA: no s'edita a mà, cap clau al repositori, cada canvi en una PR |
 | `LLEGEIX.md` | Com publicar-la (`LEEME.md` si és en castellà) |
 | `netlify.toml` | Publica la carpeta, amb capçaleres de seguretat: CSP sense scripts i formularis només a la mateixa web |
