@@ -766,10 +766,11 @@ console.log('\nM25 · El zip ja és el repositori del client');
   const web = S.webDelMapa(celler()), mapa = M.exporta(M.importa(EXEMPLE).arbre);
   const s0 = S.webASite(web, {}), s1 = S.webASite(web, { url: 'https://celler.example/', mapa, llengua: 'es', nom: 'Celler' });
   const f = (s, r) => (s.fitxers.find(x => x.ruta === r) || {}).cos;
-  ok(['404.html', 'robots.txt', 'netlify.toml', 'CLAUDE.md', 'LLEGEIX.md'].every(r => f(s0, r)) && !f(s0, 'sitemap.xml') && !f(s0, 'mapa.json'),
-    'sempre: 404, robots.txt, netlify.toml, CLAUDE.md i com publicar-la; sense adreça ni mapa, ni sitemap ni mapa.json');
+  ok(['404.html', 'robots.txt', 'netlify.toml', 'CLAUDE.md', 'LLEGEIX.md'].every(r => f(s0, r)) && !f(s0, 'sitemap.xml') && !s0.fitxers.some(x => /^cerebro\//.test(x.ruta)),
+    'sempre: 404, robots.txt, netlify.toml, CLAUDE.md i com publicar-la; sense adreça ni mapa, ni sitemap ni cervell');
   ok(!/canonical|og:url|Sitemap:/.test(s0.fitxers.map(x => x.cos).join('')), 'sense adreça, res d\'absolut: segueix funcionant des del disc i la permaweb');
-  ok(J(JSON.parse(f(s1, 'mapa.json'))) === J(mapa) && J(M.exporta(M.importa(JSON.parse(f(s1, 'mapa.json'))).arbre)) === J(mapa), 'mapa.json és la font, i l\'editor la torna a obrir igual');
+  const mr = JSON.parse(f(s1, 'cerebro/mapa-real.json'));
+  ok(J(mr) === J(mapa) && J(M.exporta(M.importa(mr).arbre)) === J(mapa) && !f(s1, 'cerebro/mapa-ideal.json'), 'cerebro/mapa-real.json és la font, i l\'editor la torna a obrir igual');
   ok(/<link rel="canonical" href="https:\/\/celler\.example\/el-visitant\.html">/.test(f(s1, 'el-visitant.html')) && /<link rel="canonical" href="https:\/\/celler\.example\/">/.test(f(s1, 'index.html'))
     && /property="og:title" content="El visitant"/.test(f(s1, 'el-visitant.html')), 'amb adreça: canonical i Open Graph a cada pàgina');
   const sm = f(s1, 'sitemap.xml');
@@ -780,9 +781,32 @@ console.log('\nM25 · El zip ja és el repositori del client');
   const toml = f(s0, 'netlify.toml');
   ok(/publish = "\."/.test(toml) && /default-src 'none'/.test(toml) && /form-action 'self'/.test(toml) && /frame-ancestors 'none'/.test(toml) && /nosniff/.test(toml),
     'netlify.toml: publica la carpeta i tanca la porta (CSP sense scripts, formularis a la mateixa web)');
-  ok(/No s'edita a mà/.test(f(s0, 'CLAUDE.md')) && /mapa\.json/.test(f(s0, 'CLAUDE.md')) && /Cap clau al repositori/.test(f(s0, 'CLAUDE.md')), 'CLAUDE.md diu les regles: el mapa és la font i cap clau al repositori');
+  ok(/No s'edita a mà/.test(f(s0, 'CLAUDE.md')) && /mapa-real\.json/.test(f(s0, 'CLAUDE.md')) && /Cap clau al repositori/.test(f(s0, 'CLAUDE.md')), 'CLAUDE.md diu les regles: el mapa és la font i cap clau al repositori');
   ok(/No se edita a mano/.test(f(s1, 'CLAUDE.md')) && f(s1, 'LEEME.md') && !f(s1, 'LLEGEIX.md') && /^# Celler/.test(f(s1, 'LEEME.md')), 'en castellà, CLAUDE.md i LEEME.md també');
   ok(/<meta name="robots" content="noindex">/.test(f(s0, '404.html')) && /href="index.html"/.test(f(s0, '404.html')), 'la 404 no s\'indexa i torna a l\'inici');
+}
+
+console.log('\nM26 · El cervell del projecte, com el preveu el pla (cerebro/)');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const arbre = M.importa(Object.assign(clona(EXEMPLE), { ideal: EXEMPLE })).arbre, mapa = M.exporta(arbre), abans = J(mapa);
+  const st = S.webASite(S.webDelMapa(celler()), { mapa }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos;
+  const de = pre => st.fitxers.filter(x => x.ruta.startsWith(pre)).map(x => x.ruta);
+  const fl = EXEMPLE.parells.reduce((n, l) => n + (l.split('|')[3].trim() ? 1 : 0) + (l.split('|')[5].trim() ? 1 : 0), 0);
+  ok(J(mapa) === abans && !('ideal' in JSON.parse(f('cerebro/mapa-real.json'))) && JSON.parse(f('cerebro/mapa-ideal.json')).roles.length === EXEMPLE.rols.length,
+    'el real i l\'ideal, cadascun al seu fitxer, sense tocar el mapa');
+  ok(de('cerebro/roles/').length === EXEMPLE.rols.length && de('cerebro/entregables/').length === fl && de('cerebro/procesos/').length === EXEMPLE.processos.length && f('cerebro/decisiones.md'),
+    'una fitxa per rol, per lliurament i per procés, i decisiones.md');
+  const all = st.fitxers.map(x => x.ruta);
+  ok(new Set(all).size === all.length, 'cap fitxer es trepitja');
+  const r = f('cerebro/roles/qui-rep-i-explica.md');
+  ok(/^# Qui rep i explica/.test(r) && /## Què dona[\s\S]*\*\*la visita, el tast i el relat de la casa\*\* → El visitant · tangible · La visita · pas 2/.test(r)
+    && /## Què rep[\s\S]*\*\*la confiança de qui ha estat aquí\*\* ← El visitant · intangible · tot el temps/.test(r), 'la fitxa del rol: què dona i què rep, tangible o no, i on passa');
+  ok(/- La visita: pas 1, 2, 3, 4/.test(r) && /va al CRM, no aquí/.test(r), 'els processos on hi és, i l\'encaix de les persones fora del repositori');
+  ok(/\*\*Qui el produeix:\*\* L'operador de luxe/.test(f('cerebro/entregables/el-grup-i-el-pagament-per-persona.md')) && /pas 3/.test(f('cerebro/entregables/el-grup-i-el-pagament-per-persona.md')), 'la fitxa del lliurament: qui el fa, qui el rep i on va');
+  const v = f('cerebro/procesos/visita.md').split('\n').filter(l => /^1\. /.test(l));
+  ok(v.length === 4 && /el vi, la verema/.test(v[0]) && /què demana un client/.test(v[3]), 'el procés, amb els passos en ordre');
+  ok(/El poble dona i no rep/.test(f('cerebro/decisiones.md')) && /conserva el que ja tens/.test(f('cerebro/decisiones.md')), 'les troballes del mapa passen a decisions pendents, i el fitxer diu que es conserva');
+  ok(/cerebro\/mapa-real\.json/.test(f('CLAUDE.md')) && /Van al CRM/.test(f('CLAUDE.md')), 'CLAUDE.md apunta al cervell i diu què va al CRM');
 }
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));

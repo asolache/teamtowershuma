@@ -105,7 +105,7 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
 | `web.json` | Les dades de la web, enllaçades des de cada pàgina |
 | `permaweb.json` | L'empremta SHA-256 de cada fitxer |
 | `404.html` | La pàgina que no hi és, amb `noindex` |
-| `mapa.json` | **La font.** El mapa que ha fet la web: l'editor el torna a obrir igual |
+| `cerebro/` | **El cervell del projecte**, amb l'estructura que fixa el pla d'estratègia: `mapa-real.json` (la font, que l'editor torna a obrir igual) i `mapa-ideal.json` si n'hi ha, una fitxa per rol (`roles/`), per lliurament (`entregables/`) i per procés (`procesos/`), i `decisiones.md`, l'únic que s'escriu a mà |
 | `CLAUDE.md` | Les regles per a qui hi treballa, persona o IA: no s'edita a mà, cap clau al repositori, cada canvi en una PR |
 | `LLEGEIX.md` | Com publicar-la (`LEEME.md` si és en castellà) |
 | `netlify.toml` | Publica la carpeta, amb capçaleres de seguretat: CSP sense scripts i formularis només a la mateixa web |
@@ -144,8 +144,10 @@ repositori del client. Netlify en detecta els formularis sol.
 - Publicar a IPFS o Arweave des del mateix botó. Demana una cartera, i la clau
   ha de ser a la cartera de qui signa, mai al repositori.
 - Els comptes de debò, per als rols de la llista `alta`.
-- ✓ El zip ja és el repositori del client: `mapa.json`, `CLAUDE.md`,
-  `netlify.toml`, la 404, `robots.txt` i, amb l'adreça, el sitemap.
+- ✓ El zip ja és el repositori del client: el cervell (`cerebro/`),
+  `CLAUDE.md`, `netlify.toml`, la 404, `robots.txt` i, amb l'adreça, el sitemap.
+- El registre viu de transaccions (fase 2 del pla): que el mapa real es
+  recalculi amb l'ús i es compari amb l'ideal.
 
 ## 4 · La IA, pagada per ús
 
