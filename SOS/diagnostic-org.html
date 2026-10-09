@@ -1426,7 +1426,7 @@ function plegaOpcionals(){
 }
 /* L'alçada del menú enganxat, perquè el progrés s'enganxi just a sota. */
 function mesuraNav(){
-  const n=document.querySelector('.tt-nav');
+  const n=document.querySelector('nav[aria-label]');
   document.documentElement.style.setProperty('--nav-h',(n?n.offsetHeight:0)+'px');
 }
 addEventListener('resize',mesuraNav);
