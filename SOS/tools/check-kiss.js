@@ -172,13 +172,17 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
    mapa de la casa, que eren 90 KB de la portada. No és creixement, és mudança
    —i el que compta és que **ningú es baixa les quatre**. Abans, qui obria la
    portada es baixava 141 KB i hi trobava el catàleg sencer i la trajectòria;
-   ara se'n baixa 58 i, si vol el catàleg, 42 més. */
+   ara se'n baixa 58 i, si vol el catàleg, 42 més.
+
+   `premsa.html` puja de 12 a 14 KB a posta (09/10/2026): hi arriba l'embut
+   «Per on començar» (`build-embut.js`), que és el pas següent de qui hi entra
+   des d'un mitjà. Sense ell, la pàgina de prova s'acabava en un correu. */
 const SOSTRES = [
   ['SOS/vna.html', 95, 'el mètode sencer: el llenç, les vuit lectures, les construccions i el mapa de la casa'],
   ['index.html', 65, 'la portada ven el mapa de valor i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
   ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
-  ['premsa.html', 12, 'nou aparicions amb font, i la barra']
+  ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut']
 ];
 SOSTRES.forEach(([rel, max, que]) => {
   const f = join(__dirname, '..', '..', rel);
