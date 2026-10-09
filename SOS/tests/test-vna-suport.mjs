@@ -966,6 +966,51 @@ console.log('\n7C.6 · El que es veu a la desviació');
   await p.click('#edVistes input[value=real] + span');
 }
 
+console.log('\n7C.7 · Els patrons del flux: el fil, i el real al costat de l\'optimitzat');
+{
+  await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
+  await p.click('#btExemple');
+  await pausa(200);
+  const a = await p.evaluate(() => ({ n: document.querySelectorAll('#edPatCos .ed-pat').length, cmp: document.querySelectorAll('#edPatCos .ed-pat-cmp').length,
+    fil: (document.querySelector('#edPatCos .ed-pat[data-proc=visita] .ed-pat-fil') || {}).textContent || '' }));
+  ok(a.n === 3 && a.cmp === 0, 'una fitxa per procés, i sense ideal cap comparació');
+  ok(/Qui fa el vi/.test(a.fil) && /⋯/.test(a.fil), 'el fil de la visita, tallat on el valor salta: ' + a.fil.slice(0, 60));
+  await p.click('#edPatCos [data-acc=pt-fil][data-id=visita]');
+  const t = await p.evaluate(() => ({ on: !document.querySelector('#edTarja').hidden, txt: document.querySelector('#edTarja').textContent,
+    escriu: !!document.querySelector('#edTarja [data-acc=escriu]:not([hidden])') }));
+  ok(t.on && /El fil de «La visita»/.test(t.txt) && !t.escriu, '«Mostra el fil» obre la targeta, sense «escriu-ho» (no és cap troballa)');
+  await p.click('#edTarja [data-acc=tanca-tarja]').catch(() => {});
+  await p.evaluate(() => { window.__VS_ED.ideal('copia'); });
+  await pausa(150);
+  const c = await p.evaluate(() => document.querySelectorAll('#edPatCos .ed-pat-cmp').length);
+  ok(c === 3, 'amb l\'ideal, cada procés té el real al costat de l\'optimitzat');
+  await p.click('#edPatCos [data-acc=pt-vista][data-v=ideal][data-id=visita]');
+  const v = await p.evaluate(() => document.querySelector('#edVistes input:checked').value);
+  ok(v === 'ideal', '«L\'optimitzat» passa a la vista ideal');
+  await p.click('#edVistes input[value=real] + span');
+}
+
+console.log('\n7C.8 · Pantalla completa, amb la definició al costat');
+{
+  await p.evaluate(() => window.__VS_ED.ple(true));
+  await pausa(200);
+  const a = await p.evaluate(() => { const e = document.querySelector('#editor').getBoundingClientRect(), l = document.querySelector('#edLlenc').getBoundingClientRect();
+    return { ple: document.body.classList.contains('ed-ple'), w: e.width, iw: innerWidth, baix: l.bottom, ih: innerHeight, nav: !!document.querySelector('header.cap') && document.querySelector('header.cap').offsetParent !== null,
+      def: !document.querySelector('#edPleDef').hidden };
+  });
+  ok(a.ple && Math.abs(a.w - a.iw) < 2 && !a.nav, 'l\'editor ocupa tota la pantalla, sense la capçalera');
+  ok(a.baix <= a.ih + 1, 'i el llenç s\'acaba on s\'acaba la pantalla');
+  ok(a.def, 'apareix «La definició»');
+  await p.click('#edPleDef');
+  await pausa(150);
+  const d = await p.evaluate(() => ({ dins: document.querySelector('#escrit').parentElement.id, vis: (q => q.width > 200 && q.right <= innerWidth + 1 && getComputedStyle(document.querySelector('#escrit')).display !== 'none')(document.querySelector('#escrit').getBoundingClientRect()), ll: document.querySelector('#edLlenc').offsetParent !== null }));
+  ok(d.dins === 'editor' && d.vis && d.ll, 'els sis camps s\'obren al costat del mapa, i es veuen tots dos');
+  await p.evaluate(() => window.__VS_ED.ple(false));
+  await pausa(150);
+  const f = await p.evaluate(() => ({ ple: document.body.classList.contains('ed-ple'), dins: document.querySelector('#escrit').parentElement.id, pare: document.querySelector('#escrit').parentElement !== document.querySelector('#editor') }));
+  ok(!f.ple && f.pare, 'en sortir, els sis camps tornen al seu lloc');
+}
+
 console.log('\n7B.12 · Al mòbil (390 px)');
 {
   const m = await b.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });

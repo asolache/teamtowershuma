@@ -380,8 +380,43 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 /* ── El pols i la tira del flux ── */
 .ed-baix{margin-top:.9rem;display:grid;grid-template-columns:minmax(0,1fr);gap:.8rem}
 .ed-baix>*,.ed-centre>*,.ed-insp{min-width:0}
-.ed-pols,.ed-flux{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.8rem .95rem}
-.ed-pols h3,.ed-flux h3{font-size:var(--t1);margin:0}
+.ed-pols,.ed-flux,.ed-patrons{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.8rem .95rem}
+.ed-pols h3,.ed-flux h3,.ed-patrons h3{font-size:var(--t1);margin:0}
+/* Els patrons del flux: una fitxa per procés, i el real al costat de l'optimitzat */
+.ed-pat-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,19rem),1fr));gap:.6rem;margin-top:.6rem}
+.ed-pat{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;display:flex;flex-direction:column;gap:.45rem;font-size:var(--t0)}
+.ed-pat-cap{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .6rem}
+.ed-pat-cap b{font-size:var(--t1)}
+.ed-pat-cap small{color:var(--muted);font-family:var(--mono)}
+.ed-pat-cap .ed-b{margin-left:auto}
+.ed-pat-fil{margin:0;line-height:1.5}
+.ed-pat-fil .k,.ed-pat-cmp .k{display:block;font-family:var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ed-pat-fil i{font-style:normal;color:var(--orange);font-family:var(--mono)}
+.ed-pat-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.2rem;color:var(--light)}
+.ed-pat-l li::before{content:'· ';color:var(--muted)}
+.ed-pat-l li.av::before{content:'! ';color:var(--orange);font-weight:700}
+.ed-pat-l li.ok::before{content:'✓ ';color:var(--green)}
+.ed-pat-cmp{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;border-top:1px dashed var(--border);padding-top:.45rem}
+.ed-pat-cmp b{display:block}
+.ed-pat-cmp p{grid-column:1/-1;margin:0;color:var(--light)}
+.ed-pat-acc{display:flex;flex-wrap:wrap;gap:.35rem}
+.ed-pat-comp{margin-top:.6rem}
+.ed-pat-comp h4{font-size:var(--t0);margin:0 0 .3rem}
+.ed-pat-comp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem}
+.ed-pat-comp li{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem}
+
+/* ── Pantalla completa ── El mapa ocupa tota la pantalla, i la definició (els
+   sis camps) s'hi obre al costat. Sense l'API del navegador (iPhone), ocupa
+   tota la finestra i prou. */
+.ed-ple-b{display:flex;gap:.35rem;align-items:center}
+body.ed-ple{overflow:hidden}
+body.ed-ple>nav,body.ed-ple header.cap,body.ed-ple .peu,body.ed-ple main>:not(#editor){display:none !important}
+body.ed-ple #editor{position:fixed;inset:0;z-index:150;margin:0;border:0;border-radius:0;overflow:auto;background:var(--card)}
+body.ed-ple .ed-modes{display:none}
+#editor>#escrit{position:fixed;top:0;right:0;bottom:0;width:min(30rem,92vw);z-index:160;overflow:auto;border-radius:0;
+  box-shadow:-12px 0 32px color-mix(in srgb,var(--text) 18%,transparent)}
+body.ed-ple.ed-ple-def #editor{right:min(30rem,92vw)}
+@media (max-width:760px){body.ed-ple.ed-ple-def #editor{right:0}}
 .ed-pols{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem 1rem;align-items:center}
 .ed-pols-b{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
 .ed-camp{display:inline-flex;align-items:center;gap:.35rem}
@@ -798,7 +833,13 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
 
 <header class="cap"><div class="w">
   <p class="k">Suport al mapa de valor</p>
-  <h1>Les sis passes, <em>i deu regles que es comproven soles</em></h1>
+  <h1>L'eina per construir <em>cada nivell de la teva web</em></h1>
+  <p>Cada nivell del mapa és un nivell de la teva web de valor: l'organització
+  sencera, cada procés, cada rol. Aquí el defineixes, el veus <b>a pantalla completa</b>
+  i en llegeixes <b>els patrons del flux</b> — quin camí fa el valor de veritat, on
+  canvia de mans, on torna enrere — per passar del <b>flux real</b> al <b>flux
+  optimitzat</b>. Les sis passes de Verna Allee i deu regles que es comproven soles
+  et guien mentre ho escrius.</p>
   <p>Això no és un formulari: és <b>el mètode de Verna Allee convertit en una eina</b>.
   Escrius el mapa, i les deu regles el revisen mentre l'escrius. El que diu una
   regla no és una opinió — és un error que ja es va cometre, i per això està
@@ -819,6 +860,10 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
       <div class="ed-tit">
         <h2 id="edTitol">El mapa</h2>
         <p class="s">Clica per crear rols i lliuraments: s'escriu sol als sis camps.</p>
+      </div>
+      <div class="ed-ple-b">
+        <button type="button" class="ed-b" id="edPle" aria-pressed="false" title="Pantalla completa: el mapa i la seva definició, sense res més">⛶ <span>Pantalla completa</span></button>
+        <button type="button" class="ed-b" id="edPleDef" aria-pressed="false" aria-controls="escrit" hidden>☰ La definició</button>
       </div>
       <div class="ed-seg ed-modes" role="group" aria-label="Com el fas">
         <button type="button" id="edModeV" aria-pressed="true">Visual</button>
@@ -1008,6 +1053,17 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
           <input id="edNouProcNom" type="text" autocomplete="off" placeholder="La visita, la comanda…">
         </div>
         <div class="ed-flux-cos" id="edFluxCos"></div>
+      </section>
+
+      <!-- Els patrons: el recorregut concret de cada procés, el que es repeteix
+           entre processos i, amb ideal, el real al costat de l'optimitzat. Es
+           calcula a DIAG.patrons, i es prova a test-vna-motor (M22). -->
+      <section class="ed-patrons" id="edPatrons" aria-labelledby="edPatT">
+        <div class="ed-flux-cap">
+          <h3 id="edPatT">Els patrons del flux</h3>
+          <p class="hint">El recorregut concret de cada procés, el que es repeteix i, si hi ha ideal, el real al costat de l'optimitzat.</p>
+        </div>
+        <div id="edPatCos"></div>
       </section>
 
       <details class="ed-safata" id="edSafata" hidden>
@@ -2287,6 +2343,68 @@ function creaDiagnosi(dep) {
     concentracio: 'S\'optimitza el sistema sencer, o tot passa per un sol rol?', xifres: 'D\'on surt aquest número, i el pot refer la casa amb els seus?',
     noms: 'Què fa aquesta persona o empresa a l\'activitat? Aquest és el rol.', processos: 'Quins altres camins habituals hi ha? I què passa tot el temps?' };
 
+  /* ── 5b · Els patrons de la seqüència ─────────────────────────────────
+     El que es repeteix en l'ordre dels lliuraments, i el flux concret que en
+     surt. No és cap regla: és una lectura que ajuda a veure el recorregut.
+     · El fil: començant pel pas 1, el lliurament que continua qui acaba de
+       rebre. És el recorregut de debò que fa el valor, i el que es mostra.
+     · Relleus: lliuraments que fa qui acaba de rebre, sobre tots els que no
+       són del primer pas. Un relleu baix vol dir que el valor salta de mans.
+     · Compartits: dos lliuraments seguits (A→B i B→C) que es repeteixen en
+       més d'un procés. És la peça que es pot dissenyar una vegada.
+     · Amb ideal, el mateix procés de l'ideal al costat: passos, traspassos
+       tangibles i els rols del fil que l'ideal s'estalvia o afegeix.
+     Funció pura: no muta el que rep. */
+  function filDe(p) {
+    if (!p.passos.length) return { claus: [], rols: [], trencs: [], talls: [] };
+    const claus = [], rols = [], trencs = [], talls = [];
+    let ara = p.passos[0].fluxos.slice(0, 1);
+    ara.forEach(x => { claus.push(x.clau); rols.push(x.de, x.a); });
+    for (let k = 1; k < p.passos.length; k++) {
+      const reben = new Set(ara.map(x => x.a)), seg = p.passos[k].fluxos.filter(x => reben.has(x.de));
+      /* Si ningú continua el que acaba de rebre, el fil no s'acaba: salta de
+         mans, i aquell pas queda marcat com a trenc */
+      const x = (seg.length ? seg : p.passos[k].fluxos)[0];
+      if (!seg.length) { trencs.push(p.passos[k].pas); talls.push(rols.length); rols.push(x.de); }
+      ara = [x];
+      claus.push(x.clau); rols.push(x.a);
+    }
+    return { claus, rols, trencs, talls };
+  }
+  function patrons(m, mIdeal) {
+    const P = processos(m).llista.filter(p => p.passos.length), PI = mIdeal ? processos(mIdeal).llista : [];
+    const bigrames = {};
+    const llista = P.map(p => {
+      let relleus = 0, total = 0;
+      for (let k = 1; k < p.passos.length; k++) {
+        const reben = new Set(p.passos[k - 1].fluxos.map(x => x.a));
+        p.passos[k].fluxos.forEach(x => {
+          total++;
+          if (reben.has(x.de)) relleus++;
+          p.passos[k - 1].fluxos.filter(y => y.a === x.de).forEach(y => {
+            const c = [y.de, y.a, x.a].map(normNom).join('→');
+            const b = bigrames[c] = bigrames[c] || { rols: [y.de, y.a, x.a], processos: [], claus: [] };
+            if (!b.processos.includes(p.id)) b.processos.push(p.id);
+            b.claus = uniq(b.claus.concat([y.clau, x.clau]));
+          });
+        });
+      }
+      const fil = filDe(p), tang = p.passos.flatMap(st => st.fluxos).filter(x => x.mena === 'tangible').length;
+      let ideal = null;
+      const qi = PI.find(x => normNom(x.id) === normNom(p.id) && x.passos.length);
+      if (qi) {
+        const fi = filDe(qi), nr = new Set(fil.rols.map(normNom)), ni = new Set(fi.rols.map(normNom));
+        ideal = { passos: qi.passos.length, traspassos: qi.passos.flatMap(st => st.fluxos).filter(x => x.mena === 'tangible').length, fil: fi,
+          estalvia: uniq(fil.rols.filter(r => !ni.has(normNom(r)))), afegeix: uniq(fi.rols.filter(r => !nr.has(normNom(r)))) };
+      }
+      return { id: p.id, nom: p.nom, passos: p.passos.length, traspassos: tang, relleus, total, fil,
+        cicle: p.retorn.length > 0, coll: p.coll.slice(), forats: p.forats.slice(), salts: p.salts.map(x => x.pas), reentrades: p.reentrades.slice(), ideal };
+    });
+    const compartits = Object.values(bigrames).filter(b => b.processos.length > 1)
+      .sort((a, b) => b.processos.length - a.processos.length || per(a.rols.join('→'), b.rols.join('→')));
+    return { llista, compartits };
+  }
+
   /* ── 6 · Què ressalta cada troballa al llenç ───────────────────────────── */
   const RECEPTA = {
     'regla-reciprocitat': { anima: 'atura', fantasma: 'tornada' }, 'regla-solts': { anima: null, nodeEstil: 'solt' },
@@ -2300,7 +2418,8 @@ function creaDiagnosi(dep) {
     'percepcio-dividida': { anima: null }, 'sense-seq': { anima: 'atura' }, 'seq-orfena': { anima: null }, 'rol-no-declarat': { anima: null },
     'rol-falta': { fantasma: 'node' }, 'rol-propi': { insignia: 'propi' }, 'flux-falta': { fantasma: 'aresta' }, 'flux-sobra': { anima: 'atura' },
     'canvi-mena': { fantasma: 'mena' }, 'sentit-invertit': { fantasma: 'sentit' }, 'mes-traspassos': { anima: 'recorre' },
-    'coll-nou': { anima: 'encalla' }, 'centre-diferent': { anima: 'batec' }, 'zoom-falta': { insignia: 'zoom' }, 'sense-porta': { fantasma: 'porta' }
+    'coll-nou': { anima: 'encalla' }, 'centre-diferent': { anima: 'batec' }, 'zoom-falta': { insignia: 'zoom' }, 'sense-porta': { fantasma: 'porta' },
+    fil: { anima: 'recorre' }, 'patro-compartit': { anima: 'batec' }
   };
   function resalta(t) {
     const e = t.evidencia || {}, r = RECEPTA[t.codi] || RECEPTA[t.codi.replace(/^seq-.*/, 'sense-seq')] || {};
@@ -2312,7 +2431,7 @@ function creaDiagnosi(dep) {
       queden: e.queden || [], regions: e.regions || [], tipus: 'dg-t-' + t.tipus };
   }
 
-  return { normNom, metriques, processos, estructura, conversions, desviacio, nivells, diagnostica, resalta, FONT };
+  return { normNom, metriques, processos, patrons, estructura, conversions, desviacio, nivells, diagnostica, resalta, FONT };
 }
 /*/VS-DIAG*/
 
@@ -5903,7 +6022,7 @@ function creaLlenc() {
       + '<p class="ed-t-font">Font: ' + esc_((t.font && t.font.ref) || '') + (t.font && t.font.llindar ? '. Nota: el llindar és ' + ({ practica: 'de la pràctica del mètode', mixt: 'en part de la pràctica i en part de la casa' }[t.font.llindar.de] || 'de la casa') + ' (' + esc_(t.font.llindar.text) + ')' : '') + '</p><div class="ed-t-b">';
     if (R) h += '<button type="button" class="ed-b" data-acc="rec-ant"' + (R.i ? '' : ' disabled') + '>◂ Anterior</button><button type="button" class="ed-b pri" data-acc="rec-seg">' + (R.i < R.llista.length - 1 ? 'Següent ▸' : 'Acaba') + '</button>'
       + (quiet() ? '' : '<button type="button" class="ed-b" data-acc="rec-pausa">' + (R.play ? '⏸ Pausa' : '▶ Continua') + '</button>') + '<button type="button" class="ed-b" data-acc="rec-atura">■ Atura</button>';
-    else h += (desviacio() ? '' : '<button type="button" class="ed-b" data-acc="escriu" data-id="' + escA(t.id) + '">Escriu-ho com a troballa</button>') + '<button type="button" class="ed-b" data-acc="tanca-tarja">Tanca</button>';
+    else h += (desviacio() || t.sintetic ? '' : '<button type="button" class="ed-b" data-acc="escriu" data-id="' + escA(t.id) + '">Escriu-ho com a troballa</button>') + '<button type="button" class="ed-b" data-acc="tanca-tarja">Tanca</button>';
     h += '</div>';
     T.className = 'ed-tarja g-' + t.gravetat;
     T.hidden = false;
@@ -6153,7 +6272,145 @@ function creaLlenc() {
     h += '<div class="ed-carril" data-sense="1"><div class="ed-carril-cap"><span class="ed-carril-nom">Sense pas <small>· ' + sense.length + '</small></span></div>'
       + (sense.length ? '<div class="ed-safata-f">' + sense.map(k => fitxa(k, ', sense pas')).join('') + '</div>' : (F.length ? '<p class="ed-ok">Tots els lliuraments tenen pas o són «sempre» ✓</p>' : '<p class="ed-flux-buit">Quan hi hagi lliuraments, aquí sortiran els que encara no tenen pas.</p>')) + '</div>';
     posaHTML(cos, h);
+    pintaPatrons();
   }
+  /* ── Els patrons del flux ──────────────────────────────────────────────
+     Sempre el real i, si n'hi ha, l'ideal del mateix nivell: el real és el que
+     passa i l'ideal és el flux optimitzat que s'ha acordat. Només es torna a
+     pintar quan canvia el mapa o el lloc, perquè el pols crida pintaFlux a
+     cada pas i un botó que es redibuixa perd el focus. */
+  function patronsAra() {
+    const cami = LLOC.cami.slice(), rr = MODEL.resol(ARBRE, { vista: 'real', cami });
+    const real = MODEL.llegeixTextos(rr.nivell.t);
+    let ideal = null;
+    if (ARBRE.ideal) { const ri = MODEL.resol(ARBRE, { vista: 'ideal', cami }); if (ri.existeix !== false && ri.cami.length === cami.length && ri.nivell) ideal = MODEL.llegeixTextos(ri.nivell.t); }
+    return DIAG.patrons(real, ideal);
+  }
+  function pintaPatrons() {
+    const cos = $('#edPatCos');
+    if (!cos) return;
+    const k = VERSIO + '|' + LLOC.cami.join('\u0001') + '|' + !!ARBRE.ideal;
+    if (S.patK === k) return;
+    S.patK = k;
+    const P = patronsAra(), fl = (rs, talls) => rs.map((r, i) => (i ? ((talls || []).includes(i) ? ' <i>⋯</i> ' : ' → ') : '') + '«' + esc_(curt(r, 22)) + '»').join('');
+    S.patrons = P;
+    let h = '';
+    if (!P.llista.length) h = '<p class="ed-flux-buit">Quan hi hagi un procés seqüenciat, aquí sortirà el seu recorregut i el que s\'hi repeteix.</p>';
+    else {
+      h += '<div class="ed-pat-g">';
+      P.llista.forEach(p => {
+        const tr = p.fil.trencs, l = [];
+        if (p.total) l.push('<li class="' + (p.relleus === p.total ? 'ok' : 'av') + '">' + p.relleus + ' de ' + p.total + ' lliuraments els fa qui acaba de rebre'
+          + (tr.length ? '; al pas ' + tr.join(', ') + ' el valor salta de mans' : '') + '</li>');
+        l.push(p.cicle ? '<li class="ok">Tanca el cercle: torna a qui l\'ha començat</li>' : '<li>No torna a qui l\'ha començat</li>');
+        if (p.coll.length && p.passos > 2) l.push('<li class="av">Passa a tots els passos per ' + fl(p.coll) + '</li>');
+        if (p.forats.length) l.push('<li class="av">Pas buit: ' + p.forats.join(', ') + '</li>');
+        if (p.reentrades.length) l.push('<li>Hi torna a entrar: ' + fl(p.reentrades) + '</li>');
+        h += '<article class="ed-pat" data-proc="' + escA(p.id) + '"><div class="ed-pat-cap"><b>' + esc_(p.nom) + '</b><small>' + pl(p.passos, 'pas', 'passos') + ' · ' + pl(p.traspassos, 'traspàs', 'traspassos') + '</small>'
+          + '<button type="button" class="ed-b petit" data-acc="pt-recorre" data-id="' + escA(p.id) + '">▶ Recorre\'l</button></div>'
+          + '<p class="ed-pat-fil"><span class="k">El fil</span>' + fl(p.fil.rols, p.fil.talls) + (tr.length ? ' <i>· salta al pas ' + tr.join(', ') + '</i>' : '') + '</p>'
+          + '<ul class="ed-pat-l">' + l.join('') + '</ul>';
+        if (p.ideal) {
+          const I = p.ideal, dif = [];
+          if (I.estalvia.length) dif.push('l\'optimitzat s\'estalvia ' + fl(I.estalvia));
+          if (I.afegeix.length) dif.push('hi afegeix ' + fl(I.afegeix));
+          h += '<div class="ed-pat-cmp"><div><span class="k">Real</span><b>' + pl(p.passos, 'pas', 'passos') + ' · ' + pl(p.traspassos, 'traspàs', 'traspassos') + '</b></div>'
+            + '<div><span class="k">Optimitzat (ideal)</span><b>' + pl(I.passos, 'pas', 'passos') + ' · ' + pl(I.traspassos, 'traspàs', 'traspassos') + '</b></div>'
+            + '<p>' + (dif.length ? 'Al fil, ' + dif.join(', i ') + '.' : 'El fil passa pels mateixos rols.') + '</p></div>';
+        }
+        h += '<div class="ed-pat-acc"><button type="button" class="ed-b petit pri" data-acc="pt-fil" data-id="' + escA(p.id) + '">Mostra el fil</button>'
+          + (p.ideal ? '<button type="button" class="ed-b petit" data-acc="pt-vista" data-v="real" data-id="' + escA(p.id) + '">El real</button><button type="button" class="ed-b petit" data-acc="pt-vista" data-v="ideal" data-id="' + escA(p.id) + '">L\'optimitzat</button>' : '')
+          + '</div></article>';
+      });
+      h += '</div>';
+      if (!P.llista.some(p => p.ideal)) h += '<p class="hint">' + (ARBRE.ideal ? 'L\'ideal d\'aquest nivell encara no té cap procés seqüenciat: quan en tingui, aquí sortirà el real al costat de l\'optimitzat.' : 'Sense ideal no hi ha flux optimitzat per comparar: «Ideal», a dalt, el comença a partir del real.') + '</p>';
+    }
+    if (P.compartits.length) h += '<div class="ed-pat-comp"><h4>Es repeteix en més d\'un procés</h4><ul>' + P.compartits.slice(0, 6).map((c, i) => {
+      const noms = c.processos.map(id => '«' + esc_((P.llista.find(x => x.id === id) || {}).nom || id) + '»').join(' i ');
+      return '<li>' + fl(c.rols) + ' <small>· a ' + noms + '</small><button type="button" class="ed-b petit" data-acc="pt-comp" data-i="' + i + '">Mostra-ho</button></li>';
+    }).join('') + '</ul></div>';
+    posaHTML(cos, h);
+  }
+  function mostraPatro(codi, que, perque, ev, sub) {
+    const t = { id: codi + '@' + LLOC.vista + ':' + LLOC.cami.join('/') + '#' + sub, codi, capa: LLOC.vista === 'desviacio' ? 'real' : LLOC.vista,
+      nivell: { cami: LLOC.cami.slice(), rol: null }, gravetat: 'nota', tipus: 'agil', sintetic: true, que, perque,
+      pregunta: codi === 'fil' ? 'És aquest el recorregut que voleu, o el que ha anat sortint?' : 'Es podria dissenyar una sola vegada i fer-la servir als dos processos?',
+      font: { de: 'casa', ref: 'Lectura de la seqüència, de la casa: no és cap regla del mètode' }, evidencia: ev };
+    t.resalta = DIAG.resalta(t);
+    return mostra(t);
+  }
+  $('#edPatCos').addEventListener('click', e => {
+    const b = e.target.closest('[data-acc]');
+    if (!b) return;
+    const acc = b.getAttribute('data-acc'), P = S.patrons || { llista: [], compartits: [] }, p = P.llista.find(x => x.id === b.getAttribute('data-id'));
+    if (acc === 'pt-recorre' && p) { llencAVista(); reprodueix({ proces: p.id }); }
+    else if (acc === 'pt-fil' && p) {
+      const tr = p.fil.trencs;
+      mostraPatro('fil', 'El fil de «' + p.nom + '»: ' + p.fil.rols.map((r, i) => (i ? (p.fil.talls.includes(i) ? ' ⋯ ' : ' → ') : '') + r).join('') + '.',
+        tr.length ? 'Al pas ' + tr.join(', ') + ' qui lliura no és qui acaba de rebre: el valor salta de mans, i és on sol esperar.' : 'Cada pas el continua qui acaba de rebre: el valor no salta de mans.',
+        { proces: p.id, fluxos: p.fil.claus, rols: [...new Set(p.fil.rols)] }, p.id);
+    } else if (acc === 'pt-vista' && p) {
+      const v = b.getAttribute('data-v'), r = document.querySelector('input[name=edVista][value=' + v + ']');
+      if (r && !r.checked) { r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true })); }
+      llencAVista(); reprodueix({ proces: p.id });
+      anuncia((v === 'ideal' ? 'L\'optimitzat' : 'El real') + ' de «' + p.nom + '», pas a pas');
+    } else if (acc === 'pt-comp') {
+      const c = P.compartits[Number(b.getAttribute('data-i'))];
+      if (c) mostraPatro('patro-compartit', c.rols.join(' → ') + ' es repeteix a ' + c.processos.length + ' processos.',
+        'Dos lliuraments seguits que es repeteixen són una peça del flux: es pot dissenyar una vegada i fer-la servir allà on torna a sortir.',
+        { fluxos: c.claus, rols: c.rols }, c.rols.join('>'));
+    }
+  });
+
+  /* ── Pantalla completa ─────────────────────────────────────────────────
+     El mapa ocupa tota la pantalla. «La definició» hi porta els sis camps al
+     costat (es mouen dins de l'editor i tornen al seu lloc en sortir), perquè
+     dibuixar i escriure el mapa es puguin fer alhora. */
+  const escrit = $('#escrit'), llocEscrit = document.createComment('escrit');
+  /* A pantalla completa, el llenç s'acaba on s'acaba la pantalla: el que hi ha
+     a dalt (títol, eines, abast) fa una alçada o una altra segons l'amplada */
+  function ajustaPle() {
+    if (!document.body.classList.contains('ed-ple')) { llenc.style.height = ''; return; }
+    const dalt = llenc.getBoundingClientRect().top - ed.getBoundingClientRect().top + ed.scrollTop;
+    llenc.style.height = Math.max(340, Math.round(innerHeight - dalt - 14)) + 'px';
+  }
+  window.addEventListener('resize', () => { if (document.body.classList.contains('ed-ple')) ajustaPle(); });
+  function posaDef(on) {
+    const ple = document.body.classList.contains('ed-ple');
+    on = !!on && ple;
+    document.body.classList.toggle('ed-ple-def', on);
+    $('#edPleDef').setAttribute('aria-pressed', String(on));
+    if (on && escrit.parentNode !== ed) { escrit.before(llocEscrit); ed.appendChild(escrit); }
+    else if (!on && llocEscrit.parentNode) llocEscrit.replaceWith(escrit);
+    ajustaPle(); S.calEncaixa = true; dibuixa();
+    return on;
+  }
+  function posaPle(on) {
+    on = !!on;
+    const b = document.body;
+    if (on === b.classList.contains('ed-ple')) return on;
+    if (!on) posaDef(false);
+    b.classList.toggle('ed-ple', on);
+    $('#edPle').setAttribute('aria-pressed', String(on));
+    $('#edPle span').textContent = on ? 'Surt de la pantalla completa' : 'Pantalla completa';
+    $('#edPleDef').hidden = !on;
+    const de = document.documentElement;
+    try {
+      if (on && de.requestFullscreen && !document.fullscreenElement) { const q = de.requestFullscreen(); if (q && q.catch) q.catch(() => {}); }
+      else if (!on && document.fullscreenElement && document.exitFullscreen) { const q = document.exitFullscreen(); if (q && q.catch) q.catch(() => {}); }
+    } catch (x) { /* sense API: ocupa la finestra i prou */ }
+    if (on && S.mode !== 'visual') posaMode('visual');
+    if (on) ed.scrollTop = 0;
+    ajustaPle(); S.calEncaixa = true; dibuixa();
+    anuncia(on ? 'Pantalla completa. «La definició» obre els sis camps al costat; Esc o el mateix botó en surten' : 'Has sortit de la pantalla completa');
+    return on;
+  }
+  $('#edPle').addEventListener('click', () => posaPle(!document.body.classList.contains('ed-ple')));
+  $('#edPleDef').addEventListener('click', () => { if (posaDef(!document.body.classList.contains('ed-ple-def'))) { const x = escrit.querySelector('textarea,input'); if (x) x.focus({ preventScroll: true }); } });
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('ed-ple')) posaPle(false); });
+  /* Sense l'API, Esc també en surt (si cap altra cosa no l'ha fet servir) */
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !e.defaultPrevented && !document.fullscreenElement && document.body.classList.contains('ed-ple')) posaPle(false); });
+
   function obreNouProc() { const c = $('#edNouProcCaixa'); c.hidden = false; $('#edNouProcNom').focus(); }
   $('#edNouProc').addEventListener('click', obreNouProc);
   $('#edFluxCos').addEventListener('click', e => { if (e.target.closest('[data-acc=nou-proc]')) obreNouProc(); });
@@ -6364,7 +6621,10 @@ function creaLlenc() {
     encallaVisual: fet(r => encallaVisual(r || null)),
     mostra: fet(x => mostra(typeof x === 'string' ? diagnosi().troballes.find(t => t.id === x) : x)),
     recorre: fet(recorre), atura: fet(() => { aturaMostra(); atura(); return true; }),
-    indicador: () => indicador()
+    indicador: () => indicador(),
+    ple: fet(on => posaPle(on === undefined ? !document.body.classList.contains('ed-ple') : on)),
+    definicio: fet(on => posaDef(on)),
+    patrons: () => S.patrons
   });
 
   return { dibuixa, panells, encaixa, avis };
