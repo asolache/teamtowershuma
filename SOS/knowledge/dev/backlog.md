@@ -58,6 +58,14 @@ els serveis són els processos; les connexions es proposen per paraules del
 mapa. Descarrega `web.json` (`tt-web-1`). Funció pura `webDelMapa` (bloc
 `VS-WEB`), amb vint proves al motor, que corre a la CI.
 
+**Fet, i prioritat de l'Àlvar:** la web de debò surt del mapa. El botó
+«Descarrega la web (.zip)» de la pestanya Web, o `SOS/tools/web-del-mapa.js`
+des de Node, amb el mateix codi (bloc `VS-SITE`). HTML W3C validat i sense
+JavaScript, JSON-LD a cada pàgina (la web és la base de dades), formularis
+de Netlify que arriben per correu, zip determinista i `permaweb.json` amb
+l'empremta SHA-256 de cada fitxer. Vint proves al motor.
+Pendent: publicar a IPFS o Arweave, i els comptes de debò.
+
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.
 Camí A: ho tenim nosaltres, amb porta de sortida. Camí B: «Deploy to Netlify»
 al GitHub del client. La plantilla que llegeix `web.json`. La IA amb la clau
