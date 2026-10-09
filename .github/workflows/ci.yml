@@ -311,6 +311,12 @@ jobs:
       - name: La pàgina d'IA compleix el que promet
         run: node SOS/tools/check-ia.js
 
+      # `/conecta/` copia les tasques d'IA del SOS per ensenyar-ne el cost real.
+      # Si el SOS canvia un model o un sostre i la pàgina no, el cost que ensenya
+      # ja no és el de debò. I cada categoria ha de tenir una opció lliure.
+      - name: Els serveis connectables i el cost de l'IA diuen la veritat
+        run: node SOS/tools/check-conecta.js
+
       # Els municipis surten de les taules de l'app, que és qui les fa servir
       # per construir l'arbre de territoris. Dues llistes divergirien i la que
       # es quedaria enrere seria la del directori, que ningú manté.
