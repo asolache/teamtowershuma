@@ -137,10 +137,17 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
   ok(!a.errs.length && !b2.errs.length && !c.errs.length, 'sense errors de pàgina');
 }
 
-console.log('\n4 · El menú funciona sense JavaScript i a mòbil');
+console.log('\n4 · Els desplegables del menú, i a mòbil');
 {
   const { ctx, page, errs } = await obre('matriu.html', 390, 800);
   const r = await page.evaluate(async () => {
+    /* A mòbil, des del 05/10/2026, les cinc portes viuen darrere un botó
+       «Menú»: cinc no caben en una barra curta a 360 px i les tres maneres de
+       fer-ho sense script es van mesurar i cap aguantava. Sense prémer-lo
+       abans, els `<details>` no tenen caixa i això deia que el panell no
+       ocupa lloc —que és veritat, i no és el defecte que es busca aquí. */
+    const ms = document.querySelector('.tt-nav .tn-ms');
+    if (ms && getComputedStyle(ms).display !== 'none') ms.click();
     const g = document.querySelector('.tt-nav .tn-g');
     /* `open` i no l'alçada: `<details>` amaga el contingut amb un mecanisme
        intern del navegador i mesurar-lo depèn de com el pinti cadascun. El que
@@ -154,7 +161,7 @@ console.log('\n4 · El menú funciona sense JavaScript i a mòbil');
       desborda: document.documentElement.scrollWidth > window.innerWidth + 1 };
   });
   ok(r.tag === 'DETAILS',
-    'els desplegables són <details>: el navegador ja en fa un component accessible, i no cal script');
+    'cada porta és un <details>: el navegador ja en fa un component accessible amb teclat');
   ok(r.tancat === false && r.obert === true && r.alt > 0,
     'arrenca tancat, un clic l\'obre i llavors el panell ocupa lloc');
   ok(!r.desborda, 'i a 390px la pàgina no desborda de costat');
