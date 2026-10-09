@@ -161,6 +161,65 @@ footer a{color:var(--indigo);text-decoration:none}
 .env-ok{color:var(--green);font-size:.86rem;margin:.5rem 0 0}
 .env-ko{color:var(--orange);font-size:.86rem;margin:.5rem 0 0}
 
+/* ── Els botons de pas, a tota mida ─────────────────────────────────────────
+   `.acts` i `.btn-g` eren al marcatge i no tenien cap regla: «Enrere» i
+   «Següent» sortien com dos botons iguals i desalineats, i el principal no es
+   distingia. Ara el que fa avançar és ple i l'altre és fantasma. */
+.acts{display:flex;gap:.6rem;justify-content:space-between;align-items:center;margin-top:1.4rem}
+.acts>span:empty{flex:0}
+.acts .btn{justify-content:center}
+.btn-g{background:transparent;border-color:transparent;color:var(--muted)}
+.btn-g:hover{color:var(--text);border-color:var(--border)}
+[data-next],#doDx,#bNet{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);font-weight:600;flex:1;max-width:320px;margin-left:auto}
+[data-next]:hover,#doDx:hover,#bNet:hover{filter:brightness(1.08);border-color:var(--indigo)}
+input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.6rem .75rem;font:inherit;font-size:.92rem}
+/* El que no cal per respondre, plegat. Ho munta el JS (`plegaOpcionals`). */
+#result .acts{flex-wrap:wrap;justify-content:flex-start}
+#result .btn-g{border-color:var(--border);color:var(--text)}
+#bNet{margin-left:0}
+.mes{margin:.2rem 0 1rem;border:1px dashed var(--border);border-radius:10px;padding:.2rem .8rem}
+.mes>summary{cursor:pointer;color:var(--indigo);font-size:.88rem;font-weight:600;padding:.6rem 0;list-style:none}
+.mes>summary::-webkit-details-marker{display:none}
+.mes>summary::before{content:'+ '}
+.mes[open]>summary::before{content:'− '}
+
+/* ── Al mòbil, com una app ──────────────────────────────────────────────────
+   Una pantalla per pas: la capçalera només al primer, cap targeta dins de
+   targeta (la caixa ocupava 40 px d'amplada que el text necessitava), el
+   progrés enganxat a dalt i el botó d'avançar enganxat a baix, a l'abast del
+   polze. Les descripcions de les caselles, a dues línies, i senceres a la
+   triada. */
+@media(max-width:640px){
+  header{padding:1.2rem 1rem .9rem}
+  header h1{font-size:1.45rem;margin-bottom:.35rem}
+  header p{font-size:.9rem;line-height:1.5}
+  header nav{margin-top:.6rem;font-size:.82rem}
+  body:not([data-pas="1"]) header{display:none}
+  .wrap{padding:0 0 2rem}
+  .prog{position:sticky;top:var(--nav-h,0px);z-index:5;margin:0;padding:.7rem 1rem;background:var(--bg);border-bottom:1px solid var(--border)}
+  .step{background:transparent;border:0;border-radius:0;padding:1.1rem 1rem 0;margin:0}
+  .step h2{font-size:1.25rem}
+  .opts{grid-template-columns:1fr;gap:.45rem}
+  .opt{padding:.75rem .85rem;min-height:52px}
+  .opt .o-t{font-size:.95rem}
+  .opt .o-d{font-size:.8rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .opt.sel .o-d{-webkit-line-clamp:unset;display:block}
+  input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px;padding:.75rem .8rem}
+  .acts{position:sticky;bottom:0;z-index:5;margin:1.2rem -1rem 0;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--border)}
+  [data-next],#doDx{max-width:none;min-height:50px;font-size:1rem}
+  .btn-g{padding:.65rem .6rem}
+  #result{padding:1rem}
+  .dx,.sec,.send{padding:1.1rem 1rem;border-radius:12px}
+  .dx h2{font-size:1.25rem}
+  .send-btns{flex-direction:column}
+  #result .acts{position:static;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0 0;padding:0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+  #result .btn{width:100%;justify-content:center;padding:.65rem .5rem}
+  .env .acts{grid-template-columns:1fr}
+  #bNet{min-height:50px;font-size:1rem}
+  footer{padding:1.5rem 1rem 2rem}
+}
+
 </style>
 </head>
 <body>
@@ -331,7 +390,7 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <section class="step" id="s2" hidden>
 <h2 data-i18n="dx.s2.h">2 · On ho aplicaríem</h2>
-<p class="sub" data-i18n="dx.s2.sub">Això no canvia què et recomanem —ho ha decidit el pas anterior—: canvia què cal preguntar-te i com es llegeix el diagnòstic.</p>
+<p class="sub" data-i18n="dx.s2.sub">Només per saber què preguntar-te i com llegir el diagnòstic.</p>
 <!--FORM-ORG-->
 <div class="f">
 <label data-i18n="fo.l.tipus">Tipus d'organització *</label>
@@ -451,7 +510,7 @@ footer a{color:var(--indigo);text-decoration:none}
 <div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
 <p class="err" id="e4" data-i18n="dx.e4">Ens falta el nom i un correu que sembli un correu.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="3" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" id="doDx" data-i18n="dx.veure">Veure el diagnòstic sencer →</button></div>
+<div class="acts"><button type="button" class="btn btn-g" data-back="3" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" id="doDx" data-i18n="dx.veure">Veure el diagnòstic →</button></div>
 </section>
 
 </form>
@@ -752,7 +811,7 @@ ca: {
   'dx.s4.sub':'Només falta saber a qui l\'adrecem. No es crea cap compte i no surt res d\'aquest navegador fins que no ho envies tu.',
   'dx.e4':'Ens falta el nom i un correu que sembli un correu.',
   'dx.s2.h':'2 · On ho aplicaríem',
-  'dx.s2.sub':'Això no canvia què et recomanem —ho ha decidit el pas anterior—: canvia què cal preguntar-te i com es llegeix el diagnòstic.',
+  'dx.s2.sub':'Només per saber què preguntar-te i com llegir el diagnòstic.',
   'dx.e2':'Tria quin tipus d\'organització sou i digues on sou.',
   'dx.s1.h':'1 · Què vols que passi',
   'dx.s1.sub':'És la pregunta que decideix tota la resta. Tria la que més s\'assembli al que et va portar aquí.',
@@ -796,7 +855,7 @@ ca: {
   'dx.e3':'Digue\'ns qui pot dir que sí: és el que ens permet preparar-ho bé.',
   'dx.seg':'Següent →',
   'dx.enrere':'← Enrere',
-  'dx.veure':'Veure el diagnòstic sencer →',
+  'dx.veure':'Veure el diagnòstic →',
   'dx.r.proposa':'El que proposaríem',
   'dx.r.primer':'El primer pas',
   'dx.r.teva':'La teva organització',
@@ -818,7 +877,8 @@ ca: {
   'dx.b.copiat':'Copiat ✓',
   'dx.b.nocopia':'No s\'ha pogut copiar',
   'dx.b.baixa':'Descarrega\'l',
-  'dx.b.torna':'Torna a començar'
+  'dx.b.torna':'Torna a començar',
+  'dx.mes':'Més detalls (opcional)'
 },
 es: {
 /*DIAG-I18N-ES*/
@@ -974,7 +1034,7 @@ es: {
   'dx.s4.sub':'Solo falta saber a quién se lo dirigimos. No se crea ninguna cuenta y no sale nada de este navegador hasta que lo envíes tú.',
   'dx.e4':'Nos falta el nombre y un correo que parezca un correo.',
   'dx.s2.h':'2 · Dónde lo aplicaríamos',
-  'dx.s2.sub':'Esto no cambia qué te recomendamos —lo ha decidido el paso anterior—: cambia qué hay que preguntarte y cómo se lee el diagnóstico.',
+  'dx.s2.sub':'Solo para saber qué preguntarte y cómo leer el diagnóstico.',
   'dx.e2':'Elige qué tipo de organización sois y di dónde estáis.',
   'dx.s1.h':'1 · Qué quieres que pase',
   'dx.s1.sub':'Es la pregunta que decide todo lo demás. Elige la que más se parezca a lo que te trajo aquí.',
@@ -1018,7 +1078,7 @@ es: {
   'dx.e3':'Dinos quién puede decir que sí: es lo que nos permite prepararlo bien.',
   'dx.seg':'Siguiente →',
   'dx.enrere':'← Atrás',
-  'dx.veure':'Ver el diagnóstico entero →',
+  'dx.veure':'Ver el diagnóstico →',
   'dx.r.proposa':'Lo que propondríamos',
   'dx.r.primer':'El primer paso',
   'dx.r.teva':'Tu organización',
@@ -1040,7 +1100,8 @@ es: {
   'dx.b.copiat':'Copiado ✓',
   'dx.b.nocopia':'No se ha podido copiar',
   'dx.b.baixa':'Descárgalo',
-  'dx.b.torna':'Vuelve a empezar'
+  'dx.b.torna':'Vuelve a empezar',
+  'dx.mes':'Más detalles (opcional)'
 }
 };
 /* Es llegeixen les dues claus i s'escriuen les dues: la portada desa la tria
@@ -1093,6 +1154,7 @@ function llegeixPont(){
    L'arreglo és dir de quins passos parlem: els del formulari. */
 function showStep(n){
   pas=n;
+  document.body.dataset.pas=n;
   $$('#dxForm .step').forEach(s=>s.hidden=s.id!=='s'+n);
   $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1260,6 +1322,7 @@ $('#doDx').onclick=()=>{
   $('#dxForm').style.display='none';
   $('#prog').style.display='none';
   $('#result').style.display='block';
+  document.body.dataset.pas='r';
   const subj='Diagnòstic d\'organització · '+($('#orgNom').value.trim()||$('#nom').value.trim());
   $('#bSend').href='mailto:'+mailAddr()+'?subject='+encodeURIComponent(subj)+
     '&body='+encodeURIComponent(buildSummary(current));
@@ -1343,6 +1406,33 @@ function dxAplicaLang(l){
 }
 $$('.lang-b').forEach(b=>b.onclick=()=>dxAplicaLang(b.dataset.lang));
 
+/* EL QUE ÉS OPCIONAL, PLEGAT. Els camps venen dels blocs compartits
+   (`build-formularis.js`) i el territori els necessita oberts; aquí no
+   canvien el diagnòstic, així que es pleguen sota «Més detalls» i el pas es
+   respon amb una pantalla. Es mouen, no es copien: els ids i els valors són
+   els mateixos i el resum els llegeix igual. */
+function plegaOpcionals(){
+  [['s2',['web','dediqueu','comarca','persones']],['s4',['tel','carrec']]].forEach(([pasId,ids])=>{
+    const sec=$('#'+pasId);if(!sec)return;
+    const camps=ids.map(id=>{const e=$('#'+id);return e?e.closest('.f'):null;}).filter(Boolean);
+    if(!camps.length)return;
+    const d=document.createElement('details');d.className='mes';
+    d.innerHTML='<summary data-i18n="dx.mes">Més detalls (opcional)</summary>';
+    const ref=sec.querySelector('.err');
+    sec.insertBefore(d,ref);
+    camps.forEach(f=>{const g=f.parentElement;d.appendChild(f);
+      if(g&&g.classList.contains('grid2')&&!g.children.length)g.remove();});
+  });
+}
+/* L'alçada del menú enganxat, perquè el progrés s'enganxi just a sota. */
+function mesuraNav(){
+  const n=document.querySelector('.tt-nav');
+  document.documentElement.style.setProperty('--nav-h',(n?n.offsetHeight:0)+'px');
+}
+addEventListener('resize',mesuraNav);
+
+plegaOpcionals();
+mesuraNav();
 llegeixPont();
 showStep(1);
 dxAplicaLang(DX_LANG);

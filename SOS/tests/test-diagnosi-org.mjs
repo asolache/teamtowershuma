@@ -211,6 +211,33 @@ console.log('\n5b · El que es tria es veu');
   await v.close();
 }
 
+/* ── 5d · Al mòbil, com una app ─────────────────────────────────────────── */
+console.log('\n5d · Al mòbil');
+{
+  const m = await b.newPage({ viewport: { width: 390, height: 844 } });
+  m.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await m.goto(url('diagnostic-org.html'));
+  await m.waitForFunction(() => window.__DXORG);
+  const r = await m.evaluate(() => {
+    const out = { amples: [] };
+    const mira = () => out.amples.push(document.documentElement.scrollWidth);
+    mira();
+    document.querySelector('#objTipus .opt[data-v="web"]').click();
+    window.__DXORG.showStep(2); mira();
+    const bar = document.querySelector('#s2 .acts');
+    out.enganxat = getComputedStyle(bar).position === 'sticky';
+    out.plegats = ['web', 'comarca', 'persones'].every(id => !!document.querySelector('#' + id).closest('details.mes'));
+    out.municipiVisible = !document.querySelector('#municipi').closest('details');
+    out.capcalera = getComputedStyle(document.querySelector('header')).display;
+    return out;
+  });
+  ok(r.amples.every(w => w <= 390), 'cap pas fa scroll de costat · ' + r.amples.join(', ') + ' px');
+  ok(r.enganxat, 'el botó d\'avançar queda enganxat a baix, a l\'abast del polze');
+  ok(r.plegats && r.municipiVisible, 'el que és opcional es plega i el que cal respondre es veu');
+  ok(r.capcalera === 'none', 'i a partir del pas 2 la capçalera deixa lloc al formulari');
+  await m.close();
+}
+
 /* ── 5c · La data s'escull, i es llegeix ────────────────────────────────── */
 console.log('\n5c · La data');
 {
