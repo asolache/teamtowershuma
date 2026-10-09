@@ -13865,7 +13865,10 @@ const MODAL_ROUTES={
   kit:{open:()=>openNarrativeKit(),label:'Kit narratiu Molekulon'},
   pings:{open:()=>openMatchesModal(),label:'Pings ecosistema'},
   mentoria:{open:()=>{const n=state.activePersona;if(!n){toast('Identifica\'t primer per preparar la mentoria');return false;}openMentoringPlan(n);},label:'La meva mentoria'},
-  eines:{open:()=>openEines(),label:'Les eines del SOS'}
+  eines:{open:()=>openEines(),label:'Les eines del SOS'},
+  /* Els diagnòstics acaben amb «munta el vostre node»: qui hi clica ja ha
+     decidit, i ha de caure a l'assistent i no a la portada. */
+  node:{open:()=>openLocateWizard(),label:'Munta el teu node'}
 };
 let _routeLock=false;          // evita que aplicar una ruta en torni a escriure una altra
 let _routeModal=null;          // quin modal ha obert la ruta actual
