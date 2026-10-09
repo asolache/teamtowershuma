@@ -102,8 +102,12 @@ const GRUPS = [
        la llista de l'app, com les de l'arrel: és una pàgina de venda. */
     ['/mapa-web/', T('Mapa i web en una hora', 'Mapa y web en una hora'),
       T('El servei: el mapa del teu negoci i la web, en una sessió', 'El servicio: el mapa de tu negocio y la web, en una sesión')],
+    /* El prototip de serveis connectables, també en esborrany i `noindex`:
+       la pila per rol, el catàleg de serveis i el cost real de l'IA. */
+    ['/conecta/', T('Serveis connectables', 'Servicios conectables'),
+      T('La teva web amb la teva IA, el CRM i els cobraments', 'Tu web con tu IA, el CRM y los cobros')],
     ['cataleg.html', T('El catàleg', 'El catálogo'),
-      T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
+      T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
     ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
       T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
     /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
