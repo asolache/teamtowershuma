@@ -310,6 +310,114 @@ la millora contínua del SOS.
 **Com es tanca:** els tres pilots fets, amb les hores i el cost d'IA de cada
 flux apuntats, i el que se n'aprengui escrit com a veda.
 
+### `for-ai/` · el contracte de la IA, antifràgil (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «actualitzar els arxius de `SOS/knowledge/for-ai` per a
+la màxima antifragilitat». Que cada error que una IA cometi aquí deixi el
+contracte més fort, i no només una veda més al codex que ningú li passa.
+
+**Avui** hi ha dos fitxers (`README.md`, el contracte de treball, i
+`mapa-de-valor.md`, el contracte del VNA) i **cap guarda els llegeix**:
+
+- El README ja va ser un mapa fals una vegada (els 18 vedes, `localStorage`,
+  números de línia) i el que el va arreglar va ser una revisió a mà. Encara hi
+  queden afirmacions que poden caducar sense que res ho avisi: «el repositori
+  no té `package.json`», les guardes a `SOS/tools/check-*.js`, `run.mjs`, la
+  ruta de Chromium escrita a mà, `pushLedger()`, `verifyNoLeak`, `window.__SOS`.
+- `mapa-de-valor.md` diu que `aiPlanValueFlows()` i `aiSuggestMap()` criden
+  l'API **sense** el mètode. Si és veritat, el contracte no arriba al model que
+  l'ha de complir; si ja no ho és, el fitxer menteix.
+- Les deu regles són en prosa aquí i executables a `build-vna-suport.js`
+  (`test(mapa)`): dues còpies de la mateixa llista sense cap guarda que les
+  compari, que és el que el mateix README prohibeix.
+
+**El que es demana:**
+
+1. **Una guarda `check-for-ai.js`** que comprovi que tot el que els fitxers
+   anomenen existeix: fitxers, funcions, rutes i vedes citades (i que el
+   número de veda és el que diu). Provada trencant-la a posta.
+2. **Una sola font de les deu regles**, o una guarda que compari la prosa amb
+   les executables (nombre, ordre, llindars).
+3. **El contracte, al model.** Que les crides IA que fan mapes portin les
+   seccions 1-3 de `mapa-de-valor.md`, generades del fitxer i no copiades; si
+   no, corregir el que diu el fitxer.
+4. **Un bucle d'aprenentatge:** quan una IA s'equivoca de debò aquí, l'error
+   entra a «Els antipatrons que hem comès de debò» amb la seva veda i la data,
+   i la guarda que l'hauria aturat. Res d'antipatrons hipotètics.
+5. **Data i font a cada afirmació que caduca**, o fora del fitxer (es genera o
+   es cerca, com ja diu el README per a les xifres).
+
+**Com es tanca:** la guarda al CI i en verd; trencar a posta una referència del
+README (un fitxer o una funció esborrada) la fa petar; les regles no poden
+divergir sense que el CI ho digui; i el que es trobi caducat, corregit i
+explicat aquí amb la seva mesura.
+
+### La passarel·la de pagament · cobrar el servei i els costos que passen (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «desenvolupament de passarel·la de pagament per a
+pagament de serveis com Claude Code, Netlify, GitHub si es requereix».
+
+**Avui no es cobra res des de la web.** Cap pàgina té passarel·la (`SOS/compra.html`
+ho diu en clar: «Aquí no es cobra res»), `/mapa-web/` diu que una botiga amb
+passarel·la és un projecte a part, i l'únic que corre al servidor és la funció de
+vora `netlify/edge-functions/anthropic-proxy.js`. No hi ha `netlify/functions/`.
+
+**El que es demana:** que un client pugui pagar el servei i, quan el projecte ho
+demana, **els costos que passen** (IA, allotjament, repositori) **sense marge
+amagat**: cada línia diu de quin servei ve i quant ha costat de debò. Encaixa amb
+el catàleg sense preus d'aquest mateix bloc: el que es cobra és el cost d'IA de
+cada flux més les hores, i la passarel·la és on aquest desglossament es paga.
+
+1. **Triar el proveïdor** (Stripe o un de proper; decisió de l'Àlvar). Ha de
+   fer pagament únic i **quota recurrent**, i factura amb les dades fiscals.
+2. **Una funció de Netlify** que creï la sessió de pagament i rebi l'avís
+   (webhook) de pagat. Les claus, només a les variables d'entorn: **cap clau al
+   client**, com al CRM.
+3. **El cost real per flux**, sortit del que el SOS ja apunta (model, tokens,
+   hores) i no d'una taula escrita a mà. Si no es pot mesurar, no es cobra com a
+   cost: va a les hores.
+4. **Costos de tercers a nom del client quan es pugui.** El repositori i el
+   Netlify a nom del client (ja és el que diu l'oferta) són més nets que
+   revendre'ls; la passarel·la només cobra el que no es pot posar a nom seu.
+
+**Com es tanca:** un pagament de prova de punta a punta en mode test; la factura
+desglossada per fluxos; cap clau al repositori (amb una guarda que ho busqui), i
+el primer pilot cobrat així. Els imports no viuen aquí.
+
+### Ingressos recurrents · CRM, API i comissions (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «el o els sistemes tipus CRM o APIs, comissions, per
+generar ingressos recurrents dels serveis de teamtowershuma».
+
+**Avui:** `SOS/crm.html` calcula el potencial de cada lead però viu a
+`localStorage` d'un sol navegador; el pla del CRM que s'actualitza sol (més amunt,
+«Un CRM que s'actualitza sol») ja diu que el mur és no tenir servidor. El
+«sistema viu» com a quota s'està validant amb els pilots, sense preu encara.
+
+**El que es demana**, tres fonts d'ingrés recurrent amb una sola infraestructura
+(funcions de Netlify + Supabase, la que ja fa servir `SOS/online.html`):
+
+1. **La quota del sistema viu.** La passarel·la de l'ítem anterior cobra la
+   quota; el SOS apunta què ha fet cada mes per cada client (millores, avisos,
+   revisions) perquè la quota es justifiqui amb el que ha passat i no amb una
+   promesa.
+2. **L'API del registre de valor**, de pagament per ús o per pla: mapes,
+   transaccions, diagnòstic i avisos (webhooks) perquè les eines del client
+   (formularis, facturació, n8n, Make, Zapier, agents) hi escriguin. Una clau
+   per projecte i per rol.
+3. **Comissions per prescripció.** Qui porta un client (un soci, un
+   distribuïdor, un altre node) rep una part apuntada al registre amb
+   `pushLedger()`, signada, i el CRM sap d'on ve cada lead.
+4. **El CRM amb servidor**: la ingesta automàtica i l'enriquiment amb IA del pla
+   del CRM, ara amb la fitxa del client lligada al que paga i al que consumeix.
+   Les dades personals i els preus pactats es queden al CRM, mai a l'API pública
+   ni al repositori.
+
+**Com es tanca:** el primer client amb quota cobrada i el seu informe mensual
+generat sol; una clau d'API d'un pilot escrivint transaccions; i una comissió
+de prova apuntada i liquidada. Abans de construir res, l'Àlvar decideix Zoho o
+el nostre (és la pregunta oberta del pla del CRM), perquè canvia on viu la fitxa.
+
 ### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar**, per a la UX de l'editor de `SOS/vna-suport.html`. Són
