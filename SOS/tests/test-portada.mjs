@@ -364,8 +364,15 @@ console.log('\n7 · El catàleg: cap paquet a mitges, i cap preu que no es pugui
   const mudes = aMida.filter(x => x.capACost !== '#cost');
   ok(!mudes.length, 'i tots porten al mapa de cost'
     + (mudes.length ? ' — muts: ' + mudes.map(x => x.id).join(', ') : ''));
-  ok(r.paquets.some(x => /mapa de cost/i.test(x.font)) && r.paquets.some(x => /validar/i.test(x.font)),
-    'i el preu diu d\'on surt: n\'hi ha segons mapa de cost i n\'hi ha a validar');
+  /* Sense forquilles (09/10/2026, decidit per l'Àlvar): cap paquet porta xifra
+     en euros, i tots diuen com es calcula —per fluxos o amb el mapa de cost—
+     i porten al mètode. Una xifra que hi tornés sola seria un preu publicat
+     que ningú ha decidit. */
+  const ambXifra = await p.evaluate(() => [...document.querySelectorAll('.paquet')]
+    .filter(a => /\d\s*€/.test((a.querySelector('.pk-preu strong') || {}).textContent || '')).map(a => a.id));
+  ok(!ambXifra.length, 'cap paquet porta forquilla en euros' + (ambXifra.length ? ' — ' + ambXifra.join(', ') : ''));
+  ok(r.paquets.every(x => /mapa de cost|per fluxos/i.test(x.font)) && r.paquets.every(x => x.capACost === '#cost'),
+    'i tots diuen com es calcula (per fluxos o amb el mapa de cost) i hi porten');
 
   const punts = new Set(r.paquets.map(x => x.punt.trim()));
   ok(punts.size >= 2, 'i no tots diuen el mateix punt d\'adaptació: ' + [...punts].join(' · '));

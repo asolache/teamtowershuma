@@ -215,7 +215,7 @@ const ROL_NOM={${rols}};`;
 
    Cada casella porta el sector i la forquilla a l'atribut, perquè el càlcul del
    navegador no hagi de tornar a saber-se el catàleg de memòria. */
-const { FAMILIES, SECTORS, ORDRE_SECTORS, PAQUETS, SOS_PAQUETS, NIVELLS } = require('./build-oferta.js');
+const { FAMILIES, SECTORS, ORDRE_SECTORS, PAQUETS, SOS_PAQUETS, NIVELLS, PER_FLUXOS } = require('./build-oferta.js');
 
 /* Els noms porten clau. El triador es llegia **sencer en català** amb el
    castellà posat —vint-i-quatre noms de paquet i quatre capçaleres de família—
@@ -243,11 +243,15 @@ function blocPaquets() {
      portada. Interpolant l'array sense dir-ho, en sortia «admin,tercer» per la
      conversió automàtica, i el filtre —que parteix per espais— llegia un sol
      valor inexistent: el paquet no sortia a cap tria. */
+  /* Sense forquilles al catàleg (09/10/2026), la calculadora tampoc en suma:
+     un paquet «per fluxos» va fora del total com un de mida, i el que sí que
+     suma són les hores per nivell. */
+  const fluxos = p => PER_FLUXOS && !p.mida;
   const fila = p => `<label class="pq" data-sector="${p.sector.join(' ')}">` +
     `<input type="checkbox" name="paquet" value="${p.id}"` +
-    (p.mida ? ' data-mida="1"' : ` data-min="${p.preuMin}" data-max="${p.preuMax}"`) + '>' +
+    (p.mida ? ' data-mida="1"' : fluxos(p) ? ' data-mida="1" data-fluxos="1"' : ` data-min="${p.preuMin}" data-max="${p.preuMax}"`) + '>' +
     `<span class="pq-n" data-i18n="pr.paq.${p.id}">${esc(p.nom)}</span>` +
-    `<span class="pq-p"${p.mida ? ' data-i18n="pr.r.amida"' : ''}>${p.mida ? 'a mida' : (p.preuMin === p.preuMax
+    `<span class="pq-p"${p.mida ? ' data-i18n="pr.r.amida"' : fluxos(p) ? ' data-i18n="pr.r.fluxos"' : ''}>${p.mida ? 'a mida' : fluxos(p) ? 'per fluxos' : (p.preuMin === p.preuMax
       ? p.preuMin.toLocaleString('ca-ES') + ' €'
       : p.preuMin.toLocaleString('ca-ES') + '–' + p.preuMax.toLocaleString('ca-ES') + ' €')}</span>` +
     `</label>`;
@@ -392,8 +396,8 @@ const FORM = {
 const PRESSU = {
   'pr.h1': { ca: 'Demana pressupost', es: 'Pide presupuesto' },
   'pr.intro': {
-    ca: 'Tria el que t\'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l\'enviïs.</strong>',
-    es: 'Elige lo que te interesa y sale una <strong>propuesta borrador</strong> con el desglose a la vista: la horquilla de cada paquete, las horas por nivel si lo contratas por horas, y qué falta para cerrarla. <strong>Te la puedes llevar aunque no nos la envíes.</strong>'
+    ca: 'Tria el que t\'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: com es calcula cada paquet per fluxos, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l\'enviïs.</strong>',
+    es: 'Elige lo que te interesa y sale una <strong>propuesta borrador</strong> con el desglose a la vista: cómo se calcula cada paquete por flujos, las horas por nivel si lo contratas por horas, y qué falta para cerrarla. <strong>Te la puedes llevar aunque no nos la envíes.</strong>'
   },
   'pr.s1.h': { ca: '1 · Qui ets', es: '1 · Quién eres' },
   'pr.s1.sub': {
@@ -506,15 +510,17 @@ const PRESSU = {
     es: 'Sin IVA. Es una horquilla orientativa: la propuesta final la cierra una conversación.'
   },
   'pr.r.fora': {
-    ca: 'No hi entren {p}: es pressuposten amb el mapa de cost i el desglossament va a la proposta.',
-    es: 'No entran {p}: se presupuestan con el mapa de coste y el desglose va a la propuesta.'
+    ca: 'No hi entren {p}: es pressuposten per fluxos amb el mapa de cost i el desglossament va a la proposta.',
+    es: 'No entran {p}: se presupuestan por flujos con el mapa de coste y el desglose va a la propuesta.'
   },
   'pr.r.amida': { ca: 'a mida', es: 'a medida' },
+  'pr.r.fluxos': { ca: 'per fluxos', es: 'por flujos' },
+  'pr.r.total.fluxos': { ca: 'Per fluxos · el desglossament va a la proposta', es: 'Por flujos · el desglose va en la propuesta' },
   /* Com s'ha calculat. És la frase que sosté el preu i per això es diu sencera
      a les dues llengües: qui la llegeix ha de poder discutir-la. */
   'pr.r.metode': {
-    ca: 'Les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell i les despeses directes van al seu preu de factura, sense marge a sobre. El que separa un nivell del següent és evidència registrada i verificable, no antiguitat.',
-    es: 'Las horas salen de los flujos del mapa de valor, cada rol se cobra al precio de su nivel y los gastos directos van a su precio de factura, sin margen encima. Lo que separa un nivel del siguiente es evidencia registrada y verificable, no antigüedad.'
+    ca: 'Les hores surten dels fluxos del mapa de valor, cada rol es cobra al preu del seu nivell, cada flux porta el cost de la seva IA amb el model que toca a cada tasca, i les despeses directes van al seu preu de factura, sense marge a sobre. El que separa un nivell del següent és evidència registrada i verificable, no antiguitat.',
+    es: 'Las horas salen de los flujos del mapa de valor, cada rol se cobra al precio de su nivel, cada flujo lleva el coste de su IA con el modelo que toca en cada tarea, y los gastos directos van a su precio de factura, sin margen encima. Lo que separa un nivel del siguiente es evidencia registrada y verificable, no antigüedad.'
   },
   /* Què falta per tancar-ho. Cap és decoració: cada una surt d'una resposta. */
   'pr.r.f.dimensionar': {

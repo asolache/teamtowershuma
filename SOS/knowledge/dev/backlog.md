@@ -44,7 +44,7 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
-### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat 09/10/2026)
+### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar:** «treure els preus de tot el catàleg i traduir-los a
 costos d'IA, amb el model adequat a cada tasca i optimitzat pel SOS».
@@ -65,6 +65,16 @@ amb una guarda que ho comprovi a cada canvi; els tests de la portada i del
 catàleg en verd. Les xifres reals de cost per model surten dels pilots, no
 s'inventen.
 
+**Fet (09/10/2026).** `PER_FLUXOS` a `build-oferta.js` apaga les forquilles a
+totes les sortides (catàleg, README, calculadora i portal del SOS); `preuMin` i
+`preuMax` queden com a referència interna i per a la guarda del sostre públic.
+El mapa de cost guanya un pas: «Cada flux porta el cost de la seva IA». La
+calculadora posa els paquets fora del total, «per fluxos», i el total només
+suma hores. Guardes: `test-portada.mjs` peta si una fitxa torna a portar «€» i
+`test-pressupost.mjs` comprova que cap casella en porta. L'escala per hores
+(N1–N3) es queda: és la base del desglossament. Les tarifes pròpies de
+`/mapa-web/` (servei a part, en esborrany) no s'han tocat.
+
 ### Què es diu d'IKEA en públic (demanat 09/10/2026)
 
 **L'Àlvar ha dit «treu-ho»** a la pregunta de què es pot dir d'IKEA en públic.
@@ -73,8 +83,27 @@ Avui IKEA surt als logos de clients (`index.html`, `qui-som.html`,
 l'aval de `/mapa-web/`, als textos de `SOS/vna.html` i a `ia.html`. Les fotos ja
 estan decidides: només pixelades i fora de la web.
 
-**Pendent:** confirmar si «treu-ho» vol dir treure IKEA de tota la web pública o
-només deixar d'ensenyar el cas. Fins que es confirmi no es toca res públic.
+**Decidit (09/10/2026): només el cas.** IKEA es queda a la llista de clients;
+surten «dos mapes de valor» (direcció i serveis) de la portada, de `qui-som`,
+de `/mapa-web/` i dels textos del mètode, i la guarda de `build-clients.js` que
+ho exigia.
+
+### L'oferta com a web 3.0, i el que millora respecte a la 2.0 (demanat 09/10/2026)
+
+**Context de l'Àlvar:** és desenvolupador web 3.0, i creu que el que més val és
+oferir això ensenyant què millora respecte a una web 2.0: IA, descentralització,
+obert, model operatiu de gestió, independència, amb suport i formació acció si
+es vol. Hi ha leads al CRM que han demanat web (els noms es queden al CRM i al
+pla privat).
+
+**Avui** el catàleg ven «Web o eina feta amb IA» i `/mapa-web/` ven el mapa i la
+web en una sessió; cap dels dos fa la comparació 2.0 / 3.0.
+
+**El que es demana:** una porta d'entrada clara amb aquesta comparació, i una
+proposta tipus per als leads que han demanat web, pressupostada per fluxos.
+
+**Com es tanca:** la comparació publicada on la vegi qui ve a buscar web, i la
+primera proposta enviada a un lead real.
 
 ### Els tres primers pilots del paquet nou (decidit 09/10/2026)
 

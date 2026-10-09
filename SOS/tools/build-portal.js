@@ -46,7 +46,7 @@ const bad = m => { fails++; console.log('  ✗ ' + m); };
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const { GRUPS } = require('./build-nav.js');
-const { SOS_PAQUETS } = require('./build-oferta.js');
+const { SOS_PAQUETS, PER_FLUXOS } = require('./build-oferta.js');
 const nav = f => {
   for (const g of GRUPS) { const l = g.links.find(x => x[0] === f); if (l) return { nom: l[1], que: l[2] }; }
   return null;
@@ -186,10 +186,10 @@ function blocPaquets() {
   const f = ['<section class="ob-sec">'];
   f.push('<h2>I si voleu que us hi acompanyem</h2>');
   f.push('<p class="ob-sub2">L\'eina és lliure i funciona sense nosaltres: això no és una versió de prova. ' +
-    'El que es paga és <b>no haver de descobrir sol com es munta</b>. Tres coses, amb el preu escrit.</p>');
+    'El que es paga és <b>no haver de descobrir sol com es munta</b>. Tres coses, i com es calcula cadascuna.</p>');
   f.push('<div class="ob-pq">');
   SOS_PAQUETS.forEach(p => {
-    const preu = p.publica === false ? 'Preu a mida'
+    const preu = p.publica === false ? 'Preu a mida' : PER_FLUXOS ? 'Per fluxos · hores i IA, desglossat'
       : (p.preuMin === p.preuMax ? `${p.preuMin} €` : `De ${p.preuMin} a ${p.preuMax} €`);
     f.push(`<div class="pq"><div class="pq-h"><b>${esc(p.nom)}</b><span class="pq-d">${esc(p.dura)}</span></div>` +
       `<p class="pq-e">${esc(p.endus)}</p>` +
@@ -197,7 +197,7 @@ function blocPaquets() {
   });
   f.push('</div>');
   f.push('<p class="ob-pq-n">El catàleg sencer —consultoria, formació, producció i dinamització— és a ' +
-    '<a href="../index.html#cataleg">teamtowershuma.com</a>, amb la forquilla de cada paquet i d\'on surt el número. ' +
+    '<a href="../index.html#cataleg">teamtowershuma.com</a>, amb com es calcula cada paquet per fluxos. ' +
     'Aquí hi ha només el que es contracta <b>al voltant de l\'eina</b>.</p>');
   f.push('</section>');
   return f.join('\n');
