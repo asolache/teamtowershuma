@@ -878,7 +878,8 @@ function resum(P){
 /* ── Preus i comanda ──────────────────────────────────────────────────────
    `PREUS` és l'únic lloc on viu un import. `0` és gratis; `null` és «preu a
    confirmar» i no es publica cap xifra fins que l'Àlvaro no la doni. */
-const PREUS={t0:{eur:0},t1:{eur:null},t2:{eur:null},t3:{eur:null},viu:{eur:null}};
+/* Sessió i taller, preus de validació publicats per decisió de l'Àlvaro (09/10/2026). */
+const PREUS={t0:{eur:0},t1:{eur:390,x:'pv.t1.x'},t2:{eur:1200,x:'pv.t2.x'},t3:{eur:null},viu:{eur:null}};
 function textPreu(t){
   const p=PREUS[t]; if(!p)return '';
   if(p.eur===0)return T('pv.gratis');
@@ -1020,6 +1021,8 @@ ca: {
   'pv.t1.n':'Sessió individual',
   'pv.t1.q':'Autònoms, fundadors i qui dirigeix sol',
   'pv.t1.d':'Revisem el teu mapa junts, hi marquem on s\'encalla el valor i en surt el primer pas.',
+  'pv.t1.x':'Preu de validació · després 690 €',
+  'pv.t2.x':'Preu de validació · després 1.800 €',
   'pv.t2.n':'Taller d\'equip',
   'pv.t2.q':'Equips de 4 a 12 persones',
   'pv.t2.d':'L\'equip veu el mateix flux de valor i es posa d\'acord en on ha de fluir millor. Mapa real i ideal.',
@@ -1304,6 +1307,8 @@ es: {
   'pv.t1.n':'Sesión individual',
   'pv.t1.q':'Autónomos, fundadores y quien dirige solo',
   'pv.t1.d':'Revisamos tu mapa juntos, marcamos dónde se atasca el valor y sale el primer paso.',
+  'pv.t1.x':'Precio de validación · después 690 €',
+  'pv.t2.x':'Precio de validación · después 1.800 €',
   'pv.t2.n':'Taller de equipo',
   'pv.t2.q':'Equipos de 4 a 12 personas',
   'pv.t2.d':'El equipo ve el mismo flujo de valor y se pone de acuerdo en dónde tiene que fluir mejor. Mapa real e ideal.',

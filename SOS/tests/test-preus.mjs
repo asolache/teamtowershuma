@@ -37,6 +37,7 @@ console.log('\n1 · Els preus, sense cap xifra inventada');
   const r = await p.evaluate(() => ({
     targetes: document.querySelectorAll('#preus .pv-c').length,
     preus: [...document.querySelectorAll('[data-preu]')].map(e => e.textContent.trim()),
+    x: [...document.querySelectorAll('[data-preu-x]')].map(e => e.textContent.trim()),
     contracta: document.querySelectorAll('#preus [data-contracta]').length,
     h1: document.querySelector('h1').textContent,
     amida: !!document.querySelector('#amida') && !!document.querySelector('#pForm'),
@@ -44,8 +45,9 @@ console.log('\n1 · Els preus, sense cap xifra inventada');
   }));
   ok(r.targetes === 4, 'quatre maneres d\'entrar');
   ok(r.preus[0] === 'Gratis', 'l\'esborrany del mapa és gratis');
-  ok(r.preus.slice(1).every(t => t === 'Preu a confirmar'), 'els imports buits diuen «preu a confirmar»: ' + r.preus.join(' · '));
-  ok(!r.preus.some(t => /\d/.test(t)), 'i cap targeta no treu una xifra que ningú ha donat');
+  ok(r.preus[1] === '390 € + IVA' && r.preus[2] === '1.200 € + IVA', 'sessió i taller amb el preu de validació: ' + r.preus.join(' · '));
+  ok(r.preus[3] === 'Preu a confirmar', 'i el negoci operatiu, sense xifra fins que es confirmi');
+  ok(/després 690 €/.test(r.x[1]) && /després 1\.800 €/.test(r.x[2]), 'cada preu de validació diu el de després');
   ok(r.contracta === 4, 'tres «Contracta» i un «Avisa\'m» per al sistema viu');
   ok(/Preus i contractació/.test(r.h1), 'el títol és el de la pàgina de preus');
   ok(r.amida && /35, 55 o 80 €\/h/.test(r.flux), 'i a sota, el pressupost a mida per fluxos amb l\'escala pública');
@@ -55,7 +57,7 @@ console.log('\n2 · Contracta: sense dades no surt res');
 {
   await p.click('[data-contracta="t2"]');
   const obert = await p.evaluate(() => document.querySelector('#cm').open && document.querySelector('#cmQu').textContent);
-  ok(/Taller d'equip/.test(obert || ''), 'el botó obre la comanda del que has triat: ' + obert);
+  ok(/Taller d'equip · 1\.200 €/.test(obert || ''), 'el botó obre la comanda del que has triat: ' + obert);
   await p.click('#cEnvia');
   const r = await p.evaluate(() => ({ err: document.querySelector('#cErr').classList.contains('on'), n: window.__crides.length }));
   ok(r.err && r.n === 0, 'sense nom, correu ni acceptació, avisa i no envia res');
@@ -75,7 +77,7 @@ console.log('\n3 · La comanda s\'envia una vegada, al formulari de Netlify');
   const r = await p.evaluate(() => ({ c: window.__crides, ok: !document.querySelector('#cOk').hidden }));
   const cos = new URLSearchParams(r.c[0] ? r.c[0].body : '');
   ok(r.c.length === 1 && r.c[0].url === '/', 'una sola crida, al formulari del lloc');
-  ok(cos.get('form-name') === 'comanda' && cos.get('paquet') === 'Taller d\'equip' && cos.get('preu') === 'a confirmar',
+  ok(cos.get('form-name') === 'comanda' && cos.get('paquet') === 'Taller d\'equip' && cos.get('preu') === '1200',
     'amb el formulari «comanda», el que s\'ha triat i el preu tal com està');
   ok(/COMANDA · Taller d'equip/.test(cos.get('resum') || '') && /es paga abans de començar/.test(cos.get('resum') || ''),
     'i un resum que diu què s\'ha acceptat');

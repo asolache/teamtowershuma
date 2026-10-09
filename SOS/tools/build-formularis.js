@@ -411,6 +411,8 @@ const PRESSU = {
   'pv.t1.n': { ca: 'Sessió individual', es: 'Sesión individual' },
   'pv.t1.q': { ca: 'Autònoms, fundadors i qui dirigeix sol', es: 'Autónomos, fundadores y quien dirige solo' },
   'pv.t1.d': { ca: 'Revisem el teu mapa junts, hi marquem on s\'encalla el valor i en surt el primer pas.', es: 'Revisamos tu mapa juntos, marcamos dónde se atasca el valor y sale el primer paso.' },
+  'pv.t1.x': { ca: 'Preu de validació · després 690 €', es: 'Precio de validación · después 690 €' },
+  'pv.t2.x': { ca: 'Preu de validació · després 1.800 €', es: 'Precio de validación · después 1.800 €' },
   'pv.t2.n': { ca: 'Taller d\'equip', es: 'Taller de equipo' },
   'pv.t2.q': { ca: 'Equips de 4 a 12 persones', es: 'Equipos de 4 a 12 personas' },
   'pv.t2.d': { ca: 'L\'equip veu el mateix flux de valor i es posa d\'acord en on ha de fluir millor. Mapa real i ideal.', es: 'El equipo ve el mismo flujo de valor y se pone de acuerdo en dónde tiene que fluir mejor. Mapa real e ideal.' },
