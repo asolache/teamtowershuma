@@ -213,6 +213,9 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-llenc.v-desviacio{background-color:color-mix(in srgb,var(--gold) 3%,var(--bg))}
 .ed-llenc.ed-entra .ed-svg{animation:ed-fon .22s ease-out}
 @keyframes ed-fon{from{opacity:0}to{opacity:1}}
+.ed-svg.ed-vol{pointer-events:none}
+.ed-svg.ed-vol text{animation:ed-fos .14s ease-out forwards}
+@keyframes ed-fos{to{opacity:0}}
 .ed-svg{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-select:none;touch-action:none}
 .ed-svg.eina-r,.ed-svg.eina-t,.ed-svg.eina-i{cursor:crosshair}
 .ed-svg.eina-h,.ed-svg.pan{cursor:grab}
@@ -408,6 +411,14 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-fitxa small{display:block;color:var(--muted);font-size:var(--t0);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ed-fitxa:hover,.ed-fitxa.hl{background:var(--card);box-shadow:0 0 0 2px color-mix(in srgb,var(--indigo) 35%,transparent)}
 .ed-fitxa.sel{box-shadow:0 0 0 2px var(--indigo)}
+.ed-fitxa{-webkit-touch-callout:none}
+.ed-fitxa.arrossegant{opacity:.35}
+.ed-fitxa.fantasma{position:fixed;z-index:80;pointer-events:none;margin:0;background:var(--card);box-shadow:0 10px 26px rgba(0,0,0,.2);transform:rotate(-2deg)}
+body.ed-arr,body.ed-arr *{cursor:grabbing !important;user-select:none;-webkit-user-select:none}
+.ed-pas.diana-alhora{outline:2px dashed var(--indigo);outline-offset:3px;border-radius:9px}
+.ed-pas.diana-abans{box-shadow:-6px 0 0 -2px var(--indigo)}
+.ed-pas.diana-despres{box-shadow:6px 0 0 -2px var(--indigo)}
+.ed-carril.diana{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 6%,var(--card))}
 .ed-fitxa.ara{background:color-mix(in srgb,var(--indigo) 9%,var(--card));box-shadow:0 0 0 2px var(--indigo)}
 .ed-fitxa.atura{box-shadow:0 0 0 2px var(--orange)}
 .ed-fitxa.noarriba{border-style:dashed;border-color:var(--muted)}
@@ -467,7 +478,8 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
 .ed-svg .ed-nom.baix,.ed-svg .ed-etq-t,.ed-svg .mv-dinsn,.ed-svg .ed-ins,.ed-svg .ed-nb text{paint-order:stroke;stroke:var(--bg);stroke-width:3.5px;stroke-linejoin:round}
 .ed-svg .mv-dinsn{font-size:12.5px;fill:var(--muted);font-family:var(--mono);text-anchor:middle}
 .ed-svg .mv-anell{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:3 4;opacity:.75}
-.ed-svg .mv-n:hover .mv-anell,.ed-svg .mv-n:focus-visible .mv-anell{stroke-dasharray:none;opacity:1}
+.ed-svg .mv-n:hover .mv-anell,.ed-svg .mv-n:focus-visible .mv-anell{stroke-dasharray:none;opacity:1;stroke:var(--indigo);stroke-width:2}
+.ed-svg .mv-n:hover .mv-dinsn,.ed-svg .mv-n:focus-visible .mv-dinsn{fill:var(--indigo)}
 .ed-svg .mv-n:hover .mv-nc{stroke:var(--muted)}
 .ed-svg .mv-n.sel .mv-nc{stroke:var(--indigo);stroke-width:3}
 .ed-svg .mv-n.sel .ed-halo{fill:color-mix(in srgb,var(--indigo) 13%,transparent)}
@@ -1016,7 +1028,7 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
       <section class="ed-flux" id="edFlux" aria-labelledby="edFluxT">
         <div class="ed-flux-cap">
           <h3 id="edFluxT">El flux</h3>
-          <p class="hint">Un carril per procés i, a cada pas, el que es lliura. És la passa 5, en ordre.</p>
+          <p class="hint">Un carril per procés i, a cada pas, el que es lliura. És la passa 5, en ordre. Per canviar-ne l'ordre, arrossega una fitxa (amb el dit, mantén-la un moment); amb el teclat, Alt+fletxes.</p>
           <button type="button" class="ed-b" id="edNouProc">+ Procés</button>
         </div>
         <div class="ed-nouproc" id="edNouProcCaixa" hidden>
@@ -3874,7 +3886,7 @@ function creaLlenc() {
     resalta: null, recorre: null, filtre: 'tot', vistaBuida: null, quiet: false, mode: 'visual', tab: 'sel',
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
-    cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null
+    cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -4361,10 +4373,11 @@ function creaLlenc() {
     const escn = S.esc && S.escK === escK ? S.esc : MODEL.escena(ARBRE, LLOC, { diag: DIAG });
     S.esc = escn; S.escK = escK;
     const noms = new Set(escn.nodes.filter(n => n.tipus !== 'fora').map(n => n.nom));
+    let vol = null;
     if (llocK !== S.llocK) {
       const canvi = !!S.llocK;
       S.llocK = llocK; S.calEncaixa = true;
-      if (canvi) { netejaNivell(); efecteEntra(); }
+      if (canvi) { vol = S.vol; S.vol = null; netejaNivell(); if (!vol) efecteEntra(); }
     } else if (!S.opUI && [...noms].filter(n => !S.nomsAbans.has(n)).length >= 2) S.calEncaixa = true;
     S.nomsAbans = noms;
     validaSel(escn);
@@ -4381,6 +4394,7 @@ function creaLlenc() {
       llenc.style.backgroundPosition = r1(S.cam.tx) + 'px ' + r1(S.cam.ty) + 'px';
       const z1 = $('#edZ1'), pct = Math.round(S.cam.k * 100) + ' %';
       if (z1 && z1.textContent !== pct) { z1.textContent = pct; z1.setAttribute('aria-label', pct + ', torna al 100 % (1)'); z1.title = pct + ': torna al 100 % (1)'; }
+      if (vol) volFalco(vol, escn, w, h);
     }
     if (!nomesCam) xrome(escn);
   }
@@ -4397,6 +4411,35 @@ function creaLlenc() {
     if (quiet()) return;
     llenc.classList.remove('ed-entra'); void llenc.offsetWidth; llenc.classList.add('ed-entra');
     setTimeout(() => llenc.classList.remove('ed-entra'), 260);
+  }
+  /* El vol de falcó: en entrar a un rol que ja té xarxa a dins, la càmera s'hi
+     acosta, les etiquetes s'apaguen i el mapa de dins creix des del rol. En
+     pujar, al revés. Només és dibuix: el camí, la selecció i l'arbre canvien
+     a l'instant, com sempre. Amb «menys moviment», el fos de sempre. */
+  function preparaVol(tipus, rol) {
+    if (quiet() || !S.esc || !svg.animate) return null;
+    const n = S.esc.nodes.find(x => x.nom === rol && x.tipus !== 'fora');
+    if (tipus === 'entra' && !(n && n.dins)) return null;
+    const clon = svg.cloneNode(true);
+    clon.removeAttribute('id');
+    clon.querySelectorAll('[id],[tabindex],[role]').forEach(x => { x.removeAttribute('id'); x.removeAttribute('tabindex'); x.removeAttribute('role'); });
+    clon.setAttribute('aria-hidden', 'true'); clon.setAttribute('inert', '');
+    clon.classList.add('ed-vol');
+    return { tipus, rol, q: n ? aP(n.x, n.y) : null, clon };
+  }
+  function volFalco(v, escn, w, h) {
+    llenc.querySelectorAll('svg.ed-vol').forEach(x => x.remove());
+    let q = v.q;
+    if (v.tipus === 'puja') { const n = escn.nodes.find(x => x.nom === v.rol && x.tipus !== 'fora'); q = n ? aP(n.x, n.y) : null; }
+    if (!q) { efecteEntra(); return; }
+    const c = [w / 2, h / 2], A = 3.2, B = 1 / A;
+    const T = (s, x, y) => 'translate(' + r1(x) + 'px,' + r1(y) + 'px) scale(' + s + ')';
+    const cap = T(A, c[0] - A * q[0], c[1] - A * q[1]), des = T(B, q[0] - B * c[0], q[1] - B * c[1]), id = 'translate(0px,0px) scale(1)';
+    const o = { duration: 460, easing: 'cubic-bezier(.3,.6,.2,1)' }, entra = v.tipus === 'entra';
+    svg.after(v.clon);
+    v.clon.animate([{ transformOrigin: '0 0', transform: id, opacity: 1 }, { transformOrigin: '0 0', transform: entra ? cap : des, opacity: 0 }], Object.assign({ fill: 'forwards' }, o))
+      .finished.then(() => v.clon.remove(), () => v.clon.remove());
+    svg.animate([{ transformOrigin: '0 0', transform: entra ? des : cap, opacity: 0 }, { offset: 0.35, opacity: 0.6 }, { transformOrigin: '0 0', transform: id, opacity: 1 }], o);
   }
   /* En canviar de nivell o de vista, el que es feia al nivell d'abans s'acaba. */
   function netejaNivell() {
@@ -5125,7 +5168,9 @@ function creaLlenc() {
       if (!r.ok && r.buit) avisa('«' + rol + '» no té xarxa a dins');
       return;
     }
+    S.vol = preparaVol('entra', rol);
     const r = CTRL.entra(rol, { crea: !!crea });
+    S.vol = null;
     if (r.ok) { S.pendentDins = null; llenc.focus({ preventScroll: true }); return; }
     if (r.buit === 'dins') {
       S.pendentDins = rol;
@@ -5133,7 +5178,13 @@ function creaLlenc() {
       avisa('«' + rol + '» encara no té xarxa a dins: «Crea\'n la xarxa de dins» la comença');
     }
   }
-  function pujaUI() { const deixat = LLOC.cami[LLOC.cami.length - 1]; if (CTRL.puja().ok) focusRol(deixat); }
+  function pujaUI() {
+    const deixat = LLOC.cami[LLOC.cami.length - 1];
+    S.vol = deixat === undefined ? null : preparaVol('puja', deixat);
+    const r = CTRL.puja();
+    S.vol = null;
+    if (r.ok) focusRol(deixat);
+  }
 
   /* ── El teclat al llenç ────────────────────────────────────────────────── */
   function rolEnfocat() { const a = document.activeElement; return a && svg.contains(a) ? quinRol(a) : null; }
@@ -6073,6 +6124,7 @@ function creaLlenc() {
 
   /* ── La tira del flux ──────────────────────────────────────────────────── */
   function pintaFlux() {
+    if (S.fitxaArr) return;          // mentre s'arrossega, la tira no es refà: en deixar-la ja es pinta
     const cos = $('#edFluxCos'), m = llegeix(), F = fluxos(m), seq = m.seq, vd = desviacio();
     const fx = c => F.find(x => x.clau === c);
     const fr = framePas(), ara = new Set(fr ? fr.fluxos : []);
@@ -6083,7 +6135,7 @@ function creaLlenc() {
       if (ara.has(c)) cl.push(fr.atura ? 'atura' : fr.noArriba ? 'noarriba' : 'ara');
       if (S.sel && S.sel.tipus === 'flux' && S.sel.clau === c) cl.push('sel');
       return '<button type="button" class="' + cl.join(' ') + '" data-acc="tria-f" data-clau="' + escA(c) + '" data-k="fitxa:' + escA(c) + '" data-mena="' + (x.mena === 'intangible' ? 'i' : 't') + '"'
-        + ' aria-label="' + escA(x.q + ', de ' + x.de + ' a ' + x.a + '. ' + menaNom(x.mena) + (extra || '') + '. Alt+fletxes per moure\'l, S per «sempre»') + '">'
+        + ' aria-label="' + escA(x.q + ', de ' + x.de + ' a ' + x.a + '. ' + menaNom(x.mena) + (extra || '') + '. Arrossega-la o Alt+fletxes per moure-la, S per «sempre»') + '">'
         + '<b>' + esc_(curt(x.q, 26)) + '</b><small>' + esc_(curt(x.de, 12)) + ' → ' + esc_(curt(x.a, 12)) + '</small></button>';
     };
     const ids = m.processos.map(p => p.id), usats = [...new Set(Object.values(seq).filter(v => Array.isArray(v)).map(v => v[0]))];
@@ -6103,8 +6155,8 @@ function creaLlenc() {
         h += '<ol class="ed-passos">';
         let ant = 0;
         passos.forEach(n => {
-          if (n > ant + 1) h += '<li class="ed-pas salt"><span class="ed-pas-n">' + (ant + 1) + (n - 1 > ant + 1 ? '–' + (n - 1) : '') + '</span><span class="ed-fitxa-salt">salt</span></li>';
-          h += '<li class="ed-pas"><span class="ed-pas-n">pas ' + n + '</span>' + its.filter(k => (Number(seq[k][1]) || 1) === n).sort().map(k => fitxa(k, ', ' + (p.nom || p.id) + ', pas ' + n)).join('') + '</li>';
+          if (n > ant + 1) h += '<li class="ed-pas salt" data-n="' + n + '"><span class="ed-pas-n">' + (ant + 1) + (n - 1 > ant + 1 ? '–' + (n - 1) : '') + '</span><span class="ed-fitxa-salt">salt</span></li>';
+          h += '<li class="ed-pas" data-n="' + n + '"><span class="ed-pas-n">pas ' + n + '</span>' + its.filter(k => (Number(seq[k][1]) || 1) === n).sort().map(k => fitxa(k, ', ' + (p.nom || p.id) + ', pas ' + n)).join('') + '</li>';
           ant = n;
         });
         h += '</ol>';
@@ -6112,8 +6164,8 @@ function creaLlenc() {
       h += '</div>';
     });
     const sempre = Object.keys(seq).filter(k => seq[k] === 'sempre' && fx(k)), sense = F.filter(x => !Object.prototype.hasOwnProperty.call(seq, x.clau)).map(x => x.clau);
-    if (sempre.length) h += '<div class="ed-carril"><div class="ed-carril-cap"><span class="ed-carril-nom">∞ Sempre <small>· el que passa tot el temps</small></span></div><div class="ed-safata-f">' + sempre.map(k => fitxa(k, ', sempre')).join('') + '</div></div>';
-    h += '<div class="ed-carril"><div class="ed-carril-cap"><span class="ed-carril-nom">Sense pas <small>· ' + sense.length + '</small></span></div>'
+    if (sempre.length) h += '<div class="ed-carril" data-safata="sempre"><div class="ed-carril-cap"><span class="ed-carril-nom">∞ Sempre <small>· el que passa tot el temps</small></span></div><div class="ed-safata-f">' + sempre.map(k => fitxa(k, ', sempre')).join('') + '</div></div>';
+    h += '<div class="ed-carril" data-safata="sense"><div class="ed-carril-cap"><span class="ed-carril-nom">Sense pas <small>· ' + sense.length + '</small></span></div>'
       + (sense.length ? '<div class="ed-safata-f">' + sense.map(k => fitxa(k, ', sense pas')).join('') + '</div>' : (F.length ? '<p class="ed-ok">Tots els lliuraments tenen pas o són «sempre» ✓</p>' : '<p class="ed-flux-buit">Quan hi hagi lliuraments, aquí sortiran els que encara no tenen pas.</p>')) + '</div>';
     posaHTML(cos, h);
   }
@@ -6146,6 +6198,98 @@ function creaLlenc() {
       if (j >= 0 && j < ps.length) fes(MODEL.opPas, clau, ps[j].id, 1, 'final');
     }
   });
+  /* Arrossegar una fitxa per canviar-la de pas. Amb el ratolí comença en
+     moure's 6 px; amb el dit, després de mantenir-la un moment quiet, perquè
+     lliscar encara desplaci la tira i la pàgina. Deixar-la al mig d'un pas la
+     posa «alhora»; a la vora, abans o després; a la resta del carril, al
+     final; a «Sempre» o a «Sense pas», allà. El teclat fa el mateix amb
+     Alt+fletxes. */
+  const fluxCos = $('#edFluxCos');
+  function dianaArr(x, y) {
+    const el = document.elementFromPoint(x, y), car = el && fluxCos.contains(el) && el.closest('.ed-carril');
+    if (!car) return null;
+    const saf = car.getAttribute('data-safata');
+    if (saf) return { tipus: saf, el: car };
+    const id = car.getAttribute('data-proc');
+    if (!id || car.classList.contains('no-dec')) return null;
+    const pas = el.closest('.ed-pas[data-n]');
+    if (!pas) return { tipus: 'final', id, el: car };
+    const r = pas.getBoundingClientRect(), f = (x - r.left) / (r.width || 1), n = Number(pas.getAttribute('data-n'));
+    if (pas.classList.contains('salt') || f < 0.25) return { tipus: 'insereix', id, n, el: pas, cant: 'abans' };
+    if (f > 0.75) return { tipus: 'insereix', id, n: n + 1, el: pas, cant: 'despres' };
+    return { tipus: 'alhora', id, n, el: pas };
+  }
+  function marcaDiana(d) {
+    fluxCos.querySelectorAll('.diana,.diana-alhora,.diana-abans,.diana-despres').forEach(x => x.classList.remove('diana', 'diana-alhora', 'diana-abans', 'diana-despres'));
+    if (d) d.el.classList.add(d.tipus === 'alhora' ? 'diana-alhora' : d.tipus === 'insereix' ? 'diana-' + d.cant : 'diana');
+  }
+  function comencaArr() {
+    const A = S.fitxaArr;
+    clearTimeout(A.t);
+    A.actiu = true;
+    const r = A.b.getBoundingClientRect(), g = A.b.cloneNode(true);
+    g.removeAttribute('data-acc'); g.setAttribute('aria-hidden', 'true'); g.tabIndex = -1;
+    g.classList.add('fantasma'); g.style.width = r.width + 'px';
+    A.dx = A.x0 - r.left; A.dy = A.y0 - r.top; A.g = g;
+    document.body.appendChild(g);
+    A.b.classList.add('arrossegant');
+    document.body.classList.add('ed-arr');
+    mouArr(A.x0, A.y0);
+    anuncia('Arrossegant «' + ((flux(A.clau) || {}).q || A.clau) + '»: deixa-la on toqui, Esc per desfer');
+  }
+  function mouArr(x, y) {
+    const A = S.fitxaArr;
+    A.g.style.left = (x - A.dx) + 'px'; A.g.style.top = (y - A.dy) + 'px';
+    A.d = dianaArr(x, y);
+    marcaDiana(A.d);
+    const ol = A.d && A.d.el.closest('.ed-passos');
+    /* Prop d'una vora, la tira es desplaça, però només si s'hi va: qui
+       arrenca de la vora cap a dins no l'ha de veure córrer */
+    if (ol) { const r = ol.getBoundingClientRect(); if (x < r.left + 32 && x < A.lx) ol.scrollLeft -= 12; else if (x > r.right - 32 && x > A.lx) ol.scrollLeft += 12; }
+    A.lx = x;
+  }
+  function acabaArr(deixa) {
+    const A = S.fitxaArr;
+    if (!A) return;
+    S.fitxaArr = null;
+    clearTimeout(A.t);
+    if (!A.actiu) { pintaFlux(); return; }
+    A.g.remove(); A.b.classList.remove('arrossegant'); document.body.classList.remove('ed-arr'); marcaDiana(null);
+    S.arrClic = true; setTimeout(() => { S.arrClic = false; }, 0);
+    const d = deixa && A.d, clau = A.clau;
+    if (!d) { anuncia('No s\'ha mogut'); return; }
+    if (d.tipus === 'sempre') fes(MODEL.opSempre, clau, true);
+    else if (d.tipus === 'sense') fes(MODEL.opTreuPas, clau);
+    else fes(MODEL.opPas, clau, d.id, d.n || 1, d.tipus);
+    pintaFlux();          // ara, i no quan toqui als panells: el focus ha d'anar a la fitxa nova
+    const b = [...fluxCos.querySelectorAll('.ed-fitxa')].find(x => x.getAttribute('data-clau') === clau);
+    if (b) b.focus({ preventScroll: true });
+  }
+  fluxCos.addEventListener('pointerdown', e => {
+    const b = e.target.closest('.ed-fitxa');
+    if (!b || e.button > 0 || desviacio() || S.fitxaArr) return;
+    const A = S.fitxaArr = { b, clau: b.getAttribute('data-clau'), x0: e.clientX, y0: e.clientY, pid: e.pointerId, ratoli: e.pointerType === 'mouse', actiu: false, t: 0, lx: e.clientX };
+    if (!A.ratoli) A.t = setTimeout(() => { if (S.fitxaArr === A) comencaArr(); }, 350);
+  });
+  document.addEventListener('pointermove', e => {
+    const A = S.fitxaArr;
+    if (!A || e.pointerId !== A.pid) return;
+    if (!A.actiu) {
+      const d = Math.hypot(e.clientX - A.x0, e.clientY - A.y0);
+      if (A.ratoli && d > 6) comencaArr();
+      else if (!A.ratoli && d > 8) { acabaArr(false); return; }   // llisca: és desplaçar, no arrossegar
+      else return;
+    }
+    e.preventDefault();
+    mouArr(e.clientX, e.clientY);
+  });
+  document.addEventListener('pointerup', e => { if (S.fitxaArr && e.pointerId === S.fitxaArr.pid) acabaArr(true); });
+  document.addEventListener('pointercancel', e => { if (S.fitxaArr && e.pointerId === S.fitxaArr.pid) acabaArr(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.fitxaArr && S.fitxaArr.actiu) { e.preventDefault(); e.stopPropagation(); acabaArr(false); } }, true);
+  /* Mentre s'arrossega amb el dit, la pàgina no es desplaça ni surt el menú contextual */
+  fluxCos.addEventListener('touchmove', e => { if (S.fitxaArr && S.fitxaArr.actiu) e.preventDefault(); }, { passive: false });
+  fluxCos.addEventListener('contextmenu', e => { if (S.fitxaArr) e.preventDefault(); });
+  fluxCos.addEventListener('click', e => { if (S.arrClic) { S.arrClic = false; e.preventDefault(); e.stopPropagation(); } }, true);
   function resaltaFitxes(clau) {
     svg.querySelectorAll('.ed-f.hl,.ed-etq.hl').forEach(x => x.classList.remove('hl'));
     document.querySelectorAll('#edFluxCos .ed-fitxa.hl').forEach(x => x.classList.remove('hl'));

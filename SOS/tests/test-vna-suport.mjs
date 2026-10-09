@@ -562,6 +562,62 @@ console.log('\n7B.5 · L\'ordre del flux, clicant en ordre');
   await p.click('.ed-eina[data-eina=v]');
 }
 
+console.log('\n7B.5b · Ordenar el flux arrossegant, amb ratolí i amb el dit');
+{
+  const CL = ['Qui fa el vi→Qui rep i explica', 'Qui rep i explica→El visitant', 'El visitant→Qui rep i explica', 'Qui rep i explica→Qui fa el vi'];
+  const seq = () => p.evaluate(() => window.__VS_ED.exporta().seq || {});
+  const pas = (s, c) => (s[c] || [])[1];
+  const fitxa = c => p.evaluate(k => { const b = [...document.querySelectorAll('#edFluxCos .ed-fitxa')].find(x => x.getAttribute('data-clau') === k); b.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, c);
+  const columna = (c, f) => p.evaluate(([k, f]) => { const b = [...document.querySelectorAll('#edFluxCos .ed-fitxa')].find(x => x.getAttribute('data-clau') === k); const r = b.closest('.ed-pas').getBoundingClientRect(); return { x: r.left + r.width * f, y: r.top + r.height / 2 }; }, [c, f]);
+  const arrossega = async (de, a) => { await p.mouse.move(de.x, de.y); await p.mouse.down(); for (let i = 1; i <= 8; i++) await p.mouse.move(de.x + (a.x - de.x) * i / 8, de.y + (a.y - de.y) * i / 8); await p.mouse.up(); await pausa(60); };
+  await p.evaluate(() => document.querySelector('#edFlux').scrollIntoView({ block: 'center' }));
+  let s0 = await seq();
+  ok(pas(s0, CL[2]) === 3 && pas(s0, CL[0]) === 1, 'de partida: ' + CL.map(c => pas(s0, c)).join(', '));
+  /* Ratolí: a la vora esquerra del pas 1 = abans */
+  await arrossega(await fitxa(CL[2]), await columna(CL[0], 0.08));
+  let s1 = await seq();
+  ok(pas(s1, CL[2]) === 1 && pas(s1, CL[0]) === 2 && pas(s1, CL[1]) === 3 && pas(s1, CL[3]) === 4, 'amb el ratolí, deixar-la a la vora d\'un pas la posa abans i renumera: ' + CL.map(c => pas(s1, c)).join(', '));
+  ok(await p.evaluate(() => !document.querySelector('.ed-fitxa.fantasma') && !document.querySelector('#edFluxCos .diana,#edFluxCos [class*=diana-]') && !document.body.classList.contains('ed-arr')), 'i no queda ni la fantasma ni la marca');
+  ok(await p.evaluate(k => document.activeElement && document.activeElement.getAttribute('data-clau') === k, CL[2]), 'el focus segueix la fitxa que has mogut');
+  /* Al mig d'un pas = alhora */
+  await arrossega(await fitxa(CL[3]), await columna(CL[2], 0.5));
+  let s2 = await seq();
+  ok(pas(s2, CL[3]) === 1 && pas(s2, CL[2]) === 1, 'al mig d\'un pas, va «alhora»: ' + CL.map(c => pas(s2, c)).join(', '));
+  /* Esc desfà l'arrossegament */
+  { const de = await fitxa(CL[1]), a = await columna(CL[0], 0.5); await p.mouse.move(de.x, de.y); await p.mouse.down(); await p.mouse.move(de.x + 30, de.y); await p.mouse.move(a.x, a.y);
+    await p.keyboard.press('Escape'); await p.mouse.up(); await pausa(60); }
+  ok(JSON.stringify(await seq()) === JSON.stringify(s2) && await p.evaluate(() => !document.querySelector('.ed-fitxa.fantasma')), 'Esc a mig camí la deixa on era');
+  /* Un clic sense moure encara tria la fitxa */
+  { const q = await fitxa(CL[1]); await p.mouse.click(q.x, q.y); }
+  ok(await p.evaluate(k => [...document.querySelectorAll('#edSvg .ed-f.sel')].some(x => x.getAttribute('data-clau') === k), CL[1]), 'un clic quiet continua triant el lliurament');
+  /* A «Sense pas» */
+  { const de = await fitxa(CL[1]), a = await p.evaluate(() => { const r = document.querySelector('#edFluxCos [data-safata=sense]').getBoundingClientRect(); return { x: r.left + 20, y: r.top + 12 }; }); await arrossega(de, a); }
+  ok(!Object.prototype.hasOwnProperty.call(await seq(), CL[1]), 'deixada a «Sense pas», es queda sense pas');
+  await p.click('#edDesfes');
+  ok(pas(await seq(), CL[1]) !== undefined, 'i Desfés la torna');
+  /* El dit: lliscar desplaça; mantenir i moure arrossega */
+  const cdp = await p.context().newCDPSession(p);
+  const toc = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+  const s3 = await seq();
+  { const de = await fitxa(CL[1]), a = await columna(CL[0], 0.08);
+    await toc('touchStart', de.x, de.y); for (let i = 1; i <= 6; i++) await toc('touchMove', de.x + (a.x - de.x) * i / 6, de.y + (a.y - de.y) * i / 6); await toc('touchEnd'); await pausa(700); }   // que s'aturi el desplaçament que ha fet el dit
+  ok(JSON.stringify(await seq()) === JSON.stringify(s3) && await p.evaluate(() => !document.querySelector('.ed-fitxa.fantasma')), 'amb el dit, lliscar de seguida no mou res (és desplaçar)');
+  { const de = await fitxa(CL[1]), a = await columna(CL[2], 0.08);
+    await toc('touchStart', de.x, de.y); await pausa(450);
+    const fant = await p.evaluate(() => !!document.querySelector('.ed-fitxa.fantasma'));
+    for (let i = 1; i <= 6; i++) await toc('touchMove', de.x + (a.x - de.x) * i / 6, de.y + (a.y - de.y) * i / 6);
+    await toc('touchEnd'); await pausa(80);
+    ok(fant, 'mantenir el dit un moment l\'agafa');
+  }
+  const s4 = await seq();
+  ok(pas(s4, CL[1]) === 1 && pas(s4, CL[2]) === 2, 'i en deixar-la, la posa abans del pas: ' + CL.map(c => pas(s4, c)).join(', '));
+  await cdp.detach();
+  /* El teclat continua: Alt+→ */
+  await p.focus('#edFluxCos .ed-fitxa[data-clau="' + CL[1] + '"]');
+  await p.keyboard.press('Alt+ArrowRight');
+  ok(pas(await seq(), CL[1]) === 2, 'i amb el teclat, Alt+→ la passa després');
+}
+
 console.log('\n7B.6 · Entrar a dins d\'un rol i tornar a pujar');
 {
   await veuLlenc();
@@ -586,10 +642,25 @@ console.log('\n7B.6 · Entrar a dins d\'un rol i tornar a pujar');
   ok(dalt.cami === 0 && dalt.puja, 'Alt+↑ torna al mapa sencer');
   const Q2 = await rolXY('Qui rep i explica');
   await p.mouse.dblclick(Q2.x, Q2.y);
-  await pausa(100);
-  ok(await p.evaluate(() => window.__VS_ED.lloc().cami.join('/') === 'Qui rep i explica'), 'ara que ja té xarxa, el doble clic hi entra directament');
+  const vol = await p.evaluate(() => ({ cami: window.__VS_ED.lloc().cami.join('/'), clon: document.querySelectorAll('#edLlenc svg.ed-vol').length,
+    ids: document.querySelectorAll('#edLlenc svg.ed-vol [id],#edLlenc svg.ed-vol [tabindex]').length, anim: document.querySelector('#edSvg').getAnimations().length }));
+  ok(vol.cami === 'Qui rep i explica', 'ara que ja té xarxa, el doble clic hi entra directament, i el camí canvia a l\'instant');
+  ok(vol.clon === 1 && vol.anim > 0, 'amb vol de falcó: el mapa de fora s\'acosta al rol i el de dins creix des d\'ell');
+  ok(vol.ids === 0, 'i la còpia que vola no duplica ids ni entra al tabulador');
+  await pausa(600);
+  ok(await p.evaluate(() => !document.querySelector('#edLlenc svg.ed-vol') && !document.querySelector('#edSvg').getAnimations().length), 'el vol acaba sol i no deixa res al llenç');
   await p.click('#edPuja');
-  ok(await p.evaluate(() => window.__VS_ED.lloc().cami.length === 0), 'i «↑ Puja» en surt');
+  const vp = await p.evaluate(() => ({ cami: window.__VS_ED.lloc().cami.length, clon: document.querySelectorAll('#edLlenc svg.ed-vol').length }));
+  ok(vp.cami === 0 && vp.clon === 1, 'i «↑ Puja» en surt fent el vol al revés');
+  await pausa(600);
+  await p.emulateMedia({ reducedMotion: 'reduce' });
+  const Q3 = await rolXY('Qui rep i explica');
+  await p.mouse.dblclick(Q3.x, Q3.y);
+  ok(await p.evaluate(() => window.__VS_ED.lloc().cami.length === 1 && !document.querySelector('#edLlenc svg.ed-vol')), 'amb «menys moviment», s\'hi entra sense vol');
+  await p.click('#edPuja');
+  await p.emulateMedia({ reducedMotion: 'no-preference' });
+  const fl = await p.evaluate(() => ({ c: window.__VS_ED.lloc().cami.length, sel: window.__VS_ED.exporta() && 1 }));
+  ok(fl.c === 0, 'i tornar a pujar també');
 }
 
 console.log('\n7B.7 · El diagnòstic al dibuix');
