@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Demana pressupost · SOS · TeamTowers Humà</title>
-<meta name="description" content="Tria els paquets que t'interessen i en surt una proposta esborrany amb el desglossament: forquilla per paquet, hores per nivell si el contractes per hores, i què falta per tancar-la. Te la pots endur encara que no ens l'enviïs.">
-<meta property="og:title" content="Demana pressupost · TeamTowers Humà">
-<meta property="og:description" content="Una proposta esborrany en cinc minuts, amb el mapa de cost a la vista i sense trucar.">
+<title>Preus i contractació · SOS · TeamTowers Humà</title>
+<meta name="description" content="Preus de TeamTowers: de l'esborrany del mapa al negoci operatiu, i tot el que és a mida, per fluxos. Tria i contracta; la confirmació i la factura arriben per correu.">
+<meta property="og:title" content="Preus i contractació · TeamTowers Humà">
+<meta property="og:description" content="Quatre maneres d'entrar i la resta a mida, per fluxos. Tria i contracta sense trucar.">
 <style>
 :root{
 /*TT-PELL*/
@@ -37,6 +37,34 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6}
+/* ── Preus i contractació (09/10/2026) ── */
+.pv{max-width:1080px;margin:0 auto;padding:2rem 1.2rem 0}
+.pv-eye{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin:0 0 .3rem;text-align:center}
+.pv h2{text-align:center;font-size:1.35rem;margin:0 0 1.4rem}
+.pv-g{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem}
+@media(max-width:960px){.pv-g{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.pv-g{grid-template-columns:1fr}}
+.pv-c{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.1rem;display:flex;flex-direction:column;gap:.5rem}
+.pv-c.top{border-color:var(--indigo);box-shadow:0 0 0 1px var(--indigo)}
+.pv-c h3{margin:0;font-size:1.02rem}
+.pv-q{font-size:.78rem;color:var(--muted);margin:0}
+.pv-p{font-size:1.5rem;font-weight:700;margin:.2rem 0 0;line-height:1.2}
+.pv-p.conf{font-size:1.05rem;color:var(--light)}
+.pv-x{font-size:.76rem;color:var(--muted);margin:0;min-height:1.1em}
+.pv-d{font-size:.88rem;color:var(--light);margin:0;line-height:1.5;flex:1}
+.pv-c .btn{justify-content:center;margin-top:.4rem}
+.pv-viu{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-top:.9rem;background:var(--panel);border:1px dashed var(--border);border-radius:14px;padding:1rem 1.1rem}
+.pv-viu p{margin:0;font-size:.88rem;color:var(--light);flex:1;min-width:220px}
+.pv-flux{margin:1.2rem 0 0;font-size:.9rem;color:var(--light);line-height:1.6;text-align:center}
+.amida-h{margin:0 0 .3rem;font-size:1.25rem;scroll-margin-top:5rem}
+dialog.cm{border:1px solid var(--border);border-radius:16px;padding:1.4rem;max-width:520px;width:calc(100% - 2rem);background:var(--card);color:var(--text)}
+dialog.cm::backdrop{background:rgba(21,19,15,.45)}
+.cm h2{margin:0 0 .2rem;font-size:1.2rem}
+.cm-qu{font-weight:700;margin:.2rem 0 .6rem}
+.cm .chk{display:flex;gap:.5rem;align-items:flex-start;font-size:.84rem;color:var(--light);margin:.4rem 0}
+.cm .chk input{margin-top:.2rem}
+.cm-ok{color:var(--green);font-weight:600}
+.cm-btns{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:flex-end;margin-top:.8rem}
 .wrap{max-width:800px;margin:0 auto;padding:2rem 1.2rem 4rem}
 header{padding:3rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rgba(21,19,15,.07)}
 header h1{font-size:2rem;margin:0 0 .6rem;background:linear-gradient(90deg,var(--indigo),var(--green),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -229,7 +257,7 @@ footer a{color:var(--light)}
 <nav class="tt-nav" aria-label="Navegació del lloc">
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
-  <div class="tn-gs" id="tt-gs"><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html" aria-current="page"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span data-i18n="nv.g.sos">El SOS</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.apren">Formació</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span data-i18n="nv.g.mon">Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html" aria-current="page"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span data-i18n="nv.g.sos">El SOS</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.apren">Formació</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span data-i18n="nv.g.mon">Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
   <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
 </nav>
@@ -245,11 +273,87 @@ footer a{color:var(--light)}
 <!--/TT-NAV-->
 
 <header>
-<h1 data-i18n="pr.h1">Demana pressupost</h1>
-<p data-i18n-html="pr.intro">Tria el que t'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: la forquilla de cada paquet, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l'enviïs.</strong></p>
+<h1 data-i18n="pr.h1">Preus i contractació</h1>
+<p data-i18n-html="pr.intro">Comença pel que et cal ara: cada pas porta al següent i cap no t'obliga a fer el de dalt. Els preus són <strong>sense IVA</strong>. Si el que vols no hi és, a sota tens el <a href="#amida">pressupost a mida, per fluxos</a>.</p>
 </header>
 
+
+<!-- ── Preus ── (09/10/2026) Els imports viuen a `PREUS`, a l'script.
+     Un import buit es llegeix «preu a confirmar»: aquí no se n'inventa cap. -->
+<section class="pv" id="preus" aria-labelledby="pvH">
+<p class="pv-eye" data-i18n="pv.eye">Preus · sense IVA</p>
+<h2 id="pvH" data-i18n="pv.h">Quatre maneres d'entrar, de la més lleugera al sistema sencer</h2>
+<div class="pv-g">
+<article class="pv-c" data-tier="t0">
+<h3 data-i18n="pv.t0.n">Esborrany del mapa</h3>
+<p class="pv-q" data-i18n="pv.t0.q">Per a qualsevol que vulgui veure on és</p>
+<p class="pv-p" data-preu="t0"></p>
+<p class="pv-x" data-preu-x="t0"></p>
+<p class="pv-d" data-i18n="pv.t0.d">El mapa de valor del teu negoci, dibuixat amb el que ens expliques. És teu i te l'endús.</p>
+<a class="btn" href="vna.html" data-i18n="pv.t0.cta">Comença ara</a>
+</article>
+<article class="pv-c" data-tier="t1">
+<h3 data-i18n="pv.t1.n">Sessió individual</h3>
+<p class="pv-q" data-i18n="pv.t1.q">Autònoms, fundadors i qui dirigeix sol</p>
+<p class="pv-p" data-preu="t1"></p>
+<p class="pv-x" data-preu-x="t1"></p>
+<p class="pv-d" data-i18n="pv.t1.d">Revisem el teu mapa junts, hi marquem on s'encalla el valor i en surt el primer pas.</p>
+<button type="button" class="btn btn-primary" data-contracta="t1" data-i18n="pv.cta">Contracta</button>
+</article>
+<article class="pv-c" data-tier="t2">
+<h3 data-i18n="pv.t2.n">Taller d'equip</h3>
+<p class="pv-q" data-i18n="pv.t2.q">Equips de 4 a 12 persones</p>
+<p class="pv-p" data-preu="t2"></p>
+<p class="pv-x" data-preu-x="t2"></p>
+<p class="pv-d" data-i18n="pv.t2.d">L'equip veu el mateix flux de valor i es posa d'acord en on ha de fluir millor. Mapa real i ideal.</p>
+<button type="button" class="btn btn-primary" data-contracta="t2" data-i18n="pv.cta">Contracta</button>
+</article>
+<article class="pv-c top" data-tier="t3">
+<h3 data-i18n="pv.t3.n">El teu negoci operatiu</h3>
+<p class="pv-q" data-i18n="pv.t3.q">Pimes i projectes que volen el sistema sencer</p>
+<p class="pv-p" data-preu="t3"></p>
+<p class="pv-x" data-preu-x="t3"></p>
+<p class="pv-d" data-i18n="pv.t3.d">La sala amb l'equip, el mapa real i l'ideal, el cervell per rol, la web de xarxa a nom vostre i 30 dies d'acompanyament.</p>
+<button type="button" class="btn btn-primary" data-contracta="t3" data-i18n="pv.cta">Contracta</button>
+</article>
+</div>
+<div class="pv-viu">
+<p><strong data-i18n="pv.viu.n">Després · Sistema viu, cada mes</strong> · <span data-i18n="pv.viu.d">Mantenim les connexions i les millorem amb el que mesura el SOS. La quota es decideix amb els pilots.</span></p>
+<button type="button" class="btn" data-contracta="viu" data-i18n="pv.viu.cta">Avisa'm</button>
+</div>
+<p class="pv-flux" data-i18n-html="pv.flux"><strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell (35, 55 o 80 €/h) més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.</p>
+</section>
+
+<dialog class="cm" id="cm" aria-labelledby="cmH">
+<form id="cmForm" method="dialog" novalidate>
+<h2 id="cmH" data-i18n="pv.m.h">Contracta</h2>
+<p class="cm-qu" id="cmQu"></p>
+<p class="sub" data-i18n="pv.m.sub">Deixa'ns on enviar-te la confirmació. Encara no cobrem en línia: en un dia laborable et confirmem la data i t'enviem la factura amb l'enllaç de pagament.</p>
+<div class="grid2">
+<div class="f"><label for="cNom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="cNom" autocomplete="name"></div>
+<div class="f"><label for="cMail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="cMail" autocomplete="email"></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="cOrg" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="cOrg" autocomplete="organization"></div>
+<div class="f"><label for="cTel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="cTel" autocomplete="tel"></div>
+</div>
+<div class="f"><label for="cQuan" data-i18n="pv.m.quan">Quan us aniria bé</label><input type="text" id="cQuan" data-i18n-ph="pv.m.quan.ph"></div>
+<div class="f"><label for="cNotes" data-i18n="pv.m.notes">Res més que hàgim de saber</label><textarea id="cNotes" rows="2"></textarea></div>
+<label class="chk"><input type="checkbox" id="cAcc"><span data-i18n="pv.m.acc">Entenc que la comanda es confirma per correu i es paga per transferència o enllaç de pagament abans de començar.</span></label>
+<p class="err" id="cErr" data-i18n="pv.m.err">Cal el nom, un correu vàlid i acceptar com es paga.</p>
+<p class="hint" data-i18n="pv.m.priv">S'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM. Res més.</p>
+<p class="cm-ok" id="cOk" hidden data-i18n="pv.m.ok">Comanda rebuda. En un dia laborable et confirmem la data i t'enviem la factura.</p>
+<p class="err" id="cKo"><span data-i18n="pv.m.ko">No s'ha pogut enviar. Envia-la per correu:</span> <a id="cMailto" href="#" data-i18n="pv.m.mail">Obre el correu</a></p>
+<div class="cm-btns">
+<button type="button" class="btn" id="cTanca" data-i18n="pv.m.tanca">Tanca</button>
+<button type="button" class="btn btn-primary" id="cEnvia" data-i18n="pv.m.envia">Confirma la comanda</button>
+</div>
+</form>
+</dialog>
+
 <main class="wrap">
+<h2 class="amida-h" id="amida" data-i18n="pv.amida.h">A mida, per fluxos</h2>
+<p class="sub" data-i18n="pv.amida.sub">Tria els paquets i en surt una proposta esborrany amb el desglossament a la vista. Te la pots endur encara que no ens l'enviïs.</p>
 
 <div class="prog" id="prog" aria-hidden="true">
 <div class="prog-s on"></div><div class="prog-s"></div><div class="prog-s"></div><div class="prog-s"></div>
@@ -454,6 +558,15 @@ footer a{color:var(--light)}
 </div>
 
 </main>
+
+
+<!-- El formulari que Netlify ha de veure per donar d'alta la comanda. No té
+     `action` i està amagat: l'envia el botó «Confirma la comanda» amb un POST. -->
+<form name="comanda" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="comanda">
+  <input name="bot-field"><input name="nom"><input name="mail"><input name="tel"><input name="orgNom">
+  <input name="paquet"><input name="preu"><input name="quan"><textarea name="notes"></textarea><textarea name="resum"></textarea>
+</form>
 
 <footer>
 <p data-i18n-html="pr.peu">SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a></p>
@@ -761,6 +874,76 @@ function resum(P){
   return L.join('\n');
 }
 
+
+/* ── Preus i comanda ──────────────────────────────────────────────────────
+   `PREUS` és l'únic lloc on viu un import. `0` és gratis; `null` és «preu a
+   confirmar» i no es publica cap xifra fins que l'Àlvaro no la doni. */
+const PREUS={t0:{eur:0},t1:{eur:null},t2:{eur:null},t3:{eur:null},viu:{eur:null}};
+function textPreu(t){
+  const p=PREUS[t]; if(!p)return '';
+  if(p.eur===0)return T('pv.gratis');
+  if(p.eur==null)return T('pv.confirmar');
+  return eur(p.eur)+' '+T('pv.iva');
+}
+function pintaPreus(){
+  $$('[data-preu]').forEach(el=>{
+    const t=el.dataset.preu, p=PREUS[t];
+    el.textContent=textPreu(t);
+    el.classList.toggle('conf',!!p&&p.eur==null);
+  });
+  $$('[data-preu-x]').forEach(el=>{
+    const t=el.dataset.preuX, p=PREUS[t];
+    el.textContent=p&&p.eur==null?T('pv.confirmar.d'):(p&&p.x?T(p.x):'');
+  });
+}
+let comanda=null;
+const nomTier=t=>t==='viu'?T('pv.viu.n'):T('pv.'+t+'.n');
+const nomTierCa=t=>t==='viu'?catala('pv.viu.n'):catala('pv.'+t+'.n');
+function resumComanda(){
+  const c=comanda, p=PREUS[c]||{};
+  return ['COMANDA · '+nomTierCa(c),
+    'Preu: '+(p.eur==null?'a confirmar':(p.eur===0?'gratis':p.eur+' € + IVA')),
+    'Nom: '+v('cNom'),'Correu: '+v('cMail'),
+    v('cTel')&&'Telèfon: '+v('cTel'), v('cOrg')&&'Organització: '+v('cOrg'),
+    v('cQuan')&&'Quan: '+v('cQuan'), v('cNotes')&&'Notes: '+v('cNotes'),
+    'Acceptat: es confirma per correu i es paga abans de començar.',
+    'Enviada des de teamtowershuma.com/SOS/pressupost.html'].filter(Boolean).join('\n');
+}
+function obreComanda(t){
+  comanda=t;
+  $('#cmQu').textContent=nomTier(t)+' · '+textPreu(t);
+  $('#cEnvia').textContent=T(t==='viu'?'pv.m.avisa':'pv.m.envia');
+  $('#cEnvia').disabled=false;
+  ['cErr','cKo'].forEach(id=>$('#'+id).classList.remove('on'));
+  $('#cOk').hidden=true;
+  /* Si ja l'han escrit al formulari de sota o al diagnòstic, no es torna a demanar. */
+  [['cNom','nom'],['cMail','mail'],['cTel','tel'],['cOrg','orgNom']].forEach(([a,b])=>{ if(!v(a)&&v(b))$('#'+a).value=v(b); });
+  const d=$('#cm'); if(d.showModal)d.showModal(); else d.setAttribute('open','');
+}
+$$('[data-contracta]').forEach(b=>b.onclick=()=>obreComanda(b.dataset.contracta));
+$('#cTanca').onclick=()=>{const d=$('#cm'); if(d.close)d.close(); else d.removeAttribute('open');};
+/* L'ENVIAMENT DE LA COMANDA. Viu dins d'aquest clic: fins que no es prem,
+   d'aquí no surt res. */
+$('#cEnvia').onclick=async()=>{
+  const okNom=v('cNom').length>1, okMail=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('cMail')), okAcc=$('#cAcc').checked;
+  $('#cErr').classList.toggle('on',!(okNom&&okMail&&okAcc));
+  if(!(okNom&&okMail&&okAcc))return;
+  const p=PREUS[comanda]||{};
+  const dades={'form-name':'comanda','bot-field':'',nom:v('cNom'),mail:v('cMail'),tel:v('cTel'),orgNom:v('cOrg'),
+    paquet:nomTierCa(comanda),preu:p.eur==null?'a confirmar':String(p.eur),quan:v('cQuan'),notes:v('cNotes'),resum:resumComanda()};
+  const cos=Object.keys(dades).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(dades[k])).join('&');
+  $('#cEnvia').disabled=true; $('#cKo').classList.remove('on');
+  try{
+    const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:cos});
+    if(!r.ok)throw new Error(r.status);
+    $('#cOk').hidden=false;
+  }catch(e){
+    $('#cEnvia').disabled=false;
+    $('#cMailto').href='mailto:'+mailAddr()+'?subject='+encodeURIComponent('Comanda · '+nomTierCa(comanda))+'&body='+encodeURIComponent(resumComanda());
+    $('#cKo').classList.add('on');
+  }
+};
+
 let actual=null;
 $('#doProp').onclick=()=>{
   if(!validate(1)){showStep(1);return;}
@@ -826,8 +1009,48 @@ totalHores();
 var PR_I18N = {
 ca: {
 /*PRESSU-I18N-CA*/
-  'pr.h1':'Demana pressupost',
-  'pr.intro':'Tria el que t\'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: com es calcula cada paquet per fluxos, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l\'enviïs.</strong>',
+  'pr.h1':'Preus i contractació',
+  'pr.intro':'Comença pel que et cal ara: cada pas porta al següent i cap no t\'obliga a fer el de dalt. Els preus són <strong>sense IVA</strong>. Si el que vols no hi és, a sota tens el <a href="#amida">pressupost a mida, per fluxos</a>.',
+  'pv.eye':'Preus · sense IVA',
+  'pv.h':'Quatre maneres d\'entrar, de la més lleugera al sistema sencer',
+  'pv.t0.n':'Esborrany del mapa',
+  'pv.t0.q':'Per a qualsevol que vulgui veure on és',
+  'pv.t0.d':'El mapa de valor del teu negoci, dibuixat amb el que ens expliques. És teu i te l\'endús.',
+  'pv.t0.cta':'Comença ara',
+  'pv.t1.n':'Sessió individual',
+  'pv.t1.q':'Autònoms, fundadors i qui dirigeix sol',
+  'pv.t1.d':'Revisem el teu mapa junts, hi marquem on s\'encalla el valor i en surt el primer pas.',
+  'pv.t2.n':'Taller d\'equip',
+  'pv.t2.q':'Equips de 4 a 12 persones',
+  'pv.t2.d':'L\'equip veu el mateix flux de valor i es posa d\'acord en on ha de fluir millor. Mapa real i ideal.',
+  'pv.t3.n':'El teu negoci operatiu',
+  'pv.t3.q':'Pimes i projectes que volen el sistema sencer',
+  'pv.t3.d':'La sala amb l\'equip, el mapa real i l\'ideal, el cervell per rol, la web de xarxa a nom vostre i 30 dies d\'acompanyament.',
+  'pv.gratis':'Gratis',
+  'pv.confirmar':'Preu a confirmar',
+  'pv.confirmar.d':'Te\'l diem amb la confirmació, abans de pagar res.',
+  'pv.viu.n':'Després · Sistema viu, cada mes',
+  'pv.viu.d':'Mantenim les connexions i les millorem amb el que mesura el SOS. La quota es decideix amb els pilots.',
+  'pv.viu.cta':'Avisa\'m',
+  'pv.cta':'Contracta',
+  'pv.iva':'+ IVA',
+  'pv.flux':'<strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell (35, 55 o 80 €/h) més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.',
+  'pv.amida.h':'A mida, per fluxos',
+  'pv.amida.sub':'Tria els paquets i en surt una proposta esborrany amb el desglossament a la vista. Te la pots endur encara que no ens l\'enviïs.',
+  'pv.m.h':'Contracta',
+  'pv.m.sub':'Deixa\'ns on enviar-te la confirmació. Encara no cobrem en línia: en un dia laborable et confirmem la data i t\'enviem la factura amb l\'enllaç de pagament.',
+  'pv.m.quan':'Quan us aniria bé',
+  'pv.m.quan.ph':'p.ex. les tardes de la setmana que ve',
+  'pv.m.notes':'Res més que hàgim de saber',
+  'pv.m.acc':'Entenc que la comanda es confirma per correu i es paga per transferència o enllaç de pagament abans de començar.',
+  'pv.m.err':'Cal el nom, un correu vàlid i acceptar com es paga.',
+  'pv.m.envia':'Confirma la comanda',
+  'pv.m.avisa':'Apunta-m\'hi',
+  'pv.m.tanca':'Tanca',
+  'pv.m.ok':'Comanda rebuda. En un dia laborable et confirmem la data i t\'enviem la factura.',
+  'pv.m.ko':'No s\'ha pogut enviar. Envia-la per correu:',
+  'pv.m.mail':'Obre el correu',
+  'pv.m.priv':'S\'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més.',
   'pr.s1.h':'1 · Qui ets',
   'pr.s1.sub':'Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.',
   'pr.s1.err':'Cal com a mínim el nom i un correu vàlid.',
@@ -1004,8 +1227,8 @@ ca: {
   'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
   'nv.t.arrel-cataleg':'El catàleg',
   'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
-  'nv.t.pressupost':'Demana pressupost',
-  'nv.d.pressupost':'Tria què vols i en surt la proposta',
+  'nv.t.pressupost':'Preus i contractació',
+  'nv.d.pressupost':'De l\'esborrany al negoci operatiu, i la resta a mida',
   'nv.t.diagnostic':'Diagnòstic',
   'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
   'nv.g.sos':'El SOS',
@@ -1070,8 +1293,48 @@ ca: {
 },
 es: {
 /*PRESSU-I18N-ES*/
-  'pr.h1':'Pide presupuesto',
-  'pr.intro':'Elige lo que te interesa y sale una <strong>propuesta borrador</strong> con el desglose a la vista: cómo se calcula cada paquete por flujos, las horas por nivel si lo contratas por horas, y qué falta para cerrarla. <strong>Te la puedes llevar aunque no nos la envíes.</strong>',
+  'pr.h1':'Precios y contratación',
+  'pr.intro':'Empieza por lo que te hace falta ahora: cada paso lleva al siguiente y ninguno te obliga a hacer el de arriba. Los precios son <strong>sin IVA</strong>. Si lo que quieres no está, debajo tienes el <a href="#amida">presupuesto a medida, por flujos</a>.',
+  'pv.eye':'Precios · sin IVA',
+  'pv.h':'Cuatro maneras de entrar, de la más ligera al sistema entero',
+  'pv.t0.n':'Borrador del mapa',
+  'pv.t0.q':'Para cualquiera que quiera ver dónde está',
+  'pv.t0.d':'El mapa de valor de tu negocio, dibujado con lo que nos cuentas. Es tuyo y te lo llevas.',
+  'pv.t0.cta':'Empieza ahora',
+  'pv.t1.n':'Sesión individual',
+  'pv.t1.q':'Autónomos, fundadores y quien dirige solo',
+  'pv.t1.d':'Revisamos tu mapa juntos, marcamos dónde se atasca el valor y sale el primer paso.',
+  'pv.t2.n':'Taller de equipo',
+  'pv.t2.q':'Equipos de 4 a 12 personas',
+  'pv.t2.d':'El equipo ve el mismo flujo de valor y se pone de acuerdo en dónde tiene que fluir mejor. Mapa real e ideal.',
+  'pv.t3.n':'Tu negocio operativo',
+  'pv.t3.q':'Pymes y proyectos que quieren el sistema entero',
+  'pv.t3.d':'La sala con el equipo, el mapa real y el ideal, el cerebro por rol, la web de red a vuestro nombre y 30 días de acompañamiento.',
+  'pv.gratis':'Gratis',
+  'pv.confirmar':'Precio a confirmar',
+  'pv.confirmar.d':'Te lo decimos con la confirmación, antes de pagar nada.',
+  'pv.viu.n':'Después · Sistema vivo, cada mes',
+  'pv.viu.d':'Mantenemos las conexiones y las mejoramos con lo que mide el SOS. La cuota se decide con los pilotos.',
+  'pv.viu.cta':'Avísame',
+  'pv.cta':'Contrata',
+  'pv.iva':'+ IVA',
+  'pv.flux':'<strong>A medida, por flujos.</strong> Todo lo que no está aquí se presupuesta por flujos: las horas de cada nivel (35, 55 u 80 €/h) más el coste real de la IA, que te factura el proveedor a tu nombre. <a href="#amida">Hazte el presupuesto</a> · <a href="/conecta/">el coste de la IA, tarea por tarea</a>.',
+  'pv.amida.h':'A medida, por flujos',
+  'pv.amida.sub':'Elige los paquetes y sale una propuesta borrador con el desglose a la vista. Te la puedes llevar aunque no nos la envíes.',
+  'pv.m.h':'Contrata',
+  'pv.m.sub':'Déjanos dónde enviarte la confirmación. Aún no cobramos en línea: en un día laborable te confirmamos la fecha y te enviamos la factura con el enlace de pago.',
+  'pv.m.quan':'Cuándo os iría bien',
+  'pv.m.quan.ph':'p.ej. las tardes de la semana que viene',
+  'pv.m.notes':'Algo más que debamos saber',
+  'pv.m.acc':'Entiendo que el pedido se confirma por correo y se paga por transferencia o enlace de pago antes de empezar.',
+  'pv.m.err':'Hace falta el nombre, un correo válido y aceptar cómo se paga.',
+  'pv.m.envia':'Confirma el pedido',
+  'pv.m.avisa':'Apúntame',
+  'pv.m.tanca':'Cierra',
+  'pv.m.ok':'Pedido recibido. En un día laborable te confirmamos la fecha y te enviamos la factura.',
+  'pv.m.ko':'No se ha podido enviar. Envíala por correo:',
+  'pv.m.mail':'Abre el correo',
+  'pv.m.priv':'Se envía solo cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más.',
   'pr.s1.h':'1 · Quién eres',
   'pr.s1.sub':'Para saber con quién hablamos y cómo dirigirnos. Si ya has hecho el diagnóstico, esto ya debería venir rellenado.',
   'pr.s1.err':'Hace falta como mínimo el nombre y un correo válido.',
@@ -1248,8 +1511,8 @@ es: {
   'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
   'nv.t.arrel-cataleg':'El catálogo',
   'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
-  'nv.t.pressupost':'Pide presupuesto',
-  'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
+  'nv.t.pressupost':'Precios y contratación',
+  'nv.d.pressupost':'Del borrador al negocio operativo, y el resto a medida',
   'nv.t.diagnostic':'Diagnóstico',
   'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
   'nv.g.sos':'El SOS',
@@ -1354,6 +1617,7 @@ function prAplicaLang(l) {
   /* I la proposta, si ja està calculada: qui canvia de llengua llegint-la no
      l'ha de tornar a demanar. */
   if (actual) pinta(actual);
+  pintaPreus();
 }
 document.querySelectorAll('.lang-b').forEach(function (b) {
   b.addEventListener('click', function () { prAplicaLang(b.getAttribute('data-lang')); });
@@ -1363,7 +1627,7 @@ prAplicaLang(PR_LANG);
 /* Hook per a proves. El que es mira des de fora és el **resum**, que ha de
    seguir en català amb la pantalla en castellà: sense això, la prova hauria de
    prémer «copia» i llegir el porta-retalls. */
-window.__PRESSU = { proposta, resum, pinta, prAplicaLang, PR_I18N };
+window.__PRESSU = { proposta, resum, pinta, prAplicaLang, PR_I18N, PREUS, pintaPreus, obreComanda, resumComanda };
 </script>
 
 </body>

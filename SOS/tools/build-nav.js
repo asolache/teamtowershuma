@@ -108,8 +108,8 @@ const GRUPS = [
       T('La teva web amb la teva IA, el CRM i els cobraments', 'Tu web con tu IA, el CRM y los cobros')],
     ['cataleg.html', T('El catàleg', 'El catálogo'),
       T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
-    ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
-      T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
+    ['pressupost.html', T('Preus i contractació', 'Precios y contratación'),
+      T('De l\'esborrany al negoci operatiu, i la resta a mida', 'Del borrador al negocio operativo, y el resto a medida')],
     /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
        pregunta si ets una organització o un territori. Posar-hi els dos
        diagnòstics obligaria a triar abans de saber què els distingeix. */

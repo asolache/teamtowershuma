@@ -117,7 +117,7 @@ const FUITES = [
   [/<form[^>]+action=/i, 'un <form> amb action'],
   [/googletagmanager|google-analytics|gtag\(/i, 'analítica']
 ];
-for (const [nom, src] of [['territori', dx], ['pressupost', pr], ['la tria', TRIA]]) {
+for (const [nom, src] of [['territori', dx], ['la tria', TRIA]]) {
   const trobades = FUITES.filter(([re]) => re.test(src)).map(([, n]) => n);
   if (!trobades.length) ok(`el ${nom} no envia res sol: cap sortida de dades`);
   else bad(`el ${nom} té ${pl(trobades.length, 'sortida de dades', 'sortides de dades')} (${trobades.join(', ')}) — la pàgina promet que no envia res fins que tu ho premis`);
@@ -134,30 +134,33 @@ for (const [nom, src] of [['territori', dx], ['pressupost', pr], ['la tria', TRI
      · que visqui dins d'un `onclick`, no a l'arrencada ni dins del càlcul;
      · i que al costat hi hagi escrit què s'envia i a on. Un enviament que no
        es diu és pitjor que no tenir-lo. */
-(() => {
-  const altres = FUITES.filter(([re, n]) => n !== 'fetch()' && re.test(org)).map(([, n]) => n);
-  if (altres.length) bad(`el diagnòstic d'organització té sortides que no toca (${altres.join(', ')})`);
-  else ok('el diagnòstic d\'organització no té cap sortida de dades fora del botó');
+/* El pressupost s'hi afegeix el 09/10/2026: és la pàgina de preus i té el botó
+   «Confirma la comanda». La mateixa regla, sense relaxar-la: una crida, dins
+   d'un clic, dient què s'envia i a on, i recollint l'error. */
+for (const [nom, src] of [['el diagnòstic d\'organització', org], ['el pressupost', pr]]) {
+  const altres = FUITES.filter(([re, n]) => n !== 'fetch()' && re.test(src)).map(([, n]) => n);
+  if (altres.length) bad(`${nom} té sortides que no toca (${altres.join(', ')})`);
+  else ok(`${nom} no té cap sortida de dades fora del botó`);
 
-  const crides = (org.match(/\bfetch\s*\(/g) || []).length;
-  if (crides !== 1) bad(`el diagnòstic d'organització té ${crides} crides de xarxa: n'ha de tenir exactament una, la del botó`);
+  const crides = (src.match(/\bfetch\s*\(/g) || []).length;
+  if (crides !== 1) bad(`${nom} té ${crides} crides de xarxa: n'ha de tenir exactament una, la del botó`);
   else {
-    const i = org.search(/\bfetch\s*\(/);
-    const abans = org.slice(Math.max(0, i - 800), i);
+    const i = src.search(/\bfetch\s*\(/);
+    const abans = src.slice(Math.max(0, i - 1200), i);
     if (!/onclick\s*=\s*async\s*\(\s*\)\s*=>/.test(abans))
-      bad('la crida de xarxa no penja d\'un clic: la pàgina enviaria sense que ningú ho premi');
-    else ok('la seva única crida de xarxa viu dins del botó d\'enviar');
+      bad(`la crida de xarxa de ${nom} no penja d'un clic: la pàgina enviaria sense que ningú ho premi`);
+    else ok(`la seva única crida de xarxa viu dins del botó d'enviar (${nom})`);
   }
 
-  if (!/S'envia/.test(org) || !/Netlify/.test(org))
-    bad('la pàgina no diu què s\'envia ni a on — un enviament que no es diu és pitjor que no tenir-lo');
-  else ok('i diu què s\'envia i a on, al costat del botó');
+  if (!/S'envia/.test(src) || !/Netlify/.test(src))
+    bad(`${nom} no diu què s'envia ni a on — un enviament que no es diu és pitjor que no tenir-lo`);
+  else ok(`i diu què s'envia i a on, al costat del botó (${nom})`);
 
-  // El diagnòstic s'ha de poder veure encara que l'enviament falli.
-  if (!/catch\s*\(/.test(org.slice(org.search(/\bfetch\s*\(/))))
-    bad('si l\'enviament falla no ho recull ningú: la persona es quedaria sense saber-ho');
-  else ok('i si falla es diu, i el diagnòstic es té igualment');
-})();
+  // El que s'ha fet s'ha de poder tenir encara que l'enviament falli.
+  if (!/catch\s*\(/.test(src.slice(src.search(/\bfetch\s*\(/))))
+    bad(`si l'enviament de ${nom} falla no ho recull ningú: la persona es quedaria sense saber-ho`);
+  else ok(`i si falla es diu (${nom})`);
+}
 
 /* ── 3c · El que es tria s'ha de VEURE que s'ha triat ─────────────────────
    Un formulari on prems una casella i no passa res visible no sembla trencat:

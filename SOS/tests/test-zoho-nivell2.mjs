@@ -62,6 +62,16 @@ console.log('\n2 · El lead');
   ok(aLead('x', DADES) === null, 'un formulari desconegut no fa lead');
 }
 
+console.log('\n2b · La comanda de la pàgina de preus');
+{
+  const c = aLead('comanda', { nom: 'Júlia Ferrer', mail: 'julia@example.org', orgNom: 'La Cooperativa',
+    paquet: 'Taller d\'equip', preu: 'a confirmar', quan: 'dimarts', notes: 'som 8', resum: 'COMANDA · Taller d\'equip' });
+  ok(c && c.Email === 'julia@example.org' && c.Company === 'La Cooperativa', 'la comanda també entra com a lead');
+  ok(/Origen: Comanda des de la pàgina de preus/.test(c.Description) && /Comanda: Taller d'equip · a confirmar/.test(c.Description),
+    'i la descripció diu què s\'ha contractat i a quin preu');
+  ok(/Quan: dimarts/.test(c.Description) && /Notes: som 8/.test(c.Description), 'amb quan i les notes');
+}
+
 console.log('\n3 · El camí bo');
 {
   const f = fals([{ status: 200, json: { access_token: 'tok' } }, { status: 201, json: { data: [{ status: 'success', code: 'SUCCESS', details: { id: '123' } }] } }]);

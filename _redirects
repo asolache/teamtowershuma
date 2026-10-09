@@ -14,6 +14,11 @@
 # camins tal com són: /SOS/comando.html existeix i /sos/comando no, i qui hi
 # arriba veu un 404 sense saber que s'ha equivocat de majúscules. Es declaren
 # les tres formes de cadascuna perquè la que la gent escriu sempre funcioni.
+# La pàgina de preus: es diu en veu alta «teamtowershuma.com/preus».
+/preus /SOS/pressupost.html    200
+/sos/preus /SOS/pressupost.html    200
+/sos/pressupost /SOS/pressupost.html    200
+
 /SOS/online /SOS/online.html    200
 /sos/online /SOS/online.html    200
 /online /SOS/online.html    200
