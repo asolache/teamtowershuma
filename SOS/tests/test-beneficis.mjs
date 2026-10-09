@@ -127,13 +127,17 @@ ok(r.rsc, 'es diu que serveix per a un programa de RSC amb les pròpies persones
 ok(r.qui, 'i a qui: empresa, cooperativa i federació d\'entitats');
 ok(r.registre, 'i que el que aporta cada persona queda al seu registre, no al de l\'empresa');
 
-console.log('\n5 · I el focus segueix sent comunitari');
+console.log('\n5 · El mateix esquelet per a una pime, una cooperativa i el veïnat');
+/* Fins al 09/10/2026 aquí es comprovava que el focus fos comunitari. Amb
+   l'estratègia del negoci operatiu, el hero parla primer a l'organització
+   —que el mapa acordat a la sala segueixi funcionant— i el veïnat hi segueix
+   sent: el que no pot passar és que se'n perdi cap dels tres. */
 const c = await page.evaluate(() => {
   const ob = document.getElementById('onboarding').innerText;
-  return { veinal: /veïnal/i.test(ob), barri: /barri/i.test(ob),
+  return { veinal: /veïnal/i.test(ob), pime: /\bpime/i.test(ob), coop: /cooperativa/i.test(ob),
     obre: /organització|xarxa d'entitats/i.test(ob) };
 });
-ok(c.veinal && c.barri, 'la portada segueix parlant del barri i del veïnat');
+ok(c.pime && c.coop && c.veinal, 'la portada diu les tres: pime, cooperativa i xarxa veïnal');
 ok(c.obre, 'i obre l\'esquelet a una organització o una xarxa sense deixar-ho');
 
 await b.close();
