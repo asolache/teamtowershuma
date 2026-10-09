@@ -56,6 +56,8 @@ console.log('\n2 · El lead');
   ok(aLead('diagnostic-org', { nom: 'Júlia' }).Last_Name === 'Júlia', 'amb un sol mot, va sencer a Last_Name (obligatori a Zoho)');
   ok(l.Company === 'La Cooperativa' && l.City === 'Vilafranca del Penedès' && l.No_of_Employees === 45, 'organització, municipi i persones');
   ok(/Origen: Diagnòstic d'organització/.test(l.Description) && /Resum del diagnòstic/.test(l.Description), 'la descripció diu d\'on ve i porta el resum');
+  ok(/Rols de la xarxa sense porta: Qui revèn/.test(aLead('diagnostic-org', { ...DADES, rols: 'Qui revèn' }).Description)
+    && !/Rols de la xarxa/.test(l.Description), 'els rols sense porta hi van quan n\'hi ha, i si no, no hi surt la línia');
   ok(!('Lead_Source' in l), 'sense ZOHO_LEAD_SOURCE no s\'inventa un valor de la llista');
   ok(aLead('diagnostic-org', DADES, { leadSource: 'Web' }).Lead_Source === 'Web', 'i amb ell, s\'hi posa');
   ok(!Object.values(l).includes(''), 'cap camp buit viatja');

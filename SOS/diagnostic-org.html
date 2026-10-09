@@ -177,6 +177,11 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 #result .acts{flex-wrap:wrap;justify-content:flex-start}
 #result .btn-g{border-color:var(--border);color:var(--text)}
 #bNet{margin-left:0}
+.rols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.4rem}
+.rols .chip{border-radius:10px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:.05rem;padding:.5rem .7rem}
+.rols .r-t{font-weight:600;color:var(--text)}
+.rols .r-d{font-size:.74rem;color:var(--muted);line-height:1.35}
+.rols .chip.sel{background:color-mix(in srgb,var(--indigo) 12%,transparent)}
 .mes{margin:.2rem 0 1rem;border:1px dashed var(--border);border-radius:10px;padding:.2rem .8rem}
 .mes>summary{cursor:pointer;color:var(--indigo);font-size:.88rem;font-weight:600;padding:.6rem 0;list-style:none}
 .mes>summary::-webkit-details-marker{display:none}
@@ -202,6 +207,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
   .opts{grid-template-columns:1fr;gap:.45rem}
   .opt{padding:.75rem .85rem;min-height:52px}
   .opt .o-t{font-size:.95rem}
+  .rols{grid-template-columns:1fr 1fr}
   .opt .o-d{font-size:.8rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .opt.sel .o-d{-webkit-line-clamp:unset;display:block}
   input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px;padding:.75rem .8rem}
@@ -414,6 +420,22 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 </div>
 <div class="f"><label for="persones" data-i18n="fo.l.persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" data-i18n-ph="fo.ph.persones" placeholder="p.ex. 45"><div class="hint" data-i18n="fo.h.persones">De tota l'organització, no només de l'equip que hi entraria.</div></div>
 <!--/FORM-ORG-->
+<!-- QUINS ROLS NO TENEN PORTA. Només per als objectius del negoci operatiu
+     (`grup: 'operatiu'` a build-diagnosi-org.js): és el que fa començar
+     l'esborrany del mapa i la web per aquests rols. Opcional i de tocar, no
+     d'escriure. -->
+<div class="f" id="qRols" hidden><label data-i18n="dx.l.rols">Qui més sosté el negoci i avui no té res pensat per a ell</label>
+<div class="chips rols" id="rols">
+<!--DX-ROLS-->
+<button type="button" class="chip" data-rol="compra"><span class="r-t">🛒 Qui compra</span> <span class="r-d">clients</span></button>
+<button type="button" class="chip" data-rol="reven"><span class="r-t">🏪 Qui revèn</span> <span class="r-d">botigues, distribuïdors, agències</span></button>
+<button type="button" class="chip" data-rol="subministra"><span class="r-t">📦 Qui subministra</span> <span class="r-d">proveïdors</span></button>
+<button type="button" class="chip" data-rol="treballa"><span class="r-t">🧑‍🔧 Qui hi treballa</span> <span class="r-d">equip, socis, col·laboradors</span></button>
+<button type="button" class="chip" data-rol="acull"><span class="r-t">🏘️ Qui us acull</span> <span class="r-d">el poble, el barri, el territori</span></button>
+<button type="button" class="chip" data-rol="recomana"><span class="r-t">📣 Qui us recomana</span> <span class="r-d">prescriptors, xarxes, clients contents</span></button>
+<!--/DX-ROLS-->
+</div>
+<div class="hint" data-i18n="dx.h.rols">Opcional. Tria'n tants com vulguis: el mapa i la web començaran per aquests.</div></div>
 <p class="err" id="e2" data-i18n="dx.e2">Tria quin tipus d'organització sou i digues on sou.</p>
 <div class="acts"><button type="button" class="btn btn-g" data-back="1" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="3" data-i18n="dx.seg">Següent →</button></div>
 </section>
@@ -529,6 +551,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 
 <h3 style="margin:1.4rem 0 .6rem;font-size:1.05rem" data-i18n="dx.r.primer">El primer pas</h3>
 <p id="rNext"></p>
+<p id="rRols" class="dx-nota-org" hidden></p>
 
 <!-- L'ENVIAMENT · un acte a part, i dit.
      El diagnòstic ja està calculat i ja el tens: fins aquí no ha sortit res
@@ -579,7 +602,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
   <input name="bot-field"><input name="nom"><input name="mail"><input name="tel"><input name="carrec">
   <input name="rol"><input name="org"><input name="orgNom"><input name="web"><input name="dediqueu"><input name="municipi"><input name="persones">
   <input name="objectiu"><input name="termini"><input name="decideix">
-  <textarea name="ampliacio"></textarea><textarea name="resum"></textarea>
+  <input name="rols"><textarea name="ampliacio"></textarea><textarea name="resum"></textarea>
 </form>
 
 <script type="module">
@@ -596,16 +619,24 @@ const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció 
 /*DX-DADES*/
 // Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
 const GRUPS={'operatiu':{t:'El teu negoci operatiu',tEs:'Tu negocio operativo'},'equip':{t:'L\'equip i les jornades',tEs:'El equipo y las jornadas'}};
+const ROLS={
+  'compra':{ic:'🛒',t:'Qui compra',tEs:'Quien compra',d:'clients',dEs:'clientes'},
+  'reven':{ic:'🏪',t:'Qui revèn',tEs:'Quien revende',d:'botigues, distribuïdors, agències',dEs:'tiendas, distribuidores, agencias'},
+  'subministra':{ic:'📦',t:'Qui subministra',tEs:'Quien suministra',d:'proveïdors',dEs:'proveedores'},
+  'treballa':{ic:'🧑‍🔧',t:'Qui hi treballa',tEs:'Quien trabaja',d:'equip, socis, col·laboradors',dEs:'equipo, socios, colaboradores'},
+  'acull':{ic:'🏘️',t:'Qui us acull',tEs:'Quien os acoge',d:'el poble, el barri, el territori',dEs:'el pueblo, el barrio, el territorio'},
+  'recomana':{ic:'📣',t:'Qui us recomana',tEs:'Quien os recomienda',d:'prescriptors, xarxes, clients contents',dEs:'prescriptores, redes, clientes contentos'}
+};
 const OBJECTIUS={
-  'operatiu':{ic:'⚙️',t:'Que el negoci funcioni cada dia com l\'hem pensat',tEs:'Que el negocio funcione cada día como lo hemos pensado',preg:'dolor',diu:'Sabem com hauria de funcionar i no és com funciona. No volem un altre informe al calaix: volem veure qui lliura què, on s\'encalla i que ens avisi.',diuEs:'Sabemos cómo debería funcionar y no es como funciona. No queremos otro informe en el cajón: queremos ver quién entrega qué, dónde se atasca y que nos avise.',paq:['mapa-organitzacio','fluxos-ia','web-ia'],despres:['ia-amb-frens'],llegim:'És el que fem ara: el mapa real i l\'ideal de la vostra xarxa, un cervell per rol que es queda al vostre repositori, la web de xarxa i les eines de cada rol connectades. Comença amb un esborrany gratuït del mapa fet amb el que ja teniu, i es pressuposta per fluxos.',llegimEs:'Es lo que hacemos ahora: el mapa real y el ideal de vuestra red, un cerebro por rol que se queda en vuestro repositorio, la web de red y las herramientas de cada rol conectadas. Empieza con un borrador gratuito del mapa hecho con lo que ya tenéis, y se presupuesta por flujos.'},
-  'web':{ic:'🌐',t:'Una web per a tota la xarxa, no només per a qui compra',tEs:'Una web para toda la red, no solo para quien compra',preg:'dolor',diu:'Les botigues ens demanen la fitxa per missatge, qui ens recomana no té res per reenviar i els proveïdors no saben què busquem. La web només parla amb qui compra.',diuEs:'Las tiendas nos piden la ficha por mensaje, quien nos recomienda no tiene nada que reenviar y los proveedores no saben qué buscamos. La web solo habla con quien compra.',paq:['web-ia','mapa-organitzacio'],despres:['fluxos-ia'],llegim:'Primer el mapa i després la web: cada rol del mapa hi té una porta, cada intercanvi tangible una acció i cada intangible el contingut que dona confiança. És HTML estàndard del W3C, al vostre GitHub i publicat a Netlify, i el repositori és la memòria de la casa. Sense quota i sense dependre de nosaltres.',llegimEs:'Primero el mapa y después la web: cada rol del mapa tiene una puerta, cada intercambio tangible una acción y cada intangible el contenido que da confianza. Es HTML estándar del W3C, en vuestro GitHub y publicado en Netlify, y el repositorio es la memoria de la casa. Sin cuota y sin depender de nosotros.'},
-  'fluxos':{ic:'🤖',t:'Treure\'ns de sobre la feina que es repeteix, sense perdre el criteri',tEs:'Quitarnos de encima el trabajo que se repite, sin perder el criterio',preg:'dolor',diu:'Cada setmana fem a mà la mateixa feina, i no sabem què podem posar en mans d\'una IA sense que s\'equivoqui en el que importa.',diuEs:'Cada semana hacemos a mano el mismo trabajo, y no sabemos qué podemos poner en manos de una IA sin que se equivoque en lo que importa.',paq:['fluxos-ia','ia-amb-frens'],despres:['web-ia'],llegim:'Es marca cada flux: el que es repeteix igual s\'automatitza, el que porta criteri es queda en mans de persones i l\'intangible s\'escriu. Cada flux porta el cost de la seva IA, amb el model que toca a cada tasca: el petit on n\'hi ha prou i el gran només on cal.',llegimEs:'Se marca cada flujo: lo que se repite igual se automatiza, lo que lleva criterio se queda en manos de personas y lo intangible se escribe. Cada flujo lleva el coste de su IA, con el modelo que toca a cada tarea: el pequeño donde basta y el grande solo donde hace falta.'},
-  'mapa':{ic:'🕸️',t:'Entendre com flueix el valor i de qui depenem de debò',tEs:'Entender cómo fluye el valor y de quién dependemos de verdad',preg:'dolor',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',diuEs:'Sabemos quién hay en el organigrama y no sabemos quién sostiene qué. Cuando se va alguien, nos damos cuenta de lo que hacía.',paq:['fent-pinya-vna','mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el primer pas del negoci operatiu i el que fa possible tota la resta.',llegimEs:'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es el primer paso del negocio operativo y lo que hace posible todo lo demás.'},
-  'acords':{ic:'🔗',t:'Que el que aporta cadascú quedi registrat i sigui de tots',tEs:'Que lo que aporta cada uno quede registrado y sea de todos',preg:'dolor',diu:'Som una cooperativa, una xarxa o un projecte amb socis. El que aporta cadascú —hores, coneixement, contactes— no consta enlloc, o consta en una plataforma que no és nostra.',diuEs:'Somos una cooperativa, una red o un proyecto con socios. Lo que aporta cada uno —horas, conocimiento, contactos— no consta en ningún sitio, o consta en una plataforma que no es nuestra.',paq:['contractes','mapa-organitzacio'],despres:['web-ia'],llegim:'El mapa diu què aporta cada rol, tangible i intangible; el registre ho apunta i les dades es queden a casa vostra, no en una plataforma. Si els acords s\'han d\'executar sols —contractes intel·ligents sobre Ethereum o xarxes semblants—, primer es fa l\'estudi de viabilitat: diem si val la pena abans de construir res.',llegimEs:'El mapa dice qué aporta cada rol, tangible e intangible; el registro lo apunta y los datos se quedan en vuestra casa, no en una plataforma. Si los acuerdos tienen que ejecutarse solos —contratos inteligentes sobre Ethereum o redes similares—, primero se hace el estudio de viabilidad: decimos si vale la pena antes de construir nada.'},
-  'sostenir':{ic:'🧱',t:'Que l\'equip sostingui el que hem muntat quan marxem',tEs:'Que el equipo sostenga lo que hemos montado cuando nos vayamos',preg:'dolor',diu:'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',diuEs:'Hemos hecho proyectos que funcionaban mientras estaba quien los llevaba. Queremos que el siguiente no dependa de una persona.',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.',llegimEs:'Sostener una manera de trabajar es un oficio y se aprende haciéndolo sobre vuestro caso. El cuarto paso del método es que nos vamos, y eso solo es honesto si antes se ha formado a quien se queda.'},
-  'direccio':{ic:'🧭',t:'Acompanyar la direcció en una decisió que costa',tEs:'Acompañar a la dirección en una decisión que cuesta',preg:'dolor',diu:'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',diuEs:'Hay una decisión sobre la mesa —una reorganización, un relevo, una fusión— y falta una mirada de fuera que no venga a vender nada.',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.',llegimEs:'Aquí no se entrega un taller: se entran sesiones con quien decide, con el mapa en la mano y sin público.'},
-  'cohesio':{ic:'🤝',t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',tEs:'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',preg:'format',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',diuEs:'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',paq:['fent-pinya','fent-pinya-vna','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',llegimEs:'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'},
-  'obrir':{ic:'🎪',t:'Un acte que es recordi, o la jornada sencera',tEs:'Un acto que se recuerde, o la jornada entera',preg:'format',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació, o que algú ens porti la jornada de cap a peus.',diuEs:'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación, o que alguien nos lleve la jornada de principio a fin.',paq:['demos','fent-pinya','produccio'],despres:['transmedia'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on. Si la porteu sencera, vol dir guió, proveïdors i permisos, i es cotitza a mida.',llegimEs:'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde. Si la llevamos entera, quiere decir guion, proveedores y permisos, y se cotiza a medida.'}
+  'operatiu':{ic:'⚙️',t:'Que el negoci funcioni cada dia com l\'hem pensat',tEs:'Que el negocio funcione cada día como lo hemos pensado',preg:'dolor',grup:'operatiu',diu:'Sabem com hauria de funcionar i no és com funciona. No volem un altre informe al calaix: volem veure qui lliura què, on s\'encalla i que ens avisi.',diuEs:'Sabemos cómo debería funcionar y no es como funciona. No queremos otro informe en el cajón: queremos ver quién entrega qué, dónde se atasca y que nos avise.',paq:['mapa-organitzacio','fluxos-ia','web-ia'],despres:['ia-amb-frens'],llegim:'És el que fem ara: el mapa real i l\'ideal de la vostra xarxa, un cervell per rol que es queda al vostre repositori, la web de xarxa i les eines de cada rol connectades. Comença amb un esborrany gratuït del mapa fet amb el que ja teniu, i es pressuposta per fluxos.',llegimEs:'Es lo que hacemos ahora: el mapa real y el ideal de vuestra red, un cerebro por rol que se queda en vuestro repositorio, la web de red y las herramientas de cada rol conectadas. Empieza con un borrador gratuito del mapa hecho con lo que ya tenéis, y se presupuesta por flujos.'},
+  'web':{ic:'🌐',t:'Una web per a tota la xarxa, no només per a qui compra',tEs:'Una web para toda la red, no solo para quien compra',preg:'dolor',grup:'operatiu',diu:'Les botigues ens demanen la fitxa per missatge, qui ens recomana no té res per reenviar i els proveïdors no saben què busquem. La web només parla amb qui compra.',diuEs:'Las tiendas nos piden la ficha por mensaje, quien nos recomienda no tiene nada que reenviar y los proveedores no saben qué buscamos. La web solo habla con quien compra.',paq:['web-ia','mapa-organitzacio'],despres:['fluxos-ia'],llegim:'Primer el mapa i després la web: cada rol del mapa hi té una porta, cada intercanvi tangible una acció i cada intangible el contingut que dona confiança. És HTML estàndard del W3C, al vostre GitHub i publicat a Netlify, i el repositori és la memòria de la casa. Sense quota i sense dependre de nosaltres.',llegimEs:'Primero el mapa y después la web: cada rol del mapa tiene una puerta, cada intercambio tangible una acción y cada intangible el contenido que da confianza. Es HTML estándar del W3C, en vuestro GitHub y publicado en Netlify, y el repositorio es la memoria de la casa. Sin cuota y sin depender de nosotros.'},
+  'fluxos':{ic:'🤖',t:'Treure\'ns de sobre la feina que es repeteix, sense perdre el criteri',tEs:'Quitarnos de encima el trabajo que se repite, sin perder el criterio',preg:'dolor',grup:'operatiu',diu:'Cada setmana fem a mà la mateixa feina, i no sabem què podem posar en mans d\'una IA sense que s\'equivoqui en el que importa.',diuEs:'Cada semana hacemos a mano el mismo trabajo, y no sabemos qué podemos poner en manos de una IA sin que se equivoque en lo que importa.',paq:['fluxos-ia','ia-amb-frens'],despres:['web-ia'],llegim:'Es marca cada flux: el que es repeteix igual s\'automatitza, el que porta criteri es queda en mans de persones i l\'intangible s\'escriu. Cada flux porta el cost de la seva IA, amb el model que toca a cada tasca: el petit on n\'hi ha prou i el gran només on cal.',llegimEs:'Se marca cada flujo: lo que se repite igual se automatiza, lo que lleva criterio se queda en manos de personas y lo intangible se escribe. Cada flujo lleva el coste de su IA, con el modelo que toca a cada tarea: el pequeño donde basta y el grande solo donde hace falta.'},
+  'mapa':{ic:'🕸️',t:'Entendre com flueix el valor i de qui depenem de debò',tEs:'Entender cómo fluye el valor y de quién dependemos de verdad',preg:'dolor',grup:'operatiu',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',diuEs:'Sabemos quién hay en el organigrama y no sabemos quién sostiene qué. Cuando se va alguien, nos damos cuenta de lo que hacía.',paq:['fent-pinya-vna','mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el primer pas del negoci operatiu i el que fa possible tota la resta.',llegimEs:'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es el primer paso del negocio operativo y lo que hace posible todo lo demás.'},
+  'acords':{ic:'🔗',t:'Que el que aporta cadascú quedi registrat i sigui de tots',tEs:'Que lo que aporta cada uno quede registrado y sea de todos',preg:'dolor',grup:'operatiu',diu:'Som una cooperativa, una xarxa o un projecte amb socis. El que aporta cadascú —hores, coneixement, contactes— no consta enlloc, o consta en una plataforma que no és nostra.',diuEs:'Somos una cooperativa, una red o un proyecto con socios. Lo que aporta cada uno —horas, conocimiento, contactos— no consta en ningún sitio, o consta en una plataforma que no es nuestra.',paq:['contractes','mapa-organitzacio'],despres:['web-ia'],llegim:'El mapa diu què aporta cada rol, tangible i intangible; el registre ho apunta i les dades es queden a casa vostra, no en una plataforma. Si els acords s\'han d\'executar sols —contractes intel·ligents sobre Ethereum o xarxes semblants—, primer es fa l\'estudi de viabilitat: diem si val la pena abans de construir res.',llegimEs:'El mapa dice qué aporta cada rol, tangible e intangible; el registro lo apunta y los datos se quedan en vuestra casa, no en una plataforma. Si los acuerdos tienen que ejecutarse solos —contratos inteligentes sobre Ethereum o redes similares—, primero se hace el estudio de viabilidad: decimos si vale la pena antes de construir nada.'},
+  'sostenir':{ic:'🧱',t:'Que l\'equip sostingui el que hem muntat quan marxem',tEs:'Que el equipo sostenga lo que hemos montado cuando nos vayamos',preg:'dolor',grup:'equip',diu:'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',diuEs:'Hemos hecho proyectos que funcionaban mientras estaba quien los llevaba. Queremos que el siguiente no dependa de una persona.',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.',llegimEs:'Sostener una manera de trabajar es un oficio y se aprende haciéndolo sobre vuestro caso. El cuarto paso del método es que nos vamos, y eso solo es honesto si antes se ha formado a quien se queda.'},
+  'direccio':{ic:'🧭',t:'Acompanyar la direcció en una decisió que costa',tEs:'Acompañar a la dirección en una decisión que cuesta',preg:'dolor',grup:'equip',diu:'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',diuEs:'Hay una decisión sobre la mesa —una reorganización, un relevo, una fusión— y falta una mirada de fuera que no venga a vender nada.',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.',llegimEs:'Aquí no se entrega un taller: se entran sesiones con quien decide, con el mapa en la mano y sin público.'},
+  'cohesio':{ic:'🤝',t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',tEs:'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',preg:'format',grup:'equip',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',diuEs:'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',paq:['fent-pinya','fent-pinya-vna','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',llegimEs:'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'},
+  'obrir':{ic:'🎪',t:'Un acte que es recordi, o la jornada sencera',tEs:'Un acto que se recuerde, o la jornada entera',preg:'format',grup:'equip',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació, o que algú ens porti la jornada de cap a peus.',diuEs:'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación, o que alguien nos lleve la jornada de principio a fin.',paq:['demos','fent-pinya','produccio'],despres:['transmedia'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on. Si la porteu sencera, vol dir guió, proveïdors i permisos, i es cotitza a mida.',llegimEs:'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde. Si la llevamos entera, quiere decir guion, proveedores y permisos, y se cotiza a medida.'}
 };
 /* Nom, durada i què t'endús de cada paquet, copiats del catàleg pel generador.
    Sense preu a posta: aquest diagnòstic no en diu cap i el preu es parla. */
@@ -878,7 +909,10 @@ ca: {
   'dx.b.nocopia':'No s\'ha pogut copiar',
   'dx.b.baixa':'Descarrega\'l',
   'dx.b.torna':'Torna a començar',
-  'dx.mes':'Més detalls (opcional)'
+  'dx.mes':'Més detalls (opcional)',
+  'dx.l.rols':'Qui més sosté el negoci i avui no té res pensat per a ell',
+  'dx.h.rols':'Opcional. Tria\'n tants com vulguis: el mapa i la web començaran per aquests.',
+  'dx.r.rols':'L\'esborrany del mapa començarà per qui avui no té porta, i a la web cadascun en tindrà una:'
 },
 es: {
 /*DIAG-I18N-ES*/
@@ -1101,7 +1135,10 @@ es: {
   'dx.b.nocopia':'No se ha podido copiar',
   'dx.b.baixa':'Descárgalo',
   'dx.b.torna':'Vuelve a empezar',
-  'dx.mes':'Más detalles (opcional)'
+  'dx.mes':'Más detalles (opcional)',
+  'dx.l.rols':'Quién más sostiene el negocio y hoy no tiene nada pensado para él',
+  'dx.h.rols':'Opcional. Elige tantos como quieras: el mapa y la web empezarán por estos.',
+  'dx.r.rols':'El borrador del mapa empezará por quien hoy no tiene puerta, y en la web cada uno tendrá la suya:'
 }
 };
 /* Es llegeixen les dues claus i s'escriuen les dues: la portada desa la tria
@@ -1115,7 +1152,7 @@ try{DX_LANG=localStorage.getItem('sos.lang')||localStorage.getItem('tt_lang')||'
 const T=k=>{const d=DX_I18N[DX_LANG]||DX_I18N.ca;return d[k]!==undefined?d[k]:(DX_I18N.ca[k]||'');};
 const L=(o,c)=>!o?'':(DX_LANG==='es'?(o[c+'Es']||o[c]):o[c])||'';
 
-const st={org:'',obj:''};
+const st={org:'',obj:'',rols:[]};
 let pas=1,current=null;
 
 /* El pont amb el pressupost. Mateixa clau que les altres dues pàgines: qui ve
@@ -1202,6 +1239,11 @@ $$('#objTipus .opt').forEach(b=>b.onclick=()=>{
   $('#qFormat').hidden=preg!=='format';
   $('#qDolor').hidden=preg!=='dolor';
   $('#s3sub').textContent=T(preg==='format'?'dx.s3.format':'dx.s3.dolor');
+  $('#qRols').hidden=(OBJECTIUS[st.obj]||{}).grup!=='operatiu';
+});
+$$('#rols .chip').forEach(c=>c.onclick=()=>{
+  c.classList.toggle('sel');
+  st.rols=$$('#rols .chip.sel').map(x=>x.dataset.rol);
 });
 
 $$('[data-next]').forEach(b=>b.onclick=()=>{
@@ -1230,6 +1272,9 @@ function diagnose(){
   else nextK='dx.next.base';
   return{obj:st.obj,O,org:st.org,paq,despres,nextK,get next(){return T(nextK);},
     ampliacio:$('#ampliacio').value.trim(),
+    /* Només si la pregunta s'ha vist: qui canvia d'objectiu a una jornada
+       després d'haver-ne triat no ha de portar rols que ja no se li pregunten. */
+    rols:$('#qRols').hidden?[]:st.rols.filter(id=>ROLS[id]),
     nota:ORG_NOTA[st.org]||null,
     termini:term,decideix:dec};
 }
@@ -1253,6 +1298,8 @@ function renderDx(d){
       +d.despres.map(p=>fila(p,true)).join(''):'');
   $('#rPreu').textContent=T('dx.r.preu');
   $('#rNext').textContent=d.next;
+  $('#rRols').textContent=d.rols.length?T('dx.r.rols')+' '+d.rols.map(id=>L(ROLS[id],'t').toLowerCase()).join(', ')+'.':'';
+  $('#rRols').hidden=!d.rols.length;
 }
 /* `<input type="date">` sempre torna 2026-03-14, hi posi el que hi posi el
    calendari del país. Al correu i al resum hi va com es diu en veu alta. */
@@ -1288,6 +1335,7 @@ function buildSummary(d){
     'Objectiu: '+d.O.t,
     'Paquets que hi encaixen: '+d.paq.map(p=>p.nom).join(', ')];
   if(d.ampliacio)L.push('Amb les seves paraules: '+d.ampliacio);
+  if(d.rols.length)L.push('Rols sense porta: '+d.rols.map(id=>ROLS[id].t).join(', '));
   if(!$('#qFormat').hidden)L.push('Participants: '+v('participants'),'Quan: '+dataLlegible(v('quan')),
     'On: '+v('lloc'),'Format: '+v('dins'));
   else L.push('Què han provat: '+v('provat'),'Qui ho sosté: '+v('soste'),
@@ -1304,7 +1352,7 @@ function buildJson(d){
       web:v('web'),dediqueu:v('dediqueu'),
       municipi:v('municipi'),comarca:v('comarca'),persones:v('persones')},
     vol:{objectiu:d.obj,objectiuNom:d.O.t,paquets:d.paq.map(p=>p.id),
-      ampliacio:d.ampliacio,
+      ampliacio:d.ampliacio,rolsSensePorta:d.rols,
       format:$('#qFormat').hidden?null:{participants:v('participants'),quan:v('quan'),lloc:v('lloc'),dins:v('dins')},
       dolor:$('#qDolor').hidden?null:{provat:v('provat'),soste:v('soste'),simarxa:v('simarxa')}},
     decisio:{quiDecideix:d.decideix,termini:d.termini},
@@ -1340,6 +1388,7 @@ $('#bNet').onclick=async()=>{
     municipi:v('municipi'),persones:v('persones'),
     objectiu:current.O.t,termini:current.termini,decideix:current.decideix,
     ampliacio:current.ampliacio,
+    rols:current.rols.map(id=>ROLS[id].t).join(', '),
     resum:buildSummary(current)};
   const cos=Object.keys(dades).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(dades[k])).join('&');
   $('#bNet').disabled=true;$('#envKo').hidden=true;
@@ -1384,6 +1433,8 @@ function pintaObjectius(){
     if(dd)dd.textContent=L(O,'diu');
   });
   $$('#objTipus .opts-g').forEach(g=>{const G=GRUPS[g.dataset.g];if(G)g.textContent=L(G,'t');});
+  $$('#rols .chip').forEach(c=>{const R=ROLS[c.dataset.rol];if(!R)return;
+    c.querySelector('.r-t').textContent=R.ic+' '+L(R,'t');c.querySelector('.r-d').textContent=L(R,'d');});
 }
 function dxAplicaLang(l){
   if(!DX_I18N[l])l='ca';

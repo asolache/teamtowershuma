@@ -335,6 +335,7 @@ function fromJson(o){
     objectiu:esOrg?(v.objectiu||''):'',
     objectiuNom:esOrg?(v.objectiuNom||''):'',
     paquets:esOrg?(v.paquets||[]):[],
+    rolsSensePorta:esOrg?(v.rolsSensePorta||[]):[],
     quiDecideix:esOrg?(dec.quiDecideix||''):'',
     format:esOrg&&v.format?[v.format.participants,v.format.quan,v.format.lloc].filter(Boolean).join(' · '):'',
     maturity:d.maturity!=null?d.maturity:null,support:d.support!=null?d.support:null,

@@ -57,6 +57,7 @@ export function aLead(formName, d, opts = {}) {
       d.termini && 'Termini: ' + net(d.termini),
       d.decideix && 'Qui decideix: ' + net(d.decideix),
       d.ampliacio && 'Ho amplien així: ' + net(d.ampliacio),
+      d.rols && 'Rols de la xarxa sense porta: ' + net(d.rols),
       d.resum && '\n' + net(d.resum)
     ].filter(Boolean).join('\n'), 32000)
   });

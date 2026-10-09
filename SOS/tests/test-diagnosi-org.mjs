@@ -238,6 +238,34 @@ console.log('\n5d · Al mòbil');
   await m.close();
 }
 
+/* ── 5e · Quins rols no tenen porta ───────────────────────────────────────── */
+console.log('\n5e · Els rols de la xarxa');
+{
+  const q = await b.newPage();
+  q.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await q.goto(url('diagnostic-org.html'));
+  await q.waitForFunction(() => window.__DXORG);
+  const r = await q.evaluate(() => {
+    const S = window.__DXORG, vis = () => !document.querySelector('#qRols').hidden;
+    document.querySelector('#objTipus .opt[data-v="obrir"]').click();
+    const acte = vis();
+    document.querySelector('#objTipus .opt[data-v="web"]').click();
+    const web = vis();
+    ['reven', 'recomana'].forEach(id => document.querySelector('#rols .chip[data-rol="' + id + '"]').click());
+    const d = S.diagnose();
+    const json = S.buildJson(d), resum = S.buildSummary(d);
+    document.querySelector('#objTipus .opt[data-v="cohesio"]').click();
+    return { acte, web, rols: d.rols, json: json.vol.rolsSensePorta, resum,
+      despres: S.diagnose().rols };
+  });
+  ok(!r.acte && r.web, 'només es pregunta quan l\'objectiu és del negoci operatiu');
+  ok(r.rols.join() === 'reven,recomana' && r.json.join() === 'reven,recomana',
+    'els rols triats van al diagnòstic i al JSON del CRM · ' + r.rols.join(', '));
+  ok(r.resum.includes('Rols sense porta: Qui revèn, Qui us recomana'), 'i al resum en català');
+  ok(r.despres.length === 0, 'i si canvia a un objectiu que no ho pregunta, no s\'arrosseguen');
+  await q.close();
+}
+
 /* ── 5c · La data s'escull, i es llegeix ────────────────────────────────── */
 console.log('\n5c · La data');
 {

@@ -71,10 +71,11 @@ d'empresa tenen porta.
 - **Mesurar les caselles.** Quan hi hagi leads a Zoho amb el camp
   d'objectiu, mirar quines es trien i quines no; una casella que ningú tria
   en tres mesos s'ajunta amb una altra.
-- **Rols de la xarxa al diagnòstic.** El pas 2 pregunta quina casa sou; falta
-  preguntar quins rols de la vostra xarxa (qui compra, revèn, subministra,
-  treballa, acull, recomana) no tenen porta avui, que és el que alimenta
-  l'esborrany del mapa.
+- ~~**Rols de la xarxa al diagnòstic.**~~ Fet el 09/10/2026: als objectius
+  del negoci operatiu, el pas 2 pregunta quins dels sis rols de la web de
+  xarxa no tenen porta avui. Va al resultat, al resum, al JSON del CRM i a la
+  descripció del lead de Zoho. Pendent: que l'esborrany del mapa el llegeixi
+  i comenci per aquests rols.
 
 ### Serveis connectables, cost real de l'IA i ingressos recurrents (demanat 09/10/2026)
 

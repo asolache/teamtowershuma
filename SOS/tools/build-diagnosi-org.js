@@ -189,6 +189,21 @@ const OBJECTIUS = [
   }
 ];
 
+/* ══ ELS ROLS DE LA XARXA ════════════════════════════════════════════════════
+   Els sis de la web de xarxa (`/mapa-web/`): un negoci al centre i qui el
+   sosté al voltant. Es pregunta **quins no tenen porta avui** només quan
+   l'objectiu és del negoci operatiu, perquè és el que canvia la resposta:
+   l'esborrany del mapa i la web comencen per aquests rols. A una jornada o a
+   una mentoria no li canvia res, i per això allà no surt. */
+const ROLS = [
+  { id: 'compra', ic: '🛒', t: 'Qui compra', tEs: 'Quien compra', d: 'clients', dEs: 'clientes' },
+  { id: 'reven', ic: '🏪', t: 'Qui revèn', tEs: 'Quien revende', d: 'botigues, distribuïdors, agències', dEs: 'tiendas, distribuidores, agencias' },
+  { id: 'subministra', ic: '📦', t: 'Qui subministra', tEs: 'Quien suministra', d: 'proveïdors', dEs: 'proveedores' },
+  { id: 'treballa', ic: '🧑‍🔧', t: 'Qui hi treballa', tEs: 'Quien trabaja', d: 'equip, socis, col·laboradors', dEs: 'equipo, socios, colaboradores' },
+  { id: 'acull', ic: '🏘️', t: 'Qui us acull', tEs: 'Quien os acoge', d: 'el poble, el barri, el territori', dEs: 'el pueblo, el barrio, el territorio' },
+  { id: 'recomana', ic: '📣', t: 'Qui us recomana', tEs: 'Quien os recomienda', d: 'prescriptors, xarxes, clients contents', dEs: 'prescriptores, redes, clientes contentos' }
+];
+
 /* ══ QUÈ CANVIA EL TIPUS D'ORGANITZACIÓ ══════════════════════════════════════
    No canvia el que es recomana —això ho fa l'objectiu—: canvia **què cal
    preguntar abans de poder respondre**, i què s'ha de dir a la proposta.
@@ -241,6 +256,12 @@ function blocObjectius() {
   ).join('\n');
 }
 
+function blocRols() {
+  return ROLS.map(r =>
+    `<button type="button" class="chip" data-rol="${r.id}"><span class="r-t">${r.ic} ${esc(r.t)}</span> <span class="r-d">${esc(r.d)}</span></button>`
+  ).join('\n');
+}
+
 /* ── Les dues llengües, al costat ─────────────────────────────────────────
    Cada camp de text porta el seu germà `*Es`. Va així i no amb dos objectes
    `{ca:{…},es:{…}}` perquè el que la pàgina indexa és l'objectiu (`OBJECTIUS
@@ -249,7 +270,7 @@ function blocObjectius() {
    de `build-oferta.js`, que és qui declara què es ven i en quines llengües. */
 function blocDades() {
   const q = s => String(s == null ? '' : s).replace(/'/g, "\\'");
-  const objs = OBJECTIUS.map(o => `'${o.id}':{ic:'${o.ic}',t:'${q(o.t)}',tEs:'${q(o.tEs)}',preg:'${o.preguntes}',` +
+  const objs = OBJECTIUS.map(o => `'${o.id}':{ic:'${o.ic}',t:'${q(o.t)}',tEs:'${q(o.tEs)}',preg:'${o.preguntes}',grup:'${o.grup}',` +
     /* `diu` és com ho diria qui truca. Va al resultat sota el títol quan no
        ha escrit res al camp lliure: el diagnòstic ha de començar tornant-li
        el que ens ha dit, i no repetint el titular. */
@@ -264,8 +285,12 @@ function blocDades() {
   const notes = Object.keys(ORGS_NOTA).map(k =>
     `'${k}':{t:'${q(ORGS_NOTA[k].t)}',tEs:'${q(ORGS_NOTA[k].es)}'}`).join(',\n  ');
   const grups = Object.keys(GRUPS).map(g => `'${g}':{t:'${q(GRUPS[g].t)}',tEs:'${q(GRUPS[g].tEs)}'}`).join(',');
+  const rols = ROLS.map(r => `'${r.id}':{ic:'${r.ic}',t:'${q(r.t)}',tEs:'${q(r.tEs)}',d:'${q(r.d)}',dEs:'${q(r.dEs)}'}`).join(',\n  ');
   return `// Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
 const GRUPS={${grups}};
+const ROLS={
+  ${rols}
+};
 const OBJECTIUS={
   ${objs}
 };
@@ -282,7 +307,8 @@ const ORG_NOTA={
 /* ══ ESCRIURE O COMPROVAR ════════════════════════════════════════════════════ */
 const MARQUES = [
   ['<!--DX-OBJECTIUS-->', '<!--/DX-OBJECTIUS-->', blocObjectius],
-  ['/*DX-DADES*/', '/*/DX-DADES*/', blocDades]
+  ['/*DX-DADES*/', '/*/DX-DADES*/', blocDades],
+  ['<!--DX-ROLS-->', '<!--/DX-ROLS-->', blocRols]
 ];
 
 /* ── Les guardes ─────────────────────────────────────────────────────────── */
@@ -355,6 +381,7 @@ const MARQUES = [
   }));
   Object.keys(ORGS_NOTA).forEach(k => { if (!ORGS_NOTA[k].es) falten.push('nota ' + k); });
   Object.keys(GRUPS).forEach(k => { if (!GRUPS[k].tEs) falten.push('titular ' + k); });
+  ROLS.forEach(r => { if (!r.tEs || !r.dEs) falten.push('rol ' + r.id); });
   if (falten.length) bad('text sense castellà: ' + falten.join(', ')
     + ' — el botó es llegiria en una llengua i el resultat en l\'altra, sense petar');
   else ok(`${OBJECTIUS.length} objectius i ${Object.keys(ORGS_NOTA).length} notes, en les dues llengües`);
@@ -405,4 +432,4 @@ if (CHECK) {
 if (fails) { console.log('\n❌ No s\'ha escrit res.'); process.exit(1); }
 console.log(`\n✅ diagnostic-org.html · ${OBJECTIUS.length} objectius i ${Object.keys(ORGS_NOTA).length} tipus d'organització`);
 
-module.exports = { OBJECTIUS, GRUPS, ORGS_NOTA };
+module.exports = { OBJECTIUS, GRUPS, ROLS, ORGS_NOTA };
