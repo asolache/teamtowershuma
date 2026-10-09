@@ -4,6 +4,11 @@ Cada veda es un error que ya se cometió, escrito para que nadie tenga que
 volver a aprenderlo. No es estilo: es ley. Una veda nueva entra con **quién la
 dijo, cuándo, el error que evita y la guarda que la vigila** (`../guardas/`).
 
+Aquí van **las vedas propias** de este proyecto. Además, el proyecto hereda las
+de TeamTowers que valen para cualquiera (`vedas-heredadas.md`): no se editan
+aquí, llegan con cada actualización del cerebro. Si una veda propia resulta
+valer para todos, se propone a TeamTowers y vuelve heredada.
+
 ## Veda 1 — Siempre hay un backlog
 
 Ninguna petición se queda en una conversación. Antes de hacerla, o si no se

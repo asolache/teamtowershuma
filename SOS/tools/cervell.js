@@ -29,6 +29,7 @@
  *
  * Ús:  node SOS/tools/cervell.js [--arrel <dir>] [--check]
  *      node SOS/tools/cervell.js --nou <dir> [--nom <nom>]   instal·la un cervell
+ *      node SOS/tools/cervell.js --actualitza <dir>           li porta l'herència nova
  */
 const { readFileSync, writeFileSync, readdirSync, statSync, existsSync, cpSync, copyFileSync, mkdirSync } = require('node:fs');
 const { join, dirname, basename, resolve, relative } = require('node:path');
@@ -36,6 +37,71 @@ const { join, dirname, basename, resolve, relative } = require('node:path');
 const args = process.argv.slice(2);
 const CHECK = args.includes('--check');
 const opcio = nom => { const i = args.indexOf(nom); return i >= 0 ? args[i + 1] : null; };
+
+/* ── L'herència: el que un projecte rep de TeamTowers ───────────────────────────
+   Un cervell nou amb tres vedes és un cervell que ha d'aprendre de zero el que
+   aquí ja vam pagar. Per això el projecte hereta les vedes que valen per a
+   qualsevol projecte, el mètode del mapa de valor i les IA que el fan servir
+   (la skill i el contracte). Es declaren a `knowledge/cervell/heretat.json` i
+   **no es copien a mà**: es treuen del codex i dels fitxers de debò cada cop que
+   s'instal·la o s'actualitza un cervell, perquè una còpia a mà divergeix en
+   silenci (veda 71). Les rutes de SOS es reescriuen: a la còpia si s'hereta, a
+   l'origen públic si no. I tot passa pel sedàs abans de sortir (veda 159). */
+const HERETAT = join(__dirname, '..', 'knowledge', 'cervell', 'heretat.json');
+function herencia(conf) {
+  const H = JSON.parse(readFileSync(HERETAT, 'utf8'));
+  const TT = join(__dirname, '..', '..');
+  const errors = [], out = new Map();
+  const es = (conf.idioma || 'ca') === 'es';
+  const desti = conf.heretat || 'saber/vedas-heredadas.md';
+  const reescriu = text => text.replace(/(^|[^\w/.-])((?:SOS|\.claude)\/[\w./<>-]*[\w>])/g, (m, a, ruta) => {
+    const dest = Object.keys(H.fitxers).find(d => H.fitxers[d] === ruta);
+    /* Des de l'arrel, com cita SOS: una skill es llegeix des de l'arrel del
+       projecte, no des de la seva carpeta. Un patró (`*.md`, `<ram>`) no és
+       un fitxer: s'enllaça la carpeta de l'origen. */
+    if (dest) return a + dest;
+    const patro = ruta.search(/[*<]/);
+    return a + (patro < 0 ? H.font + ruta : H.font.replace('/blob/', '/tree/') + ruta.slice(0, ruta.lastIndexOf('/', patro) + 1));
+  });
+  const codex = readFileSync(join(TT, 'SOS', 'knowledge', 'codex.md'), 'utf8');
+  const caps = [...codex.matchAll(/^## Veda (\d+) — .+$/gm)].map(m => ({ n: +m[1], at: m.index }));
+  const tall = at => { const r = codex.indexOf('\n## ', at + 3); return r < 0 ? codex.length : r; };
+  let md = es
+    ? `# Vedas heredadas de TeamTowers\n\n> **No lo edites:** sale del codex de TeamTowers (${H.font}SOS/knowledge/codex.md)\n> y se actualiza con \`cervell.js --actualitza\`. Las vedas propias de este\n> proyecto van en \`codex.md\`. Están en catalán, la lengua en que se escribieron.\n`
+    : `# Vedes heretades de TeamTowers\n\n> **No l'editis:** surt del codex de TeamTowers (${H.font}SOS/knowledge/codex.md)\n> i s'actualitza amb \`cervell.js --actualitza\`. Les vedes pròpies d'aquest\n> projecte van a \`codex.md\`.\n`;
+  let n = 0;
+  for (const [tema, nums] of Object.entries(H.vedes)) {
+    md += `\n## ${tema}\n`;
+    for (const num of nums) {
+      const c = caps.find(x => x.n === num);
+      if (!c) { errors.push(`la veda ${num} de heretat.json no és al codex`); continue; }
+      n++;
+      md += '\n' + codex.slice(c.at, tall(c.at)).trim().replace(/^(#{2,5}) /gm, '#$1 ') + '\n';
+    }
+  }
+  out.set(desti, reescriu(md));
+  for (const [dest, font] of Object.entries(H.fitxers)) {
+    if (!existsSync(join(TT, font))) { errors.push(`heretat.json hereta ${font} i no existeix`); continue; }
+    let t = readFileSync(join(TT, font), 'utf8');
+    const cap = es
+      ? `<!-- Heredado de TeamTowers: ${H.font}${font} · no lo edites; se actualiza con cervell.js --actualitza -->\n`
+      : `<!-- Heretat de TeamTowers: ${H.font}${font} · no l'editis; s'actualitza amb cervell.js --actualitza -->\n`;
+    /* La capçalera YAML d'una skill ha de quedar la primera línia. */
+    t = t.startsWith('---\n') ? t.replace(/^(---\n[\s\S]*?\n---\n)/, '$1' + cap) : cap + t;
+    out.set(dest, reescriu(t));
+  }
+  for (const [dest, t] of out) H.sedas.forEach(re => {
+    const m = t.match(new RegExp(re));
+    if (m) errors.push(`el sedàs atura ${dest}: «${m[0]}» (patró ${re})`);
+  });
+  return { out, errors, vedes: n };
+}
+function hereta(desti, conf) {
+  const { out, errors, vedes } = herencia(conf);
+  if (errors.length) { errors.forEach(e => console.log('✗ ' + e)); console.log('✗ No s\'hereta res fins que el sedàs i les referències passin.'); process.exit(1); }
+  for (const [f, t] of out) { mkdirSync(dirname(join(desti, f)), { recursive: true }); writeFileSync(join(desti, f), t); }
+  console.log(`✅ ${vedes} vedes i ${out.size - 1} fitxers de saber i IA heretats de TeamTowers`);
+}
 
 /* ── Instal·lar un cervell en un projecte ────────────────────────────────────
    Copiar la plantilla a mà vol dir oblidar-se l'eina, i un cervell sense eina
@@ -55,7 +121,20 @@ if (opcio('--nou')) {
   writeFileSync(join(desti, 'cervell.json'), JSON.stringify(conf, null, 2) + '\n');
   mkdirSync(dirname(join(desti, conf.eina)), { recursive: true });
   copyFileSync(__filename, join(desti, conf.eina));
+  hereta(desti, conf);
   console.log(`✅ Cervell instal·lat a ${desti}. Ara:  node ${conf.eina}  i després  node ${conf.eina} --check`);
+  process.exit(0);
+}
+/* El seguiment: un cervell que ja hi és rep l'eina i l'herència d'avui, i no
+   es toca res més —ni les vedes pròpies, ni la taxonomia, ni el backlog. */
+if (opcio('--actualitza')) {
+  const desti = resolve(opcio('--actualitza'));
+  if (!existsSync(join(desti, 'cervell.json'))) { console.log(`✗ ${desti} no té cervell.json: instal·la'l amb --nou.`); process.exit(1); }
+  const conf = JSON.parse(readFileSync(join(desti, 'cervell.json'), 'utf8'));
+  mkdirSync(dirname(join(desti, conf.eina)), { recursive: true });
+  copyFileSync(__filename, join(desti, conf.eina));
+  hereta(desti, conf);
+  console.log(`✅ Cervell actualitzat a ${desti}. Ara:  node ${conf.eina}  per refer el mapa i la pàgina`);
   process.exit(0);
 }
 
@@ -110,7 +189,8 @@ const T = {
     pBacklog: 'El que queda per fer', pBacklogDiu: 'blocs al backlog', pGuarda: 'Com se sap que és cert',
     pGuardaDiu: 'Cada canvi passa per la guarda: cap carpeta sense cara, cap mapa vell, cap cita a un fitxer o una funció que no existeix.',
     pFalta: 'falta', pHiEs: 'hi és', pCap: 'Encara cap.',
-    pPecaNom: { comunicacio: 'La comunicació', taxonomia: 'La taxonomia', mapa: 'El mapa', codex: 'El codex', backlog: 'El backlog', contracte: 'El contracte de la IA' }
+    pHeretades: 'heretades', pHeretadesDiu: 'Les heretades de TeamTowers, per tema. No s\'editen aquí: arriben amb cada actualització.',
+    pPecaNom: { heretat: 'L\'herència de TeamTowers', comunicacio: 'La comunicació', taxonomia: 'La taxonomia', mapa: 'El mapa', codex: 'El codex', backlog: 'El backlog', contracte: 'El contracte de la IA' }
   },
   es: {
     llei: 'Las reglas que gobiernan el resto. Si se rompen, invalidan el trabajo hecho.',
@@ -129,7 +209,8 @@ const T = {
     pBacklog: 'Lo que queda por hacer', pBacklogDiu: 'bloques en el backlog', pGuarda: 'Cómo se sabe que es cierto',
     pGuardaDiu: 'Cada cambio pasa por la guarda: ninguna carpeta sin cara, ningún mapa viejo, ninguna cita a un fichero o una función que no existe.',
     pFalta: 'falta', pHiEs: 'está', pCap: 'Todavía ninguno.',
-    pPecaNom: { comunicacio: 'La comunicación', taxonomia: 'La taxonomía', mapa: 'El mapa', codex: 'El codex', backlog: 'El backlog', contracte: 'El contrato de la IA' }
+    pHeretades: 'heredadas', pHeretadesDiu: 'Las heredadas de TeamTowers, por tema. No se editan aquí: llegan con cada actualización.',
+    pPecaNom: { heretat: 'La herencia de TeamTowers', comunicacio: 'La comunicación', taxonomia: 'La taxonomía', mapa: 'El mapa', codex: 'El codex', backlog: 'El backlog', contracte: 'El contrato de la IA' }
   }
 };
 const L = T[C.idioma || 'ca'];
@@ -238,7 +319,7 @@ function pagina() {
   const vedes = [...llegeix(C.codex).matchAll(/^##\s+Veda\s+(\d+)\s*[—–-]\s*(.+)$/gm)].map(m => ({ n: m[1], t: m[2].trim() }));
   const blocs = [...llegeix(C.backlog).matchAll(/^###\s+(.+)$/gm)].map(m => m[1].trim());
   const contracte = (C.lectura || []).map(l => l.path).find(p => p !== C.mapa && p !== C.taxonomia && p !== C.codex);
-  const peces = [['comunicacio', C.comunicacio], ['taxonomia', C.taxonomia], ['mapa', C.mapa], ['codex', C.codex],
+  const peces = [['comunicacio', C.comunicacio], ['heretat', C.heretat], ['taxonomia', C.taxonomia], ['mapa', C.mapa], ['codex', C.codex],
     ['contracte', contracte], ['backlog', C.backlog]].filter(([, f]) => f);
   const li = (a, b) => `<li>${a}${b ? ` <span>${b}</span>` : ''}</li>`;
   let h = `<!doctype html>
@@ -261,6 +342,7 @@ a{color:var(--accent)}code{font-size:.88em}
 .ok{color:var(--ok)}.ko{color:var(--ko);font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{text-align:left;padding:.45rem .4rem;border-bottom:1px solid var(--line);vertical-align:top}
 th{color:var(--muted);font-weight:500}.cara{font-weight:600;white-space:nowrap}
+details{border-bottom:1px solid var(--line);padding:.45rem 0}summary{cursor:pointer;font-weight:500}
 </style>
 </head>
 <body>
@@ -282,8 +364,25 @@ th{color:var(--muted);font-weight:500}.cara{font-weight:600;white-space:nowrap}
   CARES.forEach(cara => arbre.filter(d => decl.get(d) && decl.get(d).cara === cara).forEach(d => {
     h += `<tr><td class="cara">${esc(cara)}</td><td><code>${esc(d)}/</code></td><td>${esc(decl.get(d).diu)}</td></tr>\n`;
   }));
-  h += `</table>\n\n<h2>${esc(L.pVedes)} · ${vedes.length}</h2>\n<p class="lead">${esc(L.pVedesDiu)}</p>\n`;
+  /* Les heretades es compten a part i per tema: el client ha de veure què
+     és seu i què li ve de casa, i seixanta títols en fila no es llegeixen. */
+  const her = llegeix(C.heretat);
+  const temes = [];
+  her.split(/^## /m).slice(1).forEach(b => {
+    const nom = b.split('\n')[0].trim();
+    const vs = [...b.matchAll(/^###\s+Veda\s+(\d+)\s*[—–-]\s*(.+)$/gm)].map(m => ({ n: m[1], t: m[2].trim() }));
+    if (vs.length) temes.push({ nom, vs });
+  });
+  const nHer = temes.reduce((a, t) => a + t.vs.length, 0);
+  h += `</table>\n\n<h2>${esc(L.pVedes)} · ${vedes.length}${nHer ? ` + ${nHer} ${esc(L.pHeretades)}` : ''}</h2>\n<p class="lead">${esc(L.pVedesDiu)}</p>\n`;
   h += vedes.length ? '<ol>\n' + vedes.map(v => `<li value="${esc(v.n)}">${md2(v.t)}</li>`).join('\n') + '\n</ol>\n' : `<p>${esc(L.pCap)}</p>\n`;
+  if (nHer) {
+    h += `<p>${esc(L.pHeretadesDiu)} <a href="${enl(C.heretat)}"><code>${esc(C.heretat)}</code></a></p>\n`;
+    temes.forEach(t => {
+      h += `<details><summary>${esc(t.nom)} · ${t.vs.length}</summary>\n<ul>\n` +
+        t.vs.map(v => li(`${esc(v.n)} · ${md2(v.t)}`)).join('\n') + '\n</ul>\n</details>\n';
+    });
+  }
   h += `\n<h2>${esc(L.pBacklog)} · ${blocs.length} ${esc(L.pBacklogDiu)}</h2>\n`;
   h += blocs.length ? '<ul>\n' + blocs.map(b => li(md2(b))).join('\n') + '\n</ul>\n' : `<p>${esc(L.pCap)}</p>\n`;
   h += `\n<h2>${esc(L.pGuarda)}</h2>\n<p>${esc(L.pGuardaDiu)} <code>node ${esc(C.eina)} --check</code></p>\n</main>\n</body>\n</html>\n`;
@@ -387,6 +486,17 @@ let citats = 0;
   }
 });
 ok(`${citats} referències revisades als fitxers de lectura`);
+
+/* ── 4 · L'herència que donem ───────────────────────────────────────────────
+   Només on viu `heretat.json` (a TeamTowers): si una veda heretada es
+   renumera o un fitxer heretat es mou, ho ha de saber aquest CI i no el del
+   client el dia que s'actualitzi. */
+if (existsSync(HERETAT) && resolve(join(__dirname, '..', '..')) === ARREL) {
+  console.log('\nL\'herència que reben els projectes');
+  const { errors, vedes, out } = herencia({ idioma: 'es' });
+  errors.forEach(bad);
+  if (!errors.length) ok(`${vedes} vedes i ${out.size - 1} fitxers heretables, i cap passa del sedàs`);
+}
 
 console.log(fails ? `\n❌ ${fails} problema${fails === 1 ? '' : 's'} al cervell.`
   : '\n✅ El cervell diu el que hi ha, i tot el que hi ha té cara.');

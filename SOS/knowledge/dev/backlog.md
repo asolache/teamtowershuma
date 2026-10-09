@@ -327,8 +327,14 @@ UX, seguiment i desenvolupament de l'estratègia».
   que diuen que no hi és no hi és. Mapa en català o castellà.
 - **La plantilla** i el model, a `SOS/knowledge/cervell/`, i `--nou <dir>` per
   instal·lar-la en un projecte amb l'eina inclosa.
-- **La prova trencant-la a posta:** `SOS/tests/test-cervell.mjs`, onze casos, al CI.
+- **La prova trencant-la a posta:** `SOS/tests/test-cervell.mjs`, tretze casos, al CI.
 - **La veda 161** i un article al blog.
+- **L'herència** (demanat el mateix dia: «més contingut, més intel·ligència
+  aplicada de les vedes i els sabers, més les IA»): 58 vedes per tema, el saber
+  del mapa de valor, la skill i el prompt de revisió, declarats a
+  `SOS/knowledge/cervell/heretat.json`, generats a cada `--nou` i
+  `--actualitza`, i passats pel sedàs. **Queda:** traduir les heretades al
+  castellà sense fer-ne una segona còpia (avui arriben en català).
 - Cobreix el punt 1 del bloc `for-ai/` de sota per a fitxers i funcions citats;
   hi queden els números de veda citats i les deu regles.
 

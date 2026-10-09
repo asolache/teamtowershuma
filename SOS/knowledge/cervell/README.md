@@ -45,6 +45,35 @@ deia «els 18 vedes» quan n'hi havia 116. La guarda llegeix el contracte i el
 creua amb l'arbre de debò. En aquest repositori va trobar, el primer dia, la
 cita del mateix fitxer que esteu llegint abans que existís.
 
+## L'herència: el que ja sap un cervell nou
+
+**Demanat per l'Àlvar el 09/10/2026:** «segur que hi ha més contingut ja al
+cervell i més intel·ligència aplicada de les vedes i els sabers aplicats. Més
+les IA.» Un cervell nou amb tres vedes hauria d'aprendre de zero el que aquí ja
+vam pagar. Per això cada projecte hereta, declarat a
+[`heretat.json`](heretat.json):
+
+- **58 vedes** del codex de SOS que valen per a qualsevol projecte, per temes:
+  la veritat del que es diu, guardes i proves, una sola font, persones i dades,
+  pantalles i UX, producte i oferta, mapa de valor i el cervell. Les que només
+  tenen sentit dins del SOS (el llibre signat, Molekulon, els preus dels
+  nostres paquets) es queden aquí.
+- **El saber del mapa de valor:** el mètode de Verna Allee, els patrons vistos
+  en mapes reals i el contracte per a un model que en proposa un.
+- **Les IA:** la skill `mapa-de-valor` (a `.claude/skills/`, on la troba Claude
+  Code) i el prompt de revisió de PR.
+
+No es copia a mà: `--nou` i `--actualitza` ho treuen del codex i dels fitxers
+de debò cada vegada. Les rutes de SOS es reescriuen cap a la còpia, si s'hereta,
+o cap a l'origen públic a GitHub, si no. Tot passa pel **sedàs** abans de sortir
+(cap import en euros, cap nom de client o pilot), i el CI d'aquest repositori
+peta si una veda heretada es renumera o un fitxer heretat es mou.
+
+**El seguiment del servei** és, en part, això:
+`node SOS/tools/cervell.js --actualitza ../el-projecte` porta al client l'eina
+i l'herència d'avui sense tocar ni les seves vedes, ni la seva taxonomia, ni el
+seu backlog.
+
 ## Un sol cervell, no dues còpies
 
 **L'eina és una i la mateixa** per a TeamTowers i per a qualsevol client. El que

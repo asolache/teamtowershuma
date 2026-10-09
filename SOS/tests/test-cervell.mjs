@@ -10,7 +10,7 @@
  *
  *   node SOS/tests/test-cervell.mjs
  */
-import { mkdtempSync, existsSync, rmSync, mkdirSync, writeFileSync, appendFileSync, readFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, existsSync, rmSync, mkdirSync, writeFileSync, appendFileSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -73,6 +73,47 @@ cas('un idioma sense textos peta', a => {
   const p = join(a, 'cervell.json'), c = JSON.parse(readFileSync(p, 'utf8'));
   writeFileSync(p, JSON.stringify({ ...c, idioma: 'xx' }));
 });
+
+/* El seguiment: --actualitza torna l'herència a com és avui i no toca el que
+   és del projecte. */
+{
+  const arrel = mkdtempSync(join(tmpdir(), 'cervell-'));
+  rmSync(arrel, { recursive: true });
+  spawnSync(process.execPath, [EINA, '--nou', arrel], { encoding: 'utf8' });
+  const her = join(arrel, 'saber', 'vedas-heredadas.md'), propi = join(arrel, 'saber', 'codex.md');
+  const original = readFileSync(her, 'utf8');
+  writeFileSync(her, 'tocat a mà\n');
+  appendFileSync(propi, '\n## Veda 4 — Una de pròpia\n');
+  const propiAbans = readFileSync(propi, 'utf8');
+  const r = spawnSync(process.execPath, [EINA, '--actualitza', arrel], { encoding: 'utf8' });
+  const bo = r.status === 0 && readFileSync(her, 'utf8') === original && readFileSync(propi, 'utf8') === propiAbans
+    && /### Veda 161/.test(original) && existsSync(join(arrel, '.claude', 'skills', 'mapa-de-valor', 'SKILL.md'));
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} --actualitza porta l'herència d'avui (vedes, skill) i no toca les vedes pròpies`);
+  rmSync(arrel, { recursive: true, force: true });
+}
+
+/* El sedàs de l'herència: una casa de prova amb una veda heretable que porta un
+   import ha de quedar aturada, i sense l'import ha de passar. */
+{
+  const casa = mkdtempSync(join(tmpdir(), 'casa-'));
+  const SOS = join(casa, 'SOS');
+  mkdirSync(join(SOS, 'tools'), { recursive: true });
+  cpSync(join(DIR, '..', 'knowledge', 'cervell'), join(SOS, 'knowledge', 'cervell'), { recursive: true });
+  cpSync(EINA, join(SOS, 'tools', 'cervell.js'));
+  writeFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), JSON.stringify({
+    font: 'https://exemple.org/', sedas: ['\\d[\\d.,]*\\s?€'], vedes: { Prova: [1] }, fitxers: {}
+  }));
+  const instal = text => {
+    writeFileSync(join(SOS, 'knowledge', 'codex.md'), `## Veda 1 — Una\n\n${text}\n`);
+    const d = join(casa, 'client-' + Math.random().toString(36).slice(2));
+    return spawnSync(process.execPath, [join(SOS, 'tools', 'cervell.js'), '--nou', d], { encoding: 'utf8' }).status;
+  };
+  const bo = instal('Costa 4.000 € i prou.') === 1 && instal('No diu cap import.') === 0;
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} el sedàs atura una herència que porta un import, i deixa passar la que no`);
+  rmSync(casa, { recursive: true, force: true });
+}
 
 console.log(fails ? `\n❌ ${fails} cas${fails === 1 ? '' : 'os'} on la guarda no ha fet el que promet.`
   : '\n✅ La guarda peta quan toca, i només llavors.');

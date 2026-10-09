@@ -29,5 +29,6 @@
     "misc/",
     "temp/"
   ],
-  "codex": "saber/codex.md"
+  "codex": "saber/codex.md",
+  "heretat": "saber/vedas-heredadas.md"
 }
