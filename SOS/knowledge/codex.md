@@ -5084,3 +5084,30 @@ n'havia de deixar i no la deixa obliga a repetir el mateix error.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
 - `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).
 - `SOS/knowledge/vision/*.md` guarda decisions d'arquitectura vives.
+
+## Veda 161 — El cervell es comprova, i n'hi ha un per a tots
+
+**Dit per l'Àlvar el 09/10/2026:** «que el model de cervell del projecte sigui
+reutilitzable» i «que el que aprenguem ara ho reutilitzem i passi a les vedes,
+al blog i al servei».
+
+El cervell d'un projecte és el que una IA llegeix abans d'escriure-hi: la
+taxonomia, el mapa, el codex, el contracte i el backlog. Dues coses el fan
+cervell i no documentació:
+
+1. **Es comprova.** Tot el que els fitxers de lectura citen ha d'existir, i el
+   que diuen que no hi és no hi ha de ser. El contracte de la IA ja havia
+   mentit una vegada (els 18 vedes quan n'hi havia 116) i ho va arreglar una
+   revisió a mà; ara ho vigila `SOS/tools/cervell.js` al CI. El primer dia va
+   trobar la taxonomia citant un fitxer que encara no existia.
+2. **N'hi ha un.** L'eina i la plantilla són les mateixes per a TeamTowers i per
+   a cada client (`SOS/knowledge/cervell/`). El que canvia és `cervell.json`.
+   Una millora que neix en un projecte client torna aquí, i des d'aquí arriba a
+   tots; dues còpies del model divergirien en silenci (veda 71).
+
+El que s'aprèn en un cervell segueix el flux de la veda 160 fins al final: un
+error real al contracte del projecte, una veda aquí si val per a tots, una
+comprovació nova a l'eina si es pot comprovar, un article al blog i la versió
+nova del cervell al seguiment del client. El cervell és el valor afegit del
+servei: el client s'emporta un projecte que avisa sol quan el que diu deixa de
+ser cert.

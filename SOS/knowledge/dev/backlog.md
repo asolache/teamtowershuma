@@ -310,6 +310,51 @@ la millora contínua del SOS.
 **Com es tanca:** els tres pilots fets, amb les hores i el cost d'IA de cada
 flux apuntats, i el que se n'aprengui escrit com a veda.
 
+### El cervell reutilitzable · el valor afegit dels serveis (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «que el model de cervell del projecte sigui
+reutilitzable» (també ho va demanar al projecte d'Events Penedès), «aplica les
+bones pràctiques ja aplicades a SOS i que sigui el valor afegit d'aquests
+serveis», i «que el que aprenguem ara ho reutilitzem i passi a les vedes, al
+blog i al servei, que s'ha de continuar desenvolupant i millorant en disseny,
+UX, seguiment i desenvolupament de l'estratègia».
+
+**Fet (aquest PR):**
+
+- **Una eina per a tots:** `SOS/tools/cervell.js`, configurada per
+  `cervell.json`. Genera el mapa (abans `build-mapa.js`, que queda d'àlies) i
+  comprova el contracte: tot el que citen els fitxers de lectura existeix, i el
+  que diuen que no hi és no hi és. Mapa en català o castellà.
+- **La plantilla** i el model, a `SOS/knowledge/cervell/`, i `--nou <dir>` per
+  instal·lar-la en un projecte amb l'eina inclosa.
+- **La prova trencant-la a posta:** `SOS/tests/test-cervell.mjs`, nou casos, al CI.
+- **La veda 161** i un article al blog.
+- Cobreix el punt 1 del bloc `for-ai/` de sota per a fitxers i funcions citats;
+  hi queden els números de veda citats i les deu regles.
+
+**Mesurat el primer dia:** 163 referències revisades als fitxers de lectura de
+SOS; la guarda va trobar la taxonomia citant `knowledge/cervell/README.md` abans
+que existís.
+
+**Pendent:**
+
+1. **Events Penedès hi entra.** El repositori privat de tarifes ja té
+   comunicació, backlog i guardes; li falten taxonomia, mapa i codex. Se li
+   escriu el `cervell.json` apuntant al que ja té i se li copia l'eina, en un PR
+   allà, quan aquell projecte ho validi.
+2. **El servei, dissenyat:** què rep el client el dia que se li lliura el
+   repositori (una pàgina «el teu cervell» que es llegeixi sense obrir GitHub),
+   i la UX de la primera hora amb el cervell nou.
+3. **El seguiment com a servei recurrent:** portar la versió nova de l'eina i de
+   la plantilla a cada client, i tornar aquí el que s'hi aprèn. Encaixa amb
+   «Ingressos recurrents» (més avall).
+4. **L'estratègia:** posar el cervell al catàleg públic com el que s'emporta el
+   client a cada servei, alineat amb el pla del repositori d'estratègia, sense
+   xifres que l'Àlvar no hagi publicat.
+
+**Com es tanca:** l'eina al CI en verd aquí i a Events Penedès, la plantilla
+instal·lada en un client, i el catàleg dient què és el cervell.
+
 ### `for-ai/` · el contracte de la IA, antifràgil (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** «actualitzar els arxius de `SOS/knowledge/for-ai` per a

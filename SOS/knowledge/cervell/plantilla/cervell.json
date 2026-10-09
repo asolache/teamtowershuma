@@ -1,0 +1,31 @@
+{
+  "nom": "NOMBRE-DEL-PROYECTO",
+  "idioma": "es",
+  "eina": "guardas/cervell.js",
+  "taxonomia": "saber/taxonomia.md",
+  "mapa": "saber/MAPA.md",
+  "lectura": [
+    {
+      "path": "saber/MAPA.md",
+      "diu": "qué hay"
+    },
+    {
+      "path": "saber/codex.md",
+      "diu": "la ley"
+    },
+    {
+      "path": "saber/para-la-ia.md",
+      "diu": "el contrato de trabajo"
+    },
+    {
+      "path": "saber/taxonomia.md",
+      "diu": "dónde va cada cosa"
+    }
+  ],
+  "backlog": "saber/backlog.md",
+  "comunicacio": "CLAUDE.md",
+  "noHiEs": [
+    "misc/",
+    "temp/"
+  ]
+}

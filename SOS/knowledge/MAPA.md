@@ -1,12 +1,11 @@
 # Mapa del repositori
 
-> **Generat per `SOS/tools/build-mapa.js`. No l'editis a mà.**
+> **Generat per `SOS/tools/cervell.js`. No l'editis a mà.**
 > Les cares es declaren a [`taxonomia.md`](taxonomia.md); això és el que en
 > surt en creuar-les amb l'arbre de debò. Si el mapa i l'arbre divergeixen, el
 > CI peta — un mapa desactualitzat és pitjor que cap mapa.
 
-Comença per aquí, després [`codex.md`](codex.md) (la llei) i després
-[`for-ai/README.md`](for-ai/README.md) (el contracte de treball).
+Comença per aquí, després [`codex.md`](codex.md) (la llei) i després [`for-ai/README.md`](for-ai/README.md) (el contracte de treball) i després [`taxonomia.md`](taxonomia.md) (on va cada cosa).
 
 ## obra
 
@@ -14,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 246 · 17261 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 256 · 17294 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
@@ -32,8 +31,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 29 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 102 · 1290 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 53 · 1191 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 103 · 1295 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 54 · 1200 KB |
 
 ## saber
 
@@ -41,8 +40,9 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 41 · 940 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 5 · 296 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 49 · 955 KB |
+| `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 8 · 11 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 5 · 298 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
@@ -71,7 +71,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 | `v8/` | Versió anterior de l'app | 37 · 701 KB |
 | `v9/` | Versió anterior de l'app, servida encara per `_redirects` | 48 · 834 KB |
 
-## arrel · pàgines soltes
+## arrel · pàgines HTML
 
 7 pàgines HTML a l'arrel del repositori (`cataleg.html`, `finances.html`, `home-nova.html`, `ia.html`…).
 Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.
@@ -79,4 +79,4 @@ No són referència de com es fan les coses ara.
 
 ---
 
-*35 carpetes declarades · generat des de l'arbre, no escrit.*
+*36 carpetes declarades · generat des de l'arbre, no escrit.*
