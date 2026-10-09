@@ -65,13 +65,23 @@ const props = await p.evaluate(() => {
   return out;
 });
 const ids = Object.keys(props);
-ok(ids.length === 6, `${ids.length} objectius`);
+ok(ids.length >= 6 && ids[0] === 'operatiu', `${ids.length} objectius, el primer el negoci operatiu`);
 const firmes = new Set(ids.map(k => props[k].paq.join('+')));
 ok(firmes.size === ids.length,
   `${firmes.size} propostes diferents de ${ids.length} objectius: la segmentació decideix alguna cosa`);
 const orfes = ids.flatMap(k => props[k].paq.concat(props[k].despres)).filter(x => !CATALEG.includes(x));
 ok(orfes.length === 0, 'i cap proposta apunta a un paquet que no és al catàleg de debò'
   + (orfes.length ? ' · ' + orfes.join(', ') : ''));
+
+/* Els titulars dels grups també canvien de llengua: els pinta la pàgina des
+   de `GRUPS`, i un titular que es quedés en català no petaria. */
+const titulars = await p.evaluate(() => {
+  window.__DXORG.dxAplicaLang('es');
+  const es = [...document.querySelectorAll('#objTipus .opts-g')].map(g => g.textContent);
+  window.__DXORG.dxAplicaLang('ca');
+  return es;
+});
+ok(titulars[0] === 'Tu negocio operativo', 'els titulars de les caselles es tradueixen · ' + titulars.join(' / '));
 
 /* ── 3 · Les preguntes que s'obren ──────────────────────────────────────── */
 console.log('\n3 · No es pregunta res que no canviï la resposta');
