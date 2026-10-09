@@ -343,6 +343,21 @@ UX, seguiment i desenvolupament de l'estratègia».
   servir amb un negoci de debò i escriure aquí el que ensenyi; i el pas manual
   de donar accés al client al projecte de Claude, que no es pot automatitzar
   des d'aquí.
+- **Primera proposta de debò: La Bodega de Sara (09/10/2026).** Fet amb la
+  skill en un cervell instal·lat amb `--nou`; queda a la carpeta compartida del
+  projecte, no en aquest repositori. El que ha ensenyat:
+  1. **La regla 9 va aturar el primer esborrany** per un nom propi a l'abast i a
+     una troballa. El bucle revisar-corregir funciona: el mapa no va sortir fins
+     que va passar.
+  2. **El diagnòstic parla només en català**, i la proposta és en castellà: les
+     troballes s'han de traduir a mà. Cal la llengua al diagnòstic, com ja la té
+     la web (`--llengua`).
+  3. **El menú de la web són els noms dels rols** («Quien lo vende para casa»).
+     Al mapa estan bé; en una web, «Para vinotecas» es llegeix millor. Cal una
+     etiqueta curta per porta, declarada al mapa i no escrita a la web.
+  4. **El diagnòstic va trobar com a conversió una cosa que ja es cobra** (la
+     formació de sala). La skill ha de dir que es miri el catàleg del negoci
+     abans de proposar una conversió com a nova.
 - Cobreix el punt 1 del bloc `for-ai/` de sota per a fitxers i funcions citats;
   hi queden els números de veda citats i les deu regles.
 

@@ -62,6 +62,11 @@ node SOS/tools/revisa-mapa.js propuesta/mapa.json
 
 - **Si sale provisional, no se entrega:** hay una regla dura abierta. Se corrige
   el mapa y se vuelve a revisar.
+- Una troballa de conversión («quién pagaría por…») se mira contra lo que el
+  negocio **ya cobra** (paso 1) antes de proponerla como nueva: a veces ya es un
+  servicio que no llega a quien lo recibe.
+- El diagnóstico habla en catalán: las troballas se traducen a la lengua de la
+  propuesta, sin cambiarles el sentido.
 - Las troballas `mitjana` y `baixa` **no se esconden**: son la mitad del valor
   de la propuesta. Cada una trae su pregunta; esas preguntas van al paso 4.
 - No se toca el diagnóstico para que pase. Si una regla parece equivocada para
