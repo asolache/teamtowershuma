@@ -997,6 +997,25 @@ console.log('\n7D · La web que surt del mapa');
   await p.click('#edPanWeb [data-web-pag="serveis"]');
   ok(await p.evaluate(() => document.querySelector('#edWebNom').value) === 'Celler de prova', 'el nom es manté en tornar a pintar');
   ok(zs.includes('registre.html') && zs.includes('name="registre"'), 'la web porta el formulari del registre viu');
+  await p.click('#edWebVeure');
+  await p.waitForFunction(() => { const f = document.querySelector('#edWebMarc'); return f && f.contentDocument && f.contentDocument.querySelector('nav a'); });
+  const marc = () => p.evaluate(() => { const d = document.querySelector('#edWebMarc').contentDocument;
+    return { lang: d.documentElement.lang, h1: (d.querySelector('h1') || {}).textContent || '', css: !!d.querySelector('style') && !d.querySelector('link[rel=stylesheet]'), ruta: document.querySelector('#edWebRuta').textContent,
+      fons: getComputedStyle(d.body).fontFamily, scripts: [...d.scripts].every(x => x.type === 'application/ld+json') }; });
+  const v0 = await marc();
+  ok(v0.ruta === 'index.html' && v0.lang === 'es' && /Celler de prova/.test(v0.h1) && v0.css && v0.scripts, '«Vista prèvia» ensenya la web de debò al navegador, amb el seu estil i sense scripts');
+  await p.evaluate(() => document.querySelector('#edWebMarc').contentDocument.querySelector('nav a[href="el-visitant.html"]').click());
+  await p.waitForFunction(() => document.querySelector('#edWebRuta').textContent === 'el-visitant.html' && /visitant/i.test(document.querySelector('#edWebMarc').contentDocument.querySelector('h1').textContent));
+  ok(true, 'els enllaços del menú porten a la pàgina de la porta, dins la vista prèvia');
+  await p.evaluate(() => document.querySelector('#edWebMarc').contentDocument.querySelector('form button[type=submit]').click());
+  await p.waitForFunction(() => document.querySelector('#edWebRuta').textContent === 'gracies.html');
+  ok(true, 'enviar el formulari porta a la pàgina de gràcies');
+  await p.fill('#edWebNom', 'Celler nou');
+  await p.waitForFunction(() => /Celler nou/.test(document.querySelector('#edWebMarc').contentDocument.title));
+  ok(true, 'canviar el nom es veu a l\'acte a la vista prèvia');
+  await p.click('#edWebVeure');
+  ok(await p.evaluate(() => !document.querySelector('#edWebMarc') && document.activeElement.id === 'edWebVeure'), 'es tanca amb el mateix botó, i el focus no es perd');
+  await p.fill('#edWebNom', 'Celler de prova');
   await p.selectOption('#edWebLlengua', 'ca');
   await p.setInputFiles('#edWebReg', { name: 'registre.csv', mimeType: 'text/csv', buffer: Buffer.from('created_at,de,a,entregable,mena,valor,nom,correu\n'
     + '2026-10-01,Qui rep i explica,El visitant,"la visita, el tast i el relat de la casa",tangible,5,Anna,anna@exemple.cat\n2026-10-02,La cooperativa,Qui fa el vi,raïm,tangible,4,,\n') });

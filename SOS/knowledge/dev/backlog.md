@@ -104,6 +104,9 @@ pestanya Web o amb `SOS/tools/llegeix-registre.js` (mateix codi, bloc
 Desviació) i els avisos de la fase 3. Del CSV només es queden rols,
 lliurament, tipus, data, evidència i valor. Vint-i-quatre proves al motor.
 Següent del pla: l'API i els webhooks (fase 3).
+**Fet (demanat per l'Àlvar el 09/10/2026):** la vista prèvia de la web al
+navegador. A la pestanya Web, «Vista prèvia» ensenya la web de debò (el mateix
+codi que el zip) pàgina a pàgina, sense descarregar res.
 Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.

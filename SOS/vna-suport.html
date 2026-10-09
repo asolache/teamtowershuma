@@ -335,6 +335,9 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-web-xips a{display:inline-flex;align-items:center;min-height:44px;font-size:.75rem;padding:.1rem .7rem;border-radius:999px;border:1px solid var(--border);text-decoration:none}
 .ed-web-fila{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
 .ed-web-dades{display:grid;gap:.5rem;margin:.3rem 0 .2rem}
+.ed-web-previa{border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;margin:.5rem 0}
+.ed-web-previa p{margin:0;padding:.35rem .6rem;background:var(--card);border-bottom:1px solid var(--border-strong);font-size:.85rem}
+.ed-web-previa iframe{display:block;width:100%;height:70vh;min-height:420px;border:0;background:#fff}
 .ed-web-dades label{display:grid;gap:.2rem;margin:0}
 .ed-web-dades input,.ed-web-dades select{font:inherit;min-height:44px;padding:.35rem .55rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--card);color:var(--text)}
 /* ── L'inspector ── */
@@ -4641,7 +4644,7 @@ function creaLlenc() {
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
     cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
-    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', reg: null
+    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', reg: null, webPrevia: null
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -6565,7 +6568,9 @@ function creaLlenc() {
       + '<label>Correu on arriben els formularis <input type="email" id="edWebCorreu" value="' + escA(S.webCorreu) + '" placeholder="hola@exemple.cat"></label>'
       + '<label>Adreça definitiva, si ja la tens <input type="url" id="edWebUrl" value="' + escA(S.webUrl) + '" placeholder="https://"></label>'
       + '<label>Llengua <select id="edWebLlengua"><option value="ca"' + (S.webLlengua === 'es' ? '' : ' selected') + '>Català</option><option value="es"' + (S.webLlengua === 'es' ? ' selected' : '') + '>Castellà</option></select></label></div>'
-      + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button></div>'
+      + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button>'
+      + '<button type="button" class="ed-b" id="edWebVeure" aria-expanded="' + !!S.webPrevia + '">' + (S.webPrevia ? 'Tanca la vista prèvia' : 'Vista prèvia') + '</button></div>'
+      + (S.webPrevia ? '<div class="ed-web-previa"><p>La web tal com sortirà, pàgina a pàgina: <code id="edWebRuta"></code>. Els enllaços funcionen; els formularis porten a la pàgina de gràcies.</p><iframe id="edWebMarc" title="Vista prèvia de la web" sandbox="allow-same-origin"></iframe></div>' : '')
       + '<p>HTML i CSS estàtics, sense JavaScript: una pàgina per porta, els formularis que arriben per correu (Netlify Forms), les dades a cada pàgina en JSON-LD i <code>permaweb.json</code> amb l\'empremta de cada fitxer. El zip ja és el repositori del client: porta el cervell del projecte (<code>cerebro/</code>: el mapa i una fitxa per rol, lliurament i procés), les regles (<code>CLAUDE.md</code>) i el <code>netlify.toml</code>. S\'arrossega a Netlify i ja és publicada.</p>';
     h += '<h4>El registre viu</h4><p>La web porta <code>registre.html</code>, on la xarxa anota cada lliurament. Netlify en dona el CSV: carrega\'l aquí i veuràs el mapa que surt de l\'ús, comparat amb el que has dibuixat. Del CSV només es llegeixen rols, lliurament, tipus, data, evidència i valor.</p>'
       + '<div class="ed-web-dades"><label>El CSV del registre <input type="file" id="edWebReg" accept=".csv,.json,text/csv,application/json"></label></div>';
@@ -6578,6 +6583,7 @@ function creaLlenc() {
         + '<p>«Obre» el posa a l\'editor amb el teu dibuix com a ideal i ensenya la vista Desviació. Es pot desfer.</p>';
     }
     posaHTML(p, h);
+    mostraPrevia();
   }
   function webPagina(web, pag) {
     if (pag === 'inici') {
@@ -6604,10 +6610,39 @@ function creaLlenc() {
       + '<h6>La benvinguda</h6><ol>' + x.benvinguda.map(b => '<li data-pas="' + escA(b.pas) + '"><b>' + esc_(b.t) + '</b> ' + esc_(b.d) + '</li>').join('') + '</ol>'
       + (x.connexions.length ? '<h6>Es connecta amb</h6><div class="ed-web-xips">' + x.connexions.map(c => '<a href="../conecta/#catalogo" title="Per la paraula «' + escA(c.per) + '» del mapa">' + esc_(c.nom) + '</a>').join('') + '</div>' : '');
   }
+  /* La vista prèvia: la web de debò (VS-SITE), pàgina a pàgina, en un marc
+     sense scripts. El full d'estil va dins de la pàgina i els enllaços entre
+     pàgines es resolen aquí, perquè funcioni també des del disc. */
+  function siteAra() {
+    return webASite(webAra().web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE) });
+  }
+  function mostraPrevia() {
+    const f = $('#edWebMarc');
+    if (!f || !S.webPrevia) return;
+    const per = {}; siteAra().fitxers.forEach(x => { per[x.ruta] = x.cos; });
+    if (!/\.html$/.test(S.webPrevia) || !per[S.webPrevia]) S.webPrevia = 'index.html';
+    f.onload = () => {
+      const d = f.contentDocument;
+      if (!d) return;
+      d.addEventListener('click', ev => {
+        if (ev.target.closest('button[type=submit]')) { ev.preventDefault(); S.webPrevia = 'gracies.html'; mostraPrevia(); avis('A la web publicada, el formulari arriba per correu'); return; }
+        const a = ev.target.closest('a[href]');
+        if (!a) return;
+        const h = a.getAttribute('href'), r = h.split('#')[0];
+        if (!r) return;
+        ev.preventDefault();
+        if (/\.html$/.test(r) && per[r]) { S.webPrevia = r; mostraPrevia(); f.focus(); }
+        else if (/^(https?:|mailto:)/.test(h)) window.open(h, '_blank', 'noopener');
+        else avis('«' + r + '» és a la web publicada');
+      });
+    };
+    f.srcdoc = per[S.webPrevia].replace('<link rel="stylesheet" href="estil.css">', '<style>' + per['estil.css'] + '</style>');
+    $('#edWebRuta').textContent = S.webPrevia;
+  }
   /* La web, en un zip. L'empremta SHA-256 la fa el navegador; si no pot
      (un context sense crypto.subtle), la web surt igual i ho diu. */
   async function baixaWeb() {
-    const { web } = webAra(), site = webASite(web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE) });
+    const site = siteAra();
     let fitxers = site.fitxers, nota = '';
     try {
       fitxers = await ambPermaweb(site, async b => [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map(x => x.toString(16).padStart(2, '0')).join(''));
@@ -6622,9 +6657,10 @@ function creaLlenc() {
     if (e.target.id === 'edWebNom') S.webNom = e.target.value;
     if (e.target.id === 'edWebCorreu') S.webCorreu = e.target.value;
     if (e.target.id === 'edWebUrl') S.webUrl = e.target.value;
+    if (/^edWeb(Nom|Correu|Url)$/.test(e.target.id)) mostraPrevia();
   });
   $('#edPanWeb').addEventListener('change', e => {
-    if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; return; }
+    if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; mostraPrevia(); return; }
     if (e.target.id === 'edWebReg') { if (e.target.files && e.target.files[0]) llegeixRegWeb(e.target.files[0]); return; }
     const c = e.target.closest('[data-web-casa]');
     if (!c) return;
@@ -6639,6 +6675,7 @@ function creaLlenc() {
     const b = e.target.closest('[data-web-pag]');
     if (b) { S.webPag = b.getAttribute('data-web-pag'); pintaWeb(); const q = $('#edPanWeb [data-web-pag="' + CSS.escape(S.webPag) + '"]'); if (q) q.focus(); return; }
     if (e.target.closest('#edWebZip')) { baixaWeb(); return; }
+    if (e.target.closest('#edWebVeure')) { S.webPrevia = S.webPrevia ? null : 'index.html'; pintaWeb(); $('#edWebVeure').focus(); return; }
     if (e.target.closest('#edWebJson')) { baixaText('web.json', JSON.stringify(webAra().web, null, 2), 'application/json'); return; }
     if (!S.reg) return;
     if (e.target.closest('#edRegInforme')) { baixaText('informe.md', S.reg.informe, 'text/markdown'); return; }

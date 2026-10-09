@@ -137,6 +137,9 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
   mapa dona sempre els mateixos bytes. `permaweb.json` permet comprovar el que
   s'ha publicat.
 
+**Per veure-la abans:** el botó «Vista prèvia» de la pestanya Web l'ensenya
+al navegador, pàgina a pàgina, amb els enllaços i els formularis.
+
 **Per publicar-la:** arrossega la carpeta a Netlify (Netlify Drop) o puja-la al
 repositori del client. Netlify en detecta els formularis sol.
 
