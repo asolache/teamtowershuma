@@ -44,6 +44,55 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### Serveis connectables, cost real de l'IA i ingressos recurrents (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** prototipar el model amb els pilots, coherent i
+disruptiu: els costos reals de l'IA, un servei per integrar la web amb la teva
+IA i una manera d'aconseguir ingressos recurrents facilitant serveis premium
+(CRM i qualsevol altre que el client necessiti). Amb un prototip de serveis
+connectables: els que ja tenim connectats (Netlify, Zoho CRM), les IA, Stripe,
+Amazon i els que interessin al 90 % dels clients i dels seus rols.
+
+**Fet (prototip):** `conecta/index.html`, en castellà i `noindex` com
+`/mapa-web/`, i al menú.
+
+- **Per rol i per fluxos.** Set rols i catorze fluxos. Cada flux té les seves
+  peces, amb alternatives per triar, i se suma a una pila. La pila diu quins
+  serveis surten, quantes claus van al servidor i com es paga cadascun. Es
+  descarrega en JSON sense claus: és el nivell 1 de la guia d'integració.
+- **Catàleg.** 29 serveis en vuit categories. Diu els que ja fem servir i, a
+  cada categoria, almenys una opció lliure.
+- **Cost real de l'IA.** Les quinze tasques d'`AI_INTENTS`, amb el model
+  d'avui (totes Opus 4.8) i el model proposat per tasca (Haiku, Sonnet o
+  Opus). Calcula el sostre de sortida a preu oficial, amb la font i la data.
+- **El model,** com a proposta per validar amb els pilots. Té tres ingressos:
+  la posada en marxa per fluxos, el Sistema viu mensual i la facilitació de
+  serveis. A la facilitació, qualsevol comissió es declara i sempre hi ha
+  una opció lliure al costat.
+- **Guarda** `check-conecta.js` a la CI: comprova que les tasques coincideixen
+  amb `AI_INTENTS`, que hi ha font i data del preu, que cada categoria té una
+  opció lliure i que no hi ha ni euros ni claus. **Test:**
+  `SOS/tests/test-conecta.mjs`.
+
+**El que queda:**
+
+1. **Aplicar el model per tasca a `AI_INTENTS`,** després de mesurar amb els
+   pilots la qualitat i els tokens reals (el SOS ja els compta a
+   `AI.audit`). Si una tasca perd qualitat, torna al model d'abans. La guarda
+   farà petar la pàgina fins que s'actualitzi, i és el que volem.
+2. **Nivell 2:** una funció a Netlify que rep el formulari i escriu al CRM.
+   Comença pel flux «Cada formulari entra al CRM», amb Zoho al pilot 1.
+3. **Programes de partner** (Zoho, Stripe, HubSpot, Holded…): quins n'hi ha i
+   què paguen. Les xifres van al repositori privat, no aquí.
+4. **La quota del Sistema viu,** que es decideix amb els pilots.
+5. **Versió en català** i treure el `noindex` quan l'Àlvar validi el model.
+
+**Com es tanca:** cada pilot surt amb la seva pila en JSON i amb el cost
+d'IA mesurat, no estimat. A més, un flux de nivell 2 ha de funcionar de debò
+al pilot 1.
+
+---
+
 ### Ensenyar a l'Àlvar a integrar-se amb l'automatització del pla (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** que li ensenyem a connectar-se amb els serveis
