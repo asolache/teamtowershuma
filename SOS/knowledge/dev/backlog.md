@@ -82,6 +82,12 @@ Amazon i els que interessin al 90 % dels clients i dels seus rols.
    farà petar la pàgina fins que s'actualitzi, i és el que volem.
 2. **Nivell 2:** una funció a Netlify que rep el formulari i escriu al CRM.
    Comença pel flux «Cada formulari entra al CRM», amb Zoho al pilot 1.
+   **Escrit (09/10/2026):** `netlify/functions/submission-created.mjs` passa
+   el *Diagnòstic d'organització* a lead de Zoho. Netlify la crida sola a cada
+   enviament verificat. Sense claus no fa res; té mode prova i fa servir el
+   permís mínim (només crear leads). Al registre no hi va cap dada personal.
+   Test sense xarxa a la CI: `test-zoho-nivell2.mjs`. **Falta que l'Àlvar hi
+   posi les claus** seguint `guia-zoho-nivell2.md`, i provar-ho de debò.
 3. **Programes de partner** (Zoho, Stripe, HubSpot, Holded…): quins n'hi ha i
    què paguen. Les xifres van al repositori privat, no aquí.
 4. **La quota del Sistema viu,** que es decideix amb els pilots.
@@ -128,6 +134,19 @@ cada peça de la fase.
 
 **Com es tanca:** l'Àlvar fa ell sol el nivell 1 amb la guia, i el nivell 2 en
 quan l'API existeixi, amb una integració que funcioni de debò.
+
+### /mapa-web/ també per fluxos (fet 09/10/2026)
+
+La pàgina del servei tenia nou xifres tancades: la sessió, el taller, el
+preu «després», l'acompanyament, dues quotes, dos extres i el JSON-LD.
+**Default triat, coherent amb «tot per fluxos»:** cap xifra. La sessió i el
+taller diuen «per fluxos: hores i IA», amb el segell «Pilot». Les quotes del
+manteniment passen a ser del Sistema viu, que es decideix amb els pilots, i
+els extres entren al pressupost com un flux més. La garantia «no hi ha hores
+extra» es queda: el pressupost per fluxos, un cop acceptat, no canvia.
+`check-conecta.js` ara peta si /mapa-web/ torna a publicar euros.
+
+---
 
 ### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat i fet 09/10/2026)
 

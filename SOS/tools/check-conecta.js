@@ -111,6 +111,13 @@ const clau = src.match(/sk-[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|eyJ[A-Za-z0-9_-]{
 if (clau) bad('hi ha una cosa que sembla una clau: ' + clau[0].slice(0, 12) + '…');
 else ok('cap clau al codi');
 
+/* 3b · La pàgina del servei tampoc: «tot per fluxos» (Àlvar, 09/10/2026) val
+   per a tot el que es ven, i /mapa-web/ en tenia nou xifres tancades. */
+const mw = readFileSync(join(ARREL, 'mapa-web', 'index.html'), 'utf8').replace(/<!--[\s\S]*?-->/g, '');
+const eurosMw = mw.match(/\d[\d.,]*\s*€|€\s*\d|"priceCurrency"/g);
+if (eurosMw) bad('/mapa-web/ encara publica preus: ' + eurosMw.slice(0, 3).join(' · '));
+else ok('/mapa-web/ tampoc publica preus en euros: tot per fluxos');
+
 /* 4 · S'hi arriba des del menú. */
 const nav = readFileSync(join(__dirname, 'build-nav.js'), 'utf8');
 if (!nav.includes("'/conecta/'")) bad('la pàgina no és al menú (build-nav.js)');
