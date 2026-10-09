@@ -140,6 +140,11 @@ const res = await p.evaluate(() => {
 ok(res.alt > 200 && res.text.length > 200,
   `el diagnòstic es veu de debò · ${Math.round(res.alt)}px i ${res.text.length} caràcters de text`);
 ok(res.formFora, 'i el formulari s\'aparta');
+const portes = await p.evaluate(() => [...document.querySelectorAll('#result .ara-c')].map(x => x.getAttribute('href')));
+ok(['vna-suport.html', 'index.html#/node', 'index.html#/alta'].every(h => portes.includes(h)),
+  'i acaba portant al mapa de valor, al node i al perfil');
+ok(await p.evaluate(() => !!document.querySelector('#result .ara-op a[href="/#operatiu"]')),
+  'i ofereix el servei: el negoci operatiu');
 ok(res.text.includes('cap casella ho diu del tot'),
   'el que ha escrit ell surt al diagnòstic, i no només l\'etiqueta que ha triat');
 ok(!/\d[\d.]*\s*€/.test(res.text), 'i no hi surt cap preu: la xifra es parla');

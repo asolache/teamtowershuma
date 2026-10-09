@@ -47,6 +47,17 @@ nav a:hover{text-decoration:underline}
 .prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
 .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
 .step[hidden]{display:none}
+.ara{margin:1.6rem 0 0}
+.ara h3{margin:0 0 .3rem;font-size:1.05rem}
+.ara-s{color:var(--muted);font-size:.86rem;margin:0 0 .8rem;line-height:1.55}
+.ara-g{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.ara-c{display:flex;flex-direction:column;gap:.3rem;border:1px solid var(--border);border-radius:10px;padding:.85rem .9rem;text-decoration:none;color:inherit;background:var(--card,transparent);transition:border-color .13s}
+.ara-c:hover{border-color:var(--indigo)}
+.ara-c b{font-size:.92rem}
+.ara-c span{font-size:.8rem;color:var(--muted);line-height:1.45}
+.ara-op{margin:1rem 0 0;padding:1rem 1.1rem;border-radius:10px;border:1px solid var(--green,#00e676);background:rgba(0,230,118,.06);font-size:.88rem;line-height:1.6}
+.ara-op a{font-weight:600;color:var(--indigo)}
+@media(max-width:640px){.ara-g{grid-template-columns:1fr}}
 .dx-avanc{border:1px solid var(--border);border-left:3px solid var(--green,#00e676);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin:0 0 1.2rem;background:rgba(0,230,118,.05)}
 .dx-avanc .av-k,.dx-avanc .av-pk{font-family:var(--mono,monospace);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green,#00e676);margin-bottom:.35rem}
 .dx-avanc .av-pk{margin-top:.8rem}
@@ -443,6 +454,22 @@ enlloc: aquestes són les eines del SOS que responen al que has marcat, i cadasc
 aquesta</strong> i no una altra.</p>
 <div id="rPortes"></div></div>
 
+<!-- I ARA, QUÈ EN FAS (09/10/2026) ────────────────────────────────────
+     El diagnòstic no s'acaba en llegir-lo: porta cap a les tres maneres
+     d'entrar al SOS —el mapa de valor de l'organització, el node i el
+     perfil— i, al final, a demanar el servei. Les mateixes portes que la
+     portada de /sos/. -->
+<div class="ara">
+<h3 data-i18n="dt.ara.h">I ara, què en fas</h3>
+<p class="ara-s" data-i18n="dt.ara.s">Pots començar avui pel teu compte, sense donar-te d'alta enlloc. Tria per on:</p>
+<div class="ara-g">
+<a class="ara-c" href="vna-suport.html"><b data-i18n="dt.ara.vna.t">🕸 Dibuixa el vostre mapa de valor</b><span data-i18n="dt.ara.vna.d">Rols, lliuraments, el real i l'ideal. Amb el que has respost ja tens per on començar.</span></a>
+<a class="ara-c" href="index.html#/node"><b data-i18n="dt.ara.node.t">📍 Munta el vostre node</b><span data-i18n="dt.ara.node.d">La vostra organització al SOS: rols, tauler i comptes. Al teu navegador i sense quota.</span></a>
+<a class="ara-c" href="index.html#/alta"><b data-i18n="dt.ara.perfil.t">🦸 Crea el teu perfil</b><span data-i18n="dt.ara.perfil.d">Tria el teu rol i que el que aportes consti. És teu i te l'endús.</span></a>
+</div>
+<p class="ara-op" data-i18n-html="dt.ara.op">I si ho voleu <b>muntat i funcionant</b>, això és <a href="/#operatiu">el teu negoci operatiu</a>: la sala amb l'equip, el mapa real i l'ideal, el cervell per rol i 30 dies d'acompanyament. Envia'ns el diagnòstic aquí sota i et preparem la proposta, desglossada per fluxos.</p>
+</div>
+
 <div class="send">
 <h3 data-i18n="dt.send.h">📨 Vols que ho mirem junts?</h3>
 <p data-i18n-html="dt.send.p">Si ens ho envies, preparem una <strong>sessió exploratòria de 45 minuts sense compromís</strong> amb aquest diagnòstic ja llegit. Si prefereixes quedar-t'ho, també serveix: <strong>és teu</strong>.</p>
@@ -624,6 +651,15 @@ ca: {
   'dt.av.k':'El vostre punt de partida',
   'dt.av.pk':'Què cal desfer',
   'dt.av.n':'L\'itinerari que us toca, com us podem acompanyar, d\'on poden sortir els diners i el primer pas, en un clic.',
+  'dt.ara.h':'I ara, què en fas',
+  'dt.ara.s':'Pots començar avui pel teu compte, sense donar-te d\'alta enlloc. Tria per on:',
+  'dt.ara.vna.t':'🕸 Dibuixa el vostre mapa de valor',
+  'dt.ara.vna.d':'Rols, lliuraments, el real i l\'ideal. Amb el que has respost ja tens per on començar.',
+  'dt.ara.node.t':'📍 Munta el vostre node',
+  'dt.ara.node.d':'La vostra organització al SOS: rols, tauler i comptes. Al teu navegador i sense quota.',
+  'dt.ara.perfil.t':'🦸 Crea el teu perfil',
+  'dt.ara.perfil.d':'Tria el teu rol i que el que aportes consti. És teu i te l\'endús.',
+  'dt.ara.op':'I si ho voleu <b>muntat i funcionant</b>, això és <a href="/#operatiu">el teu negoci operatiu</a>: la sala amb l\'equip, el mapa real i l\'ideal, el cervell per rol i 30 dies d\'acompanyament. Envia\'ns el diagnòstic aquí sota i et preparem la proposta, desglossada per fluxos.',
   'dt.h1':'Diagnòstic comunitari',
   'dt.intro':'Digues d\'on véns, què ja teniu i què us falta, i en <strong>3 minuts</strong> tens el vostre punt de partida i què cal desfer. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l\'enviïs o no</strong>.',
   'dt.s4.h':'4 · El teu diagnòstic ja està fet',
@@ -877,6 +913,15 @@ es: {
   'dt.av.k':'Vuestro punto de partida',
   'dt.av.pk':'Qué hay que deshacer',
   'dt.av.n':'El itinerario que os toca, cómo os podemos acompañar, de dónde puede salir el dinero y el primer paso, en un clic.',
+  'dt.ara.h':'Y ahora, qué haces con esto',
+  'dt.ara.s':'Puedes empezar hoy por tu cuenta, sin darte de alta en ningún sitio. Elige por dónde:',
+  'dt.ara.vna.t':'🕸 Dibuja vuestro mapa de valor',
+  'dt.ara.vna.d':'Roles, entregas, el real y el ideal. Con lo que has respondido ya tienes por dónde empezar.',
+  'dt.ara.node.t':'📍 Monta vuestro nodo',
+  'dt.ara.node.d':'Vuestra organización en el SOS: roles, panel y cuentas. En tu navegador y sin cuota.',
+  'dt.ara.perfil.t':'🦸 Crea tu perfil',
+  'dt.ara.perfil.d':'Elige tu rol y que lo que aportas conste. Es tuyo y te lo llevas.',
+  'dt.ara.op':'Y si lo queréis <b>montado y funcionando</b>, eso es <a href="/#operatiu">tu negocio operativo</a>: la sala con el equipo, el mapa real y el ideal, el cerebro por rol y 30 días de acompañamiento. Envíanos el diagnóstico aquí debajo y te preparamos la propuesta, desglosada por flujos.',
   'dt.h1':'Diagnóstico comunitario',
   'dt.intro':'Di de dónde vienes, qué ya tenéis y qué os falta, y en <strong>3 minutos</strong> tienes vuestro punto de partida y qué hay que deshacer. El contacto, al final y solo para dirigirte el diagnóstico entero — <strong>nos lo envíes o no</strong>.',
   'dt.s4.h':'4 · Tu diagnóstico ya está hecho',
