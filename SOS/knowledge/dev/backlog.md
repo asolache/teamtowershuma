@@ -44,6 +44,28 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### La web surt del mapa, i l'alta en un toc (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** que mentre es crea el mapa de valor surti la web, amb
+menús, pàgines, contingut i serveis, i que ja hi hagi la creació de comptes,
+la integració i la benvinguda. La màgia: configurar GitHub, Netlify i la IA
+pagant amb Apple Pay, i desenvolupar amb el client des dels projectes de
+Claude Code.
+
+**Fet:** la pestanya **Web** de l'editor del mapa. Una porta per rol que no és
+de casa; compte només amb anada i tornada; la benvinguda surt de la seqüència;
+els serveis són els processos; les connexions es proposen per paraules del
+mapa. Descarrega `web.json` (`tt-web-1`). Funció pura `webDelMapa` (bloc
+`VS-WEB`), amb vint proves al motor, que corre a la CI.
+
+**Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.
+Camí A: ho tenim nosaltres, amb porta de sortida. Camí B: «Deploy to Netlify»
+al GitHub del client. La plantilla que llegeix `web.json`. La IA amb la clau
+del client o amb crèdits. Un fil de Claude per flux.
+
+**Pendent de l'Àlvar:** si els crèdits d'IA porten marge (la xifra, al
+repositori privat), i els tokens de servei de GitHub i Netlify per al camí A.
+
 ### Diagnòstic d'organització alineat amb el negoci operatiu, i després Ethereum (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** revisar «Què vols que passi» del diagnòstic amb
