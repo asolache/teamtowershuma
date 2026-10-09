@@ -66,6 +66,38 @@ del client o amb crèdits. Un fil de Claude per flux.
 **Pendent de l'Àlvar:** si els crèdits d'IA porten marge (la xifra, al
 repositori privat), i els tokens de servei de GitHub i Netlify per al camí A.
 
+### Diagnòstic d'organització alineat amb el negoci operatiu, i després Ethereum (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** revisar «Què vols que passi» del diagnòstic amb
+l'estratègia actualitzada, l'embut i els rols del mapa de valor. La web ha de
+ser exemple del valor que aportem i de la tecnologia que fem servir (webs W3C,
+web3). I, pròximament, la integració amb Ethereum i xarxes semblants.
+
+**Fet:** `build-diagnosi-org.js` passa de sis caselles (quatre d'actes i
+d'equip) a nou, en dos titulars. **El teu negoci operatiu**, primer i en
+l'ordre de l'embut: `operatiu`, `web` (web de xarxa W3C al vostre GitHub i
+Netlify), `fluxos` (IA amb el model per tasca), `mapa` i `acords` (registre
+del que aporta cadascú, la porta web3). **L'equip i les jornades**:
+`sostenir`, `direccio`, `cohesio` i `obrir`, que absorbeix `produir` (es
+pregunten igual). Cap preu. La guarda 3 («cap paquet venible sense porta») no
+comprovava res des que `sector` és una llista; ara sí, i els quinze paquets
+d'empresa tenen porta.
+
+**Pendent:**
+- **Ethereum i xarxes semblants.** Avui `contractes` es ven com a estudi de
+  viabilitat i al SOS no hi ha res construït. Pas següent: decidir amb un
+  pilot quin acord s'executa sol (p.ex. el repartiment d'un Slicing Pie o
+  l'aportació d'hores) i en quina xarxa (Ethereum L2, Gnosis o similar), amb
+  la clau a la cartera de qui signa, mai al repositori. Es tanca quan un
+  pilot té un acord real registrat i verificable, i el diagnòstic l'ensenya.
+- **Mesurar les caselles.** Quan hi hagi leads a Zoho amb el camp
+  d'objectiu, mirar quines es trien i quines no; una casella que ningú tria
+  en tres mesos s'ajunta amb una altra.
+- **Rols de la xarxa al diagnòstic.** El pas 2 pregunta quina casa sou; falta
+  preguntar quins rols de la vostra xarxa (qui compra, revèn, subministra,
+  treballa, acull, recomana) no tenen porta avui, que és el que alimenta
+  l'esborrany del mapa.
+
 ### Serveis connectables, cost real de l'IA i ingressos recurrents (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** prototipar el model amb els pilots, coherent i
