@@ -129,6 +129,19 @@ cada peça de la fase.
 **Com es tanca:** l'Àlvar fa ell sol el nivell 1 amb la guia, i el nivell 2 en
 quan l'API existeixi, amb una integració que funcioni de debò.
 
+### /mapa-web/ també per fluxos (fet 09/10/2026)
+
+La pàgina del servei tenia nou xifres tancades: la sessió, el taller, el
+preu «després», l'acompanyament, dues quotes, dos extres i el JSON-LD.
+**Default triat, coherent amb «tot per fluxos»:** cap xifra. La sessió i el
+taller diuen «per fluxos: hores i IA», amb el segell «Pilot». Les quotes del
+manteniment passen a ser del Sistema viu, que es decideix amb els pilots, i
+els extres entren al pressupost com un flux més. La garantia «no hi ha hores
+extra» es queda: el pressupost per fluxos, un cop acceptat, no canvia.
+`check-conecta.js` ara peta si /mapa-web/ torna a publicar euros.
+
+---
+
 ### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar:** «treure els preus de tot el catàleg i traduir-los a
