@@ -327,7 +327,7 @@ UX, seguiment i desenvolupament de l'estratègia».
   que diuen que no hi és no hi és. Mapa en català o castellà.
 - **La plantilla** i el model, a `SOS/knowledge/cervell/`, i `--nou <dir>` per
   instal·lar-la en un projecte amb l'eina inclosa.
-- **La prova trencant-la a posta:** `SOS/tests/test-cervell.mjs`, nou casos, al CI.
+- **La prova trencant-la a posta:** `SOS/tests/test-cervell.mjs`, onze casos, al CI.
 - **La veda 161** i un article al blog.
 - Cobreix el punt 1 del bloc `for-ai/` de sota per a fitxers i funcions citats;
   hi queden els números de veda citats i les deu regles.
@@ -342,14 +342,19 @@ que existís.
    comunicació, backlog i guardes; li falten taxonomia, mapa i codex. Se li
    escriu el `cervell.json` apuntant al que ja té i se li copia l'eina, en un PR
    allà, quan aquell projecte ho validi.
-2. **El servei, dissenyat:** què rep el client el dia que se li lliura el
-   repositori (una pàgina «el teu cervell» que es llegeixi sense obrir GitHub),
-   i la UX de la primera hora amb el cervell nou.
+2. **El servei, dissenyat:** la pàgina «el teu cervell» ja es genera
+   (`pagina` a `cervell.json`; la plantilla la porta a `saber/cervell.html`):
+   les peces i si hi són, l'ordre de lectura, les cares, les vedes i el
+   backlog, en una pàgina sola que s'obre amb doble clic, i el CI peta si ha
+   quedat vella. **Queda:** la UX de la primera hora amb el cervell nou, i
+   decidir si TeamTowers publica la seva (avui no: el backlog porta noms de
+   pilots que no han de sortir a la web).
 3. **El seguiment com a servei recurrent:** portar la versió nova de l'eina i de
    la plantilla a cada client, i tornar aquí el que s'hi aprèn. Encaixa amb
    «Ingressos recurrents» (més avall).
-4. **L'estratègia:** posar el cervell al catàleg públic com el que s'emporta el
-   client a cada servei, alineat amb el pla del repositori d'estratègia, sense
+4. **L'estratègia:** `/mapa-web/` ja diu «el cerebro de tu negocio» i la
+   comprovació que avisa; queda posar el cervell al catàleg públic com el que
+   s'emporta el client a cada servei, alineat amb el pla del repositori d'estratègia, sense
    xifres que l'Àlvar no hagi publicat.
 
 **Com es tanca:** l'eina al CI en verd aquí i a Events Penedès, la plantilla

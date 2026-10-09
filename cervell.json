@@ -50,5 +50,6 @@
   },
   "bases": [
     "SOS"
-  ]
+  ],
+  "codex": "SOS/knowledge/codex.md"
 }

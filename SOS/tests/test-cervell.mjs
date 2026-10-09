@@ -65,6 +65,9 @@ cas('una funció citada que cap codi defineix peta',
 cas('una afirmació negativa que deixa de ser certa peta',
   a => mkdirSync(join(a, 'misc')), a => rmSync(join(a, 'misc'), { recursive: true }));
 cas('un mapa editat a mà peta', a => appendFileSync(join(a, 'saber', 'MAPA.md'), '\nuna línia a mà\n'));
+cas('una pàgina del cervell editada a mà peta', a => appendFileSync(join(a, 'saber', 'cervell.html'), '<!-- a mà -->\n'));
+cas('una veda nova sense regenerar la pàgina peta',
+  a => appendFileSync(join(a, 'saber', 'codex.md'), '\n## Veda 4 — Una de nova\n\nText.\n'));
 cas('una peça del cervell que falta peta', a => rmSync(join(a, 'saber', 'backlog.md')));
 cas('un idioma sense textos peta', a => {
   const p = join(a, 'cervell.json'), c = JSON.parse(readFileSync(p, 'utf8'));

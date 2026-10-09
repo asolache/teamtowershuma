@@ -69,7 +69,15 @@ node guardas/cervell.js --check    # i al CI, a cada PR
 ```
 
 `--nou` copia la plantilla (`plantilla/`) i l'eina, i no trepitja mai un
-cervell que ja hi és. Després, el primer que es fa és declarar les carpetes del
+cervell que ja hi és.
+
+**La pàgina per al client.** Si `cervell.json` declara `pagina`, l'eina escriu
+també una pàgina HTML sola (a la plantilla, `saber/cervell.html`) amb les peces
+i si hi són, l'ordre de lectura, les cares, les vedes i el que queda al
+backlog. S'obre amb doble clic, sense GitHub, i el CI peta si ha quedat vella.
+És el que el client veu el dia que se li lliura el projecte. TeamTowers no la
+publica de la seva: el nostre backlog és de feina interna i no ha de sortir a
+la web. Després, el primer que es fa és declarar les carpetes del
 projecte a `saber/taxonomia.md`: la guarda no deixarà passar ni una sense cara.
 
 Un projecte que ja té cervell propi (un `CLAUDE.md`, un backlog, guardes) no

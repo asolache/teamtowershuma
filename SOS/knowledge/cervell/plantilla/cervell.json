@@ -4,6 +4,7 @@
   "eina": "guardas/cervell.js",
   "taxonomia": "saber/taxonomia.md",
   "mapa": "saber/MAPA.md",
+  "pagina": "saber/cervell.html",
   "lectura": [
     {
       "path": "saber/MAPA.md",
@@ -27,5 +28,6 @@
   "noHiEs": [
     "misc/",
     "temp/"
-  ]
+  ],
+  "codex": "saber/codex.md"
 }

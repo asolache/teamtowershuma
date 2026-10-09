@@ -83,6 +83,7 @@ const C = JSON.parse(readFileSync(CONF, 'utf8'));
 const rel = p => relative(ARREL, p) || '.';
 const TAX = join(ARREL, C.taxonomia);
 const MAPA = join(ARREL, C.mapa);
+const PAGINA = C.pagina ? join(ARREL, C.pagina) : null;
 const FORA = new Set(['.git', 'node_modules', ...(C.fora || [])]);
 const BAIXA = new Set(C.baixa || []);
 
@@ -103,7 +104,13 @@ const T = {
       'CI peta — un mapa desactualitzat és pitjor que cap mapa.'],
     comenca: 'Comença per aquí, després', idespres: ' i després ',
     taula: '| carpeta | què hi entra | fitxers |', arrel: 'arrel', alArrel: 'a l\'arrel del repositori',
-    peu: 'carpetes declarades · generat des de l\'arbre, no escrit.'
+    peu: 'carpetes declarades · generat des de l\'arbre, no escrit.',
+    pTitol: 'El cervell de', pLead: 'El que una IA llegeix abans d\'escriure en aquest projecte. Es genera del repositori i el CI comprova que diu la veritat: si deixa de ser certa, peta.',
+    pPeces: 'Les peces', pLectura: 'L\'ordre de lectura', pCares: 'On va cada cosa', pVedes: 'Les vedes', pVedesDiu: 'Cada veda és un error que ja es va cometre, escrit perquè ningú l\'hagi de tornar a aprendre.',
+    pBacklog: 'El que queda per fer', pBacklogDiu: 'blocs al backlog', pGuarda: 'Com se sap que és cert',
+    pGuardaDiu: 'Cada canvi passa per la guarda: cap carpeta sense cara, cap mapa vell, cap cita a un fitxer o una funció que no existeix.',
+    pFalta: 'falta', pHiEs: 'hi és', pCap: 'Encara cap.',
+    pPecaNom: { comunicacio: 'La comunicació', taxonomia: 'La taxonomia', mapa: 'El mapa', codex: 'El codex', backlog: 'El backlog', contracte: 'El contracte de la IA' }
   },
   es: {
     llei: 'Las reglas que gobiernan el resto. Si se rompen, invalidan el trabajo hecho.',
@@ -116,7 +123,13 @@ const T = {
       'CI falla — un mapa desactualizado es peor que ningún mapa.'],
     comenca: 'Empieza por aquí, después', idespres: ' y después ',
     taula: '| carpeta | qué entra | ficheros |', arrel: 'raíz', alArrel: 'en la raíz del repositorio',
-    peu: 'carpetas declaradas · generado desde el árbol, no escrito.'
+    peu: 'carpetas declaradas · generado desde el árbol, no escrito.',
+    pTitol: 'El cerebro de', pLead: 'Lo que una IA lee antes de escribir en este proyecto. Se genera del repositorio y el CI comprueba que dice la verdad: si deja de ser cierto, falla.',
+    pPeces: 'Las piezas', pLectura: 'El orden de lectura', pCares: 'Dónde va cada cosa', pVedes: 'Las vedas', pVedesDiu: 'Cada veda es un error que ya se cometió, escrito para que nadie tenga que volver a aprenderlo.',
+    pBacklog: 'Lo que queda por hacer', pBacklogDiu: 'bloques en el backlog', pGuarda: 'Cómo se sabe que es cierto',
+    pGuardaDiu: 'Cada cambio pasa por la guarda: ninguna carpeta sin cara, ningún mapa viejo, ninguna cita a un fichero o una función que no existe.',
+    pFalta: 'falta', pHiEs: 'está', pCap: 'Todavía ninguno.',
+    pPecaNom: { comunicacio: 'La comunicación', taxonomia: 'La taxonomía', mapa: 'El mapa', codex: 'El codex', backlog: 'El backlog', contracte: 'El contrato de la IA' }
   }
 };
 const L = T[C.idioma || 'ca'];
@@ -155,8 +168,9 @@ function compta(dir) {
     for (const nom of readdirSync(d)) {
       if (nom === '.git' || nom === 'node_modules') continue;
       /* El mapa no es compta a si mateix: comptant-lo, escriure'l canviava la
-         xifra que hi anava a dins i `--check` petava contra la seva sortida. */
-      if (join(d, nom) === MAPA) continue;
+         xifra que hi anava a dins i `--check` petava contra la seva sortida.
+         La pàgina del cervell, igual. */
+      if (join(d, nom) === MAPA || join(d, nom) === PAGINA) continue;
       const abs = join(d, nom);
       let st; try { st = statSync(abs); } catch (e) { continue; }
       if (st.isDirectory()) anar(abs); else { n++; bytes += st.size; }
@@ -208,8 +222,78 @@ if (C.solts) {
 }
 md += `---\n\n*${arbre.length} ${L.peu}*\n`;
 
+/* ── La pàgina del cervell ───────────────────────────────────────────────────
+   El mapa el llegeix una IA; la pàgina, el client. Qui ha encarregat el
+   projecte no obre GitHub, i si no veu el cervell no sap que el té. Per això,
+   si el projecte la declara (`pagina`), surt una pàgina sola, sense
+   dependències, que s'obre amb doble clic i diu el mateix que el mapa: es
+   genera del mateix arbre i `--check` peta si ha quedat vella. */
+const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+/* El codex i el backlog s'escriuen en Markdown: el codi es manté codi i la
+   negreta es treu, que en un títol de llista només fa soroll. */
+const md2 = t => esc(t.replace(/\*\*/g, '')).replace(/`([^`]+)`/g, '<code>$1</code>');
+const enl = f => esc(relative(dirname(PAGINA || MAPA), join(ARREL, f)).split('\\').join('/'));
+function pagina() {
+  const llegeix = f => (f && existsSync(join(ARREL, f))) ? readFileSync(join(ARREL, f), 'utf8') : '';
+  const vedes = [...llegeix(C.codex).matchAll(/^##\s+Veda\s+(\d+)\s*[—–-]\s*(.+)$/gm)].map(m => ({ n: m[1], t: m[2].trim() }));
+  const blocs = [...llegeix(C.backlog).matchAll(/^###\s+(.+)$/gm)].map(m => m[1].trim());
+  const contracte = (C.lectura || []).map(l => l.path).find(p => p !== C.mapa && p !== C.taxonomia && p !== C.codex);
+  const peces = [['comunicacio', C.comunicacio], ['taxonomia', C.taxonomia], ['mapa', C.mapa], ['codex', C.codex],
+    ['contracte', contracte], ['backlog', C.backlog]].filter(([, f]) => f);
+  const li = (a, b) => `<li>${a}${b ? ` <span>${b}</span>` : ''}</li>`;
+  let h = `<!doctype html>
+<html lang="${C.idioma || 'ca'}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(L.pTitol + ' ' + C.nom)}</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1b;--muted:#5f5e5a;--line:#e3e0d8;--ok:#2f7d4f;--ko:#b3261e;--accent:#8a4b16}
+@media (prefers-color-scheme:dark){:root{--bg:#161614;--fg:#ecebe6;--muted:#a8a69e;--line:#33322e;--ok:#6cc08e;--ko:#f2a097;--accent:#e2a36b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:46rem;margin:0 auto;padding:2.5rem 1rem 4rem}
+h1{font-size:clamp(1.5rem,5vw,2.1rem);line-height:1.2;margin:0 0 .6rem}
+h2{font-size:1.1rem;margin:2.2rem 0 .6rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+p,li{color:var(--fg)}.lead{color:var(--muted);font-size:1.05rem;margin:0}
+ul,ol{padding-left:1.2rem}li{margin:.3rem 0}li span{color:var(--muted);font-size:.9rem}
+a{color:var(--accent)}code{font-size:.88em}
+.ok{color:var(--ok)}.ko{color:var(--ko);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{text-align:left;padding:.45rem .4rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500}.cara{font-weight:600;white-space:nowrap}
+</style>
+</head>
+<body>
+<main>
+<h1>${esc(L.pTitol + ' ' + C.nom)}</h1>
+<p class="lead">${esc(L.pLead)}</p>
+
+<h2>${esc(L.pPeces)}</h2>
+<ul>
+`;
+  peces.forEach(([k, f]) => {
+    const hi = existsSync(join(ARREL, f));
+    h += li(`<strong>${esc(L.pPecaNom[k])}</strong> · <a href="${enl(f)}"><code>${esc(f)}</code></a>`,
+      hi ? `<b class="ok">${esc(L.pHiEs)}</b>` : `<b class="ko">${esc(L.pFalta)}</b>`) + '\n';
+  });
+  h += `</ul>\n\n<h2>${esc(L.pLectura)}</h2>\n<ol>\n`;
+  (C.lectura || []).forEach(l => { h += li(`<a href="${enl(l.path)}"><code>${esc(l.path)}</code></a>`, esc(l.diu)) + '\n'; });
+  h += `</ol>\n\n<h2>${esc(L.pCares)}</h2>\n<table>\n<tr><th></th><th>${esc(L.taula.split('|')[1].trim())}</th><th>${esc(L.taula.split('|')[2].trim())}</th></tr>\n`;
+  CARES.forEach(cara => arbre.filter(d => decl.get(d) && decl.get(d).cara === cara).forEach(d => {
+    h += `<tr><td class="cara">${esc(cara)}</td><td><code>${esc(d)}/</code></td><td>${esc(decl.get(d).diu)}</td></tr>\n`;
+  }));
+  h += `</table>\n\n<h2>${esc(L.pVedes)} · ${vedes.length}</h2>\n<p class="lead">${esc(L.pVedesDiu)}</p>\n`;
+  h += vedes.length ? '<ol>\n' + vedes.map(v => `<li value="${esc(v.n)}">${md2(v.t)}</li>`).join('\n') + '\n</ol>\n' : `<p>${esc(L.pCap)}</p>\n`;
+  h += `\n<h2>${esc(L.pBacklog)} · ${blocs.length} ${esc(L.pBacklogDiu)}</h2>\n`;
+  h += blocs.length ? '<ul>\n' + blocs.map(b => li(md2(b))).join('\n') + '\n</ul>\n' : `<p>${esc(L.pCap)}</p>\n`;
+  h += `\n<h2>${esc(L.pGuarda)}</h2>\n<p>${esc(L.pGuardaDiu)} <code>node ${esc(C.eina)} --check</code></p>\n</main>\n</body>\n</html>\n`;
+  return h;
+}
+
 if (!CHECK) {
   writeFileSync(MAPA, md);
+  /* Després del mapa: la pàgina diu si el mapa hi és. */
+  if (PAGINA) { writeFileSync(PAGINA, pagina()); console.log(`✅ ${rel(PAGINA)}`); }
   console.log(`✅ ${rel(MAPA)} · ${arbre.length} carpetes · ${Math.round(md.length / 1024)} KB`);
   process.exit(0);
 }
@@ -232,6 +316,11 @@ else bad(`${fantasma.length} cares declarades sense carpeta: ${fantasma.join(', 
 const vell = existsSync(MAPA) ? readFileSync(MAPA, 'utf8') : '';
 if (vell === md) ok('el mapa és el que sortiria ara');
 else bad(`el mapa no correspon a l'arbre. Arregla-ho amb:  node ${C.eina}`);
+if (PAGINA) {
+  const velleta = existsSync(PAGINA) ? readFileSync(PAGINA, 'utf8') : '';
+  if (velleta === pagina()) ok('la pàgina del cervell és la que sortiria ara');
+  else bad(`la pàgina del cervell (${C.pagina}) és vella. Arregla-ho amb:  node ${C.eina}`);
+}
 
 /* ── 2 · Les peces del cervell ───────────────────────────────────────────── */
 console.log('\nLes peces: lectura, backlog i comunicació');
