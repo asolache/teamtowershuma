@@ -96,7 +96,8 @@ const REGLES = [
       return { ok: f.length > 0 && pct >= 33,
         diu: !f.length ? 'No hi ha cap transacció'
           : pct >= 33 ? `${i} de ${f.length} intangibles (${pct} %)`
-            : `Només ${pct} % d'intangibles: això és un diagrama de processos, no un mapa de valor` }; } },
+            : !i ? 'Cap intangible: això és un diagrama de processos, no un mapa de valor'
+            : `Només ${pct} % d'intangibles: per sota d'un terç (llindar de la casa) el mapa s'acosta a un diagrama de processos` }; } },
 
   { id: 'reciprocitat', n: 4, dur: true, de: 'mètode', t: 'Tot vincle és recíproc',
     test: m => { const mal = (m.pairs || []).filter(p => !p[2] || !p[3] || !p[4] || !p[5]);

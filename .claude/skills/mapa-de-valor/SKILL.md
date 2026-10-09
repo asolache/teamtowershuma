@@ -26,9 +26,12 @@ I quan acabis, **hi escrius**. La secció «Deixar-ho millor» ho diu com.
 | | On | Què fa |
 |---|---|---|
 | **La consola** | `SOS/vna-suport.html` | Escriure el mapa i veure les deu regles revisar-lo mentre s'escriu. Funciona per `file://`, sense compte i sense enviar res |
+| **L'editor visual** | `SOS/vna-suport.html`, «Visual» | Dibuixar el mapa amb clics: rol, tangible, intangible i el flux en ordre. És el mateix model que els sis camps (el que es dibuixa s'escriu sol). Nivells (entrar en un rol, fins a sis; vista de falcó), **Real · Ideal · Desviació**, el pols animat i «I si s'encalla?» |
+| **El diagnòstic** | `SOS/vna-suport.html`, blocs `VS-DIAG` i `VS-MODEL` | Les troballes de cada nivell amb el mètode i les tres mirades (àgil, eficient, conscient), la desviació real/ideal (el que és propi no és un error) i les vuit preguntes. Crida `revisa()`: no repeteix les regles |
+| **Les proves** | `SOS/tests/test-vna-motor.mjs` · `SOS/tests/test-vna-suport.mjs` | El motor i el model amb `node`, sense navegador; l'editor amb les mans, amb Playwright |
 | **El motor** | `SOS/tools/build-vna-suport.js` | La declaració. `require`-la i crida `revisa(mapa)`: torna `{regles, passa, dures, toves}` |
 | **El mètode** | `SOS/knowledge/references/vna-verna-allee.md` | L'article de 2008. Quan divergeixi d'aquest fitxer, **mana la referència** |
-| **El contracte** | `SOS/knowledge/for-ai/mapa-de-valor.md` | El mateix, en prosa, i què se li ha de donar a un model |
+| **El contracte** | `SOS/knowledge/for-ai/mapa-de-valor.md` | El mateix, en prosa, què se li ha de donar a un model i els camps del JSON que fa servir l'editor (`pos`, `dins`, `externs`, `ideal`…) |
 
 **No reimplementis les regles.** Són a `build-vna-suport.js` i es poden executar:
 
