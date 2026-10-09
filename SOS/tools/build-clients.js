@@ -6,9 +6,8 @@
  * generador i no una mudança:
  *
  * 1. **Arribaven massa tard.** Qui obre la pàgina decideix en la primera
- *    pantalla si val la pena seguir, i la prova més forta que hi ha —que IKEA
- *    ha estat client, i amb dues aplicacions de VNA— quedava vuit pantalles per
- *    sota del titular.
+ *    pantalla si val la pena seguir, i la prova més forta que hi ha —quines
+ *    cases ja ens han contractat— quedava vuit pantalles per sota del titular.
  * 2. **Posar-los als dos llocs a mà seria escriure'ls dues vegades.** El dia
  *    que se n'afegeixi un, o que se'n retiri un altre perquè ja no toca, la
  *    llista de dalt i la de baix dirien coses diferents i no petaria res.
@@ -82,7 +81,7 @@ const GRUPS = [
     id: 'empreses', color: 'indigo',
     nom: { ca: 'Empreses', es: 'Empresas' },
     clients: [
-      { n: 'IKEA', destacat: true, font: FONT_WEB, sec: { ca: 'Retail i sostenibilitat', es: 'Retail y sostenibilidad' }, nota: 'dos mapes de valor: la direcció i l\'àrea de serveis' },
+      { n: 'IKEA', destacat: true, font: FONT_WEB, sec: { ca: 'Retail i sostenibilitat', es: 'Retail y sostenibilidad' } },
       { n: 'Telefónica', destacat: true, font: FONT_WEB, sec: { ca: 'Comunicacions', es: 'Comunicaciones' } },
       { n: 'BBVA', destacat: true, font: FONT_WEB, sec: { ca: 'Banca digital', es: 'Banca digital' } },
       { n: 'Novartis', destacat: true, font: FONT_WEB, sec: { ca: 'Farmacèutica', es: 'Farmacéutica' } },
@@ -152,8 +151,8 @@ const GRUPS = [
 /* La nota de procedència, un cop i en les dues llengües. Surt als dos blocs
    perquè cap dels dos es pugui llegir sol i dir més del que hem dit. */
 const NOTA = {
-  ca: 'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió. <strong>A IKEA, a més, dos mapes de valor: el de la direcció i el de l\'àrea de serveis.</strong>',
-  es: 'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión. <strong>En IKEA, además, dos mapas de valor: el de la dirección y el del área de servicios.</strong>'
+  ca: 'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió.',
+  es: 'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión.'
 };
 const CAP = {
   lbl: { ca: 'Han estat clients de TeamTowers', es: 'Han sido clientes de TeamTowers' },
@@ -326,18 +325,18 @@ if (!fails) {
     bad(`${DESTACATS.length} noms destacats: n'han de ser entre 3 i 8`);
   else ok(`${DESTACATS.length} noms destacats de ${TOTS.length}`);
 
-  /* 5 · IKEA hi és. No és un caprici: és l'únic client de la llista amb VNA
-         aplicat, que és exactament el que ven aquesta casa. */
+  /* 5 · IKEA hi és, i el seu cas no. El nom es queda a la llista de clients;
+         **el cas no es publica** —ni quins mapes, ni de quines àrees, ni qui
+         els va dirigir—. Decidit per l'Àlvar el 09/10/2026: un cas de client
+         només surt amb el seu permís. La guarda mira la llista i els dos blocs
+         generats, que són el que es publica. */
   const ikea = TOTS.find(c => c.n === 'IKEA');
-  if (!ikea) bad('IKEA no és a la llista: és el client que prova el que es ven');
-  else if (!ikea.destacat) bad('IKEA no surt destacada');
-  /* I no «VNA» en general: **quins dos mapes**. És l'única entrega de VNA amb
-     client anomenat que tenim, i dir-ne només la sigla deixa la prova a mitges
-     —qualsevol pot dir que ha aplicat un mètode; dir quines dues àrees es van
-     mapar és el que la fa comprovable per qui hi era. */
-  else if (!/direcci|serveis/i.test(ikea.nota || ''))
-    bad('IKEA no diu **quins** dos mapes van ser: sense les dues àrees, la prova es queda a mitges');
-  else ok('IKEA surt destacada, i es diu quins dos mapes de valor s\'hi van fer');
+  const publicat = mur() + graella() + NOTA.ca + NOTA.es + dicc('ca') + dicc('es');
+  const cas = /dos mapes|dos mapas|àrea de serveis|área de servicios|director del VNA/i;
+  if (!ikea) bad('IKEA no és a la llista de clients');
+  else if (ikea.nota) bad('IKEA porta una nota: el cas no es publica, només el nom');
+  else if (cas.test(publicat)) bad('un bloc generat descriu el cas d\'IKEA (dos mapes, àrees, direcció del VNA): només hi va el nom');
+  else ok('IKEA és a la llista, i cap bloc publicat no en descriu el cas');
 
   /* 6 · El grup d'agències no es pot buidar. El diagnòstic d'organització té
          un segment sencer per a elles —«ho compres per a un client teu»— i una

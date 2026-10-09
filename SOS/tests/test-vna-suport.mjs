@@ -612,7 +612,10 @@ console.log('\n7B.5b · Ordenar el flux arrossegant, amb ratolí i amb el dit');
   const s4 = await seq();
   ok(pas(s4, CL[1]) === 1 && pas(s4, CL[2]) === 2, 'i en deixar-la, la posa abans del pas: ' + CL.map(c => pas(s4, c)).join(', '));
   await cdp.detach();
-  /* El teclat continua: Alt+→ */
+  /* El teclat continua: Alt+→. Primer, que la tira s'acabi de refer (els
+     panells es pinten 150 ms després de cada canvi): enfocar una fitxa que
+     després se substitueix deixaria la tecla en un botó que ja no hi és. */
+  await pausa(250);
   await p.focus('#edFluxCos .ed-fitxa[data-clau="' + CL[1] + '"]');
   await p.keyboard.press('Alt+ArrowRight');
   ok(pas(await seq(), CL[1]) === 2, 'i amb el teclat, Alt+→ la passa després');

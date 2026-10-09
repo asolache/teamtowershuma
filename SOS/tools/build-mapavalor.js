@@ -86,13 +86,13 @@ const NOTACIO = [
    i no les anomenava, de manera que qui buscava el mètode no el reconeixia. */
 /* ══ LES QUATRE FASES ════════════════════════════════════════════════════════
    Els deu passos de sota estaven **plans**, i una llista de deu coses no es
-   recorda. El guió real d'una sessió —el d'IKEA, i l'article d'on surt el
-   mètode— els agrupa en **quatre passos grans**, i aquesta és la forma que es
+   recorda. El guió real d'una sessió amb un equip de direcció, i l'article
+   d'on surt el mètode, els agrupen en **quatre passos grans**, i aquesta és la forma que es
    comunica: quatre per recordar, deu per executar.
 
    Surten de: Antonio Blanco-Gracia i Ingrid Astiz, «Value Network Analysis:
    ¿qué es? ¿para qué sirve? ¿cómo hacerlo?» (Pantheon.work, 30/11/2018), i del
-   guió de la sessió d'IKEA, on consten **tal qual** com «Cuatro grandes
+   guió d'una sessió real, on consten **tal qual** com «Cuatro grandes
    pasos». Aportats per l'Àlvar el 02/10/2026. */
 const FASES = [
   { id: 'abast', n: 1, t: 'Definir l\'abast i les fronteres', tEs: 'Definir el alcance y las fronteras',
@@ -118,8 +118,8 @@ const PROCES = [
 
      La manera de fer-ho és la mateixa que l'eina ja fa servir: **zoom**. Es
      mapa un nivell, i el que hi ha a dins de cada node es mapa a part si cal.
-     Precisat per l'Àlvar el 02/10/2026, i a IKEA és exactament el que es va
-     fer: dos mapes, el de la direcció i el de l'àrea de serveis.
+     Precisat per l'Àlvar el 02/10/2026: en una casa gran, primer un nivell i
+     després, si cal, el de dins d'un node.
 
      I la conseqüència que ha de constar abans de signar res: **segons la
      criticitat de l'anàlisi, pot caldre més d'una sessió**. No és un extra
@@ -332,8 +332,7 @@ const CELLER = {
    El zoom de Verna Allee, que no és un gest de pinça: *«en una organització
    gran no es mapa tota la casa en un sol dibuix: es fa amb zoom. Un nivell
    primer i el que hi ha dins de cada node es mapa a part si la decisió ho
-   demana»*. A IKEA van ser dos mapes, el de la direcció i el de l'àrea de
-   serveis.
+   demana»*.
 
    Dos nodes del celler s'obren, i són els dos que la casa **és**:
 
@@ -499,10 +498,10 @@ const DECIDEIX = [
    Tres coses, i van en aquest ordre perquè és l'ordre en què les pregunta qui
    ha de decidir: què el fa funcionar, de qui és el mètode, i on s'ha fet.
 
-   La fila d'IKEA surt de `trajectoria.md` i del guió de la sessió. La de
-   Pantheon diu el que **ells** diuen de la seva experiència, no el que diem
-   nosaltres de la nostra: la distinció és la diferència entre citar i
-   apropiar-se. */
+   La tercera fila diu on s'ha practicat el mètode **sense anomenar cap cas de
+   client**: els casos no es publiquen sense permís (decidit per l'Àlvar el
+   09/10/2026). La de Verna Allee diu de qui és el mètode, no el que en fem
+   nosaltres: la distinció és la diferència entre citar i apropiar-se. */
 const PROVA = [
   { k: 'Per què funciona',
     kEs: 'Por qué funciona',
@@ -518,10 +517,10 @@ const PROVA = [
     dEs: 'Value Network Analysis, de <i>The Future of Knowledge</i> (2003) y <i>Value Networks and the True Nature of Collaboration</i> (2011). <b>No nos lo hemos inventado y no lo vendemos como propietario</b>: lo puedes leer, lo puede facilitar otro, y lo que compras es que salga bien a la primera.' },
   { k: 'On s\'ha fet',
     kEs: 'Dónde se ha hecho',
-    t: 'A IKEA, dos mapes',
-    tEs: 'En IKEA, dos mapas',
-    d: 'El de la <b>direcció</b> i el de l\'<b>àrea de serveis</b>, amb l\'Álvaro Solache com a director del VNA. Una de les sessions mapava la xarxa de venda i devolucions. <b>És l\'única entrega de VNA amb client anomenat que tenim</b>, i es diu amb nom perquè es pugui comprovar.',
-    dEs: 'El de <b>dirección</b> y el del <b>área de servicios</b>, con Álvaro Solache como director del VNA. Una de las sesiones mapeaba la red de venta y devoluciones. <b>Es la única entrega de VNA con cliente nombrado que tenemos</b>, y se dice con nombre para que se pueda comprobar.' }
+    t: 'A Pantheon Work, des del 2019',
+    tEs: 'En Pantheon Work, desde 2019',
+    d: 'L\'Álvaro Solache hi dirigeix projectes de consultoria amb aquest mètode, i en va cocrear la pràctica: venda, planificació, producció i formació. <b>Les fases, el full i les preguntes d\'aquesta pàgina surten del guió d\'una sessió real amb un equip de direcció</b>, no d\'un manual.',
+    dEs: 'Álvaro Solache dirige allí proyectos de consultoría con este método, y cocreó su práctica: venta, planificación, producción y formación. <b>Las fases, la hoja y las preguntas de esta página salen del guion de una sesión real con un equipo de dirección</b>, no de un manual.' }
 ];
 
 /* ══ COM ÉS UNA SESSIÓ · el full, els post-its i els gomets ══════════════════
@@ -530,7 +529,7 @@ const PROVA = [
    llista de passos: ho diu el full.
 
    Aquest dibuix és el full de paper d'estrassa tal com queda, i tot el que hi
-   surt és del guió real de la sessió d'IKEA i de l'article d'on ve el mètode:
+   surt és del guió d'una sessió real i de l'article d'on ve el mètode:
 
    · **L'abast escrit a dalt**, amb els noms i la data. És el pas 1 i es queda
      escrit al full perquè a mitja sessió algú sempre pregunta «i això també
@@ -550,7 +549,7 @@ const PROVA = [
      rol és més essencial per a la supervivència de la xarxa, i què passaria si
      aquella persona la substituís una altra.*
 
-   Aportat per l'Àlvar el 02/10/2026 amb el guió de la sessió d'IKEA.
+   Aportat per l'Àlvar el 02/10/2026 amb el guió d'una sessió real.
    `build-castells.js` no hi té res a veure: això és el full, no la pinya. */
 const SESSIO = {
   abast: 'Àmbit: la xarxa de venda i devolucions',
@@ -603,7 +602,7 @@ const SESSIO = {
 };
 
 /* ══ LES PREGUNTES DE L'ANÀLISI ══════════════════════════════════════════════
-   Les del guió d'IKEA, tal com es fan a la sala. Van a la pàgina perquè són el
+   Les del guió d'una sessió real, tal com es fan a la sala. Van a la pàgina perquè són el
    que converteix el dibuix en una conversa: **el mapa no diu res sol**, el que
    diu alguna cosa és qui respon aquestes vuit preguntes mirant-lo. */
 const PREGUNTES = [
@@ -1460,8 +1459,8 @@ const VN = {
   },
   'vn.co.ca': { ca: 'Aquesta part encara és només en català.', es: 'Esta parte todavía está solo en catalán.' },
   'vn.peu1': {
-    ca: '<strong>D\'on surt el mètode.</strong> És l\'anàlisi de xarxes de valor de <strong>Verna Allee</strong>: en comptes de dibuixar qui mana sobre qui, es dibuixa <strong>qui lliura què a qui</strong>, i es compta tant el que es factura com el que no. La pràctica en castellà i les «quatre passes grans» surten de l\'article d\'<strong>Antonio Blanco-Gracia i Ingrid Astiz</strong> a Pantheon.work (30/11/2018), i els cors del pols i les vuit preguntes, del guió real de la sessió d\'IKEA.',
-    es: '<strong>De dónde sale el método.</strong> Es el análisis de redes de valor de <strong>Verna Allee</strong>: en vez de dibujar quién manda sobre quién, se dibuja <strong>quién entrega qué a quién</strong>, y se cuenta tanto lo que se factura como lo que no. La práctica en castellano y los «cuatro pasos grandes» salen del artículo de <strong>Antonio Blanco-Gracia e Ingrid Astiz</strong> en Pantheon.work (30/11/2018), y los corazones del pulso y las ocho preguntas, del guion real de la sesión de IKEA.'
+    ca: '<strong>D\'on surt el mètode.</strong> És l\'anàlisi de xarxes de valor de <strong>Verna Allee</strong>: en comptes de dibuixar qui mana sobre qui, es dibuixa <strong>qui lliura què a qui</strong>, i es compta tant el que es factura com el que no. La pràctica en castellà i les «quatre passes grans» surten de l\'article d\'<strong>Antonio Blanco-Gracia i Ingrid Astiz</strong> a Pantheon.work (30/11/2018), i els cors del pols i les vuit preguntes, del guió d\'una sessió real amb un equip de direcció.',
+    es: '<strong>De dónde sale el método.</strong> Es el análisis de redes de valor de <strong>Verna Allee</strong>: en vez de dibujar quién manda sobre quién, se dibuja <strong>quién entrega qué a quién</strong>, y se cuenta tanto lo que se factura como lo que no. La práctica en castellano y los «cuatro pasos grandes» salen del artículo de <strong>Antonio Blanco-Gracia e Ingrid Astiz</strong> en Pantheon.work (30/11/2018), y los corazones del pulso y las ocho preguntas, del guion de una sesión real con un equipo de dirección.'
   },
   'vn.peu2': {
     ca: 'El cas del celler és <strong>un exemple treballat, no el d\'un celler concret</strong>, i no porta cap xifra d\'euros: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és on mirar.',
@@ -1568,8 +1567,8 @@ const VN = {
   },
   'vn.l.zoom.t': { ca: 'El zoom', es: 'El zoom' },
   'vn.l.zoom.d': {
-    ca: 'En una casa gran <b>no es mapa tot en un sol dibuix</b>: es fa amb zoom. Un nivell primer, i el que hi ha dins de cada node es mapa a part si la decisió ho demana. A IKEA van ser dos mapes: el de la direcció i el de l\'àrea de serveis.',
-    es: 'En una casa grande <b>no se mapea todo en un solo dibujo</b>: se hace con zoom. Un nivel primero, y lo que hay dentro de cada nodo se mapea aparte si la decisión lo pide. En IKEA fueron dos mapas: el de la dirección y el del área de servicios.'
+    ca: 'En una casa gran <b>no es mapa tot en un sol dibuix</b>: es fa amb zoom. Un nivell primer, i el que hi ha dins de cada node es mapa a part si la decisió ho demana.',
+    es: 'En una casa grande <b>no se mapea todo en un solo dibujo</b>: se hace con zoom. Un nivel primero, y lo que hay dentro de cada nodo se mapea aparte si la decisión lo pide.'
   },
   'vn.l.zoom.per': {
     ca: 'Per sobre de dotze rols i cinquanta transaccions un mapa ja no es maneja a una sala — que és, dit d\'una altra manera, per què existeix el zoom.',
@@ -1662,7 +1661,7 @@ function blocProces() {
    · **El focus.** Mirar-se un tros del graf i tornar a veure-ho tot. Sense
      això, un mapa de set nodes ja es llegeix i un de dotze no.
    · **El zoom.** Dos nodes contenen un mapa (`DINS`), i entrar-hi és el gest
-     de la metodologia: a IKEA van ser dos mapes i no un.
+     de la metodologia: en una casa gran no n'hi ha prou amb un sol mapa.
    · **La seqüència.** Cada fletxa sap en quin ordre passa (`data-seq`), i això
      és la passa 4 feta amb el dibuix i no explicada al costat. */
 function blocLlenc() {

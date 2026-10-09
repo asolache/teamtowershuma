@@ -18,6 +18,7 @@ import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 /* ⚠ **Tres pàgines des de l'endreça** (04/10/2026). El catàleg i «qui hi ha
    darrere» eren seccions d'aquesta pàgina i ara són `cataleg.html` i
@@ -200,6 +201,14 @@ console.log('\n5b · Els clients, sencers i amunt');
   ok(r.posicio === r.seccions - 1, `i tanca la pàgina (${r.posicio + 1} de ${r.seccions}): la prova tanca la venda, no l'obre`);
   ok(r.agencies, 'les agències i partners hi són, que és el segment que el diagnòstic sap atendre');
   ok(r.font, 'i es diu de quin recorregut vénen els noms');
+  /* IKEA es queda a la llista; el seu cas no es publica (decidit per l'Àlvar
+     el 09/10/2026). Es mira el font de les tres pàgines, les dues llengües:
+     el text en castellà només surt a la pantalla si es tria l'idioma. */
+  ok(r.ikea, 'IKEA és a la paret de clients');
+  const cas = /dos mapes|dos mapas|àrea de serveis|área de servicios|director del VNA|VNA de dos mapas/i;
+  const ambCas = ['index.html', 'qui-som.html', join('mapa-web', 'index.html')]
+    .filter(f => cas.test(readFileSync(join(ARREL, f), 'utf8')));
+  ok(!ambCas.length, `i el cas d'IKEA no es descriu enlloc (${ambCas.join(', ') || 'cap pàgina'})`);
   await ctx.close();
 }
 {

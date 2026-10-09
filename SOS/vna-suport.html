@@ -1913,7 +1913,7 @@ function creaDiagnosi(dep) {
   /* ── 5 · El diagnòstic ─────────────────────────────────────────────────── */
   const FONT = {
     allee: 'Verna Allee, «Value Network Analysis and value conversion of tangible and intangible assets», JIC 9(1), 2008',
-    practica: 'Pràctica del mètode: Pantheon.work (Blanco-Gracia i Astiz, 2018) i el guió de la sessió d\'IKEA',
+    practica: 'Pràctica del mètode: Pantheon.work (Blanco-Gracia i Astiz, 2018) i el guió d\'una sessió real amb un equip de direcció',
     casa: 'Regla o criteri d\'aquesta casa (SOS/tools/build-vna-suport.js, mapa-kanban-ia.md)',
     toc: 'Teoria de les restriccions (Goldratt, «The Goal», 1984)',
     lean: 'Lean: els set malbarataments (Ohno, 1978) i la seva lectura per a feina de coneixement (Poppendieck, 2003)',
@@ -5811,7 +5811,7 @@ function creaLlenc() {
     const desv = ARBRE.ideal ? MODEL.desviacioNivell(ARBRE, LLOC.cami, DIAG) : null;
     const V8 = MODEL.vuitPreguntes(mm, (mm.roles || []).length ? DIAG.metriques(mm) : undefined, desv);
     h += '<h3>Les vuit preguntes</h3><p>El mapa dona la dada; la conclusió la treu la sala.</p><ol class="ed-vuit">' + V8.map(q => '<li><b>' + q.n + '. ' + esc_(q.pregunta) + '</b>' + esc_(q.dada) + '</li>').join('') + '</ol>'
-      + '<p class="hint">El mètode és de Verna Allee (2008); les vuit preguntes i el pols, del guió de la sessió d\'IKEA i de Pantheon.work; els llindars i les tres mirades (àgil, eficient, conscient), d\'aquesta casa.</p>';
+      + '<p class="hint">El mètode és de Verna Allee (2008); les vuit preguntes i el pols, del guió d\'una sessió real i de Pantheon.work; els llindars i les tres mirades (àgil, eficient, conscient), d\'aquesta casa.</p>';
     posaHTML(p, h);
   }
   $('#edPanDia').addEventListener('change', e => {

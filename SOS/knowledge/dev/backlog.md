@@ -1079,17 +1079,12 @@ VNA, la premsa— a les quals només hi arribava qui en sabia l'adreça.
 
 ---
 
-### El cas d'IKEA, amb el detall (02/10/2026)
+### El cas d'un client a la paret (02/10/2026 · retirat 09/10/2026)
 
-**Dit per l'Àlvar:** a IKEA es van fer **dos mapes de valor: el de la direcció
-i el de l'àrea de serveis**. Abans la paret deia només «dues aplicacions de
-Value Network Analysis», que és la sigla i prou.
-
-La fila de `trajectoria.md` ho recull amb la data i qui ho ha dit, i d'allà
-surt a la paret de la portada. **La guarda que vigilava IKEA s'ha estret**: ja
-no n'hi ha prou que digui «VNA», ha de dir **quines dues àrees**. Qualsevol pot
-dir que ha aplicat un mètode; dir quines dues àrees es van mapar és el que ho
-fa comprovable per qui hi era.
+Es va publicar el detall d'un cas de VNA amb client anomenat. **El 09/10/2026
+l'Àlvar va decidir que el cas no es publica**: el client es queda a la llista i
+la guarda de `build-clients.js` ara vigila que cap bloc en torni a explicar el
+cas.
 
 *Falten els anys.*
 
@@ -1198,7 +1193,7 @@ avui**: és `#dues-vistes` de la portada, amb el pols animat i el botó
 d'encallament. El que falta per a vídeo no és codi — és
 **decidir el cas que surt a càmera** (vegeu el punt de dalt) i gravar-ho.
 
-*El pols animat, de fet, ja ve del guió de sessió d'IKEA —els cors de «el pulso
+*El pols animat, de fet, ja ve del guió d'una sessió real —els cors de «el pulso
 de la red de valor»—, o sigui que el que surt a l'anunci i el que es fa a la
 sala són la mateixa cosa. Val la pena que el vídeo ho digui.*
 
@@ -1207,8 +1202,8 @@ sala són la mateixa cosa. Val la pena que el vídeo ho digui.*
 ### El procés de VNA, explicat com es fa de debò (02/10/2026)
 
 **L'Àlvar va passar dos PDF**: l'article sencer de Pantheon —Antonio
-Blanco-Gracia i Ingrid Astiz, 30/11/2018— i **el guió real de la sessió
-d'IKEA** (19 pàgines). La petició: *«millora la comunicació del procés de VNA,
+Blanco-Gracia i Ingrid Astiz, 30/11/2018— i **el guió real d'una sessió
+amb un equip de direcció** (19 pàgines). La petició: *«millora la comunicació del procés de VNA,
 sobretot amb les imatges de la pàgina de sos/vna»*.
 
 **El que faltava era la imatge.** La pàgina explicava el mètode i **no ensenyava
@@ -1264,11 +1259,8 @@ sis. Provada posant-hi l'amplada fixa: en caça onze. `test-vna.mjs` hi afegeix
 nou assercions, entre elles que el full **té el seu CSS** —el defecte que ja va
 passar amb els polsos.
 
-⚠ **I una fila de `trajectoria.md` que ara és més forta:** el guió **confirma
-l'equip d'IKEA** —Álvaro Solache com a **director del VNA**, Bep Moll a
-comunicació, Antonio Blanco i Sergio Salgado com a consultors i analistes— i
-que l'àmbit d'una de les sessions era **la xarxa de venda i devolucions**.
-*Encara falten els anys.*
+⚠ El guió també confirmava l'equip i l'àmbit d'aquella entrega. **No es
+publica** (decidit per l'Àlvar el 09/10/2026).
 
 **El que queda:** l'article anuncia una segona part amb el cas d'una escola de
 postgrau; no s'ha comprovat si existeix (`pantheon.work` segueix bloquejat pel
@@ -1350,7 +1342,7 @@ estratégicas»*, amb un CV nou.
 
 | Anys | On | Per què importa aquí |
 |---|---|---|
-| 2019 – avui | **Pantheon Work · director de projectes de consultoria** | La web deia «beta-tester i coach». És el càrrec, i és el que sosté el pla estratègic d'IKEA |
+| 2019 – avui | **Pantheon Work · director de projectes de consultoria** | La web deia «beta-tester i coach». És el càrrec |
 | 2019 – 2020 | **Rescoio · project manager de programari** | El programari era de les **Biblioteques de les Coses** — la mateixa dinàmica que avui és una eina del SOS |
 | 2021 – 2022 | **CryptoMarketing · smart contracts officer** | El catàleg ven «contractes intel·ligents · estudi de viabilitat» i no tenia qui el signés |
 | 2021 – 2023 | **SAE Institute · professor de Web 3.0 i pensament sistèmic** | Igual |
@@ -1362,7 +1354,7 @@ treballa a cada un**. Qui compra consultoria pregunta justament això. Ara hi ha
 tres caselles, i cada una porta on consta:
 
 - **Estratègic** · director estratègic de RRHH a GEC–UOC amb el pla de la UOC
-  implantat, i el pla estratègic organitzatiu i de RRHH d'IKEA.
+  implantat.
 - **Tàctic** · direcció de projectes de consultoria, product owner, project
   manager de programari, currículums formatius.
 - **Operatiu** · selecció per a la planta d'HP, programes a Myrurgia, team coach
@@ -1690,8 +1682,8 @@ satisfacció». A `premsa.html`, «50+ aparicions», «15+ països», «5M+ d'ab
 que menys es poden defensar.
 
 **Què s'ha fet.** Les cites, fora. Les xifres agregades, fora, i al seu lloc
-les tres que es poden defensar —32 clients amb font, 20 anys, 2 aplicacions de
-VNA a IKEA— més la frase que diu **el que no consta**: «de cada client consta
+les tres que es poden defensar —32 clients amb font i 20 anys (la tercera, un
+cas de client, es va retirar el 09/10/2026)— més la frase que diu **el que no consta**: «de cada client consta
 que ho va ser; de la majoria no consta quina entrega concreta va ser».
 
 I els enllaços: les tres pàgines apuntaven a mitja generació retirada
