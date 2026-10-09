@@ -71,16 +71,16 @@ console.log('\n2 · El diagnòstic porta a algun lloc, i diu per què hi porta')
   const r = await page.evaluate(async () => {
     const $ = s => document.querySelector(s);
     $('#nom').value = 'Anna Prova'; $('#mail').value = 'a@b.cat';
-    document.querySelector('[data-go="2"]').click();
+    ['relleu', 'equity', 'diagnostic'].forEach(v => {
+      const c = document.querySelector('#need [data-v="' + v + '"]'); if (c) c.click();
+    });
+    document.querySelector('#s1 [data-go="2"]').click();
+    await new Promise(r2 => setTimeout(r2, 120));
+    document.querySelector('#s2 [data-go="3"]').click();
     await new Promise(r2 => setTimeout(r2, 120));
     document.querySelector('#orgType .opt[data-v="ajuntament"]').click();
     $('#municipi').value = 'Vilafranca';
-    document.querySelector('[data-go="3"]').click();
-    await new Promise(r2 => setTimeout(r2, 120));
-    ['relleu', 'equity', 'diagnostic'].forEach(v => {
-      const c = document.querySelector('[data-v="' + v + '"]'); if (c) c.click();
-    });
-    document.querySelector('[data-go="4"]').click();
+    document.querySelector('#s3 [data-go="4"]').click();
     await new Promise(r2 => setTimeout(r2, 120));
     const b2 = [...document.querySelectorAll('button')].find(x => /diagn/i.test(x.textContent));
     if (b2) b2.click();
@@ -129,7 +129,7 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
     `i els mateixos grups a totes: ${a.r.grups.join(' · ')}`);
   ok(a.r.destins.join('|') === b2.r.destins.join('|'),
     `amb els mateixos ${a.r.destins.length} destins i en el mateix ordre`);
-  ok(/Obre el SOS/.test(a.r.cta) && /Obre el SOS/.test(c.r.cta),
+  ok(/Fes el diagnòstic/.test(a.r.cta) && /Fes el diagnòstic/.test(c.r.cta),
     'i la mateixa acció principal, sempre al mateix lloc');
   ok(a.r.aqui.indexOf('/SOS/matriu.html') >= 0 && b2.r.aqui.indexOf('/SOS/compra.html') >= 0,
     'cada pàgina es marca a si mateixa: se sap on ets sense haver de llegir el títol');

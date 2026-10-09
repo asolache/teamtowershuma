@@ -100,15 +100,35 @@ ok(branques.obrir.format && branques.mapa.dolor,
    tenia a `block` amb el pare amagat a sobre. Un estat correcte i una pantalla
    en blanc. */
 console.log('\n4 · El que promet la pantalla');
-await p.fill('#nom', 'Anna Prova'); await p.fill('#mail', 'anna@exemple.cat');
+/* Des del 09/10/2026 el contacte va al final: primer es dona valor —què
+   vols que passi, quina casa sou, el que ho afina— i només quan el
+   diagnòstic ja està calculat es demana a qui adreçar-lo. */
+const primer = await p.evaluate(() => {
+  const s1 = document.querySelector('#s1');
+  return { visible: !s1.hidden, demanaCorreu: !!s1.querySelector('#mail'),
+    correuAlFinal: !!document.querySelector('#s4 #mail') };
+});
+ok(primer.visible && !primer.demanaCorreu, 'el primer pas no demana cap dada de contacte');
+ok(primer.correuAlFinal, 'el correu es demana al darrer pas');
+await p.click('#objTipus .opt[data-v="sostenir"]');
+await p.fill('#ampliacio', 'Som dues coses alhora i cap casella ho diu del tot.');
 await p.click('[data-next="2"]');
 await p.click('#orgType .opt[data-v="gran"]');
 await p.fill('#municipi', 'Barcelona');
 await p.click('[data-next="3"]');
-await p.click('#objTipus .opt[data-v="sostenir"]');
-await p.fill('#ampliacio', 'Som dues coses alhora i cap casella ho diu del tot.');
-await p.click('[data-next="4"]');
 await p.selectOption('#decideix', 'comite'); await p.selectOption('#termini', 'curs');
+await p.click('[data-next="4"]');
+const avanc = await p.evaluate(() => ({
+  t: document.querySelector('#avT').textContent.trim(),
+  l: document.querySelector('#avL').textContent.trim(),
+  n: document.querySelectorAll('#avP li').length,
+  alt: document.querySelector('#avanc').getBoundingClientRect().height }));
+ok(avanc.t && avanc.l.length > 40 && avanc.n > 0 && avanc.alt > 60,
+  `abans de demanar el contacte ja ensenya el que hem llegit i ${avanc.n} peça(es) que hi encaixen`);
+await p.click('#doDx');
+const sensa = await p.evaluate(() => document.querySelector('#result').style.display);
+ok(sensa !== 'block', 'sense nom ni correu no s\'obre el diagnòstic sencer');
+await p.fill('#nom', 'Anna Prova'); await p.fill('#mail', 'anna@exemple.cat');
 await p.click('#doDx');
 const res = await p.evaluate(() => {
   const $ = s => document.querySelector(s);
@@ -120,6 +140,11 @@ const res = await p.evaluate(() => {
 ok(res.alt > 200 && res.text.length > 200,
   `el diagnòstic es veu de debò · ${Math.round(res.alt)}px i ${res.text.length} caràcters de text`);
 ok(res.formFora, 'i el formulari s\'aparta');
+const portes = await p.evaluate(() => [...document.querySelectorAll('#result .ara-c')].map(x => x.getAttribute('href')));
+ok(['vna-suport.html', 'index.html#/node', 'index.html#/alta'].every(h => portes.includes(h)),
+  'i acaba portant al mapa de valor, al node i al perfil');
+ok(await p.evaluate(() => !!document.querySelector('#result .ara-op a[href="/#operatiu"]')),
+  'i ofereix el servei: el negoci operatiu');
 ok(res.text.includes('cap casella ho diu del tot'),
   'el que ha escrit ell surt al diagnòstic, i no només l\'etiqueta que ha triat');
 ok(!/\d[\d.]*\s*€/.test(res.text), 'i no hi surt cap preu: la xifra es parla');
@@ -162,6 +187,9 @@ console.log('\n5b · El que es tria es veu');
   const marca = await v.evaluate(() => {
     const mir = sel => {
       const e = document.querySelector(sel);
+      /* Sense la transició: amb el pas visible (l'objectiu ara és el primer)
+         el color es llegia a mig camí i semblava que no canviava. */
+      e.style.transition = 'none';
       const abans = getComputedStyle(e).borderColor;
       e.click();
       return { canvia: getComputedStyle(e).borderColor !== abans, sel: e.classList.contains('sel') };

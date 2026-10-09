@@ -208,8 +208,14 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    Absolutes a posta. Fins avui la barra del SOS deia `../index.html` i el
    desplegable de la portada `/SOS/x.html`: **dos modes de ruta** per a la
    mateixa llista, i per això eren dos blocs de codi. Amb rutes absolutes el
-   mateix marcatge val a l'arrel i a `/SOS/`, i la barra pot ser una. */
-const CTA = ['/SOS/', T('Obre el SOS', 'Abre el SOS')];
+   mateix marcatge val a l'arrel i a `/SOS/`, i la barra pot ser una.
+
+   ── L'acció és el diagnòstic (09/10/2026) ──────────────────────────────────
+   Deia «Obre el SOS». La guia de marca (§9) posa el diagnòstic com a crida
+   principal perquè és l'única que torna alguna cosa sense demanar res, i és
+   el primer pas del camí de client a `/sos/`, a la portada i a l'embut
+   (`build-embut.js`). L'aplicació no es perd: és al grup «El SOS» del menú. */
+const CTA = ['/SOS/diagnostic.html', T('Fes el diagnòstic', 'Haz el diagnóstico')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
