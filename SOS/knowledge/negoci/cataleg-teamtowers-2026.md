@@ -142,8 +142,8 @@ autoritat justament on més en fa falta —al costat del preu.
   risc» no respon si hi pot participar algú amb mobilitat reduïda, i li ho
   preguntaran.
 - **Els testimonis no tenen nom.** *«Espectacular…» – TripAdvisor* val menys que
-  la mateixa frase amb l'empresa i l'any. La d'IKEA, que sí que està
-  atribuïda, és la que més pesa de tot el document.
+  la mateixa frase amb l'empresa i l'any. L'única que sí que està
+  atribuïda a una empresa és la que més pesa de tot el document.
 
 ### 2.6 · El que hi falta i és teu
 

@@ -85,38 +85,34 @@ console.log('\n2 · El pont amb el diagnòstic: no es torna a preguntar el que j
   await ctx.close();
 }
 
-console.log('\n3 · El total és la suma de les forquilles, i es pot refer a mà');
+console.log('\n3 · Sense forquilles: els paquets van per fluxos i fora del total');
 {
   const { ctx, p, errs } = await nova(PONT);
   const r = await p.evaluate(() => {
     const marca = id => {
       const c = document.querySelector('input[name="paquet"][value="' + id + '"]');
-      if (c) { c.checked = true; return { min: Number(c.dataset.min), max: Number(c.dataset.max) }; }
+      if (c) { c.checked = true; return { min: c.dataset.min, fluxos: c.dataset.fluxos, txt: c.parentElement.querySelector('.pq-p').textContent }; }
       return null;
     };
-    /* Dos amb forquilla publicada. Se'n llegeix el valor de l'atribut, no d'una
-       xifra escrita aquí: si el catàleg canvia, la prova segueix sent certa. */
     const a = marca('fluxos-ia'), b2 = marca('mapa-organitzacio');
     document.querySelector('#doProp').click();
-    const t = document.querySelector('#rTotal').textContent;
-    const nums = [...t.matchAll(/([\d.]+)/g)].map(m => Number(m[1].replace(/\./g, '')));
-    return { a, b2, t, nums, files: document.querySelectorAll('#rLin li').length };
+    return { a, b2, fora: document.querySelector('#rTotalD').textContent,
+      files: [...document.querySelectorAll('#rLin li')].map(li => li.textContent),
+      xifres: [...document.querySelectorAll('.pq-p')].filter(x => /\d\s*€/.test(x.textContent)).length };
   });
-  ok(r.a && r.b2, 'els dos paquets triats tenen forquilla declarada a l\'atribut');
-  ok(r.files === 2, 'la proposta llista exactament els dos que s\'han triat');
-  ok(r.nums[0] === r.a.min + r.b2.min, 'la banda baixa és la suma dels dos mínims');
-  ok(r.nums[1] === r.a.max + r.b2.max, 'i la banda alta, la dels dos màxims');
+  ok(r.a && r.b2 && r.a.fluxos === '1' && r.b2.fluxos === '1' && r.a.min === undefined, 'els paquets no porten forquilla a l\'atribut: van per fluxos');
+  ok(r.xifres === 0 && /per fluxos/.test(r.a.txt), 'i la llista no ensenya cap xifra en euros, sinó «per fluxos»');
+  ok(r.files.length === 2 && r.files.every(t => /per fluxos/.test(t)), 'la proposta llista els dos triats, cadascun «per fluxos»');
+  ok(/per fluxos/.test(r.fora), 'i diu que es pressuposten per fluxos, fora del total');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 
-console.log('\n4 · Les hores per nivell entren al total amb el preu de l\'escala');
+console.log('\n4 · Les hores per nivell sí que fan el total, amb el preu de l\'escala');
 {
   const { ctx, p, errs } = await nova(PONT);
   const r = await p.evaluate(() => {
     document.querySelector('input[name="paquet"][value="impacte"]').checked = true;
-    const c = document.querySelector('input[name="paquet"][value="impacte"]');
-    const base = { min: Number(c.dataset.min), max: Number(c.dataset.max) };
     const camps = [...document.querySelectorAll('#escBody input')];
     /* 10 h del nivell del mig, que és el que més es contracta. */
     const mig = camps[1];
@@ -127,7 +123,7 @@ console.log('\n4 · Les hores per nivell entren al total amb el preu de l\'escal
     const nums = [...document.querySelector('#rTotal').textContent.matchAll(/([\d.]+)/g)]
       .map(m => Number(m[1].replace(/\./g, '')));
     return {
-      base, hora, nums,
+      hora, nums,
       niv: camps.length,
       obert: !document.querySelector('#rHoresBox').hidden,
       linia: document.querySelector('#rHores').textContent.replace(/\s+/g, ' ')
@@ -135,8 +131,7 @@ console.log('\n4 · Les hores per nivell entren al total amb el preu de l\'escal
   });
   ok(r.niv === 3, 'l\'escala té tres nivells, com la de la portada');
   ok(r.obert, 'la secció d\'hores s\'obre quan se n\'hi posen');
-  ok(r.nums[0] === r.base.min + 10 * r.hora, 'les hores se sumen a la banda baixa');
-  ok(r.nums[1] === r.base.max + 10 * r.hora, 'i a l\'alta');
+  ok(r.nums[0] === 10 * r.hora && r.nums.length === 1, 'el total són les hores al preu del nivell (' + r.nums.join('–') + ')');
   ok(/10 h ×/.test(r.linia), 'i el desglossament diu les hores i el preu, no només el total');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();

@@ -224,16 +224,15 @@ console.log('\n7 · Qui diu que ja té projecte d\'habitatge hi arriba des del d
   const r = await p2.evaluate(async () => {
     const $ = s => document.querySelector(s);
     $('#nom').value = 'Anna Prova'; $('#mail').value = 'a@b.cat';
-    $('[data-go="2"]').click(); await new Promise(r2 => setTimeout(r2, 120));
-    $('#orgType .opt[data-v="entitat"]').click();
-    $('#municipi').value = 'Vilafranca';
-    $('[data-go="3"]').click(); await new Promise(r2 => setTimeout(r2, 120));
+    /* Cal marcar alguna necessitat: és el primer pas, i sense res no avança. */
+    $('#need .chip[data-v="formacio"]').click();
+    $('#s1 [data-go="2"]').click(); await new Promise(r2 => setTimeout(r2, 120));
     /* El que diu qui ja té un projecte d'habitatge en marxa. */
     $('#serveis .chip[data-v="habitatge"]').click();
-    /* Cal marcar alguna necessitat: sense res a la pantalla 3, el pas a la 4 no
-       avança i el diagnòstic no s'arriba a fer. */
-    $('#need .chip[data-v="formacio"]').click();
-    $('[data-go="4"]').click(); await new Promise(r2 => setTimeout(r2, 120));
+    $('#s2 [data-go="3"]').click(); await new Promise(r2 => setTimeout(r2, 120));
+    $('#orgType .opt[data-v="entitat"]').click();
+    $('#municipi').value = 'Vilafranca';
+    $('#s3 [data-go="4"]').click(); await new Promise(r2 => setTimeout(r2, 120));
     const b2 = [...document.querySelectorAll('button')].find(x => /diagn/i.test(x.textContent));
     if (b2) b2.click();
     await new Promise(r2 => setTimeout(r2, 500));

@@ -48,36 +48,69 @@ const CATALEG = PAQUETS.concat(SOS_PAQUETS);
 const perId = id => CATALEG.find(p => p.id === id) || null;
 
 /* ══ ELS OBJECTIUS ═══════════════════════════════════════════════════════════
-   Sis, i l'ordre és el de com sovint es demana. `preguntes` diu quin bloc
-   s'obre: `format` per al que és un acte amb data i aforament, `dolor` per al
-   que és una manera de treballar que no se sosté.
+   L'ordre és el de l'embut (`build-embut.js`), no el de com es demanava abans:
+   primer **el negoci operatiu**, que és el que ara ven la casa i la porta de
+   client de `/sos/`, i després l'equip i les jornades, que segueixen al
+   catàleg i hi segueixen tenint porta.
+
+   Fins al 09/10/2026 eren sis i quatre parlaven d'actes i d'equip: qui venia
+   per la web, pels fluxos amb IA o pels acords d'una cooperativa no trobava la
+   seva casella i triava la que menys li mentia. Ara hi ha una casella per a
+   cada peça de «El teu negoci operatiu» —mapa, web de xarxa, fluxos i
+   registre d'acords— i les ganxos van als paquets del catàleg, sense preu.
+
+   `grup` diu sota quin titular surt. `preguntes` diu quin bloc s'obre: `format`
+   per al que és un acte amb data i aforament, `dolor` per al que és una manera
+   de treballar que no se sosté.
 
    `diu` és com ho diria qui truca, no com ho diem nosaltres. Un director de
    persones no demana «una intervenció de desenvolupament organitzatiu»: demana
-   que l'equip deixi de dependre de dues persones. */
+   que l'equip deixi de dependre de dues persones. I una botiga no demana «una
+   web de xarxa»: diu que li demanen la fitxa per missatge cada setmana. */
+const GRUPS = {
+  operatiu: { t: 'El teu negoci operatiu', tEs: 'Tu negocio operativo' },
+  equip: { t: 'L\'equip i les jornades', tEs: 'El equipo y las jornadas' }
+};
+
 const OBJECTIUS = [
   {
-    id: 'obrir', ic: '🎬', c: 'orange', preguntes: 'format',
-    t: 'Obrir una jornada amb alguna cosa que es recordi',
-    tEs: 'Abrir una jornada con algo que se recuerde',
-    diu: 'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.',
-    diuEs: 'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación.',
-    paquets: ['demos', 'fent-pinya'],
-    llegim: 'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.',
-    llegimEs: 'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde.'
+    id: 'operatiu', grup: 'operatiu', ic: '⚙️', c: 'indigo', preguntes: 'dolor',
+    t: 'Que el negoci funcioni cada dia com l\'hem pensat',
+    tEs: 'Que el negocio funcione cada día como lo hemos pensado',
+    diu: 'Sabem com hauria de funcionar i no és com funciona. No volem un altre informe al calaix: volem veure qui lliura què, on s\'encalla i que ens avisi.',
+    diuEs: 'Sabemos cómo debería funcionar y no es como funciona. No queremos otro informe en el cajón: queremos ver quién entrega qué, dónde se atasca y que nos avise.',
+    /* El paquet sencer de la porta de client: el mapa real i l'ideal, els
+       fluxos que es treuen de sobre i la web de xarxa. El preu es pressuposta
+       per fluxos i no surt aquí. */
+    paquets: ['mapa-organitzacio', 'fluxos-ia', 'web-ia'],
+    llegim: 'És el que fem ara: el mapa real i l\'ideal de la vostra xarxa, un cervell per rol que es queda al vostre repositori, la web de xarxa i les eines de cada rol connectades. Comença amb un esborrany gratuït del mapa fet amb el que ja teniu, i es pressuposta per fluxos.',
+    llegimEs: 'Es lo que hacemos ahora: el mapa real y el ideal de vuestra red, un cerebro por rol que se queda en vuestro repositorio, la web de red y las herramientas de cada rol conectadas. Empieza con un borrador gratuito del mapa hecho con lo que ya tenéis, y se presupuesta por flujos.',
+    despres: ['ia-amb-frens']
   },
   {
-    id: 'cohesio', ic: '🤝', c: 'green', preguntes: 'format',
-    t: 'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',
-    tEs: 'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',
-    diu: 'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',
-    diuEs: 'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',
-    paquets: ['fent-pinya', 'fent-pinya-vna', 'formacio-equips'],
-    llegim: 'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',
-    llegimEs: 'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'
+    id: 'web', grup: 'operatiu', ic: '🌐', c: 'blue', preguntes: 'dolor',
+    t: 'Una web per a tota la xarxa, no només per a qui compra',
+    tEs: 'Una web para toda la red, no solo para quien compra',
+    diu: 'Les botigues ens demanen la fitxa per missatge, qui ens recomana no té res per reenviar i els proveïdors no saben què busquem. La web només parla amb qui compra.',
+    diuEs: 'Las tiendas nos piden la ficha por mensaje, quien nos recomienda no tiene nada que reenviar y los proveedores no saben qué buscamos. La web solo habla con quien compra.',
+    paquets: ['web-ia', 'mapa-organitzacio'],
+    llegim: 'Primer el mapa i després la web: cada rol del mapa hi té una porta, cada intercanvi tangible una acció i cada intangible el contingut que dona confiança. És HTML estàndard del W3C, al vostre GitHub i publicat a Netlify, i el repositori és la memòria de la casa. Sense quota i sense dependre de nosaltres.',
+    llegimEs: 'Primero el mapa y después la web: cada rol del mapa tiene una puerta, cada intercambio tangible una acción y cada intangible el contenido que da confianza. Es HTML estándar del W3C, en vuestro GitHub y publicado en Netlify, y el repositorio es la memoria de la casa. Sin cuota y sin depender de nosotros.',
+    despres: ['fluxos-ia']
   },
   {
-    id: 'mapa', ic: '🕸️', c: 'indigo', preguntes: 'dolor',
+    id: 'fluxos', grup: 'operatiu', ic: '🤖', c: 'green', preguntes: 'dolor',
+    t: 'Treure\'ns de sobre la feina que es repeteix, sense perdre el criteri',
+    tEs: 'Quitarnos de encima el trabajo que se repite, sin perder el criterio',
+    diu: 'Cada setmana fem a mà la mateixa feina, i no sabem què podem posar en mans d\'una IA sense que s\'equivoqui en el que importa.',
+    diuEs: 'Cada semana hacemos a mano el mismo trabajo, y no sabemos qué podemos poner en manos de una IA sin que se equivoque en lo que importa.',
+    paquets: ['fluxos-ia', 'ia-amb-frens'],
+    llegim: 'Es marca cada flux: el que es repeteix igual s\'automatitza, el que porta criteri es queda en mans de persones i l\'intangible s\'escriu. Cada flux porta el cost de la seva IA, amb el model que toca a cada tasca: el petit on n\'hi ha prou i el gran només on cal.',
+    llegimEs: 'Se marca cada flujo: lo que se repite igual se automatiza, lo que lleva criterio se queda en manos de personas y lo intangible se escribe. Cada flujo lleva el coste de su IA, con el modelo que toca a cada tarea: el pequeño donde basta y el grande solo donde hace falta.',
+    despres: ['web-ia']
+  },
+  {
+    id: 'mapa', grup: 'operatiu', ic: '🕸️', c: 'indigo', preguntes: 'dolor',
     t: 'Entendre com flueix el valor i de qui depenem de debò',
     tEs: 'Entender cómo fluye el valor y de quién dependemos de verdad',
     diu: 'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',
@@ -87,12 +120,25 @@ const OBJECTIUS = [
        organització real. Qui ve per aquest objectiu i té equip per moure és
        justament qui el compra. */
     paquets: ['fent-pinya-vna', 'mapa-organitzacio', 'persones-cultura'],
-    llegim: 'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.',
-    llegimEs: 'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es lo que se vende aquí y lo que hace posible todo lo demás.',
+    llegim: 'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el primer pas del negoci operatiu i el que fa possible tota la resta.',
+    llegimEs: 'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es el primer paso del negocio operativo y lo que hace posible todo lo demás.',
     despres: ['fluxos-ia', 'web-ia']
   },
   {
-    id: 'sostenir', ic: '🧱', c: 'blue', preguntes: 'dolor',
+    id: 'acords', grup: 'operatiu', ic: '🔗', c: 'purple', preguntes: 'dolor',
+    t: 'Que el que aporta cadascú quedi registrat i sigui de tots',
+    tEs: 'Que lo que aporta cada uno quede registrado y sea de todos',
+    diu: 'Som una cooperativa, una xarxa o un projecte amb socis. El que aporta cadascú —hores, coneixement, contactes— no consta enlloc, o consta en una plataforma que no és nostra.',
+    diuEs: 'Somos una cooperativa, una red o un proyecto con socios. Lo que aporta cada uno —horas, conocimiento, contactos— no consta en ningún sitio, o consta en una plataforma que no es nuestra.',
+    /* La porta del web3. Es ven l'estudi i no l'eina: els contractes
+       intel·ligents encara no estan construïts al SOS, i el paquet ho diu. */
+    paquets: ['contractes', 'mapa-organitzacio'],
+    llegim: 'El mapa diu què aporta cada rol, tangible i intangible; el registre ho apunta i les dades es queden a casa vostra, no en una plataforma. Si els acords s\'han d\'executar sols —contractes intel·ligents sobre Ethereum o xarxes semblants—, primer es fa l\'estudi de viabilitat: diem si val la pena abans de construir res.',
+    llegimEs: 'El mapa dice qué aporta cada rol, tangible e intangible; el registro lo apunta y los datos se quedan en vuestra casa, no en una plataforma. Si los acuerdos tienen que ejecutarse solos —contratos inteligentes sobre Ethereum o redes similares—, primero se hace el estudio de viabilidad: decimos si vale la pena antes de construir nada.',
+    despres: ['web-ia']
+  },
+  {
+    id: 'sostenir', grup: 'equip', ic: '🧱', c: 'blue', preguntes: 'dolor',
     t: 'Que l\'equip sostingui el que hem muntat quan marxem',
     tEs: 'Que el equipo sostenga lo que hemos montado cuando nos vayamos',
     diu: 'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',
@@ -105,7 +151,7 @@ const OBJECTIUS = [
     despres: ['formar-formadors']
   },
   {
-    id: 'direccio', ic: '🧭', c: 'purple', preguntes: 'dolor',
+    id: 'direccio', grup: 'equip', ic: '🧭', c: 'purple', preguntes: 'dolor',
     t: 'Acompanyar la direcció en una decisió que costa',
     tEs: 'Acompañar a la dirección en una decisión que cuesta',
     diu: 'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',
@@ -115,14 +161,28 @@ const OBJECTIUS = [
     llegimEs: 'Aquí no se entrega un taller: se entran sesiones con quien decide, con el mapa en la mano y sin público.'
   },
   {
-    id: 'produir', ic: '🎪', c: 'orange', preguntes: 'format',
-    t: 'Produir un esdeveniment sencer',
-    tEs: 'Producir un evento entero',
-    diu: 'No volem una activitat dins d\'un programa: volem que algú ens porti la jornada de cap a peus.',
-    diuEs: 'No queremos una actividad dentro de un programa: queremos que alguien nos lleve la jornada de principio a fin.',
-    paquets: ['produccio', 'demos'],
-    llegim: 'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.',
-    llegimEs: 'Producción quiere decir guion, proveedores, permisos y gente a pie de calle. Se cotiza a medida porque no hay dos jornadas iguales.',
+    id: 'cohesio', grup: 'equip', ic: '🤝', c: 'green', preguntes: 'format',
+    t: 'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',
+    tEs: 'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',
+    diu: 'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',
+    diuEs: 'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',
+    paquets: ['fent-pinya', 'fent-pinya-vna', 'formacio-equips'],
+    llegim: 'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',
+    llegimEs: 'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'
+  },
+  {
+    /* Abans eren dues caselles, «obrir una jornada» i «produir un esdeveniment
+       sencer». Es pregunten igual —quanta gent, quan i on— i les dues porten
+       a la mateixa família del catàleg, així que ara és una. L'id es queda
+       `obrir` perquè és el que ja hi ha als leads del CRM. */
+    id: 'obrir', grup: 'equip', ic: '🎪', c: 'orange', preguntes: 'format',
+    t: 'Un acte que es recordi, o la jornada sencera',
+    tEs: 'Un acto que se recuerde, o la jornada entera',
+    diu: 'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació, o que algú ens porti la jornada de cap a peus.',
+    diuEs: 'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación, o que alguien nos lleve la jornada de principio a fin.',
+    paquets: ['demos', 'fent-pinya', 'produccio'],
+    llegim: 'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on. Si la porteu sencera, vol dir guió, proveïdors i permisos, i es cotitza a mida.',
+    llegimEs: 'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde. Si la llevamos entera, quiere decir guion, proveedores y permisos, y se cotiza a medida.',
     /* El transmèdia penja d'aquí perquè és el que passa quan una jornada vol
        deixar rastre: història, personatges i registre en comptes de fotos. */
     despres: ['transmedia']
@@ -166,14 +226,18 @@ const ORGS_NOTA = {
 
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
 function blocObjectius() {
-  /* Sense `data-i18n`: els sis botons els torna a escriure la pàgina des de
-     `OBJECTIUS`, que ja porta les dues llengües. Una clau de diccionari aquí
-     voldria dir el mateix títol declarat dues vegades —al botó i al resultat—
-     i el dia que es canviés un, l'altre diria una altra cosa. */
-  return OBJECTIUS.map(o =>
-    `<button type="button" class="opt" data-v="${o.id}" data-preg="${o.preguntes}" style="--c:var(--${o.c})">` +
-    `<span class="o-t">${o.ic} ${esc(o.t)}</span>` +
-    `<span class="o-d">${esc(o.diu)}</span></button>`
+  /* Sense `data-i18n`: els botons i els titulars els torna a escriure la
+     pàgina des de `OBJECTIUS` i `GRUPS`, que ja porten les dues llengües. Una
+     clau de diccionari aquí voldria dir el mateix títol declarat dues vegades
+     —al botó i al resultat— i el dia que es canviés un, l'altre diria una
+     altra cosa. */
+  return Object.keys(GRUPS).map(g =>
+    `<p class="opts-g" data-g="${g}">${esc(GRUPS[g].t)}</p>\n` +
+    OBJECTIUS.filter(o => o.grup === g).map(o =>
+      `<button type="button" class="opt" data-v="${o.id}" data-preg="${o.preguntes}" style="--c:var(--${o.c})">` +
+      `<span class="o-t">${o.ic} ${esc(o.t)}</span>` +
+      `<span class="o-d">${esc(o.diu)}</span></button>`
+    ).join('\n')
   ).join('\n');
 }
 
@@ -199,7 +263,9 @@ function blocDades() {
       `endus:'${q(p.endus)}',endusEs:'${q(p.endusEs || p.endus)}'}`).join(',\n  ');
   const notes = Object.keys(ORGS_NOTA).map(k =>
     `'${k}':{t:'${q(ORGS_NOTA[k].t)}',tEs:'${q(ORGS_NOTA[k].es)}'}`).join(',\n  ');
+  const grups = Object.keys(GRUPS).map(g => `'${g}':{t:'${q(GRUPS[g].t)}',tEs:'${q(GRUPS[g].tEs)}'}`).join(',');
   return `// Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
+const GRUPS={${grups}};
 const OBJECTIUS={
   ${objs}
 };
@@ -244,11 +310,24 @@ const MARQUES = [
        troba qui ja sap que existeix. */
 (() => {
   const arriben = new Set(OBJECTIUS.flatMap(o => o.paquets.concat(o.despres || [])));
-  const venibles = PAQUETS.filter(p => p.sector === 'privat' || p.sector === 'tots');
+  /* `sector` és una llista des que el catàleg es va partir per a qui compra
+     (`admin`, `tercer`, `empresa`). Aquesta guarda encara mirava `privat` i
+     `tots`, que ja no existien, i per tant no comprovava res: passava verda
+     amb qualsevol paquet sense porta. */
+  const venibles = CATALEG.filter(p => [].concat(p.sector || []).includes('empresa'));
   const sols = venibles.filter(p => !arriben.has(p.id));
   if (sols.length) bad('paquets que es venen a organitzacions i cap objectiu no hi porta: '
     + sols.map(p => p.id).join(', '));
   else ok(`${pl(venibles.length, 'paquet venible', 'paquets venibles')} a organitzacions, tots amb una porta`);
+})();
+
+// 3b · Cada objectiu sota un titular que existeix, i cap titular buit.
+(() => {
+  const sense = OBJECTIUS.filter(o => !GRUPS[o.grup]).map(o => o.id);
+  const buits = Object.keys(GRUPS).filter(g => !OBJECTIUS.some(o => o.grup === g));
+  if (sense.length) bad('objectius sense titular: ' + sense.join(', '));
+  else if (buits.length) bad('titulars sense cap objectiu: ' + buits.join(', '));
+  else ok(`${Object.keys(GRUPS).length} titulars, el primer «${GRUPS[OBJECTIUS[0].grup].t}»`);
 })();
 
 /* 4 · Cada objectiu obre un bloc de preguntes i només un. Un formulari que ho
@@ -275,6 +354,7 @@ const MARQUES = [
     if (!o[c + 'Es']) falten.push(o.id + '.' + c + 'Es');
   }));
   Object.keys(ORGS_NOTA).forEach(k => { if (!ORGS_NOTA[k].es) falten.push('nota ' + k); });
+  Object.keys(GRUPS).forEach(k => { if (!GRUPS[k].tEs) falten.push('titular ' + k); });
   if (falten.length) bad('text sense castellà: ' + falten.join(', ')
     + ' — el botó es llegiria en una llengua i el resultat en l\'altra, sense petar');
   else ok(`${OBJECTIUS.length} objectius i ${Object.keys(ORGS_NOTA).length} notes, en les dues llengües`);
@@ -325,4 +405,4 @@ if (CHECK) {
 if (fails) { console.log('\n❌ No s\'ha escrit res.'); process.exit(1); }
 console.log(`\n✅ diagnostic-org.html · ${OBJECTIUS.length} objectius i ${Object.keys(ORGS_NOTA).length} tipus d'organització`);
 
-module.exports = { OBJECTIUS, ORGS_NOTA };
+module.exports = { OBJECTIUS, GRUPS, ORGS_NOTA };

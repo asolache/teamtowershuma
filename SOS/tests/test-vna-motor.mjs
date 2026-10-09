@@ -659,7 +659,40 @@ console.log('\nM21 · Sense efectes');
   ok(J(base) === abans, 'i l\'arbre segueix idèntic');
 }
 
-console.log('\nM22 · Els patrons del flux');
+console.log('\nM22 · La web que surt del mapa (VS-WEB)');
+{ const webDelMapa = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\nreturn webDelMapa;')();
+  const m = congela(celler()), abans = J(m);
+  const w = webDelMapa(m);
+  ok(w.formato === 'tt-web-1' && w.titol === EXEMPLE.abast, 'el format i el títol surten del mapa');
+  ok(J(w.casa) === J(['Qui rep i explica']), 'per defecte, la casa és el rol amb més lliuraments');
+  ok(w.portes.length === EXEMPLE.rols.length - 1 && w.portes.every(p => p.rol !== 'Qui rep i explica'), 'una porta per a cada rol que no és de casa');
+  const ids = w.menu.map(x => x.id);
+  ok(new Set(ids).size === ids.length, 'cap pàgina del menú repeteix l\'adreça');
+  ok(ids[0] === 'inici' && ids[ids.length - 1] === 'equip' && ids.includes('serveis'), 'el menú comença a Inici i acaba a «Per a l\'equip»');
+  ok(w.serveis.map(s => s.nom).join('|') === 'La visita|El dia al poble|La venda pel canal', 'els serveis són els processos, en ordre');
+  ok(w.serveis[0].passos.map(p => p.n).join() === '1,2,3,4' && w.serveis[0].passos[0].de === 'Qui fa el vi', 'i cada servei porta els passos en ordre');
+  const porta = r => w.portes.find(p => p.rol === r);
+  ok(porta('El visitant').compte && porta('L\'operador de luxe').compte, 'compte quan hi ha anada i tornada amb casa');
+  ok(!porta('El distribuïdor').compte && porta('El distribuïdor').buida, 'sense compte ni contingut quan no hi ha res amb casa');
+  ok(J(w.alta) === J(w.portes.filter(p => p.compte).map(p => p.rol)), 'l\'alta és la llista dels que tenen compte');
+  const v = porta('El visitant');
+  ok(v.rep[0].q === 'la visita, el tast i el relat de la casa' && v.dona[0].q === 'la confiança de qui ha estat aquí', 'la porta diu què et donem i què ens dones, amb les paraules del mapa');
+  ok(v.benvinguda.map(b => b.pas).join() === 'coneix,compte,connecta,primer,demanem', 'la benvinguda: coneix, compte, connecta, primer, demanem');
+  ok(porta('El distribuïdor').benvinguda.map(b => b.pas).join() === 'coneix,sense-compte', 'qui no té relació amb casa no ha de donar-se d\'alta');
+  ok(porta('L\'operador de luxe').connexions.some(c => c.cat === 'crm' && c.per === 'client'), 'les connexions es proposen i diuen per quina paraula');
+  ok(w.sempre.length === 4 && w.sempre.every(s => m.seq[s.de + '→' + s.a] === 'sempre'), 'el que passa sempre surt a part');
+  const w2 = webDelMapa(m, { casa: ['Qui rep i explica', 'Qui fa el vi', 'Qui no hi és'] });
+  ok(J(w2.casa) === J(['Qui rep i explica', 'Qui fa el vi']), 'la casa la pot triar qui dibuixa; un nom que no és al mapa no hi entra');
+  ok(w2.portes.find(p => p.rol === 'El distribuïdor').compte && w2.equip.intern.length === 2, 'amb dos rols de casa, el canal té compte i el que es donen va a l\'equip');
+  ok(J(m) === abans, 'no toca el mapa');
+  const buit = webDelMapa({ roles: [], pairs: [], processos: [], seq: {} });
+  ok(buit.portes.length === 0 && J(buit.menu.map(x => x.id)) === J(['inici', 'equip']), 'un mapa buit dona una web buida que no peta');
+  const xoc = webDelMapa({ roles: ['Casa', 'Inici', 'Serveis', 'Serveis!'], pairs: [['Casa', 'Inici', 't', 'a', 'i', 'b'], ['Casa', 'Serveis', 't', 'c', '', ''], ['Casa', 'Serveis!', 't', 'd', '', '']], processos: [], seq: {} });
+  const xi = xoc.menu.map(x => x.id);
+  ok(new Set(xi).size === xi.length && xi.filter(x => x === 'inici').length === 1, 'un rol que es diu com una pàgina fixa no la trepitja');
+}
+
+console.log('\nM23 · Els patrons del flux');
 { const P = D.patrons(celler()), v = P.llista.find(x => x.id === 'visita'), c = P.llista.find(x => x.id === 'canal');
   ok(P.llista.length === 3 && v.passos === 4 && v.traspassos === 3 && v.relleus === 2, 'la visita: 4 passos, 3 canvis de mans, 2 relleus');
   ok(v.fil.rols[0] === 'Qui fa el vi' && J(v.fil.talls) === '[3]' && J(v.salts) === '[3]', 'el fil comença on comença, i es talla on el valor salta');

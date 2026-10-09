@@ -71,16 +71,16 @@ console.log('\n2 · El diagnòstic porta a algun lloc, i diu per què hi porta')
   const r = await page.evaluate(async () => {
     const $ = s => document.querySelector(s);
     $('#nom').value = 'Anna Prova'; $('#mail').value = 'a@b.cat';
-    document.querySelector('[data-go="2"]').click();
+    ['relleu', 'equity', 'diagnostic'].forEach(v => {
+      const c = document.querySelector('#need [data-v="' + v + '"]'); if (c) c.click();
+    });
+    document.querySelector('#s1 [data-go="2"]').click();
+    await new Promise(r2 => setTimeout(r2, 120));
+    document.querySelector('#s2 [data-go="3"]').click();
     await new Promise(r2 => setTimeout(r2, 120));
     document.querySelector('#orgType .opt[data-v="ajuntament"]').click();
     $('#municipi').value = 'Vilafranca';
-    document.querySelector('[data-go="3"]').click();
-    await new Promise(r2 => setTimeout(r2, 120));
-    ['relleu', 'equity', 'diagnostic'].forEach(v => {
-      const c = document.querySelector('[data-v="' + v + '"]'); if (c) c.click();
-    });
-    document.querySelector('[data-go="4"]').click();
+    document.querySelector('#s3 [data-go="4"]').click();
     await new Promise(r2 => setTimeout(r2, 120));
     const b2 = [...document.querySelectorAll('button')].find(x => /diagn/i.test(x.textContent));
     if (b2) b2.click();
@@ -129,7 +129,7 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
     `i els mateixos grups a totes: ${a.r.grups.join(' · ')}`);
   ok(a.r.destins.join('|') === b2.r.destins.join('|'),
     `amb els mateixos ${a.r.destins.length} destins i en el mateix ordre`);
-  ok(/Obre el SOS/.test(a.r.cta) && /Obre el SOS/.test(c.r.cta),
+  ok(/Fes el diagnòstic/.test(a.r.cta) && /Fes el diagnòstic/.test(c.r.cta),
     'i la mateixa acció principal, sempre al mateix lloc');
   ok(a.r.aqui.indexOf('/SOS/matriu.html') >= 0 && b2.r.aqui.indexOf('/SOS/compra.html') >= 0,
     'cada pàgina es marca a si mateixa: se sap on ets sense haver de llegir el títol');
@@ -137,10 +137,17 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
   ok(!a.errs.length && !b2.errs.length && !c.errs.length, 'sense errors de pàgina');
 }
 
-console.log('\n4 · El menú funciona sense JavaScript i a mòbil');
+console.log('\n4 · Els desplegables del menú, i a mòbil');
 {
   const { ctx, page, errs } = await obre('matriu.html', 390, 800);
   const r = await page.evaluate(async () => {
+    /* A mòbil, des del 05/10/2026, les cinc portes viuen darrere un botó
+       «Menú»: cinc no caben en una barra curta a 360 px i les tres maneres de
+       fer-ho sense script es van mesurar i cap aguantava. Sense prémer-lo
+       abans, els `<details>` no tenen caixa i això deia que el panell no
+       ocupa lloc —que és veritat, i no és el defecte que es busca aquí. */
+    const ms = document.querySelector('.tt-nav .tn-ms');
+    if (ms && getComputedStyle(ms).display !== 'none') ms.click();
     const g = document.querySelector('.tt-nav .tn-g');
     /* `open` i no l'alçada: `<details>` amaga el contingut amb un mecanisme
        intern del navegador i mesurar-lo depèn de com el pinti cadascun. El que
@@ -154,7 +161,7 @@ console.log('\n4 · El menú funciona sense JavaScript i a mòbil');
       desborda: document.documentElement.scrollWidth > window.innerWidth + 1 };
   });
   ok(r.tag === 'DETAILS',
-    'els desplegables són <details>: el navegador ja en fa un component accessible, i no cal script');
+    'cada porta és un <details>: el navegador ja en fa un component accessible amb teclat');
   ok(r.tancat === false && r.obert === true && r.alt > 0,
     'arrenca tancat, un clic l\'obre i llavors el panell ocupa lloc');
   ok(!r.desborda, 'i a 390px la pàgina no desborda de costat');

@@ -91,7 +91,7 @@ en una línia sota els logos.
 
 | Client | On es diu | Nota |
 |---|---|---|
-| **IKEA** | `#trajectoria` · `#facilitador`, tram de consultoria | **Les dues coses**: Fent Pinya amb TeamTowers **i Value Network Analysis, dues vegades**. Els dos mapes van ser **el de la direcció i el de l'àrea de serveis** — precisat per l'Àlvar el 02/10/2026, i el **guió de la sessió** (19 p., aportat el mateix dia) ho confirma: hi consta l'equip, amb **Álvaro Solache com a director del VNA**, Bep Moll a comunicació, i Antonio Blanco i Sergio Salgado com a consultors i analistes. L'àmbit d'una de les sessions era **la xarxa de venda i devolucions**. És l'única entrega de VNA amb client anomenat que tenim, i per això surt també al perfil: fa que el mètode deixi de ser una idea. *Falten els anys.* |
+| **IKEA** | `#trajectoria`, grup «Empreses» | Client de TeamTowers. **El cas no es publica**: decidit per l'Àlvar el 09/10/2026, el nom es queda a la llista de clients i el detall de la feina feta no surt a cap pàgina pública ni en aquest repositori. *Falten els anys.* |
 | Telefónica · Vodafone · BBVA · Novartis · Porsche · Mercedes · John Deere · La Caixa | `#trajectoria`, grup «Empreses» | Clients de TeamTowers. **No consta quina entrega concreta** va ser cadascun dins d'aquesta línia |
 | **InfoJobs** | `#trajectoria` · `#facilitador` | **Les dues coses**, i per això surt dos cops: hi va ser manager de RRHH (2000–2001) **i després va ser client de Fent Pinya**. Precisat per ell el 10/09/2026 |
 | **Softonic** | `#trajectoria`, grup «Empreses» | Client de Fent Pinya. L'Álvaro, 10/09/2026 |
@@ -137,9 +137,9 @@ llocs, i ara amb el motiu escrit. La lliçó no és que el criteri fos dolent: �
 que **«no és un client» era una deducció meva i no un fet**, i les deduccions
 sobre la biografia d'algú les ha de confirmar aquell algú.
 
-**Tres dels vint-i-tres són les dues coses alhora** —IKEA (client i VNA),
-InfoJobs (empleador i client) i EADA (client i escola on ha fet classe)—, i cap
-de les tres ho hauria endevinat ningú mirant un logo. És el motiu pel qual
+**Dos dels vint-i-tres són les dues coses alhora** —InfoJobs (empleador i
+client) i EADA (client i escola on ha fet classe)—, i cap dels dos ho hauria
+endevinat ningú mirant un logo. És el motiu pel qual
 aquesta taula existeix: **un nom sol no diu quina relació hi ha, i la relació és
 el que fa que el nom valgui alguna cosa.**
 
@@ -191,7 +191,7 @@ tanca dues dates.
 
 | Anys | On | Què |
 |---|---|---|
-| 2019 – avui | **Pantheon Work** | **Director de projectes de consultoria.** Venda, planificació, producció i formació amb la metodologia VNA. Fita: **pla estratègic organitzatiu i de RRHH per a IKEA** |
+| 2019 – avui | **Pantheon Work** | **Director de projectes de consultoria.** Venda, planificació, producció i formació amb la metodologia VNA |
 | 2019 – 2020 | **Rescoio** | Project manager de programari. Fita: **el desenvolupament de les «Biblioteques de les Coses»** |
 | 2021 – 2022 | **CryptoMarketing** | Cofundador i *smart contracts officer* |
 | 2021 – 2023 | **SAE Institute** | Professor de **Web 3.0 i pensament sistèmic** |
@@ -219,7 +219,7 @@ entra a `#facilitador`; la resta es queda aquí.
 
 | Nivell | Què vol dir | On consta |
 |---|---|---|
-| **Estratègic** | Dissenyar el sistema abans que hi hagi feina | Director estratègic de RRHH a **GEC–UOC** (2002–2005), amb el pla estratègic de RRHH de la UOC implantat · **pla estratègic organitzatiu i de RRHH per a IKEA** des de Pantheon Work |
+| **Estratègic** | Dissenyar el sistema abans que hi hagi feina | Director estratègic de RRHH a **GEC–UOC** (2002–2005), amb el pla estratègic de RRHH de la UOC implantat |
 | **Tàctic** | Convertir-ho en projectes que algú pugui portar | Director de projectes de consultoria (Pantheon Work) · product owner (comunitats.org) · project manager de programari (Rescoio) · currículums formatius (Complot, SAE) |
 | **Operatiu** | Fer-ho a la sala i a peu de planta | Recruiting manager de la planta d'**HP** (Manpower) · programes formatius i normatius a **Myrurgia** · team coach a **Mondragon Team Academy** · facilitació del taller Fent Pinya |
 

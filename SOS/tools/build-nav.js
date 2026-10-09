@@ -102,8 +102,12 @@ const GRUPS = [
        la llista de l'app, com les de l'arrel: és una pàgina de venda. */
     ['/mapa-web/', T('Mapa i web en una hora', 'Mapa y web en una hora'),
       T('El servei: el mapa del teu negoci i la web, en una sessió', 'El servicio: el mapa de tu negocio y la web, en una sesión')],
+    /* El prototip de serveis connectables, també en esborrany i `noindex`:
+       la pila per rol, el catàleg de serveis i el cost real de l'IA. */
+    ['/conecta/', T('Serveis connectables', 'Servicios conectables'),
+      T('La teva web amb la teva IA, el CRM i els cobraments', 'Tu web con tu IA, el CRM y los cobros')],
     ['cataleg.html', T('El catàleg', 'El catálogo'),
-      T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
+      T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
     ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
       T('Tria què vols i en surt la proposta', 'Elige qué quieres y sale la propuesta')],
     /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
@@ -204,13 +208,19 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    Absolutes a posta. Fins avui la barra del SOS deia `../index.html` i el
    desplegable de la portada `/SOS/x.html`: **dos modes de ruta** per a la
    mateixa llista, i per això eren dos blocs de codi. Amb rutes absolutes el
-   mateix marcatge val a l'arrel i a `/SOS/`, i la barra pot ser una. */
-const CTA = ['/SOS/', T('Obre el SOS', 'Abre el SOS')];
+   mateix marcatge val a l'arrel i a `/SOS/`, i la barra pot ser una.
+
+   ── L'acció és el diagnòstic (09/10/2026) ──────────────────────────────────
+   Deia «Obre el SOS». La guia de marca (§9) posa el diagnòstic com a crida
+   principal perquè és l'única que torna alguna cosa sense demanar res, i és
+   el primer pas del camí de client a `/sos/`, a la portada i a l'embut
+   (`build-embut.js`). L'aplicació no es perd: és al grup «El SOS» del menú. */
+const CTA = ['/SOS/diagnostic.html', T('Fes el diagnòstic', 'Haz el diagnóstico')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
-const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.html', 'compra.html', 'crm.html', 'diagnostic.html',
+const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
@@ -219,6 +229,17 @@ const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'comando.htm
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */
 const EXCEPCIONS = {
+  /* ⚠ `comando.html` **ja no se serveix**: les tres seves adreces fan 301 cap a
+     molekulon.org (04/10/2026). Però el fitxer no és brossa i no es pot
+     esborrar: `build-comando.js` el llegeix per comprovar que cada pla del
+     guió cita de debò la història publicada —és l'única font d'aquell relat— i
+     del mateix generador surt `molekulon-data.json`, que l'altre repositori
+     baixa cada dilluns.
+
+     O sigui que ha deixat de ser **una pàgina** i ha passat a ser **una font**.
+     Posar-li la barra seria mantenir un menú a una pantalla que ningú pot
+     obrir, i el dia que algú el mirés es creuria que és una pàgina viva. */
+  'comando.html': 'Ja no se serveix: les seves adreces fan 301 cap a molekulon.org. El fitxer es queda perquè `build-comando.js` l\'hi llegeix l\'ancoratge al canon i n\'exporta `molekulon-data.json`. És una font, no una pàgina.',
   'index.html': 'És l\'aplicació i té la seva pròpia barra, amb cerca, accions i sessió.',
   'joc.html': 'És una pantalla de joc completa; un menú a sobre en trencaria el ritme.'
 };
@@ -391,7 +412,8 @@ const clauDe = h => {
 function diccionari(l) {
   const f = [];
   GRUPS.forEach(g => {
-    f.push(`  'nv.g.${g.id}':'${esc2(g.ic + ' ' + txt(g.lbl, l))}',`);
+    /* Sense la icona: ara va al seu propi element al marcatge. */
+    f.push(`  'nv.g.${g.id}':'${esc2(txt(g.lbl, l))}',`);
     g.links.forEach(([h, t, d]) => {
       const id = clauDe(h);
       f.push(`  'nv.t.${id}':'${esc2(txt(t, l))}',`);
@@ -405,7 +427,11 @@ function diccionari(l) {
      «Totes les pàgines», que la barra única substitueix. Deixar-les seria
      exactament el que `check-landing.js` compta: claus que no tradueixen res i
      fan creure que aquell text està cobert. */
-  const fix = { 'nv.cta': { ca: txt(CTA[1], 'ca'), es: txt(CTA[1], 'es') } };
+  const fix = {
+    'nv.cta': { ca: txt(CTA[1], 'ca'), es: txt(CTA[1], 'es') },
+    /* El resum del desplegable de mòbil. A sobretaula no es veu. */
+    'nv.menu': { ca: 'Menú', es: 'Menú' }
+  };
   Object.entries(fix).forEach(([k, v]) => f.push(`  '${k}':'${esc2(v[l])}',`));
   return f.join('\n');
 }
@@ -457,7 +483,13 @@ function nav(pagina) {
 
        Abans la barra es quedava en català sobre un formulari traduït de dalt a
        baix, i era l'última costura que es veia mirant. */
-    return `<details class="tn-g${dins ? ' tn-here' : ''}"><summary data-i18n="nv.g.${g.id}">${g.ic} ${esc(txt(g.lbl, 'ca'))}</summary>` +
+    /* La icona va al seu propi element i l'etiqueta al seu: `data-i18n`
+       substitueix el `textContent` sencer, i amb la icona a dins no es podia
+       amagar a mòbil —que és el que calia per encabir les cinc portes— sense
+       perdre la traducció pel camí. */
+    return `<details class="tn-g${dins ? ' tn-here' : ''}"><summary>`
+      + `<i class="tn-i" aria-hidden="true">${g.ic}</i>`
+      + `<span data-i18n="nv.g.${g.id}">${esc(txt(g.lbl, 'ca'))}</span></summary>` +
       `<div class="tn-p">` + g.links.map(([h, t, d]) => {
         const id = clauDe(h);
         /* Els destins de l'altra casa porten `rel` i una fletxa: qui el prem
@@ -481,12 +513,61 @@ function nav(pagina) {
   return OBRE + '\n' + CSS + '\n' +
     `<nav class="tt-nav" aria-label="Navegació del lloc">\n` +
     `  <a class="tn-brand" href="${MARCA[0]}">${esc(MARCA[1])}<span>${esc(MARCA[2])}</span> ${esc(MARCA[3])}</a>\n` +
-    `  <div class="tn-gs">${GRUPS.map(grup).join('')}</div>\n` +
+    /* ── EL «MENÚ» DE MÒBIL, I PER QUÈ PORTA SCRIPT (05/10/2026) ──────────
+       Cinc portes no caben en una barra curta a 360–414 px, i els tres camins
+       es van mesurar abans de triar:
+
+       · en columna sempre obertes → barra de 173 px i el dibuix del hero a 937
+         de 844: fora de la primera pantalla;
+       · en una fila que llisca → barra de 92 px, però **dues portes de cinc**
+         visibles a 360 px, amagades darrere un gest que res anuncia;
+       · darrere un `<details>` que les embolcalla → a sobretaula el contingut
+         ha de sortir en línia, i Chromium amaga el contingut d'un `<details>`
+         tancat amb un mecanisme que ni `display` ni `content-visibility` amb
+         `!important` desfan: el panell es pintava i **no es podia clicar**.
+
+       Per això aquí hi ha quatre línies de JavaScript i no un quart intent de
+       fer-ho sense. La regla de la casa era «no injectar un script a catorze
+       fitxers autocontinguts», i el motiu escrit era que serien catorze còpies
+       **d'una cosa que el navegador ja fa**. Aquesta no la fa, i això no és una
+       còpia: és el mateix bloc generat que ja porta el CSS a vint-i-sis
+       pàgines des d'una sola declaració.
+
+       A sobretaula l'script no hi intervé: el botó és `display:none` i la fila
+       surt en línia amb CSS. */
+    `  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs"`
+    + ` data-i18n="nv.menu">Menú</button>\n` +
+    `  <div class="tn-gs" id="tt-gs">${GRUPS.map(grup).join('')}</div>\n` +
     llengua +
     `  <a class="tn-cta" href="${CTA[0]}"${jo === CTA[0] ? ' aria-current="page"' : ''}>`
     + `<span data-i18n="nv.cta">${esc(txt(CTA[1], 'ca'))}</span> →</a>\n` +
-    `</nav>\n` + TANCA;
+    `</nav>\n` + JS + '\n' + TANCA;
 }
+
+/* ══ LES QUATRE LÍNIES ════════════════════════════════════════════════════
+   Obrir i tancar el «Menú» de mòbil, i res més. Va **dins de les marques**,
+   com el CSS: una sola declaració per a vint-i-sis pàgines, i `--check` peta
+   si alguna se n'ha desviat.
+
+   `querySelector('.tt-nav')` i no `currentScript.closest('nav')`: el primer
+   intent feia això segon i l'script va quedar **fora** del `</nav>`, així que
+   `closest` tornava `null`, petava, i el botó no feia res a cap amplada de
+   mòbil. Hi ha exactament una barra per pàgina —i hi ha guarda que ho
+   comprova—, així que buscar-la per la seva classe no és ambigu i no depèn
+   d'on caigui l'script dins del bloc.
+
+   S'executa mentre es parseja, just després del `</nav>`, i per tant no espera
+   `DOMContentLoaded`: esperar-lo és el que faria que els primers tocs no
+   responguessin. */
+const JS = `<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>`;
 
 /* El CSS va amb el menú i dins de les marques: si visqués al `<style>` de cada
    pàgina, tornaríem a tenir catorze còpies que divergeixen. */
@@ -515,12 +596,15 @@ const CSS = `<style>
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
 .tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .tt-nav .tn-g{position:relative}
 .tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
   color:var(--light);white-space:nowrap;border:1px solid transparent}
 .tt-nav .tn-g>summary::-webkit-details-marker{display:none}
 .tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
 .tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
 .tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
@@ -559,19 +643,45 @@ const CSS = `<style>
      En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
      d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
      a sota, que és el que una columna sí que feia. */
-  /* Una sola fila que llisca, i no dues o tres que embolcallen: cinc
-     etiquetes de 15 px no caben en 390 px i embolcallant feien 177 px de
-     barra —tres files—, que és el mateix defecte amb un altre nombre. */
-  .tt-nav .tn-gs{width:100%;order:4;flex-wrap:nowrap;gap:.15rem;overflow-x:auto;
-    scrollbar-width:none;-webkit-overflow-scrolling:touch}
-  .tt-nav .tn-gs::-webkit-scrollbar{display:none}
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
   .tt-nav .tn-g{position:static}
   .tt-nav .tn-g>summary{padding:.3rem .5rem}
   .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
   .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
     top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
-  .tt-nav .tn-lang{margin-left:auto;order:2}
-  .tt-nav .tn-cta{margin-left:.4rem;order:3;padding:.34rem .65rem}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
 }
 </style>`;
 

@@ -120,7 +120,8 @@ aquesta llista i res més.
 - `SOS/media` · obra · Imatges i material que serveixen les pàgines
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany
-- `netlify` · obra · Funcions d'edge del web públic
+- `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
+- `netlify` · obra · Funcions del web públic: el proxy d'IA (edge) i el formulari que entra al CRM (submission-created)
 - `data` · arxiu · Llavors de dades d'una versió anterior
 - `js` · arxiu · Codi solt d'abans que tot fos autocontingut
 - `ia` · arxiu · Prototip d'app amb IA, servit encara per `_redirects`

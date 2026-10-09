@@ -65,13 +65,23 @@ const props = await p.evaluate(() => {
   return out;
 });
 const ids = Object.keys(props);
-ok(ids.length === 6, `${ids.length} objectius`);
+ok(ids.length >= 6 && ids[0] === 'operatiu', `${ids.length} objectius, el primer el negoci operatiu`);
 const firmes = new Set(ids.map(k => props[k].paq.join('+')));
 ok(firmes.size === ids.length,
   `${firmes.size} propostes diferents de ${ids.length} objectius: la segmentació decideix alguna cosa`);
 const orfes = ids.flatMap(k => props[k].paq.concat(props[k].despres)).filter(x => !CATALEG.includes(x));
 ok(orfes.length === 0, 'i cap proposta apunta a un paquet que no és al catàleg de debò'
   + (orfes.length ? ' · ' + orfes.join(', ') : ''));
+
+/* Els titulars dels grups també canvien de llengua: els pinta la pàgina des
+   de `GRUPS`, i un titular que es quedés en català no petaria. */
+const titulars = await p.evaluate(() => {
+  window.__DXORG.dxAplicaLang('es');
+  const es = [...document.querySelectorAll('#objTipus .opts-g')].map(g => g.textContent);
+  window.__DXORG.dxAplicaLang('ca');
+  return es;
+});
+ok(titulars[0] === 'Tu negocio operativo', 'els titulars de les caselles es tradueixen · ' + titulars.join(' / '));
 
 /* ── 3 · Les preguntes que s'obren ──────────────────────────────────────── */
 console.log('\n3 · No es pregunta res que no canviï la resposta');
@@ -100,15 +110,35 @@ ok(branques.obrir.format && branques.mapa.dolor,
    tenia a `block` amb el pare amagat a sobre. Un estat correcte i una pantalla
    en blanc. */
 console.log('\n4 · El que promet la pantalla');
-await p.fill('#nom', 'Anna Prova'); await p.fill('#mail', 'anna@exemple.cat');
+/* Des del 09/10/2026 el contacte va al final: primer es dona valor —què
+   vols que passi, quina casa sou, el que ho afina— i només quan el
+   diagnòstic ja està calculat es demana a qui adreçar-lo. */
+const primer = await p.evaluate(() => {
+  const s1 = document.querySelector('#s1');
+  return { visible: !s1.hidden, demanaCorreu: !!s1.querySelector('#mail'),
+    correuAlFinal: !!document.querySelector('#s4 #mail') };
+});
+ok(primer.visible && !primer.demanaCorreu, 'el primer pas no demana cap dada de contacte');
+ok(primer.correuAlFinal, 'el correu es demana al darrer pas');
+await p.click('#objTipus .opt[data-v="sostenir"]');
+await p.fill('#ampliacio', 'Som dues coses alhora i cap casella ho diu del tot.');
 await p.click('[data-next="2"]');
 await p.click('#orgType .opt[data-v="gran"]');
 await p.fill('#municipi', 'Barcelona');
 await p.click('[data-next="3"]');
-await p.click('#objTipus .opt[data-v="sostenir"]');
-await p.fill('#ampliacio', 'Som dues coses alhora i cap casella ho diu del tot.');
-await p.click('[data-next="4"]');
 await p.selectOption('#decideix', 'comite'); await p.selectOption('#termini', 'curs');
+await p.click('[data-next="4"]');
+const avanc = await p.evaluate(() => ({
+  t: document.querySelector('#avT').textContent.trim(),
+  l: document.querySelector('#avL').textContent.trim(),
+  n: document.querySelectorAll('#avP li').length,
+  alt: document.querySelector('#avanc').getBoundingClientRect().height }));
+ok(avanc.t && avanc.l.length > 40 && avanc.n > 0 && avanc.alt > 60,
+  `abans de demanar el contacte ja ensenya el que hem llegit i ${avanc.n} peça(es) que hi encaixen`);
+await p.click('#doDx');
+const sensa = await p.evaluate(() => document.querySelector('#result').style.display);
+ok(sensa !== 'block', 'sense nom ni correu no s\'obre el diagnòstic sencer');
+await p.fill('#nom', 'Anna Prova'); await p.fill('#mail', 'anna@exemple.cat');
 await p.click('#doDx');
 const res = await p.evaluate(() => {
   const $ = s => document.querySelector(s);
@@ -120,6 +150,11 @@ const res = await p.evaluate(() => {
 ok(res.alt > 200 && res.text.length > 200,
   `el diagnòstic es veu de debò · ${Math.round(res.alt)}px i ${res.text.length} caràcters de text`);
 ok(res.formFora, 'i el formulari s\'aparta');
+const portes = await p.evaluate(() => [...document.querySelectorAll('#result .ara-c')].map(x => x.getAttribute('href')));
+ok(['vna-suport.html', 'index.html#/node', 'index.html#/alta'].every(h => portes.includes(h)),
+  'i acaba portant al mapa de valor, al node i al perfil');
+ok(await p.evaluate(() => !!document.querySelector('#result .ara-op a[href="/#operatiu"]')),
+  'i ofereix el servei: el negoci operatiu');
 ok(res.text.includes('cap casella ho diu del tot'),
   'el que ha escrit ell surt al diagnòstic, i no només l\'etiqueta que ha triat');
 ok(!/\d[\d.]*\s*€/.test(res.text), 'i no hi surt cap preu: la xifra es parla');
@@ -162,6 +197,9 @@ console.log('\n5b · El que es tria es veu');
   const marca = await v.evaluate(() => {
     const mir = sel => {
       const e = document.querySelector(sel);
+      /* Sense la transició: amb el pas visible (l'objectiu ara és el primer)
+         el color es llegia a mig camí i semblava que no canviava. */
+      e.style.transition = 'none';
       const abans = getComputedStyle(e).borderColor;
       e.click();
       return { canvia: getComputedStyle(e).borderColor !== abans, sel: e.classList.contains('sel') };
@@ -171,6 +209,33 @@ console.log('\n5b · El que es tria es veu');
   ok(marca.org.canvia && marca.org.sel, 'el tipus d\'organització es marca i es veu');
   ok(marca.obj.canvia && marca.obj.sel, 'i l\'objectiu també');
   await v.close();
+}
+
+/* ── 5d · Al mòbil, com una app ─────────────────────────────────────────── */
+console.log('\n5d · Al mòbil');
+{
+  const m = await b.newPage({ viewport: { width: 390, height: 844 } });
+  m.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+  await m.goto(url('diagnostic-org.html'));
+  await m.waitForFunction(() => window.__DXORG);
+  const r = await m.evaluate(() => {
+    const out = { amples: [] };
+    const mira = () => out.amples.push(document.documentElement.scrollWidth);
+    mira();
+    document.querySelector('#objTipus .opt[data-v="web"]').click();
+    window.__DXORG.showStep(2); mira();
+    const bar = document.querySelector('#s2 .acts');
+    out.enganxat = getComputedStyle(bar).position === 'sticky';
+    out.plegats = ['web', 'comarca', 'persones'].every(id => !!document.querySelector('#' + id).closest('details.mes'));
+    out.municipiVisible = !document.querySelector('#municipi').closest('details');
+    out.capcalera = getComputedStyle(document.querySelector('header')).display;
+    return out;
+  });
+  ok(r.amples.every(w => w <= 390), 'cap pas fa scroll de costat · ' + r.amples.join(', ') + ' px');
+  ok(r.enganxat, 'el botó d\'avançar queda enganxat a baix, a l\'abast del polze');
+  ok(r.plegats && r.municipiVisible, 'el que és opcional es plega i el que cal respondre es veu');
+  ok(r.capcalera === 'none', 'i a partir del pas 2 la capçalera deixa lloc al formulari');
+  await m.close();
 }
 
 /* ── 5c · La data s'escull, i es llegeix ────────────────────────────────── */

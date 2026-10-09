@@ -47,6 +47,24 @@ nav a:hover{text-decoration:underline}
 .prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
 .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
 .step[hidden]{display:none}
+.ara{margin:1.6rem 0 0}
+.ara h3{margin:0 0 .3rem;font-size:1.05rem}
+.ara-s{color:var(--muted);font-size:.86rem;margin:0 0 .8rem;line-height:1.55}
+.ara-g{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.ara-c{display:flex;flex-direction:column;gap:.3rem;border:1px solid var(--border);border-radius:10px;padding:.85rem .9rem;text-decoration:none;color:inherit;background:var(--card,transparent);transition:border-color .13s}
+.ara-c:hover{border-color:var(--indigo)}
+.ara-c b{font-size:.92rem}
+.ara-c span{font-size:.8rem;color:var(--muted);line-height:1.45}
+.ara-op{margin:1rem 0 0;padding:1rem 1.1rem;border-radius:10px;border:1px solid var(--green,#00e676);background:rgba(0,230,118,.06);font-size:.88rem;line-height:1.6}
+.ara-op a{font-weight:600;color:var(--indigo)}
+@media(max-width:640px){.ara-g{grid-template-columns:1fr}}
+.dx-avanc{border:1px solid var(--border);border-left:3px solid var(--green,#00e676);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin:0 0 1.2rem;background:rgba(0,230,118,.05)}
+.dx-avanc .av-k,.dx-avanc .av-pk{font-family:var(--mono,monospace);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green,#00e676);margin-bottom:.35rem}
+.dx-avanc .av-pk{margin-top:.8rem}
+.dx-avanc b{display:block;font-size:1.05rem;margin-bottom:.35rem}
+.dx-avanc p{margin:0;font-size:.9rem;line-height:1.6}
+.dx-avanc ul{margin:0;padding-left:1.1rem;font-size:.88rem;line-height:1.6}
+.dx-avanc .av-n{margin-top:.7rem;font-size:.82rem;color:var(--muted)}
 .step h2{margin:0 0 .3rem;font-size:1.3rem}
 .step .sub{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.55}
 .f{margin-bottom:1.1rem}
@@ -141,12 +159,15 @@ footer a{color:var(--indigo);text-decoration:none}
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
 .tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .tt-nav .tn-g{position:relative}
 .tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
   color:var(--light);white-space:nowrap;border:1px solid transparent}
 .tt-nav .tn-g>summary::-webkit-details-marker{display:none}
 .tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
 .tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
 .tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
@@ -185,32 +206,68 @@ footer a{color:var(--indigo);text-decoration:none}
      En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
      d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
      a sota, que és el que una columna sí que feia. */
-  /* Una sola fila que llisca, i no dues o tres que embolcallen: cinc
-     etiquetes de 15 px no caben en 390 px i embolcallant feien 177 px de
-     barra —tres files—, que és el mateix defecte amb un altre nombre. */
-  .tt-nav .tn-gs{width:100%;order:4;flex-wrap:nowrap;gap:.15rem;overflow-x:auto;
-    scrollbar-width:none;-webkit-overflow-scrolling:touch}
-  .tt-nav .tn-gs::-webkit-scrollbar{display:none}
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
   .tt-nav .tn-g{position:static}
   .tt-nav .tn-g>summary{padding:.3rem .5rem}
   .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
   .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
     top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
-  .tt-nav .tn-lang{margin-left:auto;order:2}
-  .tt-nav .tn-cta{margin-left:.4rem;order:3;padding:.34rem .65rem}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
 }
 </style>
 <nav class="tt-nav" aria-label="Navegació del lloc">
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
-  <div class="tn-gs"><details class="tn-g"><summary data-i18n="nv.g.valor">🗺 Mapa de valor</summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.sos">🖥 El SOS</summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.apren">🎓 Formació</summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.mon">🌀 Molekulon</summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.casa">🏛 Qui som</summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span data-i18n="nv.g.sos">El SOS</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.apren">Formació</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span data-i18n="nv.g.mon">Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
-  <a class="tn-cta" href="/SOS/"><span data-i18n="nv.cta">Obre el SOS</span> →</a>
+  <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
 </nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
 <!--/TT-NAV-->
 
 <header>
 <h1 data-i18n="dt.h1">Diagnòstic comunitari</h1>
-<p data-i18n-html="dt.intro">Explica'ns d'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa d'acompanyament — <strong>l'enviïs o no</strong>.</p>
+<p data-i18n-html="dt.intro">Digues d'on véns, què ja teniu i què us falta, i en <strong>3 minuts</strong> tens el vostre punt de partida i què cal desfer. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l'enviïs o no</strong>.</p>
 </header>
 
 <main class="wrap">
@@ -223,60 +280,49 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <!-- ── Pas 1 ── -->
 <section class="step" id="s1">
-<h2 data-i18n="dt.s1.h">1 · Qui ets</h2>
-<p class="sub" data-i18n="dt.s1.sub">Per saber amb qui parlem i com respondre't.</p>
-<!--FORM-QUI-->
-<div class="grid2">
-<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
+<h2 data-i18n="dt.s1.h">1 · Què us falta</h2>
+<p class="sub" data-i18n="dt.s1.sub">És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.</p>
+<div class="f">
+<label data-i18n="dt.l.need">Què necessiteu *</label>
+<div class="chips" id="need">
+<button type="button" class="chip" data-v="diagnostic" data-i18n="dt.need.diagnostic">🔍 Saber què tenim i què ens falta</button>
+<button type="button" class="chip" data-v="metode" data-i18n="dt.need.metode">🧭 Un mètode per organitzar-nos</button>
+<button type="button" class="chip" data-v="gent" data-i18n="dt.need.gent">📣 Més gent implicada</button>
+<button type="button" class="chip" data-v="relleu" data-i18n="dt.need.relleu">🔁 Relleu · no cremar els de sempre</button>
+<button type="button" class="chip" data-v="governanca" data-i18n="dt.need.governanca">🗳 Decidir sense conflictes</button>
+<button type="button" class="chip" data-v="financament" data-i18n="dt.need.financament">💶 Finançament i subvencions</button>
+<button type="button" class="chip" data-v="juridicN" data-i18n="dt.need.juridicN">📜 Saber quina forma jurídica</button>
+<button type="button" class="chip" data-v="equity" data-i18n="dt.need.equity">🥧 Repartir propietat amb justícia</button>
+<button type="button" class="chip" data-v="impacte" data-i18n="dt.need.impacte">📊 Demostrar el nostre impacte</button>
+<button type="button" class="chip" data-v="formacio" data-i18n="dt.need.formacio">🎓 Formar el nostre equip</button>
+<button type="button" class="chip" data-v="eina" data-i18n="dt.need.eina">💻 Una eina per gestionar-ho</button>
+<button type="button" class="chip" data-v="mentors" data-i18n="dt.need.mentors">👥 Formar-nos com a mentors</button>
 </div>
-<div class="grid2">
-<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
-<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
 </div>
-<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
-<!--/FORM-QUI-->
-<div class="err" id="e1" data-i18n="dt.e1">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="f"><label for="repte" data-i18n="dt.l.repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" data-i18n-ph="dt.ph.repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
+<div class="grid2">
+<div class="f"><label for="termini" data-i18n="dt.l.termini">Termini</label>
+<select id="termini" name="termini">
+<option value="explorant" data-i18n="dt.term.explorant">Estem explorant, sense presses</option>
+<option value="curs" selected data-i18n="dt.term.curs">Aquest curs / semestre</option>
+<option value="urgent" data-i18n="dt.term.urgent">Urgent — tenim una data</option>
+</select></div>
+<div class="f"><label for="pressupost" data-i18n="dt.l.pressu">Capacitat pressupostària</label>
+<select id="pressupost" name="pressupost">
+<option value="cap" data-i18n="dt.pressu.cap">Cap ara mateix</option>
+<option value="petit" selected data-i18n="dt.pressu.petit">Petita o per determinar</option>
+<option value="mitja" data-i18n="dt.pressu.mitja">Tenim partida assignada</option>
+<option value="subvencio" data-i18n="dt.pressu.subvencio">Dependrà d'una subvenció</option>
+</select></div>
+</div>
+<div class="err" id="e3" data-i18n="dt.e3">Marca com a mínim una necessitat.</div>
 <div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
 <!-- ── Pas 2 ── -->
 <section class="step" id="s2" hidden>
-<h2 data-i18n="dt.s2.h">2 · D'on véns</h2>
-<p class="sub" data-i18n="dt.s2.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
-<!--FORM-ORG-->
-<div class="f">
-<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
-<div class="opts" id="orgType">
-<button type="button" class="opt" data-v="ajuntament" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
-<button type="button" class="opt" data-v="comarcal" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
-<button type="button" class="opt" data-v="entitat" data-sector="tercer" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
-<button type="button" class="opt" data-v="cooperativa" data-sector="empresa" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
-<button type="button" class="opt" data-v="grup" data-sector="tercer" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
-<button type="button" class="opt" data-v="acompanyament" data-sector="tercer" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
-<button type="button" class="opt" data-v="fundacio" data-sector="tercer" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
-<button type="button" class="opt" data-v="particular" data-sector="tot" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
-</div>
-</div>
-<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
-<div class="grid2">
-<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
-<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
-</div>
-<div class="grid2">
-<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
-<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
-</div>
-<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
-<!--/FORM-ORG-->
-<div class="err" id="e2" data-i18n="dt.e2">Tria el tipus d'organització i escriu el municipi.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="1" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="3" data-i18n="dt.seg">Següent →</button></div>
-</section>
-
-<!-- ── Pas 3 ── -->
-<section class="step" id="s3" hidden>
-<h2 data-i18n="dt.s3.h">3 · Què ja teniu</h2>
-<p class="sub" data-i18n="dt.s3.sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
+<h2 data-i18n="dt.s2.h">2 · Què ja teniu</h2>
+<p class="sub" data-i18n="dt.s2.sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
 <div class="f">
 <label data-i18n="dt.l.have">Recursos disponibles</label>
 <!-- ELS XIPS. El text de cada un és **la seva etiqueta i prou**: el que
@@ -316,48 +362,73 @@ footer a{color:var(--indigo);text-decoration:none}
 <option value="forca" data-i18n="dt.exp.forca">Força: ja hem portat processos</option>
 <option value="molta" data-i18n="dt.exp.molta">Molta: ho fem habitualment</option>
 </select></div>
+<div class="nav-btns"><button type="button" class="btn" data-go="1" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="3" data-i18n="dt.seg">Següent →</button></div>
+</section>
+
+<!-- ── Pas 3 ── -->
+<section class="step" id="s3" hidden>
+<h2 data-i18n="dt.s3.h">3 · D'on veniu</h2>
+<p class="sub" data-i18n="dt.s3.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
+<!--FORM-ORG-->
+<div class="f">
+<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
+<div class="opts" id="orgType">
+<button type="button" class="opt" data-v="ajuntament" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" data-sector="tercer" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="empresa" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" data-sector="tercer" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" data-sector="tercer" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="tercer" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" data-sector="tot" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
+</div>
+</div>
+<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="grid2">
+<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
+</div>
+<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<!--/FORM-ORG-->
+<div class="err" id="e1" data-i18n="dt.e1">Tria el tipus d'organització i escriu el municipi.</div>
 <div class="nav-btns"><button type="button" class="btn" data-go="2" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="4" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
-<!-- ── Pas 4 ── -->
+<!-- ── Pas 4 ── EL CONTACTE, AL FINAL (09/10/2026)
+     Era el primer pas. L'Àlvaro ho va demanar al revés: no es demanen dades
+     fins que ja hem aportat valor i només falta veure el diagnòstic. Aquí
+     arriba amb l'avanç calculat a dalt —el punt de partida i el que cal
+     desfer—; l'itinerari, l'acompanyament, d'on surten els diners i el primer
+     pas es veuen en deixar el contacte. Res no surt del navegador fins que
+     no ho envia. -->
 <section class="step" id="s4" hidden>
-<h2 data-i18n="dt.s4.h">4 · Què us falta</h2>
-<p class="sub" data-i18n="dt.s4.sub">Aquí és on ens dius com et podem ser útils.</p>
-<div class="f">
-<label data-i18n="dt.l.need">Què necessiteu *</label>
-<div class="chips" id="need">
-<button type="button" class="chip" data-v="diagnostic" data-i18n="dt.need.diagnostic">🔍 Saber què tenim i què ens falta</button>
-<button type="button" class="chip" data-v="metode" data-i18n="dt.need.metode">🧭 Un mètode per organitzar-nos</button>
-<button type="button" class="chip" data-v="gent" data-i18n="dt.need.gent">📣 Més gent implicada</button>
-<button type="button" class="chip" data-v="relleu" data-i18n="dt.need.relleu">🔁 Relleu · no cremar els de sempre</button>
-<button type="button" class="chip" data-v="governanca" data-i18n="dt.need.governanca">🗳 Decidir sense conflictes</button>
-<button type="button" class="chip" data-v="financament" data-i18n="dt.need.financament">💶 Finançament i subvencions</button>
-<button type="button" class="chip" data-v="juridicN" data-i18n="dt.need.juridicN">📜 Saber quina forma jurídica</button>
-<button type="button" class="chip" data-v="equity" data-i18n="dt.need.equity">🥧 Repartir propietat amb justícia</button>
-<button type="button" class="chip" data-v="impacte" data-i18n="dt.need.impacte">📊 Demostrar el nostre impacte</button>
-<button type="button" class="chip" data-v="formacio" data-i18n="dt.need.formacio">🎓 Formar el nostre equip</button>
-<button type="button" class="chip" data-v="eina" data-i18n="dt.need.eina">💻 Una eina per gestionar-ho</button>
-<button type="button" class="chip" data-v="mentors" data-i18n="dt.need.mentors">👥 Formar-nos com a mentors</button>
+<h2 data-i18n="dt.s4.h">4 · El teu diagnòstic ja està fet</h2>
+<div class="dx-avanc" id="avanc" aria-live="polite">
+<div class="av-k" data-i18n="dt.av.k">El vostre punt de partida</div>
+<b id="avT"></b>
+<p id="avL"></p>
+<div class="av-pk" data-i18n="dt.av.pk">Què cal desfer</div>
+<ul id="avP"></ul>
+<p class="av-n" data-i18n="dt.av.n">L'itinerari que us toca, com us podem acompanyar, d'on poden sortir els diners i el primer pas, en un clic.</p>
 </div>
-</div>
-<div class="f"><label for="repte" data-i18n="dt.l.repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" data-i18n-ph="dt.ph.repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
+<p class="sub" data-i18n="dt.s4.sub">Només falta saber a qui l'adrecem. No es crea cap compte i no surt res d'aquest navegador fins que no ho envies tu.</p>
+<!--FORM-QUI-->
 <div class="grid2">
-<div class="f"><label for="termini" data-i18n="dt.l.termini">Termini</label>
-<select id="termini" name="termini">
-<option value="explorant" data-i18n="dt.term.explorant">Estem explorant, sense presses</option>
-<option value="curs" selected data-i18n="dt.term.curs">Aquest curs / semestre</option>
-<option value="urgent" data-i18n="dt.term.urgent">Urgent — tenim una data</option>
-</select></div>
-<div class="f"><label for="pressupost" data-i18n="dt.l.pressu">Capacitat pressupostària</label>
-<select id="pressupost" name="pressupost">
-<option value="cap" data-i18n="dt.pressu.cap">Cap ara mateix</option>
-<option value="petit" selected data-i18n="dt.pressu.petit">Petita o per determinar</option>
-<option value="mitja" data-i18n="dt.pressu.mitja">Tenim partida assignada</option>
-<option value="subvencio" data-i18n="dt.pressu.subvencio">Dependrà d'una subvenció</option>
-</select></div>
+<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
 </div>
-<div class="err" id="e4" data-i18n="dt.e4">Marca com a mínim una necessitat.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="3" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" id="doDx" data-i18n="dt.veure">Veure el meu diagnòstic →</button></div>
+<div class="grid2">
+<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+</div>
+<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<!--/FORM-QUI-->
+<div class="err" id="e4" data-i18n="dt.e4">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="3" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" id="doDx" data-i18n="dt.veure">Veure el diagnòstic sencer →</button></div>
 </section>
 
 </form>
@@ -382,6 +453,22 @@ footer a{color:var(--indigo);text-decoration:none}
 enlloc: aquestes són les eines del SOS que responen al que has marcat, i cadascuna diu <strong>per què és
 aquesta</strong> i no una altra.</p>
 <div id="rPortes"></div></div>
+
+<!-- I ARA, QUÈ EN FAS (09/10/2026) ────────────────────────────────────
+     El diagnòstic no s'acaba en llegir-lo: porta cap a les tres maneres
+     d'entrar al SOS —el mapa de valor de l'organització, el node i el
+     perfil— i, al final, a demanar el servei. Les mateixes portes que la
+     portada de /sos/. -->
+<div class="ara">
+<h3 data-i18n="dt.ara.h">I ara, què en fas</h3>
+<p class="ara-s" data-i18n="dt.ara.s">Pots començar avui pel teu compte, sense donar-te d'alta enlloc. Tria per on:</p>
+<div class="ara-g">
+<a class="ara-c" href="vna-suport.html"><b data-i18n="dt.ara.vna.t">🕸 Dibuixa el vostre mapa de valor</b><span data-i18n="dt.ara.vna.d">Rols, lliuraments, el real i l'ideal. Amb el que has respost ja tens per on començar.</span></a>
+<a class="ara-c" href="index.html#/node"><b data-i18n="dt.ara.node.t">📍 Munta el vostre node</b><span data-i18n="dt.ara.node.d">La vostra organització al SOS: rols, tauler i comptes. Al teu navegador i sense quota.</span></a>
+<a class="ara-c" href="index.html#/alta"><b data-i18n="dt.ara.perfil.t">🦸 Crea el teu perfil</b><span data-i18n="dt.ara.perfil.d">Tria el teu rol i que el que aportes consti. És teu i te l'endús.</span></a>
+</div>
+<p class="ara-op" data-i18n-html="dt.ara.op">I si ho voleu <b>muntat i funcionant</b>, això és <a href="/#operatiu">el teu negoci operatiu</a>: la sala amb l'equip, el mapa real i l'ideal, el cervell per rol i 30 dies d'acompanyament. Envia'ns el diagnòstic aquí sota i et preparem la proposta, desglossada per fluxos.</p>
+</div>
 
 <div class="send">
 <h3 data-i18n="dt.send.h">📨 Vols que ho mirem junts?</h3>
@@ -489,20 +576,22 @@ ca: {
   'fo.rol.altre':'Una altra cosa',
 /*/DIAG-I18N-CA*/
 /*NAV-I18N-CA*/
-  'nv.g.valor':'🗺 Mapa de valor',
+  'nv.g.valor':'Mapa de valor',
   'nv.t.vna':'El mètode',
   'nv.d.vna':'Què és un mapa de valor, sobre un cas',
   'nv.t.vna-suport':'Fer-ne un',
   'nv.d.vna-suport':'L\'editor visual: rols, lliuraments, real i ideal',
   'nv.t.carpeta-mapa-web':'Mapa i web en una hora',
   'nv.d.carpeta-mapa-web':'El servei: el mapa del teu negoci i la web, en una sessió',
+  'nv.t.carpeta-conecta':'Serveis connectables',
+  'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
   'nv.t.arrel-cataleg':'El catàleg',
-  'nv.d.arrel-cataleg':'Paquets tancats, amb el preu escrit',
+  'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
   'nv.t.pressupost':'Demana pressupost',
   'nv.d.pressupost':'Tria què vols i en surt la proposta',
   'nv.t.diagnostic':'Diagnòstic',
   'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
-  'nv.g.sos':'🖥 El SOS',
+  'nv.g.sos':'El SOS',
   'nv.t.intro':'De què va',
   'nv.d.intro':'El SOS en setze plans',
   'nv.t.app':'Obre l\'aplicació',
@@ -521,7 +610,7 @@ ca: {
   'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
   'nv.t.online':'El directori',
   'nv.d.online':'Qui hi ha al territori, què ofereix i què busca',
-  'nv.g.apren':'🎓 Formació',
+  'nv.g.apren':'Formació',
   'nv.t.formacio':'Els 16 mòduls',
   'nv.d.formacio':'De N0 a N3, i el certificat és teu',
   'nv.t.ia':'Fluxos amb IA',
@@ -530,7 +619,7 @@ ca: {
   'nv.d.vedes':'Les regles, amb el motiu al costat',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacitat, explicada',
-  'nv.g.mon':'🌀 Molekulon',
+  'nv.g.mon':'Molekulon',
   'nv.t.fora-inici':'El Comando',
   'nv.d.fora-inici':'La pel·lícula que farem 150.000',
   'nv.t.fora-historia':'La història',
@@ -553,23 +642,36 @@ ca: {
   'nv.d.joc':'La plaça, a ritme',
   'nv.t.uneix-te':'Uneix-t\'hi',
   'nv.d.uneix-te':'El que ja fas al barri, comptat',
-  'nv.g.casa':'🏛 Qui som',
+  'nv.g.casa':'Qui som',
   'nv.t.arrel-qui-som':'Qui som',
   'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
   'nv.t.arrel-premsa':'Premsa',
   'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
-  'nv.cta':'Obre el SOS',
+  'nv.cta':'Fes el diagnòstic',
+  'nv.menu':'Menú',
 /*/NAV-I18N-CA*/
+  'dt.av.k':'El vostre punt de partida',
+  'dt.av.pk':'Què cal desfer',
+  'dt.av.n':'L\'itinerari que us toca, com us podem acompanyar, d\'on poden sortir els diners i el primer pas, en un clic.',
+  'dt.ara.h':'I ara, què en fas',
+  'dt.ara.s':'Pots començar avui pel teu compte, sense donar-te d\'alta enlloc. Tria per on:',
+  'dt.ara.vna.t':'🕸 Dibuixa el vostre mapa de valor',
+  'dt.ara.vna.d':'Rols, lliuraments, el real i l\'ideal. Amb el que has respost ja tens per on començar.',
+  'dt.ara.node.t':'📍 Munta el vostre node',
+  'dt.ara.node.d':'La vostra organització al SOS: rols, tauler i comptes. Al teu navegador i sense quota.',
+  'dt.ara.perfil.t':'🦸 Crea el teu perfil',
+  'dt.ara.perfil.d':'Tria el teu rol i que el que aportes consti. És teu i te l\'endús.',
+  'dt.ara.op':'I si ho voleu <b>muntat i funcionant</b>, això és <a href="/#operatiu">el teu negoci operatiu</a>: la sala amb l\'equip, el mapa real i l\'ideal, el cervell per rol i 30 dies d\'acompanyament. Envia\'ns el diagnòstic aquí sota i et preparem la proposta, desglossada per fluxos.',
   'dt.h1':'Diagnòstic comunitari',
-  'dt.intro':'Explica\'ns d\'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l\'itinerari formatiu que et toca i una proposta orientativa d\'acompanyament — <strong>l\'enviïs o no</strong>.',
-  'dt.s1.h':'1 · Qui ets',
-  'dt.s1.sub':'Per saber amb qui parlem i com respondre\'t.',
-  'dt.e1':'Cal com a mínim el nom i un correu vàlid.',
-  'dt.s2.h':'2 · D\'on véns',
-  'dt.s2.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
-  'dt.e2':'Tria el tipus d\'organització i escriu el municipi.',
-  'dt.s3.h':'3 · Què ja teniu',
-  'dt.s3.sub':'Gairebé sempre hi ha més del que sembla. Això marca per on començar.',
+  'dt.intro':'Digues d\'on véns, què ja teniu i què us falta, i en <strong>3 minuts</strong> tens el vostre punt de partida i què cal desfer. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l\'enviïs o no</strong>.',
+  'dt.s4.h':'4 · El teu diagnòstic ja està fet',
+  'dt.s4.sub':'Només falta saber a qui l\'adrecem. No es crea cap compte i no surt res d\'aquest navegador fins que no ho envies tu.',
+  'dt.e4':'Cal com a mínim el nom i un correu vàlid.',
+  'dt.s3.h':'3 · D\'on veniu',
+  'dt.s3.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
+  'dt.e1':'Tria el tipus d\'organització i escriu el municipi.',
+  'dt.s2.h':'2 · Què ja teniu',
+  'dt.s2.sub':'Gairebé sempre hi ha més del que sembla. Això marca per on començar.',
   'dt.l.have':'Recursos disponibles',
   'dt.have.persones':'👥 Grup de persones actives',
   'dt.have.espai':'🏠 Espai físic',
@@ -596,8 +698,8 @@ ca: {
   'dt.exp.poca':'Alguna cosa hem fet, sense mètode',
   'dt.exp.forca':'Força: ja hem portat processos',
   'dt.exp.molta':'Molta: ho fem habitualment',
-  'dt.s4.h':'4 · Què us falta',
-  'dt.s4.sub':'Aquí és on ens dius com et podem ser útils.',
+  'dt.s1.h':'1 · Què us falta',
+  'dt.s1.sub':'És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.',
   'dt.l.need':'Què necessiteu *',
   'dt.need.diagnostic':'🔍 Saber què tenim i què ens falta',
   'dt.need.metode':'🧭 Un mètode per organitzar-nos',
@@ -622,10 +724,10 @@ ca: {
   'dt.pressu.petit':'Petita o per determinar',
   'dt.pressu.mitja':'Tenim partida assignada',
   'dt.pressu.subvencio':'Dependrà d\'una subvenció',
-  'dt.e4':'Marca com a mínim una necessitat.',
+  'dt.e3':'Marca com a mínim una necessitat.',
   'dt.seg':'Següent →',
   'dt.enrere':'← Enrere',
-  'dt.veure':'Veure el meu diagnòstic →',
+  'dt.veure':'Veure el diagnòstic sencer →',
   'dt.m.partida':'punt de partida',
   'dt.m.acomp':'acompanyament que cal',
   'dt.m.mods':'mòduls al vostre itinerari',
@@ -738,20 +840,22 @@ es: {
   'fo.rol.altre':'Otra cosa',
 /*/DIAG-I18N-ES*/
 /*NAV-I18N-ES*/
-  'nv.g.valor':'🗺 Mapa de valor',
+  'nv.g.valor':'Mapa de valor',
   'nv.t.vna':'El método',
   'nv.d.vna':'Qué es un mapa de valor, sobre un caso',
   'nv.t.vna-suport':'Hacer uno',
   'nv.d.vna-suport':'El editor visual: roles, entregables, real e ideal',
   'nv.t.carpeta-mapa-web':'Mapa y web en una hora',
   'nv.d.carpeta-mapa-web':'El servicio: el mapa de tu negocio y la web, en una sesión',
+  'nv.t.carpeta-conecta':'Servicios conectables',
+  'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
   'nv.t.arrel-cataleg':'El catálogo',
-  'nv.d.arrel-cataleg':'Paquetes cerrados, con el precio escrito',
+  'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
   'nv.t.pressupost':'Pide presupuesto',
   'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
   'nv.t.diagnostic':'Diagnóstico',
   'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
-  'nv.g.sos':'🖥 El SOS',
+  'nv.g.sos':'El SOS',
   'nv.t.intro':'De qué va',
   'nv.d.intro':'El SOS en dieciséis planos',
   'nv.t.app':'Abre la aplicación',
@@ -770,7 +874,7 @@ es: {
   'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
   'nv.t.online':'El directorio',
   'nv.d.online':'Quién hay en el territorio, qué ofrece y qué busca',
-  'nv.g.apren':'🎓 Formación',
+  'nv.g.apren':'Formación',
   'nv.t.formacio':'Los 16 módulos',
   'nv.d.formacio':'De N0 a N3, y el certificado es tuyo',
   'nv.t.ia':'Flujos con IA',
@@ -779,7 +883,7 @@ es: {
   'nv.d.vedes':'Las reglas, con el motivo al lado',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacidad, explicada',
-  'nv.g.mon':'🌀 Molekulon',
+  'nv.g.mon':'Molekulon',
   'nv.t.fora-inici':'El Comando',
   'nv.d.fora-inici':'La película que haremos 150.000',
   'nv.t.fora-historia':'La historia',
@@ -802,23 +906,36 @@ es: {
   'nv.d.joc':'La plaza, a ritmo',
   'nv.t.uneix-te':'Únete',
   'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
-  'nv.g.casa':'🏛 Quiénes somos',
+  'nv.g.casa':'Quiénes somos',
   'nv.t.arrel-qui-som':'Quiénes somos',
   'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
   'nv.t.arrel-premsa':'Prensa',
   'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
-  'nv.cta':'Abre el SOS',
+  'nv.cta':'Haz el diagnóstico',
+  'nv.menu':'Menú',
 /*/NAV-I18N-ES*/
+  'dt.av.k':'Vuestro punto de partida',
+  'dt.av.pk':'Qué hay que deshacer',
+  'dt.av.n':'El itinerario que os toca, cómo os podemos acompañar, de dónde puede salir el dinero y el primer paso, en un clic.',
+  'dt.ara.h':'Y ahora, qué haces con esto',
+  'dt.ara.s':'Puedes empezar hoy por tu cuenta, sin darte de alta en ningún sitio. Elige por dónde:',
+  'dt.ara.vna.t':'🕸 Dibuja vuestro mapa de valor',
+  'dt.ara.vna.d':'Roles, entregas, el real y el ideal. Con lo que has respondido ya tienes por dónde empezar.',
+  'dt.ara.node.t':'📍 Monta vuestro nodo',
+  'dt.ara.node.d':'Vuestra organización en el SOS: roles, panel y cuentas. En tu navegador y sin cuota.',
+  'dt.ara.perfil.t':'🦸 Crea tu perfil',
+  'dt.ara.perfil.d':'Elige tu rol y que lo que aportas conste. Es tuyo y te lo llevas.',
+  'dt.ara.op':'Y si lo queréis <b>montado y funcionando</b>, eso es <a href="/#operatiu">tu negocio operativo</a>: la sala con el equipo, el mapa real y el ideal, el cerebro por rol y 30 días de acompañamiento. Envíanos el diagnóstico aquí debajo y te preparamos la propuesta, desglosada por flujos.',
   'dt.h1':'Diagnóstico comunitario',
-  'dt.intro':'Cuéntanos de dónde vienes, qué ya tienes y qué te falta. En <strong>3 minutos</strong> tendrás tu punto de partida, el itinerario formativo que te toca y una propuesta orientativa de acompañamiento — <strong>nos la envíes o no</strong>.',
-  'dt.s1.h':'1 · Quién eres',
-  'dt.s1.sub':'Para saber con quién hablamos y cómo responderte.',
-  'dt.e1':'Hace falta como mínimo el nombre y un correo válido.',
-  'dt.s2.h':'2 · De dónde vienes',
-  'dt.s2.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
-  'dt.e2':'Elige el tipo de organización y escribe el municipio.',
-  'dt.s3.h':'3 · Qué ya tenéis',
-  'dt.s3.sub':'Casi siempre hay más de lo que parece. Esto marca por dónde empezar.',
+  'dt.intro':'Di de dónde vienes, qué ya tenéis y qué os falta, y en <strong>3 minutos</strong> tienes vuestro punto de partida y qué hay que deshacer. El contacto, al final y solo para dirigirte el diagnóstico entero — <strong>nos lo envíes o no</strong>.',
+  'dt.s4.h':'4 · Tu diagnóstico ya está hecho',
+  'dt.s4.sub':'Solo falta saber a quién se lo dirigimos. No se crea ninguna cuenta y no sale nada de este navegador hasta que lo envíes tú.',
+  'dt.e4':'Hace falta como mínimo el nombre y un correo válido.',
+  'dt.s3.h':'3 · De dónde venís',
+  'dt.s3.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
+  'dt.e1':'Elige el tipo de organización y escribe el municipio.',
+  'dt.s2.h':'2 · Qué ya tenéis',
+  'dt.s2.sub':'Casi siempre hay más de lo que parece. Esto marca por dónde empezar.',
   'dt.l.have':'Recursos disponibles',
   'dt.have.persones':'👥 Grupo de personas activas',
   'dt.have.espai':'🏠 Espacio físico',
@@ -845,8 +962,8 @@ es: {
   'dt.exp.poca':'Algo hemos hecho, sin método',
   'dt.exp.forca':'Bastante: ya hemos llevado procesos',
   'dt.exp.molta':'Mucha: lo hacemos habitualmente',
-  'dt.s4.h':'4 · Qué os falta',
-  'dt.s4.sub':'Aquí es donde nos dices cómo te podemos ser útiles.',
+  'dt.s1.h':'1 · Qué os falta',
+  'dt.s1.sub':'Es la pregunta que más mueve el diagnóstico: di qué os falta y sale por dónde empezar.',
   'dt.l.need':'Qué necesitáis *',
   'dt.need.diagnostic':'🔍 Saber qué tenemos y qué nos falta',
   'dt.need.metode':'🧭 Un método para organizarnos',
@@ -871,10 +988,10 @@ es: {
   'dt.pressu.petit':'Pequeña o por determinar',
   'dt.pressu.mitja':'Tenemos partida asignada',
   'dt.pressu.subvencio':'Dependerá de una subvención',
-  'dt.e4':'Marca como mínimo una necesidad.',
+  'dt.e3':'Marca como mínimo una necesidad.',
   'dt.seg':'Siguiente →',
   'dt.enrere':'← Atrás',
-  'dt.veure':'Ver mi diagnóstico →',
+  'dt.veure':'Ver el diagnóstico entero →',
   'dt.m.partida':'punto de partida',
   'dt.m.acomp':'acompañamiento necesario',
   'dt.m.mods':'módulos en vuestro itinerario',
@@ -986,21 +1103,35 @@ const showStep=n=>{
   $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
   window.scrollTo({top:0,behavior:'smooth'});
 };
+/* L'ordre és el del valor: què us falta (1), què ja teniu (2), d'on veniu (3)
+   i, quan el diagnòstic ja està calculat, a qui l'adrecem (4). Cap pregunta de
+   «qui sou» abans d'haver dit què us cal (Àlvaro, 09/10/2026). */
 const validate=n=>{
-  if(n===1){
+  if(n===1){const ok=st.need.size>0;$('#e3').classList.toggle('on',!ok);return ok;}
+  if(n===3){
+    const ok=!!st.org&&$('#municipi').value.trim().length>1;
+    $('#e1').classList.toggle('on',!ok);return ok;
+  }
+  if(n===4){
     const okName=$('#nom').value.trim().length>1;
     const okMail=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());
-    $('#e1').classList.toggle('on',!(okName&&okMail));return okName&&okMail;
-  }
-  if(n===2){
-    const ok=!!st.org&&$('#municipi').value.trim().length>1;
-    $('#e2').classList.toggle('on',!ok);return ok;
+    $('#e4').classList.toggle('on',!(okName&&okMail));return okName&&okMail;
   }
   return true;
 };
+/* L'avanç del pas 4: el punt de partida i el que cal desfer, ja calculats.
+   És el valor que es dona abans de demanar res. */
+function pintaAvanc(){
+  if(!st.org)return;
+  const d=diagnose();
+  $('#avT').textContent=L(d.P,'title')+' · '+($('#municipi').value.trim()||T('dt.r.vostre'));
+  $('#avL').textContent=L(d.P,'lead');
+  $('#avP').innerHTML=d.need.map(n=>'<li>'+(L(NEED_GAP[n],'t')||n)+'</li>').join('');
+}
 $$('[data-go]').forEach(b=>b.onclick=()=>{
   const to=Number(b.dataset.go);
   if(to>step&&!validate(step))return;   // endavant només amb el pas actual vàlid
+  if(to===4)pintaAvanc();
   showStep(to);
 });
 
@@ -1357,10 +1488,9 @@ function buildJson(d){
 /* ── Sortida ─────────────────────────────────────────────────────── */
 let current=null;
 $('#doDx').onclick=()=>{
-  if(!st.need.size){$('#e4').classList.add('on');return;}
-  $('#e4').classList.remove('on');
+  if(!validate(4))return;
   if(!validate(1)){showStep(1);return;}
-  if(!validate(2)){showStep(2);return;}
+  if(!validate(3)){showStep(3);return;}
   desaPont();
   current=diagnose();
   renderDx(current);
@@ -1403,13 +1533,14 @@ function dtAplicaLang(l){
   $$('[data-i18n-html]').forEach(el=>{const v=T(el.getAttribute('data-i18n-html'));if(v)el.innerHTML=v;});
   $$('[data-i18n-ph]').forEach(el=>{const v=T(el.getAttribute('data-i18n-ph'));if(v)el.setAttribute('placeholder',v);});
   $$('.lang-b').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  if(step===4&&!current)pintaAvanc();
   if(current)renderDx(current);
 }
 $$('.lang-b').forEach(b=>b.onclick=()=>dtAplicaLang(b.dataset.lang));
 dtAplicaLang(DX_LANG);
 
 /* Hook per a proves */
-window.__DX={st,diagnose,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate,dtAplicaLang,DT_I18N,T};
+window.__DX={st,diagnose,pintaAvanc,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate,dtAplicaLang,DT_I18N,T};
 </script>
 </body>
 </html>

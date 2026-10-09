@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Diagnòstic d'organització · SOS · TeamTowers Humà</title>
-<meta name="description" content="Digue'ns què vols que passi amb el teu equip i quina casa sou. En 3 minuts tindràs què t'està passant, què proposaríem i quant dura. Sense preu: el preu es parla.">
+<meta name="description" content="Digue'ns què vols que passi —el teu negoci operatiu, la web de la teva xarxa, els fluxos amb IA o el teu equip— i quina casa sou. En 3 minuts tindràs què t'està passant, què proposaríem i quant dura. Sense preu: el preu es parla.">
 <style>
 :root{
 /*TT-PELL*/
@@ -47,6 +47,24 @@ nav a:hover{text-decoration:underline}
 .prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
 .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
 .step[hidden]{display:none}
+.ara{margin:1.6rem 0 0}
+.ara h3{margin:0 0 .3rem;font-size:1.05rem}
+.ara-s{color:var(--muted);font-size:.86rem;margin:0 0 .8rem;line-height:1.55}
+.ara-g{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.ara-c{display:flex;flex-direction:column;gap:.3rem;border:1px solid var(--border);border-radius:10px;padding:.85rem .9rem;text-decoration:none;color:inherit;background:var(--card,transparent);transition:border-color .13s}
+.ara-c:hover{border-color:var(--indigo)}
+.ara-c b{font-size:.92rem}
+.ara-c span{font-size:.8rem;color:var(--muted);line-height:1.45}
+.ara-op{margin:1rem 0 0;padding:1rem 1.1rem;border-radius:10px;border:1px solid var(--green,#00e676);background:rgba(0,230,118,.06);font-size:.88rem;line-height:1.6}
+.ara-op a{font-weight:600;color:var(--indigo)}
+@media(max-width:640px){.ara-g{grid-template-columns:1fr}}
+.dx-avanc{border:1px solid var(--border);border-left:3px solid var(--green,#00e676);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin:0 0 1.2rem;background:rgba(0,230,118,.05)}
+.dx-avanc .av-k,.dx-avanc .av-pk{font-family:var(--mono,monospace);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green,#00e676);margin-bottom:.35rem}
+.dx-avanc .av-pk{margin-top:.8rem}
+.dx-avanc b{display:block;font-size:1.05rem;margin-bottom:.35rem}
+.dx-avanc p{margin:0;font-size:.9rem;line-height:1.6}
+.dx-avanc ul{margin:0;padding-left:1.1rem;font-size:.88rem;line-height:1.6}
+.dx-avanc .av-n{margin-top:.7rem;font-size:.82rem;color:var(--muted)}
 .step h2{margin:0 0 .3rem;font-size:1.3rem}
 .step .sub{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.55}
 .f{margin-bottom:1.1rem}
@@ -56,6 +74,8 @@ input[type=text],input[type=email],input[type=tel],input[type=number],select,tex
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--indigo)}
 textarea{min-height:88px;resize:vertical}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.5rem}
+.opts-g{grid-column:1/-1;margin:.6rem 0 0;font:600 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.opts-g:first-child{margin-top:0}
 /* `color` i `text-align` explícits: `.opt` és un `<button>` i el navegador hi
    posa text negre i centrat per defecte. El `.o-d` tenia color propi i el
    `.o-t` no, o sigui que el **títol** de cada opció sortia negre sobre fons
@@ -141,6 +161,65 @@ footer a{color:var(--indigo);text-decoration:none}
 .env-ok{color:var(--green);font-size:.86rem;margin:.5rem 0 0}
 .env-ko{color:var(--orange);font-size:.86rem;margin:.5rem 0 0}
 
+/* ── Els botons de pas, a tota mida ─────────────────────────────────────────
+   `.acts` i `.btn-g` eren al marcatge i no tenien cap regla: «Enrere» i
+   «Següent» sortien com dos botons iguals i desalineats, i el principal no es
+   distingia. Ara el que fa avançar és ple i l'altre és fantasma. */
+.acts{display:flex;gap:.6rem;justify-content:space-between;align-items:center;margin-top:1.4rem}
+.acts>span:empty{flex:0}
+.acts .btn{justify-content:center}
+.btn-g{background:transparent;border-color:transparent;color:var(--muted)}
+.btn-g:hover{color:var(--text);border-color:var(--border)}
+[data-next],#doDx,#bNet{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);font-weight:600;flex:1;max-width:320px;margin-left:auto}
+[data-next]:hover,#doDx:hover,#bNet:hover{filter:brightness(1.08);border-color:var(--indigo)}
+input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.6rem .75rem;font:inherit;font-size:.92rem}
+/* El que no cal per respondre, plegat. Ho munta el JS (`plegaOpcionals`). */
+#result .acts{flex-wrap:wrap;justify-content:flex-start}
+#result .btn-g{border-color:var(--border);color:var(--text)}
+#bNet{margin-left:0}
+.mes{margin:.2rem 0 1rem;border:1px dashed var(--border);border-radius:10px;padding:.2rem .8rem}
+.mes>summary{cursor:pointer;color:var(--indigo);font-size:.88rem;font-weight:600;padding:.6rem 0;list-style:none}
+.mes>summary::-webkit-details-marker{display:none}
+.mes>summary::before{content:'+ '}
+.mes[open]>summary::before{content:'− '}
+
+/* ── Al mòbil, com una app ──────────────────────────────────────────────────
+   Una pantalla per pas: la capçalera només al primer, cap targeta dins de
+   targeta (la caixa ocupava 40 px d'amplada que el text necessitava), el
+   progrés enganxat a dalt i el botó d'avançar enganxat a baix, a l'abast del
+   polze. Les descripcions de les caselles, a dues línies, i senceres a la
+   triada. */
+@media(max-width:640px){
+  header{padding:1.2rem 1rem .9rem}
+  header h1{font-size:1.45rem;margin-bottom:.35rem}
+  header p{font-size:.9rem;line-height:1.5}
+  header nav{margin-top:.6rem;font-size:.82rem}
+  body:not([data-pas="1"]) header{display:none}
+  .wrap{padding:0 0 2rem}
+  .prog{position:sticky;top:var(--nav-h,0px);z-index:5;margin:0;padding:.7rem 1rem;background:var(--bg);border-bottom:1px solid var(--border)}
+  .step{background:transparent;border:0;border-radius:0;padding:1.1rem 1rem 0;margin:0}
+  .step h2{font-size:1.25rem}
+  .opts{grid-template-columns:1fr;gap:.45rem}
+  .opt{padding:.75rem .85rem;min-height:52px}
+  .opt .o-t{font-size:.95rem}
+  .opt .o-d{font-size:.8rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .opt.sel .o-d{-webkit-line-clamp:unset;display:block}
+  input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px;padding:.75rem .8rem}
+  .acts{position:sticky;bottom:0;z-index:5;margin:1.2rem -1rem 0;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom));
+    background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--border)}
+  [data-next],#doDx{max-width:none;min-height:50px;font-size:1rem}
+  .btn-g{padding:.65rem .6rem}
+  #result{padding:1rem}
+  .dx,.sec,.send{padding:1.1rem 1rem;border-radius:12px}
+  .dx h2{font-size:1.25rem}
+  .send-btns{flex-direction:column}
+  #result .acts{position:static;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0 0;padding:0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+  #result .btn{width:100%;justify-content:center;padding:.65rem .5rem}
+  .env .acts{grid-template-columns:1fr}
+  #bNet{min-height:50px;font-size:1rem}
+  footer{padding:1.5rem 1rem 2rem}
+}
+
 </style>
 </head>
 <body>
@@ -157,12 +236,15 @@ footer a{color:var(--indigo);text-decoration:none}
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
 .tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .tt-nav .tn-g{position:relative}
 .tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
   color:var(--light);white-space:nowrap;border:1px solid transparent}
 .tt-nav .tn-g>summary::-webkit-details-marker{display:none}
 .tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
 .tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
 .tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
@@ -201,32 +283,68 @@ footer a{color:var(--indigo);text-decoration:none}
      En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
      d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
      a sota, que és el que una columna sí que feia. */
-  /* Una sola fila que llisca, i no dues o tres que embolcallen: cinc
-     etiquetes de 15 px no caben en 390 px i embolcallant feien 177 px de
-     barra —tres files—, que és el mateix defecte amb un altre nombre. */
-  .tt-nav .tn-gs{width:100%;order:4;flex-wrap:nowrap;gap:.15rem;overflow-x:auto;
-    scrollbar-width:none;-webkit-overflow-scrolling:touch}
-  .tt-nav .tn-gs::-webkit-scrollbar{display:none}
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
   .tt-nav .tn-g{position:static}
   .tt-nav .tn-g>summary{padding:.3rem .5rem}
   .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
   .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
     top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
-  .tt-nav .tn-lang{margin-left:auto;order:2}
-  .tt-nav .tn-cta{margin-left:.4rem;order:3;padding:.34rem .65rem}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
 }
 </style>
 <nav class="tt-nav" aria-label="Navegació del lloc">
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
-  <div class="tn-gs"><details class="tn-g"><summary data-i18n="nv.g.valor">🗺 Mapa de valor</summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets tancats, amb el preu escrit</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.sos">🖥 El SOS</summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.apren">🎓 Formació</summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.mon">🌀 Molekulon</summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary data-i18n="nv.g.casa">🏛 Qui som</summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Demana pressupost</b><span data-i18n="nv.d.pressupost">Tria què vols i en surt la proposta</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span data-i18n="nv.g.sos">El SOS</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.apren">Formació</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span data-i18n="nv.g.mon">Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
-  <a class="tn-cta" href="/SOS/"><span data-i18n="nv.cta">Obre el SOS</span> →</a>
+  <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
 </nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
 <!--/TT-NAV-->
 
 <header>
 <h1 data-i18n="dx.h1">Diagnòstic d'organització</h1>
-<p data-i18n-html="dx.intro">Digue'ns <strong>què vols que passi</strong> i quina casa sou. En <strong>3 minuts</strong> tindràs què t'està passant, què proposaríem i quant dura — <strong>l'enviïs o no</strong>.</p>
+<p data-i18n-html="dx.intro">Tres preguntes sobre <strong>què vols que passi</strong> i on ho aplicaríem, i en <strong>3 minuts</strong> tens què us està passant i què hi encaixa. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l'enviïs o no</strong>.</p>
 <nav data-i18n-html="dx.nav"><a href="diagnostic.html">← L'altre diagnòstic</a> · <a href="pressupost.html">Demana pressupost</a> · <a href="index.html">Obre el SOS</a></nav>
 </header>
 
@@ -239,26 +357,40 @@ footer a{color:var(--indigo);text-decoration:none}
 <form id="dxForm" autocomplete="on">
 
 <section class="step" id="s1">
-<h2 data-i18n="dx.s1.h">1 · Qui ets</h2>
-<p class="sub" data-i18n="dx.s1.sub">Per poder-te respondre. No es crea cap compte i no surt res d'aquest navegador si tu no ho prems.</p>
-<!--FORM-QUI-->
-<div class="grid2">
-<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
+<h2 data-i18n="dx.s1.h">1 · Què vols que passi</h2>
+<p class="sub" data-i18n="dx.s1.sub">És la pregunta que decideix tota la resta. Tria la que més s'assembli al que et va portar aquí.</p>
+<div class="opts" id="objTipus">
+<!--DX-OBJECTIUS-->
+<p class="opts-g" data-g="operatiu">El teu negoci operatiu</p>
+<button type="button" class="opt" data-v="operatiu" data-preg="dolor" style="--c:var(--indigo)"><span class="o-t">⚙️ Que el negoci funcioni cada dia com l'hem pensat</span><span class="o-d">Sabem com hauria de funcionar i no és com funciona. No volem un altre informe al calaix: volem veure qui lliura què, on s'encalla i que ens avisi.</span></button>
+<button type="button" class="opt" data-v="web" data-preg="dolor" style="--c:var(--blue)"><span class="o-t">🌐 Una web per a tota la xarxa, no només per a qui compra</span><span class="o-d">Les botigues ens demanen la fitxa per missatge, qui ens recomana no té res per reenviar i els proveïdors no saben què busquem. La web només parla amb qui compra.</span></button>
+<button type="button" class="opt" data-v="fluxos" data-preg="dolor" style="--c:var(--green)"><span class="o-t">🤖 Treure'ns de sobre la feina que es repeteix, sense perdre el criteri</span><span class="o-d">Cada setmana fem a mà la mateixa feina, i no sabem què podem posar en mans d'una IA sense que s'equivoqui en el que importa.</span></button>
+<button type="button" class="opt" data-v="mapa" data-preg="dolor" style="--c:var(--indigo)"><span class="o-t">🕸️ Entendre com flueix el valor i de qui depenem de debò</span><span class="o-d">Sabem qui hi ha a l'organigrama i no sabem qui sosté què. Quan marxa algú, ens n'adonem del que feia.</span></button>
+<button type="button" class="opt" data-v="acords" data-preg="dolor" style="--c:var(--purple)"><span class="o-t">🔗 Que el que aporta cadascú quedi registrat i sigui de tots</span><span class="o-d">Som una cooperativa, una xarxa o un projecte amb socis. El que aporta cadascú —hores, coneixement, contactes— no consta enlloc, o consta en una plataforma que no és nostra.</span></button>
+<p class="opts-g" data-g="equip">L'equip i les jornades</p>
+<button type="button" class="opt" data-v="sostenir" data-preg="dolor" style="--c:var(--blue)"><span class="o-t">🧱 Que l'equip sostingui el que hem muntat quan marxem</span><span class="o-d">Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d'una persona.</span></button>
+<button type="button" class="opt" data-v="direccio" data-preg="dolor" style="--c:var(--purple)"><span class="o-t">🧭 Acompanyar la direcció en una decisió que costa</span><span class="o-d">Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.</span></button>
+<button type="button" class="opt" data-v="cohesio" data-preg="format" style="--c:var(--green)"><span class="o-t">🤝 Cohesionar un equip que s'ha trencat o que no s'ha fet mai</span><span class="o-d">L'equip ha crescut de cop, o s'ha fusionat amb un altre, o fa temps que es treballa sense veure's.</span></button>
+<button type="button" class="opt" data-v="obrir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎪 Un acte que es recordi, o la jornada sencera</span><span class="o-d">Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació, o que algú ens porti la jornada de cap a peus.</span></button>
+<!--/DX-OBJECTIUS-->
 </div>
-<div class="grid2">
-<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
-<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
-</div>
-<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
-<!--/FORM-QUI-->
-<p class="err" id="e1" data-i18n="dx.e1">Ens falta el nom i un correu que sembli un correu.</p>
+<!-- EL CAMP LLIURE. Les caselles són les maneres que tenim de
+     respondre, no les coses que li poden passar a una organització. Qui
+     ve amb una barreja, o amb un motiu que no hi és, fins ara havia de triar
+     la que menys li mentia i callar la resta.
+
+     Diu clarament que això no entra al càlcul: ho llegim nosaltres. Prometre
+     que un text lliure canvia la proposta seria mentir-li a qui l'escriu. -->
+<div class="f" style="margin-top:1rem"><label for="ampliacio" data-i18n="dx.l.ampliacio">Amplia-ho, o digue'ns si el motiu és un altre</label>
+<textarea id="ampliacio" name="ampliacio" rows="3" data-i18n-ph="dx.ph.ampliacio" placeholder="p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l'equip no s'ha refet de la fusió»"></textarea>
+<div class="hint" data-i18n="dx.h.ampliacio">Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.</div></div>
+<p class="err" id="e1" data-i18n="dx.e1">Tria què vols que passi.</p>
 <div class="acts"><span></span><button type="button" class="btn" data-next="2" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <section class="step" id="s2" hidden>
-<h2 data-i18n="dx.s2.h">2 · Quina casa sou</h2>
-<p class="sub" data-i18n="dx.s2.sub">Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s'escriu la proposta.</p>
+<h2 data-i18n="dx.s2.h">2 · On ho aplicaríem</h2>
+<p class="sub" data-i18n="dx.s2.sub">Només per saber què preguntar-te i com llegir el diagnòstic.</p>
 <!--FORM-ORG-->
 <div class="f">
 <label data-i18n="fo.l.tipus">Tipus d'organització *</label>
@@ -287,35 +419,8 @@ footer a{color:var(--indigo);text-decoration:none}
 </section>
 
 <section class="step" id="s3" hidden>
-<h2 data-i18n="dx.s3.h">3 · Què vols que passi</h2>
-<p class="sub" data-i18n="dx.s3.sub">És la pregunta que decideix tota la resta. Tria la que més s'assembli al que et va portar aquí.</p>
-<div class="opts" id="objTipus">
-<!--DX-OBJECTIUS-->
-<button type="button" class="opt" data-v="obrir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎬 Obrir una jornada amb alguna cosa que es recordi</span><span class="o-d">Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.</span></button>
-<button type="button" class="opt" data-v="cohesio" data-preg="format" style="--c:var(--green)"><span class="o-t">🤝 Cohesionar un equip que s'ha trencat o que no s'ha fet mai</span><span class="o-d">L'equip ha crescut de cop, o s'ha fusionat amb un altre, o fa temps que es treballa sense veure's.</span></button>
-<button type="button" class="opt" data-v="mapa" data-preg="dolor" style="--c:var(--indigo)"><span class="o-t">🕸️ Entendre com flueix el valor i de qui depenem de debò</span><span class="o-d">Sabem qui hi ha a l'organigrama i no sabem qui sosté què. Quan marxa algú, ens n'adonem del que feia.</span></button>
-<button type="button" class="opt" data-v="sostenir" data-preg="dolor" style="--c:var(--blue)"><span class="o-t">🧱 Que l'equip sostingui el que hem muntat quan marxem</span><span class="o-d">Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d'una persona.</span></button>
-<button type="button" class="opt" data-v="direccio" data-preg="dolor" style="--c:var(--purple)"><span class="o-t">🧭 Acompanyar la direcció en una decisió que costa</span><span class="o-d">Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.</span></button>
-<button type="button" class="opt" data-v="produir" data-preg="format" style="--c:var(--orange)"><span class="o-t">🎪 Produir un esdeveniment sencer</span><span class="o-d">No volem una activitat dins d'un programa: volem que algú ens porti la jornada de cap a peus.</span></button>
-<!--/DX-OBJECTIUS-->
-</div>
-<!-- EL CAMP LLIURE. Les sis caselles són les sis maneres que tenim de
-     respondre, no les sis coses que li poden passar a una organització. Qui
-     ve amb una barreja, o amb un motiu que no hi és, fins ara havia de triar
-     la que menys li mentia i callar la resta.
-
-     Diu clarament que això no entra al càlcul: ho llegim nosaltres. Prometre
-     que un text lliure canvia la proposta seria mentir-li a qui l'escriu. -->
-<div class="f" style="margin-top:1rem"><label for="ampliacio" data-i18n="dx.l.ampliacio">Amplia-ho, o digue'ns si el motiu és un altre</label>
-<textarea id="ampliacio" name="ampliacio" rows="3" data-i18n-ph="dx.ph.ampliacio" placeholder="p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l'equip no s'ha refet de la fusió»"></textarea>
-<div class="hint" data-i18n="dx.h.ampliacio">Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.</div></div>
-<p class="err" id="e3" data-i18n="dx.e3">Tria què vols que passi.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="2" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="4" data-i18n="dx.seg">Següent →</button></div>
-</section>
-
-<section class="step" id="s4" hidden>
-<h2 data-i18n="dx.s4.h">4 · El que falta per respondre't</h2>
-<p class="sub" id="s4sub"></p>
+<h2 data-i18n="dx.s3.h">3 · El que l'afina</h2>
+<p class="sub" id="s3sub"></p>
 
 <!-- LES DUES BRANQUES. Cap organització veu les dues: un acte amb data no té
      el mateix problema que una manera de treballar que no se sosté, i
@@ -370,7 +475,41 @@ footer a{color:var(--indigo);text-decoration:none}
     </select></div>
 </div>
 
-<p class="err" id="e4" data-i18n="dx.e4">Digue'ns qui pot dir que sí: és el que ens permet preparar-ho bé.</p>
+<p class="err" id="e3" data-i18n="dx.e3">Digue'ns qui pot dir que sí: és el que ens permet preparar-ho bé.</p>
+<div class="acts"><button type="button" class="btn btn-g" data-back="2" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="4" data-i18n="dx.seg">Següent →</button></div>
+</section>
+
+<!-- EL CONTACTE, AL FINAL (09/10/2026) ──────────────────────────────────
+     Abans era el primer pas: «Qui ets», amb el nom i el correu obligatoris
+     abans de saber què et donàvem a canvi. L'Àlvaro ho va demanar al revés:
+     **no es demanen dades fins que ja hem aportat valor i només falta veure el
+     diagnòstic.** Per això aquí arriba amb l'avanç a dalt —el que hem llegit
+     i què hi encaixa, calculat amb el que ha triat— i el que es reserva per
+     després de deixar el contacte és el detall: durada, què us en quedeu i
+     el primer pas. Res no surt del navegador fins que no ho envia. -->
+<section class="step" id="s4" hidden>
+<h2 data-i18n="dx.s4.h">4 · El teu diagnòstic ja està fet</h2>
+<div class="dx-avanc" id="avanc" aria-live="polite">
+<div class="av-k" data-i18n="dx.av.k">El que hem llegit</div>
+<b id="avT"></b>
+<p id="avL"></p>
+<div class="av-pk" data-i18n="dx.av.pk">Hi encaixa</div>
+<ul id="avP"></ul>
+<p class="av-n" data-i18n="dx.av.n">Quant dura cada peça, què us en quedeu i el primer pas, us ho ensenyem en un clic.</p>
+</div>
+<p class="sub" data-i18n="dx.s4.sub">Només falta saber a qui l'adrecem. No es crea cap compte i no surt res d'aquest navegador fins que no ho envies tu.</p>
+<!--FORM-QUI-->
+<div class="grid2">
+<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+</div>
+<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<!--/FORM-QUI-->
+<p class="err" id="e4" data-i18n="dx.e4">Ens falta el nom i un correu que sembli un correu.</p>
 <div class="acts"><button type="button" class="btn btn-g" data-back="3" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" id="doDx" data-i18n="dx.veure">Veure el diagnòstic →</button></div>
 </section>
 
@@ -395,13 +534,29 @@ footer a{color:var(--indigo);text-decoration:none}
      El diagnòstic ja està calculat i ja el tens: fins aquí no ha sortit res
      d'aquest navegador. Enviar-lo és una altra cosa i per això és un botó
      propi que diu què s'envia i a on. -->
+<!-- I ARA, QUÈ EN FAS (09/10/2026) ────────────────────────────────────
+     El diagnòstic no s'acaba en llegir-lo: porta cap a les tres maneres
+     d'entrar al SOS —el mapa de valor de l'organització, el node i el
+     perfil— i, al final, a demanar el servei. Les mateixes portes que la
+     portada de /sos/. -->
+<div class="ara">
+<h3 data-i18n="dx.ara.h">I ara, què en fas</h3>
+<p class="ara-s" data-i18n="dx.ara.s">Pots començar avui pel teu compte, sense donar-te d'alta enlloc. Tria per on:</p>
+<div class="ara-g">
+<a class="ara-c" href="vna-suport.html"><b data-i18n="dx.ara.vna.t">🕸 Dibuixa el vostre mapa de valor</b><span data-i18n="dx.ara.vna.d">Rols, lliuraments, el real i l'ideal. Amb el que has respost ja tens per on començar.</span></a>
+<a class="ara-c" href="index.html#/node"><b data-i18n="dx.ara.node.t">📍 Munta el vostre node</b><span data-i18n="dx.ara.node.d">La vostra organització al SOS: rols, tauler i comptes. Al teu navegador i sense quota.</span></a>
+<a class="ara-c" href="index.html#/alta"><b data-i18n="dx.ara.perfil.t">🦸 Crea el teu perfil</b><span data-i18n="dx.ara.perfil.d">Tria el teu rol i que el que aportes consti. És teu i te l'endús.</span></a>
+</div>
+<p class="ara-op" data-i18n-html="dx.ara.op">I si ho voleu <b>muntat i funcionant</b>, això és <a href="/#operatiu">el teu negoci operatiu</a>: la sala amb l'equip, el mapa real i l'ideal, el cervell per rol i 30 dies d'acompanyament. Envia'ns el diagnòstic aquí sota i et preparem la proposta, desglossada per fluxos.</p>
+</div>
+
 <div class="env">
   <b data-i18n="dx.env.h">Envia'ns-ho i et preparem la proposta</b>
   <div class="acts" style="margin-top:.6rem">
     <button type="button" class="btn" id="bNet" data-i18n="dx.env.btn">Envia'ns el diagnòstic</button>
     <a class="btn btn-g" id="bSend" href="#" data-i18n="dx.env.mail">O per correu</a>
   </div>
-  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —el teu contacte, la teva organització, què vols que passi i el termini— al formulari del nostre allotjament (Netlify), des d'on ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
+  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
   <p class="env-ok" id="envOk" hidden data-i18n="dx.env.ok">Rebut. Et responem en un dia laborable.</p>
   <p class="env-ko" id="envKo" hidden></p>
 </div>
@@ -440,13 +595,17 @@ const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció 
 
 /*DX-DADES*/
 // Generat per SOS/tools/build-diagnosi-org.js — no ho editis a mà.
+const GRUPS={'operatiu':{t:'El teu negoci operatiu',tEs:'Tu negocio operativo'},'equip':{t:'L\'equip i les jornades',tEs:'El equipo y las jornadas'}};
 const OBJECTIUS={
-  'obrir':{ic:'🎬',t:'Obrir una jornada amb alguna cosa que es recordi',tEs:'Abrir una jornada con algo que se recuerde',preg:'format',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació.',diuEs:'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación.',paq:['demos','fent-pinya'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on.',llegimEs:'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde.'},
-  'cohesio':{ic:'🤝',t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',tEs:'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',preg:'format',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',diuEs:'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',paq:['fent-pinya','fent-pinya-vna','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',llegimEs:'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'},
-  'mapa':{ic:'🕸️',t:'Entendre com flueix el valor i de qui depenem de debò',tEs:'Entender cómo fluye el valor y de quién dependemos de verdad',preg:'dolor',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',diuEs:'Sabemos quién hay en el organigrama y no sabemos quién sostiene qué. Cuando se va alguien, nos damos cuenta de lo que hacía.',paq:['fent-pinya-vna','mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el que es ven aquí i el que fa possible tota la resta.',llegimEs:'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es lo que se vende aquí y lo que hace posible todo lo demás.'},
+  'operatiu':{ic:'⚙️',t:'Que el negoci funcioni cada dia com l\'hem pensat',tEs:'Que el negocio funcione cada día como lo hemos pensado',preg:'dolor',diu:'Sabem com hauria de funcionar i no és com funciona. No volem un altre informe al calaix: volem veure qui lliura què, on s\'encalla i que ens avisi.',diuEs:'Sabemos cómo debería funcionar y no es como funciona. No queremos otro informe en el cajón: queremos ver quién entrega qué, dónde se atasca y que nos avise.',paq:['mapa-organitzacio','fluxos-ia','web-ia'],despres:['ia-amb-frens'],llegim:'És el que fem ara: el mapa real i l\'ideal de la vostra xarxa, un cervell per rol que es queda al vostre repositori, la web de xarxa i les eines de cada rol connectades. Comença amb un esborrany gratuït del mapa fet amb el que ja teniu, i es pressuposta per fluxos.',llegimEs:'Es lo que hacemos ahora: el mapa real y el ideal de vuestra red, un cerebro por rol que se queda en vuestro repositorio, la web de red y las herramientas de cada rol conectadas. Empieza con un borrador gratuito del mapa hecho con lo que ya tenéis, y se presupuesta por flujos.'},
+  'web':{ic:'🌐',t:'Una web per a tota la xarxa, no només per a qui compra',tEs:'Una web para toda la red, no solo para quien compra',preg:'dolor',diu:'Les botigues ens demanen la fitxa per missatge, qui ens recomana no té res per reenviar i els proveïdors no saben què busquem. La web només parla amb qui compra.',diuEs:'Las tiendas nos piden la ficha por mensaje, quien nos recomienda no tiene nada que reenviar y los proveedores no saben qué buscamos. La web solo habla con quien compra.',paq:['web-ia','mapa-organitzacio'],despres:['fluxos-ia'],llegim:'Primer el mapa i després la web: cada rol del mapa hi té una porta, cada intercanvi tangible una acció i cada intangible el contingut que dona confiança. És HTML estàndard del W3C, al vostre GitHub i publicat a Netlify, i el repositori és la memòria de la casa. Sense quota i sense dependre de nosaltres.',llegimEs:'Primero el mapa y después la web: cada rol del mapa tiene una puerta, cada intercambio tangible una acción y cada intangible el contenido que da confianza. Es HTML estándar del W3C, en vuestro GitHub y publicado en Netlify, y el repositorio es la memoria de la casa. Sin cuota y sin depender de nosotros.'},
+  'fluxos':{ic:'🤖',t:'Treure\'ns de sobre la feina que es repeteix, sense perdre el criteri',tEs:'Quitarnos de encima el trabajo que se repite, sin perder el criterio',preg:'dolor',diu:'Cada setmana fem a mà la mateixa feina, i no sabem què podem posar en mans d\'una IA sense que s\'equivoqui en el que importa.',diuEs:'Cada semana hacemos a mano el mismo trabajo, y no sabemos qué podemos poner en manos de una IA sin que se equivoque en lo que importa.',paq:['fluxos-ia','ia-amb-frens'],despres:['web-ia'],llegim:'Es marca cada flux: el que es repeteix igual s\'automatitza, el que porta criteri es queda en mans de persones i l\'intangible s\'escriu. Cada flux porta el cost de la seva IA, amb el model que toca a cada tasca: el petit on n\'hi ha prou i el gran només on cal.',llegimEs:'Se marca cada flujo: lo que se repite igual se automatiza, lo que lleva criterio se queda en manos de personas y lo intangible se escribe. Cada flujo lleva el coste de su IA, con el modelo que toca a cada tarea: el pequeño donde basta y el grande solo donde hace falta.'},
+  'mapa':{ic:'🕸️',t:'Entendre com flueix el valor i de qui depenem de debò',tEs:'Entender cómo fluye el valor y de quién dependemos de verdad',preg:'dolor',diu:'Sabem qui hi ha a l\'organigrama i no sabem qui sosté què. Quan marxa algú, ens n\'adonem del que feia.',diuEs:'Sabemos quién hay en el organigrama y no sabemos quién sostiene qué. Cuando se va alguien, nos damos cuenta de lo que hacía.',paq:['fent-pinya-vna','mapa-organitzacio','persones-cultura'],despres:['fluxos-ia','web-ia'],llegim:'El mapa de valor ensenya els intercanvis que no són a cap procés —els favors, el criteri, la confiança— i on es concentren. És el primer pas del negoci operatiu i el que fa possible tota la resta.',llegimEs:'El mapa de valor enseña los intercambios que no están en ningún proceso —los favores, el criterio, la confianza— y dónde se concentran. Es el primer paso del negocio operativo y lo que hace posible todo lo demás.'},
+  'acords':{ic:'🔗',t:'Que el que aporta cadascú quedi registrat i sigui de tots',tEs:'Que lo que aporta cada uno quede registrado y sea de todos',preg:'dolor',diu:'Som una cooperativa, una xarxa o un projecte amb socis. El que aporta cadascú —hores, coneixement, contactes— no consta enlloc, o consta en una plataforma que no és nostra.',diuEs:'Somos una cooperativa, una red o un proyecto con socios. Lo que aporta cada uno —horas, conocimiento, contactos— no consta en ningún sitio, o consta en una plataforma que no es nuestra.',paq:['contractes','mapa-organitzacio'],despres:['web-ia'],llegim:'El mapa diu què aporta cada rol, tangible i intangible; el registre ho apunta i les dades es queden a casa vostra, no en una plataforma. Si els acords s\'han d\'executar sols —contractes intel·ligents sobre Ethereum o xarxes semblants—, primer es fa l\'estudi de viabilitat: diem si val la pena abans de construir res.',llegimEs:'El mapa dice qué aporta cada rol, tangible e intangible; el registro lo apunta y los datos se quedan en vuestra casa, no en una plataforma. Si los acuerdos tienen que ejecutarse solos —contratos inteligentes sobre Ethereum o redes similares—, primero se hace el estudio de viabilidad: decimos si vale la pena antes de construir nada.'},
   'sostenir':{ic:'🧱',t:'Que l\'equip sostingui el que hem muntat quan marxem',tEs:'Que el equipo sostenga lo que hemos montado cuando nos vayamos',preg:'dolor',diu:'Hem fet projectes que funcionaven mentre hi era qui els portava. Volem que el següent no depengui d\'una persona.',diuEs:'Hemos hecho proyectos que funcionaban mientras estaba quien los llevaba. Queremos que el siguiente no dependa de una persona.',paq:['comunitats-practica','formacio-equips','equip-gestor'],despres:['formar-formadors'],llegim:'Sostenir una manera de treballar és un ofici i s\'aprèn fent-ho sobre el vostre cas. El quart pas del mètode és que marxem, i això només és honest si abans s\'ha format qui es queda.',llegimEs:'Sostener una manera de trabajar es un oficio y se aprende haciéndolo sobre vuestro caso. El cuarto paso del método es que nos vamos, y eso solo es honesto si antes se ha formado a quien se queda.'},
   'direccio':{ic:'🧭',t:'Acompanyar la direcció en una decisió que costa',tEs:'Acompañar a la dirección en una decisión que cuesta',preg:'dolor',diu:'Hi ha una decisió sobre la taula —una reorganització, un relleu, una fusió— i falta una mirada de fora que no vingui a vendre res.',diuEs:'Hay una decisión sobre la mesa —una reorganización, un relevo, una fusión— y falta una mirada de fuera que no venga a vender nada.',paq:['mentoria-directiva','persones-cultura'],llegim:'Aquí no s\'entrega un taller: s\'entren sessions amb qui decideix, amb el mapa a la mà i sense públic.',llegimEs:'Aquí no se entrega un taller: se entran sesiones con quien decide, con el mapa en la mano y sin público.'},
-  'produir':{ic:'🎪',t:'Produir un esdeveniment sencer',tEs:'Producir un evento entero',preg:'format',diu:'No volem una activitat dins d\'un programa: volem que algú ens porti la jornada de cap a peus.',diuEs:'No queremos una actividad dentro de un programa: queremos que alguien nos lleve la jornada de principio a fin.',paq:['produccio','demos'],despres:['transmedia'],llegim:'Producció vol dir guió, proveïdors, permisos i gent a peu de carrer. Es cotitza a mida perquè no hi ha dues jornades iguals.',llegimEs:'Producción quiere decir guion, proveedores, permisos y gente a pie de calle. Se cotiza a medida porque no hay dos jornadas iguales.'}
+  'cohesio':{ic:'🤝',t:'Cohesionar un equip que s\'ha trencat o que no s\'ha fet mai',tEs:'Cohesionar un equipo que se ha roto o que no se ha hecho nunca',preg:'format',diu:'L\'equip ha crescut de cop, o s\'ha fusionat amb un altre, o fa temps que es treballa sense veure\'s.',diuEs:'El equipo ha crecido de golpe, o se ha fusionado con otro, o hace tiempo que se trabaja sin verse.',paq:['fent-pinya','fent-pinya-vna','formacio-equips'],llegim:'Un castell és la prova més antiga que el pes o es reparteix o no s\'aguanta, i es viu amb el cos en dues hores. Després cal decidir si allò es queda en un bon dia o es converteix en una manera de treballar.',llegimEs:'Un castell es la prueba más antigua de que el peso o se reparte o no se aguanta, y se vive con el cuerpo en dos horas. Después hay que decidir si aquello se queda en un buen día o se convierte en una manera de trabajar.'},
+  'obrir':{ic:'🎪',t:'Un acte que es recordi, o la jornada sencera',tEs:'Un acto que se recuerde, o la jornada entera',preg:'format',diu:'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació, o que algú ens porti la jornada de cap a peus.',diuEs:'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación, o que alguien nos lleve la jornada de principio a fin.',paq:['demos','fent-pinya','produccio'],despres:['transmedia'],llegim:'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on. Si la porteu sencera, vol dir guió, proveïdors i permisos, i es cotitza a mida.',llegimEs:'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde. Si la llevamos entera, quiere decir guion, proveedores y permisos, y se cotiza a medida.'}
 };
 /* Nom, durada i què t'endús de cada paquet, copiats del catàleg pel generador.
    Sense preu a posta: aquest diagnòstic no en diu cap i el preu es parla. */
@@ -464,7 +623,9 @@ const PAQ={
   'produccio':{nom:'Producció d\'esdeveniments',nomEs:'Producción de eventos',dura:'D\'una jornada a un festival de diversos dies',duraEs:'De una jornada a un festival de varios días',endus:'L\'esdeveniment produït sencer: proveïdors, permisos, muntatge, equip i tancament.',endusEs:'El evento producido entero: proveedores, permisos, montaje, equipo y cierre.'},
   'fluxos-ia':{nom:'Fluxos amb IA · consultoria i formació',nomEs:'Flujos con IA · consultoría y formación',dura:'4 sessions · 6-8 setmanes',duraEs:'4 sesiones · 6-8 semanas',endus:'El mapa dels vostres fluxos amb cadascun marcat: quins es repeteixen igual i es poden automatitzar, quins porten criteri i no s\'han de tocar, i quins són intangibles que no consten enlloc. Amb dos fluxos automatitzats de debò i el criteri de fre escrit.',endusEs:'El mapa de vuestros flujos con cada uno marcado: cuáles se repiten igual y se pueden automatizar, cuáles llevan criterio y no hay que tocar, y cuáles son intangibles que no constan en ningún sitio. Con dos flujos automatizados de verdad y el criterio de freno escrito.'},
   'web-ia':{nom:'Web o eina feta amb IA',nomEs:'Web o herramienta hecha con IA',dura:'4-10 setmanes',duraEs:'4-10 semanas',endus:'La peça funcionant, els fitxers vostres i sense lligam amb ningú, i les guardes que comproven a cada canvi que segueix dient la veritat: un preu declarat un cop, cap enllaç mort, i les dues llengües sempre iguals.',endusEs:'La pieza funcionando, los ficheros vuestros y sin atadura con nadie, y las guardas que comprueban en cada cambio que sigue diciendo la verdad: un precio declarado una vez, ningún enlace muerto, y los dos idiomas siempre iguales.'},
-  'transmedia':{nom:'Projecte transmèdia',nomEs:'Proyecto transmedia',dura:'3-6 mesos',duraEs:'3-6 meses',endus:'Història, personatges, joc i registre: el model del Comando Molekulon aplicat al vostre encàrrec, amb la condició que acabi en alguna cosa registrada i no en visites.',endusEs:'Historia, personajes, juego y registro: el modelo del Comando Molekulon aplicado a vuestro encargo, con la condición de que acabe en algo registrado y no en visitas.'}
+  'transmedia':{nom:'Projecte transmèdia',nomEs:'Proyecto transmedia',dura:'3-6 mesos',duraEs:'3-6 meses',endus:'Història, personatges, joc i registre: el model del Comando Molekulon aplicat al vostre encàrrec, amb la condició que acabi en alguna cosa registrada i no en visites.',endusEs:'Historia, personajes, juego y registro: el modelo del Comando Molekulon aplicado a vuestro encargo, con la condición de que acabe en algo registrado y no en visitas.'},
+  'ia-amb-frens':{nom:'IA amb frens · sessió de viabilitat',nomEs:'IA con frenos · sesión de viabilidad',dura:'1 sessió + informe · 2 setmanes',duraEs:'1 sesión + informe · 2 semanas',endus:'Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d\'on ho ha tret.',endusEs:'Qué se puede automatizar con garantías y qué no, con el criterio escrito: la máquina propone, nada entra sin que una persona lo haya comprobado, y siempre se dice de dónde lo ha sacado.'},
+  'contractes':{nom:'Contractes intel·ligents · estudi de viabilitat',nomEs:'Contratos inteligentes · estudio de viabilidad',dura:'3 setmanes',duraEs:'3 semanas',endus:'Un informe de si val la pena, què costaria i quins riscos té. Es ven l\'estudi i no l\'eina: al SOS això encara no està construït, i l\'informe ho diu.',endusEs:'Un informe de si vale la pena, qué costaría y qué riesgos tiene. Se vende el estudio y no la herramienta: en el SOS esto todavía no está construido, y el informe lo dice.'}
 };
 const ORG_NOTA={
   'agencia':{t:'Com que ho compres per a un client teu, la proposta surt amb els idiomes, l\'aforament i l\'espai que necessites per passar-la-hi, i sense res que hagis de traduir.',tEs:'Como lo compras para un cliente tuyo, la propuesta sale con los idiomas, el aforo y el espacio que necesitas para pasársela, y sin nada que tengas que traducir.'},
@@ -557,20 +718,22 @@ ca: {
   'fo.rol.altre':'Una altra cosa',
 /*/DIAG-I18N-CA*/
 /*NAV-I18N-CA*/
-  'nv.g.valor':'🗺 Mapa de valor',
+  'nv.g.valor':'Mapa de valor',
   'nv.t.vna':'El mètode',
   'nv.d.vna':'Què és un mapa de valor, sobre un cas',
   'nv.t.vna-suport':'Fer-ne un',
   'nv.d.vna-suport':'L\'editor visual: rols, lliuraments, real i ideal',
   'nv.t.carpeta-mapa-web':'Mapa i web en una hora',
   'nv.d.carpeta-mapa-web':'El servei: el mapa del teu negoci i la web, en una sessió',
+  'nv.t.carpeta-conecta':'Serveis connectables',
+  'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
   'nv.t.arrel-cataleg':'El catàleg',
-  'nv.d.arrel-cataleg':'Paquets tancats, amb el preu escrit',
+  'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
   'nv.t.pressupost':'Demana pressupost',
   'nv.d.pressupost':'Tria què vols i en surt la proposta',
   'nv.t.diagnostic':'Diagnòstic',
   'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
-  'nv.g.sos':'🖥 El SOS',
+  'nv.g.sos':'El SOS',
   'nv.t.intro':'De què va',
   'nv.d.intro':'El SOS en setze plans',
   'nv.t.app':'Obre l\'aplicació',
@@ -589,7 +752,7 @@ ca: {
   'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
   'nv.t.online':'El directori',
   'nv.d.online':'Qui hi ha al territori, què ofereix i què busca',
-  'nv.g.apren':'🎓 Formació',
+  'nv.g.apren':'Formació',
   'nv.t.formacio':'Els 16 mòduls',
   'nv.d.formacio':'De N0 a N3, i el certificat és teu',
   'nv.t.ia':'Fluxos amb IA',
@@ -598,7 +761,7 @@ ca: {
   'nv.d.vedes':'Les regles, amb el motiu al costat',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacitat, explicada',
-  'nv.g.mon':'🌀 Molekulon',
+  'nv.g.mon':'Molekulon',
   'nv.t.fora-inici':'El Comando',
   'nv.d.fora-inici':'La pel·lícula que farem 150.000',
   'nv.t.fora-historia':'La història',
@@ -621,31 +784,44 @@ ca: {
   'nv.d.joc':'La plaça, a ritme',
   'nv.t.uneix-te':'Uneix-t\'hi',
   'nv.d.uneix-te':'El que ja fas al barri, comptat',
-  'nv.g.casa':'🏛 Qui som',
+  'nv.g.casa':'Qui som',
   'nv.t.arrel-qui-som':'Qui som',
   'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
   'nv.t.arrel-premsa':'Premsa',
   'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
-  'nv.cta':'Obre el SOS',
+  'nv.cta':'Fes el diagnòstic',
+  'nv.menu':'Menú',
 /*/NAV-I18N-CA*/
+  'dx.av.k':'El que hem llegit',
+  'dx.av.pk':'Hi encaixa',
+  'dx.av.n':'Quant dura cada peça, què us en quedeu i el primer pas, us ho ensenyem en un clic.',
+  'dx.ara.h':'I ara, què en fas',
+  'dx.ara.s':'Pots començar avui pel teu compte, sense donar-te d\'alta enlloc. Tria per on:',
+  'dx.ara.vna.t':'🕸 Dibuixa el vostre mapa de valor',
+  'dx.ara.vna.d':'Rols, lliuraments, el real i l\'ideal. Amb el que has respost ja tens per on començar.',
+  'dx.ara.node.t':'📍 Munta el vostre node',
+  'dx.ara.node.d':'La vostra organització al SOS: rols, tauler i comptes. Al teu navegador i sense quota.',
+  'dx.ara.perfil.t':'🦸 Crea el teu perfil',
+  'dx.ara.perfil.d':'Tria el teu rol i que el que aportes consti. És teu i te l\'endús.',
+  'dx.ara.op':'I si ho voleu <b>muntat i funcionant</b>, això és <a href="/#operatiu">el teu negoci operatiu</a>: la sala amb l\'equip, el mapa real i l\'ideal, el cervell per rol i 30 dies d\'acompanyament. Envia\'ns el diagnòstic aquí sota i et preparem la proposta, desglossada per fluxos.',
   'dx.h1':'Diagnòstic d\'organització',
-  'dx.intro':'Digue\'ns <strong>què vols que passi</strong> i quina casa sou. En <strong>3 minuts</strong> tindràs què t\'està passant, què proposaríem i quant dura — <strong>l\'enviïs o no</strong>.',
+  'dx.intro':'Tres preguntes sobre <strong>què vols que passi</strong> i on ho aplicaríem, i en <strong>3 minuts</strong> tens què us està passant i què hi encaixa. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l\'enviïs o no</strong>.',
   'dx.nav':'<a href="diagnostic.html">← L\'altre diagnòstic</a> · <a href="pressupost.html">Demana pressupost</a> · <a href="index.html">Obre el SOS</a>',
-  'dx.s1.h':'1 · Qui ets',
-  'dx.s1.sub':'Per poder-te respondre. No es crea cap compte i no surt res d\'aquest navegador si tu no ho prems.',
-  'dx.e1':'Ens falta el nom i un correu que sembli un correu.',
-  'dx.s2.h':'2 · Quina casa sou',
-  'dx.s2.sub':'Això no canvia què et recomanem —això ho decideix el pas següent—: canvia què cal preguntar-te i com s\'escriu la proposta.',
+  'dx.s4.h':'4 · El teu diagnòstic ja està fet',
+  'dx.s4.sub':'Només falta saber a qui l\'adrecem. No es crea cap compte i no surt res d\'aquest navegador fins que no ho envies tu.',
+  'dx.e4':'Ens falta el nom i un correu que sembli un correu.',
+  'dx.s2.h':'2 · On ho aplicaríem',
+  'dx.s2.sub':'Només per saber què preguntar-te i com llegir el diagnòstic.',
   'dx.e2':'Tria quin tipus d\'organització sou i digues on sou.',
-  'dx.s3.h':'3 · Què vols que passi',
-  'dx.s3.sub':'És la pregunta que decideix tota la resta. Tria la que més s\'assembli al que et va portar aquí.',
+  'dx.s1.h':'1 · Què vols que passi',
+  'dx.s1.sub':'És la pregunta que decideix tota la resta. Tria la que més s\'assembli al que et va portar aquí.',
   'dx.l.ampliacio':'Amplia-ho, o digue\'ns si el motiu és un altre',
   'dx.ph.ampliacio':'p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l\'equip no s\'ha refet de la fusió»',
   'dx.h.ampliacio':'Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.',
-  'dx.e3':'Tria què vols que passi.',
-  'dx.s4.h':'4 · El que falta per respondre\'t',
-  'dx.s4.format':'Un acte té data, gent i espai, i són les tres coses que decideixen què es pot fer.',
-  'dx.s4.dolor':'Tres preguntes. Són les que fan que el diagnòstic parli de vosaltres i no en general.',
+  'dx.e1':'Tria què vols que passi.',
+  'dx.s3.h':'3 · El que l\'afina',
+  'dx.s3.format':'Un acte té data, gent i espai, i són les tres coses que decideixen què es pot fer.',
+  'dx.s3.dolor':'Tres preguntes. Són les que fan que el diagnòstic parli de vosaltres i no en general.',
   'dx.l.participants':'Quanta gent hi serà',
   'dx.ph.participants':'p.ex. 80',
   'dx.l.quan':'Quin dia',
@@ -676,7 +852,7 @@ ca: {
   'dx.dec.comite':'Un comitè o una direcció',
   'dx.dec.client':'El meu client',
   'dx.tria':'— tria —',
-  'dx.e4':'Digue\'ns qui pot dir que sí: és el que ens permet preparar-ho bé.',
+  'dx.e3':'Digue\'ns qui pot dir que sí: és el que ens permet preparar-ho bé.',
   'dx.seg':'Següent →',
   'dx.enrere':'← Enrere',
   'dx.veure':'Veure el diagnòstic →',
@@ -692,7 +868,7 @@ ca: {
   'dx.env.h':'Envia\'ns-ho i et preparem la proposta',
   'dx.env.btn':'Envia\'ns el diagnòstic',
   'dx.env.mail':'O per correu',
-  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —el teu contacte, la teva organització, què vols que passi i el termini— al formulari del nostre allotjament (Netlify), des d\'on ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues.',
+  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues.',
   'dx.env.ok':'Rebut. Et responem en un dia laborable.',
   'dx.env.enviat':'Enviat ✓',
   'dx.env.ko':'No s\'ha pogut enviar. Prova «O per correu», que obre el teu programa amb tot escrit — el diagnòstic el tens igualment.',
@@ -701,7 +877,8 @@ ca: {
   'dx.b.copiat':'Copiat ✓',
   'dx.b.nocopia':'No s\'ha pogut copiar',
   'dx.b.baixa':'Descarrega\'l',
-  'dx.b.torna':'Torna a començar'
+  'dx.b.torna':'Torna a començar',
+  'dx.mes':'Més detalls (opcional)'
 },
 es: {
 /*DIAG-I18N-ES*/
@@ -764,20 +941,22 @@ es: {
   'fo.rol.altre':'Otra cosa',
 /*/DIAG-I18N-ES*/
 /*NAV-I18N-ES*/
-  'nv.g.valor':'🗺 Mapa de valor',
+  'nv.g.valor':'Mapa de valor',
   'nv.t.vna':'El método',
   'nv.d.vna':'Qué es un mapa de valor, sobre un caso',
   'nv.t.vna-suport':'Hacer uno',
   'nv.d.vna-suport':'El editor visual: roles, entregables, real e ideal',
   'nv.t.carpeta-mapa-web':'Mapa y web en una hora',
   'nv.d.carpeta-mapa-web':'El servicio: el mapa de tu negocio y la web, en una sesión',
+  'nv.t.carpeta-conecta':'Servicios conectables',
+  'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
   'nv.t.arrel-cataleg':'El catálogo',
-  'nv.d.arrel-cataleg':'Paquetes cerrados, con el precio escrito',
+  'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
   'nv.t.pressupost':'Pide presupuesto',
   'nv.d.pressupost':'Elige qué quieres y sale la propuesta',
   'nv.t.diagnostic':'Diagnóstico',
   'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
-  'nv.g.sos':'🖥 El SOS',
+  'nv.g.sos':'El SOS',
   'nv.t.intro':'De qué va',
   'nv.d.intro':'El SOS en dieciséis planos',
   'nv.t.app':'Abre la aplicación',
@@ -796,7 +975,7 @@ es: {
   'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
   'nv.t.online':'El directorio',
   'nv.d.online':'Quién hay en el territorio, qué ofrece y qué busca',
-  'nv.g.apren':'🎓 Formación',
+  'nv.g.apren':'Formación',
   'nv.t.formacio':'Los 16 módulos',
   'nv.d.formacio':'De N0 a N3, y el certificado es tuyo',
   'nv.t.ia':'Flujos con IA',
@@ -805,7 +984,7 @@ es: {
   'nv.d.vedes':'Las reglas, con el motivo al lado',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacidad, explicada',
-  'nv.g.mon':'🌀 Molekulon',
+  'nv.g.mon':'Molekulon',
   'nv.t.fora-inici':'El Comando',
   'nv.d.fora-inici':'La película que haremos 150.000',
   'nv.t.fora-historia':'La historia',
@@ -828,31 +1007,44 @@ es: {
   'nv.d.joc':'La plaza, a ritmo',
   'nv.t.uneix-te':'Únete',
   'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
-  'nv.g.casa':'🏛 Quiénes somos',
+  'nv.g.casa':'Quiénes somos',
   'nv.t.arrel-qui-som':'Quiénes somos',
   'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
   'nv.t.arrel-premsa':'Prensa',
   'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
-  'nv.cta':'Abre el SOS',
+  'nv.cta':'Haz el diagnóstico',
+  'nv.menu':'Menú',
 /*/NAV-I18N-ES*/
+  'dx.av.k':'Lo que hemos leído',
+  'dx.av.pk':'Encaja',
+  'dx.av.n':'Cuánto dura cada pieza, qué os quedáis y el primer paso, os lo enseñamos en un clic.',
+  'dx.ara.h':'Y ahora, qué haces con esto',
+  'dx.ara.s':'Puedes empezar hoy por tu cuenta, sin darte de alta en ningún sitio. Elige por dónde:',
+  'dx.ara.vna.t':'🕸 Dibuja vuestro mapa de valor',
+  'dx.ara.vna.d':'Roles, entregas, el real y el ideal. Con lo que has respondido ya tienes por dónde empezar.',
+  'dx.ara.node.t':'📍 Monta vuestro nodo',
+  'dx.ara.node.d':'Vuestra organización en el SOS: roles, panel y cuentas. En tu navegador y sin cuota.',
+  'dx.ara.perfil.t':'🦸 Crea tu perfil',
+  'dx.ara.perfil.d':'Elige tu rol y que lo que aportas conste. Es tuyo y te lo llevas.',
+  'dx.ara.op':'Y si lo queréis <b>montado y funcionando</b>, eso es <a href="/#operatiu">tu negocio operativo</a>: la sala con el equipo, el mapa real y el ideal, el cerebro por rol y 30 días de acompañamiento. Envíanos el diagnóstico aquí debajo y te preparamos la propuesta, desglosada por flujos.',
   'dx.h1':'Diagnóstico de organización',
-  'dx.intro':'Dinos <strong>qué quieres que pase</strong> y qué casa sois. En <strong>3 minutos</strong> tendrás qué te está pasando, qué propondríamos y cuánto dura — <strong>nos lo envíes o no</strong>.',
+  'dx.intro':'Tres preguntas sobre <strong>qué quieres que pase</strong> y dónde lo aplicaríamos, y en <strong>3 minutos</strong> tienes qué os está pasando y qué encaja. El contacto, al final y solo para dirigirte el diagnóstico entero — <strong>nos lo envíes o no</strong>.',
   'dx.nav':'<a href="diagnostic.html">← El otro diagnóstico</a> · <a href="pressupost.html">Pide presupuesto</a> · <a href="index.html">Abre el SOS</a>',
-  'dx.s1.h':'1 · Quién eres',
-  'dx.s1.sub':'Para poder responderte. No se crea ninguna cuenta y no sale nada de este navegador si tú no lo pulsas.',
-  'dx.e1':'Nos falta el nombre y un correo que parezca un correo.',
-  'dx.s2.h':'2 · Qué casa sois',
-  'dx.s2.sub':'Esto no cambia qué te recomendamos —eso lo decide el paso siguiente—: cambia qué hay que preguntarte y cómo se escribe la propuesta.',
+  'dx.s4.h':'4 · Tu diagnóstico ya está hecho',
+  'dx.s4.sub':'Solo falta saber a quién se lo dirigimos. No se crea ninguna cuenta y no sale nada de este navegador hasta que lo envíes tú.',
+  'dx.e4':'Nos falta el nombre y un correo que parezca un correo.',
+  'dx.s2.h':'2 · Dónde lo aplicaríamos',
+  'dx.s2.sub':'Solo para saber qué preguntarte y cómo leer el diagnóstico.',
   'dx.e2':'Elige qué tipo de organización sois y di dónde estáis.',
-  'dx.s3.h':'3 · Qué quieres que pase',
-  'dx.s3.sub':'Es la pregunta que decide todo lo demás. Elige la que más se parezca a lo que te trajo aquí.',
+  'dx.s1.h':'1 · Qué quieres que pase',
+  'dx.s1.sub':'Es la pregunta que decide todo lo demás. Elige la que más se parezca a lo que te trajo aquí.',
   'dx.l.ampliacio':'Amplíalo, o dinos si el motivo es otro',
   'dx.ph.ampliacio':'p.ej. «son las dos cosas a la vez: abrimos una convención, pero lo que nos preocupa de verdad es que el equipo no se ha recuperado de la fusión»',
   'dx.h.ampliacio':'Opcional. Esto no lo calcula nada: lo leemos nosotros antes de preparar la propuesta, y suele ser lo que la hace acertar.',
-  'dx.e3':'Elige qué quieres que pase.',
-  'dx.s4.h':'4 · Lo que falta para responderte',
-  'dx.s4.format':'Un acto tiene fecha, gente y espacio, y son las tres cosas que deciden qué se puede hacer.',
-  'dx.s4.dolor':'Tres preguntas. Son las que hacen que el diagnóstico hable de vosotros y no en general.',
+  'dx.e1':'Elige qué quieres que pase.',
+  'dx.s3.h':'3 · Lo que lo afina',
+  'dx.s3.format':'Un acto tiene fecha, gente y espacio, y son las tres cosas que deciden qué se puede hacer.',
+  'dx.s3.dolor':'Tres preguntas. Son las que hacen que el diagnóstico hable de vosotros y no en general.',
   'dx.l.participants':'Cuánta gente habrá',
   'dx.ph.participants':'p.ej. 80',
   'dx.l.quan':'Qué día',
@@ -883,7 +1075,7 @@ es: {
   'dx.dec.comite':'Un comité o una dirección',
   'dx.dec.client':'Mi cliente',
   'dx.tria':'— elige —',
-  'dx.e4':'Dinos quién puede decir que sí: es lo que nos permite prepararlo bien.',
+  'dx.e3':'Dinos quién puede decir que sí: es lo que nos permite prepararlo bien.',
   'dx.seg':'Siguiente →',
   'dx.enrere':'← Atrás',
   'dx.veure':'Ver el diagnóstico →',
@@ -899,7 +1091,7 @@ es: {
   'dx.env.h':'Envíanoslo y te preparamos la propuesta',
   'dx.env.btn':'Envíanos el diagnóstico',
   'dx.env.mail':'O por correo',
-  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —tu contacto, tu organización, qué quieres que pase y el plazo— al formulario de nuestro alojamiento (Netlify), desde donde nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas.',
+  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —qué quieres que pase, tu organización, el plazo y tu contacto— al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM (Zoho) y nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas.',
   'dx.env.ok':'Recibido. Te respondemos en un día laborable.',
   'dx.env.enviat':'Enviado ✓',
   'dx.env.ko':'No se ha podido enviar. Prueba «O por correo», que abre tu programa con todo escrito — el diagnóstico lo tienes igualmente.',
@@ -908,7 +1100,8 @@ es: {
   'dx.b.copiat':'Copiado ✓',
   'dx.b.nocopia':'No se ha podido copiar',
   'dx.b.baixa':'Descárgalo',
-  'dx.b.torna':'Vuelve a empezar'
+  'dx.b.torna':'Vuelve a empezar',
+  'dx.mes':'Más detalles (opcional)'
 }
 };
 /* Es llegeixen les dues claus i s'escriuen les dues: la portada desa la tria
@@ -961,21 +1154,35 @@ function llegeixPont(){
    L'arreglo és dir de quins passos parlem: els del formulari. */
 function showStep(n){
   pas=n;
+  document.body.dataset.pas=n;
   $$('#dxForm .step').forEach(s=>s.hidden=s.id!=='s'+n);
   $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
   window.scrollTo({top:0,behavior:'smooth'});
 }
+/* L'ordre és el del valor: què vols que passi (1), quina casa sou (2), el
+   que ho afina (3) i, quan el diagnòstic ja està calculat, a qui l'adrecem
+   (4). Cada pas valida el seu i prou. */
 function validate(n){
-  if(n===1){
-    const ok=$('#nom').value.trim().length>1&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());
-    $('#e1').classList.toggle('on',!ok);return ok;
-  }
+  if(n===1){const ok=!!st.obj;$('#e1').classList.toggle('on',!ok);return ok;}
   if(n===2){
     const ok=!!st.org&&$('#municipi').value.trim().length>1;
     $('#e2').classList.toggle('on',!ok);return ok;
   }
-  if(n===3){const ok=!!st.obj;$('#e3').classList.toggle('on',!ok);return ok;}
+  if(n===3){const ok=!!$('#decideix').value;$('#e3').classList.toggle('on',!ok);return ok;}
+  if(n===4){
+    const ok=$('#nom').value.trim().length>1&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());
+    $('#e4').classList.toggle('on',!ok);return ok;
+  }
   return true;
+}
+/* L'avanç del pas 4: el que hem llegit i què hi encaixa, ja calculat. És el
+   valor que es dona abans de demanar res; el detall ve després. */
+function pintaAvanc(){
+  if(!st.obj)return;
+  const d=diagnose();
+  $('#avT').textContent=L(d.O,'t');
+  $('#avL').textContent=L(d.O,'llegim');
+  $('#avP').innerHTML=d.paq.map(p=>'<li>'+esc(L(p,'nom'))+'</li>').join('');
 }
 
 /* La classe és `sel` i no `on`: aquí `on` vol dir una altra cosa —la barra de
@@ -994,10 +1201,14 @@ $$('#objTipus .opt').forEach(b=>b.onclick=()=>{
   const preg=b.dataset.preg;
   $('#qFormat').hidden=preg!=='format';
   $('#qDolor').hidden=preg!=='dolor';
-  $('#s4sub').textContent=T(preg==='format'?'dx.s4.format':'dx.s4.dolor');
+  $('#s3sub').textContent=T(preg==='format'?'dx.s3.format':'dx.s3.dolor');
 });
 
-$$('[data-next]').forEach(b=>b.onclick=()=>{if(validate(pas))showStep(Number(b.dataset.next));});
+$$('[data-next]').forEach(b=>b.onclick=()=>{
+  if(!validate(pas))return;
+  const n=Number(b.dataset.next);
+  if(n===4)pintaAvanc();
+  showStep(n);});
 $$('[data-back]').forEach(b=>b.onclick=()=>showStep(Number(b.dataset.back)));
 
 /* ── EL MOTOR ─────────────────────────────────────────────────────────────
@@ -1101,8 +1312,7 @@ function buildJson(d){
 }
 
 $('#doDx').onclick=()=>{
-  if(!$('#decideix').value){$('#e4').classList.add('on');return;}
-  $('#e4').classList.remove('on');
+  if(!validate(4))return;
   if(!validate(1)){showStep(1);return;}
   if(!validate(2)){showStep(2);return;}
   if(!validate(3)){showStep(3);return;}
@@ -1112,6 +1322,7 @@ $('#doDx').onclick=()=>{
   $('#dxForm').style.display='none';
   $('#prog').style.display='none';
   $('#result').style.display='block';
+  document.body.dataset.pas='r';
   const subj='Diagnòstic d\'organització · '+($('#orgNom').value.trim()||$('#nom').value.trim());
   $('#bSend').href='mailto:'+mailAddr()+'?subject='+encodeURIComponent(subj)+
     '&body='+encodeURIComponent(buildSummary(current));
@@ -1161,8 +1372,8 @@ $('#bAgain').onclick=()=>{location.reload();};
    igual que una etiqueta i que un diccionari de només `textContent` deixa en
    català sense que peti res.
 
-   I dues coses més que no són atributs: **els sis objectius**, que els pinta
-   el generador des de `OBJECTIUS` i per tant es tornen a escriure d'allà, i
+   I dues coses més que no són atributs: **els objectius i els seus titulars**,
+   que els pinta el generador des de `OBJECTIUS` i `GRUPS` i per tant es tornen a escriure d'allà, i
    **el resultat**, si ja està calculat —qui canvia de llengua llegint el
    diagnòstic no l'ha de tornar a fer. */
 function pintaObjectius(){
@@ -1172,6 +1383,7 @@ function pintaObjectius(){
     if(t)t.textContent=(O.ic?O.ic+' ':'')+L(O,'t');
     if(dd)dd.textContent=L(O,'diu');
   });
+  $$('#objTipus .opts-g').forEach(g=>{const G=GRUPS[g.dataset.g];if(G)g.textContent=L(G,'t');});
 }
 function dxAplicaLang(l){
   if(!DX_I18N[l])l='ca';
@@ -1188,15 +1400,43 @@ function dxAplicaLang(l){
   pintaObjectius();
   /* El subtítol del pas 4 depèn de l'objectiu triat i no d'una clau fixa. */
   const sel=$('#objTipus .opt.sel');
-  if(sel)$('#s4sub').textContent=T(sel.dataset.preg==='format'?'dx.s4.format':'dx.s4.dolor');
+  if(sel)$('#s3sub').textContent=T(sel.dataset.preg==='format'?'dx.s3.format':'dx.s3.dolor');
+  if(pas===4&&!current)pintaAvanc();
   if(current)renderDx(current);
 }
 $$('.lang-b').forEach(b=>b.onclick=()=>dxAplicaLang(b.dataset.lang));
 
+/* EL QUE ÉS OPCIONAL, PLEGAT. Els camps venen dels blocs compartits
+   (`build-formularis.js`) i el territori els necessita oberts; aquí no
+   canvien el diagnòstic, així que es pleguen sota «Més detalls» i el pas es
+   respon amb una pantalla. Es mouen, no es copien: els ids i els valors són
+   els mateixos i el resum els llegeix igual. */
+function plegaOpcionals(){
+  [['s2',['web','dediqueu','comarca','persones']],['s4',['tel','carrec']]].forEach(([pasId,ids])=>{
+    const sec=$('#'+pasId);if(!sec)return;
+    const camps=ids.map(id=>{const e=$('#'+id);return e?e.closest('.f'):null;}).filter(Boolean);
+    if(!camps.length)return;
+    const d=document.createElement('details');d.className='mes';
+    d.innerHTML='<summary data-i18n="dx.mes">Més detalls (opcional)</summary>';
+    const ref=sec.querySelector('.err');
+    sec.insertBefore(d,ref);
+    camps.forEach(f=>{const g=f.parentElement;d.appendChild(f);
+      if(g&&g.classList.contains('grid2')&&!g.children.length)g.remove();});
+  });
+}
+/* L'alçada del menú enganxat, perquè el progrés s'enganxi just a sota. */
+function mesuraNav(){
+  const n=document.querySelector('nav[aria-label]');
+  document.documentElement.style.setProperty('--nav-h',(n?n.offsetHeight:0)+'px');
+}
+addEventListener('resize',mesuraNav);
+
+plegaOpcionals();
+mesuraNav();
 llegeixPont();
 showStep(1);
 dxAplicaLang(DX_LANG);
-window.__DXORG={st,diagnose,buildSummary,buildJson,dataLlegible,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate,dxAplicaLang,DX_I18N,T};
+window.__DXORG={st,diagnose,pintaAvanc,buildSummary,buildJson,dataLlegible,OBJECTIUS,PAQ,ORG_NOTA,showStep,validate,dxAplicaLang,DX_I18N,T};
 </script>
 </body>
 </html>

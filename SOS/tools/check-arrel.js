@@ -58,7 +58,6 @@ const PAGINES = readdirSync(ARREL).filter(f => /\.html$/.test(f) && !EXCLOU.incl
 const XIFRES = {
   '32': 'els clients anomenats a trajectoria.md',
   '20': 'els anys de recorregut de TeamTowers',
-  '2': 'les dues aplicacions de VNA a IKEA',
   '2007': 'l\'any de l\'article d\'El Periódico'
 };
 

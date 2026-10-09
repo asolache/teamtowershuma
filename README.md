@@ -34,12 +34,13 @@ la portada deja filtrar por ella. Eran dos puertas, y una guardaba dos dentro:
 un ayuntamiento y una asociación no tienen el mismo presupuesto, no deciden
 igual y no compran lo mismo.
 
-Cada paquete dice **para quién es, cuánto dura, qué te llevas, cuánto cuesta,
-con qué dinero se paga y en qué punto está**. Los que van a administración
-pública quedan **por debajo de los 5.000 €**, que es lo que se contrata sin
-abrir un expediente largo. Los que ponen *a medida* no llevan cifra cerrada
-porque depende de cosas que no se pueden adivinar desde una página — pero sí
-llevan [cómo se calculan](#el-mapa-de-coste).
+Cada paquete dice **para quién es, cuánto dura, qué te llevas, cómo se
+calcula lo que cuesta, con qué dinero se paga y en qué punto está**. Ninguno
+lleva cifra cerrada publicada: se presupuestan **por flujos**, con las horas de
+cada rol y el coste de la IA de cada flujo, y llevan
+[cómo se calculan](#el-mapa-de-coste). Los que van a administración pública se
+dimensionan para quedar por debajo de los 5.000 €, que es lo que se contrata
+sin abrir un expediente largo.
 
 > El **punto** no es decoración. *Probado* = entregado muchas veces, con casos
 > que enseñar. *En adaptación* = producto probado que se está llevando a un
@@ -59,12 +60,12 @@ llevan [cómo se calculan](#el-mapa-de-coste).
 
 | Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
 |---|---|---|---|---|---|
-| **Diagnóstico del tejido local** | Ayuntamientos, consejos comarcales y entidades | 2 sesiones · 3 semanas | De 1.500 a 3.000 € | Dejas de decidir por intuición. Sabes qué tres vínculos sostienen el pueblo y cuál se romperá primero, que es lo que evita perder un año en un proyecto que no se aguantaba. | En adaptación · Horquilla del modelo |
-| **Mapa de valor de una organización** | Empresas, cooperativas y entidades con equipo propio | 3 sesiones · 4-6 semanas | De 2.500 a 4.500 € | Se ve quién sostiene lo que no consta en ningún organigrama. Es la conversación que evita que, cuando esa persona se vaya, el equipo descubra de golpe todo lo que hacía. | Probado · A validar |
-| **Haciendo piña con el mapa de valor** | Comités de dirección, equipos de gobierno y consejos rectores · de 12 a 40 personas | 1 jornada + 2 sesiones · 3-5 semanas | De 4.500 a 12.000 € | El equipo se alinea diciendo en voz alta cuál es su organización real, y la ve como un sistema y no como la suma de lo que hace cada uno. Eso no se consigue con un informe: se vive una vez y después ya no se deshace. | Nuevo · A validar |
-| **Mapa comarcal y asamblea federativa** | Consejos comarcales y mancomunidades | 4 sesiones con varios municipios · 2-3 meses | De 3.500 a 6.000 € | Resuelve el problema político que tenéis: que el municipio grande no decida por los pequeños y que los pequeños no valgan lo mismo que el grande. Con esto, los acuerdos se toman; sin ello, se vuelven a aplazar. | Nuevo · Horquilla del modelo |
-| **Medida de impacto y justificación** | Ayuntamientos, fundaciones y financiadores | Informe semestral o anual · 2 semanas | De 600 a 1.500 € | Podéis justificar la subvención con datos que aguantan una auditoría, y pedir la siguiente con lo que ha pasado de verdad en vez de con el número de actividades hechas. | Nuevo · Horquilla del modelo |
-| **Diagnóstico de personas y cultura** | Empresas y cooperativas con equipo | 3 sesiones · 6 semanas | De 1.800 a 3.200 € | Es la puerta de entrada: lo que viene después se dimensiona con este informe en la mano y no con una propuesta a ciegas. Sabéis qué costará antes de comprometer un presupuesto. | Probado · A validar |
+| **Diagnóstico del tejido local** | Ayuntamientos, consejos comarcales y entidades | 2 sesiones · 3 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Dejas de decidir por intuición. Sabes qué tres vínculos sostienen el pueblo y cuál se romperá primero, que es lo que evita perder un año en un proyecto que no se aguantaba. | En adaptación · Desglosado por flujos |
+| **Mapa de valor de una organización** | Empresas, cooperativas y entidades con equipo propio | 3 sesiones · 4-6 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Se ve quién sostiene lo que no consta en ningún organigrama. Es la conversación que evita que, cuando esa persona se vaya, el equipo descubra de golpe todo lo que hacía. | Probado · Desglosado por flujos |
+| **Haciendo piña con el mapa de valor** | Comités de dirección, equipos de gobierno y consejos rectores · de 12 a 40 personas | 1 jornada + 2 sesiones · 3-5 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | El equipo se alinea diciendo en voz alta cuál es su organización real, y la ve como un sistema y no como la suma de lo que hace cada uno. Eso no se consigue con un informe: se vive una vez y después ya no se deshace. | Nuevo · Desglosado por flujos |
+| **Mapa comarcal y asamblea federativa** | Consejos comarcales y mancomunidades | 4 sesiones con varios municipios · 2-3 meses | Por flujos · [mapa de coste](#el-mapa-de-coste) | Resuelve el problema político que tenéis: que el municipio grande no decida por los pequeños y que los pequeños no valgan lo mismo que el grande. Con esto, los acuerdos se toman; sin ello, se vuelven a aplazar. | Nuevo · Desglosado por flujos |
+| **Medida de impacto y justificación** | Ayuntamientos, fundaciones y financiadores | Informe semestral o anual · 2 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Podéis justificar la subvención con datos que aguantan una auditoría, y pedir la siguiente con lo que ha pasado de verdad en vez de con el número de actividades hechas. | Nuevo · Desglosado por flujos |
+| **Diagnóstico de personas y cultura** | Empresas y cooperativas con equipo | 3 sesiones · 6 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Es la puerta de entrada: lo que viene después se dimensiona con este informe en la mano y no con una propuesta a ciegas. Sabéis qué costará antes de comprometer un presupuesto. | Probado · Desglosado por flujos |
 
 ### 🎓 Formación
 
@@ -72,13 +73,13 @@ llevan [cómo se calculan](#el-mapa-de-coste).
 
 | Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
 |---|---|---|---|---|---|
-| **Programa de Gestor/a** | Técnicos municipales y profesionales · precio por persona | ~45 h en 3-4 meses | De 1.200 a 2.000 € | Dejáis de depender de una consultora para sostener lo que ya tenéis. Lo que antes se volvía a contratar cada año queda dentro de la casa. | Nuevo · Horquilla del modelo |
-| **Programa de equipo gestor** | Una entidad del territorio, financiada por el ayuntamiento | 12 semanas · 5 roles · ~34 h de mentoría | De 4.500 a 7.000 € | Forma un equipo y no una persona. Es la diferencia entre una dinámica que sobrevive a quien la arrancó y una que se muere cuando esa persona se cansa —que es como mueren la mayoría. | Nuevo · Horquilla del modelo |
-| **Comunidades de práctica** | Organizaciones con conocimiento disperso | 6 sesiones en 3 meses | De 3.000 a 5.500 € | Lo que sabe una persona deja de salir por la puerta con ella. Quien entra nuevo no vuelve a empezar de cero, y eso se nota en el tiempo que tarda en ser útil. | Probado · A validar |
-| **Formación de equipos** | Empresas, cooperativas y equipos técnicos | De media jornada a cuatro sesiones | De 1.200 a 2.800 € | El equipo sale con un vocabulario compartido para hablar de lo que antes no se decía. La conversación difícil del lunes se puede tener, porque hay palabras para tenerla. | Probado · A validar |
-| **La Fábrica de Superhéroes** | Escuelas y AFA · 6 a 13 años | 8 sesiones | De 1.800 a 3.200 € | La criatura descubre que tiene algo que dar, y lo descubre porque otro lo confirma. Eso es lo que después sostiene una comunidad, y se aprende antes de los trece. | Nuevo · A validar |
-| **Formación de formadores** | Ateneus Cooperatius y profesionales independientes | 20 h + tutela de 2 casos | De 2.000 a 3.500 € | Es el único paquete que multiplica sin consumir nuestras horas: un Ateneu formado acompaña decenas de proyectos que nosotros no tocaríamos nunca. | Nuevo · Horquilla del modelo |
-| **Mentoría para equipos directivos** | Dirección, personas, innovación y organización · empresas, cooperativas y sector público | 6 meses · sesión quincenal de 1 h por persona | De 3.500 a 9.000 € | Lo que se compra no son sesiones: es que unas competencias concretas queden desarrolladas y se puedan enseñar. Si al final del programa una evidencia no está, las sesiones que hagan falta para cerrarla no se vuelven a facturar. | Nuevo · A validar |
+| **Programa de Gestor/a** | Técnicos municipales y profesionales · precio por persona | ~45 h en 3-4 meses | Por flujos · [mapa de coste](#el-mapa-de-coste) | Dejáis de depender de una consultora para sostener lo que ya tenéis. Lo que antes se volvía a contratar cada año queda dentro de la casa. | Nuevo · Desglosado por flujos |
+| **Programa de equipo gestor** | Una entidad del territorio, financiada por el ayuntamiento | 12 semanas · 5 roles · ~34 h de mentoría | Por flujos · [mapa de coste](#el-mapa-de-coste) | Forma un equipo y no una persona. Es la diferencia entre una dinámica que sobrevive a quien la arrancó y una que se muere cuando esa persona se cansa —que es como mueren la mayoría. | Nuevo · Desglosado por flujos |
+| **Comunidades de práctica** | Organizaciones con conocimiento disperso | 6 sesiones en 3 meses | Por flujos · [mapa de coste](#el-mapa-de-coste) | Lo que sabe una persona deja de salir por la puerta con ella. Quien entra nuevo no vuelve a empezar de cero, y eso se nota en el tiempo que tarda en ser útil. | Probado · Desglosado por flujos |
+| **Formación de equipos** | Empresas, cooperativas y equipos técnicos | De media jornada a cuatro sesiones | Por flujos · [mapa de coste](#el-mapa-de-coste) | El equipo sale con un vocabulario compartido para hablar de lo que antes no se decía. La conversación difícil del lunes se puede tener, porque hay palabras para tenerla. | Probado · Desglosado por flujos |
+| **La Fábrica de Superhéroes** | Escuelas y AFA · 6 a 13 años | 8 sesiones | Por flujos · [mapa de coste](#el-mapa-de-coste) | La criatura descubre que tiene algo que dar, y lo descubre porque otro lo confirma. Eso es lo que después sostiene una comunidad, y se aprende antes de los trece. | Nuevo · Desglosado por flujos |
+| **Formación de formadores** | Ateneus Cooperatius y profesionales independientes | 20 h + tutela de 2 casos | Por flujos · [mapa de coste](#el-mapa-de-coste) | Es el único paquete que multiplica sin consumir nuestras horas: un Ateneu formado acompaña decenas de proyectos que nosotros no tocaríamos nunca. | Nuevo · Desglosado por flujos |
+| **Mentoría para equipos directivos** | Dirección, personas, innovación y organización · empresas, cooperativas y sector público | 6 meses · sesión quincenal de 1 h por persona | Por flujos · [mapa de coste](#el-mapa-de-coste) | Lo que se compra no son sesiones: es que unas competencias concretas queden desarrolladas y se puedan enseñar. Si al final del programa una evidencia no está, las sesiones que hagan falta para cerrarla no se vuelven a facturar. | Nuevo · Desglosado por flujos |
 
 ### 🎪 Producción y dinamización
 
@@ -86,11 +87,11 @@ llevan [cómo se calculan](#el-mapa-de-coste).
 
 | Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
 |---|---|---|---|---|---|
-| **Comú-diada** | Ayuntamientos, consejos comarcales y entidades | Una jornada · 3 semanas de producción antes | De 2.200 a 4.500 € | La diferencia con una fiesta es que el martes todavía hay algo funcionando. Se paga una jornada y queda una dinámica con gente apuntada, no un álbum de fotos. | Nuevo · A validar |
+| **Comú-diada** | Ayuntamientos, consejos comarcales y entidades | Una jornada · 3 semanas de producción antes | Por flujos · [mapa de coste](#el-mapa-de-coste) | La diferencia con una fiesta es que el martes todavía hay algo funcionando. Se paga una jornada y queda una dinámica con gente apuntada, no un álbum de fotos. | Nuevo · Desglosado por flujos |
 | **Taller de castells «Fent Pinya»** | Equipos de empresa, plenos municipales, escuelas y mesas comunitarias · de 10 a 1.000 personas | 2 h + 30 min de reflexión | A medida · [mapa de coste](#el-mapa-de-coste) | Un grupo que ha repartido el peso de verdad, porque se ha levantado un castell, y que sale con el vocabulario para hablar de ello al día siguiente. Es el producto con más kilómetros de la casa: 60.000 personas desde 2005. | Probado · Según mapa de coste |
 | **Demostración castellera** | Empresas, ayuntamientos, fiestas mayores y agencias de eventos | Hasta 4 castells por actuación | A medida · [mapa de coste](#el-mapa-de-coste) | Es la pieza cultural que se recuerda y se comparte. No es formación —no toca a nadie del equipo— y por eso no sustituye al taller: lo acompaña. | Probado · Según mapa de coste |
-| **Producción de eventos** | Empresas, ayuntamientos y festivales | De una jornada a un festival de varios días | De 3.000 a 9.000 € | Una sola persona responsable de todo lo que puede salir mal, y veinte años sabiendo qué sale mal. Lo que compráis no es el montaje: es no tener que estar. | Probado · A validar |
-| **Puesta en marcha de una dinámica** | Entidades y grupos promotores, financiado por el ayuntamiento | 6 meses · sesiones quincenales | De 2.400 a 5.400 € | Al sexto mes hay intercambios registrados y gente que sabe llevarlo. La diferencia con un plan estratégico es que esto se puede enseñar funcionando. | En adaptación · Horquilla del modelo |
+| **Producción de eventos** | Empresas, ayuntamientos y festivales | De una jornada a un festival de varios días | Por flujos · [mapa de coste](#el-mapa-de-coste) | Una sola persona responsable de todo lo que puede salir mal, y veinte años sabiendo qué sale mal. Lo que compráis no es el montaje: es no tener que estar. | Probado · Desglosado por flujos |
+| **Puesta en marcha de una dinámica** | Entidades y grupos promotores, financiado por el ayuntamiento | 6 meses · sesiones quincenales | Por flujos · [mapa de coste](#el-mapa-de-coste) | Al sexto mes hay intercambios registrados y gente que sabe llevarlo. La diferencia con un plan estratégico es que esto se puede enseñar funcionando. | En adaptación · Desglosado por flujos |
 
 ### ⚙️ Digital e IA
 
@@ -98,9 +99,9 @@ llevan [cómo se calculan](#el-mapa-de-coste).
 
 | Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
 |---|---|---|---|---|---|
-| **Flujos con IA · consultoría y formación** | Empresas, cooperativas, ayuntamientos y entidades con equipo propio | 4 sesiones · 6-8 semanas | De 1.800 a 4.500 € | Recuperáis horas de trabajo que se repetía, y lo hacéis sin romper por el camino lo que sostenía la relación con quien os compra o os vota. El equipo sale sabiendo decidir solo qué toca la máquina y qué no. | En adaptación · A validar |
-| **Web o herramienta hecha con IA** | Empresas, cooperativas, ayuntamientos y entidades | 4-10 semanas | De 2.500 a 8.000 € | La diferencia con una web hecha con IA y ya está se ve al tercer mes: esta la puede cambiar vuestro equipo sin romperla, porque lo que la mantiene honesta es un programa y no la memoria de quien la hizo. | En adaptación · A validar |
-| **Proyecto transmedia** | Ayuntamientos, fundaciones, marcas y programas educativos | 3-6 meses | De 4.000 a 12.000 € | Una campaña deja impresiones; esto deja gente dada de alta haciendo algo que queda contado. Seis meses después todavía se puede enseñar qué pasó, que es lo que ningún informe de campaña sabe responder. | Nuevo · A validar |
+| **Flujos con IA · consultoría y formación** | Empresas, cooperativas, ayuntamientos y entidades con equipo propio | 4 sesiones · 6-8 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Recuperáis horas de trabajo que se repetía, y lo hacéis sin romper por el camino lo que sostenía la relación con quien os compra o os vota. El equipo sale sabiendo decidir solo qué toca la máquina y qué no. | En adaptación · Desglosado por flujos |
+| **Web o herramienta hecha con IA** | Empresas, cooperativas, ayuntamientos y entidades | 4-10 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | La diferencia con una web hecha con IA y ya está se ve al tercer mes: esta la puede cambiar vuestro equipo sin romperla, porque lo que la mantiene honesta es un programa y no la memoria de quien la hizo. | En adaptación · Desglosado por flujos |
+| **Proyecto transmedia** | Ayuntamientos, fundaciones, marcas y programas educativos | 3-6 meses | Por flujos · [mapa de coste](#el-mapa-de-coste) | Una campaña deja impresiones; esto deja gente dada de alta haciendo algo que queda contado. Seis meses después todavía se puede enseñar qué pasó, que es lo que ningún informe de campaña sabe responder. | Nuevo · Desglosado por flujos |
 
 ### 🖥️ Alrededor del SOS
 
@@ -108,9 +109,9 @@ llevan [cómo se calculan](#el-mapa-de-coste).
 
 | Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |
 |---|---|---|---|---|---|
-| **Implantación y soporte** | Ayuntamientos, consejos comarcales y Ateneus | 3 semanas | De 800 a 2.500 € | La herramienta es gratuita y te la puedes llevar. Lo que se paga es no tener que descubrir solo cómo se monta, y que el día uno ya estén vuestros datos dentro. | Nuevo · Horquilla del modelo |
-| **IA con frenos · sesión de viabilidad** | Quien se plantee usar IA con datos de personas | 1 sesión + informe · 2 semanas | De 600 a 1.500 € | Salís de la reunión con una decisión escrita y no con una intuición. Y con el criterio de freno puesto antes de comprar nada, que es cuando todavía se puede poner. | En adaptación · A validar |
-| **Contratos inteligentes · estudio de viabilidad** | Cooperativas y administraciones que quieran automatizar acuerdos | 3 semanas | De 1.200 a 2.500 € | Sabréis si esto os sirve antes de gastar nada. Un «no vale la pena» con los números al lado vale lo mismo que un «sí», y es más barato que descubrirlo construyendo. | Nuevo · A validar |
+| **Implantación y soporte** | Ayuntamientos, consejos comarcales y Ateneus | 3 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | La herramienta es gratuita y te la puedes llevar. Lo que se paga es no tener que descubrir solo cómo se monta, y que el día uno ya estén vuestros datos dentro. | Nuevo · Desglosado por flujos |
+| **IA con frenos · sesión de viabilidad** | Quien se plantee usar IA con datos de personas | 1 sesión + informe · 2 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Salís de la reunión con una decisión escrita y no con una intuición. Y con el criterio de freno puesto antes de comprar nada, que es cuando todavía se puede poner. | En adaptación · Desglosado por flujos |
+| **Contratos inteligentes · estudio de viabilidad** | Cooperativas y administraciones que quieran automatizar acuerdos | 3 semanas | Por flujos · [mapa de coste](#el-mapa-de-coste) | Sabréis si esto os sirve antes de gastar nada. Un «no vale la pena» con los números al lado vale lo mismo que un «sí», y es más barato que descubrirlo construyendo. | Nuevo · Desglosado por flujos |
 
 <!--/TT-OFERTA-MD-->
 
@@ -127,8 +128,9 @@ sin llamar.
 
 1. **Se dibuja el trabajo como un mapa de valor** — Qué roles la hacen y qué intercambios hay entre ellos. Es el mismo mapa que os enseñamos a hacer, y el mismo que os quedáis.
 2. **Cada rol lleva sus horas** — Las horas salen de los flujos del mapa, no de una intuición. Si un flujo no está, no se cobra; si está, se puede discutir.
-3. **Cada rol tiene el precio de su nivel** — Tres niveles, y lo que los separa es evidencia verificable en el registro. La propuesta dice qué persona hace qué horas.
-4. **Los gastos directos, a su precio de factura** — Desplazamientos, materiales, alquileres, músicos, monitores y terceros. Sin margen escondido encima: si se revenden, se dice.
+3. **Cada flujo lleva el coste de su IA** — Con el modelo que toca en cada tarea: el pequeño donde basta y el grande solo donde hace falta. El SOS lo elige y aprende de cada proyecto cuál hacía falta, y la propuesta lo dice flujo por flujo.
+4. **Cada rol tiene el precio de su nivel** — Tres niveles, y lo que los separa es evidencia verificable en el registro. La propuesta dice qué persona hace qué horas.
+5. **Los gastos directos, a su precio de factura** — Desplazamientos, materiales, alquileres, músicos, monitores y terceros. Sin margen escondido encima: si se revenden, se dice.
 
 | Nivel | Qué hace | Cómo se acredita | Precio hora |
 |---|---|---|---|
@@ -136,7 +138,7 @@ sin llamar.
 | **N2 · Gestor/a** | Sostiene un nodo entero solo: facilita, mapa, gobernanza, cuentas y seguimiento. | Más de 20 h registradas y tres comunidades acompañadas, o una iniciativa liderada. | 55 €/h |
 | **N3 · Mentor/a** | Diseña el encargo, pone el criterio, decide ante el cliente y forma a los demás. | Más de 50 h, tres comunidades, dos iniciativas o una graduada, y gestores formados. | 80 €/h |
 
-Todos los precios son **sin IVA**. La escala es tarifa propuesta para 2026 y se revisa cada año. El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y **no llevan precio cerrado publicado**: lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia.
+Ningún paquete lleva **precio cerrado publicado**: todos se presupuestan así, desglosados por flujos. La escala es **sin IVA**, es tarifa propuesta para 2026 y se revisa cada año.
 
 <!--/TT-COST-MD-->
 
