@@ -44,7 +44,43 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
-### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat 09/10/2026)
+### Ensenyar a l'Àlvar a integrar-se amb l'automatització del pla (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** que li ensenyem a connectar-se amb els serveis
+d'automatització que el pla d'estratègia preveu (la fase «API i agents»), alineat
+amb l'estratègia.
+
+**El que preveu el pla** (el detall és al repositori privat d'estratègia):
+
+- una API amb els recursos del mapa: mapes, rols, lliuraments, transaccions,
+  diagnòstic i cervell per rol;
+- avisos (webhooks) quan passa alguna cosa: una transacció nova, un rol sense
+  reciprocitat, una desviació entre el real i l'ideal, el cervell d'un rol
+  actualitzat;
+- un servidor MCP perquè un agent (Claude o un altre) llegeixi i escrigui el
+  mapa;
+- una clau per rol, de manera que cadascú només toca el que és seu.
+
+**Avui** no hi ha cap d'aquestes peces: el SOS és estàtic i l'editor del mapa
+exporta i importa JSON. El CRM ja apunta un webhook com a idea.
+
+**El que es demana:** una guia pas a pas, escrita per a qui no programa cada
+dia, amb tres nivells:
+
+1. **Ara mateix:** exportar el mapa de l'editor en JSON i portar-lo a una eina
+   d'automatització o a Claude.
+2. **Quan hi hagi API i webhooks:** rebre un avís quan es registra una
+   transacció i fer-hi alguna cosa (un correu, una fila al CRM, una tasca).
+3. **Quan hi hagi MCP:** demanar a un agent «què li falta al rol X» i que ho
+   llegeixi del mapa.
+
+Cada nivell es prova sobre el pilot 1 (teamtowershuma), i la guia creix amb
+cada peça de la fase.
+
+**Com es tanca:** l'Àlvar fa ell sol el nivell 1 amb la guia, i el nivell 2 en
+quan l'API existeixi, amb una integració que funcioni de debò.
+
+### El catàleg sense preus: el que costa és la IA, amb el model que toca (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar:** «treure els preus de tot el catàleg i traduir-los a
 costos d'IA, amb el model adequat a cada tasca i optimitzat pel SOS».
@@ -65,6 +101,16 @@ amb una guarda que ho comprovi a cada canvi; els tests de la portada i del
 catàleg en verd. Les xifres reals de cost per model surten dels pilots, no
 s'inventen.
 
+**Fet (09/10/2026).** `PER_FLUXOS` a `build-oferta.js` apaga les forquilles a
+totes les sortides (catàleg, README, calculadora i portal del SOS); `preuMin` i
+`preuMax` queden com a referència interna i per a la guarda del sostre públic.
+El mapa de cost guanya un pas: «Cada flux porta el cost de la seva IA». La
+calculadora posa els paquets fora del total, «per fluxos», i el total només
+suma hores. Guardes: `test-portada.mjs` peta si una fitxa torna a portar «€» i
+`test-pressupost.mjs` comprova que cap casella en porta. L'escala per hores
+(N1–N3) es queda: és la base del desglossament. Les tarifes pròpies de
+`/mapa-web/` (servei a part, en esborrany) no s'han tocat.
+
 ### Què es diu d'IKEA en públic (demanat 09/10/2026)
 
 **L'Àlvar ha dit «treu-ho»** a la pregunta de què es pot dir d'IKEA en públic.
@@ -73,8 +119,27 @@ Avui IKEA surt als logos de clients (`index.html`, `qui-som.html`,
 l'aval de `/mapa-web/`, als textos de `SOS/vna.html` i a `ia.html`. Les fotos ja
 estan decidides: només pixelades i fora de la web.
 
-**Pendent:** confirmar si «treu-ho» vol dir treure IKEA de tota la web pública o
-només deixar d'ensenyar el cas. Fins que es confirmi no es toca res públic.
+**Decidit (09/10/2026): només el cas.** IKEA es queda a la llista de clients;
+surten «dos mapes de valor» (direcció i serveis) de la portada, de `qui-som`,
+de `/mapa-web/` i dels textos del mètode, i la guarda de `build-clients.js` que
+ho exigia.
+
+### L'oferta com a web 3.0, i el que millora respecte a la 2.0 (demanat 09/10/2026)
+
+**Context de l'Àlvar:** és desenvolupador web 3.0, i creu que el que més val és
+oferir això ensenyant què millora respecte a una web 2.0: IA, descentralització,
+obert, model operatiu de gestió, independència, amb suport i formació acció si
+es vol. Hi ha leads al CRM que han demanat web (els noms es queden al CRM i al
+pla privat).
+
+**Avui** el catàleg ven «Web o eina feta amb IA» i `/mapa-web/` ven el mapa i la
+web en una sessió; cap dels dos fa la comparació 2.0 / 3.0.
+
+**El que es demana:** una porta d'entrada clara amb aquesta comparació, i una
+proposta tipus per als leads que han demanat web, pressupostada per fluxos.
+
+**Com es tanca:** la comparació publicada on la vegi qui ve a buscar web, i la
+primera proposta enviada a un lead real.
 
 ### Els tres primers pilots del paquet nou (decidit 09/10/2026)
 
@@ -1059,17 +1124,12 @@ VNA, la premsa— a les quals només hi arribava qui en sabia l'adreça.
 
 ---
 
-### El cas d'IKEA, amb el detall (02/10/2026)
+### El cas d'un client a la paret (02/10/2026 · retirat 09/10/2026)
 
-**Dit per l'Àlvar:** a IKEA es van fer **dos mapes de valor: el de la direcció
-i el de l'àrea de serveis**. Abans la paret deia només «dues aplicacions de
-Value Network Analysis», que és la sigla i prou.
-
-La fila de `trajectoria.md` ho recull amb la data i qui ho ha dit, i d'allà
-surt a la paret de la portada. **La guarda que vigilava IKEA s'ha estret**: ja
-no n'hi ha prou que digui «VNA», ha de dir **quines dues àrees**. Qualsevol pot
-dir que ha aplicat un mètode; dir quines dues àrees es van mapar és el que ho
-fa comprovable per qui hi era.
+Es va publicar el detall d'un cas de VNA amb client anomenat. **El 09/10/2026
+l'Àlvar va decidir que el cas no es publica**: el client es queda a la llista i
+la guarda de `build-clients.js` ara vigila que cap bloc en torni a explicar el
+cas.
 
 *Falten els anys.*
 
@@ -1178,7 +1238,7 @@ avui**: és `#dues-vistes` de la portada, amb el pols animat i el botó
 d'encallament. El que falta per a vídeo no és codi — és
 **decidir el cas que surt a càmera** (vegeu el punt de dalt) i gravar-ho.
 
-*El pols animat, de fet, ja ve del guió de sessió d'IKEA —els cors de «el pulso
+*El pols animat, de fet, ja ve del guió d'una sessió real —els cors de «el pulso
 de la red de valor»—, o sigui que el que surt a l'anunci i el que es fa a la
 sala són la mateixa cosa. Val la pena que el vídeo ho digui.*
 
@@ -1187,8 +1247,8 @@ sala són la mateixa cosa. Val la pena que el vídeo ho digui.*
 ### El procés de VNA, explicat com es fa de debò (02/10/2026)
 
 **L'Àlvar va passar dos PDF**: l'article sencer de Pantheon —Antonio
-Blanco-Gracia i Ingrid Astiz, 30/11/2018— i **el guió real de la sessió
-d'IKEA** (19 pàgines). La petició: *«millora la comunicació del procés de VNA,
+Blanco-Gracia i Ingrid Astiz, 30/11/2018— i **el guió real d'una sessió
+amb un equip de direcció** (19 pàgines). La petició: *«millora la comunicació del procés de VNA,
 sobretot amb les imatges de la pàgina de sos/vna»*.
 
 **El que faltava era la imatge.** La pàgina explicava el mètode i **no ensenyava
@@ -1244,11 +1304,8 @@ sis. Provada posant-hi l'amplada fixa: en caça onze. `test-vna.mjs` hi afegeix
 nou assercions, entre elles que el full **té el seu CSS** —el defecte que ja va
 passar amb els polsos.
 
-⚠ **I una fila de `trajectoria.md` que ara és més forta:** el guió **confirma
-l'equip d'IKEA** —Álvaro Solache com a **director del VNA**, Bep Moll a
-comunicació, Antonio Blanco i Sergio Salgado com a consultors i analistes— i
-que l'àmbit d'una de les sessions era **la xarxa de venda i devolucions**.
-*Encara falten els anys.*
+⚠ El guió també confirmava l'equip i l'àmbit d'aquella entrega. **No es
+publica** (decidit per l'Àlvar el 09/10/2026).
 
 **El que queda:** l'article anuncia una segona part amb el cas d'una escola de
 postgrau; no s'ha comprovat si existeix (`pantheon.work` segueix bloquejat pel
@@ -1330,7 +1387,7 @@ estratégicas»*, amb un CV nou.
 
 | Anys | On | Per què importa aquí |
 |---|---|---|
-| 2019 – avui | **Pantheon Work · director de projectes de consultoria** | La web deia «beta-tester i coach». És el càrrec, i és el que sosté el pla estratègic d'IKEA |
+| 2019 – avui | **Pantheon Work · director de projectes de consultoria** | La web deia «beta-tester i coach». És el càrrec |
 | 2019 – 2020 | **Rescoio · project manager de programari** | El programari era de les **Biblioteques de les Coses** — la mateixa dinàmica que avui és una eina del SOS |
 | 2021 – 2022 | **CryptoMarketing · smart contracts officer** | El catàleg ven «contractes intel·ligents · estudi de viabilitat» i no tenia qui el signés |
 | 2021 – 2023 | **SAE Institute · professor de Web 3.0 i pensament sistèmic** | Igual |
@@ -1342,7 +1399,7 @@ treballa a cada un**. Qui compra consultoria pregunta justament això. Ara hi ha
 tres caselles, i cada una porta on consta:
 
 - **Estratègic** · director estratègic de RRHH a GEC–UOC amb el pla de la UOC
-  implantat, i el pla estratègic organitzatiu i de RRHH d'IKEA.
+  implantat.
 - **Tàctic** · direcció de projectes de consultoria, product owner, project
   manager de programari, currículums formatius.
 - **Operatiu** · selecció per a la planta d'HP, programes a Myrurgia, team coach
@@ -1670,8 +1727,8 @@ satisfacció». A `premsa.html`, «50+ aparicions», «15+ països», «5M+ d'ab
 que menys es poden defensar.
 
 **Què s'ha fet.** Les cites, fora. Les xifres agregades, fora, i al seu lloc
-les tres que es poden defensar —32 clients amb font, 20 anys, 2 aplicacions de
-VNA a IKEA— més la frase que diu **el que no consta**: «de cada client consta
+les tres que es poden defensar —32 clients amb font i 20 anys (la tercera, un
+cas de client, es va retirar el 09/10/2026)— més la frase que diu **el que no consta**: «de cada client consta
 que ho va ser; de la majoria no consta quina entrega concreta va ser».
 
 I els enllaços: les tres pàgines apuntaven a mitja generació retirada

@@ -14,7 +14,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 238 · 17025 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 238 · 17031 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
@@ -31,8 +31,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 28 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 99 · 1245 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 50 · 1149 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 99 · 1247 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 50 · 1151 KB |
 
 ## saber
 
@@ -40,12 +40,12 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 39 · 909 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 3 · 264 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 39 · 911 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 3 · 267 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
-| `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
+| `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 121 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 2 · 28 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 13 · 134 KB |
 | `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 3 · 7 KB |
