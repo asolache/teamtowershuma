@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- BORRADOR · no se indexa hasta que Álvaro valide textos y precios, y hasta que exista la versión en catalán. -->
+    <meta name="robots" content="noindex, follow">
+    <title>Mapa de valor y web para toda tu red | TeamTowers</title>
+    <meta name="description" content="Dibujamos contigo quién da qué a quién en tu negocio, con el método de Verna Allee. De ese mapa sale una web con una puerta para clientes, tiendas, quien te recomienda, tu equipo y tus proveedores, publicada en la sesión y a tu nombre.">
+    <meta name="author" content="Álvaro Solache · TeamTowers">
+    <link rel="canonical" href="https://teamtowershuma.com/mapa-web/">
+    <meta property="og:title" content="Una web para todos los que sostienen tu negocio. No solo para quien compra.">
+    <meta property="og:description" content="Mapa de valor y web publicada en una sesión de 2 h 30. Una puerta para cada rol que sostiene tu negocio. Por TeamTowers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/mapa-web/">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="TeamTowers">
+    <meta property="og:image" content="https://teamtowershuma.com/mapa-web/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Una web para todos los que sostienen tu negocio, junto al mapa de valor de ejemplo: un negocio en el centro y seis roles alrededor.">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Mapa de valor y web en una sesión",
+      "serviceType": "Value Network Analysis y desarrollo web con IA",
+      "url": "https://teamtowershuma.com/mapa-web/",
+      "provider": {
+        "@type": "Organization",
+        "name": "TeamTowers",
+        "url": "https://teamtowershuma.com/",
+        "founder": { "@type": "Person", "name": "Álvaro Solache" }
+      },
+      "areaServed": "ES",
+      "availableChannel": { "@type": "ServiceChannel", "availableLanguage": ["es", "ca"] },
+      "description": "Sesión individual o de equipo, de 2 h 30 o de 4 h, para dibujar la red de valor de un negocio con el método de Verna Allee y publicar, en la misma sesión, una web con una puerta para cada rol, a nombre del cliente y con el conocimiento del proyecto en Markdown dentro de su repositorio.",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Formatos",
+        "itemListElement": [
+          { "@type": "Offer", "name": "Borrador del mapa", "price": "0", "priceCurrency": "EUR", "priceSpecification": { "@type": "PriceSpecification", "price": "0", "priceCurrency": "EUR", "valueAddedTaxIncluded": false }, "description": "Borrador del mapa y preguntas que tu web no contesta, en tres días laborables. Sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Sesión individual", "price": "390", "priceCurrency": "EUR", "priceSpecification": { "@type": "PriceSpecification", "price": "390", "priceCurrency": "EUR", "valueAddedTaxIncluded": false }, "description": "Precio de validación para las diez primeras sesiones; después, 690 €. Sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Taller de equipo", "price": "1200", "priceCurrency": "EUR", "priceSpecification": { "@type": "PriceSpecification", "price": "1200", "priceCurrency": "EUR", "valueAddedTaxIncluded": false }, "description": "Precio de validación para los tres primeros talleres; después, 1.800 €. Sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Acompañamiento de tres meses", "price": "1400", "priceCurrency": "EUR", "priceSpecification": { "@type": "PriceSpecification", "price": "1400", "priceCurrency": "EUR", "valueAddedTaxIncluded": false }, "description": "Seis sesiones de 1 h, una cada dos semanas, y una revisión semanal de los cambios con su informe. Sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Mantenimiento «Guardas»", "price": "35", "priceCurrency": "EUR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "35", "priceCurrency": "EUR", "unitCode": "MON", "valueAddedTaxIncluded": false }, "description": "Al mes, sin permanencia. Sin IVA. Borrador." },
+          { "@type": "Offer", "name": "Mantenimiento «Cerebro al día»", "price": "120", "priceCurrency": "EUR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "120", "priceCurrency": "EUR", "unitCode": "MON", "valueAddedTaxIncluded": false }, "description": "Al mes, sin permanencia. Sin IVA. Borrador." }
+        ]
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            /* La piel de teamtowershuma.com (build-pell.js), copiada a mano:
+               esta carpeta queda fuera del generador mientras sea borrador. */
+            --bg: #fbfaf7;
+            --panel: #f4f1ea;
+            --card: #ffffff;
+            --text: #15130f;
+            --light: #4a463e;
+            --muted: #5e594d;
+            --border: #ddd7c8;
+            --border-strong: #cac3b0;
+            --indigo: #4f46e5;
+            --indigo-hover: #4338ca;
+            --blue: #005795;
+            --purple: #a3187f;
+            --green: #0c6640;
+            --orange: #9c4408;
+            --on-accent: #ffffff;
+            --cream: #fff4d6;
+            --sans: 'Space Grotesk', system-ui, sans-serif;
+            --mono: 'JetBrains Mono', 'SF Mono', Monaco, Consolas, monospace;
+            --t0: .9375rem;
+            --t1: 1.0625rem;
+            --t2: 1.25rem;
+            --t3: clamp(1.3rem, 2.4vw, 1.6rem);
+            --t4: clamp(1.8rem, 4.2vw, 2.75rem);
+            --t5: clamp(2.3rem, 6.4vw, 4.15rem);
+            --radius: 14px;
+            --gutter: 1rem;
+            --sec: clamp(3.5rem, 8vw, 6.5rem);
+            --shadow: 0 1px 2px rgb(21 19 15 / .05), 0 14px 34px -20px rgb(21 19 15 / .28);
+        }
+        @media (min-width: 600px) { :root { --gutter: 2rem; } }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 100%; scroll-padding-top: 1rem; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: var(--t1); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+        a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: .2em; }
+        a:hover { text-decoration-thickness: 2px; }
+        :focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; border-radius: 4px; }
+        code { font-family: var(--mono); font-size: .86em; background: var(--panel); border: 1px solid var(--border); padding: .02em .35em; border-radius: 5px; white-space: nowrap; }
+        strong, b { font-weight: 600; }
+        ul, ol { list-style: none; }
+        .container { max-width: 1160px; margin-inline: auto; padding-inline: var(--gutter); }
+        .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+        .salta { position: absolute; left: -9999px; top: 0; background: var(--indigo); color: var(--on-accent); padding: .7rem 1.1rem; z-index: 200; border-radius: 0 0 10px 0; font-weight: 600; }
+        .salta:focus { left: 0; }
+        /* La cabecera es fija desde 760 px: el relleno de desplazamiento evita que tape
+           el destino de un ancla y también el foco al tabular (WCAG 2.4.11). */
+        @media (min-width: 760px) { html { scroll-padding-top: 4.5rem; } }
+
+        /* Cabecera mínima: el menú único del sitio se genera con build-nav.js y
+           esta página aún no está dada de alta en él. */
+        .cab { background: color-mix(in srgb, var(--bg) 92%, transparent); border-bottom: 1px solid var(--border); z-index: 100; }
+        @media (min-width: 760px) { .cab { position: sticky; top: 0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); } }
+        .cab .container { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; min-height: 56px; }
+        .marca { display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; font-weight: 700; font-size: var(--t1); color: var(--text); text-decoration: none; letter-spacing: -.02em; }
+        .marca b { color: var(--indigo); font-weight: 700; }
+        .marca svg { width: 22px; height: 22px; }
+        .cab nav { width: calc(100% + .8rem); margin-inline: -.4rem; }
+        .cab ul { display: flex; flex-wrap: wrap; gap: 0; }
+        .cab ul li { white-space: nowrap; }
+        .cab ul a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .4rem; color: var(--light); text-decoration: none; font-size: .8125rem; font-weight: 500; }
+        .cab ul a:hover { color: var(--text); }
+        @media (min-width: 760px) {
+            .cab nav { width: auto; margin-left: auto; margin-right: -.6rem; }
+            .cab ul { flex-wrap: nowrap; }
+            .cab ul a { font-size: var(--t0); padding-inline: .6rem; }
+        }
+
+        .borrador { background: var(--cream); border-bottom: 1px solid #e8d49a; font-size: var(--t0); padding: .6rem 0; line-height: 1.5; }
+        .borrador strong { color: var(--orange); }
+
+        /* Tipografía de sección */
+        main > section { padding-block: var(--sec); border-top: 1px solid var(--border); }
+        main > section.alt { background: var(--panel); }
+        .eyebrow { display: flex; align-items: center; gap: .65rem; font-family: var(--mono); font-size: .78rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; line-height: 1.4; }
+        .eyebrow::before { content: ""; flex: none; width: 1.6rem; height: 1px; background: var(--border-strong); }
+        h1 { font-size: clamp(2.3rem, 5.2vw, 3.5rem); line-height: 1.03; letter-spacing: -.035em; font-weight: 700; margin-bottom: 1.4rem; }
+        h1 span { display: block; color: var(--muted); }
+        h2 { font-size: var(--t4); line-height: 1.1; letter-spacing: -.025em; font-weight: 600; margin-bottom: 1rem; text-wrap: balance; }
+        h3 { font-size: var(--t2); line-height: 1.3; letter-spacing: -.01em; font-weight: 600; margin-bottom: .5rem; }
+        .cabeza { max-width: 48rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
+        .lead { max-width: 62ch; font-size: clamp(1.0625rem, 1.5vw, 1.1875rem); color: var(--light); }
+        .lead strong { color: var(--text); }
+        .cierre { margin-top: clamp(2rem, 4vw, 2.75rem); max-width: 60ch; font-size: var(--t2); line-height: 1.5; padding-left: 1.2rem; border-left: 3px solid var(--text); }
+        .peque { font-size: .875rem; color: var(--muted); line-height: 1.6; }
+        .mono-nota { font-family: var(--mono); font-size: .8125rem; line-height: 1.65; color: var(--muted); }
+        .sello-pend { display: inline-flex; align-items: center; gap: .35rem; font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--orange); border: 1px dashed var(--orange); border-radius: 999px; padding: .12rem .55rem; background: color-mix(in srgb, var(--orange) 6%, var(--card)); line-height: 1.5; white-space: nowrap; }
+        .nw { white-space: nowrap; }
+        .flecha::after { content: "→"; content: "→" / ""; margin-left: .35em; }
+
+        /* Botones: uno principal por pantalla */
+        .accions { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 1rem 1.25rem; margin-top: 2rem; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: .75rem 1.35rem; border-radius: 12px; font: 600 var(--t0)/1.25 var(--sans); text-decoration: none; text-align: center; touch-action: manipulation; transition: background-color .15s, border-color .15s, color .15s, transform .15s; }
+        .btn-primary { background: var(--indigo); color: var(--on-accent); box-shadow: inset 0 1px 0 rgb(255 255 255 / .18), 0 10px 22px -12px var(--indigo); }
+        .btn-primary:hover { background: var(--indigo-hover); }
+        .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border-strong); }
+        .btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); }
+        .btn-sm { min-height: 44px; padding: .6rem 1.05rem; font-size: .9rem; }
+        .cta { display: grid; gap: .55rem; }
+        .micro { font-family: var(--mono); font-size: .75rem; line-height: 1.55; color: var(--muted); max-width: 40ch; }
+
+        /* 1 · Inicio */
+        .inicio { padding-block: clamp(2.5rem, 7vw, 5.5rem) var(--sec); border-top: 0 !important; background: radial-gradient(60rem 30rem at 85% 10%, color-mix(in srgb, var(--blue) 6%, transparent), transparent 70%), radial-gradient(40rem 26rem at 70% 70%, color-mix(in srgb, var(--purple) 5%, transparent), transparent 70%); }
+        .inicio-grid { display: grid; gap: 2rem; align-items: center; }
+        .sello { width: 24px; height: 24px; flex: none; }
+        .eyebrow.con-sello::before { display: none; }
+        .inicio .lead { margin-top: .2rem; }
+        .ahora { max-width: 60ch; margin-top: 1rem; color: var(--light); font-size: var(--t0); padding-left: 1rem; border-left: 3px solid var(--border-strong); }
+        .criterio { max-width: 60ch; margin-top: 1rem; font-size: var(--t1); line-height: 1.5; }
+        @media (min-width: 960px) {
+            .inicio-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 3.5rem; }
+        }
+        /* «Tu web»: el menú que sale del mapa, una puerta por rol. Se ve también en móvil. */
+        .tuweb { margin: 0; width: 100%; max-width: 440px; justify-self: center; }
+        .tuweb-t { font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; color: var(--muted); margin-bottom: .55rem; }
+        .tuweb-v { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+        .tuweb-barra { display: flex; align-items: center; gap: .35rem; padding: .55rem .85rem; background: var(--panel); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+        .tuweb-barra i { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+        .tuweb-barra span { margin-left: .5rem; }
+        .tuweb ul { padding: .35rem 0; }
+        .tuweb li { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .1rem .75rem; padding: .55rem 1rem; border-top: 1px solid var(--border); }
+        .tuweb li:first-child { border-top: 0; }
+        .tuweb .pw { font-weight: 600; font-size: var(--t0); }
+        .tuweb .rol { display: inline-flex; align-items: center; gap: .45rem; font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+        .tuweb .rol::before { content: ""; width: 1.1rem; height: 0; border-top: 2px solid var(--blue); }
+        .tuweb li:nth-child(even) .rol::before { border-top: 2px dashed var(--purple); }
+
+        .triada { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 5vw, 3.5rem); counter-reset: tri; }
+        .triada li { counter-increment: tri; position: relative; background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--acc); border-radius: var(--radius); padding: 1.25rem 1.35rem 1.35rem; box-shadow: var(--shadow); }
+        .triada li::before { content: counter(tri, decimal-leading-zero); display: block; font-family: var(--mono); font-size: .75rem; color: var(--muted); margin-bottom: .55rem; letter-spacing: .08em; }
+        .triada li:nth-child(1) { --acc: var(--blue); }
+        .triada li:nth-child(2) { --acc: var(--indigo); }
+        .triada li:nth-child(3) { --acc: var(--purple); }
+        .triada b { display: block; font-size: var(--t2); line-height: 1.3; margin-bottom: .35rem; }
+        .triada span { display: block; font-size: var(--t0); color: var(--light); line-height: 1.55; }
+        @media (min-width: 760px) { .triada { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .aval { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; margin-top: 1.5rem; padding: .9rem 1.1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); font-size: .9rem; color: var(--light); line-height: 1.45; }
+        .aval b { color: var(--text); font-weight: 600; }
+        .aval > span { display: block; }
+        .aval .sello-pend { margin-left: .35rem; }
+        @media (min-width: 760px) {
+            .aval > span { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; }
+            .aval > span + span::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--border-strong); margin-right: .75rem; }
+            .aval .sello-pend { margin-left: 0; }
+        }
+        .atajos { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.1rem; margin-top: 1.5rem; font-size: .9rem; color: var(--muted); }
+        .atajos a { display: inline-flex; align-items: center; min-height: 44px; }
+
+        /* 2 · Dolor */
+        .frases { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        .frases li { background: var(--card); padding: 1.5rem 1.4rem 1.3rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1.1rem; }
+        .frase { font-size: var(--t2); line-height: 1.38; font-weight: 500; letter-spacing: -.01em; }
+        .quien { font-family: var(--mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+        @media (min-width: 640px) { .frases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 900px) { .frases { grid-template-columns: repeat(3, minmax(0, 1fr)); } .frases li { min-height: 11rem; } }
+
+        /* La pinya: un momento de tipografía grande */
+        main > section.gran { padding-block: clamp(3.5rem, 9vw, 7rem); }
+        .gran-a { max-width: 30ch; font-size: clamp(1.6rem, 3.6vw, 2.5rem); line-height: 1.2; letter-spacing: -.02em; font-weight: 500; color: var(--light); text-wrap: balance; }
+        .gran-b { max-width: 26ch; margin: 1.1rem 0 0; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.08; letter-spacing: -.03em; font-weight: 700; }
+        .gran-b span { color: var(--purple); }
+
+        /* 3 · La red (elemento distintivo) */
+        .red { display: grid; gap: 1.25rem; }
+        .red fieldset { border: 0; min-width: 0; }
+        .red legend { font-family: var(--mono); font-size: .75rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: .65rem; padding: 0; }
+        .red .op { position: relative; }
+        .red input[type="radio"] { position: absolute; top: 0; left: 0; opacity: 0; width: 1px; height: 1px; }
+        .red label { cursor: pointer; touch-action: manipulation; }
+        .vistas .op { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; max-width: 34rem; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
+        .vistas label { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: .5rem .6rem; border-radius: 10px; font: 600 var(--t0)/1.2 var(--sans); color: var(--light); text-align: center; transition: background-color .2s, color .2s; }
+        .vistas label:hover { color: var(--text); background: color-mix(in srgb, var(--card) 70%, transparent); }
+        .vistas input:checked + label { background: var(--indigo); color: var(--on-accent); box-shadow: 0 6px 16px -10px var(--indigo); }
+        .red input:focus-visible + label { outline: 2px solid var(--indigo); outline-offset: 2px; }
+        .entre-ctl { display: flex; align-items: center; gap: .1rem; min-height: 44px; }
+        .entre-ctl input { width: 20px; height: 20px; margin: 12px; accent-color: var(--indigo); flex: none; cursor: pointer; }
+        .entre-ctl label { padding-block: .6rem; font-size: var(--t0); font-weight: 500; }
+
+        .red-fig { display: grid; gap: 1.25rem; margin: 0; }
+        .red-svg { display: block; width: 100%; max-width: 480px; height: auto; margin-inline: auto; background-color: var(--card); background-image: radial-gradient(circle, var(--border) 1px, transparent 1.3px); background-size: 18px 18px; border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow); }
+        .red-svg text { font-family: var(--sans); text-anchor: middle; }
+        .n rect { fill: var(--card); stroke: var(--border-strong); stroke-width: 1.5; }
+        .n .v { font-size: 15px; font-weight: 600; fill: var(--text); }
+        .n .s, .n .s-embudo { font-family: var(--mono); font-size: 12.5px; fill: var(--muted); }
+        .n-centro circle { fill: var(--text); }
+        .n-centro text { fill: var(--bg); font-size: 14px; font-weight: 600; }
+        .l, .cuerda { fill: none; stroke-width: 2.25; stroke-linecap: round; }
+        .l-t { stroke: var(--blue); }
+        .l-i { stroke: var(--purple); stroke-dasharray: 5 5; }
+        .cuerda { stroke-width: 1.75; }
+        .pt-t { fill: var(--blue); }
+        .pt-i { fill: var(--purple); }
+        .s-embudo, .solo-embudo, .b-duda { display: none; }
+        .red-svg .solo-embudo { font-family: var(--mono); font-size: 12.5px; fill: var(--blue); text-anchor: start; font-weight: 500; }
+        .b-ok circle { fill: var(--green); }
+        .b-ok path { stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .b-duda circle { fill: var(--orange); }
+        .red-svg .b-duda text { fill: #fff; font-size: 12px; font-weight: 700; }
+        .red-svg :is(.l, .cuerda, .n, .b-ok, .b-duda, .lineas), .n rect { transition: stroke-opacity .3s, opacity .2s, stroke-width .2s, stroke .2s, fill .2s; }
+
+        /* Vistas */
+        .red:has(#v-embudo:checked) :is(.l-i, .l-t:not(.l-compra), .cuerda) { stroke-opacity: 0; }
+        .red:has(#v-embudo:checked) .l-compra.l-t { stroke-width: 3.25; }
+        .red:has(#v-embudo:checked) .n:not(.n-compra, .n-centro) rect { fill: transparent; stroke-dasharray: 4 4; }
+        .red:has(#v-embudo:checked) .n:not(.n-compra, .n-centro) .v { fill: var(--muted); }
+        .red:has(#v-embudo:checked) .n:not(.n-compra) .s { display: none; }
+        .red:has(#v-embudo:checked) :is(.s-embudo, .solo-embudo) { display: inline; }
+        .red:has(#v-embudo:checked, #v-borrador:checked) :is(.b-ok, .cuerda) { display: none; }
+        .red:has(#v-borrador:checked) :is(.l-t, .l-i) { stroke: var(--orange); }
+        .red:has(#v-borrador:checked) .n:not(.n-centro) rect { stroke: var(--orange); stroke-dasharray: 4 3; }
+        .red:has(#v-borrador:checked) .b-duda { display: inline; }
+        .red:has(#v-red:checked):not(:has(#v-entre:checked)) .cuerda { display: none; }
+        .red:has(#v-red:checked):has(#v-entre:checked) .lineas { opacity: .35; }
+        .red:has(#v-embudo:checked, #v-borrador:checked) .entre-ctl { display: none; }
+
+        /* Pies, recuentos, listas y líneas de ficha */
+        .red:has(#v-embudo:checked) :is(.cap-borrador, .cap-red, .cap-entre, .c-borrador, .c-red, .entre-lista, .en-borrador) { display: none; }
+        .red:has(#v-borrador:checked) :is(.cap-embudo, .cap-red, .cap-entre, .c-embudo, .c-red, .entre-lista, .en-embudo) { display: none; }
+        .red:has(#v-red:checked) :is(.cap-embudo, .cap-borrador, .c-embudo, .c-borrador, .en-embudo, .en-borrador) { display: none; }
+        .red:has(#v-red:checked):not(:has(#v-entre:checked)) :is(.cap-entre, .entre-lista) { display: none; }
+
+        /* Esquema «tu web» (decorativo) */
+        .mock { display: none; width: 100%; max-width: 480px; margin-inline: auto; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+        @media (min-width: 480px) { .mock { display: block; } }
+        .mock-barra { display: flex; align-items: center; gap: .35rem; padding: .5rem .8rem; background: var(--panel); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+        .mock-barra i { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+        .mock-barra span { margin-left: .5rem; }
+        .mock ul { display: flex; flex-wrap: wrap; gap: .4rem; padding: .75rem .8rem .85rem; }
+        .mock li { font-family: var(--mono); font-size: 12px; line-height: 1.4; padding: .22rem .6rem; border: 1px solid var(--border); border-radius: 999px; color: var(--light); background: var(--card); transition: background-color .2s, color .2s, opacity .2s; }
+        .mock li.t-inicio { background: var(--panel); }
+        .red:has(#v-embudo:checked) .mock li:not(.t-inicio, .t-compra) { text-decoration: line-through; color: var(--muted); opacity: .6; }
+        .red:has(#v-borrador:checked) .mock li { border-style: dashed; border-color: var(--orange); }
+
+        figcaption.red-pie { display: grid; gap: 1rem; align-content: start; }
+        .cap { font-size: var(--t0); color: var(--light); line-height: 1.6; }
+        .cap-t { display: block; font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--text); margin-bottom: .3rem; }
+        .cuenta { font-family: var(--mono); font-size: .8rem; line-height: 1.5; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: .55rem .75rem; }
+        .leyenda { display: grid; gap: .6rem; font-size: .875rem; color: var(--light); line-height: 1.5; }
+        .leyenda li { display: grid; grid-template-columns: 34px 1fr; gap: .6rem; align-items: start; }
+        .leyenda svg { width: 34px; height: 14px; margin-top: .25rem; overflow: visible; }
+        .leyenda b { color: var(--text); }
+        .nota-red { font-family: var(--mono); font-size: .75rem; line-height: 1.65; color: var(--muted); border-top: 1px solid var(--border); padding-top: .9rem; }
+        @media (min-width: 960px) {
+            .red-fig { grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr); grid-template-areas: "svg pie" "mock pie"; column-gap: 2.75rem; row-gap: 1rem; align-items: start; }
+            .red-svg { grid-area: svg; }
+            .mock { grid-area: mock; }
+            figcaption.red-pie { grid-area: pie; align-self: center; }
+        }
+
+        .panel { display: grid; gap: 1.25rem; margin-top: .75rem; }
+        .roles .op { display: flex; flex-wrap: wrap; gap: .5rem; }
+        .roles label { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; padding: .55rem 1rem; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--card); font: 600 var(--t0)/1.2 var(--sans); transition: border-color .2s, background-color .2s, box-shadow .2s; }
+        .roles label span { font-weight: 400; color: var(--muted); }
+        .roles label:hover { border-color: var(--indigo); }
+        .roles input:checked + label { border-color: var(--indigo); box-shadow: inset 0 0 0 1px var(--indigo); background: color-mix(in srgb, var(--indigo) 10%, var(--card)); }
+
+        .fichas { display: grid; gap: 1rem; align-items: start; }
+        .fichas-nota { display: none; font-size: .875rem; color: var(--muted); }
+        @media (max-width: 639px) {
+            /* En móvil, con «Toda la red», cada ficha enseña solo su puerta; el detalle sale al elegir el rol. */
+            .red:has(#r-todos:checked) .fichas-nota { display: block; }
+            .red:has(#r-todos:checked) .ficha dl > div:not(:last-child) { display: none; }
+            .red:has(#r-todos:checked) .ficha dl > div:last-child { margin-top: .5rem; }
+            .red:has(#r-todos:checked) .ficha :is(.en-embudo, .en-borrador) { margin-top: .6rem; }
+        }
+        @media (min-width: 640px) { .fichas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1000px) { .fichas { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .ficha { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.3rem 1.3rem; transition: border-color .2s, box-shadow .2s; }
+        .ficha:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+        .ficha h3 { font-size: var(--t2); margin-bottom: .2rem; }
+        .ficha h3 span { color: var(--muted); font-weight: 400; font-size: var(--t0); }
+        .ficha dl > div { padding-top: .75rem; margin-top: .75rem; border-top: 1px solid var(--border); }
+        .ficha dt { font-family: var(--mono); font-size: .7rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: .35rem; }
+        .ficha dd { font-size: .9375rem; line-height: 1.5; }
+        .ficha dd + dd { margin-top: .35rem; }
+        .tag { display: inline-block; font-family: var(--mono); font-size: .7rem; font-weight: 500; line-height: 1.5; padding: 0 .45rem; border-radius: 999px; margin-right: .3rem; vertical-align: .08em; }
+        .tag.tg { color: var(--blue); background: color-mix(in srgb, var(--blue) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--blue) 35%, var(--card)); }
+        .tag.in { color: var(--purple); background: color-mix(in srgb, var(--purple) 9%, var(--card)); border: 1px dashed color-mix(in srgb, var(--purple) 45%, var(--card)); }
+        .en-embudo, .en-borrador { margin-top: .9rem; font-size: .875rem; line-height: 1.55; padding-left: .8rem; }
+        .en-embudo { color: var(--muted); border-left: 3px solid var(--border-strong); }
+        .en-borrador { color: var(--light); border-left: 3px dashed var(--orange); }
+        .en-borrador em { color: var(--text); }
+        .entre-lista { grid-column: 1 / -1; background: var(--card); border: 1px solid var(--border); border-left: 3px dashed var(--purple); border-radius: var(--radius); padding: 1.2rem 1.3rem; }
+        .entre-lista ul { display: grid; gap: .9rem; margin-top: .6rem; }
+        @media (min-width: 760px) { .entre-lista ul { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; } }
+        .entre-lista li { font-size: .9375rem; line-height: 1.55; color: var(--light); }
+        .entre-lista li b { display: block; color: var(--text); }
+
+        /* Foco de rol */
+        .red:has(.roles :checked:not(#r-todos)) :where(.l, .cuerda, .b-ok, .b-duda) { opacity: .15; }
+        .red:has(.roles :checked:not(#r-todos)) :where(.n:not(.n-centro)) { opacity: .4; }
+        .red:has(.roles :checked:not(#r-todos)) .ficha { display: none; }
+        @keyframes fluye { to { stroke-dashoffset: -20; } }
+.red:has(#r-compra:checked) :is(.n-compra,.l-compra,.c-compra,.b-compra),
+.red:has(#r-revende:checked) :is(.n-revende,.l-revende,.c-revende,.b-revende),
+.red:has(#r-suministra:checked) :is(.n-suministra,.l-suministra,.c-suministra,.b-suministra),
+.red:has(#r-trabaja:checked) :is(.n-trabaja,.l-trabaja,.c-trabaja,.b-trabaja),
+.red:has(#r-acoge:checked) :is(.n-acoge,.l-acoge,.c-acoge,.b-acoge),
+.red:has(#r-recomienda:checked) :is(.n-recomienda,.l-recomienda,.c-recomienda,.b-recomienda){opacity:1}
+.red:has(#r-compra:checked) .n-compra rect,
+.red:has(#r-revende:checked) .n-revende rect,
+.red:has(#r-suministra:checked) .n-suministra rect,
+.red:has(#r-trabaja:checked) .n-trabaja rect,
+.red:has(#r-acoge:checked) .n-acoge rect,
+.red:has(#r-recomienda:checked) .n-recomienda rect{stroke:var(--indigo);stroke-width:2.5}
+.red:has(#r-compra:checked) :is(.l-compra,.c-compra),
+.red:has(#r-revende:checked) :is(.l-revende,.c-revende),
+.red:has(#r-suministra:checked) :is(.l-suministra,.c-suministra),
+.red:has(#r-trabaja:checked) :is(.l-trabaja,.c-trabaja),
+.red:has(#r-acoge:checked) :is(.l-acoge,.c-acoge),
+.red:has(#r-recomienda:checked) :is(.l-recomienda,.c-recomienda){stroke-width:3.25}
+.red:has(#r-compra:checked) .mock .t-compra,
+.red:has(#r-revende:checked) .mock .t-revende,
+.red:has(#r-suministra:checked) .mock .t-suministra,
+.red:has(#r-trabaja:checked) .mock .t-trabaja,
+.red:has(#r-acoge:checked) .mock .t-acoge,
+.red:has(#r-recomienda:checked) .mock .t-recomienda{background:var(--indigo);color:var(--on-accent);border-color:var(--indigo);border-style:solid;text-decoration:none;opacity:1}
+.red:has(#r-compra:checked) #ficha-compra,
+.red:has(#r-revende:checked) #ficha-revende,
+.red:has(#r-suministra:checked) #ficha-suministra,
+.red:has(#r-trabaja:checked) #ficha-trabaja,
+.red:has(#r-acoge:checked) #ficha-acoge,
+.red:has(#r-recomienda:checked) #ficha-recomienda{display:block}
+.red:has(#r-compra:checked) .l-compra.l-i,
+.red:has(#r-revende:checked) .l-revende.l-i,
+.red:has(#r-suministra:checked) .l-suministra.l-i,
+.red:has(#r-trabaja:checked) .l-trabaja.l-i,
+.red:has(#r-acoge:checked) .l-acoge.l-i,
+.red:has(#r-recomienda:checked) .l-recomienda.l-i{animation:fluye 1.1s linear 4}
+.red:has(#ficha-compra:is(:hover,:focus-within)) .l-compra,
+.red:has(#ficha-revende:is(:hover,:focus-within)) .l-revende,
+.red:has(#ficha-suministra:is(:hover,:focus-within)) .l-suministra,
+.red:has(#ficha-trabaja:is(:hover,:focus-within)) .l-trabaja,
+.red:has(#ficha-acoge:is(:hover,:focus-within)) .l-acoge,
+.red:has(#ficha-recomienda:is(:hover,:focus-within)) .l-recomienda{stroke-width:3.25}
+.red:has(#ficha-compra:is(:hover,:focus-within)) .n-compra rect,
+.red:has(#ficha-revende:is(:hover,:focus-within)) .n-revende rect,
+.red:has(#ficha-suministra:is(:hover,:focus-within)) .n-suministra rect,
+.red:has(#ficha-trabaja:is(:hover,:focus-within)) .n-trabaja rect,
+.red:has(#ficha-acoge:is(:hover,:focus-within)) .n-acoge rect,
+.red:has(#ficha-recomienda:is(:hover,:focus-within)) .n-recomienda rect{stroke:var(--indigo);stroke-width:2.5}
+
+        /* Tablas que en móvil pasan a filas apiladas */
+        .tabla-marco { margin-top: 2rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        .tabla { width: 100%; border-collapse: collapse; font-size: var(--t0); line-height: 1.5; }
+        .tabla caption { text-align: left; padding: 1rem 1.15rem .6rem; font-family: var(--mono); font-size: .75rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+        .tabla th, .tabla td { text-align: left; vertical-align: top; padding: .9rem 1.15rem; border-top: 1px solid var(--border); }
+        .tabla thead th { font-size: .875rem; font-weight: 600; background: var(--panel); }
+        .tabla tbody th { font-weight: 600; }
+        .tabla td { color: var(--light); }
+        .tabla .col-red { color: var(--text); }
+        .tabla thead .col-embudo { color: var(--muted); font-weight: 500; }
+        @media (min-width: 720px) { .tabla-dif tbody th { width: 22%; } .tabla-dif td:not(.col-red) { width: 30%; } }
+        .tabla .tg-t { color: var(--blue); }
+        .tabla .in-t { color: var(--purple); }
+        @media (max-width: 719px) {
+            .tabla-resp, .tabla-resp tbody, .tabla-resp caption { display: block; }
+            .tabla-resp thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+            .tabla-resp tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 1rem; padding: .95rem 1.05rem; border-top: 1px solid var(--border); }
+            .tabla-resp tbody th { grid-column: 1 / -1; padding: 0 0 .45rem; border: 0; }
+            .tabla-resp td { padding: 0; border: 0; font-size: .9rem; }
+            .tabla-resp td::before { content: attr(data-th); content: attr(data-th) / ""; display: block; font-family: var(--mono); font-size: .68rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: .2rem; }
+            .tabla-resp caption { padding-bottom: .9rem; }
+        }
+
+        /* 5 · Cómo */
+        .pasos { counter-reset: paso; border-bottom: 1px solid var(--border); }
+        .paso { counter-increment: paso; display: grid; grid-template-columns: 2.6rem minmax(0, 1fr); column-gap: 1rem; row-gap: .6rem; padding-block: 1.6rem; border-top: 1px solid var(--border); }
+        .paso::before { content: counter(paso, decimal-leading-zero); grid-row: 1 / span 2; font-family: var(--mono); font-size: 1.35rem; font-weight: 500; color: var(--indigo); line-height: 1.2; }
+        .paso-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .6rem; }
+        .cuando { font-family: var(--mono); font-size: .78rem; color: var(--muted); letter-spacing: .02em; width: 100%; }
+        .paso h3 { font-size: var(--t3); line-height: 1.25; margin-bottom: .6rem; }
+        .paso p, .paso li { color: var(--light); font-size: var(--t0); line-height: 1.65; max-width: 64ch; }
+        .paso ul { display: grid; gap: .45rem; }
+        .paso li { position: relative; padding-left: 1.1rem; }
+        .paso li::before { content: ""; position: absolute; left: 0; top: .72em; width: .5rem; height: 2px; background: var(--border-strong); }
+        @media (min-width: 900px) {
+            .paso { grid-template-columns: 3.5rem 14rem minmax(0, 1fr); column-gap: 1.75rem; padding-block: 2rem; }
+            .paso::before { grid-row: 1; font-size: 1.6rem; }
+            .paso-meta { flex-direction: column; align-items: flex-start; }
+        }
+        .q { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .72rem; font-weight: 500; line-height: 1.4; padding: .18rem .6rem .18rem .5rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); white-space: nowrap; }
+        .q::before { content: ""; width: .55rem; height: .55rem; border-radius: 50%; background: var(--qc, var(--muted)); flex: none; }
+        .q-ia { --qc: var(--indigo); }
+        .q-al { --qc: var(--green); }
+        .q-tu { --qc: var(--border-strong); }
+        .q-re { --qc: var(--orange); }
+        .quienes { display: flex; flex-wrap: wrap; gap: .35rem; }
+
+        /* 6 · Lo sutil */
+        .sutiles { display: grid; gap: 1rem; }
+        @media (min-width: 960px) { .sutiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .sutil { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--acc, var(--border-strong)); border-radius: var(--radius); padding: 1.35rem 1.4rem 1.5rem; }
+        .sutil.entorno { --acc: var(--blue); }
+        .sutil.historia { --acc: var(--purple); }
+        .sutil h3 { font-size: var(--t2); margin-bottom: .2rem; }
+        .gran-cita { max-width: 32ch; margin-bottom: 1.25rem; font-size: clamp(1.5rem, 3.4vw, 2.3rem); line-height: 1.22; letter-spacing: -.02em; font-weight: 500; text-wrap: balance; }
+        .sutil dl > div { padding-top: .85rem; margin-top: .85rem; border-top: 1px solid var(--border); }
+        .sutil dt { font-family: var(--mono); font-size: .7rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: .3rem; }
+        .sutil dd { font-size: var(--t0); line-height: 1.6; color: var(--light); }
+        .sutil dd q { color: var(--text); quotes: "«" "»"; }
+
+        /* 7 · Quién hace qué */
+        .sub { font-size: var(--t3); margin: clamp(2.5rem, 5vw, 3.5rem) 0 1rem; }
+        .tres { display: grid; gap: 1rem; }
+        @media (min-width: 900px) { .tres { grid-template-columns: 1.2fr .85fr 1fr; } }
+        .col-q { background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--qc); border-radius: var(--radius); padding: 1.3rem 1.4rem 1.4rem; }
+        .col-q h3 { display: flex; align-items: center; gap: .5rem; font-size: var(--t1); font-weight: 600; margin-bottom: .9rem; }
+        .col-q h3 span { font-weight: 400; color: var(--muted); }
+        .col-q h3::before { content: ""; width: .65rem; height: .65rem; border-radius: 50%; background: var(--qc); }
+        .col-q ul { display: grid; gap: .55rem; }
+        .col-q li { position: relative; padding-left: 1.15rem; font-size: var(--t0); line-height: 1.5; color: var(--light); }
+        .col-q li::before { content: ""; position: absolute; left: 0; top: .6em; width: .45rem; height: .45rem; border-radius: 2px; background: color-mix(in srgb, var(--qc) 55%, var(--card)); }
+        .col-q.q-tu { --qc: var(--muted); }
+        .regla { display: grid; gap: .9rem; margin-top: 1.5rem; padding: 1.2rem 1.35rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); font-family: var(--mono); font-size: .875rem; line-height: 1.65; }
+        @media (min-width: 760px) { .regla { grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 1.5rem; } }
+        .estados { display: flex; align-items: center; gap: .5rem; }
+        .estados .flecha-d { color: var(--muted); }
+        .chip-e { display: inline-flex; align-items: center; gap: .35rem; font-family: var(--mono); font-size: .78rem; font-weight: 700; padding: .25rem .65rem; border-radius: 999px; white-space: nowrap; }
+        .chip-e.prop { color: var(--orange); border: 1.5px dashed var(--orange); background: color-mix(in srgb, var(--orange) 6%, var(--card)); }
+        .chip-e.ok { color: var(--on-accent); background: var(--green); border: 1.5px solid var(--green); }
+        .notas-q { display: grid; gap: 1rem; margin-top: 1.5rem; }
+        @media (min-width: 900px) { .notas-q { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+        .faq summary::after { content: "+"; content: "+" / ""; font-family: var(--mono); font-size: 1.2rem; font-weight: 400; color: var(--muted); flex: none; }
+        .faq details[open] summary::after { content: "−"; content: "−" / ""; }
+        .esta { margin-top: 1.25rem; max-width: 70ch; font-size: var(--t0); color: var(--light); }
+        .enlace-consola { display: inline-flex; align-items: center; min-height: 44px; margin-top: .75rem; font-weight: 500; }
+
+        /* 8 · Cerebro */
+        .cerebro-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; margin-top: 1.5rem; }
+        .cerebro-grid > * { min-width: 0; }
+        @media (min-width: 960px) { .cerebro-grid { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: start; } .arbol pre { font-size: .78rem; } }
+        .dues { display: grid; gap: 1rem; }
+        @media (min-width: 640px) { .dues { grid-template-columns: 1fr 1fr; } }
+        .caixa { background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--acc); border-radius: var(--radius); padding: 1.2rem 1.3rem 1.3rem; }
+        .caixa.repo { --acc: var(--green); }
+        .caixa.crm { --acc: var(--orange); }
+        .caixa h3 { font-size: var(--t1); }
+        .caixa ul { display: grid; gap: .4rem; }
+        .caixa li { position: relative; padding-left: 1rem; font-size: .9rem; line-height: 1.5; color: var(--light); }
+        .caixa li::before { content: ""; position: absolute; left: 0; top: .62em; width: .4rem; height: .4rem; border-radius: 50%; background: var(--acc); }
+        .tablon { margin-top: 1rem; padding: 1.1rem 1.3rem; border-radius: var(--radius); background: var(--text); color: #f4f1ea; }
+        .tablon strong { display: block; font-size: var(--t2); line-height: 1.35; font-weight: 600; margin-bottom: .35rem; }
+        .tablon p { font-size: .9rem; color: #cfc8b6; }
+        .tablon code { background: rgb(255 255 255 / .08); border-color: rgb(255 255 255 / .16); color: #f4f1ea; }
+        figure.arbol { margin: 0; container-type: inline-size; }
+        pre { font-family: var(--mono); font-size: .8rem; line-height: 1.7; background: var(--text); color: #f4f1ea; border-radius: var(--radius); padding: 1.2rem 1.3rem; overflow-x: auto; tab-size: 4; }
+        pre code { white-space: inherit; background: none; border: 0; padding: 0; font-size: inherit; color: inherit; }
+        pre .c { color: #b9b2a0; }
+        pre .d { color: #9fd0f2; }
+        pre .m { color: #f5b3e3; }
+        pre .h { white-space: pre; }
+        @container (max-width: 38rem) {
+            pre .h { display: none; }
+            pre .c { display: block; white-space: normal; padding-left: 2.6em; text-indent: -1.2em; margin-bottom: .15rem; }
+            pre .c2 { padding-left: 5.6em; }
+        }
+        .viene { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+        .viene h3 { font-size: var(--t2); }
+
+        /* 9 · Prueba */
+        .bio { display: grid; gap: 1.5rem; padding: clamp(1.4rem, 3vw, 2rem); background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); }
+        @media (min-width: 960px) { .bio { grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: 2.75rem; } }
+        .bio h3 { font-size: var(--t3); }
+        .bio-intro p { color: var(--light); }
+        .bio dl > div { display: grid; gap: .25rem; padding-block: .85rem; border-top: 1px solid var(--border); }
+        .bio dl > div:first-child { border-top: 0; padding-top: 0; }
+        @media (min-width: 640px) { .bio dl > div { grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; } }
+        .bio dt { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-top: .2rem; }
+        .bio dd { font-size: var(--t0); line-height: 1.6; color: var(--light); }
+        .cifras { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+        .cifras span { font-family: var(--mono); font-size: .78rem; font-weight: 500; color: var(--text); padding: .2rem .6rem; border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+        .bloque { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+        .bloque > h3 { font-size: var(--t3); margin-bottom: 1rem; }
+        .projectes { display: grid; gap: .75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); }
+        .projectes a { display: flex; flex-direction: column; gap: .3rem; height: 100%; min-height: 44px; padding: 1rem 1.15rem 1.1rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; color: var(--light); transition: border-color .2s, box-shadow .2s; }
+        .projectes a:hover { border-color: var(--blue); box-shadow: var(--shadow); }
+        .projectes .dom { font-family: var(--mono); font-size: .9rem; font-weight: 700; color: var(--blue); overflow-wrap: anywhere; }
+        .projectes .desc { font-size: .875rem; line-height: 1.5; }
+        .projectes .sello-pend { align-self: flex-start; }
+        .bio .sello-pend { margin-left: .35rem; vertical-align: .1em; }
+        .comprueba { display: grid; gap: .75rem; }
+        .comprueba li { padding: 1rem 1.15rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--t0); color: var(--light); line-height: 1.6; }
+        .comprueba a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; margin-top: .1rem; }
+        @media (min-width: 900px) { .comprueba { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .en-casa { margin-top: 1.25rem; padding: 1.3rem 1.4rem; background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--blue); border-radius: var(--radius); }
+        .en-casa h3 { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; font-size: var(--t1); }
+        .en-casa p { font-size: var(--t0); color: var(--light); max-width: 78ch; }
+
+        /* 10 · Precios */
+        .franja-0 { max-width: 70ch; padding: .3rem 0 .3rem 1.2rem; border-left: 4px solid var(--orange); color: var(--light); }
+        .franja-0 strong { color: var(--text); }
+        .preus { display: grid; gap: 1rem; margin-top: 2rem; align-items: stretch; }
+        @media (min-width: 820px) { .preus { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 62rem; } }
+        .ancla { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .75rem; max-width: 70ch; margin-bottom: 1.25rem; font-size: var(--t0); color: var(--light); }
+        .ancla strong { color: var(--text); }
+        .preu { position: relative; display: flex; flex-direction: column; gap: .7rem; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 1.5rem 1.4rem 1.6rem; }
+        .preu.destacat { border: 2px solid var(--indigo); box-shadow: 0 1px 2px rgb(21 19 15 / .05), 0 22px 44px -26px color-mix(in srgb, var(--indigo) 70%, transparent); }
+        .preu .etiqueta { align-self: flex-start; font-family: var(--mono); font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--on-accent); background: var(--indigo); border-radius: 999px; padding: .2rem .65rem; }
+        .preu h3 { font-size: var(--t3); margin: 0; }
+        .preu .per { font-size: .9rem; color: var(--muted); line-height: 1.5; }
+        .importe { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .75rem; padding-block: .9rem; border-block: 1px solid var(--border); }
+        .xifra { font-size: clamp(2.4rem, 5vw, 3rem); font-weight: 700; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
+        .xifra small { font-size: .875rem; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+        .despues { width: 100%; font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+        .incl { font-family: var(--mono); font-size: .7rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+        .preu ul { display: grid; gap: .5rem; }
+        .preu li { position: relative; padding-left: 1.5rem; font-size: .9rem; line-height: 1.5; color: var(--light); }
+        .preu li::before { content: ""; position: absolute; left: .1rem; top: .38em; width: .7rem; height: .38rem; border-left: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); }
+        .precios-pie { display: grid; gap: 1rem; margin-top: 1.75rem; }
+        .despues-f { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px dashed color-mix(in srgb, var(--orange) 45%, var(--border)); }
+        .despues-f > h3 { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; font-size: var(--t2); margin-bottom: .35rem; }
+        .despues-f > p { font-size: var(--t0); color: var(--muted); margin-bottom: 1rem; }
+        .extras { display: grid; gap: 1rem; }
+        @media (min-width: 900px) { .extras { grid-template-columns: 1.3fr 1fr 1fr; } }
+        .extra { padding: 1.15rem 1.25rem; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); }
+        .extra h4 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .2rem .75rem; font-size: var(--t1); margin-bottom: .4rem; }
+        .extra h4 b { font-family: var(--mono); font-size: .9rem; font-weight: 700; white-space: nowrap; }
+        .extra p { font-size: .9rem; line-height: 1.6; color: var(--light); }
+        .extra p + p { margin-top: .5rem; }
+        .caja-p { padding: 1.2rem 1.3rem; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); }
+        .caja-p h3 { font-size: var(--t1); }
+        .caja-p p { font-size: .9rem; line-height: 1.6; color: var(--light); }
+        .notas-p { display: grid; gap: .35rem; margin-top: 1.5rem; max-width: 86ch; }
+        .notas-p li { position: relative; padding-left: 1rem; font-size: .875rem; line-height: 1.6; color: var(--muted); }
+        .notas-p li::before { content: "·"; position: absolute; left: .2rem; }
+
+        /* 11 · Empezar (la banda oscura) */
+        main > section.oscuro { background: var(--text); color: #f4f1ea; border-top: 0; position: relative; overflow: hidden; }
+        .oscuro::before { content: ""; position: absolute; inset: auto -10% -40% auto; width: 46rem; height: 46rem; border-radius: 50%; background: radial-gradient(circle, rgb(79 70 229 / .32), transparent 65%); pointer-events: none; }
+        .oscuro .container { position: relative; }
+        .oscuro h2 { font-size: clamp(2rem, 5vw, 3.25rem); }
+        .oscuro .lead { color: #d9d3c4; }
+        .oscuro .btn-primary { background: var(--indigo); box-shadow: 0 12px 30px -12px #6366f1; }
+        .oscuro .btn-primary:hover { background: #5a52ec; }
+        .oscuro .btn-ghost { background: transparent; color: #f4f1ea; border-color: rgb(244 241 234 / .4); }
+        .oscuro .btn-ghost:hover { border-color: #f4f1ea; color: #fff; }
+        .oscuro :focus-visible { outline-color: #a5b4fc; }
+        .oscuro .micro { color: #b9b2a0; }
+        .oscuro .micro a { color: #c7d2fe; }
+        .oscuro .peque { color: #b9b2a0; margin-top: 1.5rem; max-width: 70ch; }
+
+        /* 12 · Objeciones */
+        .objeciones { display: grid; gap: 1.5rem; }
+        @media (min-width: 960px) { .objeciones { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 2.5rem; } }
+        .no-hacemos { align-self: start; padding: .2rem 0 .2rem 1.25rem; border-left: 4px solid var(--orange); }
+        .no-hacemos ul, .garantias ul { display: grid; gap: .65rem; }
+        .no-hacemos li, .garantias li { position: relative; padding-left: 1.6rem; font-size: var(--t0); line-height: 1.55; color: var(--light); }
+        .no-hacemos li::before { content: "—"; content: "—" / ""; position: absolute; left: 0; color: var(--orange); font-weight: 700; }
+        .garantias h4 { font-family: var(--mono); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin: 1.25rem 0 .7rem; }
+        .garantias h3 + h4 { margin-top: .5rem; }
+        .garantias .si li::before { content: "✓"; content: "✓" / ""; position: absolute; left: 0; top: -.05em; display: grid; place-items: center; width: 1.15rem; height: 1.15rem; margin-top: .2em; border-radius: 50%; background: var(--green); color: #fff; font-size: .7rem; font-weight: 700; }
+        .garantias .no li::before { content: "–"; content: "–" / ""; position: absolute; left: .3rem; color: var(--muted); font-weight: 700; }
+        .valores-t { margin-top: clamp(2.5rem, 5vw, 3.5rem); margin-bottom: .75rem; font-size: var(--t0); color: var(--light); }
+        .valores { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        @media (min-width: 640px) { .valores { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1000px) { .valores { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+        .valores li { background: var(--card); padding: 1rem 1.15rem; font-family: var(--mono); font-size: .8125rem; line-height: 1.6; color: var(--light); }
+        .valores strong { display: block; font-family: var(--sans); font-size: var(--t1); color: var(--text); margin-bottom: .15rem; }
+        .faq { margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 54rem; }
+        .faq > h3 { font-size: var(--t3); margin-bottom: 1rem; }
+        .faq details { border-top: 1px solid var(--border); }
+        .faq details:last-of-type { border-bottom: 1px solid var(--border); }
+        .faq summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 56px; padding-block: .8rem; cursor: pointer; font-weight: 600; font-size: var(--t1); line-height: 1.4; list-style: none; }
+        .faq summary::-webkit-details-marker { display: none; }
+        .faq summary:hover { color: var(--indigo); }
+        .faq details p { padding-bottom: 1.2rem; max-width: 68ch; color: var(--light); font-size: var(--t0); line-height: 1.7; }
+
+        /* 13 · Puertas */
+        .puertas { display: grid; gap: 1rem; }
+        @media (min-width: 860px) { .puertas { grid-template-columns: 1fr 1fr; } }
+        .puerta { display: flex; flex-direction: column; gap: .8rem; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 1.4rem 1.4rem 1.5rem; }
+        .puerta:target { border-color: var(--indigo); box-shadow: 0 0 0 3px color-mix(in srgb, var(--indigo) 20%, transparent); }
+        .puerta h3 { font-size: var(--t2); margin: 0; line-height: 1.3; }
+        .puerta .para { font-size: .9rem; color: var(--muted); margin-top: -.5rem; }
+        .puerta dl { display: grid; gap: .55rem; padding-block: .85rem; border-block: 1px solid var(--border); }
+        .puerta dl > div { display: grid; gap: .1rem; }
+        @media (min-width: 480px) { .puerta dl > div { grid-template-columns: 5.5rem minmax(0, 1fr); gap: .75rem; } }
+        .puerta dt { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: .15rem; }
+        .puerta dd { font-size: .9375rem; line-height: 1.55; }
+        .puerta > p { font-size: .9375rem; line-height: 1.6; color: var(--light); }
+        .puerta .accions { margin-top: auto; padding-top: .4rem; gap: .6rem 1rem; align-items: center; }
+        .puerta blockquote { font-size: .9375rem; line-height: 1.6; padding: 1rem 1.1rem; background: var(--panel); border: 1px dashed var(--border-strong); border-radius: 12px; -webkit-user-select: all; user-select: all; }
+        .puerta .enlace { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; font-size: .9375rem; }
+
+        /* Lo que viene (dentro de «Lo que se queda contigo») */
+        .futur { max-width: 70ch; padding: .3rem 0 .3rem 1.25rem; border-left: 4px solid var(--purple); color: var(--light); font-size: var(--t1); }
+
+        /* Pie */
+        .pie { padding: 3rem 0 3.5rem; background: var(--panel); border-top: 1px solid var(--border); font-size: var(--t0); color: var(--muted); }
+        .pie-fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 2rem; }
+        .pie-marca { color: var(--text); }
+        .pie-marca b { color: var(--indigo); }
+        .pie ul { display: flex; flex-wrap: wrap; gap: 0 1.25rem; }
+        .pie ul a { display: inline-flex; align-items: center; min-height: 44px; color: var(--light); }
+        .pie .mono-nota { margin-top: 1.25rem; max-width: 80ch; }
+
+        /* Modos especiales */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition: none !important; animation: none !important; }
+        }
+        @media (forced-colors: active) {
+            .l, .cuerda { stroke: CanvasText; }
+            .n rect { stroke: CanvasText; }
+            .red input:checked + label { outline: 2px solid Highlight; }
+            /* Chromium no fuerza el fondo del SVG: sin esto, en tema oscuro las líneas desaparecen. */
+            .red-svg { background: Canvas; }
+            .n rect { fill: Canvas; }
+            .n .v, .n .s, .n .s-embudo { fill: CanvasText; }
+            .n-centro circle { fill: CanvasText; }
+            .n-centro text { fill: Canvas; }
+            .pt-t, .pt-i { fill: CanvasText; }
+            .tuweb .rol::before { border-top-color: CanvasText; }
+        }
+        @media print {
+            .cab, .borrador, .vistas, .roles, .entre-ctl, .mock, .accions { display: none; }
+            .ficha, .entre-lista, .en-embudo, .en-borrador { display: block !important; break-inside: avoid; }
+            main > section { padding-block: 1.5rem; }
+            .oscuro { background: none !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+<a class="salta" href="#contingut">Saltar al contenido</a>
+
+<header class="cab">
+    <div class="container">
+        <a class="marca" href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12 Q12 2 21 12" fill="none" stroke="#005795" stroke-width="2.4" stroke-linecap="round"/><path d="M3 12 Q12 22 21 12" fill="none" stroke="#a3187f" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 3"/></svg><span>Team<b>Towers</b></span></a>
+        <nav aria-label="Secciones de esta página">
+            <ul>
+                <li><a href="#red">La red</a></li>
+                <li><a href="#como">Cómo</a></li>
+                <li><a href="#precios">Precios</a></li>
+                <li><a href="#preguntas">Preguntas</a></li>
+                <li><a href="#puertas">Otras puertas</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main id="contingut">
+
+<div class="borrador" role="note"><p class="container"><strong>Borrador.</strong> Textos y precios pendientes de validar. Esta página no se indexa todavía.</p></div>
+
+<!-- 1 · Promesa -->
+<section id="inicio" class="inicio" aria-labelledby="t-inicio">
+    <div class="container">
+        <div class="inicio-grid">
+            <div>
+                <p class="eyebrow con-sello"><svg class="sello" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12 Q12 2 21 12" fill="none" stroke="#005795" stroke-width="2.2" stroke-linecap="round"/><path d="M3 12 Q12 22 21 12" fill="none" stroke="#a3187f" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 3"/></svg>Mapa de valor y web · Una hora para cada uno, en una sesión de 2 h 30</p>
+                <h1 id="t-inicio">Una web para todos los que sostienen tu negocio. <span>No solo para quien compra.</span></h1>
+                <p class="lead">Clientes, tiendas, quien te recomienda, tu equipo, tus proveedores y tu pueblo. Dibujamos contigo qué da y qué recibe cada uno. De ese mapa sale tu web: una puerta para cada uno, publicada en la sesión y a tu nombre.</p>
+                <p class="ahora">Hoy una IA hace una web correcta en minutos, y por eso tantas se parecen. Lo que hace tuya la tuya no está escrito: lo sacamos en la sesión.</p>
+                <p class="criterio"><strong>La IA hace lo que se repite. Una persona con más de veinte años de oficio con equipos pone el criterio.</strong></p>
+                <div class="accions">
+                    <div class="cta">
+                        <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Borrador de mapa · Mapa y web" data-cuerpo="borrador">Pedir mi borrador gratis</a>
+                        <p class="micro">0 € · en tres días laborables · Se abre tu correo con cuatro preguntas. Basta con la dirección de tu web.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+                    </div>
+                    <a class="btn btn-ghost" href="#red">Ver la red en un ejemplo</a>
+                </div>
+            </div>
+            <figure class="tuweb">
+                <figcaption class="tuweb-t">Ejemplo · el menú de tu web, y a quién sirve cada puerta</figcaption>
+                <div class="tuweb-v">
+                    <div class="tuweb-barra" aria-hidden="true"><i></i><i></i><i></i><span>tu-negocio.com</span></div>
+                    <ul>
+                        <li><span class="pw">Lo que ofrecemos</span><span class="rol">quien compra</span></li>
+                        <li><span class="pw">Para tiendas</span><span class="rol">quien revende</span></li>
+                        <li><span class="pw">Recomiéndanos</span><span class="rol">quien te recomienda</span></li>
+                        <li><span class="pw">Cómo trabajamos</span><span class="rol">tu equipo</span></li>
+                        <li><span class="pw">Para proveedores</span><span class="rol">quien te suministra</span></li>
+                        <li><span class="pw">Nuestra historia</span><span class="rol">tu pueblo</span></li>
+                    </ul>
+                </div>
+            </figure>
+        </div>
+
+        <h2 class="sr">Lo que te llevas</h2>
+        <ul class="triada">
+            <li><b>Un mapa de valor.</b><span>Quién da qué a quién, lo que se paga y lo que no, y dónde se atasca.</span></li>
+            <li><b>Una web publicada.</b><span>Una puerta para cada rol del flujo elegido, en tu dominio y a tu nombre. La leen bien buscadores, lectores de pantalla e IA.</span></li>
+            <li><b>La memoria de tu negocio.</b><span>Tu mapa, tu marca y tu historia por escrito, en archivos tuyos, con las reglas para que cualquier IA trabaje bien después.</span></li>
+        </ul>
+        <p class="aval"><span><b>Método:</b> Value Network Analysis, de Verna Allee</span><span>Dirección del VNA de dos mapas para IKEA, con Pantheon Work <span class="sello-pend">A validar</span></span><span>Más de 20 años con equipos en TeamTowers y Fent Pinya</span></p>
+        <p class="atajos"><span>¿Vienes por otro motivo?</span> <a href="#puerta-agencias">Lo quiero para un cliente mío</a> <a href="#puerta-grupos">Represento a un grupo de negocios</a> <a href="#puerta-recomendar">Quiero recomendaros</a></p>
+    </div>
+</section>
+
+<!-- 2 · Dolor -->
+<section id="dolor" class="alt" aria-labelledby="t-dolor">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">¿Te suena?</p>
+            <h2 id="t-dolor">Tu web atiende a quien compra. A los demás los atiendes tú, por mensaje.</h2>
+        </div>
+        <ul class="frases">
+            <li><p class="frase">«Las tiendas me piden la ficha y la tarifa por mensaje. Cada semana.»</p><p class="quien">Con las tiendas</p></li>
+            <li><p class="frase">«Me recomiendan mucho. Y quien me recomienda no tiene nada que reenviar.»</p><p class="quien">Con quien te recomienda</p></li>
+            <li><p class="frase">«Cada persona nueva me pregunta lo mismo. Lo sé yo, y solo yo.»</p><p class="quien">Con tu equipo</p></li>
+            <li><p class="frase">«Mis proveedores no saben qué busco. Me ofrecen siempre lo mismo.»</p><p class="quien">Con tus proveedores</p></li>
+            <li><p class="frase">«En el pueblo nos conocen de siempre. En la web parecemos recién llegados.»</p><p class="quien">Con tu pueblo</p></li>
+            <li><p class="frase">«Mido visitas y formularios. Lo que de verdad nos trae trabajo no sale en ningún informe.»</p><p class="quien">Con tu web</p></li>
+        </ul>
+        <p class="cierre">No es un problema de diseño. Tu web se pensó para quien compra. Y para un solo gesto: dejar sus datos. El resto de tu red también entra, y no encuentra nada para ella.</p>
+    </div>
+</section>
+
+<!-- La pinya: la tesis con la imagen de la casa -->
+<section id="pinya" class="gran" aria-labelledby="t-pinya">
+    <div class="container">
+        <p class="gran-a">En un <span lang="ca">castell</span>, la foto se la lleva quien corona. Lo sostiene la <span lang="ca">pinya</span>, y casi nunca sale en la foto.</p>
+        <h2 id="t-pinya" class="gran-b">Tu negocio también tiene <span lang="ca">pinya</span>. Esta web la pone en la foto.</h2>
+    </div>
+</section>
+
+<!-- 3 · La red: elemento distintivo. Funciona entero sin JS (radios, casilla y :has()). -->
+<section id="red" class="alt" aria-labelledby="t-red">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Tu red, a la vista</p>
+            <h2 id="t-red">Lo que ve una web embudo. Lo que ve una web de red.</h2>
+            <p class="lead">Un ejemplo genérico: un negocio pequeño y los seis roles que lo sostienen. Cambia la vista para ver cómo lo mira cada web. Elige un rol para ver qué le das, qué te devuelve y qué puerta tiene en tu web.</p>
+        </div>
+
+        <div class="red">
+            <fieldset class="vistas">
+                <legend>Cómo se mira la red</legend>
+                <div class="op">
+                    <input type="radio" name="vista" id="v-embudo"><label for="v-embudo">Web embudo</label>
+                    <input type="radio" name="vista" id="v-borrador"><label for="v-borrador">Borrador de la IA</label>
+                    <input type="radio" name="vista" id="v-red" checked><label for="v-red">Web de red</label>
+                </div>
+            </fieldset>
+            <p class="entre-ctl"><input type="checkbox" id="v-entre"><label for="v-entre">Ver también lo que pasa entre ellos</label></p>
+
+            <figure class="red-fig">
+<svg class="red-svg" viewBox="10 22 380 352" role="img" aria-labelledby="red-tit" aria-describedby="red-desc">
+<title id="red-tit">Red de valor de ejemplo</title>
+<desc id="red-desc">Un negocio en el centro y seis roles alrededor: compra, revende, suministra, trabaja, acoge y recomienda. Cada rol está unido al negocio por una línea tangible y otra intangible. El detalle de cada intercambio está en las fichas que siguen.</desc>
+<defs>
+<marker id="pt-t" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" class="pt-t"/></marker>
+<marker id="pt-i" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" class="pt-i"/></marker>
+</defs>
+<g class="lineas">
+<path class="l l-t l-compra" d="M200 160 Q218 118 200 76"/>
+<path class="l l-i l-compra" d="M200 160 Q182 118 200 76"/>
+<path class="l l-t l-revende" d="M235 180.6 Q272.7 180.3 292.9 148.5"/>
+<path class="l l-i l-revende" d="M235 180.6 Q255.2 148.8 292.9 148.5"/>
+<path class="l l-t l-suministra" d="M235 219.4 Q255.2 251.2 292.9 251.5"/>
+<path class="l l-i l-suministra" d="M235 219.4 Q272.7 219.7 292.9 251.5"/>
+<path class="l l-t l-trabaja" d="M200 240 Q182 282 200 324"/>
+<path class="l l-i l-trabaja" d="M200 240 Q218 282 200 324"/>
+<path class="l l-t l-acoge" d="M165 219.4 Q127.3 219.7 107.1 251.5"/>
+<path class="l l-i l-acoge" d="M165 219.4 Q144.8 251.2 107.1 251.5"/>
+<path class="l l-t l-recomienda" d="M165 180.6 Q144.8 148.8 107.1 148.5"/>
+<path class="l l-i l-recomienda" d="M165 180.6 Q127.3 180.3 107.1 148.5"/>
+</g>
+<g class="cuerdas">
+<path class="cuerda l-t c-revende c-compra" d="M305 104 Q304 62 259 58" marker-start="url(#pt-t)" marker-end="url(#pt-t)"/>
+<path class="cuerda l-i c-recomienda c-compra" d="M95 104 Q96 62 141 58" marker-start="url(#pt-i)" marker-end="url(#pt-i)"/>
+<path class="cuerda l-i c-suministra c-trabaja" d="M305 296 Q304 338 259 342" marker-start="url(#pt-i)" marker-end="url(#pt-i)"/>
+<path class="cuerda l-i c-acoge c-trabaja" d="M95 296 Q96 338 141 342" marker-start="url(#pt-i)" marker-end="url(#pt-i)"/>
+<path class="cuerda l-i c-acoge c-recomienda" d="M52 246 Q14 200 52 154" marker-start="url(#pt-i)" marker-end="url(#pt-i)"/>
+</g>
+<text class="solo-embudo" x="214" y="113"><tspan x="214">contacto</tspan><tspan x="214" dy="13">→ venta</tspan></text>
+<g class="nodos">
+<g class="n n-centro"><circle cx="200" cy="200" r="46"/><text x="200" y="205">Tu negocio</text></g>
+<g class="n n-compra" data-rol="compra"><rect x="144" y="36" width="112" height="44" rx="22"/><text class="v" x="200" y="56">Compra</text><text class="s" x="200" y="72">clientes</text></g>
+<g class="n n-revende" data-rol="revende"><rect x="272.2" y="107" width="112" height="44" rx="22"/><text class="v" x="328.2" y="127">Revende</text><text class="s" x="328.2" y="143">tiendas</text><text class="s-embudo" x="328.2" y="143">sin puerta</text></g>
+<g class="n n-suministra" data-rol="suministra"><rect x="272.2" y="249" width="112" height="44" rx="22"/><text class="v" x="328.2" y="269">Suministra</text><text class="s" x="328.2" y="285">proveedores</text><text class="s-embudo" x="328.2" y="285">sin puerta</text></g>
+<g class="n n-trabaja" data-rol="trabaja"><rect x="144" y="320" width="112" height="44" rx="22"/><text class="v" x="200" y="340">Trabaja</text><text class="s" x="200" y="356">equipo</text><text class="s-embudo" x="200" y="356">sin puerta</text></g>
+<g class="n n-acoge" data-rol="acoge"><rect x="15.8" y="249" width="112" height="44" rx="22"/><text class="v" x="71.8" y="269">Acoge</text><text class="s" x="71.8" y="285">tu pueblo</text><text class="s-embudo" x="71.8" y="285">sin puerta</text></g>
+<g class="n n-recomienda" data-rol="recomienda"><rect x="15.8" y="107" width="112" height="44" rx="22"/><text class="v" x="71.8" y="127">Recomienda</text><text class="s" x="71.8" y="143">prescriptores</text><text class="s-embudo" x="71.8" y="143">sin puerta</text></g>
+</g>
+<g class="badges">
+<g class="b-duda b-compra" transform="translate(244 38)"><circle r="9"/><text y="4.2">?</text></g><g class="b-ok b-compra" transform="translate(244 38)"><circle r="9"/><path d="M-4 0L-1 3L4 -3"/></g>
+<g class="b-duda b-revende" transform="translate(372.2 109)"><circle r="9"/><text y="4.2">?</text></g><g class="b-ok b-revende" transform="translate(372.2 109)"><circle r="9"/><path d="M-4 0L-1 3L4 -3"/></g>
+<g class="b-duda b-suministra" transform="translate(372.2 251)"><circle r="9"/><text y="4.2">?</text></g><g class="b-ok b-suministra" transform="translate(372.2 251)"><circle r="9"/><path d="M-4 0L-1 3L4 -3"/></g>
+<g class="b-duda b-trabaja" transform="translate(244 322)"><circle r="9"/><text y="4.2">?</text></g><g class="b-ok b-trabaja" transform="translate(244 322)"><circle r="9"/><path d="M-4 0L-1 3L4 -3"/></g>
+<g class="b-duda b-acoge" transform="translate(115.8 251)"><circle r="9"/><text y="4.2">?</text></g><g class="b-ok b-acoge" transform="translate(115.8 251)"><circle r="9"/><path d="M-4 0L-1 3L4 -3"/></g>
+<g class="b-duda b-recomienda" transform="translate(115.8 109)"><circle r="9"/><text y="4.2">?</text></g><g class="b-ok b-recomienda" transform="translate(115.8 109)"><circle r="9"/><path d="M-4 0L-1 3L4 -3"/></g>
+</g>
+</svg>
+                <div class="mock" aria-hidden="true">
+                    <div class="mock-barra"><i></i><i></i><i></i><span>tu web</span></div>
+                    <ul>
+                        <li class="t-inicio">Inicio</li>
+                        <li class="t-compra">Lo que ofrecemos</li>
+                        <li class="t-revende">Para tiendas</li>
+                        <li class="t-recomienda">Recomiéndanos</li>
+                        <li class="t-trabaja">Cómo trabajamos</li>
+                        <li class="t-suministra">Para proveedores</li>
+                        <li class="t-acoge">Nuestra historia</li>
+                    </ul>
+                </div>
+                <figcaption class="red-pie">
+                    <p class="cap cap-embudo"><b class="cap-t">Web embudo</b>Una web embudo ve un rol y un intercambio: el contacto que acaba en venta. Los otros cinco roles también entran en tu web. No encuentran nada para ellos, y lo que podrían aportarte se queda fuera.</p>
+                    <p class="cap cap-borrador"><b class="cap-t">Borrador de la IA</b>Así llega el mapa a la sesión. La IA lo propone a partir de tu web, tu catálogo o un audio, y todo va en naranja porque es una propuesta. Lo intangible casi nunca está escrito: por eso cada rol lleva una pregunta para la sala.</p>
+                    <p class="cap cap-red"><b class="cap-t">Web de red</b>Después de la sesión, cada rol tiene una puerta. Tu web le da algo que necesita y le pide lo que puede aportar. Cada relación tiene dos partes. La tangible se paga o se puede reclamar. La intangible nadie la exige, y es la que lo sostiene todo: confianza, conocimiento, reputación.</p>
+                    <p class="cap cap-entre"><b class="cap-t">Entre ellos</b>Una parte del valor no pasa por ti, sino entre ellos. Quien recomienda habla con quien compra. Quien suministra enseña a tu equipo. La web también sirve ahí: con la página que se reenvía o la ficha que la tienda enseña en el mostrador.</p>
+                    <p class="cuenta c-embudo">Web embudo · 1 rol de 6 con puerta · 1 intercambio cuenta: contacto → venta</p>
+                    <p class="cuenta c-borrador">Borrador de la IA · 6 roles y tu negocio · 6 preguntas para la sala</p>
+                    <p class="cuenta c-red">Web de red · 6 roles y tu negocio · 36 intercambios, 23 intangibles · 6 puertas</p>
+                    <ul class="leyenda">
+                        <li><svg viewBox="0 0 34 14" aria-hidden="true"><path d="M2 7H32" stroke="#005795" stroke-width="2.5" stroke-linecap="round"/></svg><span><b>Tangible</b>: lo que se entrega, se paga o se puede reclamar.</span></li>
+                        <li><svg viewBox="0 0 34 14" aria-hidden="true"><path d="M2 7H32" stroke="#a3187f" stroke-width="2.5" stroke-dasharray="5 5"/></svg><span><b>Intangible</b>: lo que se espera y nadie exige: confianza, conocimiento, reputación, un aviso a tiempo.</span></li>
+                        <li><svg viewBox="0 0 34 14" aria-hidden="true"><rect x="1" y="1" width="20" height="12" rx="6" fill="none" stroke="#9c4408" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="28" cy="7" r="6" fill="#9c4408"/><text x="28" y="10.2" fill="#fff" font-size="9" font-weight="700" text-anchor="middle" font-family="Space Grotesk, sans-serif">?</text></svg><span><b>Borrador</b>: lo propone la IA y falta que lo valide una persona.</span></li>
+                        <li><svg viewBox="0 0 34 14" aria-hidden="true"><circle cx="7" cy="7" r="6.5" fill="#0c6640"/><path d="M4 7L6.2 9.2L10 5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Validado</b> en la sesión.</span></li>
+                    </ul>
+                    <p class="nota-red">Ejemplo genérico, sin nombres ni cifras. Es una vista parcial, desde tu negocio. En la sesión se dibuja tu red completa, entre seis y doce roles, y la consola la revisa con diez reglas: que cada vínculo vaya y vuelva, que ningún rol concentre demasiado y que no haya cifras que no se puedan rehacer.</p>
+                </figcaption>
+            </figure>
+
+            <div class="panel">
+                <fieldset class="roles">
+                    <legend>Elige un rol</legend>
+                    <div class="op">
+                        <input type="radio" name="foco" id="r-todos" checked><label for="r-todos">Toda la red</label>
+                        <input type="radio" name="foco" id="r-compra"><label for="r-compra">Compra <span>· clientes</span></label>
+                        <input type="radio" name="foco" id="r-revende"><label for="r-revende">Revende <span>· tiendas y distribuidores</span></label>
+                        <input type="radio" name="foco" id="r-recomienda"><label for="r-recomienda">Recomienda <span>· prescriptores</span></label>
+                        <input type="radio" name="foco" id="r-trabaja"><label for="r-trabaja">Trabaja <span>· equipo</span></label>
+                        <input type="radio" name="foco" id="r-suministra"><label for="r-suministra">Suministra <span>· proveedores</span></label>
+                        <input type="radio" name="foco" id="r-acoge"><label for="r-acoge">Acoge <span>· tu pueblo o tu barrio</span></label>
+                    </div>
+                </fieldset>
+
+                <p class="fichas-nota">Aquí ves la puerta de cada rol. Elige un rol arriba para ver también qué le das y qué te devuelve.</p>
+                <div class="fichas">
+                    <article class="ficha" id="ficha-compra" aria-labelledby="f-compra">
+                        <h3 id="f-compra">Compra <span>· clientes</span></h3>
+                        <dl>
+                            <div><dt>Le das</dt><dd><span class="tag tg">tangible</span> El producto o el servicio.</dd><dd><span class="tag in">intangible</span> Criterio para elegir sin miedo a equivocarse.</dd></div>
+                            <div><dt>Te devuelve</dt><dd><span class="tag tg">tangible</span> El pago.</dd><dd><span class="tag in">intangible</span> Su experiencia, contada a otros.</dd></div>
+                            <div><dt>En tu web</dt><dd><b>Puerta.</b> «Lo que ofrecemos»: qué incluye y qué no, y cuánto cuesta o cómo se calcula.</dd><dd><b>Acción.</b> Pedir, reservar o comprar en pocos pasos, con un botón que dice qué pasará.</dd><dd><b>Contenido.</b> Cómo trabajas y quién está detrás.</dd></div>
+                        </dl>
+                        <p class="en-embudo">En una web embudo: es el único rol que existe, y solo cuenta su parte tangible.</p>
+                        <p class="en-borrador">En el borrador de la IA: sale de tu web y tu catálogo. Pregunta para la sala: <em>«¿Por qué te eligen a ti y no al de al lado?»</em></p>
+                    </article>
+                    <article class="ficha" id="ficha-revende" aria-labelledby="f-revende">
+                        <h3 id="f-revende">Revende <span>· tiendas y distribuidores</span></h3>
+                        <dl>
+                            <div><dt>Le das</dt><dd><span class="tag tg">tangible</span> Producto y condiciones de venta.</dd><dd><span class="tag in">intangible</span> Argumentos para vender lo tuyo.</dd></div>
+                            <div><dt>Te devuelve</dt><dd><span class="tag tg">tangible</span> Pedidos.</dd><dd><span class="tag in">intangible</span> Lo que oye en el mostrador.</dd></div>
+                            <div><dt>En tu web</dt><dd><b>Puerta.</b> «Para tiendas».</dd><dd><b>Acción.</b> Pedir reposición y descargar fichas, tarifa e imágenes al día.</dd><dd><b>Contenido.</b> El argumentario y las respuestas a lo que pregunta su cliente.</dd></div>
+                        </dl>
+                        <p class="en-embudo">En una web embudo: sin puerta. El catálogo viaja por mensaje, cada vez en una versión distinta.</p>
+                        <p class="en-borrador">En el borrador de la IA: pregunta para la sala: <em>«¿Qué le falta a una tienda para vender lo tuyo sin llamarte?»</em></p>
+                    </article>
+                    <article class="ficha" id="ficha-recomienda" aria-labelledby="f-recomienda">
+                        <h3 id="f-recomienda">Recomienda <span>· prescriptores</span></h3>
+                        <dl>
+                            <div><dt>Le das</dt><dd><span class="tag in">intangible</span> Algo bueno que contar.</dd><dd><span class="tag in">intangible</span> Reconocimiento.</dd><dd><span class="tag tg">tangible</span> Comisión, solo si está pactada.</dd></div>
+                            <div><dt>Te devuelve</dt><dd><span class="tag in">intangible</span> Su recomendación.</dd><dd><span class="tag in">intangible</span> Clientes que llegan confiando.</dd></div>
+                            <div><dt>En tu web</dt><dd><b>Puerta.</b> «Recomiéndanos»: una página pensada para reenviar.</dd><dd><b>Acción.</b> Copiar el enlace o un texto de presentación.</dd><dd><b>Contenido.</b> Quién eres en una frase, a quién ayudas y a quién no.</dd></div>
+                        </dl>
+                        <p class="en-embudo">En una web embudo: sin puerta. Recomienda de palabra y no tiene nada que reenviar.</p>
+                        <p class="en-borrador">En el borrador de la IA: pregunta para la sala: <em>«¿Quién te recomienda sin que se lo pidas, y qué gana con ello?»</em></p>
+                    </article>
+                    <article class="ficha" id="ficha-trabaja" aria-labelledby="f-trabaja">
+                        <h3 id="f-trabaja">Trabaja <span>· equipo</span></h3>
+                        <dl>
+                            <div><dt>Le das</dt><dd><span class="tag tg">tangible</span> El salario.</dd><dd><span class="tag in">intangible</span> Saber cómo se hacen las cosas aquí.</dd><dd><span class="tag in">intangible</span> Una casa que se enseña con orgullo.</dd></div>
+                            <div><dt>Te devuelve</dt><dd><span class="tag tg">tangible</span> Su trabajo.</dd><dd><span class="tag in">intangible</span> Mejoras e ideas.</dd></div>
+                            <div><dt>En tu web</dt><dd><b>Puerta.</b> «Cómo trabajamos» y, si buscas gente, «Trabaja con nosotros».</dd><dd><b>Acción.</b> Proponer un cambio en la web o en el cerebro.</dd><dd><b>Contenido.</b> Procesos y decisiones por escrito, no guardados en una cabeza.</dd></div>
+                        </dl>
+                        <p class="en-embudo">En una web embudo: sin puerta. Lo que sabe la casa sigue en la cabeza de una persona.</p>
+                        <p class="en-borrador">En el borrador de la IA: pregunta para la sala: <em>«¿Qué sabe tu equipo que no está escrito en ningún sitio?»</em></p>
+                    </article>
+                    <article class="ficha" id="ficha-suministra" aria-labelledby="f-suministra">
+                        <h3 id="f-suministra">Suministra <span>· proveedores</span></h3>
+                        <dl>
+                            <div><dt>Le das</dt><dd><span class="tag tg">tangible</span> El pago.</dd><dd><span class="tag in">intangible</span> Previsión de lo que vas a necesitar.</dd></div>
+                            <div><dt>Te devuelve</dt><dd><span class="tag tg">tangible</span> Materia prima o servicio.</dd><dd><span class="tag in">intangible</span> Avisos a tiempo y saber técnico.</dd></div>
+                            <div><dt>En tu web</dt><dd><b>Puerta.</b> «Para proveedores».</dd><dd><b>Acción.</b> Proponer una colaboración a quien decide.</dd><dd><b>Contenido.</b> Qué compras, con qué criterio y por qué.</dd></div>
+                        </dl>
+                        <p class="en-embudo">En una web embudo: sin puerta. No sabe qué buscas ni a quién escribir.</p>
+                        <p class="en-borrador">En el borrador de la IA: pregunta para la sala: <em>«¿Qué te avisa un proveedor sin que se lo pidas?»</em></p>
+                    </article>
+                    <article class="ficha" id="ficha-acoge" aria-labelledby="f-acoge">
+                        <h3 id="f-acoge">Acoge <span>· tu pueblo o tu barrio</span></h3>
+                        <dl>
+                            <div><dt>Le das</dt><dd><span class="tag tg">tangible</span> Tasas e impuestos.</dd><dd><span class="tag in">intangible</span> Vida en el lugar: empleo, actividad, colaboración.</dd></div>
+                            <div><dt>Te devuelve</dt><dd><span class="tag tg">tangible</span> Permisos y espacio para trabajar.</dd><dd><span class="tag in">intangible</span> Arraigo y reputación de casa.</dd></div>
+                            <div><dt>En tu web</dt><dd><b>Puerta.</b> «Nuestra historia» y «Dónde estamos».</dd><dd><b>Acción.</b> Invitar, visitar, colaborar.</dd><dd><b>Contenido.</b> De dónde venís, con quién y qué hacéis por el entorno, en la lengua del lugar.</dd></div>
+                        </dl>
+                        <p class="en-embudo">En una web embudo: sin puerta. Tu historia no está y pareces recién llegado.</p>
+                        <p class="en-borrador">En el borrador de la IA: pregunta para la sala: <em>«¿Qué te da el lugar donde estás que no sale en ninguna factura?»</em></p>
+                    </article>
+                    <div class="entre-lista">
+                        <h3 id="t-entre">Lo que pasa entre ellos</h3>
+                        <ul>
+                            <li><b>Recomienda ↔ Compra</b>Ida: una recomendación <span class="tag in">intangible</span> · vuelta: quedar bien con quien la sigue <span class="tag in">intangible</span> · En la web: una página que se puede reenviar.</li>
+                            <li><b>Revende ↔ Compra</b>Ida: el producto <span class="tag tg">tangible</span> · vuelta: el pago <span class="tag tg">tangible</span> · En la web: fichas que la tienda enseña en el mostrador.</li>
+                            <li><b>Suministra ↔ Trabaja</b>Ida: saber técnico <span class="tag in">intangible</span> · vuelta: cómo funciona en el uso <span class="tag in">intangible</span> · En la web: el cerebro guarda lo que se aprende.</li>
+                            <li><b>Acoge ↔ Trabaja</b>Ida: gente del lugar <span class="tag in">intangible</span> · vuelta: un oficio que se queda <span class="tag in">intangible</span> · En la web: «Trabaja con nosotros», en la lengua del sitio.</li>
+                            <li><b>Acoge ↔ Recomienda</b>Ida: reputación de casa <span class="tag in">intangible</span> · vuelta: que se hable bien del lugar <span class="tag in">intangible</span> · En la web: una historia que otros pueden contar.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bloque">
+            <h3 id="t-diferencia">Embudo o red: la misma web, pensada para un rol o para seis.</h3>
+            <div class="tabla-marco">
+                <table class="tabla tabla-resp tabla-dif">
+                    <caption>Web embudo y web de red, criterio a criterio</caption>
+                    <thead>
+                        <tr><th scope="col">Criterio</th><th scope="col" class="col-embudo">Web embudo</th><th scope="col" class="col-red">Web de red</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><th scope="row">A quién habla</th><td data-th="Web embudo">A quien compra</td><td class="col-red" data-th="Web de red">A cada rol que aporta valor: quien compra, revende, recomienda, trabaja, suministra y acoge</td></tr>
+                        <tr><th scope="row">Qué intercambio ve</th><td data-th="Web embudo">Uno: el contacto que acaba en venta</td><td class="col-red" data-th="Web de red">Todos los que importan, tangibles e intangibles, en los dos sentidos</td></tr>
+                        <tr><th scope="row">Qué pide</th><td data-th="Web embudo">Un formulario</td><td class="col-red" data-th="Web de red">A cada rol, lo que puede aportar: un pedido, una recomendación, una mejora, un aviso</td></tr>
+                        <tr><th scope="row">Cómo sabes si funciona</th><td data-th="Web embudo">Visitas y formularios</td><td class="col-red" data-th="Web de red">Si el valor va y vuelve: pedidos de tiendas, recomendaciones, preguntas que ya no te hacen</td></tr>
+                        <tr><th scope="row">Cuando cambia tu negocio</th><td data-th="Web embudo">Hay que rehacerla</td><td class="col-red" data-th="Web de red">Cambias el mapa y la web le sigue</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="cierre">Una web de red no deja de vender. La venta es uno de sus flujos, y muchas veces el principal. Lo que cambia es que también atiende a quien hace que la venta llegue.</p>
+            <p class="esta">Esta página hace lo mismo: tiene <a href="#puertas">puertas para agencias, grupos, quien nos recomienda y quien quiere aprender el método</a>.</p>
+            <p class="esta">La sesión individual cuesta 390 € sin IVA, a precio de validación. <a href="#precios">Ver qué incluye</a>.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 4 · Cómo, con quién hace qué -->
+<section id="como" aria-labelledby="t-como">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Cómo se hace</p>
+            <h2 id="t-como">Primero el mapa. Luego la web. Después, la memoria.</h2>
+            <p class="lead">Una sesión de dos horas y media, en remoto o presencial: una hora para el mapa, una para la web y veinte minutos para cerrar. Lo repetible se hace antes, con IA. La sala se dedica a lo que solo se decide entre personas.</p>
+        </div>
+        <ol class="pasos">
+            <li class="paso">
+                <div class="paso-meta"><span class="cuando">Antes · sin gastar sesión</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-al">Álvaro</span></span></div>
+                <div>
+                    <h3>Llegas a revisar, no a empezar.</h3>
+                    <p>Nos mandas lo que ya tengas: tu web, el catálogo, documentos que puedas compartir o un audio de diez minutos, que antes pasamos a texto. La IA propone los roles, los intercambios y el esqueleto de la web. La <a href="/SOS/vna-suport.html">consola de mapa de valor</a> lo revisa con diez reglas. Álvaro lo lee, lo corrige y añade lo que no está en tus papeles: tu historia, tu lugar y cómo se habla en tu sector.</p>
+                </div>
+            </li>
+            <li class="paso">
+                <div class="paso-meta"><span class="cuando">Primera hora · el mapa</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-tu">Tú</span><span class="q q-al">Álvaro</span></span></div>
+                <div>
+                    <h3>Lo que ningún documento dice.</h3>
+                    <ul>
+                        <li>Dónde acaba tu negocio, en una frase.</li>
+                        <li>Entre seis y doce roles, dichos por lo que hacen y no por el cargo.</li>
+                        <li>Lo intangible, que casi nunca está escrito: quién te recomienda sin que se lo pidas, qué te avisa un proveedor, qué sabe tu equipo.</li>
+                        <li>El flujo que más importa ahora: el que trae clientes, el que hace vender a las tiendas o el que hoy se pierde. Ese flujo es el guion de la web.</li>
+                        <li>A veces aparece un rol que hace falta y hoy no es de nadie. También es un hallazgo.</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="paso">
+                <div class="paso-meta"><span class="cuando">Segunda hora · la web, en directo</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-tu">Tú</span><span class="q q-al">Álvaro</span></span></div>
+                <div>
+                    <h3>Tu web se publica delante de ti. Y antes de acabar, la cambias tú.</h3>
+                    <p>Cada rol es una puerta. Cada intercambio tangible, una acción. Cada intangible, contenido que da confianza. Claude Code construye desde el esqueleto, que ya sigue tu mapa. Tú decides textos, tono y fotos. Álvaro revisa en la sala cada cambio antes de publicarlo. El repositorio está en tu GitHub y conectado a tu Netlify: cada cambio aceptado se publica solo.</p>
+                </div>
+            </li>
+            <li class="paso">
+                <div class="paso-meta"><span class="cuando">Al cerrar · 20 min, y a las dos semanas</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-al">Álvaro</span></span></div>
+                <div>
+                    <h3>La memoria, por escrito.</h3>
+                    <p>El mapa, el flujo, las decisiones, tu marca, tu lugar y tu historia quedan en Markdown dentro del repositorio. Y un <code>CLAUDE.md</code> con las reglas de tu proyecto: Claude Code empieza leyendo eso, y para otras IA se deja el mismo texto en <code>AGENTS.md</code>. A las dos semanas, media hora para revisar los cambios que hayas hecho tú.</p>
+                </div>
+            </li>
+        </ol>
+
+        <h3 class="sub" id="quien-hace-que">Por qué cabe en una sesión</h3>
+        <div class="tres">
+            <div class="col-q q-al">
+                <h3>Lo hace una persona <span>(hoy, Álvaro)</span></h3>
+                <ul>
+                    <li>Leer la sala: lo que se dice y lo que se calla.</li>
+                    <li>Hacer salir lo intangible, que nunca está en los documentos.</li>
+                    <li>Escuchar la marca que no está escrita, el lugar y la historia.</li>
+                    <li>Decidir contigo qué flujo importa ahora y qué se deja fuera.</li>
+                    <li>Decir que no cuando algo no encaja.</li>
+                    <li>Revisar en la sala cada cambio antes de publicarlo.</li>
+                </ul>
+            </div>
+            <div class="col-q q-tu">
+                <h3>Lo haces tú</h3>
+                <ul>
+                    <li>Contar lo que solo tú sabes.</li>
+                    <li>Decidir qué entra y qué no.</li>
+                    <li>Hacer tu primer cambio antes de acabar.</li>
+                </ul>
+            </div>
+            <div class="col-q q-ia">
+                <h3>Lo hace la IA</h3>
+                <ul>
+                    <li>Leer tu material y proponer el mapa.</li>
+                    <li>Montar la web desde el mapa y dejar cada cambio listo para publicar.</li>
+                    <li>Pasar las comprobaciones de enlaces, código y accesibilidad.</li>
+                    <li>Dejar por escrito la memoria y las reglas.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="regla">
+            <p class="estados"><span class="chip-e prop"><span aria-hidden="true">?</span> propuesta</span><span class="flecha-d" aria-hidden="true">→</span><span class="chip-e ok"><span aria-hidden="true">✓</span> validado</span></p>
+            <p>Lo que propone la IA entra en naranja. Solo pasa a verde cuando lo valida una persona. El historial del repositorio guarda qué cambio hizo la IA y quién lo aprobó.</p>
+        </div>
+
+        <p class="cierre">Por eso cabe en una sesión. Y por eso no pagas semanas de maquetación: pagas la parte que no se repite.</p>
+
+        <div class="notas-q">
+            <p class="mono-nota">Lo que la IA nunca hace aquí: inventar tu historia, opiniones de clientes o cifras. Publicar sin revisión. Tocar los datos de tu CRM. Las diez reglas las aplica la consola, no la IA: el mismo mapa da siempre el mismo resultado. Y publica Netlify, al aceptar un cambio.</p>
+            <p class="peque">Trabajamos con Claude, de Anthropic, mediante Claude Code. Tu material pasa por esa IA para preparar el borrador. Si mandas un audio, antes lo pasa a texto otra herramienta, y te decimos cuál. Por eso solo pedimos lo que colgarías en un tablón.</p>
+        </div>
+        <a class="enlace-consola flecha" href="/SOS/vna-suport.html">Ver la consola que prepara el borrador</a>
+    </div>
+</section>
+
+<!-- 5 · Lo que pone una persona -->
+<section id="sutil" class="alt" aria-labelledby="t-sutil">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Lo que no está en ningún documento</p>
+            <p class="gran-cita">«Probé a hacerla con una IA. Salió rápido, y salió una web que no es mía.»</p>
+            <h2 id="t-sutil">Una web puede ser correcta y no ser tuya.</h2>
+            <p class="lead">Una IA lee lo que hay publicado y te devuelve la media. Lo que hace que tu casa sea tu casa casi nunca está escrito. Lo pregunta una persona en la sesión, y queda escrito para que la IA lo respete después.</p>
+        </div>
+        <div class="sutiles">
+            <article class="sutil marca-s" aria-labelledby="s-marca">
+                <h3 id="s-marca">Marca</h3>
+                <dl>
+                    <div><dt>La pregunta</dt><dd><q>¿Qué no dirías nunca, aunque vendiera?</q> y <q>¿Qué palabra usáis aquí que en otro sitio no se entendería?</q></dd></div>
+                    <div><dt>Cómo se ve en la web</dt><dd>La paleta y la tipografía salen de lo que ya es tuyo (el rótulo, la furgoneta, el envoltorio), no de una plantilla. Las palabras también: las que usan quienes hablan de ti.</dd></div>
+                    <div><dt>Dónde queda escrito</dt><dd><code>cerebro/marca.md</code>, y las variables de color del CSS con su nombre y su porqué.</dd></div>
+                </dl>
+            </article>
+            <article class="sutil entorno" aria-labelledby="s-entorno">
+                <h3 id="s-entorno">Entorno</h3>
+                <dl>
+                    <div><dt>La pregunta</dt><dd><q>¿Qué nota quien entra por tu puerta que no sale en ninguna foto?</q> y <q>¿Qué lengua se habla en tu casa?</q></dd></div>
+                    <div><dt>Cómo se ve en la web</dt><dd>Fotos del lugar y no de banco de imágenes, la luz y los materiales del sitio, cómo llegar, y la lengua de tu red.</dd></div>
+                    <div><dt>Dónde queda escrito</dt><dd><code>cerebro/lugar.md</code>.</dd></div>
+                </dl>
+            </article>
+            <article class="sutil historia" aria-labelledby="s-historia">
+                <h3 id="s-historia">Historia</h3>
+                <dl>
+                    <div><dt>La pregunta</dt><dd><q>¿De dónde viene el negocio y qué se ha conservado?</q></dd></div>
+                    <div><dt>Cómo se ve en la web</dt><dd>Una página de historia que sirve a tres roles a la vez. A quien compra le da confianza, con el lugar crea arraigo y al equipo le da sentido.</dd></div>
+                    <div><dt>Dónde queda escrito</dt><dd><code>cerebro/historia.md</code>, con fechas y fuentes. Nada inventado.</dd></div>
+                </dl>
+            </article>
+        </div>
+        <p class="cierre">Si tu red habla dos lenguas, tu web también debería. Se deja previsto desde el primer día.</p>
+    </div>
+</section>
+
+<!-- 6 · Qué se queda contigo -->
+<section id="cerebro" aria-labelledby="t-cerebro">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Lo que se queda contigo</p>
+            <h2 id="t-cerebro">La web, su memoria y el oficio. Las tres cosas se quedan contigo.</h2>
+            <p class="lead">Sales sabiendo tres cosas: pedir un cambio con contexto, escribir las reglas que la IA debe seguir y comprobar lo que hace antes de creértelo. Sirve con Claude Code y, por API, con otros modelos.</p>
+        </div>
+        <div class="cerebro-grid">
+            <div>
+                <div class="dues">
+                    <div class="caixa repo">
+                        <h3>Va al repositorio</h3>
+                        <ul>
+                            <li>El mapa de valor y sus versiones</li>
+                            <li>Roles, procesos y flujos</li>
+                            <li>Decisiones y su motivo</li>
+                            <li>Marca, lugar e historia</li>
+                            <li>Textos, guías y preguntas frecuentes</li>
+                            <li>Las reglas para la IA <span class="nw">(<code>CLAUDE.md</code>)</span></li>
+                        </ul>
+                    </div>
+                    <div class="caixa crm">
+                        <h3>Se queda en tu CRM</h3>
+                        <ul>
+                            <li>Datos personales de clientes y contactos</li>
+                            <li>Contratos, precios pactados y facturas</li>
+                            <li>Conversaciones comerciales</li>
+                            <li>Contraseñas y claves, nunca en el repositorio</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tablon">
+                    <strong>Si no lo colgarías en un tablón, no va al repositorio.</strong>
+                    <p>Queda escrito en tu <code>CLAUDE.md</code> para que la IA también lo siga.</p>
+                </div>
+            </div>
+            <figure class="arbol">
+                <figcaption class="sr">Estructura de ejemplo del repositorio</figcaption>
+<pre><code><span class="d">tu-negocio/</span>
+├── index.html<span class="h">              </span><span class="c"># la web
+</span>├── <span class="d">para/</span><span class="h">                   </span><span class="c"># una puerta por rol del mapa
+</span>│   ├── tiendas.html
+│   ├── recomendar.html
+│   └── proveedores.html
+├── historia.html<span class="h">           </span><span class="c"># para quien compra, el equipo y el lugar
+</span>├── <span class="m">CLAUDE.md</span><span class="h">               </span><span class="c"># reglas para Claude Code: qué no debe tocar
+</span>├── <span class="m">AGENTS.md</span><span class="h">               </span><span class="c"># las mismas reglas, para otras IA
+</span>├── <span class="d">cerebro/</span>
+│   ├── mapa-de-valor.md<span class="h">    </span><span class="c c2"># roles e intercambios, con sus versiones
+</span>│   ├── mapa-de-valor.json<span class="h">  </span><span class="c c2"># el mismo mapa, para la consola
+</span>│   ├── flujo-de-valor.md<span class="h">   </span><span class="c c2"># el recorrido que guía la web
+</span>│   ├── decisiones.md<span class="h">       </span><span class="c c2"># qué se decidió y por qué
+</span>│   ├── marca.md<span class="h">            </span><span class="c c2"># colores, palabras y tono, con el porqué
+</span>│   ├── lugar.md<span class="h">            </span><span class="c c2"># lengua, paisaje, materiales
+</span>│   └── historia.md<span class="h">         </span><span class="c c2"># de dónde venís, con fuentes
+</span>└── netlify.toml<span class="h">            </span><span class="c"># configuración de publicación en Netlify</span></code></pre>
+            </figure>
+        </div>
+        <div class="viene">
+            <h3>Lo que viene: un cerebro en tu propio ordenador.</h3>
+            <p class="futur">La siguiente fase es que el cerebro de tu proyecto pueda consultarse con un modelo de lenguaje que corre en local, sin que nada salga de tu equipo. Como todo está en Markdown y en estándares abiertos, está pensado para que el paso no obligue a rehacer nada. Lo estamos preparando y todavía no lo ofrecemos.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 7 · Prueba -->
+<section id="prueba" class="alt" aria-labelledby="t-prueba">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Prueba</p>
+            <h2 id="t-prueba">Quién está detrás, y qué puedes comprobar.</h2>
+        </div>
+
+        <div class="bio">
+            <div class="bio-intro">
+                <h3>Álvaro Solache</h3>
+                <p>Psicólogo social y consultor estratégico sistémico. Vive en el Penedès. Es CEO de TeamTowers.</p>
+            </div>
+            <dl>
+                <div><dt>Método</dt><dd>Trabaja con el análisis de redes de valor (VNA) de Verna Allee. Fue beta-tester y coach de la metodología en la cocreación de Pantheon Work. Con ese equipo dirigió el VNA de dos mapas para IKEA: el de la dirección y el del área de servicios.<span class="sello-pend">A validar</span></dd></div>
+                <div><dt>Personas</dt><dd>Responsable de RRHH de InfoJobs en el 2000 y director de RRHH en GEC–UOC. Community manager del grupo de benchmarking del Fòrum de RRHH de Foment del Treball.</dd></div>
+                <div><dt>Redes</dt><dd>Cofundador de comunitats.org, con la UOC, La Salle, la Universidad de León y la Agencia de Desarrollo Económico de la Junta de Castilla y León.</dd></div>
+                <div><dt>Software</dt><dd>Ha dirigido desarrollo de software. Esa experiencia sostiene hoy el SOS de TeamTowers.</dd></div>
+                <div><dt>Equipos</dt><dd>Dinamiza el taller Fent Pinya, creado en Vilafranca por su socio Fèlix Miret.<span class="cifras"><span>Fent Pinya: más de 20 años</span><span>más de 60.000 participantes</span><span>más de 150 organizaciones</span></span></dd></div>
+            </dl>
+        </div>
+
+        <div class="bloque">
+            <h3>Hecho con este método</h3>
+            <!-- eventspenedes.com y labodegadesara.com: sin descripción hasta que Álvaro la valide (sector y qué rol ganó puerta). -->
+            <ul class="projectes">
+                <li><a href="https://eventspenedes.com" rel="noopener"><span class="dom">eventspenedes.com</span><span class="sello-pend">Descripción a validar</span></a></li>
+                <li><a href="https://labodegadesara.com" rel="noopener"><span class="dom">labodegadesara.com</span><span class="sello-pend">Descripción a validar</span></a></li>
+                <li><a href="https://www.teamtowers.eu" rel="noopener"><span class="dom">teamtowers.eu</span><span class="desc">La consultora.</span></a></li>
+                <li><a href="https://teamtowershuma.com" rel="noopener"><span class="dom">teamtowershuma.com</span><span class="desc">La app y el SOS. Varias versiones y varias IA probadas por API antes de quedarnos con este método.</span></a></li>
+                <li><a href="https://molekulon.org" rel="noopener"><span class="dom">molekulon.org</span><span class="desc">El Comando Molekulon, una tribu creativa pensada para los 27 pueblos del Alt Penedès y los 6 del Garraf.</span></a></li>
+            </ul>
+        </div>
+
+        <div class="bloque">
+            <h3>Compruébalo tú</h3>
+            <ul class="comprueba">
+                <li>La consola con la que se revisa tu mapa está publicada, con sus diez reglas y el motivo de cada una.<br><a class="flecha" href="/SOS/vna-suport.html">Probar la consola</a></li>
+                <li>Un mapa de valor sobre nuestra propia red.<br><a class="flecha" href="/SOS/vna.html">Ver el ejemplo</a></li>
+                <li>Esta página se ha hecho con el mismo método: Claude Code, GitHub y Netlify, en HTML sin frameworks. Puedes ver su código fuente.</li>
+            </ul>
+            <!-- Fuente: cataleg-teamtowers-2026.md §2.5. Fue una revisión con la guía de estilo, no un VNA formal. Lo valida Álvaro antes de publicar. -->
+            <div class="en-casa">
+                <h3>Lo aplicamos primero en casa <span class="sello-pend">A validar</span></h3>
+                <p>Revisamos nuestro propio catálogo, el que va a las agencias de eventos. No contestaba lo primero que pregunta una agencia: qué pasa si llueve, cuándo se puede cancelar y cuánto cuesta el desplazamiento más allá de dos horas de Barcelona. Una agencia es quien revende, y le faltaba su puerta.</p>
+            </div>
+        </div>
+        <p class="peque bloque">En esta página no hay testimonios. Los primeros casos se publicarán cuando las personas implicadas los hayan revisado.</p>
+    </div>
+</section>
+
+<!-- 8 · Oferta -->
+<section id="precios" aria-labelledby="t-precios">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Precios · borrador</p>
+            <h2 id="t-precios">Precio cerrado. Pagas lo que te llevas, no las horas.</h2>
+            <p class="lead">Sabes el precio antes de empezar. No cambia si la sesión se alarga.</p>
+        </div>
+
+        <p class="ancla"><span><strong>Una web a medida de <a href="/cataleg.html#pk-web-ia">nuestro catálogo</a>:</strong> de 2.500 a 8.000 € y de 4 a 10 semanas <span class="sello-pend">A validar</span></span> <span><strong>Aquí:</strong> una sesión y un precio cerrado.</span></p>
+
+        <p class="franja-0"><strong>Borrador de tu mapa · 0 €.</strong> Nos mandas la dirección de tu web y dos líneas, y en tres días laborables recibes el borrador de tu mapa y las preguntas que tu web no contesta. Lo prepara la IA y lo revisa una persona. Es un borrador, no un diagnóstico. Si después contratas, la sesión empieza desde ahí.</p>
+
+        <div class="preus">
+            <article class="preu destacat" aria-labelledby="p-sesion">
+                <p class="etiqueta">Para empezar</p>
+                <h3 id="p-sesion">Sesión individual</h3>
+                <p class="per">Para una persona que lleva su negocio, o un equipo de hasta tres · 2 h 30 min, en remoto o presencial</p>
+                <div class="importe">
+                    <p class="xifra">390 € <small>sin IVA</small></p>
+                    <p class="sello-pend">Precio de validación</p>
+                    <p class="despues">después, 690 €</p>
+                </div>
+                <p class="incl">Incluye</p>
+                <ul>
+                    <li>El borrador y su revisión en la sala</li>
+                    <li>Tu mapa de valor y tu flujo, en dibujo y en texto</li>
+                    <li>Web publicada en la sesión: portada, hasta tres puertas del flujo elegido y contacto, en un idioma</li>
+                    <li>Los archivos en tu cuenta de GitHub y la web en tu cuenta de Netlify: todo a tu nombre</li>
+                    <li>Tu dominio, si nos das acceso. Mientras se actualiza, la web se ve en su dirección de Netlify</li>
+                    <li>La memoria de tu negocio por escrito, con las reglas para la IA</li>
+                    <li>Guía de una página: cómo pedir un cambio y cómo deshacerlo</li>
+                    <li>Informe de comprobaciones: código, enlaces y accesibilidad</li>
+                    <li>Media hora de revisión a las dos semanas</li>
+                </ul>
+            </article>
+            <article class="preu" aria-labelledby="p-taller">
+                <h3 id="p-taller">Taller de equipo</h3>
+                <p class="per">De 4 a 12 personas · media jornada (4 h), mejor presencial</p>
+                <div class="importe">
+                    <p class="xifra">1.200 € <small>sin IVA</small></p>
+                    <p class="sello-pend">Precio de validación</p>
+                    <p class="despues">después, 1.800 €</p>
+                </div>
+                <p class="incl">Incluye</p>
+                <ul>
+                    <li>Todo lo de la sesión individual, con hasta cuatro puertas</li>
+                    <li>Antes del taller, 15 minutos de conversación con dos o tres personas clave</li>
+                    <li>Un mapa hecho entre todo el equipo</li>
+                    <li>Cada persona hace al menos un cambio real, con su nombre en el historial</li>
+                    <li>Guía de buenas prácticas para trabajar con IA en equipo: revisión de cambios, y qué va a los archivos y qué al CRM</li>
+                    <li>Una hora de revisión con el equipo a las dos semanas</li>
+                </ul>
+            </article>
+        </div>
+
+        <div class="accions">
+            <div class="cta">
+                <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Reserva · Mapa y web">Escribir para reservar sesión o taller</a>
+                <p class="micro">Se abre tu correo.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+            </div>
+            <a class="btn btn-ghost" href="#empezar">Empezar por el borrador gratis</a>
+        </div>
+
+        <div class="despues-f">
+            <h3>Después, si quieres <span class="sello-pend">A validar</span></h3>
+            <p>Sin permanencia. Nada de esto hace falta para que la web funcione.</p>
+            <div class="extras">
+                <div class="extra">
+                    <h4>Acompañamiento <b>1.400 € · 3 meses</b></h4>
+                    <p>Seis sesiones de 1 h, una cada dos semanas. Una revisión semanal de los cambios que hagáis, con su informe. El mapa se pone al día y la web se conecta con tus procesos: formularios, reservas, CRM.</p>
+                    <p>El primer día fijamos una función que se pueda comprobar en la web. Si a los tres meses no funciona por causa nuestra, seguimos un mes más sin coste.</p>
+                </div>
+                <div class="extra">
+                    <h4>Guardas <b>35 € al mes</b></h4>
+                    <p>Cada mes, comprobaciones automáticas de enlaces, accesibilidad, código, datos estructurados y formularios. Si una falla, te llega el aviso con la causa y cómo arreglarlo. Arreglarlo entra en Cerebro al día.</p>
+                    <p><span class="sello-pend">Por construir</span></p>
+                </div>
+                <div class="extra">
+                    <h4>Cerebro al día <b>120 € al mes</b></h4>
+                    <p>Lo mismo, más dos cambios pequeños al mes y una revisión del mapa cada trimestre.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="precios-pie">
+            <div class="caja-p">
+                <h3>Qué es el precio de validación</h3>
+                <p>Las diez primeras sesiones cuestan 390 € en vez de 690 €, y los tres primeros talleres, 1.200 € en vez de 1.800 €. La diferencia la pagas en otra moneda: 20 minutos contándonos qué funcionó y qué no. Publicar tu caso es opcional, y solo después de que lo hayas revisado.</p>
+            </div>
+        </div>
+
+        <ul class="notas-p">
+            <li>Precios en borrador, sin IVA. Se revisan tras las diez primeras sesiones.</li>
+            <li>No incluyen el dominio ni la suscripción a la IA, que van a tu nombre para que todo sea tuyo. GitHub y Netlify tienen plan gratuito a octubre de 2026. Sus condiciones las fijan ellos.</li>
+            <li>Presencial en el Penedès, sin coste de desplazamiento. Fuera, el desplazamiento se cobra a precio de factura, sin margen.</li>
+            <li>Extras a precio cerrado: puerta adicional 190 € · segundo idioma 350 €.</li>
+            <li>Si contratas la web a medida del catálogo en los 60 días siguientes, descontamos lo que pagaste por la sesión o el taller.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- 9 · CTA final -->
+<section id="empezar" class="oscuro" aria-labelledby="t-empezar">
+    <div class="container">
+        <h2 id="t-empezar">Mándanos tu web. En tres días te devolvemos tu red.</h2>
+        <p class="lead">Con la dirección de tu web y dos líneas basta: a qué te dedicas y si serías tú o un equipo. En tres días laborables tendrás el borrador de tu mapa y las preguntas que tu web no contesta. Sin llamada y sin pagar nada. Te contesta una persona.</p>
+        <div class="accions">
+            <div class="cta">
+                <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Borrador de mapa · Mapa y web" data-cuerpo="borrador">Pedir mi borrador gratis</a>
+                <p class="micro">Se abre tu correo con cuatro preguntas.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+            </div>
+            <a class="btn btn-ghost" href="/SOS/vna-suport.html">Probar la consola por mi cuenta</a>
+        </div>
+        <p class="peque">El borrador lo prepara una IA. No mandes datos personales de clientes ni contratos: el mapa habla de roles, no de personas.</p>
+    </div>
+</section>
+
+<!-- 10 · Objeciones -->
+<section id="preguntas" aria-labelledby="t-preguntas">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Objeciones</p>
+            <h2 id="t-preguntas">Lo que no hacemos, lo que garantizamos y lo que suele preguntarse.</h2>
+        </div>
+        <div class="objeciones">
+            <div class="no-hacemos">
+                <h3>Lo que no hacemos</h3>
+                <ul>
+                    <li>No hacemos tiendas online con pasarela de pago y stock en una sesión. Eso es el proyecto de 4 a 10 semanas.</li>
+                    <li>No llevamos redes sociales ni campañas de anuncios.</li>
+                    <li>No hacemos logotipo ni identidad desde cero, ni fotografía.</li>
+                    <li>No redactamos textos legales. Te avisamos de lo que falta, y los firma tu asesoría.</li>
+                    <li>No escribimos tu historia sin ti. No inventamos opiniones de clientes ni cifras.</li>
+                    <li>No guardamos datos de tus clientes. El repositorio no es un CRM.</li>
+                    <li>No hacemos webs que solo podamos cambiar nosotros.</li>
+                </ul>
+            </div>
+            <div class="garantias">
+                <h3>Lo que garantizamos, y lo que no.</h3>
+                <h4>Garantizamos <span class="sello-pend">A validar</span></h4>
+                <ul class="si">
+                    <li>Sales de la sesión con la web publicada. Si no lo está por causa nuestra, la terminamos en tres días laborables. Si tampoco entonces, te devolvemos lo pagado.</li>
+                    <li>Todo está a tu nombre desde el primer minuto: repositorio, Netlify y dominio. Si te vas, te lo llevas todo.</li>
+                    <li>Antes de entregarla, la web pasa las comprobaciones automáticas de código, enlaces y accesibilidad AA. Una persona revisa lo que la máquina no puede comprobar. Te dejamos el informe.</li>
+                    <li>El precio es cerrado. No hay horas extra.</li>
+                    <li>Si con el borrador vemos que no encajamos, te lo decimos antes de cobrar nada.</li>
+                </ul>
+                <h4>No garantizamos</h4>
+                <ul class="no">
+                    <li>Ventas, contactos ni posiciones en buscadores. Dependen de tu negocio y de tu red. La web ayuda a que el valor circule, pero no lo crea.</li>
+                    <li>Que sea la web definitiva. Es la primera versión de algo que ya sabes cambiar.</li>
+                    <li>Que el mapa no cambie. Cambiará, y por eso vive en Markdown y no en un PDF.</li>
+                </ul>
+            </div>
+        </div>
+
+        <p class="valores-t">Nuestros cuatro valores vienen del mundo casteller. Aquí son criterios, no adornos:</p>
+        <ul class="valores">
+            <li><strong lang="ca">Força</strong>nada depende de una sola persona, tampoco de nosotros.</li>
+            <li><strong lang="ca">Equilibri</strong>cada tangible con su intangible.</li>
+            <li><strong>Valor</strong>lo que se entrega se puede comprobar.</li>
+            <li><strong lang="ca">Seny</strong>una web que funciona hoy vale más que tres empezadas.</li>
+        </ul>
+
+        <div class="faq">
+            <h3>Preguntas</h3>
+            <details>
+                <summary>¿De verdad hay una web en una hora?</summary>
+                <p>Una hora de construcción, dentro de una sesión de dos horas y media. Es posible porque llegamos con el borrador del mapa y el esqueleto ya hechos a partir de tu material. Sale una web sencilla, bien hecha y publicada. No es la definitiva: es la primera versión de algo que ya sabes cambiar.</p>
+            </details>
+            <details>
+                <summary>¿No será una plantilla?</summary>
+                <p>No. El esqueleto sale de tu mapa: tus roles, tus intercambios y tu flujo. La marca, el lugar y la historia salen de la sesión. Una plantilla no sabe quién te recomienda.</p>
+            </details>
+            <details>
+                <summary>Lo que necesito es vender. ¿Por qué una red?</summary>
+                <p>La venta está en el mapa, y muchas veces es el flujo principal. Pero quien compra suele llegar por alguien: por quien recomienda, por quien revende o por el lugar. Una web que solo atiende el último paso pierde los anteriores.</p>
+            </details>
+            <details>
+                <summary>Si lo hace una IA, ¿por qué cuesta esto?</summary>
+                <p>Porque la IA hace la parte que menos vale. Lo que pagas es saber a quién tiene que hablar tu web, qué tiene que darle a cada uno y qué no decir. Eso sale de la sesión, no de una instrucción. La IA nos permite no cobrarte semanas de ir y venir.</p>
+            </details>
+            <details>
+                <summary>¿Y si me la hago yo con una IA?</summary>
+                <p>Puedes, y la sesión te enseña a hacerlo. Lo que no sale de una instrucción es el mapa. Si quieres probar sin pagar, la <a href="/SOS/vna-suport.html">consola de mapa de valor</a> está abierta.</p>
+            </details>
+            <details>
+                <summary>Ya tengo web.</summary>
+                <p>Mejor: es material para el borrador. A veces lo que falta es una puerta, como una zona para tiendas o una página para reenviar, y no hace falta rehacerlo todo. Si tu web está en un repositorio, trabajamos encima. Si no, empezamos una nueva y decides qué pasa con la antigua.</p>
+            </details>
+            <details>
+                <summary>¿Necesito saber programar?</summary>
+                <p>No. Necesitas saber explicar tu negocio, que es lo que hacemos en el mapa. La sesión te enseña a pedir cambios a la IA y a comprobarlos.</p>
+            </details>
+            <details>
+                <summary>¿Y si la IA se equivoca?</summary>
+                <p>Pasa. Por eso cada cambio se revisa antes de publicarse y se puede deshacer. El mapa pasa por diez reglas. El <code>CLAUDE.md</code> deja escrito lo que la IA no debe tocar. Para impedirlo, y no solo pedirlo, se usan los permisos de Claude Code y una rama protegida en GitHub.</p>
+            </details>
+            <details>
+                <summary>¿De quién es todo?</summary>
+                <p>Tuyo. El repositorio, la cuenta de Netlify, el dominio y la suscripción a la IA van a tu nombre. Si un día dejas de trabajar con nosotros, no pierdes nada.</p>
+            </details>
+            <details>
+                <summary>¿Qué pasa con la información confidencial?</summary>
+                <p>No entra en el repositorio. Los datos personales, los contratos y las conversaciones comerciales se quedan en tu CRM. La regla queda escrita para que la IA también la siga. Para el borrador, no nos mandes nada de eso: te decimos qué IA lo procesa.</p>
+            </details>
+            <details>
+                <summary>¿Por qué Claude?</summary>
+                <p>Probamos varias IA por API en versiones anteriores de nuestras herramientas, y el resultado no nos convenció. Hoy trabajamos con Claude Code. Tu memoria está en Markdown y sirve para cualquier IA que elijas mañana.</p>
+            </details>
+            <details>
+                <summary>¿En qué lengua?</summary>
+                <p>En la de tu red. La sesión entrega la web en un idioma y deja preparado el segundo. Traducirlo y revisarlo es un extra de 350 € (precio en borrador).</p>
+            </details>
+            <details>
+                <summary>¿Cuánto cuesta después?</summary>
+                <p>El dominio y, si quieres seguir cambiando la web con IA, la suscripción. GitHub y Netlify tienen plan gratuito a octubre de 2026. Con nosotros no hay cuota, salvo que contrates el acompañamiento o el mantenimiento.</p>
+            </details>
+            <details>
+                <summary>¿Qué es un mapa de valor?</summary>
+                <p>Un dibujo de los roles de tu negocio y de lo que se dan entre ellos, tangible e intangible, según el análisis de redes de valor de Verna Allee. Tienes un <a href="/SOS/vna.html">ejemplo sobre nuestra propia red</a>.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- 11 · La página aplica su método -->
+<section id="puertas" class="alt" aria-labelledby="t-puertas">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Esta página también es una red</p>
+            <h2 id="t-puertas">Si vienes por otro motivo, también hay una puerta para ti.</h2>
+            <p class="lead">Lo que proponemos a tu negocio lo aplicamos aquí. Cada puerta dice qué te damos y qué te pedimos.</p>
+        </div>
+        <div class="puertas">
+            <article class="puerta" id="puerta-agencias" aria-labelledby="pu-agencias">
+                <h3 id="pu-agencias">Lo quiero para un cliente mío</h3>
+                <p class="para">Agencias, estudios de diseño, consultoras</p>
+                <dl>
+                    <div><dt>Te damos</dt><dd>El método, la consola, la revisión del mapa y una entrega que se puede revisar línea a línea.</dd><dd>Precio de partner y tu margen, por escrito antes de empezar. Puedes presentarlo con tu marca. <span class="sello-pend">A validar</span></dd></div>
+                    <div><dt>Nos das</dt><dd>La relación con tu cliente y lo que sabes de su sector.</dd></div>
+                </dl>
+                <p>La web y el repositorio quedan a nombre de tu cliente. Ya trabajamos con seis agencias que llevan el taller Fent Pinya a sus clientes. Este servicio, todavía no.</p>
+                <div class="accions">
+                    <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Agencia · Mapa y web">Proponer una colaboración</a>
+                </div>
+            </article>
+            <article class="puerta" id="puerta-grupos" aria-labelledby="pu-grupos">
+                <h3 id="pu-grupos">Represento a un grupo de negocios</h3>
+                <p class="para">Asociaciones de comerciantes, cooperativas, espacios de trabajo compartido, agentes de desarrollo local</p>
+                <dl>
+                    <div><dt>Te damos</dt><dd>Un taller común sobre el método y, después, una sesión de web por negocio. Cada negocio sale con su mapa y su web, y el grupo con el mapa de lo que se dan entre ellos.</dd></div>
+                    <div><dt>Nos das</dt><dd>El grupo, el lugar y lo que sabes del territorio.</dd></div>
+                </dl>
+                <p>Precio de grupo, por debajo de la sesión individual, por escrito antes de empezar.</p>
+                <div class="accions">
+                    <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Grupo · Mapa y web">Proponer un taller para mi grupo</a>
+                </div>
+            </article>
+            <article class="puerta" id="puerta-recomendar" aria-labelledby="pu-recomendar">
+                <h3 id="pu-recomendar">Quiero recomendaros</h3>
+                <dl>
+                    <div><dt>Te damos</dt><dd>Un texto que puedes reenviar tal cual y, si tu cliente lo permite, te contamos cómo ha ido.</dd><dd>Por cada presentación que acabe en sesión, media hora de revisión de tu propia web. <span class="sello-pend">A validar</span></dd></div>
+                    <div><dt>Nos das</dt><dd>Una presentación a quien lo necesita.</dd></div>
+                </dl>
+                <blockquote>«TeamTowers hace contigo el mapa de valor de tu negocio, quién da qué a quién, y en la misma sesión publica una web que sirve a toda esa red, no solo a quien compra. La web y el repositorio quedan a tu nombre. teamtowershuma.com/mapa-web»</blockquote>
+                <div class="accions">
+                    <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Recomendación · Mapa y web">Escribir para presentar a alguien</a>
+                </div>
+            </article>
+            <article class="puerta" id="puerta-facilitar" aria-labelledby="pu-facilitar">
+                <h3 id="pu-facilitar">Quiero aprender el método, o facilitarlo</h3>
+                <dl>
+                    <div><dt>Te damos</dt><dd>La consola de mapa de valor, abierta y sin cuenta, con sus diez reglas.</dd></div>
+                    <div><dt>Nos das</dt><dd>Tu mirada. Si encuentras un fallo en las reglas, nos lo dices.</dd></div>
+                </dl>
+                <p>Estamos preparando cómo formar a otras personas para que esto no dependa de una sola. Todavía no lo ofrecemos.</p>
+                <div class="accions">
+                    <a class="btn btn-ghost btn-sm" href="/SOS/vna-suport.html">Abrir la consola</a>
+                    <a class="enlace js-mail" href="/qui-som" data-asunto="Facilitar · Mapa y web">Avisadme cuando esté</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="pie">
+    <div class="container">
+        <div class="pie-fila">
+            <p class="pie-marca">Team<b>Towers</b> · <span lang="ca">Força · Equilibri</span> · Valor · <span lang="ca">Seny</span></p>
+            <ul>
+                <li><a href="/">Volver a la portada</a></li>
+                <li><a href="/qui-som">Quién está detrás</a></li>
+            </ul>
+        </div>
+        <p class="mono-nota">Esta página se ha hecho con su propio método: un borrador hecho por IA a partir del material y un repositorio con su cerebro dentro. Falta la revisión final de una persona: por eso es un borrador.</p>
+    </div>
+</footer>
+
+<script>
+// Correo montado en tiempo de ejecución, igual que en el resto del sitio.
+// Sin JavaScript los botones llevan a /qui-som, donde está el contacto.
+(function () {
+    var u = 'asolache', d = 'mac' + '.' + 'com', dir = u + '@' + d;
+    var cuerpos = {
+        borrador: 'Mi web:\nA qué me dedico, en una frase:\n¿Solo yo o un equipo? ¿Cuántas personas?:\nMaterial que puedo mandar (catálogo, documentos, audio):\n\n(No incluyas datos personales de clientes ni contratos.)'
+    };
+    document.querySelectorAll('.js-mail').forEach(function (a) {
+        var asunto = a.getAttribute('data-asunto') || 'Mapa y web';
+        var cuerpo = cuerpos[a.getAttribute('data-cuerpo')];
+        a.href = 'mailto:' + dir + '?subject=' + encodeURIComponent(asunto) +
+            (cuerpo ? '&body=' + encodeURIComponent(cuerpo) : '');
+    });
+    // Quien no tiene un programa de correo configurado ve la dirección escrita.
+    document.querySelectorAll('.js-dir').forEach(function (s) {
+        var a = s.querySelector('a');
+        a.href = 'mailto:' + dir;
+        a.textContent = dir;
+        s.hidden = false;
+    });
+})();
+</script>
+</body>
+</html>

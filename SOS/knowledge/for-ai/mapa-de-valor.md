@@ -186,6 +186,47 @@ en va empaquetar uns quants amb anàlisi experta i els va vendre.
 
 ---
 
+## 7 · L'editor visual de la consola
+
+A `SOS/vna-suport.html` el mapa també es **dibuixa**: un clic fa un rol, dos
+clics un lliurament tangible o intangible, i clicar els lliuraments en ordre en
+fa el flux. **El dibuix i els sis camps són el mateix model**: el que es dibuixa
+s'escriu sol a «Els rols», «Els parells» i «La seqüència», i les deu regles el
+revisen igual. El que el text no sap dir va en camps propis del JSON, que el
+text no llegeix:
+
+| Camp | Què guarda |
+|---|---|
+| `pos` | On és cada rol al dibuix |
+| `gomets` | Com valora qui el rep cada lliurament, de −2 a +2 |
+| `dins` | La xarxa de dins d'un rol: un mapa sencer, amb les seves regles. És el zoom del mètode, de la vista de falcó fins a sis nivells de detall |
+| `portes` | A dins, qui rep o qui dona cada lliurament que ve de fora |
+| `externs` | Els rols que no són de la casa (client, proveïdor, entorn): el diagnòstic no hi busca colls d'ampolla ni valor per convertir |
+| `ideal` | El mapa que es voldria tenir, amb `alies` (aquest rol de l'ideal és aquell del real) i `treu` (lliuraments del real que l'ideal vol deixar de fer) |
+
+**Real, ideal i desviació.** L'ideal és una referència, no una nota. La
+desviació compara els dos al mateix nivell i diu de cada element si **falta**
+al real, és **propi**, **canvia** (de mena, de sentit o de nom) o **sobra**.
+**El que és propi no és un error**: és el cas de la casa. Les comparacions
+d'estructura (el centre, els colls, els traspassos) es fan sobre el que els dos
+mapes tenen en comú, i si una diferència ve d'un element propi es diu així i
+baixa a nota. Si es reanomena un rol al real amb l'ideal ja fet, l'editor
+pregunta si cal canviar-lo també a l'ideal o si són el mateix rol (`alies`).
+
+**El diagnòstic** llegeix cada nivell amb el mètode i amb tres mirades de la
+casa —**àgil** (el retorn que arriba a temps per ajustar), **eficient** (els
+traspassos i els duplicats, només dels tangibles) i **conscient** (el que
+circula sense contracte)— i proposa tres preguntes per començar. «Mostra-ho» ho
+ensenya al dibuix; **el pols** fa córrer els lliuraments pas a pas, procés a
+procés, i «I si s'encalla?» atura un rol i diu què deixa d'arribar. Cada
+troballa diu si el seu llindar és del mètode, de la pràctica o de la casa.
+
+> **El diagnòstic no substitueix la sala.** Dona la dada i la pregunta; la
+> conclusió la treu qui hi és. Tot es pot fer amb el teclat i amb un sol dit, i
+> sense moviment si es demana.
+
+---
+
 *Afegit el 03/10/2026 amb l'article de 2008, aportat per l'Àlvar. Les regles 6 i
 7 de la secció 2 són d'aquesta casa i estan mesurades; les altres són del
 mètode. Els llindars **no són de Verna Allee** —l'article diu explícitament que

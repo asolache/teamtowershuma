@@ -96,7 +96,12 @@ const GRUPS = [
        què és un mapa de valor i `vna-suport` el fa. Separades al menú, qui
        acaba de llegir el mètode no troba on aplicar-lo. */
     ['vna-suport.html', T('Fer-ne un', 'Hacer uno'),
-      T('Les sis passes, i deu regles que el revisen', 'Los seis pasos, y diez reglas que lo revisan')],
+      T('L\'editor visual: rols, lliuraments, real i ideal', 'El editor visual: roles, entregables, real e ideal')],
+    /* El servei, en esborrany: la pàgina porta `noindex` fins que Àlvaro
+       validi els preus, però des del menú s'hi ha de poder arribar. Fora de
+       la llista de l'app, com les de l'arrel: és una pàgina de venda. */
+    ['/mapa-web/', T('Mapa i web en una hora', 'Mapa y web en una hora'),
+      T('El servei: el mapa del teu negoci i la web, en una sessió', 'El servicio: el mapa de tu negocio y la web, en una sesión')],
     ['cataleg.html', T('El catàleg', 'El catálogo'),
       T('Paquets tancats, amb el preu escrit', 'Paquetes cerrados, con el precio escrito')],
     ['pressupost.html', T('Demana pressupost', 'Pide presupuesto'),
@@ -385,6 +390,9 @@ const clauDe = h => {
     return 'fora-' + (c || 'inici');
   }
   if (h === '/SOS/') return 'app';
+  /* Una carpeta del lloc (`/mapa-web/`) es nomena per la carpeta: les barres
+     dins d'una clau no les llegeix la guarda del diccionari. */
+  if (h.startsWith('/')) return 'carpeta-' + h.replace(/^\/|\/$/g, '').replace(/\//g, '-');
   return (esArrel(h) ? 'arrel-' : '') + h.replace(/\.html$/, '');
 };
 
@@ -730,7 +738,7 @@ function blocApp() {
        clica fora de l'app sense avisar. A la barra sí que hi van, perquè allà
        la feina de la llista és dir **on és tot**. */
     grups: GRUPS.map(g => ({ lbl: g.lbl, ic: g.ic,
-      links: g.links.filter(l => !esFora(l[0]) && !esArrel(l[0]) && l[0] !== APP && l[0] !== '/SOS/')
+      links: g.links.filter(l => !esFora(l[0]) && !esArrel(l[0]) && l[0] !== APP && !l[0].startsWith('/'))
         .map(([h, t, d]) => ({ h, t, d })) }))
       .filter(g => g.links.length),
     eines: EINES

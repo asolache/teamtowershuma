@@ -57,7 +57,7 @@ Màxim quatre castells per actuació.
 
 ### Marxandatge
 
-Mocadors castellers 5,25 € · faixes castelleres 15,75 € (sense IVA).
+Mocadors castellers 5 € (logo del client imprès: +3,5 € per mocador) · faixes castelleres 15,75 € (sense IVA).
 
 ### Les dades
 

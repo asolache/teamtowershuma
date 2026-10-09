@@ -5054,6 +5054,32 @@ Bloquejar-ho tot hauria semblat més segur i hauria fet la pantalla inservible �
 una pantalla inservible acaba amb la fitxa escrita a mà, fora de l'eina i sense
 cap sedàs. **Un fre que no deixa treballar no protegeix: es desmunta.**
 
+## Veda 160 — Sempre hi ha un backlog, i el flux de la creativitat acaba en vedes
+
+**Dit per l'Àlvar el 09/10/2026:** «Sempre hi ha un backlog» i «el flux de valor
+de la creativitat de Shakti té les vedes».
+
+Una petició és energia creativa —Shakti, la Kriya del panteó, la rauxa de la
+veda 16— i l'energia que no s'escriu enlloc es perd. Per això **cap petició es
+queda en una conversa**: abans de fer-la, o si no es fa ara, entra al backlog
+(`knowledge/dev/backlog.md`) amb qui la va demanar, quan, què es demana i com es
+tancarà. Una idea dita en un fil i no anotada és una idea que la sessió següent
+no sabrà que existeix.
+
+I el flux no s'acaba quan la feina està feta. Té quatre passos i un lliurament
+al final:
+
+1. **La petició**, tal com la diu qui la fa.
+2. **El backlog**, on queda escrita, prioritzada i amb el criteri per tancar-la.
+3. **La feina**, que es tanca amb el que s'ha mesurat, no amb un «fet».
+4. **La veda**, quan la feina ha ensenyat alguna cosa que val per a la propera
+   vegada.
+
+La veda és l'intangible que la creativitat retorna a la casa: el que s'ha après
+fent, escrit perquè ningú l'hagi de tornar a aprendre (veda 15, el codex com a
+font viva). Una onada de feina que no deixa cap veda no és dolenta; una que
+n'havia de deixar i no la deixa obliga a repetir el mateix error.
+
 - Tot autocontingut a `SOS/index.html` per defecte.
 - `SOS/prompts/*.md` guarda els prompts versionats de cada intent d'IA.
 - `SOS/knowledge/references/*.md` guarda notes curtes de referents (Verna Allee, Ostrom, Boal, Penrose, X-Men, Mondragón, Pantheon.work…).
