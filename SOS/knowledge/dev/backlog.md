@@ -44,6 +44,68 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### La web surt del mapa, i l'alta en un toc (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** que mentre es crea el mapa de valor surti la web, amb
+menús, pàgines, contingut i serveis, i que ja hi hagi la creació de comptes,
+la integració i la benvinguda. La màgia: configurar GitHub, Netlify i la IA
+pagant amb Apple Pay, i desenvolupar amb el client des dels projectes de
+Claude Code.
+
+**Fet:** la pestanya **Web** de l'editor del mapa. Una porta per rol que no és
+de casa; compte només amb anada i tornada; la benvinguda surt de la seqüència;
+els serveis són els processos; les connexions es proposen per paraules del
+mapa. Descarrega `web.json` (`tt-web-1`). Funció pura `webDelMapa` (bloc
+`VS-WEB`), amb vint proves al motor, que corre a la CI.
+
+**Fet, i prioritat de l'Àlvar:** la web de debò surt del mapa. El botó
+«Descarrega la web (.zip)» de la pestanya Web, o `SOS/tools/web-del-mapa.js`
+des de Node, amb el mateix codi (bloc `VS-SITE`). HTML W3C validat i sense
+JavaScript, JSON-LD a cada pàgina (la web és la base de dades), formularis
+de Netlify que arriben per correu, zip determinista i `permaweb.json` amb
+l'empremta SHA-256 de cada fitxer. Vint proves al motor.
+Pendent: publicar a IPFS o Arweave, i els comptes de debò.
+
+**Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.
+Camí A: ho tenim nosaltres, amb porta de sortida. Camí B: «Deploy to Netlify»
+al GitHub del client. La plantilla que llegeix `web.json`. La IA amb la clau
+del client o amb crèdits. Un fil de Claude per flux.
+
+**Pendent de l'Àlvar:** si els crèdits d'IA porten marge (la xifra, al
+repositori privat), i els tokens de servei de GitHub i Netlify per al camí A.
+
+### Diagnòstic d'organització alineat amb el negoci operatiu, i després Ethereum (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** revisar «Què vols que passi» del diagnòstic amb
+l'estratègia actualitzada, l'embut i els rols del mapa de valor. La web ha de
+ser exemple del valor que aportem i de la tecnologia que fem servir (webs W3C,
+web3). I, pròximament, la integració amb Ethereum i xarxes semblants.
+
+**Fet:** `build-diagnosi-org.js` passa de sis caselles (quatre d'actes i
+d'equip) a nou, en dos titulars. **El teu negoci operatiu**, primer i en
+l'ordre de l'embut: `operatiu`, `web` (web de xarxa W3C al vostre GitHub i
+Netlify), `fluxos` (IA amb el model per tasca), `mapa` i `acords` (registre
+del que aporta cadascú, la porta web3). **L'equip i les jornades**:
+`sostenir`, `direccio`, `cohesio` i `obrir`, que absorbeix `produir` (es
+pregunten igual). Cap preu. La guarda 3 («cap paquet venible sense porta») no
+comprovava res des que `sector` és una llista; ara sí, i els quinze paquets
+d'empresa tenen porta.
+
+**Pendent:**
+- **Ethereum i xarxes semblants.** Avui `contractes` es ven com a estudi de
+  viabilitat i al SOS no hi ha res construït. Pas següent: decidir amb un
+  pilot quin acord s'executa sol (p.ex. el repartiment d'un Slicing Pie o
+  l'aportació d'hores) i en quina xarxa (Ethereum L2, Gnosis o similar), amb
+  la clau a la cartera de qui signa, mai al repositori. Es tanca quan un
+  pilot té un acord real registrat i verificable, i el diagnòstic l'ensenya.
+- **Mesurar les caselles.** Quan hi hagi leads a Zoho amb el camp
+  d'objectiu, mirar quines es trien i quines no; una casella que ningú tria
+  en tres mesos s'ajunta amb una altra.
+- **Rols de la xarxa al diagnòstic.** El pas 2 pregunta quina casa sou; falta
+  preguntar quins rols de la vostra xarxa (qui compra, revèn, subministra,
+  treballa, acull, recomana) no tenen porta avui, que és el que alimenta
+  l'esborrany del mapa.
+
 ### Serveis connectables, cost real de l'IA i ingressos recurrents (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** prototipar el model amb els pilots, coherent i
