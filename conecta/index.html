@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- PROTOTIPO · no se indexa: el modelo se valida con los pilotos antes de publicarlo. -->
+    <meta name="robots" content="noindex, follow">
+    <title>Servicios conectables | TeamTowers</title>
+    <meta name="description" content="Tu web conectada a tu IA y a los servicios que ya usas: CRM, cobros, tienda, correo y automatización. Por rol, por flujos y con el coste real de la IA de cada tarea.">
+    <meta name="author" content="Álvaro Solache · TeamTowers">
+    <link rel="canonical" href="https://teamtowershuma.com/conecta/">
+    <meta property="og:title" content="Tu web conectada a tu IA y a lo que ya usas. Con tus cuentas y tus claves.">
+    <meta property="og:description" content="Flujos por rol, servicios conectables y el coste real de la IA de cada tarea. Prototipo de TeamTowers para los pilotos.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/conecta/">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="TeamTowers">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* La piel de teamtowershuma.com (build-pell.js), copiada a mano como
+               en /mapa-web/: esta carpeta queda fuera del generador mientras sea
+               prototipo. */
+            --bg: #fbfaf7;
+            --panel: #f4f1ea;
+            --card: #ffffff;
+            --text: #15130f;
+            --light: #4a463e;
+            --muted: #5e594d;
+            --border: #ddd7c8;
+            --border-strong: #cac3b0;
+            --indigo: #4f46e5;
+            --indigo-hover: #4338ca;
+            --blue: #005795;
+            --purple: #a3187f;
+            --green: #0c6640;
+            --orange: #9c4408;
+            --on-accent: #ffffff;
+            --cream: #fff4d6;
+            --sans: 'Space Grotesk', system-ui, sans-serif;
+            --mono: 'JetBrains Mono', 'SF Mono', Monaco, Consolas, monospace;
+            --t0: .9375rem;
+            --t1: 1.0625rem;
+            --t2: 1.25rem;
+            --t4: clamp(1.8rem, 4.2vw, 2.75rem);
+            --radius: 14px;
+            --gutter: 1rem;
+            --sec: clamp(3rem, 7vw, 5.5rem);
+            --shadow: 0 1px 2px rgb(21 19 15 / .05), 0 14px 34px -20px rgb(21 19 15 / .28);
+        }
+        @media (min-width: 600px) { :root { --gutter: 2rem; } }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 100%; scroll-padding-top: 1rem; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: var(--t1); line-height: 1.65; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: .2em; }
+        a:hover { text-decoration-thickness: 2px; }
+        :focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; border-radius: 4px; }
+        code { font-family: var(--mono); font-size: .86em; background: var(--panel); border: 1px solid var(--border); padding: .02em .35em; border-radius: 5px; }
+        strong, b { font-weight: 600; }
+        ul, ol { list-style: none; }
+        button, select, input { font: inherit; color: inherit; }
+        .container { max-width: 1160px; margin-inline: auto; padding-inline: var(--gutter); }
+        .salta { position: absolute; left: -9999px; top: 0; background: var(--indigo); color: var(--on-accent); padding: .7rem 1.1rem; z-index: 200; border-radius: 0 0 10px 0; font-weight: 600; }
+        .salta:focus { left: 0; }
+        @media (min-width: 760px) { html { scroll-padding-top: 4.5rem; } }
+
+        .cab { background: color-mix(in srgb, var(--bg) 92%, transparent); border-bottom: 1px solid var(--border); z-index: 100; }
+        @media (min-width: 760px) { .cab { position: sticky; top: 0; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); } }
+        .cab .container { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.5rem; min-height: 56px; }
+        .marca { display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; font-weight: 700; color: var(--text); text-decoration: none; letter-spacing: -.02em; }
+        .marca b { color: var(--indigo); font-weight: 700; }
+        .marca svg { width: 22px; height: 22px; }
+        .cab nav { width: calc(100% + .8rem); margin-inline: -.4rem; }
+        .cab ul { display: flex; flex-wrap: wrap; }
+        .cab ul li { white-space: nowrap; }
+        .cab ul a { display: inline-flex; align-items: center; min-height: 44px; padding-inline: .4rem; color: var(--light); text-decoration: none; font-size: .8125rem; font-weight: 500; }
+        .cab ul a:hover { color: var(--text); }
+        @media (min-width: 760px) {
+            .cab nav { width: auto; margin-left: auto; margin-right: -.6rem; }
+            .cab ul { flex-wrap: nowrap; }
+            .cab ul a { font-size: var(--t0); padding-inline: .6rem; }
+        }
+        .borrador { background: var(--cream); border-bottom: 1px solid #e8d49a; font-size: var(--t0); padding: .6rem 0; line-height: 1.5; }
+        .borrador strong { color: var(--orange); }
+
+        main > section { padding-block: var(--sec); border-top: 1px solid var(--border); }
+        main > section.alt { background: var(--panel); }
+        .eyebrow { display: flex; align-items: center; gap: .65rem; font-family: var(--mono); font-size: .78rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; line-height: 1.4; }
+        .eyebrow::before { content: ""; flex: none; width: 1.6rem; height: 1px; background: var(--border-strong); }
+        h1 { font-size: clamp(2.1rem, 5vw, 3.3rem); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; margin-bottom: 1.3rem; max-width: 22ch; }
+        h1 span { display: block; color: var(--muted); }
+        h2 { font-size: var(--t4); line-height: 1.1; letter-spacing: -.025em; font-weight: 600; margin-bottom: 1rem; text-wrap: balance; }
+        h3 { font-size: var(--t2); line-height: 1.3; letter-spacing: -.01em; font-weight: 600; margin-bottom: .5rem; }
+        .cabeza { max-width: 50rem; margin-bottom: clamp(1.75rem, 4vw, 2.5rem); }
+        .lead { max-width: 62ch; font-size: clamp(1.0625rem, 1.5vw, 1.1875rem); color: var(--light); }
+        .lead strong { color: var(--text); }
+        .peque { font-size: .875rem; color: var(--muted); line-height: 1.6; }
+        .mono-nota { font-family: var(--mono); font-size: .8125rem; line-height: 1.65; color: var(--muted); }
+        .accions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: 1.75rem; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 44px; padding: .6rem 1.1rem; border-radius: 12px; font: 600 var(--t0)/1.25 var(--sans); text-decoration: none; text-align: center; cursor: pointer; touch-action: manipulation; border: 1px solid transparent; transition: background-color .15s, border-color .15s, color .15s; }
+        .btn-primary { background: var(--indigo); color: var(--on-accent); }
+        .btn-primary:hover { background: var(--indigo-hover); }
+        .btn-ghost { background: var(--card); color: var(--text); border-color: var(--border-strong); }
+        .btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); }
+        .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+        /* 1 · Inicio */
+        .inicio { padding-block: clamp(2.5rem, 6vw, 4.5rem) var(--sec); border-top: 0 !important; background: radial-gradient(60rem 30rem at 85% 10%, color-mix(in srgb, var(--blue) 6%, transparent), transparent 70%), radial-gradient(40rem 26rem at 70% 70%, color-mix(in srgb, var(--purple) 5%, transparent), transparent 70%); }
+        .tabla-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 2rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); }
+        table { width: 100%; border-collapse: collapse; font-size: var(--t0); line-height: 1.45; }
+        caption { text-align: left; padding: .9rem 1rem .2rem; font-family: var(--mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+        th, td { text-align: left; vertical-align: top; padding: .65rem 1rem; border-top: 1px solid var(--border); }
+        thead th { font-family: var(--mono); font-size: .75rem; font-weight: 500; letter-spacing: .04em; color: var(--muted); border-top: 0; }
+        tbody th { font-weight: 600; white-space: nowrap; }
+        .compara td:last-child { color: var(--text); }
+        .compara td:nth-child(2) { color: var(--muted); }
+
+        /* 2 · Flujos por rol */
+        .roles { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
+        .chip { min-height: 44px; padding: .45rem .95rem; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--card); cursor: pointer; font-size: var(--t0); font-weight: 500; }
+        .chip:hover { border-color: var(--indigo); }
+        .chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+        .flujos-grid { display: grid; gap: 1.5rem; align-items: start; }
+        @media (min-width: 960px) { .flujos-grid { grid-template-columns: minmax(0, 1fr) 340px; } }
+        .flujos { display: grid; gap: 1rem; }
+        @media (min-width: 640px) { .flujos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .flujo { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.15rem 1.2rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: .7rem; }
+        .flujo.en-pila { border-color: var(--indigo); box-shadow: 0 0 0 1px var(--indigo), var(--shadow); }
+        .flujo h3 { font-size: 1.0625rem; margin: 0; }
+        .marcas { display: flex; flex-wrap: wrap; gap: .35rem; }
+        .marca-n { font-family: var(--mono); font-size: .7rem; letter-spacing: .03em; padding: .1rem .5rem; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); background: var(--panel); white-space: nowrap; }
+        .marca-n.nivel { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 35%, var(--border)); }
+        .marca-n.ia { color: var(--purple); border-color: color-mix(in srgb, var(--purple) 35%, var(--border)); }
+        .piezas { display: grid; gap: .45rem; }
+        .pieza { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); align-items: center; gap: .5rem; font-size: .875rem; }
+        .pieza > label { color: var(--muted); font-family: var(--mono); font-size: .72rem; line-height: 1.3; }
+        .pieza select, .pieza output { min-height: 40px; width: 100%; padding: .35rem .55rem; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--card); font-size: .875rem; }
+        .pieza output { display: flex; align-items: center; background: var(--panel); border-color: var(--border); }
+        .flujo .btn { margin-top: auto; align-self: flex-start; }
+        .flujo .btn[aria-pressed="true"] { background: var(--indigo); color: var(--on-accent); border-color: var(--indigo); }
+
+        .pila { background: var(--card); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 1.15rem; box-shadow: var(--shadow); }
+        @media (min-width: 960px) { .pila { position: sticky; top: 5rem; } }
+        .pila h3 { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+        .pila-cifras { font-family: var(--mono); font-size: .8rem; color: var(--muted); margin-bottom: .8rem; }
+        .pila-vacia { color: var(--muted); font-size: var(--t0); }
+        .pila ul { display: grid; gap: .35rem; margin: .4rem 0 .9rem; }
+        .pila li { display: flex; justify-content: space-between; gap: .75rem; font-size: .875rem; border-top: 1px dashed var(--border); padding-top: .35rem; }
+        .pila li span:last-child { color: var(--muted); text-align: right; font-size: .8rem; }
+        .pila h4 { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: .5rem; }
+        .pila .accions { margin-top: .9rem; gap: .5rem; }
+
+        /* 3 · Catálogo */
+        .filtro { display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; font-size: var(--t0); cursor: pointer; }
+        .filtro input { width: 1.15rem; height: 1.15rem; accent-color: var(--indigo); }
+        .cat { margin-top: 2rem; }
+        .cat h3 { font-size: 1.0625rem; font-family: var(--mono); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+        .servicios { display: grid; gap: .8rem; margin-top: .6rem; }
+        @media (min-width: 640px) { .servicios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1000px) { .servicios { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .serv { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .9rem 1rem 1rem; }
+        .serv header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem .6rem; margin-bottom: .35rem; }
+        .serv b { font-size: 1.0625rem; }
+        .serv .marca-n.uso { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, var(--border)); background: color-mix(in srgb, var(--green) 6%, var(--card)); }
+        .serv .marca-n.libre { color: var(--blue); border-color: color-mix(in srgb, var(--blue) 40%, var(--border)); }
+        .serv p { font-size: .9rem; color: var(--light); line-height: 1.5; }
+        .serv dl { display: grid; gap: .2rem; margin-top: .6rem; font-size: .8rem; line-height: 1.45; }
+        .serv dl div { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: .5rem; }
+        .serv dt { font-family: var(--mono); color: var(--muted); font-size: .72rem; padding-top: .1rem; }
+
+        /* 4 · Coste de la IA */
+        .precios .num { white-space: nowrap; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .85rem; }
+        .tareas input { width: 4.5rem; min-height: 40px; padding: .3rem .45rem; border: 1px solid var(--border-strong); border-radius: 8px; text-align: right; font-family: var(--mono); font-size: .85rem; background: var(--card); }
+        .tareas td.modelo { white-space: nowrap; font-size: .85rem; }
+        .tareas .mejor { color: var(--green); font-weight: 600; }
+        .tareas tfoot td, .tareas tfoot th { font-weight: 600; border-top: 2px solid var(--border-strong); }
+        .leyenda { display: grid; gap: .6rem; margin-top: 1.5rem; }
+        @media (min-width: 760px) { .leyenda { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .leyenda li { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--acc); border-radius: 10px; padding: .7rem .9rem; font-size: .9rem; color: var(--light); }
+        .leyenda li b { display: block; color: var(--text); }
+        .leyenda li:nth-child(1) { --acc: var(--green); }
+        .leyenda li:nth-child(2) { --acc: var(--blue); }
+        .leyenda li:nth-child(3) { --acc: var(--purple); }
+        .notas { display: grid; gap: .5rem; margin-top: 1.5rem; max-width: 70ch; font-size: var(--t0); color: var(--light); }
+        .notas li { padding-left: 1rem; border-left: 2px solid var(--border-strong); }
+
+        /* 5 · Tu web y tu IA */
+        .tubo { display: grid; gap: .6rem; align-items: stretch; margin: .5rem 0 2rem; }
+        @media (min-width: 760px) { .tubo { grid-template-columns: 1fr auto 1.3fr auto 1fr; align-items: center; } }
+        .tubo > div { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem 1rem; text-align: center; font-size: .9rem; color: var(--light); }
+        .tubo > div b { display: block; color: var(--text); font-size: 1rem; }
+        .tubo > div.clave { border-color: var(--indigo); }
+        .tubo > i { font-style: normal; text-align: center; color: var(--muted); font-family: var(--mono); }
+        @media (max-width: 759px) { .tubo > i { transform: rotate(90deg); } }
+        .niveles { display: grid; gap: 1rem; counter-reset: niv; }
+        @media (min-width: 760px) { .niveles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .niveles li { counter-increment: niv; background: var(--card); border: 1px solid var(--border); border-top: 3px solid var(--acc); border-radius: var(--radius); padding: 1.1rem 1.2rem 1.2rem; box-shadow: var(--shadow); }
+        .niveles li::before { content: "Nivel " counter(niv); display: block; font-family: var(--mono); font-size: .75rem; color: var(--muted); letter-spacing: .08em; margin-bottom: .4rem; }
+        .niveles li:nth-child(1) { --acc: var(--green); }
+        .niveles li:nth-child(2) { --acc: var(--blue); }
+        .niveles li:nth-child(3) { --acc: var(--purple); }
+        .niveles p { font-size: var(--t0); color: var(--light); }
+        .estado { display: inline-block; margin-bottom: .5rem; font-family: var(--mono); font-size: .7rem; padding: .1rem .5rem; border-radius: 999px; border: 1px dashed var(--border-strong); color: var(--muted); }
+
+        /* 6 · Modelo */
+        .modelo { display: grid; gap: 1rem; }
+        @media (min-width: 760px) { .modelo { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .modelo article { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.15rem 1.2rem 1.25rem; box-shadow: var(--shadow); }
+        .modelo article p { font-size: var(--t0); color: var(--light); }
+        .reglas { display: grid; gap: .45rem; margin-top: 2rem; max-width: 62ch; }
+        .reglas li { display: flex; gap: .6rem; font-size: var(--t1); }
+        .reglas li::before { content: "✓"; color: var(--green); font-weight: 700; }
+
+        .pie { padding-block: 2.5rem 3rem; border-top: 1px solid var(--border); background: var(--panel); }
+        .pie-fila { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .pie ul { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .pie-marca b { color: var(--indigo); }
+        .aviso { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 10px; font-size: var(--t0); z-index: 300; max-width: calc(100% - 2rem); }
+    </style>
+</head>
+<body>
+<a class="salta" href="#contingut">Saltar al contenido</a>
+
+<header class="cab">
+    <div class="container">
+        <a class="marca" href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12 Q12 2 21 12" fill="none" stroke="#005795" stroke-width="2.4" stroke-linecap="round"/><path d="M3 12 Q12 22 21 12" fill="none" stroke="#a3187f" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 3"/></svg><span>Team<b>Towers</b></span></a>
+        <nav aria-label="Secciones de esta página">
+            <ul>
+                <li><a href="#flujos">Por rol</a></li>
+                <li><a href="#catalogo">Servicios</a></li>
+                <li><a href="#ia">Coste de la IA</a></li>
+                <li><a href="#tu-ia">Tu web y tu IA</a></li>
+                <li><a href="#modelo">Cómo se sostiene</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main id="contingut">
+
+<div class="borrador" role="note"><p class="container"><strong>Prototipo para los pilotos.</strong> Sin precios cerrados: el modelo se valida con ellos. Esta página no se indexa todavía.</p></div>
+
+<!-- 1 · Promesa -->
+<section id="inicio" class="inicio" aria-labelledby="t-inicio">
+    <div class="container">
+        <p class="eyebrow">Servicios conectables · Tu negocio operativo</p>
+        <h1 id="t-inicio">Tu web conectada a tu IA y a lo que ya usas. <span>Con tus cuentas y tus claves.</span></h1>
+        <p class="lead">Elige tu rol y te mostramos los flujos que más tiempo ahorran, qué servicios enchufar y qué cuesta la IA de cada tarea. <strong>Cualquier pieza se cambia por otra sin rehacer el resto.</strong></p>
+        <div class="accions">
+            <a class="btn btn-primary" href="#flujos">Montar mi pila</a>
+            <a class="btn btn-ghost" href="#ia">Ver el coste de la IA</a>
+        </div>
+        <div class="tabla-wrap">
+            <table class="compara">
+                <caption>Qué cambia respecto a una web 2.0</caption>
+                <thead><tr><th scope="col"></th><th scope="col">Una web 2.0</th><th scope="col">Tu negocio operativo</th></tr></thead>
+                <tbody>
+                    <tr><th scope="row">IA</th><td>Un chat pegado encima</td><td>Cada flujo con el modelo justo y su coste a la vista</td></tr>
+                    <tr><th scope="row">Datos</th><td>Viven en la plataforma</td><td>En tus cuentas, y se exportan en JSON</td></tr>
+                    <tr><th scope="row">Claves</th><td>Las guarda la agencia</td><td>En el servidor de tu web, a tu nombre</td></tr>
+                    <tr><th scope="row">Abierto</th><td>Plantilla cerrada</td><td>El código en tu repositorio y una opción libre en cada categoría</td></tr>
+                    <tr><th scope="row">Después</th><td>Mantenimiento por horas</td><td>Un sistema que se mide y mejora, y formación en la acción</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- 2 · Flujos por rol: el constructor de la pila -->
+<section id="flujos" class="alt" aria-labelledby="t-flujos">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Por rol · por flujos</p>
+            <h2 id="t-flujos">Elige tu rol y añade los flujos que quieres.</h2>
+            <p class="lead">Un flujo es un trabajo que hoy hace una persona a mano y mañana se hace solo. Cada uno lleva sus piezas: elige la que ya usas o la que prefieras.</p>
+        </div>
+        <div class="roles" id="cx-roles" role="group" aria-label="Rol"></div>
+        <div class="flujos-grid">
+            <div class="flujos" id="cx-flujos" aria-live="polite"></div>
+            <aside class="pila" id="cx-pila" aria-labelledby="t-pila">
+                <h3 id="t-pila">Tu pila</h3>
+                <div id="cx-pila-cuerpo"></div>
+                <div class="accions">
+                    <button type="button" class="btn btn-primary" id="cx-descarga">Descargar (JSON)</button>
+                    <a class="btn btn-ghost" id="cx-pide" href="/qui-som">Pedir que la montemos</a>
+                    <button type="button" class="btn btn-ghost" id="cx-vacia">Vaciar</button>
+                </div>
+                <p class="peque" style="margin-top:.75rem">El JSON no lleva ninguna clave. Puedes dárselo a tu IA para que te explique la pila o la compare con lo que ya tienes.</p>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<!-- 3 · Catálogo de servicios -->
+<section id="catalogo" aria-labelledby="t-catalogo">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Servicios conectables</p>
+            <h2 id="t-catalogo">Lo que ya conectamos y lo que se puede conectar.</h2>
+            <p class="lead">Los que están <strong>en uso</strong> funcionan hoy en TeamTowers: el piloto 1 somos nosotros. En cada categoría hay al menos una opción <strong>libre</strong>, que puedes alojar tú.</p>
+        </div>
+        <label class="filtro"><input type="checkbox" id="cx-solo-libres"> Ver solo las opciones libres</label>
+        <div id="cx-catalogo"></div>
+    </div>
+</section>
+
+<!-- 4 · Coste real de la IA -->
+<section id="ia" class="alt" aria-labelledby="t-ia">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Coste real de la IA</p>
+            <h2 id="t-ia">Lo que cuesta de verdad la IA, tarea por tarea.</h2>
+            <p class="lead">El SOS tiene <strong id="cx-n-tareas">15</strong> tareas con IA y hoy todas usan el mismo modelo. La propuesta: el modelo justo para cada tarea. Precios oficiales del proveedor en dólares por millón de tokens, sin convertir a euros para no inventar el cambio.</p>
+        </div>
+        <div class="tabla-wrap">
+            <table class="precios" id="cx-precios">
+                <caption>Precio de lista · <a id="cx-fuente" href="#">fuente</a></caption>
+                <thead><tr><th scope="col">Modelo</th><th scope="col" class="num">Entrada ($/M)</th><th scope="col" class="num">Salida ($/M)</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <ul class="leyenda">
+            <li><b>Haiku · ligero</b>Rellenar un formato con datos que ya tienes.</li>
+            <li><b>Sonnet · medio</b>Redactar con criterio.</li>
+            <li><b>Opus · fuerte</b>Decidir estructura o valor, donde un error sale caro.</li>
+        </ul>
+        <div class="tabla-wrap">
+            <table class="tareas" id="cx-tareas">
+                <caption>Techo por cada 100 usos · cambia los usos al mes</caption>
+                <thead><tr><th scope="col">Tarea</th><th scope="col">Hoy</th><th scope="col" class="num">Techo hoy</th><th scope="col">Propuesta</th><th scope="col" class="num">Techo propuesta</th><th scope="col" class="num">Usos al mes</th></tr></thead>
+                <tbody></tbody>
+                <tfoot><tr><th scope="row" colspan="2">Techo del mes</th><td class="num" id="cx-mes-hoy"></td><td></td><td class="num" id="cx-mes-prop"></td><td class="num" id="cx-ahorro"></td></tr></tfoot>
+            </table>
+        </div>
+        <ul class="notas">
+            <li><b>Techo</b> es lo máximo que la tarea puede escribir (su límite de tokens de salida) por el precio de salida. Lo que la tarea lee se cobra aparte y depende de tu texto: el SOS ya cuenta los tokens reales de cada llamada.</li>
+            <li>Los usos al mes de ejemplo son 10 por tarea. Cambia los números por los tuyos.</li>
+            <li>La propuesta es una hipótesis. Con los pilotos medimos calidad y coste real, y si una tarea pierde calidad vuelve al modelo anterior.</li>
+            <li>Con tu clave, la factura de la IA te llega del proveedor a tu nombre. Con un modelo abierto en tu máquina no pagas por token: pagas el equipo y la luz.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- 5 · De tu web a tu IA -->
+<section id="tu-ia" aria-labelledby="t-tu-ia">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Servicio · integrar tu web con tu IA</p>
+            <h2 id="t-tu-ia">Tu web avisa a tu IA, y tu IA trabaja con datos tuyos.</h2>
+            <p class="lead">La pieza del medio es la que lo hace seguro: una función en el servidor de tu web que guarda las claves. La página que ve la gente nunca lleva una.</p>
+        </div>
+        <div class="tubo" aria-label="Cómo viaja un dato">
+            <div><b>Tu web</b>Un formulario, un pedido, una pregunta</div>
+            <i aria-hidden="true">→</i>
+            <div class="clave"><b>Una función con tus claves</b>En el servidor de tu web, a tu nombre</div>
+            <i aria-hidden="true">→</i>
+            <div><b>Tu CRM · tu IA · tus cobros</b>Cada uno recibe solo lo suyo</div>
+        </div>
+        <ol class="niveles">
+            <li><span class="estado">Hoy</span><h3>Exporta y que tu IA lo lea</h3><p>Esta página descarga tu pila en JSON y el editor del mapa exporta tu mapa. Se lo das a tu IA, la que uses, y trabaja con tus datos y no con suposiciones.</p></li>
+            <li><span class="estado">Con los pilotos</span><h3>La web avisa</h3><p>Cuando entra un formulario o un cobro, la función avisa al CRM y a tu IA. Sin copiar y pegar, y sin claves en el navegador. El primero ya está escrito: el diagnóstico de la web entra en Zoho CRM como contacto.</p></li>
+            <li><span class="estado">En el plan</span><h3>Tu IA pregunta y actúa</h3><p>Un servidor MCP abre tu negocio a tu IA con permisos por rol: ventas ve el embudo y finanzas los cobros. Nadie ve más de lo que su rol necesita.</p></li>
+        </ol>
+    </div>
+</section>
+
+<!-- 6 · Cómo se sostiene -->
+<section id="modelo" class="alt" aria-labelledby="t-modelo">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Cómo se sostiene · propuesta para validar con los pilotos</p>
+            <h2 id="t-modelo">Tres ingresos, y ninguno depende de esconderte algo.</h2>
+        </div>
+        <div class="modelo">
+            <article><h3>Puesta en marcha, por flujos</h3><p>Cada flujo de tu pila se presupuesta aparte, con horas y coste de IA. Sin paquete cerrado: pagas lo que montas. <a href="/SOS/pressupost.html">Pedir presupuesto</a>.</p></article>
+            <article><h3>Sistema vivo, cada mes</h3><p>Mantenemos las conexiones y las mejoramos con lo que mide el SOS. Cuanto más se automatiza, menos horas nuestras hacen falta. La cuota se decide con los pilotos.</p></article>
+            <article><h3>Facilitación de servicios</h3><p>Damos de alta y configuramos cada servicio en tu cuenta, a tu nombre. Si un proveedor nos paga por traerte, lo pone en la propuesta. Y siempre hay una opción libre al lado.</p></article>
+        </div>
+        <ul class="reglas">
+            <li>Tus cuentas y tus claves, a tu nombre.</li>
+            <li>La IA te la factura el proveedor, y el contador está a la vista.</li>
+            <li>Toda comisión de un proveedor, declarada en la propuesta.</li>
+            <li>Una opción libre en cada categoría.</li>
+            <li>Todo se exporta: si te vas, te lo llevas.</li>
+        </ul>
+        <div class="accions">
+            <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Piloto · Servicios conectables" data-cuerpo="piloto">Quiero ser piloto</a>
+            <a class="btn btn-ghost" href="/mapa-web/">Antes, el mapa de mi negocio</a>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="pie">
+    <div class="container">
+        <div class="pie-fila">
+            <p class="pie-marca">Team<b>Towers</b> · <span lang="ca">Força · Equilibri</span> · Valor · <span lang="ca">Seny</span></p>
+            <ul>
+                <li><a href="/">Volver a la portada</a></li>
+                <li><a href="/mapa-web/">Mapa y web</a></li>
+                <li><a href="/qui-som">Quién está detrás</a></li>
+            </ul>
+        </div>
+        <p class="mono-nota">Los datos de esta página están en un solo bloque al final del código. Una comprobación del repositorio los cruza con las tareas reales del SOS, para que la tabla de costes no se quede atrás.</p>
+    </div>
+</footer>
+
+<!-- Los datos de la página. `SOS/tools/check-conecta.js` comprueba que las
+     tareas coinciden con `AI_INTENTS` de SOS/index.html, que cada pieza de un
+     flujo existe, que cada categoría tiene una opción libre y que no hay ni
+     precios en euros ni claves. -->
+<script type="application/json" id="cx-datos">
+{
+  "precios": {
+    "fuente": "https://platform.claude.com/docs/en/about-claude/pricing",
+    "consultado": "2026-10-09",
+    "modelos": {
+      "claude-opus-4-8":   { "nombre": "Opus 4.8",  "in": 5,   "out": 25 },
+      "claude-opus-5-5":   { "nombre": "Opus 5.5",  "in": 4,   "out": 20 },
+      "claude-sonnet-5-5": { "nombre": "Sonnet 5.5", "in": 2,  "out": 10 },
+      "claude-haiku-5-5":  { "nombre": "Haiku 5.5", "in": 0.1, "out": 0.5, "nota": "con entradas de hasta 100.000 tokens" }
+    }
+  },
+  "tareas": [
+    { "id": "suggest_map",             "que": "Proponer el mapa de valor",          "hoy": "claude-opus-4-8", "max": 2000, "propuesta": "claude-opus-5-5" },
+    { "id": "entregable_acta",         "que": "Redactar un acta",                   "hoy": "claude-opus-4-8", "max": 1500, "propuesta": "claude-sonnet-5-5" },
+    { "id": "entregable_informe",      "que": "Redactar un informe",                "hoy": "claude-opus-4-8", "max": 2000, "propuesta": "claude-sonnet-5-5" },
+    { "id": "entregable_convocatoria", "que": "Preparar una convocatoria",          "hoy": "claude-opus-4-8", "max": 1200, "propuesta": "claude-haiku-5-5" },
+    { "id": "entregable_justificacio", "que": "Justificar una subvención",          "hoy": "claude-opus-4-8", "max": 2600, "propuesta": "claude-opus-5-5" },
+    { "id": "entregable_inventari",    "que": "Ordenar un inventario",              "hoy": "claude-opus-4-8", "max": 1800, "propuesta": "claude-haiku-5-5" },
+    { "id": "entregable_comanda",      "que": "Ordenar un pedido",                  "hoy": "claude-opus-4-8", "max": 2000, "propuesta": "claude-haiku-5-5" },
+    { "id": "entregable_fitxa",        "que": "Rellenar una ficha",                 "hoy": "claude-opus-4-8", "max": 1200, "propuesta": "claude-haiku-5-5" },
+    { "id": "molekulon_invite",        "que": "Escribir una invitación",            "hoy": "claude-opus-4-8", "max": 1500, "propuesta": "claude-sonnet-5-5" },
+    { "id": "narrative_kit",           "que": "Preparar un kit narrativo",          "hoy": "claude-opus-4-8", "max": 2500, "propuesta": "claude-sonnet-5-5" },
+    { "id": "character_dossier",       "que": "Escribir un dosier de personaje",    "hoy": "claude-opus-4-8", "max": 2500, "propuesta": "claude-sonnet-5-5" },
+    { "id": "valuation",               "que": "Valorar una aportación",             "hoy": "claude-opus-4-8", "max": 1200, "propuesta": "claude-opus-5-5" },
+    { "id": "governance_check",        "que": "Revisar una decisión de gobierno",   "hoy": "claude-opus-4-8", "max": 800,  "propuesta": "claude-haiku-5-5" },
+    { "id": "pr_review",               "que": "Revisar un cambio de código",        "hoy": "claude-opus-4-8", "max": 1500, "propuesta": "claude-sonnet-5-5" },
+    { "id": "discover_entities",       "que": "Descubrir entidades de un territorio", "hoy": "claude-opus-4-8", "max": 2000, "propuesta": "claude-sonnet-5-5" }
+  ],
+  "roles": [
+    { "id": "direccion",   "nombre": "Dirección" },
+    { "id": "ventas",      "nombre": "Ventas" },
+    { "id": "marketing",   "nombre": "Marketing y comunicación" },
+    { "id": "atencion",    "nombre": "Atención al cliente" },
+    { "id": "operaciones", "nombre": "Operaciones" },
+    { "id": "finanzas",    "nombre": "Finanzas y administración" },
+    { "id": "equipo",      "nombre": "Equipo y personas" }
+  ],
+  "categorias": [
+    { "id": "web",        "nombre": "Web y datos" },
+    { "id": "crm",        "nombre": "CRM y gestión" },
+    { "id": "ia",         "nombre": "IA" },
+    { "id": "cobros",     "nombre": "Cobros" },
+    { "id": "venta",      "nombre": "Tienda y marketplaces" },
+    { "id": "oficina",    "nombre": "Correo, agenda y archivos" },
+    { "id": "comunica",   "nombre": "Mensajes y comunicación" },
+    { "id": "automatiza", "nombre": "Automatización" }
+  ],
+  "claves": {
+    "servidor":    "En la función del servidor de tu web. Nunca en la página.",
+    "local":       "Sin clave de terceros: corre en tu máquina.",
+    "dispositivo": "Tu clave privada, en tu dispositivo."
+  },
+  "costes": {
+    "suscripcion": "Suscripción",
+    "usuario":     "Suscripción por usuario",
+    "uso":         "Por uso: tokens o mensajes",
+    "cobro":       "Comisión por cobro",
+    "venta":       "Comisión por venta",
+    "autoaloja":   "Suscripción, o sin licencia en tu servidor",
+    "libre":       "Sin licencia: tu servidor o tu máquina"
+  },
+  "conectores": [
+    { "id": "netlify",     "nombre": "Netlify",            "cat": "web",        "uso": true,  "libre": false, "via": "API · webhooks · funciones", "clave": "servidor",    "coste": "suscripcion", "para": "Publica tu web y ejecuta las funciones que guardan las claves." },
+    { "id": "github",      "nombre": "GitHub",             "cat": "web",        "uso": true,  "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "El cerebro versionado: cada cambio de la web y del mapa, con su historia." },
+    { "id": "supabase",    "nombre": "Supabase",           "cat": "web",        "uso": true,  "libre": true,  "via": "API · webhooks",             "clave": "servidor",    "coste": "autoaloja",   "para": "Base de datos Postgres de código abierto, en su nube o en tu servidor." },
+    { "id": "zoho",        "nombre": "Zoho CRM",           "cat": "crm",        "uso": true,  "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "usuario",     "para": "Contactos, embudo de ventas y app móvil." },
+    { "id": "hubspot",     "nombre": "HubSpot",            "cat": "crm",        "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "usuario",     "para": "CRM con embudo, correo y formularios." },
+    { "id": "holded",      "nombre": "Holded",             "cat": "crm",        "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "usuario",     "para": "Facturación, contabilidad e inventario, pensado para empresas en España." },
+    { "id": "odoo",        "nombre": "Odoo",               "cat": "crm",        "uso": false, "libre": true,  "via": "API",                        "clave": "servidor",    "coste": "autoaloja",   "para": "CRM, facturación e inventario en una sola pieza. La edición Community es libre." },
+    { "id": "claude",      "nombre": "Claude",             "cat": "ia",         "uso": true,  "libre": false, "via": "API",                        "clave": "servidor",    "coste": "uso",         "para": "La IA que usa el SOS hoy, con tu propia clave." },
+    { "id": "openai",      "nombre": "OpenAI",             "cat": "ia",         "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "uso",         "para": "Los modelos de ChatGPT, por API." },
+    { "id": "gemini",      "nombre": "Gemini",             "cat": "ia",         "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "uso",         "para": "Los modelos de Google, por API." },
+    { "id": "mistral",     "nombre": "Mistral",            "cat": "ia",         "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "uso",         "para": "Modelos de una empresa europea, algunos con pesos abiertos." },
+    { "id": "ollama",      "nombre": "Modelo local (Ollama)", "cat": "ia",      "uso": false, "libre": true,  "via": "API local",                  "clave": "local",       "coste": "libre",       "para": "Modelos abiertos en tu ordenador: nada sale de casa." },
+    { "id": "stripe",      "nombre": "Stripe",             "cat": "cobros",     "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "cobro",       "para": "Cobros con tarjeta y suscripciones." },
+    { "id": "redsys",      "nombre": "Redsys",             "cat": "cobros",     "uso": false, "libre": false, "via": "Aviso al servidor",          "clave": "servidor",    "coste": "cobro",       "para": "El TPV de tu banco, con tarjeta y Bizum." },
+    { "id": "btcpay",      "nombre": "BTCPay Server",      "cat": "cobros",     "uso": false, "libre": true,  "via": "API · webhooks",             "clave": "servidor",    "coste": "libre",       "para": "Cobros en bitcoin sin intermediario, en tu servidor." },
+    { "id": "amazon",      "nombre": "Amazon",             "cat": "venta",      "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "venta",       "para": "Vender en Amazon y traer sus pedidos y su stock." },
+    { "id": "shopify",     "nombre": "Shopify",            "cat": "venta",      "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "Tienda en línea con cobros y envíos." },
+    { "id": "woocommerce", "nombre": "WooCommerce",        "cat": "venta",      "uso": false, "libre": true,  "via": "API · webhooks",             "clave": "servidor",    "coste": "libre",       "para": "Tienda libre sobre WordPress, en tu servidor." },
+    { "id": "workspace",   "nombre": "Google Workspace",   "cat": "oficina",    "uso": true,  "libre": false, "via": "API",                        "clave": "servidor",    "coste": "usuario",     "para": "Gmail, Calendar y Drive." },
+    { "id": "m365",        "nombre": "Microsoft 365",      "cat": "oficina",    "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "usuario",     "para": "Outlook, Teams y OneDrive." },
+    { "id": "nextcloud",   "nombre": "Nextcloud",          "cat": "oficina",    "uso": false, "libre": true,  "via": "API · WebDAV · CalDAV",      "clave": "servidor",    "coste": "libre",       "para": "Archivos, calendario y videollamadas en tu servidor." },
+    { "id": "whatsapp",    "nombre": "WhatsApp Business",  "cat": "comunica",   "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "uso",         "para": "La app para empezar, la API para automatizar." },
+    { "id": "brevo",       "nombre": "Brevo",              "cat": "comunica",   "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "Boletines y correos automáticos, de una empresa europea." },
+    { "id": "slack",       "nombre": "Slack",              "cat": "comunica",   "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "usuario",     "para": "Conversaciones del equipo por canales." },
+    { "id": "nostr",       "nombre": "Nostr",              "cat": "comunica",   "uso": true,  "libre": true,  "via": "Protocolo abierto (relés)",  "clave": "dispositivo", "coste": "libre",       "para": "Publicar y firmar sin plataforma: tu identidad es tu clave." },
+    { "id": "zapier",      "nombre": "Zapier",             "cat": "automatiza", "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "Conecta miles de aplicaciones sin programar." },
+    { "id": "make",        "nombre": "Make",               "cat": "automatiza", "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "Automatizaciones visuales entre aplicaciones." },
+    { "id": "n8n",         "nombre": "n8n",                "cat": "automatiza", "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "autoaloja",   "para": "Automatizaciones que puedes alojar tú (licencia fair-code)." },
+    { "id": "nodered",     "nombre": "Node-RED",           "cat": "automatiza", "uso": false, "libre": true,  "via": "API · webhooks",             "clave": "servidor",    "coste": "libre",       "para": "Automatizaciones libres, de la Fundación OpenJS." }
+  ],
+  "niveles": {
+    "1": "Nivel 1 · exporta",
+    "2": "Nivel 2 · la web avisa",
+    "3": "Nivel 3 · tu IA actúa"
+  },
+  "flujos": [
+    { "id": "mapa-vivo",     "roles": ["direccion"],               "nivel": 1, "ia": "claude-opus-5-5",   "que": "El mapa de tu negocio, al día y con su historia",
+      "piezas": [["github"], ["supabase"], ["claude", "ollama"]] },
+    { "id": "pregunta-ia",   "roles": ["direccion", "finanzas"],   "nivel": 3, "ia": "claude-sonnet-5-5", "que": "Preguntar a tu IA cómo va el negocio, con datos tuyos",
+      "piezas": [["claude", "openai", "gemini", "mistral", "ollama"], ["zoho", "hubspot", "odoo", "holded"]] },
+    { "id": "form-crm",      "roles": ["ventas", "atencion"],      "nivel": 2, "ia": null,                "que": "Cada formulario de la web entra en el CRM con su ficha",
+      "piezas": [["netlify"], ["zoho", "hubspot", "odoo"]] },
+    { "id": "lead-ia",       "roles": ["ventas"],                  "nivel": 2, "ia": "claude-haiku-5-5",  "que": "La IA lee la web de un contacto y propone su potencial, marcado como hipótesis",
+      "piezas": [["netlify"], ["claude", "mistral", "ollama"], ["zoho", "hubspot", "odoo"]] },
+    { "id": "publica-una",   "roles": ["marketing"],               "nivel": 2, "ia": "claude-sonnet-5-5", "que": "Publicar una vez: en la web, en el boletín y en una red abierta",
+      "piezas": [["github"], ["netlify"], ["brevo"], ["nostr"]] },
+    { "id": "catalogo-uno",  "roles": ["marketing", "operaciones"], "nivel": 2, "ia": null,               "que": "Vender en tu tienda y en Amazon con un solo catálogo",
+      "piezas": [["woocommerce", "shopify"], ["amazon"], ["n8n", "make", "zapier", "nodered"]] },
+    { "id": "whatsapp-ia",   "roles": ["atencion"],                "nivel": 2, "ia": "claude-haiku-5-5",  "que": "Responder por WhatsApp con lo que dice tu web, y pasar a una persona si no lo sabe",
+      "piezas": [["whatsapp"], ["claude", "mistral", "ollama"], ["netlify"]] },
+    { "id": "citas",         "roles": ["atencion", "ventas"],      "nivel": 2, "ia": null,                "que": "Citas en tu calendario sin ir y venir de correos",
+      "piezas": [["netlify"], ["workspace", "m365", "nextcloud"]] },
+    { "id": "pedido-aviso",  "roles": ["operaciones"],             "nivel": 2, "ia": null,                "que": "Pedido cobrado: aviso al almacén y al cliente",
+      "piezas": [["stripe", "redsys", "btcpay"], ["n8n", "make", "zapier", "nodered"], ["workspace", "m365"]] },
+    { "id": "stock-tuyo",    "roles": ["operaciones"],             "nivel": 2, "ia": null,                "que": "Stock y pedidos en una base de datos tuya",
+      "piezas": [["supabase"], ["n8n", "nodered"]] },
+    { "id": "cobro-factura", "roles": ["finanzas"],                "nivel": 2, "ia": null,                "que": "Cobro, factura y contabilidad sin teclear",
+      "piezas": [["stripe", "redsys", "btcpay"], ["holded", "odoo"]] },
+    { "id": "coste-ia",      "roles": ["finanzas", "direccion"],   "nivel": 1, "ia": null,                "que": "El coste de la IA de cada flujo, a la vista",
+      "piezas": [["claude"], ["supabase"]] },
+    { "id": "equipo-junto",  "roles": ["equipo"],                  "nivel": 1, "ia": null,                "que": "Documentos, calendario y conversaciones del equipo en un sitio",
+      "piezas": [["workspace", "m365", "nextcloud"], ["slack"]] },
+    { "id": "cerebro-rol",   "roles": ["equipo", "direccion"],     "nivel": 3, "ia": "claude-sonnet-5-5", "que": "Un cerebro por rol: lo que sabe la casa, a mano de su IA",
+      "piezas": [["github"], ["claude", "openai", "gemini", "mistral", "ollama"]] }
+  ]
+}
+</script>
+
+<script>
+(function () {
+    'use strict';
+    var D = JSON.parse(document.getElementById('cx-datos').textContent);
+    var CON = {}; D.conectores.forEach(function (c) { CON[c.id] = c; });
+    var CAT = {}; D.categorias.forEach(function (c) { CAT[c.id] = c.nombre; });
+    var ROL = {}; D.roles.forEach(function (r) { ROL[r.id] = r.nombre; });
+    var M = D.precios.modelos;
+    var CLAU = 'tt-conecta-v1';
+
+    function el(tag, attrs, kids) {
+        var n = document.createElement(tag);
+        if (attrs) Object.keys(attrs).forEach(function (k) {
+            if (k === 'text') n.textContent = attrs[k];
+            else if (k === 'class') n.className = attrs[k];
+            else n.setAttribute(k, attrs[k]);
+        });
+        (kids || []).forEach(function (k) { if (k) n.appendChild(typeof k === 'string' ? document.createTextNode(k) : k); });
+        return n;
+    }
+    function aviso(t) {
+        var a = el('div', { class: 'aviso', role: 'status', text: t });
+        document.body.appendChild(a);
+        setTimeout(function () { a.remove(); }, 2200);
+    }
+
+    /* El estado: el rol que se mira y, por flujo, si está en la pila y qué
+       pieza se ha elegido en cada hueco. Se recuerda en este navegador; si el
+       almacenamiento falla (ventana privada), la página funciona igual. */
+    var S = { rol: 'todos', pila: {} };
+    try { var g = JSON.parse(localStorage.getItem(CLAU) || 'null'); if (g && g.pila) S = { rol: g.rol || 'todos', pila: g.pila }; } catch (e) {}
+    Object.keys(S.pila).forEach(function (id) {
+        var f = D.flujos.find(function (x) { return x.id === id; });
+        if (!f) { delete S.pila[id]; return; }
+        var e = S.pila[id];
+        if (!Array.isArray(e.tria) || e.tria.length !== f.piezas.length) e.tria = f.piezas.map(function (p) { return p[0]; });
+        e.tria = e.tria.map(function (t, i) { return f.piezas[i].indexOf(t) >= 0 ? t : f.piezas[i][0]; });
+    });
+    function desa() { try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) {} }
+    function tria(f) { return (S.pila[f.id] && S.pila[f.id].tria) || (TRIA[f.id] = TRIA[f.id] || f.piezas.map(function (p) { return p[0]; })); }
+    var TRIA = {};
+
+    /* Roles: en botones con aria-pressed, uno a la vez. */
+    var rolesEl = document.getElementById('cx-roles');
+    [{ id: 'todos', nombre: 'Todos' }].concat(D.roles).forEach(function (r) {
+        var b = el('button', { type: 'button', class: 'chip', 'data-rol': r.id, 'aria-pressed': String(S.rol === r.id), text: r.nombre });
+        b.addEventListener('click', function () { S.rol = r.id; desa(); pintaRoles(); pintaFlujos(); });
+        rolesEl.appendChild(b);
+    });
+    function pintaRoles() { rolesEl.querySelectorAll('.chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.rol === S.rol)); }); }
+
+    function nombreIA(m) { return M[m] ? M[m].nombre : m; }
+
+    var flujosEl = document.getElementById('cx-flujos');
+    function pintaFlujos() {
+        flujosEl.textContent = '';
+        D.flujos.filter(function (f) { return S.rol === 'todos' || f.roles.indexOf(S.rol) >= 0; }).forEach(function (f) {
+            var enPila = !!S.pila[f.id], t = tria(f);
+            var marcas = el('div', { class: 'marcas' }, [
+                el('span', { class: 'marca-n nivel', text: D.niveles[f.nivel] }),
+                f.ia ? el('span', { class: 'marca-n ia', text: 'IA: ' + nombreIA(f.ia) }) : null
+            ].concat(f.roles.map(function (r) { return el('span', { class: 'marca-n', text: ROL[r] }); })));
+            var piezas = el('div', { class: 'piezas' });
+            f.piezas.forEach(function (alt, i) {
+                var cat = CAT[CON[alt[0]].cat], idc = 'cx-' + f.id + '-' + i, ctl;
+                if (alt.length > 1) {
+                    ctl = el('select', { id: idc, 'data-flujo': f.id, 'data-i': String(i) });
+                    alt.forEach(function (c) {
+                        var o = el('option', { value: c, text: CON[c].nombre + (CON[c].libre ? ' · libre' : '') });
+                        if (c === t[i]) o.selected = true;
+                        ctl.appendChild(o);
+                    });
+                    ctl.addEventListener('change', function () {
+                        t[i] = ctl.value;
+                        if (S.pila[f.id]) { S.pila[f.id].tria = t; desa(); pintaPila(); }
+                    });
+                } else {
+                    ctl = el('output', { id: idc, text: CON[alt[0]].nombre });
+                }
+                piezas.appendChild(el('div', { class: 'pieza' }, [el('label', { for: idc, text: cat }), ctl]));
+            });
+            var btn = el('button', { type: 'button', class: 'btn btn-ghost', 'aria-pressed': String(enPila), text: enPila ? 'En tu pila ✓' : 'Añadir a mi pila' });
+            btn.addEventListener('click', function () {
+                if (S.pila[f.id]) delete S.pila[f.id];
+                else S.pila[f.id] = { tria: t.slice() };
+                desa(); pintaFlujos(); pintaPila();
+                var b = flujosEl.querySelector('[data-id="' + f.id + '"] .btn');
+                if (b) b.focus();
+            });
+            flujosEl.appendChild(el('article', { class: 'flujo' + (enPila ? ' en-pila' : ''), 'data-id': f.id }, [el('h3', { text: f.que }), marcas, piezas, btn]));
+        });
+    }
+
+    /* La pila: los servicios que salen de los flujos elegidos, sin repetir. */
+    function servicios() {
+        var vistos = {}, out = [];
+        D.flujos.forEach(function (f) {
+            if (!S.pila[f.id]) return;
+            S.pila[f.id].tria.forEach(function (c) { if (!vistos[c]) { vistos[c] = 1; out.push(CON[c]); } });
+        });
+        return out;
+    }
+    var pilaEl = document.getElementById('cx-pila-cuerpo');
+    function pintaPila() {
+        pilaEl.textContent = '';
+        var fl = D.flujos.filter(function (f) { return S.pila[f.id]; }), sv = servicios();
+        ['cx-descarga', 'cx-vacia'].forEach(function (id) { document.getElementById(id).disabled = !fl.length; });
+        if (!fl.length) { pilaEl.appendChild(el('p', { class: 'pila-vacia', text: 'Añade flujos para ver qué servicios necesitas, dónde van las claves y cómo se paga cada uno.' })); return; }
+        var claves = sv.filter(function (c) { return c.clave === 'servidor'; }).length;
+        var libres = sv.filter(function (c) { return c.libre; }).length;
+        pilaEl.appendChild(el('p', { class: 'pila-cifras', id: 'cx-cifras', text: fl.length + (fl.length === 1 ? ' flujo · ' : ' flujos · ') + sv.length + (sv.length === 1 ? ' servicio · ' : ' servicios · ') + claves + (claves === 1 ? ' clave en el servidor · ' : ' claves en el servidor · ') + libres + (libres === 1 ? ' libre' : ' libres') }));
+        pilaEl.appendChild(el('h4', { text: 'Flujos' }));
+        pilaEl.appendChild(el('ul', null, fl.map(function (f) { return el('li', null, [el('span', { text: f.que }), el('span', { text: 'N' + f.nivel })]); })));
+        pilaEl.appendChild(el('h4', { text: 'Servicios y cómo se pagan' }));
+        pilaEl.appendChild(el('ul', { id: 'cx-servicios' }, sv.map(function (c) { return el('li', { 'data-id': c.id }, [el('span', { text: c.nombre }), el('span', { text: D.costes[c.coste] })]); })));
+        actualizaMail(fl, sv);
+    }
+
+    function pilaJSON() {
+        return {
+            formato: 'tt-pila-1',
+            fecha: new Date().toISOString().slice(0, 10),
+            origen: 'https://teamtowershuma.com/conecta/',
+            nota: 'Sin claves. Las claves van en la función del servidor de tu web, nunca aquí.',
+            flujos: D.flujos.filter(function (f) { return S.pila[f.id]; }).map(function (f) {
+                return { id: f.id, que: f.que, nivel: f.nivel, ia: f.ia, piezas: S.pila[f.id].tria };
+            }),
+            servicios: servicios().map(function (c) {
+                return { id: c.id, nombre: c.nombre, categoria: CAT[c.cat], via: c.via, clave: D.claves[c.clave], coste: D.costes[c.coste], libre: c.libre };
+            })
+        };
+    }
+    document.getElementById('cx-descarga').addEventListener('click', function () {
+        var blob = new Blob([JSON.stringify(pilaJSON(), null, 2)], { type: 'application/json' });
+        var a = el('a', { href: URL.createObjectURL(blob), download: 'mi-pila-teamtowers.json' });
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+        aviso('Pila descargada');
+    });
+    document.getElementById('cx-vacia').addEventListener('click', function () {
+        S.pila = {}; desa(); pintaFlujos(); pintaPila(); aviso('Pila vacía');
+    });
+
+    /* Correo montado en tiempo de ejecución, igual que en el resto del sitio.
+       Sin JavaScript los botones llevan a /qui-som, donde está el contacto. */
+    var dir = 'asolache' + '@' + 'mac' + '.' + 'com';
+    function mailto(asunto, cuerpo) { return 'mailto:' + dir + '?subject=' + encodeURIComponent(asunto) + '&body=' + encodeURIComponent(cuerpo); }
+    function actualizaMail(fl, sv) {
+        document.getElementById('cx-pide').href = mailto('Mi pila · Servicios conectables',
+            'Quiero montar estos flujos:\n' + fl.map(function (f) { return '- ' + f.que + ' (' + S.pila[f.id].tria.map(function (c) { return CON[c].nombre; }).join(', ') + ')'; }).join('\n') +
+            '\n\nServicios: ' + sv.map(function (c) { return c.nombre; }).join(', ') +
+            '\n\nMi rol:\nLo que ya uso:\n\n(No incluyas claves ni contraseñas.)');
+    }
+    document.querySelectorAll('.js-mail').forEach(function (a) {
+        a.href = mailto(a.getAttribute('data-asunto'), 'Mi negocio:\nMi rol:\nLos servicios que ya uso:\nEl flujo que más tiempo me quita:\n\n(No incluyas datos personales de clientes ni claves.)');
+    });
+
+    /* Catálogo por categoría. */
+    var catEl = document.getElementById('cx-catalogo'), soloLibres = document.getElementById('cx-solo-libres');
+    function rolesDe(c) {
+        var r = {};
+        D.flujos.forEach(function (f) { if (f.piezas.some(function (p) { return p.indexOf(c.id) >= 0; })) f.roles.forEach(function (x) { r[x] = 1; }); });
+        return D.roles.filter(function (x) { return r[x.id]; }).map(function (x) { return x.nombre; });
+    }
+    function pintaCatalogo() {
+        catEl.textContent = '';
+        D.categorias.forEach(function (cat) {
+            var cs = D.conectores.filter(function (c) { return c.cat === cat.id && (!soloLibres.checked || c.libre); });
+            if (!cs.length) return;
+            catEl.appendChild(el('div', { class: 'cat', 'data-cat': cat.id }, [
+                el('h3', { text: cat.nombre }),
+                el('div', { class: 'servicios' }, cs.map(function (c) {
+                    return el('article', { class: 'serv', 'data-id': c.id }, [
+                        el('header', null, [el('b', { text: c.nombre }),
+                            c.uso ? el('span', { class: 'marca-n uso', text: 'En uso en TeamTowers' }) : null,
+                            c.libre ? el('span', { class: 'marca-n libre', text: 'Libre' }) : null]),
+                        el('p', { text: c.para }),
+                        el('dl', null, [
+                            el('div', null, [el('dt', { text: 'Se enchufa' }), el('dd', { text: c.via })]),
+                            el('div', null, [el('dt', { text: 'La clave' }), el('dd', { text: D.claves[c.clave] })]),
+                            el('div', null, [el('dt', { text: 'Se paga' }), el('dd', { text: D.costes[c.coste] })]),
+                            el('div', null, [el('dt', { text: 'Para' }), el('dd', { text: rolesDe(c).join(', ') })])
+                        ])
+                    ]);
+                }))
+            ]));
+        });
+    }
+    soloLibres.addEventListener('change', pintaCatalogo);
+
+    /* Coste de la IA: techo = tokens máximos de salida × precio de salida. */
+    function techo(model, max) { return max * M[model].out / 1e6; }
+    /* En castellano el punto separa miles: «$5.000» se leería cinco mil.
+       Coma decimal y el símbolo detrás, como se escribe aquí un precio. */
+    function usd(x) { var d = x >= 0.1 || x === 0 ? 2 : 4; return x.toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }) + ' $'; }
+    document.getElementById('cx-fuente').href = D.precios.fuente;
+    document.getElementById('cx-fuente').textContent = 'fuente oficial, consultada el ' + D.precios.consultado.split('-').reverse().join('/');
+    var ptb = document.querySelector('#cx-precios tbody');
+    Object.keys(M).forEach(function (k) {
+        ptb.appendChild(el('tr', null, [el('th', { scope: 'row', text: M[k].nombre + (M[k].nota ? ' (' + M[k].nota + ')' : '') }), el('td', { class: 'num', text: usd(M[k].in) }), el('td', { class: 'num', text: usd(M[k].out) })]));
+    });
+    document.getElementById('cx-n-tareas').textContent = D.tareas.length;
+    var ttb = document.querySelector('#cx-tareas tbody');
+    D.tareas.forEach(function (t) {
+        var h = techo(t.hoy, t.max) * 100, p = techo(t.propuesta, t.max) * 100;
+        var inp = el('input', { type: 'number', min: '0', step: '1', value: '10', inputmode: 'numeric', 'aria-label': 'Usos al mes: ' + t.que, 'data-tarea': t.id });
+        inp.addEventListener('input', sumaMes);
+        ttb.appendChild(el('tr', { 'data-tarea': t.id }, [
+            el('th', { scope: 'row', text: t.que }),
+            el('td', { class: 'modelo', text: nombreIA(t.hoy) }),
+            el('td', { class: 'num', text: usd(h) }),
+            el('td', { class: 'modelo', text: nombreIA(t.propuesta) }),
+            el('td', { class: 'num' + (p < h ? ' mejor' : ''), text: usd(p) }),
+            el('td', { class: 'num' }, [inp])
+        ]));
+    });
+    function sumaMes() {
+        var h = 0, p = 0;
+        D.tareas.forEach(function (t) {
+            var n = Math.max(0, parseInt(ttb.querySelector('input[data-tarea="' + t.id + '"]').value, 10) || 0);
+            h += n * techo(t.hoy, t.max); p += n * techo(t.propuesta, t.max);
+        });
+        document.getElementById('cx-mes-hoy').textContent = usd(h);
+        document.getElementById('cx-mes-prop').textContent = usd(p);
+        document.getElementById('cx-ahorro').textContent = h > 0 ? '−' + Math.round((1 - p / h) * 100) + ' %' : '—';
+    }
+
+    pintaFlujos(); pintaPila(); pintaCatalogo(); sumaMes();
+    window.__CX = { datos: D, estado: S, pilaJSON: pilaJSON, techo: techo };
+})();
+</script>
+</body>
+</html>

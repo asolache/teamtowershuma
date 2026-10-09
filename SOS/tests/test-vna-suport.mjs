@@ -14,6 +14,7 @@ import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 
 const DIR = dirname(fileURLToPath(import.meta.url));
 const PAG = 'file://' + join(DIR, '..', 'vna-suport.html');
@@ -612,7 +613,10 @@ console.log('\n7B.5b · Ordenar el flux arrossegant, amb ratolí i amb el dit');
   const s4 = await seq();
   ok(pas(s4, CL[1]) === 1 && pas(s4, CL[2]) === 2, 'i en deixar-la, la posa abans del pas: ' + CL.map(c => pas(s4, c)).join(', '));
   await cdp.detach();
-  /* El teclat continua: Alt+→ */
+  /* El teclat continua: Alt+→. Primer, que la tira s'acabi de refer (els
+     panells es pinten 150 ms després de cada canvi): enfocar una fitxa que
+     després se substitueix deixaria la tecla en un botó que ja no hi és. */
+  await pausa(250);
   await p.focus('#edFluxCos .ed-fitxa[data-clau="' + CL[1] + '"]');
   await p.keyboard.press('Alt+ArrowRight');
   ok(pas(await seq(), CL[1]) === 2, 'i amb el teclat, Alt+→ la passa després');
@@ -950,6 +954,47 @@ console.log('\n7C.6 · El que es veu a la desviació');
   await p.click('#edVistes input[value=real] + span');
 }
 
+console.log('\n7D · La web que surt del mapa');
+{
+  await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
+  await p.click('#btExemple');
+  await p.click('#edTabWeb');
+  const menu = () => p.evaluate(() => [...document.querySelectorAll('#edPanWeb [data-web-pag]')].map(b => b.textContent));
+  const m0 = await menu();
+  ok(m0[0] === 'Inici' && m0.includes('El visitant') && m0.includes('Serveis') && m0[m0.length - 1] === 'Per a l\'equip' && !m0.includes('Qui rep i explica'),
+    'la pestanya «Web» mostra el menú: Inici, una porta per rol, Serveis i l\'equip');
+  await p.click('#edPanWeb [data-web-pag="el-visitant"]');
+  const v = await p.evaluate(() => ({ h: document.querySelector('#edWebPag h5').textContent, pas: [...document.querySelectorAll('#edWebPag li[data-pas]')].map(l => l.getAttribute('data-pas')).join(),
+    cur: document.querySelector('#edPanWeb [aria-current=page]').getAttribute('data-web-pag'), focus: document.activeElement.getAttribute('data-web-pag'),
+    xip: (document.querySelector('#edWebPag .ed-web-xips a') || {}).href || '' }));
+  ok(v.h === 'El visitant' && v.pas === 'coneix,compte,connecta,primer,demanem', 'la porta del visitant porta la benvinguda en cinc passos');
+  ok(v.cur === 'el-visitant' && v.focus === 'el-visitant', 'el menú marca la pàgina i el focus no es perd');
+  ok(/conecta\/#catalogo$/.test(v.xip) && !/^file:\/\/\/conecta/.test(v.xip), 'les connexions porten al catàleg de /conecta/, també des del disc');
+  await p.click('#edPanWeb [data-web-pag="serveis"]');
+  const sv = await p.evaluate(() => [...document.querySelectorAll('#edWebPag h6')].map(h => h.textContent));
+  ok(sv.slice(0, 3).join('|') === 'La visita|El dia al poble|La venda pel canal', 'Serveis: els processos del mapa, en ordre');
+  await p.check('#edPanWeb [data-web-casa="Qui fa el vi"]');
+  const m1 = await menu();
+  ok(!m1.includes('Qui fa el vi') && m1.length === m0.length - 1, 'marcar un rol com a de casa li treu la porta');
+  ok(await p.evaluate(() => document.activeElement.getAttribute('data-web-casa')) === 'Qui fa el vi', 'i el focus es queda a la casella');
+  await p.evaluate(() => { const ed = window.__VS_ED; ed.rol('Qui porta l\'agenda'); });
+  await p.click('#edTabWeb');
+  ok((await menu()).includes('Qui porta l\'agenda'), 'un rol nou al mapa és una porta nova a la web');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#edWebJson')]);
+  const j = JSON.parse(readFileSync(await dl.path(), 'utf8'));
+  ok(dl.suggestedFilename() === 'web.json' && j.formato === 'tt-web-1' && j.casa.length === 2 && Array.isArray(j.alta), 'Descarrega web.json amb el format tt-web-1 i la casa triada');
+  await p.fill('#edWebNom', 'Celler de prova');
+  await p.fill('#edWebCorreu', 'hola@exemple.cat');
+  await p.selectOption('#edWebLlengua', 'es');
+  const [dz] = await Promise.all([p.waitForEvent('download'), p.click('#edWebZip')]);
+  const z = readFileSync(await dz.path()), zs = z.toString('latin1');
+  ok(dz.suggestedFilename() === 'celler-de-prova.zip' && zs.startsWith('PK') && zs.includes('permaweb.json') && zs.includes('<html lang="es">') && zs.includes('mailto:hola@exemple.cat'),
+    'Descarrega la web (.zip): les pàgines en la llengua triada, el correu i permaweb.json');
+  await p.click('#edPanWeb [data-web-pag="serveis"]');
+  ok(await p.evaluate(() => document.querySelector('#edWebNom').value) === 'Celler de prova', 'el nom es manté en tornar a pintar');
+  await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
+}
+
 console.log('\n7B.12 · Al mòbil (390 px)');
 {
   const m = await b.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
@@ -974,6 +1019,16 @@ console.log('\n7B.12 · Al mòbil (390 px)');
   await m.tap('#edModeV');
   const v = await m.evaluate(() => ({ escrit: document.querySelector('#escrit').offsetParent !== null, llenc: document.querySelector('#edLlenc').offsetParent !== null, sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
   ok(v.llenc && !v.escrit && v.sw <= v.cw, 'i «Visual» torna al dibuix');
+  await m.evaluate(() => document.querySelector('#edTabWeb').click());
+  await m.tap('#edPanWeb [data-web-pag="l-operador-de-luxe"]');
+  const w = await m.evaluate(() => {
+    const d = document.documentElement, vis = x => { const q = x.getBoundingClientRect(); return q.width > 0 && q.height > 0 && x.offsetParent !== null; };
+    const petits = [...document.querySelectorAll('#edPanWeb button, #edPanWeb label, #edPanWeb a')].filter(vis)
+      .filter(x => { const q = x.getBoundingClientRect(); return q.width < 43.5 || q.height < 43.5; }).map(x => x.textContent.trim().slice(0, 20));
+    return { sw: d.scrollWidth, cw: d.clientWidth, petits, h: (document.querySelector('#edWebPag h5') || {}).textContent };
+  });
+  ok(w.h === 'L\'operador de luxe' && w.sw <= w.cw, `la pestanya «Web» al mòbil, sense scroll horitzontal (${w.sw} ≤ ${w.cw})`);
+  ok(!w.petits.length, 'i tot el que es toca a la web fa almenys 44 × 44' + (w.petits.length ? ': ' + w.petits.join(', ') : ''));
   await m.evaluate(() => { try { localStorage.clear(); } catch (e) { /* res */ } });
   await m.close();
 }

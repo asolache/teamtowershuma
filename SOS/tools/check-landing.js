@@ -463,7 +463,7 @@ else {
 
 /* ── 7c · Cap nom de client sense font escrita ────────────────────────────
    Un nom d'empresa a `#trajectoria` és **una afirmació sobre un tercer**:
-   IKEA, BBVA o Novartis no han signat res que digui que es poden fer servir de
+   BBVA, Novartis o Telefónica no han signat res que digui que es poden fer servir de
    referència, i el dia que un d'ells ho pregunti la resposta no pot ser «ho
    vam posar perquè ens sonava».
 

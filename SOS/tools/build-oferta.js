@@ -149,9 +149,24 @@ const PUNTS = {
    s'endú qui la paga** (`valor`), que és l'única pregunta que decideix. */
 const FONTS = {
   mapa:      { lbl: 'Segons mapa de cost', lblEs: 'Según mapa de coste' },
+  fluxos:    { lbl: 'Desglossat per fluxos', lblEs: 'Desglosado por flujos' },
   negoci:    { lbl: 'Forquilla del model', lblEs: 'Horquilla del modelo' },
   estimacio: { lbl: 'A validar',       lblEs: 'A validar' }
 };
+
+/* ══ SENSE FORQUILLES (09/10/2026) ═══════════════════════════════════════════
+   L'Àlvar ha decidit treure les forquilles en euros de tot el catàleg públic.
+   El que es cobra es calcula **per fluxos**: les hores de cada rol al preu del
+   seu nivell, més el cost de la IA de cada flux amb el model que toca a cada
+   tasca —el petit on n'hi ha prou, el gran només on cal—, que el SOS tria i
+   n'aprèn. Les xifres reals per flux sortiran dels pilots, i no s'inventen.
+
+   `preuMin` i `preuMax` es queden a cada paquet com a referència interna del
+   model i per a la guarda del sostre públic, però amb aquest interruptor
+   encès no surten a cap pàgina: ni al catàleg, ni al README, ni a la
+   calculadora, ni al portal del SOS. */
+const PER_FLUXOS = true;
+const PER_FLUXOS_LBL = { ca: 'Per fluxos · hores i IA, desglossat', es: 'Por flujos · horas e IA, desglosado' };
 
 /* ══ L'ESCALA ═════════════════════════════════════════════════════════════
    Tres nivells i un preu hora, que és com contracta una administració quan
@@ -197,6 +212,10 @@ const PASSOS_COST = [
     tEs: 'Cada rol lleva sus horas',
     d: 'Les hores surten dels fluxos del mapa, no d\'una intuïció. Si un flux no hi és, no es cobra; si hi és, es pot discutir.',
     dEs: 'Las horas salen de los flujos del mapa, no de una intuición. Si un flujo no está, no se cobra; si está, se puede discutir.' },
+  { t: 'Cada flux porta el cost de la seva IA',
+    tEs: 'Cada flujo lleva el coste de su IA',
+    d: 'Amb el model que toca a cada tasca: el petit on n\'hi ha prou i el gran només on cal. El SOS el tria i aprèn de cada projecte quin calia, i la proposta ho diu flux per flux.',
+    dEs: 'Con el modelo que toca en cada tarea: el pequeño donde basta y el grande solo donde hace falta. El SOS lo elige y aprende de cada proyecto cuál hacía falta, y la propuesta lo dice flujo por flujo.' },
   { t: 'Cada rol té el preu del seu nivell',
     tEs: 'Cada rol tiene el precio de su nivel',
     d: 'Tres nivells, i el que els separa és evidència verificable al registre. La proposta diu quina persona fa quines hores.',
@@ -567,8 +586,8 @@ const PAQUETS = [
     endusEs: 'La dinámica funcionando con roles, gobernanza y cuentas: banco de tiempo, biblioteca de las cosas, grupo de consumo, cuidados vecinales, comunidad energética o vivienda en cesión de uso.',
     valor: 'Al sisè mes hi ha intercanvis registrats i gent que sap portar-ho. La diferència amb un pla estratègic és que això es pot ensenyar funcionant.',
     valorEs: 'Al sexto mes hay intercambios registrados y gente que sabe llevarlo. La diferencia con un plan estratégico es que esto se puede enseñar funcionando.',
-    perque: 'Són de 400 a 900 € al mes segons la mida del grup i si cal constituir res; sis mesos és el mínim per veure si s\'aguanta sol.',
-    perqueEs: 'Son de 400 a 900 € al mes según el tamaño del grupo y si hay que constituir algo; seis meses es el mínimo para ver si se aguanta solo.',
+    perque: 'Es paga per mesos i puja amb la mida del grup i si cal constituir res; sis mesos és el mínim per veure si s\'aguanta sol.',
+    perqueEs: 'Se paga por meses y sube con el tamaño del grupo y si hay que constituir algo; seis meses es el mínimo para ver si se aguanta solo.',
     diners: 'Partida de participació · Ateneus Cooperatius',
     dinersEs: 'Partida de participación · Ateneus Cooperatius' },
 
@@ -696,7 +715,7 @@ const forq = p => p.preuMin === p.preuMax ? eur(p.preuMin)
 const k = (id, camp) => 'pk.' + id + '.' + camp;
 
 function fitxa(p) {
-  const pt = PUNTS[p.punt], fo = FONTS[p.font];
+  const font = PER_FLUXOS && !p.mida ? 'fluxos' : p.font, pt = PUNTS[p.punt], fo = FONTS[font];
   const nom = p.enllac
     ? `<a href="${p.enllac}" data-i18n="${k(p.id, 'n')}">${esc(p.nom)}</a>`
     : `<span data-i18n="${k(p.id, 'n')}">${esc(p.nom)}</span>`;
@@ -705,6 +724,7 @@ function fitxa(p) {
      i hi porta. Sense aquest enllaç, no publicar preu seria amagar-lo. */
   const preu = p.mida
     ? `<strong class="pk-mida"><a href="#cost" data-i18n="pk.mida">A mida · calculat amb el mapa de cost</a></strong>`
+    : PER_FLUXOS ? `<strong class="pk-mida"><a href="#cost" data-i18n="pk.fluxos">${esc(PER_FLUXOS_LBL.ca)}</a></strong>`
     : `<strong>${forq(p)}</strong>`;
   return `        <article class="paquet" id="pk-${p.id}" data-sector="${p.sector.join(' ')}">
           <header>
@@ -721,7 +741,7 @@ function fitxa(p) {
           </dl>
           <div class="pk-preu">
             ${preu}
-            <span class="pk-font" data-i18n="pk.font.${p.font}">${esc(fo.lbl)}</span>
+            <span class="pk-font" data-i18n="pk.font.${font}">${esc(fo.lbl)}</span>
             <p class="pk-perque" data-i18n="${k(p.id, 'p')}">${esc(p.perque)}</p>
           </div>
         </article>`;
@@ -802,7 +822,7 @@ ${files}
         </table>
       </div>
       <p class="cm-int" data-i18n-html="cm.priv">I a una empresa o una cooperativa, <strong>la suma és la mateixa i el sostre no hi és</strong>: els 5.000 € existeixen per encaixar en una contractació menor de l'administració, i fora d'allà no volen dir res. El que canvia és d'on surt el pressupost —sovint de l'àrea que té el problema, no de formació— i que allà sí que es poden plantejar encàrrecs llargs sense partir-los en fases.</p>
-      <p class="cm-peu" data-i18n-html="cm.peu">Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.</p>`;
+      <p class="cm-peu" data-i18n-html="cm.peu">Cap paquet porta preu tancat publicat: tots es pressuposten així, <strong>desglossats per fluxos</strong>, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir. L'escala és <strong>sense IVA</strong>, és tarifa proposada per al 2026 i es revisa cada any.</p>`;
 }
 
 /* Les claus dels dos idiomes surten de la mateixa declaració, i per això no
@@ -817,7 +837,9 @@ function diccionari(llengua) {
   Object.keys(PUNTS).forEach(id => {
     files.push(`  ${q('pk.punt.' + id)}:${q(es ? PUNTS[id].lblEs : PUNTS[id].lbl)},`);
   });
-  Object.keys(FONTS).forEach(id => {
+  /* Amb el catàleg per fluxos, les fonts de les forquilles ja no surten a cap
+     fitxa: les seves claus serien òrfenes. */
+  Object.keys(FONTS).filter(id => !PER_FLUXOS || id === 'mapa' || id === 'fluxos').forEach(id => {
     files.push(`  ${q('pk.font.' + id)}:${q(es ? FONTS[id].lblEs : FONTS[id].lbl)},`);
   });
   files.push(`  ${q('pk.lbl.qui')}:${q(es ? 'Para quién' : 'Per a qui')},` +
@@ -830,7 +852,8 @@ function diccionari(llengua) {
   files.push(`  ${q('pk.f.tot')}:${q(es ? 'Todo el catálogo' : 'Tot el catàleg')},` +
              ORDRE_SECTORS.map(id =>
                `${q('pk.f.' + id)}:${q(es ? SECTORS[id].lblEs : SECTORS[id].lbl)},`).join('') +
-             `${q('pk.mida')}:${q(es ? 'A medida · calculado con el mapa de coste' : 'A mida · calculat amb el mapa de cost')},`);
+             `${q('pk.mida')}:${q(es ? 'A medida · calculado con el mapa de coste' : 'A mida · calculat amb el mapa de cost')},` +
+             `${q('pk.fluxos')}:${q(es ? PER_FLUXOS_LBL.es : PER_FLUXOS_LBL.ca)},`);
   /* El mapa de cost: quatre passos, tres nivells i el peu. */
   PASSOS_COST.forEach((p, i) => {
     files.push(`  ${q('cm.p' + (i + 1) + '.t')}:${q(es ? p.tEs : p.t)},${q('cm.p' + (i + 1) + '.d')}:${q(es ? p.dEs : p.d)},`);
@@ -855,8 +878,8 @@ function diccionari(llengua) {
     ? 'Y en una empresa o una cooperativa, <strong>la suma es la misma y el techo no está</strong>: los 5.000 € existen para encajar en una contratación menor de la administración, y fuera de ahí no quieren decir nada. Lo que cambia es de dónde sale el presupuesto —a menudo del área que tiene el problema, no de formación— y que ahí sí se pueden plantear encargos largos sin partirlos en fases.'
     : "I a una empresa o una cooperativa, <strong>la suma és la mateixa i el sostre no hi és</strong>: els 5.000 € existeixen per encaixar en una contractació menor de l'administració, i fora d'allà no volen dir res. El que canvia és d'on surt el pressupost —sovint de l'àrea que té el problema, no de formació— i que allà sí que es poden plantejar encàrrecs llargs sense partir-los en fases.")},`);
   files.push(`  ${q('cm.peu')}:${q(es
-    ? 'Todos los precios de esta página son <strong>sin IVA</strong>. La escala es tarifa propuesta para 2026 y se revisa cada año. El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y no llevan precio cerrado publicado: lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia, y preferimos enseñar el desglose que comprometer una cifra que después haya que desdecir.'
-    : "Tots els preus d'aquesta pàgina són <strong>sense IVA</strong>. L'escala és tarifa proposada per al 2026 i es revisa cada any. El taller «Fent Pinya» i les demostracions castelleres es pressuposten així i no porten preu tancat publicat: el que costen depèn de quanta gent hi ha, quanta colla cal moure i a quina distància, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir.")},`);
+    ? 'Ningún paquete lleva precio cerrado publicado: todos se presupuestan así, <strong>desglosados por flujos</strong>, y preferimos enseñar el desglose que comprometer una cifra que después haya que desdecir. La escala es <strong>sin IVA</strong>, es tarifa propuesta para 2026 y se revisa cada año.'
+    : "Cap paquet porta preu tancat publicat: tots es pressuposten així, <strong>desglossats per fluxos</strong>, i preferim ensenyar el desglossament que comprometre una xifra que després s'hagi de desdir. L'escala és <strong>sense IVA</strong>, és tarifa proposada per al 2026 i es revisa cada any.")},`);
   /* Només els paquets de la portada. Els tres del SOS es pinten a `/sos/`,
      que no passa pel diccionari: emetre'ls aquí serien claus que no tradueixen
      res, i una clau òrfena fa creure que aquell text està cobert. */
@@ -883,9 +906,10 @@ function taulaMd() {
      publica i el README sí, el que hi ha són dos preus i un de fals. */
   const preuEs = p => p.mida
     ? 'A medida · [mapa de coste](#el-mapa-de-coste)'
+    : PER_FLUXOS ? 'Por flujos · [mapa de coste](#el-mapa-de-coste)'
     : (p.preuMin === p.preuMax ? eur(p.preuMin)
        : 'De ' + eur(p.preuMin).replace(' €', '') + ' a ' + eur(p.preuMax));
-  const fila = p => `| **${p.nomEs}** | ${p.quiEs} | ${p.duraEs} | ${preuEs(p)} | ${p.valorEs} | ${PUNTS[p.punt].lblEs} · ${FONTS[p.font].lblEs} |`;
+  const fila = p => `| **${p.nomEs}** | ${p.quiEs} | ${p.duraEs} | ${preuEs(p)} | ${p.valorEs} | ${PUNTS[p.punt].lblEs} · ${FONTS[PER_FLUXOS && !p.mida ? 'fluxos' : p.font].lblEs} |`;
   const taula = llista => [
     '| Paquete | Para quién | Cuánto dura | Precio | Qué aporta | Punto · Precio |',
     '|---|---|---|---|---|---|',
@@ -905,9 +929,8 @@ function costMd() {
   const files = NIVELLS.map(n =>
     `| **${n.id} · ${n.nomEs}** | ${n.faEs} | ${n.evEs} | ${n.hora} €/h |`).join('\n');
   return passos + '\n\n| Nivel | Qué hace | Cómo se acredita | Precio hora |\n|---|---|---|---|\n' + files +
-    '\n\nTodos los precios son **sin IVA**. La escala es tarifa propuesta para 2026 y se revisa cada año. ' +
-    'El taller «Fent Pinya» y las demostraciones castelleras se presupuestan así y **no llevan precio cerrado publicado**: ' +
-    'lo que cuestan depende de cuánta gente hay, cuánta colla hay que mover y a qué distancia.';
+    '\n\nNingún paquete lleva **precio cerrado publicado**: todos se presupuestan así, desglosados por flujos. ' +
+    'La escala es **sin IVA**, es tarifa propuesta para 2026 y se revisa cada año.';
 }
 
 /* ══ Escriure ═════════════════════════════════════════════════════════════ */
@@ -938,7 +961,7 @@ function posa(src, marques) {
    comptes de copiar-se, i per això aquest fitxer només fa la seva feina quan
    s'executa: si escrivís en carregar-se, requerir-lo des d'una altra eina
    reescriuria la portada de rebot. */
-module.exports = { FAMILIES, SECTORS, ORDRE_SECTORS, PUNTS, FONTS, NIVELLS, PASSOS_COST, PAQUETS, SOS_PAQUETS };
+module.exports = { FAMILIES, SECTORS, ORDRE_SECTORS, PUNTS, FONTS, NIVELLS, PASSOS_COST, PAQUETS, SOS_PAQUETS, PER_FLUXOS, PER_FLUXOS_LBL };
 if (require.main !== module) return;
 
 const src = readFileSync(PORTADA, 'utf8');

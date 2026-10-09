@@ -47,8 +47,13 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 
 const { GRUPS } = require('./build-nav.js');
 const { SOS_PAQUETS } = require('./build-oferta.js');
+/* El menú declara cada etiqueta com `{ ca, es }` (o una cadena si és un nom
+   propi). La porta és en català i en llegeix el català: abans s'hi passava
+   l'objecte sencer i a la pàgina publicada hi deia «[object Object]» a
+   trenta-dues etiquetes, sense que cap guarda ho veiés. */
+const ca = v => (typeof v === 'string' ? v : v && v.ca);
 const nav = f => {
-  for (const g of GRUPS) { const l = g.links.find(x => x[0] === f); if (l) return { nom: l[1], que: l[2] }; }
+  for (const g of GRUPS) { const l = g.links.find(x => x[0] === f); if (l) return { nom: ca(l[1]), que: ca(l[2]) }; }
   return null;
 };
 
@@ -182,23 +187,38 @@ function blocMon() {
   return f.join('\n');
 }
 
+/* ══ SI EL VOLEU MUNTAT ═══════════════════════════════════════════════════
+   Estratègia d'octubre del 2026: el que es ven és «el teu negoci operatiu» —el
+   mapa de valor funcionant cada dia— i **el catàleg públic deixa d'ensenyar
+   preus**. Es pressuposta per fluxos: les hores de criteri humà més el cost
+   d'IA de cada flux, amb el model adequat a cada tasca. Per això aquí no hi
+   surt cap xifra en euros, i hi ha una guarda que ho vigila.
+
+   L'oferta principal porta a la portada (`/#operatiu`), que és on es ven; aquí
+   es diu què és en una línia i es posen al costat els tres serveis que es
+   contracten al voltant de l'eina. */
 function blocPaquets() {
-  const f = ['<section class="ob-sec">'];
-  f.push('<h2>I si voleu que us hi acompanyem</h2>');
+  const f = ['<section class="ob-sec" id="obOferta">'];
+  f.push('<h2>I si el voleu muntat i funcionant</h2>');
   f.push('<p class="ob-sub2">L\'eina és lliure i funciona sense nosaltres: això no és una versió de prova. ' +
-    'El que es paga és <b>no haver de descobrir sol com es munta</b>. Tres coses, amb el preu escrit.</p>');
+    'El que es contracta és <b>no haver de descobrir sols com es munta</b>, i un criteri humà a la sala que cap sistema substitueix.</p>');
+  f.push('<a class="ob-op" href="/#operatiu"><span class="ob-op-k">La proposta</span>' +
+    '<b>El teu negoci operatiu</b>' +
+    '<span class="ob-op-d">Dos mapes dibuixats amb l\'equip —el de la direcció i el de l\'àrea on el valor s\'encalla—, ' +
+    'el cervell del projecte ordenat per rol, la web de xarxa, les eines de cada rol i 30 dies d\'acompanyament. ' +
+    'Surts amb el negoci funcionant, no amb un informe.</span>' +
+    '<span class="ob-op-cta">Què inclou →</span></a>');
   f.push('<div class="ob-pq">');
   SOS_PAQUETS.forEach(p => {
-    const preu = p.publica === false ? 'Preu a mida'
-      : (p.preuMin === p.preuMax ? `${p.preuMin} €` : `De ${p.preuMin} a ${p.preuMax} €`);
     f.push(`<div class="pq"><div class="pq-h"><b>${esc(p.nom)}</b><span class="pq-d">${esc(p.dura)}</span></div>` +
       `<p class="pq-e">${esc(p.endus)}</p>` +
-      `<div class="pq-p">${esc(preu)}<span>${esc(p.qui)}</span></div></div>`);
+      `<div class="pq-p qui">Per a qui<span>${esc(p.qui)}</span></div></div>`);
   });
   f.push('</div>');
-  f.push('<p class="ob-pq-n">El catàleg sencer —consultoria, formació, producció i dinamització— és a ' +
-    '<a href="../index.html#cataleg">teamtowershuma.com</a>, amb la forquilla de cada paquet i d\'on surt el número. ' +
-    'Aquí hi ha només el que es contracta <b>al voltant de l\'eina</b>.</p>');
+  f.push('<p class="ob-pq-n"><b>Com es pressuposta:</b> per fluxos. Cada flux porta les hores de criteri humà i el cost d\'IA ' +
+    'que fa servir, amb el model adequat a cada tasca, i el pressupost ho diu línia per línia. ' +
+    '<a href="pressupost.html">Demana el teu pressupost →</a> · El catàleg sencer és a ' +
+    '<a href="../index.html#cataleg">teamtowershuma.com</a>.</p>');
   f.push('</section>');
   return f.join('\n');
 }
@@ -264,13 +284,24 @@ const TOTES = MUNTAR.concat(APREN, MON);
   else ok('les ' + TOTES.length + ' fitxes diuen què és i què s\'hi guanya');
 })();
 
-// 5 · Els tres paquets porten preu, durada i per a qui, llegits del catàleg.
+// 5 · Els paquets porten durada, per a qui i què s'hi endú, llegits del
+//     catàleg. I **cap preu en euros**: des de l'octubre del 2026 es
+//     pressuposta per fluxos i el catàleg públic no n'ensenya.
 (() => {
   if (!SOS_PAQUETS.length) { bad('no hi ha paquets del SOS a build-oferta.js'); return; }
-  const coixos = SOS_PAQUETS.filter(p => !p.dura || !p.qui || !p.endus ||
-    (p.publica !== false && (p.preuMin == null || p.preuMax == null))).map(p => p.id);
-  if (coixos.length) bad('paquets sense preu, durada, públic o entregable: ' + coixos.join(', '));
-  else ok(`${SOS_PAQUETS.length} paquets del SOS, tots amb preu, durada i per a qui`);
+  const coixos = SOS_PAQUETS.filter(p => !p.dura || !p.qui || !p.endus).map(p => p.id);
+  if (coixos.length) bad('paquets sense durada, públic o entregable: ' + coixos.join(', '));
+  else ok(`${SOS_PAQUETS.length} paquets del SOS, tots amb durada, per a qui i què s'hi endú`);
+  if (/\d\s*€/.test(blocPaquets())) bad('el bloc del que es contracta ensenya un preu en euros');
+  else ok('cap preu en euros: es pressuposta per fluxos');
+})();
+
+// 5 bis · Cap fitxa amb una etiqueta que no sigui text. «[object Object]» no
+//     peta enlloc: només surt a la pàgina, i va sortir-hi trenta-dues vegades.
+(() => {
+  const html = Object.values(BLOCS).map(fn => fn()).join('');
+  if (/\[object /.test(html)) bad('la porta escriu «[object …]» en lloc d\'una etiqueta');
+  else ok('totes les etiquetes de les fitxes són text');
 })();
 
 // 6 · El pont cap al catàleg sencer. Aquesta portada no ven consultoria i no ha
