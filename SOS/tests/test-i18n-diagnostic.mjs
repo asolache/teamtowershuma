@@ -149,15 +149,18 @@ console.log('\n2 · I el diagnòstic que en surt, també');
   await p.waitForTimeout(200);
   await p.click('.lang-b[data-lang="es"]');
   await p.waitForTimeout(200);
-  await p.fill('#nom', 'Ana Ruiz');
-  await p.fill('#mail', 'ana@exemple.cat');
+  /* L'ordre és el del valor: l'objectiu primer i el contacte al final. */
+  await p.click('#objTipus .opt[data-v="mapa"]');
   await p.click('[data-next="2"]');
   await p.click('#orgType .opt[data-v="gran"]');
   await p.fill('#municipi', 'Sabadell');
   await p.click('[data-next="3"]');
-  await p.click('#objTipus .opt[data-v="mapa"]');
-  await p.click('[data-next="4"]');
   await p.selectOption('#decideix', 'comite');
+  await p.click('[data-next="4"]');
+  ok(!/[àèòï]|l'|ç/.test(await p.evaluate(() => document.querySelector('#avanc').innerText)),
+    'l\'avanç d\'abans del contacte, en castellà');
+  await p.fill('#nom', 'Ana Ruiz');
+  await p.fill('#mail', 'ana@exemple.cat');
   await p.click('#doDx');
   await p.waitForTimeout(350);
 
