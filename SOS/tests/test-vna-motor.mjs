@@ -692,6 +692,21 @@ console.log('\nM22 · La web que surt del mapa (VS-WEB)');
   ok(new Set(xi).size === xi.length && xi.filter(x => x === 'inici').length === 1, 'un rol que es diu com una pàgina fixa no la trepitja');
 }
 
+console.log('\nM24 · Els patrons del flux');
+{ const P = D.patrons(celler()), v = P.llista.find(x => x.id === 'visita'), c = P.llista.find(x => x.id === 'canal');
+  ok(P.llista.length === 3 && v.passos === 4 && v.traspassos === 3 && v.relleus === 2, 'la visita: 4 passos, 3 canvis de mans, 2 relleus');
+  ok(v.fil.rols[0] === 'Qui fa el vi' && J(v.fil.talls) === '[3]' && J(v.salts) === '[3]', 'el fil comença on comença, i es talla on el valor salta');
+  ok(J(v.coll) === '["Qui rep i explica"]' && !v.cicle, 'el coll d\'ampolla és qui rep i explica, i no tanca el cercle');
+  ok(c.cicle && c.fil.talls.length === 0, 'el canal sí que torna a qui l\'ha obert, sense talls');
+  ok(P.llista.every(x => x.ideal === null), 'sense ideal no hi ha comparació');
+  const Q = D.patrons(celler(), deLinies(IDEAL)), vi = Q.llista.find(x => x.id === 'visita').ideal;
+  ok(vi && vi.passos === 3 && vi.traspassos === 2, 'amb l\'ideal, la visita optimitzada: 3 passos, 2 canvis de mans');
+  ok(J(vi.estalvia) === '["L\'operador de luxe"]' && vi.afegeix.length === 0, 'i s\'estalvia l\'operador (els noms casen encara que l\'ideal els escrigui diferent)');
+  ok(Q.llista.find(x => x.id === 'canal').ideal === null, 'el procés que l\'ideal no té, sense comparació');
+  const m = celler(); const abans = J(m); D.patrons(m, deLinies(IDEAL));
+  ok(J(m) === abans, 'no toca el mapa');
+}
+
 console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
 { const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite, zipFitxers, crc32, ambPermaweb };')();
   const web = S.webDelMapa(celler()), abans = J(web);

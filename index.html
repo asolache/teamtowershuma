@@ -561,6 +561,56 @@
                 text-transform:uppercase; letter-spacing:.08em; color:var(--accent-green); }
         }
 
+
+        /* El negoci operatiu. Les taules es llegeixen per files: a mòbil cada
+           fila es torna una fitxa i la primera cel·la fa de títol. */
+        .operatiu { padding:5rem 0; border-top:1px solid var(--border); }
+        .op-wrap { max-width:1000px; margin:0 auto; }
+        .op-origen { border:1px solid var(--border); border-left:3px solid var(--accent-green); border-radius:0 12px 12px 0;
+            padding:1.2rem 1.4rem; background:var(--bg-panel); margin-bottom:2.4rem; }
+        .op-origen b { display:block; font-size:1.05rem; color:var(--white); margin-bottom:.5rem; }
+        .op-origen p { margin:0; font-size:.88rem; line-height:1.75; color:var(--light); }
+        .op-origen p b { display:inline; font-size:inherit; }
+        .op-t { width:100%; border-collapse:collapse; margin-bottom:1rem; }
+        .op-t thead th { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+            color:var(--muted); text-align:left; font-weight:400; padding:.5rem .8rem; border-bottom:1px solid var(--border); }
+        .op-t td, .op-t tbody th { padding:.8rem; border-bottom:1px solid var(--border); font-size:.86rem;
+            line-height:1.6; vertical-align:top; text-align:left; }
+        .op-t tbody th { color:var(--white); font-weight:600; }
+        .op-avui { color:var(--muted); }
+        .op-ara { color:var(--light); }
+        .op-qui { margin-top:2.4rem; }
+        .op-qui td { width:50%; color:var(--light); }
+        .op-xifra { color:var(--light); font-family:var(--mono); white-space:nowrap; }
+        .op-nou th, .op-nou td { background:var(--green-dim); }
+        .op-h3 { font-size:1.15rem; font-weight:700; margin:2.6rem 0 1rem; }
+        .op-cicle { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(5,1fr); gap:.8rem; counter-reset:op; }
+        .op-cicle li { counter-increment:op; border:1px solid var(--border); border-top:2px solid var(--accent-indigo);
+            border-radius:0 0 10px 10px; padding:1rem; background:var(--bg-panel); font-size:.8rem; line-height:1.6; color:var(--muted); }
+        .op-cicle li b { display:block; color:var(--white); font-size:.92rem; margin-bottom:.35rem; }
+        .op-cicle li b::before { content:counter(op) ' · '; font-family:var(--mono); color:var(--accent-indigo); font-weight:400; }
+        .op-nota { font-size:.82rem; line-height:1.7; color:var(--muted); margin-top:1rem; }
+        .op-nota b { color:var(--light); }
+        .op-nota a { color:var(--accent-blue); }
+        .op-paquet { display:grid; grid-template-columns:1.6fr 1fr; gap:2rem; align-items:start; }
+        .op-llista { margin:0; padding-left:1.3rem; display:grid; gap:.55rem; font-size:.88rem; line-height:1.6; color:var(--light); }
+        aside.op-preu { border:1px solid var(--border); border-top:3px solid var(--accent-green);
+            border-radius:0 0 12px 12px; padding:1.4rem; background:var(--bg-panel); margin-top:2.6rem; display:flex; flex-direction:column; gap:.7rem; }
+        aside.op-preu strong { font-size:2.2rem; line-height:1; color:var(--white); }
+        aside.op-preu small { font-size:.8rem; color:var(--muted); font-weight:400; }
+        aside.op-preu p { margin:0; font-size:.8rem; line-height:1.65; color:var(--muted); }
+        @media (max-width:860px) {
+            .op-cicle { grid-template-columns:1fr; }
+            .op-paquet { grid-template-columns:1fr; gap:0; }
+        }
+        @media (max-width:700px) {
+            .op-t, .op-t tbody, .op-t tr, .op-t td, .op-t tbody th { display:block; width:100%; }
+            .op-t thead { display:none; }
+            .op-t tr { border-bottom:1px solid var(--border); padding:.6rem 0; }
+            .op-t td, .op-t tbody th { border:none; padding:.2rem 0; }
+            .op-qui td { width:100%; }
+        }
+
         .mv-pols-ui { margin-top:.7rem; }
         .mv-pu-b { display:flex; flex-wrap:wrap; gap:.45rem; }
         .mv-b { font-family:var(--mono); font-size:.72rem; color:var(--light); cursor:pointer;
@@ -914,8 +964,8 @@
                      Ara diu el recorregut i l'objecte: **dels castells al flux
                      de valor**. El recorregut és el que fa creïble el mètode i
                      l'objecte és el que es compra. -->
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Qui sosté la teva organització, i què doneu de franc</h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">En una sessió, l'equip sencer diu en veu alta qui dona què a qui —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l'equip se'l queda.</p>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">El mapa de valor de la teva organització, <em>funcionant cada dia</em></h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">L'equip dibuixa junt per on ha de fluir el valor —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l'ideal. Te'n vas amb el negoci funcionant, no amb un informe.</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l'equip se'l queda.</p>
             </div>
             <div class="hero-cos">
                 <!-- Les dues portes. Existeixen perquè la pàgina venia a dues
@@ -955,12 +1005,12 @@
                     </li>
                     <li>
                         <span class="evo-k" data-i18n="hero.evo3.k">Avui · TeamTowers Humà</span>
-                        <span data-i18n="hero.evo3.d">El mateix a empreses, ajuntaments i barris, amb una eina lliure que ho manté viu.</span>
+                        <span data-i18n="hero.evo3.d">El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d'on s'encalla el valor.</span>
                     </li>
                 </ol>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
                     <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Diagnostica la teva organització · 3 min</a>
-                    <a href="/SOS/pressupost.html" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero.cta2">Demana pressupost →</a>
+                    <a href="#operatiu" class="btn-ghost" data-i18n="hero.cta2">El teu negoci operatiu →</a>
                 </div>
                 <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
                 <!-- La prova, al costat de la primera crida i no al peu. Les tres
@@ -1082,6 +1132,96 @@
      L'historial de git guarda les quatre seccions senceres. -->
 
 
+
+<!-- EL NEGOCI OPERATIU ─────────────────────────────────────────────────
+     L'estratègia d'octubre del 2026: el que funcionava a la sala —que un equip
+     vegi el mateix flux i s'acordi on ha de fluir millor— durava el que durava
+     el taller. Ara es queda com un sistema viu i es ven com a paquet, a un preu
+     de pime. La sala segueix sent humana; l'execució la fa el sistema.
+     Les xifres de l'escala són les de `/mapa-web/` (sessió i taller) i la del
+     paquet nou; cap altra xifra no surt aquí. -->
+<section class="operatiu" id="operatiu">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="op.eyebrow">La proposta</div>
+            <h2 data-i18n-html="op.h2">Del taller al sistema viu: <em>el teu negoci operatiu</em></h2>
+            <p data-i18n="op.intro">Una organització petita o mitjana surt amb el seu model de negoci funcionant, no amb un informe. La sala la seguim fent les persones; la feina que abans costava setmanes la fa el sistema.</p>
+        </div>
+        <div class="op-wrap fade-up">
+            <div class="op-origen">
+                <div class="vd-pk" data-i18n="op.or.k">D'on surt</div>
+                <b data-i18n="op.or.t">A IKEA, el valor no va ser el dibuix</b>
+                <p data-i18n-html="op.or.d">Dos mapes —el de la direcció i el de l'àrea de serveis— van fer que l'equip directiu veiés el mateix flux de valor i s'acordés on havia de fluir millor. <b>El flux va millorar abans de canviar cap procés.</b> Però aquell efecte durava el que durava el taller, i després depenia de la memòria de l'equip. Això és el que ara es queda.</p>
+            </div>
+            <table class="op-t">
+                <thead><tr><th scope="col" data-i18n="op.t1.c0">La feina</th><th scope="col" data-i18n="op.t1.c1">Abans, a mà</th><th scope="col" data-i18n="op.t1.c2">Ara, amb el sistema</th></tr></thead>
+                <tbody>
+        <tr><th scope="row"><span data-i18n="op.t1.0.k">Preparar el mapa</span></th><td class="op-avui" data-i18n="op.t1.0.a">Entrevistes i esborranys del facilitador</td><td class="op-ara" data-i18n="op.t1.0.b">Un primer esborrany fet amb la web, els documents i l'àudio de la casa</td></tr>
+        <tr><th scope="row"><span data-i18n="op.t1.1.k">La sala: dibuixar junts i marcar les zones calentes</span></th><td class="op-avui" data-i18n="op.t1.1.a">El facilitador i l'equip</td><td class="op-ara" data-i18n="op.t1.1.b">Igual. És el valor humà i no s'automatitza</td></tr>
+        <tr><th scope="row"><span data-i18n="op.t1.2.k">Passar el mapa en net i analitzar-lo</span></th><td class="op-avui" data-i18n="op.t1.2.a">Dies de feina posterior</td><td class="op-ara" data-i18n="op.t1.2.b">Editor visual, deu regles i diagnòstic automàtic</td></tr>
+        <tr><th scope="row"><span data-i18n="op.t1.3.k">Que la visió compartida duri</span></th><td class="op-avui" data-i18n="op.t1.3.a">Depenia de la memòria de l'equip</td><td class="op-ara" data-i18n="op.t1.3.b">Registre de lliuraments, mapa real contra l'ideal i avisos</td></tr>
+        <tr><th scope="row"><span data-i18n="op.t1.4.k">Portar-ho a les eines</span></th><td class="op-avui" data-i18n="op.t1.4.a">Fora de l'encàrrec</td><td class="op-ara" data-i18n="op.t1.4.b">Web de xarxa, eines per rol i API</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="op-h3" data-i18n="op.ci.h">Com es manté viu</h3>
+            <ol class="op-cicle">
+            <li><b data-i18n="op.ci.0.k">Registrar</b><span data-i18n="op.ci.0.d">Cada rol apunta el que lliura: a qui, què, quan i quin valor li dona qui ho rep, de l'1 al 5.</span></li>
+            <li><b data-i18n="op.ci.1.k">Guardar</b><span data-i18n="op.ci.1.d">El lliurament queda al cervell del projecte, ordenat per rol.</span></li>
+            <li><b data-i18n="op.ci.2.k">Recalcular</b><span data-i18n="op.ci.2.d">El mapa real es torna a dibuixar amb l'ús, no amb la memòria del taller.</span></li>
+            <li><b data-i18n="op.ci.3.k">Comparar</b><span data-i18n="op.ci.3.d">Es posa al costat del mapa ideal que es va acordar a la sala.</span></li>
+            <li><b data-i18n="op.ci.4.k">Avisar</b><span data-i18n="op.ci.4.d">Si un rol dona i no rep, o el real s'allunya de l'ideal en una zona calenta, ho diu.</span></li>
+            </ol>
+            <p class="op-nota" data-i18n-html="op.ci.nota">Cada persona tria el seu rol i veu només la seva part: el que dona, el que rep i el que té pendent. Quan surt un lliurament o un rol que ningú havia dibuixat, el sistema proposa afegir-lo i una persona l'accepta. <b>El mapa creix amb l'ús, i mai sense revisió humana.</b></p>
+
+            <div class="op-paquet">
+                <div>
+                    <h3 class="op-h3" data-i18n="op.pq.h">Què inclou</h3>
+                    <ol class="op-llista">
+                <li data-i18n="op.pq.0">Un primer esborrany del mapa fet amb el material que ja teniu.</li>
+                <li data-i18n="op.pq.1">Dos mapes: el de la direcció i el de l'àrea on el valor s'encalla. Real i ideal, amb les zones calentes marcades.</li>
+                <li data-i18n="op.pq.2">El cervell del projecte, ordenat per rol: què dona i què rep cadascú, els lliuraments i els processos.</li>
+                <li data-i18n="op.pq.3">La web de xarxa: una porta per rol, publicada a nom vostre.</li>
+                <li data-i18n="op.pq.4">Una o dues eines internes: el registre de lliuraments i el tauler de cada rol.</li>
+                <li data-i18n="op.pq.5">L'API i els avisos, connectats a una eina que ja feu servir, sense escriure codi.</li>
+                <li data-i18n="op.pq.6">30 dies d'acompanyament, amb una revisió del mapa real contra l'ideal amb dades d'ús.</li>
+                    </ol>
+                </div>
+                <aside class="op-preu">
+                    <span class="vd-pk" data-i18n="op.preu.k">El teu negoci operatiu</span>
+                    <strong data-i18n="op.preu.p">Preu a confirmar</strong>
+                    <p data-i18n="op.preu.d">Preu en validació amb els primers pilots. Les dades personals i els contractes no entren al sistema: es queden al vostre CRM.</p>
+                    <a href="/SOS/pressupost.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="op.preu.cta">Demana pressupost →</a>
+                </aside>
+            </div>
+
+            <table class="op-t op-qui">
+                <thead><tr><th scope="col" data-i18n="op.qui.c0">Ho posa la persona</th><th scope="col" data-i18n="op.qui.c1">Ho posa el sistema</th></tr></thead>
+                <tbody>
+        <tr><td data-i18n="op.qui.0.a">La sala: preguntes, conflicte productiu i acords</td><td data-i18n="op.qui.0.b">Esborranys del mapa, del cervell i dels textos</td></tr>
+        <tr><td data-i18n="op.qui.1.a">La lectura del negoci: legal, tècnica, estratègica i comercial</td><td data-i18n="op.qui.1.b">El codi de la web i de les eines, amb guardes W3C</td></tr>
+        <tr><td data-i18n="op.qui.2.a">La marca, l'entorn i la història de la casa</td><td data-i18n="op.qui.2.b">El diagnòstic: deu regles i desviacions entre real i ideal</td></tr>
+        <tr><td data-i18n="op.qui.3.a">El desenvolupament de cada persona en el seu rol</td><td data-i18n="op.qui.3.b">El registre, els avisos i l'API</td></tr>
+        <tr><td data-i18n="op.qui.4.a">Decidir què es publica i què es queda privat</td><td data-i18n="op.qui.4.b">El desplegament, les proves i el manteniment</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="op-h3" data-i18n="op.es.h">L'escala: cada graó porta al següent</h3>
+            <table class="op-t op-escala">
+                <thead><tr><th scope="col" data-i18n="op.es.c0">Graó</th><th scope="col" data-i18n="op.es.c1">Preu</th><th scope="col" data-i18n="op.es.c2">Per a qui</th></tr></thead>
+                <tbody>
+        <tr><th scope="row" data-i18n="op.es.0.k">Esborrany del mapa</th><td class="op-xifra" data-i18n="op.es.0.p">0 €</td><td data-i18n="op.es.0.q">Qualsevol que arribi per la web</td></tr>
+        <tr><th scope="row" data-i18n="op.es.1.k">Sessió individual</th><td class="op-xifra" data-i18n="op.es.1.p">A confirmar</td><td data-i18n="op.es.1.q">Autònoms i fundadors</td></tr>
+        <tr><th scope="row" data-i18n="op.es.2.k">Taller d'equip</th><td class="op-xifra" data-i18n="op.es.2.p">A confirmar</td><td data-i18n="op.es.2.q">Equips de 4 a 12 persones</td></tr>
+        <tr class="op-nou"><th scope="row" data-i18n="op.es.3.k">El teu negoci operatiu</th><td class="op-xifra" data-i18n="op.es.3.p">A confirmar</td><td data-i18n="op.es.3.q">Pimes i projectes que volen el sistema sencer</td></tr>
+        <tr><th scope="row" data-i18n="op.es.4.k">Sistema viu, cada mes</th><td class="op-xifra" data-i18n="op.es.4.p">A confirmar</td><td data-i18n="op.es.4.q">Qui ja té el sistema i vol que evolucioni</td></tr>
+        <tr><th scope="row" data-i18n="op.es.5.k">Formació acció corporativa</th><td class="op-xifra" data-i18n="op.es.5.p">Preu de gran compte</td><td data-i18n="op.es.5.q">Direccions d'empreses grans, ara amb el sistema inclòs</td></tr>
+                </tbody>
+            </table>
+            <p class="op-nota" data-i18n-html="op.es.nota">Els preus es confirmen amb els primers pilots. La sessió i el taller són els de <a href="/mapa-web/">Mapa i web en una hora</a>.</p>
+        </div>
+    </div>
+</section>
 
 <section class="enfoc" id="enfoc">
     <div class="container">
@@ -1306,8 +1446,8 @@
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="com.eyebrow">Com funciona</div>
-            <h2 data-i18n-html="com.h2">Quatre passos, i el quart <em>és que marxem</em></h2>
-            <p data-i18n="com.intro">De mitjana, de la primera reunió a tenir el projecte caminant sol passen entre quatre i sis mesos. Pots parar en qualsevol pas i quedar-te el que portis fet.</p>
+            <h2 data-i18n-html="com.h2">Quatre passos, i el quart <em>és que el mapa segueix viu</em></em></h2>
+            <p data-i18n="com.intro">Del primer esborrany al sistema funcionant. Pots parar en qualsevol pas i quedar-te el que portis fet.</p>
         </div>
         <div class="passos-grid fade-up">
             <div class="pas">
@@ -1318,21 +1458,21 @@
             </div>
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p2.n">Pas 02</div>
-                <h3 data-i18n="com.p2.h">Dibuixem el mapa</h3>
-                <p data-i18n="com.p2.p">Dues sessions amb les persones i els equips que ja hi són. En surt el mapa de qui sosté què, on hi ha sobrecàrrega i per on val la pena començar. Sense enquestes massives.</p>
-                <div class="pas-meta"><span data-i18n="com.p2.m1">2 sessions</span><span data-i18n="com.p2.m2">3-4 setmanes</span><span class="t-endus" data-i18n="com.p2.m3">T'endús: l'informe</span></div>
+                <h3 data-i18n="com.p2.h">Dibuixeu el mapa a la sala</h3>
+                <p data-i18n="com.p2.p">L'equip dibuixa junt el mapa de la direcció i el de l'àrea on el valor s'encalla, el real i l'ideal, i marca les zones calentes. Aquesta conversa és el producte, i no l'automatitza res.</p>
+                <div class="pas-meta"><span data-i18n="com.p2.m1">Presencial</span><span data-i18n="com.p2.m2">Amb l'equip</span><span class="t-endus" data-i18n="com.p2.m3">T'endús: els dos mapes</span></div>
             </div>
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p3.n">Pas 03</div>
-                <h3 data-i18n="com.p3.h">Ho poseu en marxa</h3>
-                <p data-i18n="com.p3.p">S'engega el que hàgiu triat amb els rols repartits, les sessions de cohesió i l'eina ja preparada amb el vostre cas a dins.</p>
-                <div class="pas-meta"><span data-i18n="com.p3.m1">2-3 mesos</span><span data-i18n="com.p3.m2">1 reunió al mes</span><span class="t-endus" data-i18n="com.p3.m3">T'endús: el projecte obert</span></div>
+                <h3 data-i18n="com.p3.h">Muntem el sistema</h3>
+                <p data-i18n="com.p3.p">El cervell del projecte per rol, la web de xarxa, el registre de lliuraments, el tauler de cada rol i l'API connectada a una eina vostra. El que abans eren setmanes de feina ho fa el sistema, amb guardes que ho comproven.</p>
+                <div class="pas-meta"><span data-i18n="com.p3.m1">Web de xarxa</span><span data-i18n="com.p3.m2">Eines per rol</span><span class="t-endus" data-i18n="com.p3.m3">T'endús: el negoci operatiu</span></div>
             </div>
             <div class="pas pas-final">
                 <div class="pas-n" data-i18n="com.p4.n">Pas 04</div>
-                <h3 data-i18n="com.p4.h">Ens en anem</h3>
-                <p data-i18n="com.p4.p">Formem gent vostra perquè ho sàpiga portar: acollir gent nova, fer les trobades i mantenir els comptes. Si al cap d'un any encara ens necessiteu per a què funcioni, no ho hem fet bé.</p>
-                <div class="pas-meta"><span data-i18n="com.p4.m1">45 hores</span><span data-i18n="com.p4.m2">3-4 mesos</span><span class="t-endus" data-i18n="com.p4.m3">T'endús: gent teva formada</span></div>
+                <h3 data-i18n="com.p4.h">El mapa segueix viu</h3>
+                <p data-i18n="com.p4.p">Cada lliurament que es registra recalcula el mapa real. Als 30 dies el mirem junts contra l'ideal amb dades d'ús, i a partir d'aquí el sistema avisa sol d'on s'encalla el valor.</p>
+                <div class="pas-meta"><span data-i18n="com.p4.m1">30 dies</span><span data-i18n="com.p4.m2">1 revisió</span><span class="t-endus" data-i18n="com.p4.m3">T'endús: un sistema que evoluciona</span></div>
             </div>
         </div>
     </div>
@@ -1571,6 +1711,92 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
+/* El negoci operatiu (estratègia d'octubre del 2026) */
+  'hero.evo3.d':'El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d\'on s\'encalla el valor.',
+  'hero.cta2':'El teu negoci operatiu →',
+  'op.eyebrow':'La proposta',
+  'op.h2':'Del taller al sistema viu: <em>el teu negoci operatiu</em>',
+  'op.intro':'Una organització petita o mitjana surt amb el seu model de negoci funcionant, no amb un informe. La sala la seguim fent les persones; la feina que abans costava setmanes la fa el sistema.',
+  'op.or.k':'D\'on surt',
+  'op.or.t':'A IKEA, el valor no va ser el dibuix',
+  'op.or.d':'Dos mapes —el de la direcció i el de l\'àrea de serveis— van fer que l\'equip directiu veiés el mateix flux de valor i s\'acordés on havia de fluir millor. <b>El flux va millorar abans de canviar cap procés.</b> Però aquell efecte durava el que durava el taller, i després depenia de la memòria de l\'equip. Això és el que ara es queda.',
+  'op.t1.c0':'La feina',
+  'op.t1.c1':'Abans, a mà',
+  'op.t1.c2':'Ara, amb el sistema',
+  'op.t1.0.k':'Preparar el mapa',
+  'op.t1.0.a':'Entrevistes i esborranys del facilitador',
+  'op.t1.0.b':'Un primer esborrany fet amb la web, els documents i l\'àudio de la casa',
+  'op.t1.1.k':'La sala: dibuixar junts i marcar les zones calentes',
+  'op.t1.1.a':'El facilitador i l\'equip',
+  'op.t1.1.b':'Igual. És el valor humà i no s\'automatitza',
+  'op.t1.2.k':'Passar el mapa en net i analitzar-lo',
+  'op.t1.2.a':'Dies de feina posterior',
+  'op.t1.2.b':'Editor visual, deu regles i diagnòstic automàtic',
+  'op.t1.3.k':'Que la visió compartida duri',
+  'op.t1.3.a':'Depenia de la memòria de l\'equip',
+  'op.t1.3.b':'Registre de lliuraments, mapa real contra l\'ideal i avisos',
+  'op.t1.4.k':'Portar-ho a les eines',
+  'op.t1.4.a':'Fora de l\'encàrrec',
+  'op.t1.4.b':'Web de xarxa, eines per rol i API',
+  'op.ci.h':'Com es manté viu',
+  'op.ci.0.k':'Registrar',
+  'op.ci.0.d':'Cada rol apunta el que lliura: a qui, què, quan i quin valor li dona qui ho rep, de l\'1 al 5.',
+  'op.ci.1.k':'Guardar',
+  'op.ci.1.d':'El lliurament queda al cervell del projecte, ordenat per rol.',
+  'op.ci.2.k':'Recalcular',
+  'op.ci.2.d':'El mapa real es torna a dibuixar amb l\'ús, no amb la memòria del taller.',
+  'op.ci.3.k':'Comparar',
+  'op.ci.3.d':'Es posa al costat del mapa ideal que es va acordar a la sala.',
+  'op.ci.4.k':'Avisar',
+  'op.ci.4.d':'Si un rol dona i no rep, o el real s\'allunya de l\'ideal en una zona calenta, ho diu.',
+  'op.ci.nota':'Cada persona tria el seu rol i veu només la seva part: el que dona, el que rep i el que té pendent. Quan surt un lliurament o un rol que ningú havia dibuixat, el sistema proposa afegir-lo i una persona l\'accepta. <b>El mapa creix amb l\'ús, i mai sense revisió humana.</b>',
+  'op.pq.h':'Què inclou',
+  'op.pq.0':'Un primer esborrany del mapa fet amb el material que ja teniu.',
+  'op.pq.1':'Dos mapes: el de la direcció i el de l\'àrea on el valor s\'encalla. Real i ideal, amb les zones calentes marcades.',
+  'op.pq.2':'El cervell del projecte, ordenat per rol: què dona i què rep cadascú, els lliuraments i els processos.',
+  'op.pq.3':'La web de xarxa: una porta per rol, publicada a nom vostre.',
+  'op.pq.4':'Una o dues eines internes: el registre de lliuraments i el tauler de cada rol.',
+  'op.pq.5':'L\'API i els avisos, connectats a una eina que ja feu servir, sense escriure codi.',
+  'op.pq.6':'30 dies d\'acompanyament, amb una revisió del mapa real contra l\'ideal amb dades d\'ús.',
+  'op.preu.k':'El teu negoci operatiu',
+  'op.preu.p':'Preu a confirmar',
+  'op.preu.d':'Preu en validació amb els primers pilots. Les dades personals i els contractes no entren al sistema: es queden al vostre CRM.',
+  'op.preu.cta':'Demana pressupost →',
+  'op.qui.c0':'Ho posa la persona',
+  'op.qui.c1':'Ho posa el sistema',
+  'op.qui.0.a':'La sala: preguntes, conflicte productiu i acords',
+  'op.qui.0.b':'Esborranys del mapa, del cervell i dels textos',
+  'op.qui.1.a':'La lectura del negoci: legal, tècnica, estratègica i comercial',
+  'op.qui.1.b':'El codi de la web i de les eines, amb guardes W3C',
+  'op.qui.2.a':'La marca, l\'entorn i la història de la casa',
+  'op.qui.2.b':'El diagnòstic: deu regles i desviacions entre real i ideal',
+  'op.qui.3.a':'El desenvolupament de cada persona en el seu rol',
+  'op.qui.3.b':'El registre, els avisos i l\'API',
+  'op.qui.4.a':'Decidir què es publica i què es queda privat',
+  'op.qui.4.b':'El desplegament, les proves i el manteniment',
+  'op.es.h':'L\'escala: cada graó porta al següent',
+  'op.es.c0':'Graó',
+  'op.es.c1':'Preu',
+  'op.es.c2':'Per a qui',
+  'op.es.0.k':'Esborrany del mapa',
+  'op.es.0.p':'0 €',
+  'op.es.0.q':'Qualsevol que arribi per la web',
+  'op.es.1.k':'Sessió individual',
+  'op.es.1.p':'A confirmar',
+  'op.es.1.q':'Autònoms i fundadors',
+  'op.es.2.k':'Taller d\'equip',
+  'op.es.2.p':'A confirmar',
+  'op.es.2.q':'Equips de 4 a 12 persones',
+  'op.es.3.k':'El teu negoci operatiu',
+  'op.es.3.p':'A confirmar',
+  'op.es.3.q':'Pimes i projectes que volen el sistema sencer',
+  'op.es.4.k':'Sistema viu, cada mes',
+  'op.es.4.p':'A confirmar',
+  'op.es.4.q':'Qui ja té el sistema i vol que evolucioni',
+  'op.es.5.k':'Formació acció corporativa',
+  'op.es.5.p':'Preu de gran compte',
+  'op.es.5.q':'Direccions d\'empreses grans, ara amb el sistema inclòs',
+  'op.es.nota':'Els preus es confirmen amb els primers pilots. La sessió i el taller són els de <a href="/mapa-web/">Mapa i web en una hora</a>.',
   'peu.vna':'Mapa de valor',
   'peu.cataleg':'El catàleg',
   'peu.formacio':'Formació',
@@ -1789,11 +2015,11 @@ ca: {
   'vd.p2.t':'A Pantheon Work, des del 2019',
   'vd.p2.d':'L\'Álvaro Solache hi dirigeix projectes de consultoria amb aquest mètode, i en va cocrear la pràctica: venda, planificació, producció i formació. <b>Les fases, el full i les preguntes d\'aquesta pàgina surten del guió d\'una sessió real amb un equip de direcció</b>, no d\'un manual.',
 /*/TT-VD-I18N-CA*/
-  'hero.h1':'Qui sosté la teva organització, i què doneu de franc',
-  'hero.desc':'En una sessió, l\'equip sencer diu en veu alta qui dona què a qui —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l\'equip se\'l queda.',
+  'hero.h1':'El mapa de valor de la teva organització, <em>funcionant cada dia</em>',
+  'hero.desc':'L\'equip dibuixa junt per on ha de fluir el valor —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L\'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l\'ideal. Te\'n vas amb el negoci funcionant, no amb un informe.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
-  'hero.evo3.k':'Avui · TeamTowers Humà','hero.evo3.d':'El mateix a empreses, ajuntaments i barris, amb una eina lliure que ho manté viu.',
+  'hero.evo3.k':'Avui · TeamTowers Humà',
   /*TT-CL-I18N-CA*/
   'clm.lbl':'Han estat clients de TeamTowers','clm.h2':'Multinacionals, universitats i agències, <em>i el mateix mètode</em>',
   'clm.nota':'Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d\'equip i cohesió.',
@@ -1819,7 +2045,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Diagnostica la teva organització · 3 min','hero.cta2':'Demana pressupost →','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Diagnostica la teva organització · 3 min','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
@@ -1865,8 +2091,8 @@ ca: {
   'cta.h2':'Hi ha feina a la teva organització<br>que <em>s\'aguanta amb pinces?</em>',
   'cta.btn2':'Explora el SOS en viu →','cta.btn3':'Fes el diagnòstic en 3 min →',
   'com.eyebrow':'Com funciona',
-  'com.h2':'Quatre passos, i el quart <em>és que marxem</em>',
-  'com.intro':'De mitjana, de la primera reunió a tenir el projecte caminant sol passen entre quatre i sis mesos. Pots parar en qualsevol pas i quedar-te el que portis fet.',
+  'com.h2':'Quatre passos, i el quart <em>és que el mapa segueix viu</em>',
+  'com.intro':'Del primer esborrany al sistema funcionant. Pots parar en qualsevol pas i quedar-te el que portis fet.',
   'com.p1.n':'Pas 01',
   'com.p1.h':'Mires on ets',
   'com.p1.p':'Respons unes preguntes sobre la teva organització: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.',
@@ -1874,29 +2100,114 @@ ca: {
   'com.p1.m2':'Gratuït',
   'com.p1.m3':'T\'endús: el diagnòstic',
   'com.p2.n':'Pas 02',
-  'com.p2.h':'Dibuixem el mapa',
-  'com.p2.p':'Dues sessions amb les persones i els equips que ja hi són. En surt el mapa de qui sosté què, on hi ha sobrecàrrega i per on val la pena començar. Sense enquestes massives.',
-  'com.p2.m1':'2 sessions',
-  'com.p2.m2':'3-4 setmanes',
-  'com.p2.m3':'T\'endús: l\'informe',
+  'com.p2.h':'Dibuixeu el mapa a la sala',
+  'com.p2.p':'L\'equip dibuixa junt el mapa de la direcció i el de l\'àrea on el valor s\'encalla, el real i l\'ideal, i marca les zones calentes. Aquesta conversa és el producte, i no l\'automatitza res.',
+  'com.p2.m1':'Presencial',
+  'com.p2.m2':'Amb l\'equip',
+  'com.p2.m3':'T\'endús: els dos mapes',
   'com.p3.n':'Pas 03',
-  'com.p3.h':'Ho poseu en marxa',
-  'com.p3.p':'S\'engega el que hàgiu triat amb els rols repartits, les sessions de cohesió i l\'eina ja preparada amb el vostre cas a dins.',
-  'com.p3.m1':'2-3 mesos',
-  'com.p3.m2':'1 reunió al mes',
-  'com.p3.m3':'T\'endús: el projecte obert',
+  'com.p3.h':'Muntem el sistema',
+  'com.p3.p':'El cervell del projecte per rol, la web de xarxa, el registre de lliuraments, el tauler de cada rol i l\'API connectada a una eina vostra. El que abans eren setmanes de feina ho fa el sistema, amb guardes que ho comproven.',
+  'com.p3.m1':'Web de xarxa',
+  'com.p3.m2':'Eines per rol',
+  'com.p3.m3':'T\'endús: el negoci operatiu',
   'com.p4.n':'Pas 04',
-  'com.p4.h':'Ens en anem',
-  'com.p4.p':'Formem gent vostra perquè ho sàpiga portar: acollir gent nova, fer les trobades i mantenir els comptes. Si al cap d\'un any encara ens necessiteu per a què funcioni, no ho hem fet bé.',
-  'com.p4.m1':'45 hores',
-  'com.p4.m2':'3-4 mesos',
-  'com.p4.m3':'T\'endús: gent teva formada',
+  'com.p4.h':'El mapa segueix viu',
+  'com.p4.p':'Cada lliurament que es registra recalcula el mapa real. Als 30 dies el mirem junts contra l\'ideal amb dades d\'ús, i a partir d\'aquí el sistema avisa sol d\'on s\'encalla el valor.',
+  'com.p4.m1':'30 dies',
+  'com.p4.m2':'1 revisió',
+  'com.p4.m3':'T\'endús: un sistema que evoluciona',
   'cta.pr1':'Primer banc de temps de la ciutat de León, engegat i encara explicable pas a pas',
   'cta.pr2':'Persones pel taller Fent Pinya des del 2005',
   'cta.pr3':'De l\'eina és gratuïta i oberta: es pot revisar abans de confiar-hi',
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.',
 },
 es: {
+  'hero.evo3.d':'El mismo método convertido en un sistema vivo: cada rol registra lo que da y recibe, y el mapa avisa de dónde se atasca el valor.',
+  'hero.cta2':'Tu negocio operativo →',
+  'op.eyebrow':'La propuesta',
+  'op.h2':'Del taller al sistema vivo: <em>tu negocio operativo</em>',
+  'op.intro':'Una organización pequeña o mediana sale con su modelo de negocio funcionando, no con un informe. La sala la seguimos haciendo las personas; el trabajo que antes costaba semanas lo hace el sistema.',
+  'op.or.k':'De dónde sale',
+  'op.or.t':'En IKEA, el valor no fue el dibujo',
+  'op.or.d':'Dos mapas —el de dirección y el del área de servicios— hicieron que el equipo directivo viera el mismo flujo de valor y se pusiera de acuerdo en dónde tenía que fluir mejor. <b>El flujo mejoró antes de cambiar ningún proceso.</b> Pero ese efecto duraba lo que duraba el taller, y después dependía de la memoria del equipo. Eso es lo que ahora se queda.',
+  'op.t1.c0':'El trabajo',
+  'op.t1.c1':'Antes, a mano',
+  'op.t1.c2':'Ahora, con el sistema',
+  'op.t1.0.k':'Preparar el mapa',
+  'op.t1.0.a':'Entrevistas y borradores del facilitador',
+  'op.t1.0.b':'Un primer borrador hecho con la web, los documentos y el audio de la casa',
+  'op.t1.1.k':'La sala: dibujar juntos y marcar las zonas calientes',
+  'op.t1.1.a':'El facilitador y el equipo',
+  'op.t1.1.b':'Igual. Es el valor humano y no se automatiza',
+  'op.t1.2.k':'Pasar el mapa a limpio y analizarlo',
+  'op.t1.2.a':'Días de trabajo posterior',
+  'op.t1.2.b':'Editor visual, diez reglas y diagnóstico automático',
+  'op.t1.3.k':'Que la visión compartida dure',
+  'op.t1.3.a':'Dependía de la memoria del equipo',
+  'op.t1.3.b':'Registro de entregas, mapa real frente al ideal y avisos',
+  'op.t1.4.k':'Llevarlo a las herramientas',
+  'op.t1.4.a':'Fuera del encargo',
+  'op.t1.4.b':'Web de red, herramientas por rol y API',
+  'op.ci.h':'Cómo se mantiene vivo',
+  'op.ci.0.k':'Registrar',
+  'op.ci.0.d':'Cada rol apunta lo que entrega: a quién, qué, cuándo y qué valor le da quien lo recibe, del 1 al 5.',
+  'op.ci.1.k':'Guardar',
+  'op.ci.1.d':'La entrega queda en el cerebro del proyecto, ordenada por rol.',
+  'op.ci.2.k':'Recalcular',
+  'op.ci.2.d':'El mapa real se vuelve a dibujar con el uso, no con la memoria del taller.',
+  'op.ci.3.k':'Comparar',
+  'op.ci.3.d':'Se pone al lado del mapa ideal que se acordó en la sala.',
+  'op.ci.4.k':'Avisar',
+  'op.ci.4.d':'Si un rol da y no recibe, o el real se aleja del ideal en una zona caliente, lo dice.',
+  'op.ci.nota':'Cada persona elige su rol y ve solo su parte: lo que da, lo que recibe y lo que tiene pendiente. Cuando aparece una entrega o un rol que nadie había dibujado, el sistema propone añadirlo y una persona lo acepta. <b>El mapa crece con el uso, y nunca sin revisión humana.</b>',
+  'op.pq.h':'Qué incluye',
+  'op.pq.0':'Un primer borrador del mapa hecho con el material que ya tenéis.',
+  'op.pq.1':'Dos mapas: el de dirección y el del área donde el valor se atasca. Real e ideal, con las zonas calientes marcadas.',
+  'op.pq.2':'El cerebro del proyecto, ordenado por rol: qué da y qué recibe cada uno, las entregas y los procesos.',
+  'op.pq.3':'La web de red: una puerta por rol, publicada a vuestro nombre.',
+  'op.pq.4':'Una o dos herramientas internas: el registro de entregas y el panel de cada rol.',
+  'op.pq.5':'La API y los avisos, conectados a una herramienta que ya uséis, sin escribir código.',
+  'op.pq.6':'30 días de acompañamiento, con una revisión del mapa real frente al ideal con datos de uso.',
+  'op.preu.k':'Tu negocio operativo',
+  'op.preu.p':'Precio a confirmar',
+  'op.preu.d':'Precio en validación con los primeros pilotos. Los datos personales y los contratos no entran en el sistema: se quedan en vuestro CRM.',
+  'op.preu.cta':'Pide presupuesto →',
+  'op.qui.c0':'Lo pone la persona',
+  'op.qui.c1':'Lo pone el sistema',
+  'op.qui.0.a':'La sala: preguntas, conflicto productivo y acuerdos',
+  'op.qui.0.b':'Borradores del mapa, del cerebro y de los textos',
+  'op.qui.1.a':'La lectura del negocio: legal, técnica, estratégica y comercial',
+  'op.qui.1.b':'El código de la web y de las herramientas, con guardas W3C',
+  'op.qui.2.a':'La marca, el entorno y la historia de la casa',
+  'op.qui.2.b':'El diagnóstico: diez reglas y desviaciones entre real e ideal',
+  'op.qui.3.a':'El desarrollo de cada persona en su rol',
+  'op.qui.3.b':'El registro, los avisos y la API',
+  'op.qui.4.a':'Decidir qué se publica y qué se queda privado',
+  'op.qui.4.b':'El despliegue, las pruebas y el mantenimiento',
+  'op.es.h':'La escalera: cada peldaño lleva al siguiente',
+  'op.es.c0':'Peldaño',
+  'op.es.c1':'Precio',
+  'op.es.c2':'Para quién',
+  'op.es.0.k':'Borrador del mapa',
+  'op.es.0.p':'0 €',
+  'op.es.0.q':'Cualquiera que llegue por la web',
+  'op.es.1.k':'Sesión individual',
+  'op.es.1.p':'A confirmar',
+  'op.es.1.q':'Autónomos y fundadores',
+  'op.es.2.k':'Taller de equipo',
+  'op.es.2.p':'A confirmar',
+  'op.es.2.q':'Equipos de 4 a 12 personas',
+  'op.es.3.k':'Tu negocio operativo',
+  'op.es.3.p':'A confirmar',
+  'op.es.3.q':'Pymes y proyectos que quieren el sistema entero',
+  'op.es.4.k':'Sistema vivo, cada mes',
+  'op.es.4.p':'A confirmar',
+  'op.es.4.q':'Quien ya tiene el sistema y quiere que evolucione',
+  'op.es.5.k':'Formación acción corporativa',
+  'op.es.5.p':'Precio de gran cuenta',
+  'op.es.5.q':'Direcciones de empresas grandes, ahora con el sistema incluido',
+  'op.es.nota':'Los precios se confirman con los primeros pilotos. La sesión y el taller son los de <a href="/mapa-web/">Mapa y web en una hora</a>.',
   'peu.vna':'Mapa de valor',
   'peu.cataleg':'El catálogo',
   'peu.formacio':'Formación',
@@ -2115,11 +2426,11 @@ es: {
   'vd.p2.t':'En Pantheon Work, desde 2019',
   'vd.p2.d':'Álvaro Solache dirige allí proyectos de consultoría con este método, y cocreó su práctica: venta, planificación, producción y formación. <b>Las fases, la hoja y las preguntas de esta página salen del guion de una sesión real con un equipo de dirección</b>, no de un manual.',
 /*/TT-VD-I18N-ES*/
-  'hero.h1':'Quién sostiene tu organización, y qué dais gratis',
-  'hero.desc':'En una sesión, el equipo entero dice en voz alta quién da qué a quién —también los favores y la confianza— y lo mira <strong>como un sistema, no como la suma de lo que hace cada uno</strong>. El <em>flujo de valor</em> se rediseña con la gente que hay, y el equipo se lo queda.',
+  'hero.h1':'El mapa de valor de tu organización, <em>funcionando cada día</em>',
+  'hero.desc':'El equipo dibuja junto por dónde tiene que fluir el valor —también los favores y la confianza— y lo mira <strong>como un sistema, no como la suma de lo que hace cada uno</strong>. Al día siguiente, cada entrega entre roles queda registrada y el <em>mapa real</em> se compara solo con el ideal. Te vas con el negocio funcionando, no con un informe.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vivo donde el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
-  'hero.evo3.k':'Hoy · TeamTowers Humà','hero.evo3.d':'Lo mismo en empresas, ayuntamientos y barrios, con una herramienta libre que lo mantiene vivo.',
+  'hero.evo3.k':'Hoy · TeamTowers Humà',
   /*TT-CL-I18N-ES*/
   'clm.lbl':'Han sido clientes de TeamTowers','clm.h2':'Multinacionales, universidades y agencias, <em>y el mismo método</em>',
   'clm.nota':'Del recorrido de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formación en valores de equipo y cohesión.',
@@ -2145,7 +2456,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Diagnostica tu organización · 3 min','hero.cta2':'Pide presupuesto →','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Diagnostica tu organización · 3 min','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',
@@ -2191,8 +2502,8 @@ es: {
   'cta.h2':'¿Hay trabajo en tu organización<br>que <em>se aguanta con pinzas?</em>',
   'cta.btn2':'Explora el SOS en vivo →','cta.btn3':'Haz el diagnóstico en 3 min →',
   'com.eyebrow':'Cómo funciona',
-  'com.h2':'Cuatro pasos, y el cuarto <em>es que nos vamos</em>',
-  'com.intro':'De media, de la primera reunión a tener el proyecto andando solo pasan entre cuatro y seis meses. Puedes parar en cualquier paso y quedarte lo que lleves hecho.',
+  'com.h2':'Cuatro pasos, y el cuarto <em>es que el mapa sigue vivo</em>',
+  'com.intro':'Del primer borrador al sistema funcionando. Puedes parar en cualquier paso y quedarte con lo que lleves hecho.',
   'com.p1.n':'Paso 01',
   'com.p1.h':'Miras dónde estás',
   'com.p1.p':'Respondes unas preguntas sobre tu organización: qué hay en marcha, quién está y qué os falta. Puedes hacerlo ahora mismo, solo y sin hablar con nadie.',
@@ -2200,23 +2511,23 @@ es: {
   'com.p1.m2':'Gratis',
   'com.p1.m3':'Te llevas: el diagnóstico',
   'com.p2.n':'Paso 02',
-  'com.p2.h':'Dibujamos el mapa',
-  'com.p2.p':'Dos sesiones con las personas y los equipos que ya están. Sale el mapa de quién sostiene qué, dónde hay sobrecarga y por dónde vale la pena empezar. Sin encuestas masivas.',
-  'com.p2.m1':'2 sesiones',
-  'com.p2.m2':'3-4 semanas',
-  'com.p2.m3':'Te llevas: el informe',
+  'com.p2.h':'Dibujáis el mapa en la sala',
+  'com.p2.p':'El equipo dibuja junto el mapa de dirección y el del área donde el valor se atasca, el real y el ideal, y marca las zonas calientes. Esa conversación es el producto, y no la automatiza nada.',
+  'com.p2.m1':'Presencial',
+  'com.p2.m2':'Con el equipo',
+  'com.p2.m3':'Te llevas: los dos mapas',
   'com.p3.n':'Paso 03',
-  'com.p3.h':'Lo ponéis en marcha',
-  'com.p3.p':'Se pone en marcha lo que hayáis elegido con los roles repartidos, las sesiones de cohesión y la herramienta ya preparada con vuestro caso dentro.',
-  'com.p3.m1':'2-3 meses',
-  'com.p3.m2':'1 reunión al mes',
-  'com.p3.m3':'Te llevas: el proyecto abierto',
+  'com.p3.h':'Montamos el sistema',
+  'com.p3.p':'El cerebro del proyecto por rol, la web de red, el registro de entregas, el panel de cada rol y la API conectada a una herramienta vuestra. Lo que antes eran semanas de trabajo lo hace el sistema, con guardas que lo comprueban.',
+  'com.p3.m1':'Web de red',
+  'com.p3.m2':'Herramientas por rol',
+  'com.p3.m3':'Te llevas: el negocio operativo',
   'com.p4.n':'Paso 04',
-  'com.p4.h':'Nos vamos',
-  'com.p4.p':'Formamos a gente vuestra para que sepa llevarlo: acoger a los nuevos, hacer los encuentros y mantener las cuentas. Si al cabo de un año todavía nos necesitáis para que funcione, no lo hemos hecho bien.',
-  'com.p4.m1':'45 horas',
-  'com.p4.m2':'3-4 meses',
-  'com.p4.m3':'Te llevas: gente tuya formada',
+  'com.p4.h':'El mapa sigue vivo',
+  'com.p4.p':'Cada entrega que se registra recalcula el mapa real. A los 30 días lo miramos juntos frente al ideal con datos de uso, y a partir de ahí el sistema avisa solo de dónde se atasca el valor.',
+  'com.p4.m1':'30 días',
+  'com.p4.m2':'1 revisión',
+  'com.p4.m3':'Te llevas: un sistema que evoluciona',
   'cta.pr1':'Primer banco de tiempo de la ciudad de León, puesto en marcha y todavía explicable paso a paso',
   'cta.pr2':'Personas por el taller Fent Pinya desde 2005',
   'cta.pr3':'De la herramienta es gratuita y abierta: se puede revisar antes de confiar en ella',

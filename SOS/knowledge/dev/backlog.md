@@ -44,6 +44,31 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### L'editor del mapa · pantalla completa i els patrons del flux (09/10/2026)
+
+**Fet.** Demanat per l'Àlvar: que `/sos/vna-suport` es presenti com l'eina per
+construir cada nivell de la web de l'usuari, amb pantalla completa del mapa i
+de la seva definició, i que s'hi puguin trobar els patrons de la seqüència per
+veure el flux concret, real i optimitzat.
+
+| | Abans | Ara |
+|---|---|---|
+| Capçalera | «Les sis passes, i deu regles…» | «L'eina per construir cada nivell de la teva web»: nivell del mapa = nivell de la web, del real a l'optimitzat |
+| Mida del mapa | dins la pàgina | **⛶ Pantalla completa** (API del navegador; si no n'hi ha, ocupa la finestra). Esc en surt |
+| Definir i veure alhora | canviar de mode Visual / Per escrit | a pantalla completa, **☰ La definició** obre els sis camps al costat del mapa |
+| Patrons de la seqüència | només «Reprodueix» | **Els patrons del flux**: per procés, el fil (qui → qui, tallat on el valor salta de mans), relleus, si tanca el cercle, el coll d'ampolla, passos buits; i el que es repeteix entre processos |
+| Real vs optimitzat | vista Desviació, per fluxos | a cada procés, real i ideal costat a costat (passos, traspassos, quins rols s'estalvia o hi afegeix) i un clic per recórrer-ne cadascun |
+| Assercions | motor 225 · navegador 174 | motor 234 · navegador 184 |
+
+**Les decisions, i per què:**
+- **Els patrons es calculen del nivell on ets** (`DIAG.patrons`, funció pura,
+  provada al CI a M24). Entrar dins d'un rol dona els patrons del seu flux:
+  així cada nivell de la web es treballa igual.
+- **«Mostra el fil» no és cap troballa**: la targeta no ofereix «escriu-ho» a
+  les troballes, perquè és una lectura de la casa, no una regla del mètode.
+- **Pendent si l'Àlvar ho vol:** proposar l'ordre optimitzat automàticament
+  (ara el compara amb l'ideal que escriu l'equip, no l'inventa).
+
 ### La web surt del mapa, i l'alta en un toc (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** que mentre es crea el mapa de valor surti la web, amb
