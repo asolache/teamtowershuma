@@ -47,6 +47,13 @@ nav a:hover{text-decoration:underline}
 .prog-s.on{background:linear-gradient(90deg,var(--indigo),var(--green))}
 .step{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;margin-bottom:1rem}
 .step[hidden]{display:none}
+.dx-avanc{border:1px solid var(--border);border-left:3px solid var(--green,#00e676);border-radius:0 12px 12px 0;padding:1rem 1.2rem;margin:0 0 1.2rem;background:rgba(0,230,118,.05)}
+.dx-avanc .av-k,.dx-avanc .av-pk{font-family:var(--mono,monospace);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green,#00e676);margin-bottom:.35rem}
+.dx-avanc .av-pk{margin-top:.8rem}
+.dx-avanc b{display:block;font-size:1.05rem;margin-bottom:.35rem}
+.dx-avanc p{margin:0;font-size:.9rem;line-height:1.6}
+.dx-avanc ul{margin:0;padding-left:1.1rem;font-size:.88rem;line-height:1.6}
+.dx-avanc .av-n{margin-top:.7rem;font-size:.82rem;color:var(--muted)}
 .step h2{margin:0 0 .3rem;font-size:1.3rem}
 .step .sub{color:var(--muted);font-size:.88rem;margin:0 0 1.2rem;line-height:1.55}
 .f{margin-bottom:1.1rem}
@@ -249,7 +256,7 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <header>
 <h1 data-i18n="dt.h1">Diagnòstic comunitari</h1>
-<p data-i18n-html="dt.intro">Explica'ns d'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l'itinerari formatiu que et toca i una proposta orientativa d'acompanyament — <strong>l'enviïs o no</strong>.</p>
+<p data-i18n-html="dt.intro">Digues d'on véns, què ja teniu i què us falta, i en <strong>3 minuts</strong> tens el vostre punt de partida i què cal desfer. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l'enviïs o no</strong>.</p>
 </header>
 
 <main class="wrap">
@@ -262,27 +269,8 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <!-- ── Pas 1 ── -->
 <section class="step" id="s1">
-<h2 data-i18n="dt.s1.h">1 · Qui ets</h2>
-<p class="sub" data-i18n="dt.s1.sub">Per saber amb qui parlem i com respondre't.</p>
-<!--FORM-QUI-->
-<div class="grid2">
-<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
-<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
-</div>
-<div class="grid2">
-<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
-<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
-</div>
-<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
-<!--/FORM-QUI-->
-<div class="err" id="e1" data-i18n="dt.e1">Cal com a mínim el nom i un correu vàlid.</div>
-<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2" data-i18n="dt.seg">Següent →</button></div>
-</section>
-
-<!-- ── Pas 2 ── -->
-<section class="step" id="s2" hidden>
-<h2 data-i18n="dt.s2.h">2 · D'on véns</h2>
-<p class="sub" data-i18n="dt.s2.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
+<h2 data-i18n="dt.s1.h">1 · D'on véns</h2>
+<p class="sub" data-i18n="dt.s1.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
 <!--FORM-ORG-->
 <div class="f">
 <label data-i18n="fo.l.tipus">Tipus d'organització *</label>
@@ -308,14 +296,14 @@ footer a{color:var(--indigo);text-decoration:none}
 </div>
 <div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
 <!--/FORM-ORG-->
-<div class="err" id="e2" data-i18n="dt.e2">Tria el tipus d'organització i escriu el municipi.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="1" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="3" data-i18n="dt.seg">Següent →</button></div>
+<div class="err" id="e1" data-i18n="dt.e1">Tria el tipus d'organització i escriu el municipi.</div>
+<div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
-<!-- ── Pas 3 ── -->
-<section class="step" id="s3" hidden>
-<h2 data-i18n="dt.s3.h">3 · Què ja teniu</h2>
-<p class="sub" data-i18n="dt.s3.sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
+<!-- ── Pas 2 ── -->
+<section class="step" id="s2" hidden>
+<h2 data-i18n="dt.s2.h">2 · Què ja teniu</h2>
+<p class="sub" data-i18n="dt.s2.sub">Gairebé sempre hi ha més del que sembla. Això marca per on començar.</p>
 <div class="f">
 <label data-i18n="dt.l.have">Recursos disponibles</label>
 <!-- ELS XIPS. El text de cada un és **la seva etiqueta i prou**: el que
@@ -355,13 +343,13 @@ footer a{color:var(--indigo);text-decoration:none}
 <option value="forca" data-i18n="dt.exp.forca">Força: ja hem portat processos</option>
 <option value="molta" data-i18n="dt.exp.molta">Molta: ho fem habitualment</option>
 </select></div>
-<div class="nav-btns"><button type="button" class="btn" data-go="2" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="4" data-i18n="dt.seg">Següent →</button></div>
+<div class="nav-btns"><button type="button" class="btn" data-go="1" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="3" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
-<!-- ── Pas 4 ── -->
-<section class="step" id="s4" hidden>
-<h2 data-i18n="dt.s4.h">4 · Què us falta</h2>
-<p class="sub" data-i18n="dt.s4.sub">Aquí és on ens dius com et podem ser útils.</p>
+<!-- ── Pas 3 ── -->
+<section class="step" id="s3" hidden>
+<h2 data-i18n="dt.s3.h">3 · Què us falta</h2>
+<p class="sub" data-i18n="dt.s3.sub">És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.</p>
 <div class="f">
 <label data-i18n="dt.l.need">Què necessiteu *</label>
 <div class="chips" id="need">
@@ -395,8 +383,41 @@ footer a{color:var(--indigo);text-decoration:none}
 <option value="subvencio" data-i18n="dt.pressu.subvencio">Dependrà d'una subvenció</option>
 </select></div>
 </div>
-<div class="err" id="e4" data-i18n="dt.e4">Marca com a mínim una necessitat.</div>
-<div class="nav-btns"><button type="button" class="btn" data-go="3" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" id="doDx" data-i18n="dt.veure">Veure el meu diagnòstic →</button></div>
+<div class="err" id="e3" data-i18n="dt.e3">Marca com a mínim una necessitat.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="2" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="4" data-i18n="dt.seg">Següent →</button></div>
+</section>
+
+<!-- ── Pas 4 ── EL CONTACTE, AL FINAL (09/10/2026)
+     Era el primer pas. L'Àlvaro ho va demanar al revés: no es demanen dades
+     fins que ja hem aportat valor i només falta veure el diagnòstic. Aquí
+     arriba amb l'avanç calculat a dalt —el punt de partida i el que cal
+     desfer—; l'itinerari, l'acompanyament, d'on surten els diners i el primer
+     pas es veuen en deixar el contacte. Res no surt del navegador fins que
+     no ho envia. -->
+<section class="step" id="s4" hidden>
+<h2 data-i18n="dt.s4.h">4 · El teu diagnòstic ja està fet</h2>
+<div class="dx-avanc" id="avanc" aria-live="polite">
+<div class="av-k" data-i18n="dt.av.k">El vostre punt de partida</div>
+<b id="avT"></b>
+<p id="avL"></p>
+<div class="av-pk" data-i18n="dt.av.pk">Què cal desfer</div>
+<ul id="avP"></ul>
+<p class="av-n" data-i18n="dt.av.n">L'itinerari que us toca, com us podem acompanyar, d'on poden sortir els diners i el primer pas, en un clic.</p>
+</div>
+<p class="sub" data-i18n="dt.s4.sub">Només falta saber a qui l'adrecem. No es crea cap compte i no surt res d'aquest navegador fins que no ho envies tu.</p>
+<!--FORM-QUI-->
+<div class="grid2">
+<div class="f"><label for="nom" data-i18n="fo.l.nom">Nom i cognoms *</label><input type="text" id="nom" name="nom" required autocomplete="name"></div>
+<div class="f"><label for="rol" data-i18n="fo.l.rol">El teu paper a la casa</label><select id="rol" name="rol"><option value="direccio" data-i18n="fo.rol.direccio">Direcció general o gerència</option><option value="persones" data-i18n="fo.rol.persones">Direcció de persones o RRHH</option><option value="innovacio" data-i18n="fo.rol.innovacio">Innovació, estratègia o projectes</option><option value="organitzacio" data-i18n="fo.rol.organitzacio">Organització, processos o qualitat</option><option value="tecnic" data-i18n="fo.rol.tecnic">Tècnic/a de participació, promoció o serveis</option><option value="politic" data-i18n="fo.rol.politic">Càrrec electe o de confiança</option><option value="coordinacio" data-i18n="fo.rol.coordinacio">Coordinació d'equip o de programa</option><option value="altre" data-i18n="fo.rol.altre">Una altra cosa</option></select></div>
+</div>
+<div class="grid2">
+<div class="f"><label for="mail" data-i18n="fo.l.mail">Correu electrònic *</label><input type="email" id="mail" name="mail" required autocomplete="email"></div>
+<div class="f"><label for="tel" data-i18n="fo.l.tel">Telèfon (opcional)</label><input type="tel" id="tel" name="tel" autocomplete="tel"></div>
+</div>
+<div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
+<!--/FORM-QUI-->
+<div class="err" id="e4" data-i18n="dt.e4">Cal com a mínim el nom i un correu vàlid.</div>
+<div class="nav-btns"><button type="button" class="btn" data-go="3" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" id="doDx" data-i18n="dt.veure">Veure el diagnòstic sencer →</button></div>
 </section>
 
 </form>
@@ -600,16 +621,19 @@ ca: {
   'nv.cta':'Obre el SOS',
   'nv.menu':'Menú',
 /*/NAV-I18N-CA*/
+  'dt.av.k':'El vostre punt de partida',
+  'dt.av.pk':'Què cal desfer',
+  'dt.av.n':'L\'itinerari que us toca, com us podem acompanyar, d\'on poden sortir els diners i el primer pas, en un clic.',
   'dt.h1':'Diagnòstic comunitari',
-  'dt.intro':'Explica\'ns d\'on véns, què ja tens i què et falta. En <strong>3 minuts</strong> tindràs el teu punt de partida, l\'itinerari formatiu que et toca i una proposta orientativa d\'acompanyament — <strong>l\'enviïs o no</strong>.',
-  'dt.s1.h':'1 · Qui ets',
-  'dt.s1.sub':'Per saber amb qui parlem i com respondre\'t.',
-  'dt.e1':'Cal com a mínim el nom i un correu vàlid.',
-  'dt.s2.h':'2 · D\'on véns',
-  'dt.s2.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
-  'dt.e2':'Tria el tipus d\'organització i escriu el municipi.',
-  'dt.s3.h':'3 · Què ja teniu',
-  'dt.s3.sub':'Gairebé sempre hi ha més del que sembla. Això marca per on començar.',
+  'dt.intro':'Digues d\'on véns, què ja teniu i què us falta, i en <strong>3 minuts</strong> tens el vostre punt de partida i què cal desfer. El contacte, al final i només per adreçar-te el diagnòstic sencer — <strong>l\'enviïs o no</strong>.',
+  'dt.s4.h':'4 · El teu diagnòstic ja està fet',
+  'dt.s4.sub':'Només falta saber a qui l\'adrecem. No es crea cap compte i no surt res d\'aquest navegador fins que no ho envies tu.',
+  'dt.e4':'Cal com a mínim el nom i un correu vàlid.',
+  'dt.s1.h':'1 · D\'on véns',
+  'dt.s1.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
+  'dt.e1':'Tria el tipus d\'organització i escriu el municipi.',
+  'dt.s2.h':'2 · Què ja teniu',
+  'dt.s2.sub':'Gairebé sempre hi ha més del que sembla. Això marca per on començar.',
   'dt.l.have':'Recursos disponibles',
   'dt.have.persones':'👥 Grup de persones actives',
   'dt.have.espai':'🏠 Espai físic',
@@ -636,8 +660,8 @@ ca: {
   'dt.exp.poca':'Alguna cosa hem fet, sense mètode',
   'dt.exp.forca':'Força: ja hem portat processos',
   'dt.exp.molta':'Molta: ho fem habitualment',
-  'dt.s4.h':'4 · Què us falta',
-  'dt.s4.sub':'Aquí és on ens dius com et podem ser útils.',
+  'dt.s3.h':'3 · Què us falta',
+  'dt.s3.sub':'És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.',
   'dt.l.need':'Què necessiteu *',
   'dt.need.diagnostic':'🔍 Saber què tenim i què ens falta',
   'dt.need.metode':'🧭 Un mètode per organitzar-nos',
@@ -662,10 +686,10 @@ ca: {
   'dt.pressu.petit':'Petita o per determinar',
   'dt.pressu.mitja':'Tenim partida assignada',
   'dt.pressu.subvencio':'Dependrà d\'una subvenció',
-  'dt.e4':'Marca com a mínim una necessitat.',
+  'dt.e3':'Marca com a mínim una necessitat.',
   'dt.seg':'Següent →',
   'dt.enrere':'← Enrere',
-  'dt.veure':'Veure el meu diagnòstic →',
+  'dt.veure':'Veure el diagnòstic sencer →',
   'dt.m.partida':'punt de partida',
   'dt.m.acomp':'acompanyament que cal',
   'dt.m.mods':'mòduls al vostre itinerari',
@@ -850,16 +874,19 @@ es: {
   'nv.cta':'Abre el SOS',
   'nv.menu':'Menú',
 /*/NAV-I18N-ES*/
+  'dt.av.k':'Vuestro punto de partida',
+  'dt.av.pk':'Qué hay que deshacer',
+  'dt.av.n':'El itinerario que os toca, cómo os podemos acompañar, de dónde puede salir el dinero y el primer paso, en un clic.',
   'dt.h1':'Diagnóstico comunitario',
-  'dt.intro':'Cuéntanos de dónde vienes, qué ya tienes y qué te falta. En <strong>3 minutos</strong> tendrás tu punto de partida, el itinerario formativo que te toca y una propuesta orientativa de acompañamiento — <strong>nos la envíes o no</strong>.',
-  'dt.s1.h':'1 · Quién eres',
-  'dt.s1.sub':'Para saber con quién hablamos y cómo responderte.',
-  'dt.e1':'Hace falta como mínimo el nombre y un correo válido.',
-  'dt.s2.h':'2 · De dónde vienes',
-  'dt.s2.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
-  'dt.e2':'Elige el tipo de organización y escribe el municipio.',
-  'dt.s3.h':'3 · Qué ya tenéis',
-  'dt.s3.sub':'Casi siempre hay más de lo que parece. Esto marca por dónde empezar.',
+  'dt.intro':'Di de dónde vienes, qué ya tenéis y qué os falta, y en <strong>3 minutos</strong> tienes vuestro punto de partida y qué hay que deshacer. El contacto, al final y solo para dirigirte el diagnóstico entero — <strong>nos lo envíes o no</strong>.',
+  'dt.s4.h':'4 · Tu diagnóstico ya está hecho',
+  'dt.s4.sub':'Solo falta saber a quién se lo dirigimos. No se crea ninguna cuenta y no sale nada de este navegador hasta que lo envíes tú.',
+  'dt.e4':'Hace falta como mínimo el nombre y un correo válido.',
+  'dt.s1.h':'1 · De dónde vienes',
+  'dt.s1.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
+  'dt.e1':'Elige el tipo de organización y escribe el municipio.',
+  'dt.s2.h':'2 · Qué ya tenéis',
+  'dt.s2.sub':'Casi siempre hay más de lo que parece. Esto marca por dónde empezar.',
   'dt.l.have':'Recursos disponibles',
   'dt.have.persones':'👥 Grupo de personas activas',
   'dt.have.espai':'🏠 Espacio físico',
@@ -886,8 +913,8 @@ es: {
   'dt.exp.poca':'Algo hemos hecho, sin método',
   'dt.exp.forca':'Bastante: ya hemos llevado procesos',
   'dt.exp.molta':'Mucha: lo hacemos habitualmente',
-  'dt.s4.h':'4 · Qué os falta',
-  'dt.s4.sub':'Aquí es donde nos dices cómo te podemos ser útiles.',
+  'dt.s3.h':'3 · Qué os falta',
+  'dt.s3.sub':'Es la pregunta que más mueve el diagnóstico: di qué os falta y sale por dónde empezar.',
   'dt.l.need':'Qué necesitáis *',
   'dt.need.diagnostic':'🔍 Saber qué tenemos y qué nos falta',
   'dt.need.metode':'🧭 Un método para organizarnos',
@@ -912,10 +939,10 @@ es: {
   'dt.pressu.petit':'Pequeña o por determinar',
   'dt.pressu.mitja':'Tenemos partida asignada',
   'dt.pressu.subvencio':'Dependerá de una subvención',
-  'dt.e4':'Marca como mínimo una necesidad.',
+  'dt.e3':'Marca como mínimo una necesidad.',
   'dt.seg':'Siguiente →',
   'dt.enrere':'← Atrás',
-  'dt.veure':'Ver mi diagnóstico →',
+  'dt.veure':'Ver el diagnóstico entero →',
   'dt.m.partida':'punto de partida',
   'dt.m.acomp':'acompañamiento necesario',
   'dt.m.mods':'módulos en vuestro itinerario',
@@ -1027,21 +1054,34 @@ const showStep=n=>{
   $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
   window.scrollTo({top:0,behavior:'smooth'});
 };
+/* L'ordre és el del valor: d'on véns (1), què ja teniu (2), què us falta (3)
+   i, quan el diagnòstic ja està calculat, a qui l'adrecem (4). */
 const validate=n=>{
   if(n===1){
+    const ok=!!st.org&&$('#municipi').value.trim().length>1;
+    $('#e1').classList.toggle('on',!ok);return ok;
+  }
+  if(n===3){const ok=st.need.size>0;$('#e3').classList.toggle('on',!ok);return ok;}
+  if(n===4){
     const okName=$('#nom').value.trim().length>1;
     const okMail=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());
-    $('#e1').classList.toggle('on',!(okName&&okMail));return okName&&okMail;
-  }
-  if(n===2){
-    const ok=!!st.org&&$('#municipi').value.trim().length>1;
-    $('#e2').classList.toggle('on',!ok);return ok;
+    $('#e4').classList.toggle('on',!(okName&&okMail));return okName&&okMail;
   }
   return true;
 };
+/* L'avanç del pas 4: el punt de partida i el que cal desfer, ja calculats.
+   És el valor que es dona abans de demanar res. */
+function pintaAvanc(){
+  if(!st.org)return;
+  const d=diagnose();
+  $('#avT').textContent=L(d.P,'title')+' · '+($('#municipi').value.trim()||T('dt.r.vostre'));
+  $('#avL').textContent=L(d.P,'lead');
+  $('#avP').innerHTML=d.need.map(n=>'<li>'+(L(NEED_GAP[n],'t')||n)+'</li>').join('');
+}
 $$('[data-go]').forEach(b=>b.onclick=()=>{
   const to=Number(b.dataset.go);
   if(to>step&&!validate(step))return;   // endavant només amb el pas actual vàlid
+  if(to===4)pintaAvanc();
   showStep(to);
 });
 
@@ -1398,10 +1438,9 @@ function buildJson(d){
 /* ── Sortida ─────────────────────────────────────────────────────── */
 let current=null;
 $('#doDx').onclick=()=>{
-  if(!st.need.size){$('#e4').classList.add('on');return;}
-  $('#e4').classList.remove('on');
+  if(!validate(4))return;
   if(!validate(1)){showStep(1);return;}
-  if(!validate(2)){showStep(2);return;}
+  if(!validate(3)){showStep(3);return;}
   desaPont();
   current=diagnose();
   renderDx(current);
@@ -1444,13 +1483,14 @@ function dtAplicaLang(l){
   $$('[data-i18n-html]').forEach(el=>{const v=T(el.getAttribute('data-i18n-html'));if(v)el.innerHTML=v;});
   $$('[data-i18n-ph]').forEach(el=>{const v=T(el.getAttribute('data-i18n-ph'));if(v)el.setAttribute('placeholder',v);});
   $$('.lang-b').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  if(step===4&&!current)pintaAvanc();
   if(current)renderDx(current);
 }
 $$('.lang-b').forEach(b=>b.onclick=()=>dtAplicaLang(b.dataset.lang));
 dtAplicaLang(DX_LANG);
 
 /* Hook per a proves */
-window.__DX={st,diagnose,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate,dtAplicaLang,DT_I18N,T};
+window.__DX={st,diagnose,pintaAvanc,buildSummary,buildJson,PROFILES,MODULES,SERVICES,showStep,validate,dtAplicaLang,DT_I18N,T};
 </script>
 </body>
 </html>
