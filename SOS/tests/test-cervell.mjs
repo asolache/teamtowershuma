@@ -93,6 +93,29 @@ cas('un idioma sense textos peta', a => {
   rmSync(arrel, { recursive: true, force: true });
 }
 
+/* La propuesta inicial, de punta a punta al projecte del client i sense res
+   nostre: l'editor heretat revisa el mapa d'exemple, un mapa amb una regla dura
+   oberta queda aturat, i la web surt del mapa. */
+{
+  const arrel = mkdtempSync(join(tmpdir(), 'cervell-'));
+  rmSync(arrel, { recursive: true });
+  spawnSync(process.execPath, [EINA, '--nou', arrel], { encoding: 'utf8' });
+  const eina = f => join(arrel, 'herramientas', 'tools', f);
+  const ex = spawnSync(process.execPath, [eina('revisa-mapa.js'), '--exemple'], { encoding: 'utf8' });
+  const mapa = join(arrel, 'mapa.json'), mal = join(arrel, 'mal.json');
+  writeFileSync(mapa, ex.stdout);
+  const o = JSON.parse(ex.stdout); o.parells[0] = o.parells[0].split('|').slice(0, 4).join('|') + '|  | ';
+  writeFileSync(mal, JSON.stringify(o));
+  const bo1 = spawnSync(process.execPath, [eina('revisa-mapa.js'), mapa], { encoding: 'utf8' }).status === 0;
+  const bo2 = spawnSync(process.execPath, [eina('revisa-mapa.js'), mal], { encoding: 'utf8' }).status === 1;
+  const w = spawnSync(process.execPath, [eina('web-del-mapa.js'), mapa, join(arrel, 'web'), '--llengua', 'es'], { encoding: 'utf8' });
+  const bo3 = w.status === 0 && existsSync(join(arrel, 'web', 'index.html')) && existsSync(join(arrel, 'web', 'permaweb.json'));
+  const bo = bo1 && bo2 && bo3;
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} al client, el mapa es revisa amb les regles de la casa, s'atura si en trenca una de dura i en surt la web`);
+  rmSync(arrel, { recursive: true, force: true });
+}
+
 /* El sedàs de l'herència: una casa de prova amb una veda heretable que porta un
    import ha de quedar aturada, i sense l'import ha de passar. */
 {

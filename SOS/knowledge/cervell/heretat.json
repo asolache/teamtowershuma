@@ -1,21 +1,95 @@
 {
   "font": "https://github.com/asolache/teamtowershuma/blob/main/",
-  "sedas": ["\\d[\\d.,]*\\s?€", "IKEA", "[Pp]ilots? "],
+  "sedas": [
+    "\\d[\\d.,]*\\s?€",
+    "IKEA",
+    "[Pp]ilots? "
+  ],
   "vedes": {
-    "La veritat del que es diu": [61, 67, 85, 89, 97, 102, 128, 136, 143, 149, 156, 158],
-    "Guardes i proves": [50, 106, 112, 152, 154, 155, 159],
-    "Una sola font": [44, 71, 90, 98, 100, 135],
-    "Persones i dades": [39, 42, 46, 47, 59, 60],
-    "Pantalles i UX": [35, 36, 80, 94, 99, 105, 122, 127, 138, 157],
-    "Producte i oferta": [37, 41, 48, 49, 62, 63, 66, 74, 87, 107, 140, 141, 146],
-    "Mapa de valor": [116, 120],
-    "El cervell": [160, 161]
+    "La veritat del que es diu": [
+      61,
+      67,
+      85,
+      89,
+      97,
+      102,
+      128,
+      136,
+      143,
+      149,
+      156,
+      158
+    ],
+    "Guardes i proves": [
+      50,
+      106,
+      112,
+      152,
+      154,
+      155,
+      159
+    ],
+    "Una sola font": [
+      44,
+      71,
+      90,
+      98,
+      100,
+      135
+    ],
+    "Persones i dades": [
+      39,
+      42,
+      46,
+      47,
+      59,
+      60
+    ],
+    "Pantalles i UX": [
+      35,
+      36,
+      80,
+      94,
+      99,
+      105,
+      122,
+      127,
+      138,
+      157
+    ],
+    "Producte i oferta": [
+      37,
+      41,
+      48,
+      49,
+      62,
+      63,
+      66,
+      74,
+      87,
+      107,
+      140,
+      141,
+      146
+    ],
+    "Mapa de valor": [
+      116,
+      120
+    ],
+    "El cervell": [
+      160,
+      161
+    ]
   },
   "fitxers": {
     ".claude/skills/mapa-de-valor/SKILL.md": ".claude/skills/mapa-de-valor/SKILL.md",
     "saber/heredado/vna-verna-allee.md": "SOS/knowledge/references/vna-verna-allee.md",
     "saber/heredado/ia-mapa-de-valor.md": "SOS/knowledge/for-ai/mapa-de-valor.md",
     "saber/heredado/vna-patrons.md": "SOS/knowledge/vna/patrons.md",
-    "saber/heredado/prompts/pr_review.md": "SOS/prompts/pr_review.md"
+    "saber/heredado/prompts/pr_review.md": "SOS/prompts/pr_review.md",
+    ".claude/skills/propuesta-inicial/SKILL.md": ".claude/skills/propuesta-inicial/SKILL.md",
+    "herramientas/vna-suport.html": "SOS/vna-suport.html",
+    "herramientas/tools/revisa-mapa.js": "SOS/tools/revisa-mapa.js",
+    "herramientas/tools/web-del-mapa.js": "SOS/tools/web-del-mapa.js"
   }
 }

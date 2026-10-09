@@ -24,6 +24,12 @@ cosa y `MAPA.md` qué hay; esto dice qué hacer y qué no.
   acompaña una sesión con el método VNA de Verna Allee. El método está en
   `heredado/vna-verna-allee.md`, el contrato para un modelo en
   `heredado/ia-mapa-de-valor.md` y los patrones vistos en `heredado/vna-patrons.md`.
+- **La propuesta inicial:** la skill `../.claude/skills/propuesta-inicial/SKILL.md`
+  lleva de la web que hay a un borrador de mapa revisado, las preguntas que la
+  web no contesta y una web que sale del mapa. Usa
+  `../herramientas/tools/revisa-mapa.js` (el diagnóstico del editor) y
+  `../herramientas/tools/web-del-mapa.js` (la web, con el mismo código que el
+  editor). El editor se abre con doble clic: `../herramientas/vna-suport.html`.
 - **La revisión de un PR:** `heredado/prompts/pr_review.md`, con dictamen
   verde, amarillo o rojo.
 

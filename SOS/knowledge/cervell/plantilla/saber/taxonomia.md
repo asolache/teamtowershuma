@@ -21,4 +21,5 @@ Formato: `- ruta · cara · una línea de lo que entra`. El generador lee esta
 lista y nada más. Crear una carpeta sin declararla rompe el CI.
 
 - `saber` · saber · El cerebro: mapa, codex, contrato de la IA, taxonomía y backlog
+- `herramientas` · obra · Lo que el proyecto hereda para trabajar: el editor del mapa, revisarlo y sacar la web. No se edita aquí
 - `guardas` · prova · Las comprobaciones que fallan en CI cuando una promesa deja de ser cierta

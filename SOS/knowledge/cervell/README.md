@@ -60,8 +60,12 @@ vam pagar. Per això cada projecte hereta, declarat a
   nostres paquets) es queden aquí.
 - **El saber del mapa de valor:** el mètode de Verna Allee, els patrons vistos
   en mapes reals i el contracte per a un model que en proposa un.
-- **Les IA:** la skill `mapa-de-valor` (a `.claude/skills/`, on la troba Claude
-  Code) i el prompt de revisió de PR.
+- **Les IA:** les skills `mapa-de-valor` i `propuesta-inicial` (a
+  `.claude/skills/`, on les troba Claude) i el prompt de revisió de PR.
+- **Les eines per treballar sense API:** l'editor del mapa
+  (`herramientas/vna-suport.html`, s'obre amb doble clic), `revisa-mapa.js`
+  (el mateix diagnòstic que l'editor, des de Node) i `web-del-mapa.js` (la web
+  que surt del mapa, amb el mateix codi que el botó de l'editor).
 
 No es copia a mà: `--nou` i `--actualitza` ho treuen del codex i dels fitxers
 de debò cada vegada. Les rutes de SOS es reescriuen cap a la còpia, si s'hereta,
@@ -73,6 +77,28 @@ peta si una veda heretada es renumera o un fitxer heretat es mou.
 `node SOS/tools/cervell.js --actualitza ../el-projecte` porta al client l'eina
 i l'herència d'avui sense tocar ni les seves vedes, ni la seva taxonomia, ni el
 seu backlog.
+
+## La proposta inicial, automatitzada i sense API
+
+**Demanat per l'Àlvar el 09/10/2026:** «bones pràctiques teves amb el millor de
+les skills per automatitzar la proposta inicial de web amb esborrany de mapa de
+valor dissenyat, integrant-te a teamtowershuma, donant accés a l'usuari al
+projecte i per tant integrant sense API».
+
+La skill `propuesta-inicial` (`.claude/skills/propuesta-inicial/SKILL.md`) fa
+l'«esborrany del mapa» que `/mapa-web/` ofereix: llegeix la web del negoci, en
+treu un mapa d'un flux amb la skill `mapa-de-valor`, el passa per
+`SOS/tools/revisa-mapa.js` fins que no queda cap regla dura oberta, escriu les
+preguntes que la web no contesta i en genera la web amb
+`SOS/tools/web-del-mapa.js`. Tot queda a `propuesta/` del repositori del
+projecte, marcat com a esborrany i sense imports.
+
+**Sense API** vol dir que ho fa la sessió de Claude del projecte, no la web: la
+persona entra al projecte de Claude que té el seu repositori amb cervell, i hi
+veu la feina. La web pública no crida cap model ni guarda cap clau. La prova de
+punta a punta (revisar, aturar un mapa amb una regla dura oberta, treure'n la
+web) corre al CI a `SOS/tests/test-cervell.mjs` amb les eines heretades, com
+les tindria el client.
 
 ## Un sol cervell, no dues còpies
 

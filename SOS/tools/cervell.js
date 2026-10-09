@@ -87,6 +87,9 @@ function herencia(conf) {
       ? `<!-- Heredado de TeamTowers: ${H.font}${font} · no lo edites; se actualiza con cervell.js --actualitza -->\n`
       : `<!-- Heretat de TeamTowers: ${H.font}${font} · no l'editis; s'actualitza amb cervell.js --actualitza -->\n`;
     /* La capçalera YAML d'una skill ha de quedar la primera línia. */
+    /* El codi i les pàgines es copien tal qual: reescriure-hi rutes canviaria
+       el que fan. Només el text (`.md`) porta capçalera i rutes noves. */
+    if (!dest.endsWith('.md')) { out.set(dest, t); continue; }
     t = t.startsWith('---\n') ? t.replace(/^(---\n[\s\S]*?\n---\n)/, '$1' + cap) : cap + t;
     out.set(dest, reescriu(t));
   }
