@@ -25,7 +25,11 @@
    La guia per obtenir-les és a SOS/knowledge/dev/guia-zoho-nivell2.md. */
 
 export const FORMULARIS = {
-  'diagnostic-org': 'Diagnòstic d\'organització (web)'
+  'diagnostic-org': 'Diagnòstic d\'organització (web)',
+  /* La comanda de la pàgina de preus (SOS/pressupost.html). Encara no hi ha
+     passarela de pagament: la comanda entra com a lead i es confirma per
+     correu amb la factura. */
+  'comanda': 'Comanda des de la pàgina de preus (web)'
 };
 
 const net = v => (v == null ? '' : String(v)).trim();
@@ -53,6 +57,9 @@ export function aLead(formName, d, opts = {}) {
     Description: tall([
       'Origen: ' + origen,
       d.dediqueu && 'A què es dediquen: ' + net(d.dediqueu),
+      d.paquet && 'Comanda: ' + net(d.paquet) + (d.preu ? ' · ' + net(d.preu) : ''),
+      d.quan && 'Quan: ' + net(d.quan),
+      d.notes && 'Notes: ' + net(d.notes),
       d.objectiu && 'Objectiu: ' + net(d.objectiu),
       d.termini && 'Termini: ' + net(d.termini),
       d.decideix && 'Qui decideix: ' + net(d.decideix),

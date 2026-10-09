@@ -394,10 +394,73 @@ const FORM = {
 };
 
 const PRESSU = {
-  'pr.h1': { ca: 'Demana pressupost', es: 'Pide presupuesto' },
+  'pr.h1': { ca: 'Preus i contractació', es: 'Precios y contratación' },
   'pr.intro': {
-    ca: 'Tria el que t\'interessa i en surt una <strong>proposta esborrany</strong> amb el desglossament a la vista: com es calcula cada paquet per fluxos, les hores per nivell si el contractes per hores, i què falta per tancar-la. <strong>Te la pots endur encara que no ens l\'enviïs.</strong>',
-    es: 'Elige lo que te interesa y sale una <strong>propuesta borrador</strong> con el desglose a la vista: cómo se calcula cada paquete por flujos, las horas por nivel si lo contratas por horas, y qué falta para cerrarla. <strong>Te la puedes llevar aunque no nos la envíes.</strong>'
+    ca: 'Comença pel que et cal ara: cada pas porta al següent i cap no t\'obliga a fer el de dalt. Els preus són <strong>sense IVA</strong>. Si el que vols no hi és, a sota tens el <a href="#amida">pressupost a mida, per fluxos</a>.',
+    es: 'Empieza por lo que te hace falta ahora: cada paso lleva al siguiente y ninguno te obliga a hacer el de arriba. Los precios son <strong>sin IVA</strong>. Si lo que quieres no está, debajo tienes el <a href="#amida">presupuesto a medida, por flujos</a>.'
+  },
+  /* LA PÀGINA DE PREUS (09/10/2026). L'Àlvaro va demanar que el pressupost
+     passés a ser «pricing i comprar». Els imports viuen a `PREUS`, a la
+     pàgina, i un import buit es llegeix «a confirmar»: no se n'inventa cap. */
+  'pv.eye': { ca: 'Preus · sense IVA', es: 'Precios · sin IVA' },
+  'pv.h': { ca: 'Quatre maneres d\'entrar, de la més lleugera al sistema sencer', es: 'Cuatro maneras de entrar, de la más ligera al sistema entero' },
+  'pv.t0.n': { ca: 'Esborrany del mapa', es: 'Borrador del mapa' },
+  'pv.t0.q': { ca: 'Per a qualsevol que vulgui veure on és', es: 'Para cualquiera que quiera ver dónde está' },
+  'pv.t0.d': { ca: 'El mapa de valor del teu negoci, dibuixat amb el que ens expliques. És teu i te l\'endús.', es: 'El mapa de valor de tu negocio, dibujado con lo que nos cuentas. Es tuyo y te lo llevas.' },
+  'pv.t0.cta': { ca: 'Comença ara', es: 'Empieza ahora' },
+  'pv.t1.n': { ca: 'Sessió individual', es: 'Sesión individual' },
+  'pv.t1.q': { ca: 'Autònoms, fundadors i qui dirigeix sol', es: 'Autónomos, fundadores y quien dirige solo' },
+  'pv.t1.d': { ca: 'Revisem el teu mapa junts, hi marquem on s\'encalla el valor i en surt el primer pas.', es: 'Revisamos tu mapa juntos, marcamos dónde se atasca el valor y sale el primer paso.' },
+  'pv.t2.n': { ca: 'Taller d\'equip', es: 'Taller de equipo' },
+  'pv.t2.q': { ca: 'Equips de 4 a 12 persones', es: 'Equipos de 4 a 12 personas' },
+  'pv.t2.d': { ca: 'L\'equip veu el mateix flux de valor i es posa d\'acord en on ha de fluir millor. Mapa real i ideal.', es: 'El equipo ve el mismo flujo de valor y se pone de acuerdo en dónde tiene que fluir mejor. Mapa real e ideal.' },
+  'pv.t3.n': { ca: 'El teu negoci operatiu', es: 'Tu negocio operativo' },
+  'pv.t3.q': { ca: 'Pimes i projectes que volen el sistema sencer', es: 'Pymes y proyectos que quieren el sistema entero' },
+  'pv.t3.d': { ca: 'La sala amb l\'equip, el mapa real i l\'ideal, el cervell per rol, la web de xarxa a nom vostre i 30 dies d\'acompanyament.', es: 'La sala con el equipo, el mapa real y el ideal, el cerebro por rol, la web de red a vuestro nombre y 30 días de acompañamiento.' },
+  'pv.gratis': { ca: 'Gratis', es: 'Gratis' },
+  'pv.confirmar': { ca: 'Preu a confirmar', es: 'Precio a confirmar' },
+  'pv.confirmar.d': { ca: 'Te\'l diem amb la confirmació, abans de pagar res.', es: 'Te lo decimos con la confirmación, antes de pagar nada.' },
+  'pv.viu.n': { ca: 'Després · Sistema viu, cada mes', es: 'Después · Sistema vivo, cada mes' },
+  'pv.viu.d': { ca: 'Mantenim les connexions i les millorem amb el que mesura el SOS. La quota es decideix amb els pilots.', es: 'Mantenemos las conexiones y las mejoramos con lo que mide el SOS. La cuota se decide con los pilotos.' },
+  'pv.viu.cta': { ca: 'Avisa\'m', es: 'Avísame' },
+  'pv.cta': { ca: 'Contracta', es: 'Contrata' },
+  'pv.iva': { ca: '+ IVA', es: '+ IVA' },
+  'pv.flux': {
+    ca: '<strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell (35, 55 o 80 €/h) més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.',
+    es: '<strong>A medida, por flujos.</strong> Todo lo que no está aquí se presupuesta por flujos: las horas de cada nivel (35, 55 u 80 €/h) más el coste real de la IA, que te factura el proveedor a tu nombre. <a href="#amida">Hazte el presupuesto</a> · <a href="/conecta/">el coste de la IA, tarea por tarea</a>.'
+  },
+  'pv.amida.h': { ca: 'A mida, per fluxos', es: 'A medida, por flujos' },
+  'pv.amida.sub': {
+    ca: 'Tria els paquets i en surt una proposta esborrany amb el desglossament a la vista. Te la pots endur encara que no ens l\'enviïs.',
+    es: 'Elige los paquetes y sale una propuesta borrador con el desglose a la vista. Te la puedes llevar aunque no nos la envíes.'
+  },
+  /* La comanda. Encara no hi ha passarela de pagament: la comanda es desa i
+     es confirma per correu amb la factura. Ho diu abans del botó. */
+  'pv.m.h': { ca: 'Contracta', es: 'Contrata' },
+  'pv.m.sub': {
+    ca: 'Deixa\'ns on enviar-te la confirmació. Encara no cobrem en línia: en un dia laborable et confirmem la data i t\'enviem la factura amb l\'enllaç de pagament.',
+    es: 'Déjanos dónde enviarte la confirmación. Aún no cobramos en línea: en un día laborable te confirmamos la fecha y te enviamos la factura con el enlace de pago.'
+  },
+  'pv.m.quan': { ca: 'Quan us aniria bé', es: 'Cuándo os iría bien' },
+  'pv.m.quan.ph': { ca: 'p.ex. les tardes de la setmana que ve', es: 'p.ej. las tardes de la semana que viene' },
+  'pv.m.notes': { ca: 'Res més que hàgim de saber', es: 'Algo más que debamos saber' },
+  'pv.m.acc': {
+    ca: 'Entenc que la comanda es confirma per correu i es paga per transferència o enllaç de pagament abans de començar.',
+    es: 'Entiendo que el pedido se confirma por correo y se paga por transferencia o enlace de pago antes de empezar.'
+  },
+  'pv.m.err': { ca: 'Cal el nom, un correu vàlid i acceptar com es paga.', es: 'Hace falta el nombre, un correo válido y aceptar cómo se paga.' },
+  'pv.m.envia': { ca: 'Confirma la comanda', es: 'Confirma el pedido' },
+  'pv.m.avisa': { ca: 'Apunta-m\'hi', es: 'Apúntame' },
+  'pv.m.tanca': { ca: 'Tanca', es: 'Cierra' },
+  'pv.m.ok': {
+    ca: 'Comanda rebuda. En un dia laborable et confirmem la data i t\'enviem la factura.',
+    es: 'Pedido recibido. En un día laborable te confirmamos la fecha y te enviamos la factura.'
+  },
+  'pv.m.ko': { ca: 'No s\'ha pogut enviar. Envia-la per correu:', es: 'No se ha podido enviar. Envíala por correo:' },
+  'pv.m.mail': { ca: 'Obre el correu', es: 'Abre el correo' },
+  'pv.m.priv': {
+    ca: 'S\'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més.',
+    es: 'Se envía solo cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más.'
   },
   'pr.s1.h': { ca: '1 · Qui ets', es: '1 · Quién eres' },
   'pr.s1.sub': {

@@ -54,7 +54,7 @@ console.log('\n1 · El formulari es pot llegir en castellà');
     claus: document.querySelectorAll('[data-i18n],[data-i18n-html],[data-i18n-ph]').length
   }));
   ok(r.botons === 2, `hi ha els dos botons de llengua (${r.botons})`);
-  ok(r.lang === 'ca' && /Demana/.test(r.h1), 'i obre en català: ' + r.h1);
+  ok(r.lang === 'ca' && /Preus i contractació/.test(r.h1), 'i obre en català: ' + r.h1);
   ok(r.claus > 60, `${r.claus} elements amb clau — abans no n'hi havia cap`);
 }
 
@@ -86,7 +86,7 @@ console.log('\n2 · I no es queda cap camp en català');
 
   ok(r.lang === 'es', `l'atribut \`lang\` ho diu (${r.lang}) — sense això un lector `
     + 'de pantalla llegeix castellà amb fonètica catalana');
-  ok(/Pide presupuesto/.test(r.h1), 'el títol: ' + r.h1);
+  ok(/Precios y contratación/.test(r.h1), 'el títol: ' + r.h1);
   ok(!r.amb.length, 'cap element amb clau es queda en català'
     + (r.amb.length ? ': ' + r.amb.slice(0, 5).join(', ') : ''));
   /* El defecte que un diccionari de només `textContent` deixa passar. */
@@ -112,12 +112,12 @@ console.log('\n3 · I no s\'ha de tornar a triar');
     h1: document.querySelector('h1').textContent,
     marcat: (document.querySelector('.lang-b.on') || {}).dataset?.lang
   }));
-  ok(r.lang === 'es' && /Pide/.test(r.h1), 'recarregant, segueix en castellà');
+  ok(r.lang === 'es' && /Precios/.test(r.h1), 'recarregant, segueix en castellà');
   ok(r.marcat === 'es', 'i el botó ho marca: ' + r.marcat);
   await p.click('.lang-b[data-lang="ca"]');
   await p.waitForTimeout(250);
   const t = await p.evaluate(() => document.querySelector('h1').textContent);
-  ok(/Demana/.test(t), 'i es pot tornar al català: ' + t);
+  ok(/Preus i contractació/.test(t), 'i es pot tornar al català: ' + t);
 }
 
 /* ── 4 · El formulari segueix funcionant amb l'altra llengua posada ──────── */
