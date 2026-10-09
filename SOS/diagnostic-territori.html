@@ -280,34 +280,42 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <!-- ── Pas 1 ── -->
 <section class="step" id="s1">
-<h2 data-i18n="dt.s1.h">1 · D'on véns</h2>
-<p class="sub" data-i18n="dt.s1.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
-<!--FORM-ORG-->
+<h2 data-i18n="dt.s1.h">1 · Què us falta</h2>
+<p class="sub" data-i18n="dt.s1.sub">És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.</p>
 <div class="f">
-<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
-<div class="opts" id="orgType">
-<button type="button" class="opt" data-v="ajuntament" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
-<button type="button" class="opt" data-v="comarcal" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
-<button type="button" class="opt" data-v="entitat" data-sector="tercer" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
-<button type="button" class="opt" data-v="cooperativa" data-sector="empresa" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
-<button type="button" class="opt" data-v="grup" data-sector="tercer" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
-<button type="button" class="opt" data-v="acompanyament" data-sector="tercer" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
-<button type="button" class="opt" data-v="fundacio" data-sector="tercer" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
-<button type="button" class="opt" data-v="particular" data-sector="tot" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
+<label data-i18n="dt.l.need">Què necessiteu *</label>
+<div class="chips" id="need">
+<button type="button" class="chip" data-v="diagnostic" data-i18n="dt.need.diagnostic">🔍 Saber què tenim i què ens falta</button>
+<button type="button" class="chip" data-v="metode" data-i18n="dt.need.metode">🧭 Un mètode per organitzar-nos</button>
+<button type="button" class="chip" data-v="gent" data-i18n="dt.need.gent">📣 Més gent implicada</button>
+<button type="button" class="chip" data-v="relleu" data-i18n="dt.need.relleu">🔁 Relleu · no cremar els de sempre</button>
+<button type="button" class="chip" data-v="governanca" data-i18n="dt.need.governanca">🗳 Decidir sense conflictes</button>
+<button type="button" class="chip" data-v="financament" data-i18n="dt.need.financament">💶 Finançament i subvencions</button>
+<button type="button" class="chip" data-v="juridicN" data-i18n="dt.need.juridicN">📜 Saber quina forma jurídica</button>
+<button type="button" class="chip" data-v="equity" data-i18n="dt.need.equity">🥧 Repartir propietat amb justícia</button>
+<button type="button" class="chip" data-v="impacte" data-i18n="dt.need.impacte">📊 Demostrar el nostre impacte</button>
+<button type="button" class="chip" data-v="formacio" data-i18n="dt.need.formacio">🎓 Formar el nostre equip</button>
+<button type="button" class="chip" data-v="eina" data-i18n="dt.need.eina">💻 Una eina per gestionar-ho</button>
+<button type="button" class="chip" data-v="mentors" data-i18n="dt.need.mentors">👥 Formar-nos com a mentors</button>
 </div>
 </div>
-<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
+<div class="f"><label for="repte" data-i18n="dt.l.repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" data-i18n-ph="dt.ph.repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
 <div class="grid2">
-<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
-<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
+<div class="f"><label for="termini" data-i18n="dt.l.termini">Termini</label>
+<select id="termini" name="termini">
+<option value="explorant" data-i18n="dt.term.explorant">Estem explorant, sense presses</option>
+<option value="curs" selected data-i18n="dt.term.curs">Aquest curs / semestre</option>
+<option value="urgent" data-i18n="dt.term.urgent">Urgent — tenim una data</option>
+</select></div>
+<div class="f"><label for="pressupost" data-i18n="dt.l.pressu">Capacitat pressupostària</label>
+<select id="pressupost" name="pressupost">
+<option value="cap" data-i18n="dt.pressu.cap">Cap ara mateix</option>
+<option value="petit" selected data-i18n="dt.pressu.petit">Petita o per determinar</option>
+<option value="mitja" data-i18n="dt.pressu.mitja">Tenim partida assignada</option>
+<option value="subvencio" data-i18n="dt.pressu.subvencio">Dependrà d'una subvenció</option>
+</select></div>
 </div>
-<div class="grid2">
-<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
-<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
-</div>
-<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
-<!--/FORM-ORG-->
-<div class="err" id="e1" data-i18n="dt.e1">Tria el tipus d'organització i escriu el municipi.</div>
+<div class="err" id="e3" data-i18n="dt.e3">Marca com a mínim una necessitat.</div>
 <div class="nav-btns"><span></span><button type="button" class="btn btn-primary" data-go="2" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
@@ -359,42 +367,34 @@ footer a{color:var(--indigo);text-decoration:none}
 
 <!-- ── Pas 3 ── -->
 <section class="step" id="s3" hidden>
-<h2 data-i18n="dt.s3.h">3 · Què us falta</h2>
-<p class="sub" data-i18n="dt.s3.sub">És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.</p>
+<h2 data-i18n="dt.s3.h">3 · D'on veniu</h2>
+<p class="sub" data-i18n="dt.s3.sub">El tipus d'organització canvia l'itinerari, els serveis i — sobretot — d'on poden sortir els diners.</p>
+<!--FORM-ORG-->
 <div class="f">
-<label data-i18n="dt.l.need">Què necessiteu *</label>
-<div class="chips" id="need">
-<button type="button" class="chip" data-v="diagnostic" data-i18n="dt.need.diagnostic">🔍 Saber què tenim i què ens falta</button>
-<button type="button" class="chip" data-v="metode" data-i18n="dt.need.metode">🧭 Un mètode per organitzar-nos</button>
-<button type="button" class="chip" data-v="gent" data-i18n="dt.need.gent">📣 Més gent implicada</button>
-<button type="button" class="chip" data-v="relleu" data-i18n="dt.need.relleu">🔁 Relleu · no cremar els de sempre</button>
-<button type="button" class="chip" data-v="governanca" data-i18n="dt.need.governanca">🗳 Decidir sense conflictes</button>
-<button type="button" class="chip" data-v="financament" data-i18n="dt.need.financament">💶 Finançament i subvencions</button>
-<button type="button" class="chip" data-v="juridicN" data-i18n="dt.need.juridicN">📜 Saber quina forma jurídica</button>
-<button type="button" class="chip" data-v="equity" data-i18n="dt.need.equity">🥧 Repartir propietat amb justícia</button>
-<button type="button" class="chip" data-v="impacte" data-i18n="dt.need.impacte">📊 Demostrar el nostre impacte</button>
-<button type="button" class="chip" data-v="formacio" data-i18n="dt.need.formacio">🎓 Formar el nostre equip</button>
-<button type="button" class="chip" data-v="eina" data-i18n="dt.need.eina">💻 Una eina per gestionar-ho</button>
-<button type="button" class="chip" data-v="mentors" data-i18n="dt.need.mentors">👥 Formar-nos com a mentors</button>
+<label data-i18n="fo.l.tipus">Tipus d'organització *</label>
+<div class="opts" id="orgType">
+<button type="button" class="opt" data-v="ajuntament" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.ajuntament.t">🏛 Ajuntament</span><span class="o-d" data-i18n="fo.org.ajuntament.d">Regidoria, àrea tècnica o servei municipal</span></button>
+<button type="button" class="opt" data-v="comarcal" data-sector="admin" style="--c:var(--indigo)"><span class="o-t" data-i18n="fo.org.comarcal.t">🗺 Consell comarcal</span><span class="o-d" data-i18n="fo.org.comarcal.d">O mancomunitat de municipis</span></button>
+<button type="button" class="opt" data-v="entitat" data-sector="tercer" style="--c:var(--green)"><span class="o-t" data-i18n="fo.org.entitat.t">🤝 Entitat o associació</span><span class="o-d" data-i18n="fo.org.entitat.d">AVV, ateneu, casal, banc de temps</span></button>
+<button type="button" class="opt" data-v="cooperativa" data-sector="empresa" style="--c:var(--orange)"><span class="o-t" data-i18n="fo.org.cooperativa.t">🚀 Cooperativa o empresa</span><span class="o-d" data-i18n="fo.org.cooperativa.d">SCCL, SL, projecte econòmic</span></button>
+<button type="button" class="opt" data-v="grup" data-sector="tercer" style="--c:var(--blue)"><span class="o-t" data-i18n="fo.org.grup.t">🌱 Grup promotor</span><span class="o-d" data-i18n="fo.org.grup.d">Encara sense forma jurídica</span></button>
+<button type="button" class="opt" data-v="acompanyament" data-sector="tercer" style="--c:var(--purple)"><span class="o-t" data-i18n="fo.org.acompanyament.t">🎓 Entitat d'acompanyament</span><span class="o-d" data-i18n="fo.org.acompanyament.d">Ateneu Cooperatiu, consultoria ESS</span></button>
+<button type="button" class="opt" data-v="fundacio" data-sector="tercer" style="--c:#fbbf24"><span class="o-t" data-i18n="fo.org.fundacio.t">💛 Fundació o finançador</span><span class="o-d" data-i18n="fo.org.fundacio.d">Obra social, convocatòries</span></button>
+<button type="button" class="opt" data-v="particular" data-sector="tot" style="--c:var(--muted)"><span class="o-t" data-i18n="fo.org.particular.t">👤 A títol personal</span><span class="o-d" data-i18n="fo.org.particular.d">Professional o persona interessada</span></button>
 </div>
 </div>
-<div class="f"><label for="repte" data-i18n="dt.l.repte">El repte concret, en poques paraules</label><textarea id="repte" name="repte" data-i18n-ph="dt.ph.repte" placeholder="p.ex. Tenim un banc de temps amb 30 socis però només en participen 5, i les mateixes dues persones ho porten tot des de fa tres anys."></textarea></div>
+<div class="f"><label for="orgNom" data-i18n="fo.l.orgnom">Nom de l'organització</label><input type="text" id="orgNom" name="orgNom" data-i18n-ph="fo.ph.orgnom" placeholder="deixa-ho en blanc si véns a títol personal" autocomplete="organization"></div>
 <div class="grid2">
-<div class="f"><label for="termini" data-i18n="dt.l.termini">Termini</label>
-<select id="termini" name="termini">
-<option value="explorant" data-i18n="dt.term.explorant">Estem explorant, sense presses</option>
-<option value="curs" selected data-i18n="dt.term.curs">Aquest curs / semestre</option>
-<option value="urgent" data-i18n="dt.term.urgent">Urgent — tenim una data</option>
-</select></div>
-<div class="f"><label for="pressupost" data-i18n="dt.l.pressu">Capacitat pressupostària</label>
-<select id="pressupost" name="pressupost">
-<option value="cap" data-i18n="dt.pressu.cap">Cap ara mateix</option>
-<option value="petit" selected data-i18n="dt.pressu.petit">Petita o per determinar</option>
-<option value="mitja" data-i18n="dt.pressu.mitja">Tenim partida assignada</option>
-<option value="subvencio" data-i18n="dt.pressu.subvencio">Dependrà d'una subvenció</option>
-</select></div>
+<div class="f"><label for="web" data-i18n="fo.l.web">El vostre web</label><input type="url" id="web" name="web" data-i18n-ph="fo.ph.web" placeholder="p.ex. exemple.cat" autocomplete="url" inputmode="url"><div class="hint" data-i18n="fo.h.web">Ens estalvia preguntar-vos qui sou. Opcional.</div></div>
+<div class="f"><label for="dediqueu" data-i18n="fo.l.dediqueu">A què us dediqueu</label><input type="text" id="dediqueu" name="dediqueu" data-i18n-ph="fo.ph.dediqueu" placeholder="p.ex. distribució alimentària, 3 centres" maxlength="90"></div>
 </div>
-<div class="err" id="e3" data-i18n="dt.e3">Marca com a mínim una necessitat.</div>
+<div class="grid2">
+<div class="f"><label for="municipi" data-i18n="fo.l.municipi">Municipi *</label><input type="text" id="municipi" name="municipi" required data-i18n-ph="fo.ph.municipi" placeholder="p.ex. Torrelles de Foix"></div>
+<div class="f"><label for="comarca" data-i18n="fo.l.comarca">Comarca</label><input type="text" id="comarca" name="comarca" data-i18n-ph="fo.ph.comarca" placeholder="p.ex. Alt Penedès"></div>
+</div>
+<div class="f"><label for="poblacio" data-i18n="fo.l.poblacio">Població aproximada a què arribeu</label><input type="number" id="poblacio" name="poblacio" min="0" step="1" data-i18n-ph="fo.ph.poblacio" placeholder="p.ex. 2400"><div class="hint" data-i18n="fo.h.poblacio">Habitants del municipi, o persones a qui arriba el vostre projecte.</div></div>
+<!--/FORM-ORG-->
+<div class="err" id="e1" data-i18n="dt.e1">Tria el tipus d'organització i escriu el municipi.</div>
 <div class="nav-btns"><button type="button" class="btn" data-go="2" data-i18n="dt.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-go="4" data-i18n="dt.seg">Següent →</button></div>
 </section>
 
@@ -665,8 +665,8 @@ ca: {
   'dt.s4.h':'4 · El teu diagnòstic ja està fet',
   'dt.s4.sub':'Només falta saber a qui l\'adrecem. No es crea cap compte i no surt res d\'aquest navegador fins que no ho envies tu.',
   'dt.e4':'Cal com a mínim el nom i un correu vàlid.',
-  'dt.s1.h':'1 · D\'on véns',
-  'dt.s1.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
+  'dt.s3.h':'3 · D\'on veniu',
+  'dt.s3.sub':'El tipus d\'organització canvia l\'itinerari, els serveis i — sobretot — d\'on poden sortir els diners.',
   'dt.e1':'Tria el tipus d\'organització i escriu el municipi.',
   'dt.s2.h':'2 · Què ja teniu',
   'dt.s2.sub':'Gairebé sempre hi ha més del que sembla. Això marca per on començar.',
@@ -696,8 +696,8 @@ ca: {
   'dt.exp.poca':'Alguna cosa hem fet, sense mètode',
   'dt.exp.forca':'Força: ja hem portat processos',
   'dt.exp.molta':'Molta: ho fem habitualment',
-  'dt.s3.h':'3 · Què us falta',
-  'dt.s3.sub':'És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.',
+  'dt.s1.h':'1 · Què us falta',
+  'dt.s1.sub':'És la pregunta que més mou el diagnòstic: digues què us falta i en surt per on començar.',
   'dt.l.need':'Què necessiteu *',
   'dt.need.diagnostic':'🔍 Saber què tenim i què ens falta',
   'dt.need.metode':'🧭 Un mètode per organitzar-nos',
@@ -927,8 +927,8 @@ es: {
   'dt.s4.h':'4 · Tu diagnóstico ya está hecho',
   'dt.s4.sub':'Solo falta saber a quién se lo dirigimos. No se crea ninguna cuenta y no sale nada de este navegador hasta que lo envíes tú.',
   'dt.e4':'Hace falta como mínimo el nombre y un correo válido.',
-  'dt.s1.h':'1 · De dónde vienes',
-  'dt.s1.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
+  'dt.s3.h':'3 · De dónde venís',
+  'dt.s3.sub':'El tipo de organización cambia el itinerario, los servicios y — sobre todo — de dónde puede salir el dinero.',
   'dt.e1':'Elige el tipo de organización y escribe el municipio.',
   'dt.s2.h':'2 · Qué ya tenéis',
   'dt.s2.sub':'Casi siempre hay más de lo que parece. Esto marca por dónde empezar.',
@@ -958,8 +958,8 @@ es: {
   'dt.exp.poca':'Algo hemos hecho, sin método',
   'dt.exp.forca':'Bastante: ya hemos llevado procesos',
   'dt.exp.molta':'Mucha: lo hacemos habitualmente',
-  'dt.s3.h':'3 · Qué os falta',
-  'dt.s3.sub':'Es la pregunta que más mueve el diagnóstico: di qué os falta y sale por dónde empezar.',
+  'dt.s1.h':'1 · Qué os falta',
+  'dt.s1.sub':'Es la pregunta que más mueve el diagnóstico: di qué os falta y sale por dónde empezar.',
   'dt.l.need':'Qué necesitáis *',
   'dt.need.diagnostic':'🔍 Saber qué tenemos y qué nos falta',
   'dt.need.metode':'🧭 Un método para organizarnos',
@@ -1099,14 +1099,15 @@ const showStep=n=>{
   $$('.prog-s').forEach((p,i)=>p.classList.toggle('on',i<n));
   window.scrollTo({top:0,behavior:'smooth'});
 };
-/* L'ordre és el del valor: d'on véns (1), què ja teniu (2), què us falta (3)
-   i, quan el diagnòstic ja està calculat, a qui l'adrecem (4). */
+/* L'ordre és el del valor: què us falta (1), què ja teniu (2), d'on veniu (3)
+   i, quan el diagnòstic ja està calculat, a qui l'adrecem (4). Cap pregunta de
+   «qui sou» abans d'haver dit què us cal (Àlvaro, 09/10/2026). */
 const validate=n=>{
-  if(n===1){
+  if(n===1){const ok=st.need.size>0;$('#e3').classList.toggle('on',!ok);return ok;}
+  if(n===3){
     const ok=!!st.org&&$('#municipi').value.trim().length>1;
     $('#e1').classList.toggle('on',!ok);return ok;
   }
-  if(n===3){const ok=st.need.size>0;$('#e3').classList.toggle('on',!ok);return ok;}
   if(n===4){
     const okName=$('#nom').value.trim().length>1;
     const okMail=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('#mail').value.trim());

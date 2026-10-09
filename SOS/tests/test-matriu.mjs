@@ -71,16 +71,16 @@ console.log('\n2 · El diagnòstic porta a algun lloc, i diu per què hi porta')
   const r = await page.evaluate(async () => {
     const $ = s => document.querySelector(s);
     $('#nom').value = 'Anna Prova'; $('#mail').value = 'a@b.cat';
-    document.querySelector('[data-go="2"]').click();
+    ['relleu', 'equity', 'diagnostic'].forEach(v => {
+      const c = document.querySelector('#need [data-v="' + v + '"]'); if (c) c.click();
+    });
+    document.querySelector('#s1 [data-go="2"]').click();
+    await new Promise(r2 => setTimeout(r2, 120));
+    document.querySelector('#s2 [data-go="3"]').click();
     await new Promise(r2 => setTimeout(r2, 120));
     document.querySelector('#orgType .opt[data-v="ajuntament"]').click();
     $('#municipi').value = 'Vilafranca';
-    document.querySelector('[data-go="3"]').click();
-    await new Promise(r2 => setTimeout(r2, 120));
-    ['relleu', 'equity', 'diagnostic'].forEach(v => {
-      const c = document.querySelector('[data-v="' + v + '"]'); if (c) c.click();
-    });
-    document.querySelector('[data-go="4"]').click();
+    document.querySelector('#s3 [data-go="4"]').click();
     await new Promise(r2 => setTimeout(r2, 120));
     const b2 = [...document.querySelectorAll('button')].find(x => /diagn/i.test(x.textContent));
     if (b2) b2.click();

@@ -209,16 +209,20 @@ console.log('\n3 · I el del territori, que és el que en té més');
   await p.waitForTimeout(200);
   await p.click('.lang-b[data-lang="es"]');
   await p.waitForTimeout(200);
-  /* També aquí el contacte va al final, després de l'avanç. */
-  await p.click('#orgType .opt[data-v="ajuntament"]');
-  await p.fill('#municipi', 'Igualada');
-  await p.click('[data-go="2"]');
-  await p.click('#have .chip[data-v="persones"]');
-  await p.click('#serveis .chip[data-v="banctemps"]');
-  await p.click('[data-go="3"]');
+  /* També aquí el contacte va al final, després de l'avanç, i el primer
+     que es pregunta és què us falta, no qui sou. */
+  const primer = await p.evaluate(() => ({ need: !!document.querySelector('#s1 #need'),
+    org: !!document.querySelector('#s1 #orgType'), nom: !!document.querySelector('#s1 #nom') }));
+  ok(primer.need && !primer.org && !primer.nom, 'el primer pas del territori és què us falta, no qui sou');
   await p.click('#need .chip[data-v="relleu"]');
   await p.click('#need .chip[data-v="impacte"]');
-  await p.click('[data-go="4"]');
+  await p.click('#s1 [data-go="2"]');
+  await p.click('#have .chip[data-v="persones"]');
+  await p.click('#serveis .chip[data-v="banctemps"]');
+  await p.click('#s2 [data-go="3"]');
+  await p.click('#orgType .opt[data-v="ajuntament"]');
+  await p.fill('#municipi', 'Igualada');
+  await p.click('#s3 [data-go="4"]');
   const av = await p.evaluate(() => ({ t: document.querySelector('#avanc').innerText,
     n: document.querySelectorAll('#avP li').length, demanaAbans: !!document.querySelector('#s1 #mail') }));
   ok(av.n === 2 && !av.demanaAbans, 'l\'avanç del territori surt abans del correu, amb el que cal desfer');
