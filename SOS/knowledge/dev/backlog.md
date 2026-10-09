@@ -90,6 +90,48 @@ la millora contínua del SOS.
 **Com es tanca:** els tres pilots fets, amb les hores i el cost d'IA de cada
 flux apuntats, i el que se n'aprengui escrit com a veda.
 
+### `for-ai/` · el contracte de la IA, antifràgil (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «actualitzar els arxius de `SOS/knowledge/for-ai` per a
+la màxima antifragilitat». Que cada error que una IA cometi aquí deixi el
+contracte més fort, i no només una veda més al codex que ningú li passa.
+
+**Avui** hi ha dos fitxers (`README.md`, el contracte de treball, i
+`mapa-de-valor.md`, el contracte del VNA) i **cap guarda els llegeix**:
+
+- El README ja va ser un mapa fals una vegada (els 18 vedes, `localStorage`,
+  números de línia) i el que el va arreglar va ser una revisió a mà. Encara hi
+  queden afirmacions que poden caducar sense que res ho avisi: «el repositori
+  no té `package.json`», les guardes a `SOS/tools/check-*.js`, `run.mjs`, la
+  ruta de Chromium escrita a mà, `pushLedger()`, `verifyNoLeak`, `window.__SOS`.
+- `mapa-de-valor.md` diu que `aiPlanValueFlows()` i `aiSuggestMap()` criden
+  l'API **sense** el mètode. Si és veritat, el contracte no arriba al model que
+  l'ha de complir; si ja no ho és, el fitxer menteix.
+- Les deu regles són en prosa aquí i executables a `build-vna-suport.js`
+  (`test(mapa)`): dues còpies de la mateixa llista sense cap guarda que les
+  compari, que és el que el mateix README prohibeix.
+
+**El que es demana:**
+
+1. **Una guarda `check-for-ai.js`** que comprovi que tot el que els fitxers
+   anomenen existeix: fitxers, funcions, rutes i vedes citades (i que el
+   número de veda és el que diu). Provada trencant-la a posta.
+2. **Una sola font de les deu regles**, o una guarda que compari la prosa amb
+   les executables (nombre, ordre, llindars).
+3. **El contracte, al model.** Que les crides IA que fan mapes portin les
+   seccions 1-3 de `mapa-de-valor.md`, generades del fitxer i no copiades; si
+   no, corregir el que diu el fitxer.
+4. **Un bucle d'aprenentatge:** quan una IA s'equivoca de debò aquí, l'error
+   entra a «Els antipatrons que hem comès de debò» amb la seva veda i la data,
+   i la guarda que l'hauria aturat. Res d'antipatrons hipotètics.
+5. **Data i font a cada afirmació que caduca**, o fora del fitxer (es genera o
+   es cerca, com ja diu el README per a les xifres).
+
+**Com es tanca:** la guarda al CI i en verd; trencar a posta una referència del
+README (un fitxer o una funció esborrada) la fa petar; les regles no poden
+divergir sense que el CI ho digui; i el que es trobi caducat, corregit i
+explicat aquí amb la seva mesura.
+
 ### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (demanat i fet 09/10/2026)
 
 **Demanat per l'Àlvar**, per a la UX de l'editor de `SOS/vna-suport.html`. Són
