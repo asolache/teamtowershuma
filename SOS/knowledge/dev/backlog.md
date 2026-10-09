@@ -94,7 +94,14 @@ El zip ja és el repositori del client, en sincronia amb el pla d'estratègia
 a `cerebro/` (mapa real i ideal, una fitxa per rol, per lliurament i per
 procés, i `decisiones.md`), `CLAUDE.md` amb les regles, `netlify.toml` amb
 CSP, la 404, `robots.txt` i, amb l'adreça definitiva, el sitemap, `canonical`
-i Open Graph. Següent del pla: el registre viu de transaccions (fase 2).
+i Open Graph.
+**Fet, fase 2 del pla:** el registre viu. La web porta `registre.html`
+(Netlify Forms) per anotar cada lliurament entre rols. El CSV es llegeix a la
+pestanya Web o amb `SOS/tools/llegeix-registre.js` (mateix codi, bloc
+`VS-REG`): informe, mapa observat amb el dibuixat com a ideal (vista
+Desviació) i els avisos de la fase 3. Del CSV només es queden rols,
+lliurament, tipus, data, evidència i valor. Vint-i-quatre proves al motor.
+Següent del pla: l'API i els webhooks (fase 3).
 Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.

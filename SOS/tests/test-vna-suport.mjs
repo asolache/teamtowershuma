@@ -996,6 +996,19 @@ console.log('\n7D · La web que surt del mapa');
     'i és el repositori del client: el cervell del projecte, les regles i la configuració de Netlify');
   await p.click('#edPanWeb [data-web-pag="serveis"]');
   ok(await p.evaluate(() => document.querySelector('#edWebNom').value) === 'Celler de prova', 'el nom es manté en tornar a pintar');
+  ok(zs.includes('registre.html') && zs.includes('name="registre"'), 'la web porta el formulari del registre viu');
+  await p.selectOption('#edWebLlengua', 'ca');
+  await p.setInputFiles('#edWebReg', { name: 'registre.csv', mimeType: 'text/csv', buffer: Buffer.from('created_at,de,a,entregable,mena,valor,nom,correu\n'
+    + '2026-10-01,Qui rep i explica,El visitant,"la visita, el tast i el relat de la casa",tangible,5,Anna,anna@exemple.cat\n2026-10-02,La cooperativa,Qui fa el vi,raïm,tangible,4,,\n') });
+  await p.waitForSelector('#edRegResum');
+  const rs = await p.evaluate(() => document.querySelector('#edRegResum').textContent);
+  ok(/^2 transaccions: 1 flux viu, \d+ sense ús, 1 nou\. Donen i no reben: .*La cooperativa/.test(rs), 'carregar el CSV del registre diu què és viu, què no passa i qui no rep: ' + rs.slice(0, 70));
+  const [di] = await Promise.all([p.waitForEvent('download'), p.click('#edRegInforme')]);
+  const inf = readFileSync(await di.path(), 'utf8');
+  ok(di.suggestedFilename() === 'informe.md' && /^# El registre, llegit/.test(inf) && !/Anna|@/.test(inf), 'Descarrega informe.md, sense cap dada personal del CSV');
+  await p.click('#edRegObre');
+  const ob = await p.evaluate(() => ({ v: document.querySelector('#edVistes input:checked').value, rols: window.__VS_ED.arbre().real.t.rols }));
+  ok(ob.v === 'desviacio' && /La cooperativa/.test(ob.rols), '«Obre el mapa observat» el posa a l\'editor i ensenya la desviació');
   await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
 }
 
