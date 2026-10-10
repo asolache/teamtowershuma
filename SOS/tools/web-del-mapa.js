@@ -45,7 +45,7 @@ function webDe(entrada, opts) {
 }
 async function genera(entrada, opts) {
   const o = opts || {}, { web, mapa } = webDe(entrada, o);
-  const site = motor.webASite(web, Object.assign({}, o, { mapa: mapa || undefined }));
+  const site = motor.webASite(web, Object.assign({}, o, { mapa: mapa || undefined, codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } }));
   return motor.ambPermaweb(site, async b => createHash('sha256').update(b).digest('hex'));
 }
 /* marca.json, amb el logo llegit del disc: el bloc VS-SITE només rep text. */

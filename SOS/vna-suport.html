@@ -3814,8 +3814,31 @@ const SITE_TXT = {
     idx: { titol: 'Cervell · {nom}', generat: 'Índex generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
       intro: 'Tots els documents del projecte, per tema. **Pública**: la web que troba qualsevol. **Per enllaç**: pàgines que no s\'indexen i es donen a qui toca. **Equip**: el que només viu al repositori.',
       doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web', marca: 'La marca: el disseny i els textos propis',
-      temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', regles: 'Regles' },
+      temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', regles: 'Regles', eines: 'Eines i API' },
       capes: { publica: 'pública', enllac: 'per enllaç', equip: 'equip' } },
+    api: { cap: 'Generat del mapa de valor amb la web. No s\'edita a mà: es regenera.', web: 'https://la-teva-web/',
+      doc: ['# {nom} · l\'API i els avisos', '',
+        'La web és l\'API. No hi ha cap servidor propi: fitxers estàtics, els formularis de Netlify i dues funcions que envien avisos.', '',
+        '## Llegir', '', '| Què | On |', '| --- | --- |',
+        '| Totes les dades de la web | `GET {url}web.json` |', '| Les dades de cada pàgina | El JSON-LD (schema.org) de la mateixa pàgina |',
+        '| La prova que la web és la que va sortir del mapa | `GET {url}permaweb.json` |', '',
+        'El cervell (`cerebro/`), les eines i aquests documents són de l\'equip: viuen al repositori i la web no els serveix.', '',
+        '## Escriure: el registre viu', '',
+        'Un `POST` a `{url}` amb `Content-Type: application/x-www-form-urlencoded` i els camps de `registre.html`: `form-name=registre`, `de`, `a`, `entregable`, `mena` (`tangible` o `intangible`), `valor` (de 1 a 5), `data` (AAAA-MM-DD) i `evidencia` (un enllaç https). És el que fa el formulari: Netlify ho desa i ho envia per correu. Cap camp per a dades personals.', '',
+        '## Els avisos', '', 'Cada avís és un `POST` JSON a les adreces de `TT_WEBHOOKS`:', '', '```json',
+        '{ "formato": "tt-avis-1", "tipus": "transaccion.creada", "web": "{url}", "creat": "2026-10-10T09:00:00.000Z", "dades": { "de": "…", "a": "…", "q": "…" } }', '```', '',
+        '| Avís | Quan | Qui l\'envia |', '| --- | --- | --- |',
+        '| `transaccion.creada` | Cada anotació al registre | La funció `submission-created`, sola |',
+        '| `desviacion.detectada` | L\'anotació no és cap flux del mapa (`flux-nou`), o un flux del mapa no passa (`flux-sense-us`) | La funció, el primer; `node eines/registre.mjs --envia`, el segon |',
+        '| `rol.sin_reciprocidad` | Un rol dona i no rep res registrat | `node eines/registre.mjs --envia` |',
+        '| `cerebro.actualizado` | Cada publicació de la web a producció | La funció `deploy-succeeded`, sola |', '',
+        '**La signatura.** La capçalera `X-TT-Signatura` porta `sha256=` i l\'HMAC-SHA256 del cos amb el secret. Comprova-la abans de fer res:', '', '```js',
+        'import { verificaAvis } from \'./eines/nucli.mjs\';', 'const bo = await verificaAvis(cos, capcaleres[\'x-tt-signatura\'], process.env.TT_WEBHOOK_SECRET);', '```', '',
+        '## Configurar-ho', '', 'A Netlify › Site configuration › Environment variables:', '',
+        '- `TT_WEBHOOKS`: les adreces https que escolten, separades per comes.', '- `TT_WEBHOOK_SECRET`: un secret de 16 caràcters o més. Sense secret no s\'envia res.', '',
+        'Les funcions demanen que la web es publiqui des del repositori: Netlify Drop no les desplega.', '',
+        '## Per a Claude Code', '',
+        '`.mcp.json` hi connecta `eines/mcp.mjs`, un servidor MCP sense dependències amb tres eines: `cervell_index`, `cervell_llegeix` i `registre_informe`. Només llegeix el que surt a l\'índex del cervell.'] },
     claude: ['# {nom} · regles per a qui hi treballa, persona o IA', '',
       'Aquesta web surt del mapa de valor. **No s\'edita a mà.**', '',
       '- **La font és `cerebro/mapa-real.json`** (i `cerebro/mapa-ideal.json`, si n\'hi ha). Per canviar la web, canvia el mapa a l\'editor del mapa de valor del SOS (pestanya Web) o, des del repositori de TeamTowers, amb `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Després, substitueix-ho tot.',
@@ -3826,7 +3849,8 @@ const SITE_TXT = {
       '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
       '- **Els formularis són de Netlify Forms** i arriben per correu. Cap dada personal es desa aquí.',
       '- **Permaweb.** `permaweb.json` té l\'empremta SHA-256 de cada fitxer. Si un fitxer no hi quadra, la web no és la que va sortir del mapa.',
-      '- **El registre viu.** Cada lliurament entre rols s\'anota a `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, i `node SOS/tools/llegeix-registre.js cerebro/mapa-real.json cerebro/registro/registre.csv cerebro/registro/` en treu `informe.md` i `mapa-observat.json` (s\'obre a l\'editor i ensenya la desviació). Del CSV només es queden rols, lliurament, tipus, data, evidència i valor.',
+      '- **El registre viu.** Cada lliurament entre rols s\'anota a `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, i `node eines/registre.mjs` en treu `informe.md`, `mapa-observat.json` (s\'obre a l\'editor i ensenya la desviació) i `avisos.json`. Del CSV només es queden rols, lliurament, tipus, data, evidència i valor.',
+      '- **L\'API i els avisos són a `API.md`.** Cada anotació envia un avís signat a les adreces de `TT_WEBHOOKS`. Per a Claude Code, `.mcp.json` connecta el cervell (`eines/mcp.mjs`). El codi d\'`eines/` i `netlify/` també es regenera.',
       '- **Cada canvi, en una PR.** Netlify en publica una vista prèvia, i qui decideix la mira abans d\'acceptar-la.'],
     llegeix: ['# {nom}', '', 'Web feta a partir del mapa de valor.', '', '## Publicar-la', '',
       '- **Ara mateix:** arrossega la carpeta a https://app.netlify.com/drop.',
@@ -3858,8 +3882,31 @@ const SITE_TXT = {
     idx: { titol: 'Cerebro · {nom}', generat: 'Índice generado del mapa de valor. No se edita a mano: se regenera con la web.',
       intro: 'Todos los documentos del proyecto, por tema. **Pública**: la web que encuentra cualquiera. **Por enlace**: páginas que no se indexan y se dan a quien toca. **Equipo**: lo que solo vive en el repositorio.',
       doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web', marca: 'La marca: el diseño y los textos propios',
-      temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', regles: 'Reglas' },
+      temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', regles: 'Reglas', eines: 'Herramientas y API' },
       capes: { publica: 'pública', enllac: 'por enlace', equip: 'equipo' } },
+    api: { cap: 'Generado del mapa de valor con la web. No se edita a mano: se regenera.', web: 'https://tu-web/',
+      doc: ['# {nom} · la API y los avisos', '',
+        'La web es la API. No hay ningún servidor propio: ficheros estáticos, los formularios de Netlify y dos funciones que envían avisos.', '',
+        '## Leer', '', '| Qué | Dónde |', '| --- | --- |',
+        '| Todos los datos de la web | `GET {url}web.json` |', '| Los datos de cada página | El JSON-LD (schema.org) de la misma página |',
+        '| La prueba de que la web es la que salió del mapa | `GET {url}permaweb.json` |', '',
+        'El cerebro (`cerebro/`), las herramientas y estos documentos son del equipo: viven en el repositorio y la web no los sirve.', '',
+        '## Escribir: el registro vivo', '',
+        'Un `POST` a `{url}` con `Content-Type: application/x-www-form-urlencoded` y los campos de `registre.html`: `form-name=registre`, `de`, `a`, `entregable`, `mena` (`tangible` o `intangible`), `valor` (de 1 a 5), `data` (AAAA-MM-DD) y `evidencia` (un enlace https). Es lo que hace el formulario: Netlify lo guarda y lo envía por correo. Ningún campo para datos personales.', '',
+        '## Los avisos', '', 'Cada aviso es un `POST` JSON a las direcciones de `TT_WEBHOOKS`:', '', '```json',
+        '{ "formato": "tt-avis-1", "tipus": "transaccion.creada", "web": "{url}", "creat": "2026-10-10T09:00:00.000Z", "dades": { "de": "…", "a": "…", "q": "…" } }', '```', '',
+        '| Aviso | Cuándo | Quién lo envía |', '| --- | --- | --- |',
+        '| `transaccion.creada` | Cada anotación en el registro | La función `submission-created`, sola |',
+        '| `desviacion.detectada` | La anotación no es ningún flujo del mapa (`flux-nou`), o un flujo del mapa no pasa (`flux-sense-us`) | La función, el primero; `node eines/registre.mjs --envia`, el segundo |',
+        '| `rol.sin_reciprocidad` | Un rol da y no recibe nada registrado | `node eines/registre.mjs --envia` |',
+        '| `cerebro.actualizado` | Cada publicación de la web en producción | La función `deploy-succeeded`, sola |', '',
+        '**La firma.** La cabecera `X-TT-Signatura` lleva `sha256=` y el HMAC-SHA256 del cuerpo con el secreto. Compruébala antes de hacer nada:', '', '```js',
+        'import { verificaAvis } from \'./eines/nucli.mjs\';', 'const bueno = await verificaAvis(cuerpo, cabeceras[\'x-tt-signatura\'], process.env.TT_WEBHOOK_SECRET);', '```', '',
+        '## Configurarlo', '', 'En Netlify › Site configuration › Environment variables:', '',
+        '- `TT_WEBHOOKS`: las direcciones https que escuchan, separadas por comas.', '- `TT_WEBHOOK_SECRET`: un secreto de 16 caracteres o más. Sin secreto no se envía nada.', '',
+        'Las funciones piden que la web se publique desde el repositorio: Netlify Drop no las despliega.', '',
+        '## Para Claude Code', '',
+        '`.mcp.json` conecta `eines/mcp.mjs`, un servidor MCP sin dependencias con tres herramientas: `cervell_index`, `cervell_llegeix` y `registre_informe`. Solo lee lo que sale en el índice del cerebro.'] },
     claude: ['# {nom} · reglas para quien trabaja en ella, persona o IA', '',
       'Esta web sale del mapa de valor. **No se edita a mano.**', '',
       '- **La fuente es `cerebro/mapa-real.json`** (y `cerebro/mapa-ideal.json`, si lo hay). Para cambiar la web, cambia el mapa en el editor del mapa de valor del SOS (pestaña Web) o, desde el repositorio de TeamTowers, con `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Después, sustitúyelo todo.',
@@ -3870,7 +3917,8 @@ const SITE_TXT = {
       '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
       '- **Los formularios son de Netlify Forms** y llegan por correo. Ningún dato personal se guarda aquí.',
       '- **Permaweb.** `permaweb.json` tiene la huella SHA-256 de cada fichero. Si un fichero no cuadra, la web no es la que salió del mapa.',
-      '- **El registro vivo.** Cada entregable entre roles se anota en `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, y `node SOS/tools/llegeix-registre.js cerebro/mapa-real.json cerebro/registro/registre.csv cerebro/registro/` saca `informe.md` y `mapa-observat.json` (se abre en el editor y enseña la desviación). Del CSV solo se quedan roles, entregable, tipo, fecha, evidencia y valor.',
+      '- **El registro vivo.** Cada entregable entre roles se anota en `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, y `node eines/registre.mjs` saca `informe.md`, `mapa-observat.json` (se abre en el editor y enseña la desviación) y `avisos.json`. Del CSV solo se quedan roles, entregable, tipo, fecha, evidencia y valor.',
+      '- **La API y los avisos están en `API.md`.** Cada anotación envía un aviso firmado a las direcciones de `TT_WEBHOOKS`. Para Claude Code, `.mcp.json` conecta el cerebro (`eines/mcp.mjs`). El código de `eines/` y `netlify/` también se regenera.',
       '- **Cada cambio, en una PR.** Netlify publica una vista previa, y quien decide la mira antes de aceptarla.'],
     llegeix: ['# {nom}', '', 'Web hecha a partir del mapa de valor.', '', '## Publicarla', '',
       '- **Ahora mismo:** arrastra la carpeta a https://app.netlify.com/drop.',
@@ -4042,6 +4090,59 @@ function cervell(mapa, T) {
     ? ['', '## ' + T.trob, ''].concat(real.troballes.map(t => '- **' + t.t + '**' + (t.d ? ': ' + t.d : ''))) : []));
   return out;
 }
+/* L'API i els avisos (fase 3 del pla): el codi que corre fora del navegador.
+   Surt dels blocs VS-REG, VS-API i VS-MCP de l'editor tal com hi són, perquè
+   hi hagi un sol codi; aquí només s'hi afegeix com es crida. */
+function einesDelSite(o, L, nom, url) {
+  const c = o.codi, cap = '// ' + nom.replace(/\s+/g, ' ') + ' · ' + L.api.cap + '\n', web = url || '';
+  const env = 'urls: process.env.TT_WEBHOOKS, secret: process.env.TT_WEBHOOK_SECRET, web: process.env.URL || ' + JSON.stringify(web);
+  const mapa = { pairs: (o.mapa.pairs || []).map(p => p.slice(0, 6)) };
+  return [
+    { ruta: 'eines/nucli.mjs', cos: cap + c.reg + '\n' + c.api
+      + '\nexport { REG_TXT, llegeixRegistre, observaRegistre, fluxosDelMapa, avisosDelFormulari, signaAvis, verificaAvis, enviaAvisos, TT_AVISOS };\n' },
+    { ruta: 'eines/registre.mjs', cos: '#!/usr/bin/env node\n' + cap
+      + '// node eines/registre.mjs [cerebro/registro/registre.csv] [--llengua ca|es] [--envia]\n'
+      + 'import { readFileSync, writeFileSync, mkdirSync } from \'node:fs\';\nimport { llegeixRegistre, observaRegistre, enviaAvisos } from \'./nucli.mjs\';\n'
+      + 'const arrel = new URL(\'../\', import.meta.url), a = process.argv.slice(2), o = { csv: new URL(\'cerebro/registro/registre.csv\', arrel), llengua: ' + JSON.stringify(o.llengua === 'es' ? 'es' : 'ca') + ', envia: false };\n'
+      + 'for (let i = 0; i < a.length; i++) { if (a[i] === \'--envia\') o.envia = true; else if (a[i] === \'--llengua\') o.llengua = a[++i]; else o.csv = a[i]; }\n'
+      + 'const l = llegeixRegistre(readFileSync(o.csv, \'utf8\'));\n'
+      + 'const r = observaRegistre(JSON.parse(readFileSync(new URL(\'cerebro/mapa-real.json\', arrel), \'utf8\')), l.files, { llengua: o.llengua });\n'
+      + 'const surt = new URL(\'cerebro/registro/\', arrel);\nmkdirSync(surt, { recursive: true });\n'
+      + 'writeFileSync(new URL(\'informe.md\', surt), r.informe);\n'
+      + 'writeFileSync(new URL(\'mapa-observat.json\', surt), JSON.stringify(r.mapaObservat, null, 2) + \'\\n\');\n'
+      + 'writeFileSync(new URL(\'avisos.json\', surt), JSON.stringify(r.avisos, null, 2) + \'\\n\');\n'
+      + 'console.log(\'✅ \' + l.files.length + \' · \' + r.vius.length + \' / \' + r.morts.length + \' / \' + r.nous.length + \' · \' + r.avisos.length + \' → cerebro/registro/\');\n'
+      + 'if (o.envia) {\n  const e = await enviaAvisos(r.avisos, { ' + env + ' });\n'
+      + '  console.log(e.motiu ? \'⚠️ \' + e.motiu : \'📨 \' + e.enviats);\n  e.errors.forEach(x => console.error(x));\n}\n' },
+    { ruta: 'eines/mcp.mjs', cos: '#!/usr/bin/env node\n' + cap
+      + 'import { readFileSync } from \'node:fs\';\nimport { llegeixRegistre, observaRegistre } from \'./nucli.mjs\';\n' + c.mcp
+      + '\nconst arrel = new URL(\'../\', import.meta.url);\n'
+      + 'const respon = creaMcp({ llegeix: r => { try { return readFileSync(new URL(r, arrel), \'utf8\'); } catch (e) { return null; } } });\n'
+      + 'const surt = m => process.stdout.write(JSON.stringify(m) + \'\\n\');\nlet buf = \'\';\nprocess.stdin.setEncoding(\'utf8\');\n'
+      + 'process.stdin.on(\'data\', d => {\n  buf += d;\n  for (let i = buf.indexOf(\'\\n\'); i >= 0; i = buf.indexOf(\'\\n\')) {\n'
+      + '    const l = buf.slice(0, i).trim();\n    buf = buf.slice(i + 1);\n    if (!l) continue;\n'
+      + '    let m;\n    try { m = JSON.parse(l); } catch (e) { surt({ jsonrpc: \'2.0\', id: null, error: { code: -32700, message: \'JSON\' } }); continue; }\n'
+      + '    const r = respon(m);\n    if (r) surt(r);\n  }\n});\n' },
+    { ruta: 'netlify/functions/submission-created.mjs', cos: cap
+      + 'import { fluxosDelMapa, avisosDelFormulari, enviaAvisos } from \'../../eines/nucli.mjs\';\n'
+      + 'const FLUXOS = fluxosDelMapa(' + JSON.stringify(mapa) + ');\n'
+      + 'export async function handler(event) {\n  let payload = null;\n'
+      + '  try { payload = JSON.parse(event.body || \'{}\').payload; } catch (e) { return { statusCode: 400, body: \'\' }; }\n'
+      + '  const avisos = avisosDelFormulari(payload, FLUXOS);\n  const r = await enviaAvisos(avisos, { ' + env + ' });\n'
+      + '  if (r.errors.length) console.error(r.errors.join(\'\\n\'));\n'
+      + '  return { statusCode: 200, body: JSON.stringify({ avisos: avisos.map(x => x.tipus), enviats: r.enviats, motiu: r.motiu }) };\n}\n' },
+    { ruta: 'netlify/functions/deploy-succeeded.mjs', cos: cap
+      + 'import { enviaAvisos } from \'../../eines/nucli.mjs\';\n'
+      + 'export async function handler(event) {\n  let p = {};\n  try { p = JSON.parse(event.body || \'{}\').payload || {}; } catch (e) { p = {}; }\n'
+      + '  if (p.context && p.context !== \'production\') return { statusCode: 200, body: \'\' };\n'
+      + '  const dades = { url: p.ssl_url || p.url || process.env.URL || \'\', commit: p.commit_ref || \'\', branca: p.branch || \'\' };\n'
+      + '  const r = await enviaAvisos([{ tipus: \'cerebro.actualizado\', dades }], { ' + env + ' });\n'
+      + '  if (r.errors.length) console.error(r.errors.join(\'\\n\'));\n'
+      + '  return { statusCode: 200, body: JSON.stringify({ enviats: r.enviats, motiu: r.motiu }) };\n}\n' },
+    { ruta: '.mcp.json', tipus: 'application/json', cos: JSON.stringify({ mcpServers: { cervell: { type: 'stdio', command: 'node', args: ['eines/mcp.mjs'] } } }, null, 2) + '\n' },
+    { ruta: 'API.md', tipus: 'text/markdown', cos: L.api.doc.join('\n').replace(/\{nom\}/g, nom).replace(/\{url\}/g, url || L.api.web) + '\n' }
+  ].map(f => Object.assign({ tipus: 'text/javascript' }, f));
+}
 function webASite(web, opts) {
   const o = opts || {}, L = SITE_TXT[o.llengua] || SITE_TXT.ca, llengua = SITE_TXT[o.llengua] ? o.llengua : 'ca';
   const e = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -4169,7 +4270,11 @@ function webASite(web, opts) {
     '[[headers]]', '  for = "/*"', '  [headers.values]',
     '    Content-Security-Policy = "default-src \'none\'; style-src \'self\'; img-src \'self\' data:; form-action \'self\'; base-uri \'none\'; frame-ancestors \'none\'"',
     '    X-Content-Type-Options = "nosniff"', '    Referrer-Policy = "strict-origin-when-cross-origin"',
-    '    Permissions-Policy = "camera=(), microphone=(), geolocation=()"', ''].join('\n'), 'text/plain');
+    '    Permissions-Policy = "camera=(), microphone=(), geolocation=()"', '',
+    '[functions]', '  directory = "netlify/functions"', '',
+    '# El cervell, les eines i les regles són de l\'equip: viuen al repositori i la web no els serveix.']
+    .concat(['/cerebro/*', '/eines/*', '/netlify/*', '/.mcp.json', '/CLAUDE.md', '/CEREBRO.md', '/API.md', '/LLEGEIX.md', '/LEEME.md']
+      .map(r => '[[redirects]]\n  from = "' + r + '"\n  to = "/404.html"\n  status = 404\n  force = true\n')).join('\n'), 'text/plain');
   if (o.mapa) cervell(o.mapa, L.cb).forEach(f => posa(f.ruta, f.cos, f.tipus));
   /* La marca viatja amb el repositori, com el mapa: és l'altra font. */
   if (Object.keys(MC).length) {
@@ -4179,6 +4284,7 @@ function webASite(web, opts) {
   const md = a => a.join('\n').replace(/\{nom\}/g, nom) + '\n';
   posa('CLAUDE.md', md(L.claude), 'text/markdown');
   posa(llengua === 'es' ? 'LEEME.md' : 'LLEGEIX.md', md(L.llegeix), 'text/markdown');
+  if (o.mapa && o.codi) einesDelSite(o, L, nom, url).forEach(f => posa(f.ruta, f.cos, f.tipus));
   if (o.mapa) indexCervell(fitxers, nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
   return { nom, llengua, fitxers };
 }
@@ -4188,7 +4294,7 @@ function webASite(web, opts) {
    donen a qui toca; equip, el que només viu al repositori. Surt dels fitxers
    que ja hi ha, així que no pot dir res que no hi sigui. És el mateix model que
    el cervell d'Events Penedès (cerebro/indice.json + CEREBRO.md). */
-const IDX_TEMES = ['web', 'mapa', 'rols', 'lliuraments', 'processos', 'decisions', 'regles'];
+const IDX_TEMES = ['web', 'mapa', 'rols', 'lliuraments', 'processos', 'decisions', 'regles', 'eines'];
 const IDX_CAPES = ['publica', 'enllac', 'equip'];
 function indexCervell(fitxers, nom, T) {
   const ent = [];
@@ -4208,7 +4314,8 @@ function indexCervell(fitxers, nom, T) {
     : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
     : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
     : r === 'cerebro/marca.json' ? ['web', 'equip']
-    : /^(CLAUDE|LLEGEIX|LEEME)\.md$/.test(r) ? ['regles', 'equip'] : null;
+    : /^(CLAUDE|LLEGEIX|LEEME)\.md$/.test(r) ? ['regles', 'equip']
+    : /^(eines|netlify)\/|^\.mcp\.json$|^API\.md$/.test(r) ? ['eines', 'equip'] : null;
   fitxers.forEach(f => {
     const c = classifica(f.ruta);
     if (!c) return;
@@ -4330,9 +4437,9 @@ const REG_TXT = {
     nousD: 'Propuesta: añadirlo al mapa, si una persona lo acepta.', rols: 'Roles', noRep: 'da y no recibe nada registrado.', rolNou: 'no está en el mapa.', cap0: 'Todavía no hay ninguna transacción registrada.',
     trobNou: 'Hay intercambios que no están en el mapa', trobMort: 'Hay flujos del mapa que no pasan', trobRec: 'da y no recibe' }
 };
+const regNorm = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
 function observaRegistre(mapa, files, opts) {
-  const o = opts || {}, T = REG_TXT[o.llengua] || REG_TXT.ca;
-  const n = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
+  const o = opts || {}, T = REG_TXT[o.llengua] || REG_TXT.ca, n = regNorm;
   const roles = (mapa.roles || []).slice(), perNom = {}; roles.forEach(r => { perNom[n(r)] = r; });
   const fl = [];
   (mapa.pairs || []).forEach(p => {
@@ -4391,6 +4498,129 @@ function observaRegistre(mapa, files, opts) {
   return { vius, morts, nous: nousL, rolsNous, senseReciprocitat: senseRec, mapaObservat, avisos, informe: md.join('\n') + '\n' };
 }
 /*/VS-REG*/
+/*VS-API*/
+/* ── L'API i els avisos: fase 3 del pla ─────────────────────────────────────
+ * La web ja és l'API de lectura: `web.json` i el JSON-LD de cada pàgina. Per
+ * escriure, el formulari del registre (un POST de Netlify Forms). Aquí hi ha
+ * el que hi falta: **els avisos**, que la web envia a qui els vulgui escoltar
+ * (un CRM, un Slack, un agent) amb els noms que fixa el pla.
+ *
+ *  · Cada avís és un POST JSON (`tt-avis-1`) signat amb HMAC-SHA256 a la
+ *    capçalera `X-TT-Signatura`. Qui el rep el comprova amb el mateix secret.
+ *  · Les adreces i el secret van a les variables d'entorn de Netlify
+ *    (`TT_WEBHOOKS`, `TT_WEBHOOK_SECRET`), mai al repositori. Sense secret no
+ *    s'envia res, i només a adreces https.
+ *  · Les dades són les del registre: rols, lliurament, tipus, data, evidència
+ *    i valor. Cap dada personal.
+ *
+ * Aquest bloc no corre a l'editor: és el codi que el zip posa a
+ * `eines/nucli.mjs`, i que fan servir les funcions de Netlify, l'eina del
+ * registre i el servidor MCP. Fa servir `fetch` i Web Crypto, que són igual al
+ * navegador i a Node; les proves els injecten. */
+const TT_AVISOS = ['transaccion.creada', 'rol.sin_reciprocidad', 'desviacion.detectada', 'cerebro.actualizado'];
+function fluxosDelMapa(mapa) {
+  const fl = [];
+  ((mapa || {}).pairs || []).forEach(p => {
+    if (p[0] && p[1] && p[3]) fl.push({ de: p[0], a: p[1], q: p[3] });
+    if (p[0] && p[1] && p[5]) fl.push({ de: p[1], a: p[0], q: p[5] });
+  });
+  return fl;
+}
+/* Una anotació del formulari `registre`, tal com la passa Netlify a la
+   funció `submission-created`: només en surten els camps del registre. */
+function avisosDelFormulari(payload, fluxos) {
+  if (!payload || payload.form_name !== 'registre') return [];
+  const d = Object.assign({}, payload.data || {});
+  if (!d.data && payload.created_at) d.data = payload.created_at;
+  const t = llegeixRegistre(JSON.stringify([d])).files[0];
+  if (!t) return [];
+  const av = [{ tipus: 'transaccion.creada', dades: t }];
+  if (!(fluxos || []).some(f => regNorm(f.de) === regNorm(t.de) && regNorm(f.a) === regNorm(t.a) && regNorm(f.q) === regNorm(t.q)))
+    av.push({ tipus: 'desviacion.detectada', dades: { motiu: 'flux-nou', de: t.de, a: t.a, q: t.q } });
+  return av;
+}
+async function signaAvis(cos, secret, subtle) {
+  const s = subtle || globalThis.crypto.subtle, te = new TextEncoder();
+  const k = await s.importKey('raw', te.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return 'sha256=' + [...new Uint8Array(await s.sign('HMAC', k, te.encode(cos)))].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+async function verificaAvis(cos, signatura, secret, subtle) {
+  const s = await signaAvis(cos, secret, subtle), t = String(signatura || '');
+  let d = s.length ^ t.length;
+  for (let i = 0; i < s.length; i++) d |= s.charCodeAt(i) ^ t.charCodeAt(i);
+  return d === 0;
+}
+async function enviaAvisos(avisos, opts) {
+  const o = opts || {};
+  const urls = (Array.isArray(o.urls) ? o.urls : String(o.urls || '').split(/[\s,]+/)).filter(u => /^https:\/\/\S+$/.test(u));
+  if (!urls.length) return { enviats: 0, motiu: 'sense-adreces', errors: [] };
+  if (String(o.secret || '').length < 16) return { enviats: 0, motiu: 'sense-secret', errors: [] };
+  const f = o.fetch || globalThis.fetch, errors = [];
+  let enviats = 0;
+  for (const a of avisos || []) {
+    if (!TT_AVISOS.includes(a.tipus)) continue;
+    const dades = a.dades || Object.keys(a).filter(k => k !== 'tipus').reduce((x, k) => Object.assign(x, { [k]: a[k] }), {});
+    const cos = JSON.stringify({ formato: 'tt-avis-1', tipus: a.tipus, web: o.web || '', creat: o.ara || new Date().toISOString(), dades });
+    const signatura = await signaAvis(cos, o.secret, o.subtle);
+    for (const u of urls) {
+      try {
+        const r = await f(u, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-TT-Avis': a.tipus, 'X-TT-Signatura': signatura }, body: cos });
+        if (r && r.ok) enviats++; else errors.push(u + ' → ' + (r ? r.status : '?'));
+      } catch (e) { errors.push(u + ' → ' + e.message); }
+    }
+  }
+  return { enviats, motiu: '', errors };
+}
+/*/VS-API*/
+/*VS-MCP*/
+/* ── El cervell, per a Claude Code: un servidor MCP sense dependències ──────
+ * El zip el posa a `eines/mcp.mjs`, i `.mcp.json` el declara: qui obre el
+ * repositori del client amb Claude Code té el cervell a mà, amb tres eines.
+ * Només llegeix, i només el que surt a l'índex (`cerebro/indice.json`). Aquí
+ * hi ha la part que respon; la que llegeix fitxers i parla per stdin/stdout
+ * és al fitxer generat, perquè les proves la puguin cridar sense disc. */
+function creaMcp(opts) {
+  const o = opts || {}, llegeix = o.llegeix || (() => null);
+  const eines = [
+    { name: 'cervell_index', description: 'Els documents del cervell del projecte: ruta, títol, tema (web, mapa, rols, lliuraments, processos, decisions, regles, eines) i capa (publica, enllac, equip).',
+      inputSchema: { type: 'object', properties: { tema: { type: 'string', description: 'Només els d\'aquest tema' } } } },
+    { name: 'cervell_llegeix', description: 'Llegeix un document del cervell per la seva ruta. Només els que surten a l\'índex.',
+      inputSchema: { type: 'object', properties: { ruta: { type: 'string' } }, required: ['ruta'] } },
+    { name: 'registre_informe', description: 'Llegeix el registre viu (cerebro/registro/registre.csv) i el compara amb el mapa real: fluxos vius, sense ús, nous, qui dona sense rebre i els avisos.',
+      inputSchema: { type: 'object', properties: { llengua: { type: 'string', enum: ['ca', 'es'] } } } }
+  ];
+  const text = (s, error) => Object.assign({ content: [{ type: 'text', text: s }] }, error ? { isError: true } : {});
+  const index = () => { const t = llegeix('cerebro/indice.json'); return t ? JSON.parse(t) : { entradas: [] }; };
+  const crida = (nom, a) => {
+    if (nom === 'cervell_index') return text(JSON.stringify(index().entradas.filter(x => !a.tema || x.tema === a.tema), null, 2));
+    if (nom === 'cervell_llegeix') {
+      const e = index().entradas.find(x => x.ruta === a.ruta), t = e ? llegeix(e.ruta) : null;
+      return t == null ? text('No és a l\'índex del cervell: ' + a.ruta, true) : text(t);
+    }
+    if (nom === 'registre_informe') {
+      const m = llegeix('cerebro/mapa-real.json');
+      if (!m) return text('Falta cerebro/mapa-real.json', true);
+      const r = observaRegistre(JSON.parse(m), llegeixRegistre(llegeix('cerebro/registro/registre.csv') || '').files, { llengua: a.llengua });
+      return text(r.informe + '\n```json\n' + JSON.stringify(r.avisos, null, 2) + '\n```\n');
+    }
+    return null;
+  };
+  return function respon(msg) {
+    if (!msg || msg.jsonrpc !== '2.0' || msg.id === undefined || msg.id === null) return null;
+    const ok = result => ({ jsonrpc: '2.0', id: msg.id, result }), err = (code, message) => ({ jsonrpc: '2.0', id: msg.id, error: { code, message } });
+    const p = msg.params || {};
+    if (msg.method === 'initialize') return ok({ protocolVersion: p.protocolVersion || '2025-06-18', capabilities: { tools: {} }, serverInfo: { name: 'cervell', version: '1.0.0' },
+      instructions: 'El cervell del projecte surt del mapa de valor. Comença per cervell_index; el mapa és la font i no s\'edita a mà.' });
+    if (msg.method === 'ping') return ok({});
+    if (msg.method === 'tools/list') return ok({ tools: eines });
+    if (msg.method === 'tools/call') {
+      try { const r = crida(p.name, p.arguments || {}); return r ? ok(r) : err(-32602, 'Eina desconeguda: ' + p.name); }
+      catch (e) { return ok(text('Error: ' + e.message, true)); }
+    }
+    return err(-32601, 'Mètode desconegut: ' + msg.method);
+  };
+}
+/*/VS-MCP*/
 
 /*VS-CTRL*/
 /* ── L'editor: l'estat, la sincronia amb els sis camps, els nivells i el desat ──
@@ -6732,7 +6962,14 @@ function creaLlenc() {
      sense scripts. El full d'estil va dins de la pàgina i els enllaços entre
      pàgines es resolen aquí, perquè funcioni també des del disc. */
   function siteAra() {
-    return webASite(webAra().web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE), marca: S.webMarca });
+    return webASite(webAra().web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE), codi: codiBlocs(), marca: S.webMarca });
+  }
+  /* El codi que el zip porta a eines/ i netlify/: els blocs d'aquesta mateixa
+     pàgina, tal com hi són (el mateix que llegeix web-del-mapa.js). */
+  function codiBlocs() {
+    const t = [...document.scripts].map(x => x.textContent).join('\n');
+    const b = nom => { const a = t.indexOf('/*' + nom + '*/'), z = t.indexOf('/*/' + nom + '*/'); return a >= 0 && z > a ? t.slice(a, z) : ''; };
+    return { reg: b('VS-REG'), api: b('VS-API'), mcp: b('VS-MCP') };
   }
   function mostraPrevia() {
     const f = $('#edWebMarc');

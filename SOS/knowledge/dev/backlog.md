@@ -103,7 +103,12 @@ pestanya Web o amb `SOS/tools/llegeix-registre.js` (mateix codi, bloc
 `VS-REG`): informe, mapa observat amb el dibuixat com a ideal (vista
 Desviació) i els avisos de la fase 3. Del CSV només es queden rols,
 lliurament, tipus, data, evidència i valor. Vint-i-quatre proves al motor.
-Següent del pla: l'API i els webhooks (fase 3).
+**Fet, fase 3 del pla:** l'API i els avisos. La web és l'API (`web.json`,
+JSON-LD i el formulari del registre). Dues funcions de Netlify envien els
+avisos del pla signats amb HMAC-SHA256; `.mcp.json` connecta el cervell a
+Claude Code amb `eines/mcp.mjs`. Un sol codi: blocs `VS-API` i `VS-MCP`.
+El cervell ja no es publica (404 a `netlify.toml`). Vint-i-quatre proves.
+Següent: provar els avisos amb el primer pilot i els comptes de debò.
 **Fet (demanat per l'Àlvar el 09/10/2026):** la vista prèvia de la web al
 navegador. A la pestanya Web, «Vista prèvia» ensenya la web de debò (el mateix
 codi que el zip) pàgina a pàgina, sense descarregar res.

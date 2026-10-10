@@ -137,7 +137,7 @@ cas('un idioma sense textos peta', a => {
   spawnSync(process.execPath, [INSTAL(web), '--arrel', web], { encoding: 'utf8' });
   const bo = comprova(web).status === 0 && /^- `cerebro`/m.test(readFileSync(join(web, 'saber', 'taxonomia.md'), 'utf8'));
   if (!bo) fails++;
-  console.log(`  ${bo ? '✓' : '✗'} el cervell s'instal·la sobre el zip de la web, i declara cerebro/ sol`);
+  console.log(`  ${bo ? '✓' : '✗'} el cervell s'instal·la sobre el zip de la web, i declara sol les carpetes que hi porta (cerebro, eines, netlify)`);
   rmSync(arrel, { recursive: true, force: true });
 }
 

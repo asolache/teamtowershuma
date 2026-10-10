@@ -124,14 +124,22 @@ if (opcio('--nou')) {
   writeFileSync(join(desti, 'cervell.json'), JSON.stringify(conf, null, 2) + '\n');
   mkdirSync(dirname(join(desti, conf.eina)), { recursive: true });
   copyFileSync(__filename, join(desti, conf.eina));
-  /* El zip de la web que surt del mapa ja porta `cerebro/` (les fitxes, la
-     marca i les decisions). Si s'hi instal·la el cervell, es declara: si no, la
-     primera comprovació petaria per una carpeta que ha posat la nostra eina. */
+  /* El zip de la web que surt del mapa ja porta les seves carpetes: `cerebro/`
+     (les fitxes, la marca i les decisions), `eines/` i `netlify/` (l'API i els
+     avisos). Si s'hi instal·la el cervell, es declaren: si no, la primera
+     comprovació petaria per carpetes que ha posat la nostra eina. */
   const tax = join(desti, conf.taxonomia || '');
-  if (conf.taxonomia && existsSync(join(desti, 'cerebro', 'mapa-real.json')) && existsSync(tax) && !/^- `cerebro`/m.test(readFileSync(tax, 'utf8'))) {
-    writeFileSync(tax, readFileSync(tax, 'utf8').replace(/\n*$/, '\n') + '- `cerebro` · saber · ' + (conf.idioma === 'es'
-      ? 'El cerebro que sale del mapa de valor con la web: el mapa real, una ficha por rol, entregable y proceso, la marca y las decisiones'
-      : 'El cervell que surt del mapa de valor amb la web: el mapa real, una fitxa per rol, lliurament i procés, la marca i les decisions') + '\n');
+  if (conf.taxonomia && existsSync(join(desti, 'cerebro', 'mapa-real.json')) && existsSync(tax)) {
+    const es = conf.idioma === 'es', ZIP = [
+      ['cerebro', 'saber', es ? 'El cerebro que sale del mapa de valor con la web: el mapa real, una ficha por rol, entregable y proceso, la marca y las decisiones'
+        : 'El cervell que surt del mapa de valor amb la web: el mapa real, una fitxa per rol, lliurament i procés, la marca i les decisions'],
+      ['eines', 'obra', es ? 'Las herramientas que salen con la web: leer el registro, la API y el servidor MCP del cerebro. Se regeneran con la web'
+        : 'Les eines que surten amb la web: llegir el registre, l\'API i el servidor MCP del cervell. Es regeneren amb la web'],
+      ['netlify', 'obra', es ? 'Las funciones de Netlify que envían los avisos firmados. Se regeneran con la web'
+        : 'Les funcions de Netlify que envien els avisos signats. Es regeneren amb la web']];
+    let t = readFileSync(tax, 'utf8').replace(/\n*$/, '\n');
+    ZIP.forEach(([d, cara, desc]) => { if (existsSync(join(desti, d)) && !new RegExp('^- `' + d + '`', 'm').test(t)) t += '- `' + d + '` · ' + cara + ' · ' + desc + '\n'; });
+    writeFileSync(tax, t);
   }
   hereta(desti, conf);
   console.log(`✅ Cervell instal·lat a ${desti}. Ara:  node ${conf.eina}  i després  node ${conf.eina} --check`);
