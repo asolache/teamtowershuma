@@ -372,7 +372,7 @@ textarea{min-height:88px;resize:vertical}
 <div class="f"><label for="cNotes" data-i18n="pv.m.notes">Res més que hàgim de saber</label><textarea id="cNotes" rows="2"></textarea></div>
 <label class="chk"><input type="checkbox" id="cAcc"><span data-i18n="pv.m.acc">Entenc que la comanda es confirma per correu i es paga per transferència o enllaç de pagament abans de començar.</span></label>
 <p class="err" id="cErr" data-i18n="pv.m.err">Cal el nom, un correu vàlid i acceptar com es paga.</p>
-<p class="hint" data-i18n="pv.m.priv">S'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM. Res més.</p>
+<p class="hint" data-i18n-html="pv.m.priv">S'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM. Res més. Responsable: Alvaro Solache, per confirmar-te la comanda i fer-la; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.</p>
 <p class="cm-ok" id="cOk" hidden data-i18n="pv.m.ok">Comanda rebuda. En un dia laborable et confirmem la data i t'enviem la factura.</p>
 <p class="err" id="cKo"><span data-i18n="pv.m.ko">No s'ha pogut enviar. Envia-la per correu:</span> <a id="cMailto" href="#" data-i18n="pv.m.mail">Obre el correu</a></p>
 <div class="cm-btns">
@@ -612,14 +612,15 @@ textarea{min-height:88px;resize:vertical}
 .tt-peu a{color:var(--light);text-decoration:none}
 /* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
    de vint enllaços a 44 px és un peu de mitja pantalla. */
-.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
-@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
 .tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
 .tt-peu a[aria-current]{color:var(--text);font-weight:600}
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
 .tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
   color:var(--text);font-weight:600}
 @media (max-width:760px){
@@ -630,7 +631,7 @@ textarea{min-height:88px;resize:vertical}
 </style>
 <footer class="tt-peu">
   <div class="tp-in">
-    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span data-i18n="nv.peu.legal">Avís legal i privacitat</span></a></div>
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span data-i18n="nv.t.diagnostic">Diagnòstic</span></a></li><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">El mètode</span></a></li><li><a href="/SOS/vna-suport.html"><span data-i18n="nv.t.vna-suport">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">El catàleg</span></a></li><li><a href="/SOS/pressupost.html" aria-current="page"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
   </div>
 </footer>
@@ -687,14 +688,19 @@ const v=id=>{const e=$('#'+id);return e?e.value.trim():'';};
    surt d'aquí. Si el navegador no ho deixa llegir —finestra privada, dades
    bloquejades—, el formulari comença en blanc i prou. */
 const PONT='tt.form.qui';
+/* A la pestanya i no al navegador (avís legal, 10/10/2026): el pont serveix per
+   passar d'un formulari a l'altre, i el nom, el correu i el telèfon no s'han de
+   quedar desats per a la visita següent sense haver-ho demanat. Se n'esborra la
+   còpia que hi havien deixat les versions anteriors. */
+try{localStorage.removeItem(PONT);}catch(e){}
 function desaPont(){
-  try{ localStorage.setItem(PONT, JSON.stringify({
+  try{ sessionStorage.setItem(PONT, JSON.stringify({
     nom:v('nom'), rol:v('rol'), carrec:v('carrec'), mail:v('mail'), tel:v('tel'),
     org:st.org, orgNom:v('orgNom'), municipi:v('municipi'), comarca:v('comarca'), poblacio:v('poblacio')
   })); }catch(e){}
 }
 function llegeixPont(){
-  let d=null; try{ d=JSON.parse(localStorage.getItem(PONT)||'null'); }catch(e){}
+  let d=null; try{ d=JSON.parse(sessionStorage.getItem(PONT)||'null'); }catch(e){}
   if(!d)return false;
   ['nom','carrec','mail','tel','orgNom','municipi','comarca','poblacio'].forEach(k=>{
     const el=$('#'+k); if(el&&d[k])el.value=d[k];
@@ -1114,7 +1120,7 @@ ca: {
   'pv.m.ok':'Comanda rebuda. En un dia laborable et confirmem la data i t\'enviem la factura.',
   'pv.m.ko':'No s\'ha pogut enviar. Envia-la per correu:',
   'pv.m.mail':'Obre el correu',
-  'pv.m.priv':'S\'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més.',
+  'pv.m.priv':'S\'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més. Responsable: Alvaro Solache, per confirmar-te la comanda i fer-la; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l\'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.',
   'pr.s1.h':'1 · Qui ets',
   'pr.s1.sub':'Per saber amb qui parlem i com adreçar-nos-hi. Si ja has fet el diagnòstic, això ja hauria de venir omplert.',
   'pr.s1.err':'Cal com a mínim el nom i un correu vàlid.',
@@ -1312,6 +1318,7 @@ ca: {
   'nv.cta':'Fes el diagnòstic',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escriu-nos',
+  'nv.peu.legal':'Avís legal i privacitat',
 /*/NAV-I18N-CA*/
 },
 es: {
@@ -1357,7 +1364,7 @@ es: {
   'pv.m.ok':'Pedido recibido. En un día laborable te confirmamos la fecha y te enviamos la factura.',
   'pv.m.ko':'No se ha podido enviar. Envíala por correo:',
   'pv.m.mail':'Abre el correo',
-  'pv.m.priv':'Se envía solo cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más.',
+  'pv.m.priv':'Se envía solo cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más. Responsable: Alvaro Solache, para confirmarte el pedido y hacerlo; puedes ver, corregir o borrar tus datos escribiéndonos. Todo, en el <a href="/avis-legal.html#dades">aviso legal y privacidad</a>.',
   'pr.s1.h':'1 · Quién eres',
   'pr.s1.sub':'Para saber con quién hablamos y cómo dirigirnos. Si ya has hecho el diagnóstico, esto ya debería venir rellenado.',
   'pr.s1.err':'Hace falta como mínimo el nombre y un correo válido.',
@@ -1555,6 +1562,7 @@ es: {
   'nv.cta':'Haz el diagnóstico',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escríbenos',
+  'nv.peu.legal':'Aviso legal y privacidad',
 /*/NAV-I18N-ES*/
 }
 };

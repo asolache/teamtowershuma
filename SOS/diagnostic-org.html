@@ -585,7 +585,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
     <button type="button" class="btn btn-primary" id="bNet" data-i18n="dx.env.btn">Envia'ns el diagnòstic</button>
     <a class="btn btn-ghost" id="bSend" href="#" data-i18n="dx.env.mail">O per correu</a>
   </div>
-  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
+  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues. Responsable: Alvaro Solache, per respondre't i preparar la proposta; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.</p>
   <p class="env-ok" id="envOk" hidden data-i18n="dx.env.ok">Rebut. Et responem en un dia laborable.</p>
   <p class="env-ko" id="envKo" hidden></p>
 </div>
@@ -623,14 +623,15 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 .tt-peu a{color:var(--light);text-decoration:none}
 /* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
    de vint enllaços a 44 px és un peu de mitja pantalla. */
-.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
-@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
 .tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
 .tt-peu a[aria-current]{color:var(--text);font-weight:600}
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
 .tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
   color:var(--text);font-weight:600}
 @media (max-width:760px){
@@ -641,7 +642,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 </style>
 <footer class="tt-peu">
   <div class="tp-in">
-    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span data-i18n="nv.peu.legal">Avís legal i privacitat</span></a></div>
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span data-i18n="nv.t.diagnostic">Diagnòstic</span></a></li><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">El mètode</span></a></li><li><a href="/SOS/vna-suport.html"><span data-i18n="nv.t.vna-suport">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">El catàleg</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
   </div>
 </footer>
@@ -816,6 +817,7 @@ ca: {
   'nv.cta':'Fes el diagnòstic',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escriu-nos',
+  'nv.peu.legal':'Avís legal i privacitat',
 /*/NAV-I18N-CA*/
   'dx.av.k':'El que hem llegit',
   'dx.av.pk':'Hi encaixa',
@@ -893,7 +895,7 @@ ca: {
   'dx.env.h':'Envia\'ns-ho i et preparem la proposta',
   'dx.env.btn':'Envia\'ns el diagnòstic',
   'dx.env.mail':'O per correu',
-  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues.',
+  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues. Responsable: Alvaro Solache, per respondre\'t i preparar la proposta; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l\'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.',
   'dx.env.ok':'Rebut. Et responem en un dia laborable.',
   'dx.env.enviat':'Enviat ✓',
   'dx.env.ko':'No s\'ha pogut enviar. Prova «O per correu», que obre el teu programa amb tot escrit — el diagnòstic el tens igualment.',
@@ -999,6 +1001,7 @@ es: {
   'nv.cta':'Haz el diagnóstico',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escríbenos',
+  'nv.peu.legal':'Aviso legal y privacidad',
 /*/NAV-I18N-ES*/
   'dx.av.k':'Lo que hemos leído',
   'dx.av.pk':'Encaja',
@@ -1076,7 +1079,7 @@ es: {
   'dx.env.h':'Envíanoslo y te preparamos la propuesta',
   'dx.env.btn':'Envíanos el diagnóstico',
   'dx.env.mail':'O por correo',
-  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —qué quieres que pase, tu organización, el plazo y tu contacto— al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM (Zoho) y nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas.',
+  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —qué quieres que pase, tu organización, el plazo y tu contacto— al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM (Zoho) y nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas. Responsable: Alvaro Solache, para responderte y preparar la propuesta; puedes ver, corregir o borrar tus datos escribiéndonos. Todo, en el <a href="/avis-legal.html#dades">aviso legal y privacidad</a>.',
   'dx.env.ok':'Recibido. Te respondemos en un día laborable.',
   'dx.env.enviat':'Enviado ✓',
   'dx.env.ko':'No se ha podido enviar. Prueba «O por correo», que abre tu programa con todo escrito — el diagnóstico lo tienes igualmente.',
@@ -1107,8 +1110,13 @@ let pas=1,current=null;
    d'aquí no ha de tornar a escriure com es diu. Dins d'un try perquè a finestra
    privada llegir localStorage llança i s'emporta la pàgina sencera. */
 const PONT='tt.form.qui';
+/* A la pestanya i no al navegador (avís legal, 10/10/2026): el pont serveix per
+   passar d'un formulari a l'altre, i el nom, el correu i el telèfon no s'han de
+   quedar desats per a la visita següent sense haver-ho demanat. Se n'esborra la
+   còpia que hi havien deixat les versions anteriors. */
+try{localStorage.removeItem(PONT);}catch(e){}
 function desaPont(){
-  try{localStorage.setItem(PONT,JSON.stringify({
+  try{sessionStorage.setItem(PONT,JSON.stringify({
     nom:$('#nom').value.trim(),rol:$('#rol').value,mail:$('#mail').value.trim(),
     tel:$('#tel').value.trim(),carrec:$('#carrec').value.trim(),
     org:st.org,orgNom:$('#orgNom').value.trim(),
@@ -1116,7 +1124,7 @@ function desaPont(){
     municipi:$('#municipi').value.trim(),comarca:$('#comarca').value.trim()}));}catch(e){}
 }
 function llegeixPont(){
-  try{const r=localStorage.getItem(PONT);if(!r)return;const d=JSON.parse(r);
+  try{const r=sessionStorage.getItem(PONT);if(!r)return;const d=JSON.parse(r);
     ['nom','rol','mail','tel','carrec','orgNom','web','dediqueu','municipi','comarca'].forEach(k=>{
       const el=$('#'+k);if(el&&d[k])el.value=d[k];});
     if(d.org){const b=$$('#orgType .opt').find(x=>x.dataset.v===d.org);

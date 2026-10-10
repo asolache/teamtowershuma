@@ -36,7 +36,7 @@ const nova = async (pont = null) => {
   const p = await ctx.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   if (pont) await p.addInitScript(d => {
-    try { localStorage.setItem('tt.form.qui', JSON.stringify(d)); } catch (e) { }
+    try { sessionStorage.setItem('tt.form.qui', JSON.stringify(d)); } catch (e) { }
   }, pont);
   await p.goto(PAG);
   await p.waitForSelector('#pForm');
