@@ -34,6 +34,12 @@
   force = true
 
 [[redirects]]
+  from = "/.claude/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
   from = "/.mcp.json"
   to = "/404.html"
   status = 404
@@ -65,6 +71,18 @@
 
 [[redirects]]
   from = "/LEEME.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/TREBALLAR-AMB-CLAUDE.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/TRABAJAR-CON-CLAUDE.md"
   to = "/404.html"
   status = 404
   force = true

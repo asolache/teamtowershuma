@@ -314,6 +314,33 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', [
   'const SYSTEM_PROMPT=' + JSON.stringify(systemPrompt()) + ';'
 ].join('\n'), 'js');
 
+/* ── Qui fa cada lliurament: la màquina o una persona ─────────────────────
+   La regla de la casa (`SOS/knowledge/negoci/mapa-kanban-ia.md`) viu a l'app:
+   la taxonomia tancada `ENTREGABLES` i `fluxAutomatitzable`, que mira
+   l'intangible abans que res. El repositori del client en treu
+   `cerebro/tasques-ia.md`, i ha de dir el mateix que l'app: per això el codi
+   es copia tal com hi és, i la guarda falla si algú el toca només en un lloc. */
+{
+  const APP = readFileSync(join(SOS, 'index.html'), 'utf8');
+  const tros = (inici, fi) => {
+    const a = APP.indexOf(inici);
+    if (a < 0) { bad('no es troba `' + inici + '` a SOS/index.html'); return ''; }
+    const b = APP.indexOf(fi, a);
+    if (b < 0) { bad('no es troba el final de `' + inici + '` a SOS/index.html'); return ''; }
+    return APP.slice(a, b + fi.length);
+  };
+  const kind = tros('const normKind=', 'const isIntangible=k=>normKind(k)===\'intangible\';');
+  const regla = tros('const ENTREGABLES=[', '\n  return{pot:true,motiu:\'\',tipus:t};\n}');
+  if (kind && regla) {
+    posa('SOS/vna-suport.html', 'VS-TASQUES', [
+      '/* GENERAT per SOS/tools/build-vna-suport.js des de SOS/index.html · no s\'edita a mà.',
+      '   La regla de qui fa cada lliurament, tal com és a l\'app: un intangible no',
+      '   el fa mai la màquina, i un tangible només si el seu tipus en pot sortir. */',
+      kind, regla].join('\n'), 'js');
+    ok('la regla de qui fa cada lliurament és la de l\'app, copiada tal com hi és');
+  }
+}
+
 /* ── El skill ────────────────────────────────────────────────────────────── */
 if (!existsSync(SKILL_DIR)) mkdirSync(SKILL_DIR, { recursive: true });
 posa('.claude/skills/mapa-de-valor/SKILL.md', 'VS-PASSES', blocPasses(true), 'html');

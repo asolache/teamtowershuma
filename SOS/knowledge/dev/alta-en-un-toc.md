@@ -314,6 +314,70 @@ a Safari amb una targeta a la cartera, i en mode de prova no cobra.
 Les proves (`SOS/tests/test-stripe.mjs`, sense xarxa) i la pestanya Web amb
 funcions falses (`test-vna-suport.mjs`, 7E) corren a la CI.
 
+## 3e · Nou: l'arrencada amb IA, a partir del que el client ja té
+
+**La revisió (10/10/2026).** Fins ara la web sortia només del mapa, i el text
+l'havia d'escriure algú. El client, però, no arriba en blanc: té una web, uns
+documents, un full de càlcul. I la promesa del SOS és que la feina de rutina
+la prepara la IA i l'accepta una persona. Faltaven tres coses: portar el que ja
+hi ha al cervell, que el text de les pàgines en pogués sortir, i que el client
+pogués treballar-hi amb Claude sense nosaltres al costat.
+
+**Què fa ara:**
+
+- **Importar el que ja tenen** (bloc `VS-IMPORTA`). A la pestanya Web, «El que
+  ja teniu»: s'hi pugen .html, .md, .txt i .csv, i el zip els porta a
+  `cerebro/fonts/` en Markdown, amb la font i la data. No surt del navegador.
+  Des de Node, `SOS/tools/importa.js` (sessió 0, abans que hi hagi repositori)
+  i `eines/importa.mjs` (al repositori del client) també llegeixen una web:
+  robots.txt, el sitemap i el menú, una pàgina cada segon (o el `Crawl-delay`).
+- **Les dades personals, amb dos panys.** Correus, telèfons, DNI i IBAN
+  s'amaguen al text. D'una taula, per defecte, només entra la capçalera i
+  quantes files té: cada columna que hi va, la tria una persona (a l'editor, o
+  `--columnes`), i una columna de persona no hi entra ni triada (veda 162).
+- **Una web, només amb permís.** El rastrejador demana `--autoritzat <domini>`
+  i no llegeix cap altre domini. L'autorització escrita del client va al CRM:
+  en importar la seva web, en som encarregats del tractament.
+- **Els continguts** (`cerebro/continguts/<id>.md`): el text de la portada, de
+  serveis, de cada porta o de pàgines noves, en un Markdown petit que no pot
+  trencar la web (res d'HTML, enllaços nets, imatges només pròpies). Un
+  contingut amb un correu o un telèfon no surt, i el generador diu per què;
+  només hi poden sortir el correu de la web i el telèfon de `cerebro/marca.json`.
+- **Les tasques per a la IA** (`cerebro/tasques-ia.md` i `.json`): la regla de
+  l'app (`VS-TASQUES`), copiada tal com és. Només compten els lliuraments que
+  fa un rol de casa; un intangible no el fa mai la IA; el tipus surt del nom
+  del lliurament i es diu per confirmar a la sala.
+- **El kit de Claude:** `CLAUDE.md` (les regles), `TREBALLAR-AMB-CLAUDE.md` (la
+  guia) i tres skills a `.claude/skills/`: `/importa`, `/continguts` i `/tasca`.
+  La IA només fa esborranys; acceptar la PR és acceptar el text.
+- **El repositori es refà sol.** `eines/genera.mjs` torna a fer la web amb el
+  mateix codi que l'editor (`eines/motor.mjs`, que es copia a si mateix igual,
+  byte a byte), llegeix els continguts i no trepitja mai el que s'escriu a mà:
+  el mapa, les decisions, el dossier, les fonts, els continguts i els esborranys.
+
+**Els plans de Claude, sense embuts (octubre de 2026).** Claude Code **no** és
+al pla gratuït: demana un pla de pagament o una clau d'API. El camí gratuït és
+claude.ai (pla Free): un projecte amb les instruccions de `CLAUDE.md`, el
+repositori afegit amb la integració de GitHub (només llegeix) i les skills
+pujades en zip. Claude hi llegeix el cervell i escriu el dossier, els textos i
+els esborranys; el client els puja a GitHub amb una PR, o ens els envia. Ho
+explica la guia, amb la data i l'enllaç als plans de cada moment.
+
+**La sessió 0 (nou, per provar amb el primer pilot).** Amb el client: importem
+el que ja té, en llegim el dossier i escrivim els primers continguts; la web
+que surt ja parla com ell. No es promet res que no s'hagi escrit i acordat.
+
+**El que queda obert:**
+
+- **Els tipus de lliurament són de comunitat** (acta, informe, convocatòria,
+  comanda…). En un negoci, pressupostos, propostes o respostes a consultes no
+  hi encaixen, i al celler d'exemple la IA no en pot preparar cap: és la
+  resposta honesta. Afegir-hi tipus és una decisió del SOS (`SOS/index.html`),
+  no d'aquesta eina.
+- **«pagament» i «factura» porten a `comanda`**, i un pagament no es redacta.
+  Proposat al backlog.
+- **PDF i Word** no es llegeixen: es llisten perquè els llegeixi la IA.
+
 ## 4 · La IA, pagada per ús
 
 Dues opcions, i el client tria:
@@ -343,6 +407,10 @@ PR que es revisen. El client hi entra igual:
 **Per comprovar abans de prometre-ho:** com es convida una persona de fora de
 l'organització a un projecte, i què li cal per entrar-hi.
 
+**Si el client treballa sol** (§3e): el kit de Claude del seu repositori. Amb
+Claude Code, `/importa`, `/continguts` i `/tasca` obren PR; gratis, des d'un
+projecte de claude.ai que llegeix el repositori, i el client puja el que surt.
+
 ## 6 · El que no es negocia
 
 - **Cap clau al navegador.** Stripe, GitHub, Netlify i la IA només es criden
@@ -362,6 +430,8 @@ l'organització a un projecte, i què li cal per entrar-hi.
 3. ✓ El repositori plantilla i el camí B: el botó de Netlify funciona sense que
    hàgim de guardar cap permís (`SOS/plantilla-web/`).
 4. ✓ Stripe Checkout en mode de prova i la funció que verifica l'avís.
+   ✓ L'arrencada amb IA: importar el que ja tenen, els continguts, les tasques
+   per a la IA i el kit de Claude (§3e). Provar-la amb el primer pilot.
 5. El camí A: crear el repositori i el lloc. Això demana tokens de servei
    de l'Àlvar.
 6. Els crèdits d'IA, quan l'Àlvar hagi decidit el marge.

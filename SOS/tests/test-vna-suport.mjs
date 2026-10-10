@@ -1146,6 +1146,33 @@ console.log('\n7E · El pagament de l\'alta (Stripe, amb les funcions falses)');
   ok(!f0.t || (/^Publica-la/.test(f0.t) && !f0.n), 'des del disc no hi ha pagament: el botó publica com sempre');
 }
 
+console.log('\n7F · El que el client ja té, al cervell (l\'arrencada amb IA)');
+{
+  await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
+  await p.click('#btExemple');
+  await p.click('#edTabWeb');
+  await p.setInputFiles('#edWebFonts', [
+    { name: 'qui-som.html', mimeType: 'text/html', buffer: Buffer.from('<html><head><title>Qui som</title></head><body><nav><a href="/">Inici</a></nav><p>Celler des de 1920. Escriu a pere.garcia@exemple.cat o truca al 600 123 456.</p></body></html>') },
+    { name: 'clients.csv', mimeType: 'text/csv', buffer: Buffer.from('Nom;Email;Producte;Preu\nPere;pere@x.cat;Vi negre;12\nAnna;anna@y.cat;Vi blanc;10\n') }
+  ]);
+  await p.waitForSelector('#edFontsResum');
+  const r0 = await p.evaluate(() => ({ t: document.querySelector('#edFontsResum').textContent, f: document.activeElement.id,
+    cols: [...document.querySelectorAll('#edPanWeb input[data-font-taula]')].map(x => x.value + (x.checked ? '+' : '')) }));
+  ok(/^2 fonts importades: 1 document, 1 taula\. Amagats: 1 correu, 1 telèfon\. Columnes de dades personals, fora: Nom, Email\./.test(r0.t) && r0.f === 'edFontsResum', 'pujar la web d\'ara i un CSV diu què s\'ha importat i què s\'ha amagat: ' + r0.t.slice(0, 90));
+  ok(r0.cols.join() === 'Producte,Preu', 'd\'una taula, només es poden triar les columnes sense dades personals, i cap ve triada');
+  await p.check('#edPanWeb input[data-font-taula="clients.csv"][value="Producte"]');
+  const r1 = await p.evaluate(() => ({ a: document.activeElement.value, c: [...document.querySelectorAll('#edPanWeb input[data-font-taula]')].filter(x => x.checked).map(x => x.value).join() }));
+  ok(r1.a === 'Producte' && r1.c === 'Producte', 'triar una columna la torna a importar, i el focus es queda a la casella');
+  const [dz] = await Promise.all([p.waitForEvent('download'), p.click('#edWebZip')]);
+  const zs = readFileSync(await dz.path()).toString('utf8');
+  ok(['cerebro/fonts/index.md', 'cerebro/fonts/fonts.json', 'cerebro/fonts/docs/qui-som.md', 'cerebro/fonts/dades/clients.md'].every(r => zs.includes(r)) && zs.includes('| Vi negre |') && !/\| 12 \|/.test(zs),
+    'el zip porta el que ja tenien a cerebro/fonts/, amb només la columna triada');
+  ok(!/pere\.garcia@exemple\.cat|pere@x\.cat|anna@y\.cat|600 123 456/.test(zs) && !/\| Pere \|/.test(zs), 'i cap correu, telèfon ni nom de persona');
+  ok(['.claude/skills/importa/SKILL.md', '.claude/skills/continguts/SKILL.md', '.claude/skills/tasca/SKILL.md', 'TREBALLAR-AMB-CLAUDE.md', 'cerebro/tasques-ia.md', 'eines/importa.mjs'].every(r => zs.includes(r)),
+    'i el kit de Claude: les tres skills, la guia, les tasques per a la IA i l\'importador');
+  await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
+}
+
 console.log('\n7B.12 · Al mòbil (390 px)');
 {
   const m = await b.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
@@ -1195,9 +1222,10 @@ console.log('\n6 · El fre');
 {
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   /* L'única crida és a la funció de pagament de la mateixa web (7E), que no
-     porta cap clau: les claus de Stripe viuen a Netlify. */
+     porta cap clau: les claus de Stripe viuen a Netlify. L'importador (VS-IMPORTA)
+     rep el fetch de qui el crida (o.fetch), i al navegador no el crida ningú. */
   const net = await p.evaluate(() => {
-    const h = document.documentElement.innerHTML, crides = h.match(/fetch\s*\([^,)]*/g) || [];
+    const h = document.documentElement.innerHTML, crides = h.match(/(?<![.\w])fetch\s*\([^,)]*/g) || [];
     return { fora: crides.filter(c => !/^fetch\s*\(CHECKOUT/.test(c)), propia: /const CHECKOUT = '\/\.netlify\/functions\/checkout'/.test(h), clau: /x-api-key|anthropic|sk_(test|live)_/i.test(h) };
   });
   ok(!net.fora.length && net.propia && !net.clau,
