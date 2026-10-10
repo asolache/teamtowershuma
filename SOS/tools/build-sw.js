@@ -57,7 +57,10 @@ const PORTA = [
   './', './index.html', './vna.html', './matriu.html',
   './diagnostic.html', './diagnostic-org.html', './diagnostic-territori.html',
   './banc-temps.html', './biblioteca.html', './compra.html', './energia.html',
-  './habitatge.html', './formacio.html', './intro.html', './molekulandia.html'
+  './habitatge.html', './formacio.html', './intro.html', './molekulandia.html',
+  // Les fonts de l'app: sense elles, el primer cop sense cobertura es veuria
+  // amb la del sistema. Només les llatines; les extenses s'agafen si cal.
+  './fonts/space-grotesk-latin.woff2', './fonts/jetbrains-mono-latin.woff2'
 ];
 
 /* ── L'empremta ───────────────────────────────────────────────────────────── */

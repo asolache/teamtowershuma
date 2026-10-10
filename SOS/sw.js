@@ -32,9 +32,10 @@
  * *fitxers*, no de dades. Si demà s'esborra aquesta memòria cau, no es perd res
  * de ningú: es tornen a baixar uns HTML.
  *
- * **No intercepta res que vagi a fora.** L'API d'Anthropic, els relés i les
- * fonts de Google passen de llarg: una resposta d'IA guardada i servida més
- * tard seria una resposta a una pregunta que ja no es va fer.
+ * **No intercepta res que vagi a fora.** L'API d'Anthropic i els relés
+ * passen de llarg: una resposta d'IA guardada i servida més tard seria una
+ * resposta a una pregunta que ja no es va fer. Les fonts de l'app ja no són
+ * de fora: viuen a `fonts/` i es guarden com la resta.
  */
 /* El nom de la còpia el genera `SOS/tools/build-sw.js` i és una empremta del
    contingut de les pàgines. `activate` esborra tota còpia que no es digui com
@@ -42,7 +43,7 @@
 
    Escrit a mà no es va tocar mai, i el resultat era el defecte pitjor d'aquest
    fitxer: obrir una pàgina arreglada i seguir veient la trencada. */
-const CAU = 'sos-e68b85f984';
+const CAU = 'sos-945e9ca9c1';
 
 /* Només el que és nostre i és estàtic. Es demana de fons en instal·lar perquè
    la segona pàgina que obri algú ja hi sigui, i si alguna falla no es cancel·la
@@ -64,7 +65,9 @@ const PORTA = [
   './habitatge.html',
   './formacio.html',
   './intro.html',
-  './molekulandia.html'
+  './molekulandia.html',
+  './fonts/space-grotesk-latin.woff2',
+  './fonts/jetbrains-mono-latin.woff2'
 ];
 /*/SW-PORTA*/
 
@@ -95,7 +98,7 @@ self.addEventListener('fetch', e => {
   // Res que no sigui d'aquest origen. L'API d'IA i els relés, sobretot.
   if (url.origin !== self.location.origin) return;
   // Només documents i coses estàtiques nostres.
-  if (!/\.(html|js|css|svg|png|webmanifest)$/.test(url.pathname) && !url.pathname.endsWith('/')) return;
+  if (!/\.(html|js|css|svg|png|webmanifest|woff2)$/.test(url.pathname) && !url.pathname.endsWith('/')) return;
 
   e.respondWith((async () => {
     const cau = await caches.open(CAU);
