@@ -290,7 +290,7 @@ console.log('\n7 · Com està feta');
      resta, i una pàgina amb barra que la prova no mira és una barra sense
      vigilància. */
   const dolentes = [];
-  for (const p of [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']) {
+  for (const p of [...PAGINES, 'index.html', 'cataleg.html', 'qui-som.html', 'premsa.html', 'avis-legal.html']) {
     const f = join(ARREL, PAGINES.includes(p) ? 'SOS' : '', p);
     const src = readFileSync(f, 'utf8');
     if (/navBurger|nav-open/.test(src)) dolentes.push(p + ' (rastre del burger)');
@@ -310,7 +310,7 @@ console.log('\n8 · El fre');
 {
   const { readFileSync } = await import('node:fs');
   const totes = PAGINES.map(p => 'SOS/' + p)
-    .concat(['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']);
+    .concat(['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html', 'avis-legal.html']);
   const dolentes = [];
   for (const p of totes) {
     const { pg, d, errs } = await llegeix(p);

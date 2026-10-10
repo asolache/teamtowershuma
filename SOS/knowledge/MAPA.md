@@ -13,10 +13,10 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 288 · 18256 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 289 · 18269 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
-| `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 7 · 91 KB |
+| `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 344 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
@@ -33,8 +33,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 31 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 110 · 1437 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1316 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 110 · 1438 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1319 KB |
 
 ## saber
 
@@ -42,9 +42,9 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 51 · 1002 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 51 · 1003 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 9 · 18 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 337 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 338 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
@@ -75,7 +75,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 
 ## arrel · pàgines HTML
 
-7 pàgines HTML a l'arrel del repositori (`cataleg.html`, `finances.html`, `home-nova.html`, `ia.html`…).
+8 pàgines HTML a l'arrel del repositori (`avis-legal.html`, `cataleg.html`, `finances.html`, `home-nova.html`…).
 Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.
 No són referència de com es fan les coses ara.
 

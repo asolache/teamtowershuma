@@ -37,7 +37,8 @@ const ARREL = join(__dirname, '..', '..');
 const PAGS = {
   portada: 'index.html',
   cataleg: 'cataleg.html',
-  quisom: 'qui-som.html'
+  quisom: 'qui-som.html',
+  avis: 'avis-legal.html'
 };
 
 let fails = 0;

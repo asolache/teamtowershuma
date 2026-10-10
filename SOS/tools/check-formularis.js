@@ -91,18 +91,22 @@ for (const [o, t, nom] of BLOCS) {
   else ok(`${tTerr.length} tipus al territori i ${tOrg.length} a l'organització, sense barrejar-se`);
 })();
 
-/* ── 2 · El pont existeix i és local ──────────────────────────────────────
+/* ── 2 · El pont existeix i és de la pestanya ─────────────────────────────
    El que fa que no calgui tornar a escriure el nom. Si desapareix, el segon
-   formulari torna a demanar-ho tot i ningú ho nota fins que algú abandona. */
+   formulari torna a demanar-ho tot i ningú ho nota fins que algú abandona.
+   Viu a `sessionStorage` i no a `localStorage` (avís legal, 10/10/2026): el
+   nom, el correu i el telèfon no es queden desats per a la visita següent. */
 for (const [nom, src] of FORMS) {
-  const desa = /localStorage\.setItem\(\s*PONT/.test(src);
-  const llegeix = /localStorage\.getItem\(\s*PONT/.test(src);
+  const desa = /sessionStorage\.setItem\(\s*PONT/.test(src);
+  const llegeix = /sessionStorage\.getItem\(\s*PONT/.test(src);
+  if (/localStorage\.setItem\(\s*PONT/.test(src))
+    bad(`el ${nom} torna a desar el pont a localStorage — les dades de contacte s'hi quedarien per sempre`);
   if (desa && llegeix) ok(`el ${nom} desa i llegeix el pont entre formularis`);
   else bad(`al ${nom} li falta ${!desa ? 'desar' : 'llegir'} el pont — es tornarà a demanar el que ja se sap`);
   /* I ha d'anar dins d'un try: als navegadors amb dades bloquejades, llegir
      localStorage llança i s'emporta tota la pàgina. */
-  if (/try\s*\{[^}]*localStorage/.test(src)) ok(`el ${nom} el toca dins d'un try — a finestra privada no peta`);
-  else bad(`el ${nom} toca localStorage sense try — en finestra privada això llança i tomba la pàgina`);
+  if (/try\s*\{[^}]*sessionStorage/.test(src)) ok(`el ${nom} el toca dins d'un try — a finestra privada no peta`);
+  else bad(`el ${nom} toca sessionStorage sense try — en finestra privada això llança i tomba la pàgina`);
 }
 
 /* ── 3 · Cap dels dos envia res sol ───────────────────────────────────────

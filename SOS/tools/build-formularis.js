@@ -459,8 +459,8 @@ const PRESSU = {
   'pv.m.ko': { ca: 'No s\'ha pogut enviar. Envia-la per correu:', es: 'No se ha podido enviar. Envíala por correo:' },
   'pv.m.mail': { ca: 'Obre el correu', es: 'Abre el correo' },
   'pv.m.priv': {
-    ca: 'S\'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més.',
-    es: 'Se envía solo cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más.'
+    ca: 'S\'envia només quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més. Responsable: Alvaro Solache, per confirmar-te la comanda i fer-la; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l\'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.',
+    es: 'Se envía solo cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más. Responsable: Alvaro Solache, para confirmarte el pedido y hacerlo; puedes ver, corregir o borrar tus datos escribiéndonos. Todo, en el <a href="/avis-legal.html#dades">aviso legal y privacidad</a>.'
   },
   'pr.s1.h': { ca: '1 · Qui ets', es: '1 · Quién eres' },
   'pr.s1.sub': {

@@ -20914,7 +20914,7 @@ function openContactModal(){
     <h2>Parla amb l'Álvaro</h2>
     <p class="m-sub">Álvaro Solache · psicòleg social, Torrelles de Foix. T'ajuda a donar estructura real a la teva iniciativa comunitària. Zero fum.</p>
     <div class="field"><label>El teu missatge</label><textarea id="ctMsg" placeholder="Explica'ns el repte del teu territori..."></textarea></div>
-    <div class="ai-note"><span class="ic">✉</span><span>En enviar, s'obrirà el teu correu amb el missatge cap a l'Álvaro. La seva adreça mai apareix en text pla a la pàgina.</span></div>
+    <div class="ai-note"><span class="ic">✉</span><span>En enviar, s'obrirà el teu correu amb el missatge cap a l'Álvaro. La seva adreça mai apareix en text pla a la pàgina. Qui és el titular i què passa amb les dades, a l'<a href="/avis-legal.html" target="_blank" rel="noopener">avís legal i privacitat</a>.</span></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="ctCancel">Tanca</button><button class="btn btn-primary" id="ctSend">✉ Obre el correu</button></div>
   `);
   const ta=bg.querySelector('#ctMsg');if(active)ta.value='Territori: '+active.name+'\n\n';ta.focus();
@@ -20926,7 +20926,7 @@ function openSettingsModal(){
   const cnt=state.nodes.length;
   const bg=modal(`
     <h2>Configuració i dades</h2>
-    <p class="m-sub">Les teves dades viuen només al teu navegador (${cnt} node${cnt===1?'':'s'}). Fes còpies o trasllada-les a un altre dispositiu.</p>
+    <p class="m-sub">Les teves dades viuen només al teu navegador (${cnt} node${cnt===1?'':'s'}). Fes còpies o trasllada-les a un altre dispositiu. Què passa amb elles quan connectes el SOS a altres serveis, a l'<a href="/avis-legal.html#dades" target="_blank" rel="noopener">avís legal i privacitat</a>.</p>
     <div class="field"><label>Territori</label>
       <button class="btn btn-ghost btn-sm" id="stGeo">🗺 Carrega l'esquelet de Catalunya</button>
     </div>

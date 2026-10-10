@@ -318,6 +318,7 @@ const FORA_DEL_MENU = {
    aquí només queda anotat, amb el motiu de cada una. */
 const FORA_DEL_MENU_ARREL = {
   'index.html': 'És la portada: té la seva pròpia barra i el desplegable sencer.',
+  'avis-legal.html': 'L\'avís legal i la privacitat: s\'enllaça des del peu de totes les pàgines, que és on es busca, i no des de la barra.',
   'home-nova.html': 'Esborrany de redisseny de portada, amb `noindex`. El genera `build-vitrina.js`.',
   /* ── Eines internes ─────────────────────────────────────────────────── */
   'finances.html': 'Eina interna de comptes. No és una pàgina per passejar-hi.',
@@ -409,7 +410,7 @@ const A_OBRE = '<!--SOS-EINES-->', A_TANCA = '<!--/SOS-EINES-->';
    Des del 04/10/2026 porten **la barra sencera** i no un desplegable a part:
    tenir-ne una de pròpia era dir dues vegades el mateix amb dos dissenys, i la
    seva no la vigilava ningú. */
-const PORTADES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'];
+const PORTADES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html', 'avis-legal.html'];
 
 /* ══ LES CLAUS DEL DICCIONARI ════════════════════════════════════════════
    La clau surt del nom del fitxer, que és l'únic identificador que un destí ja
@@ -464,7 +465,9 @@ function diccionari(l) {
     'nv.menu': { ca: 'Menú', es: 'Menú' },
     /* L'enllaç de correu del peu, que és l'únic text del peu que la barra no
        porta. */
-    'nv.peu.mail': { ca: 'Escriu-nos', es: 'Escríbenos' }
+    'nv.peu.mail': { ca: 'Escriu-nos', es: 'Escríbenos' },
+    /* I l'avís legal, que el peu porta a totes les pàgines i cap grup no té. */
+    'nv.peu.legal': { ca: 'Avís legal i privacitat', es: 'Aviso legal y privacidad' }
   };
   Object.entries(fix).forEach(([k, v]) => f.push(`  '${k}':'${esc2(v[l])}',`));
   return f.join('\n');
@@ -477,7 +480,7 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 /* L'adreça absoluta d'una pàgina. `index.html` existeix als dos llocs i per
    tant el nom del fitxer sol no identifica res: comparar-los donava la portada
    i l'aplicació per la mateixa pàgina. */
-const ARREL_PAGS = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'];
+const ARREL_PAGS = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html', 'avis-legal.html'];
 /* On va un destí, decidit **per l'enllaç**. Tres formes i cap més: una adreça
    de l'altra casa es deixa tal com és, una pàgina de l'arrel va a la raíz, i
    la resta a `/SOS/`. `SOS/index.html` és l'aplicació i no la portada, i per
@@ -498,7 +501,7 @@ const hrefDe = h => (esFora(h) || h.startsWith('/')) ? h : (esArrel(h) ? '/' + h
    les de la portada (`.lang-btn` / `.active`): hi havia dues implementacions
    del mateix commutador i la dels formularis ja la llegeix el seu JS. Una
    sola, i la portada s'hi adapta. */
-const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html',
+const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html', 'avis-legal.html',
   'diagnostic.html', 'diagnostic-org.html', 'diagnostic-territori.html', 'pressupost.html',
   /* `/vna` és bilingüe des del 03/10/2026 —264 claus— i la barra no ho era: qui
      la posava en castellà llegia el menú sencer en català, i la pàgina seguia
@@ -783,14 +786,15 @@ const PEU_CSS = `<style>
 .tt-peu a{color:var(--light);text-decoration:none}
 /* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
    de vint enllaços a 44 px és un peu de mitja pantalla. */
-.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
-@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
 .tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
 .tt-peu a[aria-current]{color:var(--text);font-weight:600}
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
 .tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
   color:var(--text);font-weight:600}
 @media (max-width:760px){
@@ -830,7 +834,13 @@ function peu(pagina) {
       + `<a class="tp-casa" href="/">← TeamTowers Humà</a>`;
   return P_OBRE + '\n' + PEU_CSS + '\n'
     + `<footer class="tt-peu">\n  <div class="tp-in">\n`
-    + `    <div class="tp-marca">${marca}<p class="tp-c">© 2026 TeamTowers Humà</p></div>\n`
+    /* L'avís legal va a **tots** els peus, els del lloc i els del SOS: és on
+       es busca, i el titular i la privacitat són els mateixos a tot arreu. */
+    + `    <div class="tp-marca">${marca}<p class="tp-c">© 2026 TeamTowers Humà</p>`
+    /* Des d'una pàgina en castellà, l'avís s'obre en castellà: la pàgina tria
+       la llengua per `tt_lang`, i les carpetes en castellà no l'escriuen. */
+    + `<a class="tp-legal" href="${hrefDe('avis-legal.html')}${ll === 'es' ? '?lang=es' : ''}"${hrefDe('avis-legal.html') === jo ? ' aria-current="page"' : ''}>`
+    + `<span${i18n('nv.peu.legal')}>${ll === 'es' ? 'Aviso legal y privacidad' : 'Avís legal i privacitat'}</span></a></div>\n`
     + `    <div class="tp-cols">${(lloc ? LLOC : SOS_GRUPS).map(col).join('')}</div>\n`
     + `  </div>\n</footer>\n` + P_TANCA;
 }
