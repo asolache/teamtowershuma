@@ -11,7 +11,7 @@
 
 ## 0 · On som, en quatre frases
 
-1. **La pell ja és una.** `build-pell.js` escriu la mateixa paleta a 31
+1. **La pell ja és una.** `build-pell.js` escriu la mateixa paleta a 27
    pàgines, amb els contrastos mesurats (AA a tot el text sobre `--bg`) i un
    terra de 15 px (`--t0`).
 2. **La barra ja és declarada.** `build-nav.js` genera dues barres des d'un sol
@@ -102,7 +102,7 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
 - **Els dibuixos generats** (el castell, el mapa del celler, la planta) tenen les
   seves mides en unitats SVG, no en `rem`: la guarda del terra els ha d'excloure.
 
-## 4 · Fet en aquest PR (primers passos que demanava la barra)
+## 4 · Fet (PR #216)
 
 - Dues barres generades des de `build-nav.js` (`LLOC` i `SOS_GRUPS`), amb les
   guardes per barra: cap destí a dues portes dins d'una barra, totes les pàgines
@@ -111,3 +111,14 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
   (`--t0`, `--t2`) i colors només de la pell. És el model de targeta per a la
   fase 2.
 - El peu de la portada nomena les tres ofertes.
+- **C5 tancada.** `build-vedes.js` escriu la pell ell mateix i
+  `build-pell.js --check` corre al CI. `/vedes` es publicava sense cap color.
+- **Fase 3, la meitat que es veu.** Els àlies `--white`, `--accent-*` i `--bg-*`
+  se'n van de la portada, el catàleg i qui som; `check-landing.js` peta si
+  tornen. Queda reanomenar `--light` i `--panel`/`--card`.
+- **Fase 1, menys `mapa-web/` i `conecta/`.** Les 325 mides per sota del terra
+  de les dotze pàgines que venen passen a l'escala, amb els ajustos de
+  maquetació que calien (el hero de la portada segueix cabent a la primera
+  pantalla a 1280 × 860 i a 390 × 844). Les etiquetes en majúscules
+  monoespaiades baixen l'espaiat a `.06em`: a 15 px, `.2em` cridava. Guarda
+  nova al CI: `check-terra.js`, amb les 19 regles de text SVG declarades.

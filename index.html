@@ -119,7 +119,7 @@
         .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 4rem; align-items:center;
             grid-template-areas:'cap vis' 'cos vis'; }
         .hero-cap { grid-area:cap; } .hero-cos { grid-area:cos; } .hero-visual { grid-area:vis; }
-        .hero-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.2em; color:var(--indigo); text-transform:uppercase; margin-bottom:1rem; display:flex; align-items:center; gap:.75rem; }
+        .hero-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1rem; display:flex; align-items:center; gap:.75rem; }
         .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--indigo); }
         /* L'escala respon a la llargada del titular, no al revés. El titular va
            passar de 54 a 76 caràcters i a 1440 px se n'anava a quatre línies,
@@ -216,7 +216,7 @@
 
         /* SECTION HEADERS */
         .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
-        .section-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.2em; color:var(--indigo); text-transform:uppercase; margin-bottom:1.25rem; }
+        .section-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1.25rem; }
         .section-header h2 { font-family:var(--sans); font-size:clamp(2.1rem,4vw,3.2rem); font-weight:700; line-height:1.15; margin-bottom:1.25rem; }
         .section-header h2 em { font-style:normal; color:var(--blue); }
         .section-header p { font-size:1rem; color:var(--light); line-height:1.8; }
@@ -250,7 +250,7 @@
         .banda[data-sec="tercer"]  .banda-k { color:var(--green); }
         .banda[data-sec="empresa"] .banda-k { color:var(--indigo); }
         .banda-dl { margin:0 0 1.4rem; flex:1; }
-        .banda-dl dt { font-family:var(--mono); font-size:var(--t0); letter-spacing:.09em; text-transform:uppercase;
+        .banda-dl dt { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); opacity:.75; }
         .banda-dl dd { margin:.25rem 0 1rem; font-size:var(--t0); line-height:1.6; color:var(--light); }
         .banda-dl dd:last-child { margin-bottom:0; }
@@ -311,13 +311,13 @@
            prova. */
         .cl-mur { border-top:1px solid var(--border); border-bottom:1px solid var(--border);
             background:var(--panel); padding:2.6rem 0 2.2rem; }
-        .clm-lbl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.18em; text-transform:uppercase;
+        .clm-lbl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--green); margin:0 0 .5rem; }
         .clm-h2 { font-size:1.45rem; line-height:1.28; margin:0 0 1.7rem; font-weight:700; max-width:24ch; }
         .clm-h2 em { font-style:normal; color:var(--indigo); }
         .clm-g { margin-bottom:1.5rem; }
         .clm-g:last-of-type { margin-bottom:0; }
-        .clm-gl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.14em; text-transform:uppercase;
+        .clm-gl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); margin:0 0 .55rem; display:flex; align-items:center; gap:.5rem; }
         .clm-gl::before { content:''; width:14px; height:2px; border-radius:1px; background:var(--clc); }
         .clm-g[data-g="empreses"] { --clc:var(--indigo); }
@@ -348,14 +348,14 @@
             .clm-c { padding:.45rem .55rem; }
             .clm-grid { grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); }
         }
-        .hero-disc { font-family:var(--font-mono,monospace); font-size:var(--t0); letter-spacing:.16em;
+        .hero-disc { font-family:var(--font-mono,monospace); font-size:var(--t0); letter-spacing:.06em;
             text-transform:uppercase; color:var(--green); margin:0 0 .5rem; font-weight:600; line-height:1.3; }
         /* A mòbil aquesta línia costa 26 px i el dibuix del hero ja hi cabia
            just: amb ella a la mida de sobretaula queia 15 px per sota del plec.
            Es cenyeix en comptes de treure-la —dir de què vivim val aquells
            píxels— i `test-portada` en mesura les dues amplades. */
         @media (max-width:768px) {
-            .hero-disc { font-size:var(--t0); letter-spacing:.12em; margin:0; }
+            .hero-disc { font-size:var(--t0); letter-spacing:.06em; margin:0; }
             .hero-eyebrow.hero-portes { margin-bottom:1rem; }
             /* Amb la tercera porta, les tres queien en tres línies a 390 px i el
                botó del dibuix se n'anava 2 px per sota del plec. El que costa
@@ -372,7 +372,7 @@
            dues coses que aquí no diuen res —el guió decoratiu de
            `.hero-eyebrow`, que etiqueta un títol i no una fila d'enllaços, i
            80 punts de `letter-spacing`. */
-        .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem 1.25rem; letter-spacing:.1em; line-height:1.3; }
+        .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem 1.25rem; letter-spacing:.06em; line-height:1.3; }
         .hero-portes::before { display:none; }
         .hero-portes a { color:inherit; text-decoration:none;
             border-bottom:1px dashed var(--border); transition:.15s; }
@@ -452,7 +452,7 @@
            quatre o sis, la numeració no quedarà mentint. */
         .dv-flux { max-width:900px; margin:3rem auto 0; padding-top:2.2rem;
             border-top:1px solid var(--border); }
-        .dv-fk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.14em;
+        .dv-fk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
             text-transform:uppercase; color:var(--orange); text-align:center; margin-bottom:1.3rem; }
         .dv-fl { list-style:none; padding:0; margin:0; counter-reset:dvf;
             display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:.9rem; }
@@ -527,7 +527,7 @@
         .decideix { padding:5rem 0; border-top:1px solid var(--border); }
         .vd-wrap { max-width:1000px; margin:0 auto; }
         .vd-t { width:100%; border-collapse:collapse; }
-        .vd-t th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.1em;
+        .vd-t th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
             text-transform:uppercase; color:var(--muted); text-align:left; font-weight:400;
             padding:.5rem .8rem; border-bottom:1px solid var(--border); width:50%; }
         .vd-t td { padding:.85rem .8rem; border-bottom:1px solid var(--border);
@@ -544,7 +544,7 @@
             gap:1rem; margin-top:2.4rem; padding-top:2rem; border-top:1px solid var(--border); }
         .vd-p { border:1px solid var(--border); border-radius:12px; padding:1.1rem 1.2rem;
             background:var(--panel); }
-        .vd-pk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.11em;
+        .vd-pk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
             text-transform:uppercase; color:var(--green); margin-bottom:.5rem; }
         .vd-p b { display:block; font-size:.95rem; color:var(--text); margin-bottom:.5rem; }
         .vd-p p { margin:0; font-size:var(--t0); line-height:1.7; color:var(--muted); }
@@ -571,7 +571,7 @@
         .op-origen p { margin:0; font-size:var(--t0); line-height:1.75; color:var(--light); }
         .op-origen p b { display:inline; font-size:inherit; }
         .op-t { width:100%; border-collapse:collapse; margin-bottom:1rem; }
-        .op-t thead th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.1em; text-transform:uppercase;
+        .op-t thead th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); text-align:left; font-weight:400; padding:.5rem .8rem; border-bottom:1px solid var(--border); }
         .op-t td, .op-t tbody th { padding:.8rem; border-bottom:1px solid var(--border); font-size:var(--t0);
             line-height:1.6; vertical-align:top; text-align:left; }
@@ -681,7 +681,7 @@
            qui vegi la portada i després obri el SOS reconegui el mateix. */
         .mv-qui { border:1px solid var(--border); border-radius:10px; padding:.75rem .9rem; margin:0 0 1.2rem;
             background:var(--panel); }
-        .mv-qk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.09em; text-transform:uppercase;
+        .mv-qk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); margin-bottom:.45rem; }
         .mv-qr { display:flex; gap:.5rem; align-items:baseline; font-size:var(--t0); color:var(--light);
             line-height:1.5; padding:.15rem 0; }
