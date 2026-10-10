@@ -1331,8 +1331,10 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 5. **Decidir la segona llengua del cos de l'app** (punt 8). És l'únic deute
    que creix sol.
 
-El punt 3 del pla (les portes per sobre del plec) no hi és: xoca amb el tour
-de la V76, que es va posar davant de tot a posta, i ho ha de decidir l'Àlvar.
+El punt 3 del pla (les portes per sobre del plec) no era a la llista perquè
+xocava amb el tour de la V76, posat davant de tot a posta. L'Àlvar va deixar
+triar (10/10/2026) i es va fer el que diu el pla: el tour ja no s'obre sol i
+s'ofereix en 3 pantalles després de crear el perfil (#225).
 
 ---
 
