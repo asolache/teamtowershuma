@@ -335,6 +335,7 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-web-xips a{display:inline-flex;align-items:center;min-height:44px;font-size:.75rem;padding:.1rem .7rem;border-radius:999px;border:1px solid var(--border);text-decoration:none}
 .ed-web-fila{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
 .ed-web-fila a.ed-b{text-decoration:none;min-height:44px}
+#edWebPagament:empty{display:none}
 .ed-web-dades{display:grid;gap:.5rem;margin:.3rem 0 .2rem}
 .ed-web-previa{border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;margin:.5rem 0}
 .ed-web-previa p{margin:0;padding:.35rem .6rem;background:var(--card);border-bottom:1px solid var(--border-strong);font-size:.85rem}
@@ -4890,7 +4891,7 @@ function creaLlenc() {
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
     cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
-    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', reg: null, webPrevia: null
+    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', reg: null, webPrevia: null, cobra: null, alta: null
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -6816,7 +6817,8 @@ function creaLlenc() {
       + '<label>Llengua <select id="edWebLlengua"><option value="ca"' + (S.webLlengua === 'es' ? '' : ' selected') + '>Català</option><option value="es"' + (S.webLlengua === 'es' ? ' selected' : '') + '>Castellà</option></select></label></div>'
       + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button>'
       + '<button type="button" class="ed-b" id="edWebVeure" aria-expanded="' + !!S.webPrevia + '">' + (S.webPrevia ? 'Tanca la vista prèvia' : 'Vista prèvia') + '</button>'
-      + '<a class="ed-b" id="edWebNetlify" target="_blank" rel="noopener" href="' + escA(NETLIFY_PLANTILLA) + '">Publica-la a nom teu (Netlify)</a></div>'
+      + '<a class="ed-b" id="edWebNetlify" target="_blank" rel="noopener" href="' + escA(NETLIFY_PLANTILLA) + '">' + (S.cobra && !altaPagada() ? 'Paga i publica-la a nom teu' : 'Publica-la a nom teu (Netlify)') + '</a></div>'
+      + '<p id="edWebPagament" role="status">' + esc_(textAlta()) + '</p>'
       + '<p id="edWebNetlifyNota">«Publica-la a nom teu» crea la web al teu GitHub i al teu Netlify, amb aquest mapa: tot és teu des del primer minut, i Netlify la refà a cada canvi del mapa.</p>'
       + (S.webPrevia ? '<div class="ed-web-previa"><p>La web tal com sortirà, pàgina a pàgina: <code id="edWebRuta"></code>. Els enllaços funcionen; els formularis porten a la pàgina de gràcies.</p><iframe id="edWebMarc" title="Vista prèvia de la web" sandbox="allow-same-origin"></iframe></div>' : '')
       + '<p>HTML i CSS estàtics, sense JavaScript: una pàgina per porta, els formularis que arriben per correu (Netlify Forms), les dades a cada pàgina en JSON-LD i <code>permaweb.json</code> amb l\'empremta de cada fitxer. El zip ja és el repositori del client: porta el cervell del projecte (<code>cerebro/</code>: el mapa i una fitxa per rol, lliurament i procés), les regles (<code>CLAUDE.md</code>) i el <code>netlify.toml</code>. S\'arrossega a Netlify i ja és publicada.</p>';
@@ -6880,6 +6882,68 @@ function creaLlenc() {
     if (!ara) return;
     ara.href = NETLIFY_PLANTILLA + '#' + Object.keys(v).map(k => k + '=' + encodeURIComponent(v[k])).join('&');
     if (nota) $('#edWebNetlifyNota').textContent = nota;
+  }
+  /* El pagament de l'alta: Stripe Checkout, que ja porta Apple Pay i Google
+     Pay. Només on hi ha les funcions de Netlify i la web té claus de Stripe:
+     des del disc, o si la funció respon 503, el botó publica sense pagar, com
+     abans. El mapa no surt del navegador; el nom, el correu i la llengua es
+     guarden a la pestanya mentre es paga, perquè hi siguin en tornar. */
+  const CHECKOUT = '/.netlify/functions/checkout', ALTA_K = 'vs.alta';
+  const ALTA_CAMPS = ['webNom', 'webCorreu', 'webUrl', 'webLlengua', 'webCasa'];
+  const altaDesat = () => { try { return JSON.parse(sessionStorage.getItem(ALTA_K) || 'null') || {}; } catch (e) { return {}; } };
+  const altaDesa = o => { try { sessionStorage.setItem(ALTA_K, JSON.stringify(Object.assign(altaDesat(), o))); } catch (e) { /* tornarà sense els camps */ } };
+  const altaPagada = () => !!(S.alta && S.alta.estat === 'pagat');
+  function textAlta() {
+    const e = S.alta && S.alta.estat, prova = (S.alta && S.alta.prova) || (S.cobra && S.cobra.prova) ? ' Mode de prova: no es cobra res de debò.' : '';
+    if (e === 'pagat') return 'Pagament fet. Ara «Publica-la a nom teu» crea la web al teu GitHub i al teu Netlify.' + prova;
+    if (e === 'comprova') return 'Comprovant el pagament amb Stripe…';
+    if (e === 'obre') return 'Obrint la pàgina de pagament de Stripe…';
+    if (e === 'cancel') return 'Has cancel·lat el pagament: no s\'ha cobrat res.' + (S.cobra ? ' Quan vulguis, torna a prémer el botó.' : '');
+    if (e === 'no-pagat') return 'Stripe encara no confirma el pagament. Torna-ho a provar d\'aquí a un moment.';
+    if (e === 'sense') return 'El pagament no està disponible ara mateix: pots publicar-la igualment.';
+    if (S.cobra) return 'Primer el pagament, a la pàgina de Stripe: targeta, Apple Pay o Google Pay. Després tornes aquí i el botó publica la web.' + prova;
+    return '';
+  }
+  function pintaAlta() {
+    const n = $('#edWebPagament'), a = $('#edWebNetlify');
+    if (n) n.textContent = textAlta();
+    if (a) a.textContent = S.cobra && !altaPagada() ? 'Paga i publica-la a nom teu' : 'Publica-la a nom teu (Netlify)';
+  }
+  async function paga() {
+    S.alta = { estat: 'obre' }; pintaAlta();
+    try {
+      const r = await fetch(CHECKOUT, { method: 'POST' }), j = r.ok ? await r.json() : null;
+      if (j && /^https:\/\/checkout\.stripe\.com\//.test(j.url || '')) {
+        const web = {}; ALTA_CAMPS.forEach(k => { web[k] = S[k]; });
+        altaDesa({ web });
+        desaLocal(true);   // el mapa es desa ara: no pot esperar el rellotge
+        location.assign(j.url);
+        return;
+      }
+    } catch (e) { /* sense pagament, com abans */ }
+    S.cobra = null; S.alta = { estat: 'sense' }; pintaAlta();
+  }
+  function altaInici() {
+    if (!/^https?:$/.test(location.protocol)) return;
+    const d = altaDesat(), id = new URLSearchParams(location.search).get('alta');
+    if (d.web) ALTA_CAMPS.forEach(k => { if (d.web[k] != null) S[k] = d.web[k]; });
+    if (d.pagat) S.alta = { estat: 'pagat', prova: d.prova };
+    if (id) history.replaceState(null, '', location.pathname + location.hash);
+    const reb = j => (j && j.cobra ? { prova: !!j.prova } : null);
+    if (id && /^cs_(test|live)_[A-Za-z0-9]+$/.test(id) && !d.pagat) {
+      S.alta = { estat: 'comprova' };
+      posaTab('web');
+      fetch(CHECKOUT + '?session_id=' + encodeURIComponent(id)).then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => {
+        S.alta = j && j.pagat ? { estat: 'pagat', prova: !!j.prova } : { estat: 'no-pagat' };
+        if (altaPagada()) altaDesa({ pagat: true, prova: S.alta.prova });
+        else S.cobra = { prova: false };
+        if (S.tab === 'web') pintaWeb();
+      });
+      return;
+    }
+    if (id === 'cancel') { S.alta = { estat: 'cancel' }; posaTab('web'); }
+    if (d.pagat) { if (id) posaTab('web'); return; }
+    fetch(CHECKOUT).then(r => (r.ok ? r.json() : null)).catch(() => null).then(j => { S.cobra = reb(j); if (S.tab === 'web') pintaWeb(); });
   }
   /* La vista prèvia: la web de debò (VS-SITE), pàgina a pàgina, en un marc
      sense scripts. El full d'estil va dins de la pàgina i els enllaços entre
@@ -6952,6 +7016,7 @@ function creaLlenc() {
   $('#edPanWeb').addEventListener('click', e => {
     const b = e.target.closest('[data-web-pag]');
     if (b) { S.webPag = b.getAttribute('data-web-pag'); pintaWeb(); const q = $('#edPanWeb [data-web-pag="' + CSS.escape(S.webPag) + '"]'); if (q) q.focus(); return; }
+    if (e.target.closest('#edWebNetlify')) { if (S.cobra && !altaPagada()) { e.preventDefault(); if (!S.alta || S.alta.estat !== 'obre') paga(); } return; }
     if (e.target.closest('#edWebZip')) { baixaWeb(); return; }
     if (e.target.closest('#edWebVeure')) { S.webPrevia = S.webPrevia ? null : 'index.html'; pintaWeb(); $('#edWebVeure').focus(); return; }
     if (e.target.closest('#edWebJson')) { baixaText('web.json', JSON.stringify(webAra().web, null, 2), 'application/json'); return; }
@@ -7676,6 +7741,7 @@ function creaLlenc() {
   }
   posaMode(pref.get('vs.vista') === 'escrit' ? 'escrit' : 'visual');
   if (/^S'ha recuperat/.test(ULTIM_AVIS)) setTimeout(() => avis(ULTIM_AVIS, { recuperat: true }), 0);
+  altaInici();
 
   /* Els ganxos de la fase B: el mateix camí que la interfície */
   const fet = f => (...a) => { const r = f(...a); edBuidaPendents(); return r; };
