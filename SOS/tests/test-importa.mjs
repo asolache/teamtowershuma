@@ -346,7 +346,11 @@ G('eina');
     const r4b = await corre([join(repo, 'eines', 'importa.mjs'), 'https://example.com/']);
     ok(r4b.codi === 1 && /--autoritzat/.test(r4b.err), 'una web sense --autoritzat no es llegeix: ' + r4b.err);
     ok(r4.codi === 1 && (r4.out + r4.err).includes('Cal Node 18 o més per llegir webs'), 'sense fetch, avisa: ' + r4.err);
-    // Una web de debò, en local, amb el fetch de Node.
+    // Una web de debò, en local, amb el fetch de Node (des de Node 18; la CI també prova el 16).
+    if (typeof fetch !== 'function') {
+      const r5 = await corre([join(repo, 'eines', 'importa.mjs'), 'http://127.0.0.1:9/', '--autoritzat', '127.0.0.1']);
+      ok(r5.codi === 1 && (r5.out + r5.err).includes('Cal Node 18 o més per llegir webs'), 'Node ' + process.versions.node + ' sense fetch: avisa i no llegeix: ' + r5.err);
+    } else {
     const srv = http.createServer((q, s) => {
       const R = { '/robots.txt': ['text/plain', 'User-agent: *\nDisallow: /privat'], '/': ['text/html', pag('Inici', ['/serveis', '/privat/a', '/carta.pdf']) + '<p>info@canpere.cat</p>'], '/serveis': ['text/html', pag('Serveis', ['/'])] }[q.url];
       s.writeHead(R ? 200 : 404, { 'content-type': R ? R[0] : 'text/plain' });
@@ -361,6 +365,7 @@ G('eina');
     const idx = readFileSync(join(surt, 'cerebro', 'fonts', 'index.md'), 'utf8');
     ok(idx.includes(base + 'carta.pdf') && idx.includes(base + 'privat/a') && !EMAIL.test(fw.map(f => readFileSync(join(surt, 'cerebro', 'fonts', f), 'utf8')).join('')), 'web local: docs, robots i cap correu');
     ok(/^✅ 2 web, 0 docs, 0 CSV/.test(r5.out) && r5.err.includes('· ' + base), 'web local: resum i progrés');
+    }
   } finally { rmSync(T, { recursive: true, force: true }); }
 }
 
