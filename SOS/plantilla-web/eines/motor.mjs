@@ -3237,6 +3237,9 @@ function webASite(web, opts) {
   /* El que s'ha importat a l'editor (cerebro/fonts/) va al zip; al repositori ja hi és. */
   (o.fonts || []).filter(f => /^cerebro\/fonts\/[a-z0-9._/-]+$/.test(f.ruta) && f.ruta.indexOf('..') < 0)
     .forEach(f => posa(f.ruta, f.cos, /\.json$/.test(f.ruta) ? 'application/json' : 'text/markdown'));
+  /* Sense mapa del client (la plantilla amb l'exemple), el de l'exemple no es
+     desa com a seu: ni al repositori, ni a l'índex, ni a l'empremta. */
+  if (o.sensemapa) for (let i = fitxers.length - 1; i >= 0; i--) if (/^cerebro\/mapa-(real|ideal)\.json$/.test(fitxers[i].ruta)) fitxers.splice(i, 1);
   const repo = (o.repo || []).filter(f => !fitxers.some(x => x.ruta === f.ruta));
   if (o.mapa) indexCervell(fitxers.concat(repo), nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
   return { nom, llengua, fitxers };
@@ -4066,14 +4069,14 @@ function codiRepositori(tros, exemple) {
     + 'const tros = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\'));\n'
     + 'const sencer = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\') + nom.length + 5);\n'
     + 'const exemple = font.slice(font.indexOf(\'const EXEMPLE = {\'), font.indexOf(\'};\', font.indexOf(\'const EXEMPLE = {\')) + 2);\n'
-    + 'export { EXEMPLE };\n'
+    + 'export { EXEMPLE, marcaSvg };\n'
     + 'export function genera(entrada, opts) {\n'
     + '  return generaWeb(entrada, opts, { sha: async b => createHash(\'sha256\').update(b).digest(\'hex\'),\n'
     + '    codi: { reg: tros(\'VS-REG\'), api: tros(\'VS-API\'), mcp: tros(\'VS-MCP\'), imp: tros(\'VS-IMPORTA\'), repo: codiRepositori(sencer, exemple) } });\n}\n';
   const genera = '#!/usr/bin/env node\n' + cap
     + '// Fa la web del mapa i la deixa a l\'arrel. Netlify l\'executa a cada publicació; en local, amb Node 18 o més.\n'
     + 'import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from \'node:fs\';\nimport { inflateRawSync } from \'node:zlib\';\n'
-    + 'import { genera, EXEMPLE } from \'./motor.mjs\';\n'
+    + 'import { genera, EXEMPLE, marcaSvg } from \'./motor.mjs\';\n'
     + 'const arrel = new URL(\'../\', import.meta.url), e = process.env, hi = r => existsSync(new URL(r, arrel));\n'
     + 'const llegeix = r => (hi(r) ? JSON.parse(readFileSync(new URL(r, arrel), \'utf8\')) : null);\n'
     + '/* El que és del repositori i la web no genera: els continguts, el que s\'ha importat, el dossier i els esborranys. */\n'
@@ -4090,17 +4093,18 @@ function codiRepositori(tros, exemple) {
     + '/* El que es va triar a l\'editor i la marca viatgen amb el repositori: sense llegir-los, refer la web la tornava al català, al rol que més lliura i sense marca. Les variables TT_* hi passen per sobre. */\n'
     + 'const prova = r => { try { return llegeix(r); } catch (x) { console.warn(\'⚠️  \' + r + \' no és JSON vàlid: no es fa servir.\'); return null; } };\n'
     + 'const conf = prova(\'cerebro/configuracio.json\') || {}, marca = prova(\'cerebro/marca.json\');\n'
-    + 'if (marca && marca.logo === \'../logo.svg\' && hi(\'logo.svg\')) marca.logoSvg = readFileSync(new URL(\'logo.svg\', arrel), \'utf8\');\n'
+    + 'if (marca && marca.logo === \'../logo.svg\') {\n'
+    + '  if (hi(\'logo.svg\')) marca.logoSvg = readFileSync(new URL(\'logo.svg\', arrel), \'utf8\');\n'
+    + '  if (!marcaSvg(marca.logoSvg)) console.warn(\'⚠️  cerebro/marca.json demana logo.svg, però \' + (hi(\'logo.svg\') ? \'no és un SVG que es pugui posar (porta scripts o enllaços, o passa de 100 kB)\' : \'no hi és\') + \': la web surt sense logo.\');\n}\n'
     + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }\n'
-    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, marca: marca || undefined, continguts, repo, avisa: m => console.warn(\'⚠️  \' + m) });\n'
-    + '/* El que és del repositori no es trepitja: la configuració, el mapa, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
-    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
+    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + '/* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
+    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
     + 'const escrit = r => /^cerebro\\/(fonts|continguts|esborranys)\\//.test(r);\n'
     + 'let n = 0;\n'
     + 'for (const f of fitxers) {\n'
     + '  const u = new URL(f.ruta, arrel);\n'
     + '  if ((propis.includes(f.ruta) || escrit(f.ruta)) && existsSync(u)) continue;\n'
-    + '  if (exemple && /^cerebro\\/mapa-(real|ideal)\\.json$/.test(f.ruta)) continue; // l\'exemple no es desa com a mapa del client\n'
     + '  mkdirSync(new URL(\'.\', u), { recursive: true });\n  writeFileSync(u, f.cos);\n  n++;\n}\n'
     + 'console.log(\'✅ \' + n + \' fitxers, des de \' + font + (continguts.length ? \', amb \' + continguts.length + \' continguts\' : \'\'));\n';
   return { motor, genera };
@@ -4111,7 +4115,7 @@ const font = readFileSync(new URL(import.meta.url), 'utf8');
 const tros = nom => font.slice(font.indexOf('/*' + nom + '*/'), font.indexOf('/*/' + nom + '*/'));
 const sencer = nom => font.slice(font.indexOf('/*' + nom + '*/'), font.indexOf('/*/' + nom + '*/') + nom.length + 5);
 const exemple = font.slice(font.indexOf('const EXEMPLE = {'), font.indexOf('};', font.indexOf('const EXEMPLE = {')) + 2);
-export { EXEMPLE };
+export { EXEMPLE, marcaSvg };
 export function genera(entrada, opts) {
   return generaWeb(entrada, opts, { sha: async b => createHash('sha256').update(b).digest('hex'),
     codi: { reg: tros('VS-REG'), api: tros('VS-API'), mcp: tros('VS-MCP'), imp: tros('VS-IMPORTA'), repo: codiRepositori(sencer, exemple) } });

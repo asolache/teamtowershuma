@@ -5196,3 +5196,6 @@ cada canvi, la tornava al català, al rol que més lliura i sense marca.
 comprovar que cap fitxer canvia. I el mateix al revés: l'exemple, que és una
 font per veure la web, ja no es desa com si fos el mapa del client.
 
+I qui llegeix una font no la reescriu: «genera.mjs» tornava a desar la marca
+neta, i un logo que faltava se'n perdia per sempre. Ara la deixa com és i avisa.
+

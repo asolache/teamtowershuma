@@ -105,7 +105,10 @@ la feina de rutina la gestionin les IA tal com ho defineix el SOS.
   el zip desa el que es va triar a `cerebro/configuracio.json` i `genera.mjs`
   el llegeix, amb la marca de `cerebro/marca.json`; una variable `TT_*` hi passa
   per sobre. I l'exemple del celler ja no es desa com a `cerebro/mapa-real.json`:
-  l'avís torna cada vegada. Ho vigila M33 de `test-vna-motor.mjs` (veda 165).
+  l'avís torna cada vegada, i ni l'índex ni l'empremta el llisten. El zip de
+  l'editor porta els rols de casa triats, com la línia d'ordres, i
+  `cerebro/marca.json` ja no es reescriu: un logo que falta o no es pot posar
+  avisa. Ho vigila M33 de `test-vna-motor.mjs` (veda 165).
 
 **Pendent de l'Àlvar:**
 - **Provar la sessió 0 amb el primer pilot** (teamtowershuma).

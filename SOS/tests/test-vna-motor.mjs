@@ -1148,7 +1148,7 @@ console.log('\nM33 · Refer la web en local no perd el que es va triar a l\'edit
   const net = { URL: '', NETLIFY: '', TT_NOM: '', TT_LLENGUA: '', TT_CASA: '', TT_CORREU: '', TT_URL: '', TT_MAPA: '' };
   const corre = (d, env) => spawnSync(process.execPath, ['eines/genera.mjs'], { cwd: d, encoding: 'utf8', env: Object.assign({}, process.env, net, env) });
   const tots = d => { const sota = r => readdirSync(join(d, r), { withFileTypes: true }).flatMap(x => x.isDirectory() ? sota(r + x.name + '/') : [r + x.name]); return sota('').sort(); };
-  const mapa = M.exporta(M.importa(EXEMPLE).arbre), casa = [mapa.roles[1]];
+  const arbre = M.importa(EXEMPLE).arbre, mapa = M.exporta(arbre), casa = [mapa.roles[1]];
   const logo = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>';
   const op = { nom: 'Prova', llengua: 'es', casa, correu: 'hola@exemple.cat', url: 'https://prova.example', marca: { color: '#b45309', lema: 'Obres ben fetes', logoSvg: logo } };
   const zip = await cli.genera(mapa, op);
@@ -1156,6 +1156,17 @@ console.log('\nM33 · Refer la web en local no perd el que es va triar a l\'edit
   zip.forEach(f => { mkdirSync(dirname(join(d, f.ruta)), { recursive: true }); writeFileSync(join(d, f.ruta), f.cos); });
   const conf = JSON.parse(readFileSync(join(d, 'cerebro/configuracio.json'), 'utf8'));
   ok(J(conf) === J({ nom: 'Prova', llengua: 'es', casa, correu: 'hola@exemple.cat', url: 'https://prova.example/' }), 'el zip desa el que es va triar a l\'editor a cerebro/configuracio.json');
+  /* El zip de l'editor, amb les seves pròpies funcions (siteAra i webAra, tal com hi són): ha de ser el de la línia d'ordres. */
+  { const tall = (a, z) => { const i = html.indexOf(a); return html.slice(i, html.indexOf(z, i) + z.length); };
+    const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite, ambPermaweb };')();
+    const ed = new Function('S', 'MODEL', 'ARBRE', 'LLOC', 'webASite', 'webDelMapa', 'codiBlocs',
+      tall('function webAra() {', '\n  }\n') + tall('function siteAra() {', '\n  }\n') + 'return siteAra();');
+    const codi = { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP'), imp: bloc('VS-IMPORTA'), repo: cli.codiRepositori() };
+    const estat = { webNom: op.nom, webCorreu: op.correu, webLlengua: op.llengua, webUrl: op.url, webCasa: casa, webMarca: op.marca };
+    const delEditor = await S.ambPermaweb(ed(estat, M, arbre, { vista: 'real' }, S.webASite, S.webDelMapa, () => codi), async b => (await import('node:crypto')).createHash('sha256').update(b).digest('hex'));
+    const dif = zip.filter(f => { const x = delEditor.find(y => y.ruta === f.ruta); return !x || x.cos !== f.cos; }).map(f => f.ruta);
+    ok(delEditor.length === zip.length && !dif.length, 'el zip de l\'editor i el de la línia d\'ordres són el mateix, rols de casa inclosos' + (dif.length ? ': difereixen ' + dif.slice(0, 4).join(', ') : ''));
+  }
   const r1 = corre(d, {}), abans = new Map(zip.map(f => [f.ruta, f.cos]));
   const canviats = tots(d).filter(r => abans.get(r) !== readFileSync(join(d, r), 'utf8'));
   ok(r1.status === 0 && !canviats.length, 'node eines/genera.mjs, sense variables, torna a fer la mateixa web byte a byte: nom, llengua, rols de casa, correu, adreça i marca' + (canviats.length ? ': canvien ' + canviats.slice(0, 4).join(', ') : ''));
@@ -1165,11 +1176,25 @@ console.log('\nM33 · Refer la web en local no perd el que es va triar a l\'edit
   writeFileSync(join(d, 'cerebro/configuracio.json'), '{ no és json');
   const r3 = corre(d, {});
   ok(r3.status === 0 && /configuracio\.json no és JSON vàlid/.test(r3.stderr), 'una configuració trencada avisa i no tomba la web');
+  /* La marca és de l'equip: un logo que falta o no es pot posar avisa, i marca.json no es toca. */
+  const marcaAbans = readFileSync(join(d, 'cerebro/marca.json'), 'utf8');
+  writeFileSync(join(d, 'cerebro/marca.json'), marcaAbans.replace('{', '{\n  "nota": "de l\'equip",'));
+  const marcaAra = readFileSync(join(d, 'cerebro/marca.json'), 'utf8');
+  writeFileSync(join(d, 'logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><script>x()</script></svg>');
+  const r4 = corre(d, {});
+  rmSync(join(d, 'logo.svg'));
+  const r5 = corre(d, {});
+  ok(r4.status === 0 && r5.status === 0 && /marca\.json demana logo\.svg, però no és un SVG que es pugui posar/.test(r4.stderr) && /marca\.json demana logo\.svg, però no hi és/.test(r5.stderr)
+    && readFileSync(join(d, 'cerebro/marca.json'), 'utf8') === marcaAra && !/<img src="logo\.svg"/.test(readFileSync(join(d, 'index.html'), 'utf8')),
+    'un logo que no es pot posar o que falta avisa, la web surt sense, i cerebro/marca.json queda com l\'equip el va deixar');
   const p = mkdtempSync(join(tmpdir(), 'tt-exemple-'));
   cpSync(join(DIR, '..', 'plantilla-web'), p, { recursive: true });
   const e1 = corre(p, {}), e2 = corre(p, {});
   ok(e1.status === 0 && e2.status === 0 && /Falta cerebro\/mapa-real\.json/.test(e1.stderr) && /Falta cerebro\/mapa-real\.json/.test(e2.stderr)
     && !existsSync(join(p, 'cerebro/mapa-real.json')) && existsSync(join(p, 'index.html')), 'sense mapa, l\'exemple fa la web però no es desa com a mapa del client: l\'avís torna cada vegada');
+  const idx = JSON.parse(readFileSync(join(p, 'cerebro/indice.json'), 'utf8')), pwj = readFileSync(join(p, 'permaweb.json'), 'utf8');
+  ok(!J(idx).includes('cerebro/mapa-real.json') && !pwj.includes('cerebro/mapa-real.json') && !pwj.includes('cerebro/mapa-ideal.json'),
+    'i ni l\'índex del cervell ni l\'empremta llisten un mapa que no hi és');
   [d, p].forEach(x => rmSync(x, { recursive: true, force: true }));
 }
 
