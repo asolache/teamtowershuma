@@ -1008,5 +1008,36 @@ console.log('\nM30 · El camí B: la plantilla de Netlify fa la web del mapa a n
   [d1, d2, d3, d4].forEach(d => rmSync(d, { recursive: true, force: true }));
 }
 
+console.log('\nM31 · La marca: el disseny i els textos propis, sense tocar l\'HTML');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite, ambPermaweb, marcaContrast, marcaNeta, marcaSvg };')();
+  const web = S.webDelMapa(celler()), mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const s0 = S.webASite(web, { mapa }), sb = S.webASite(web, { mapa, marca: {} });
+  ok(J(s0) === J(sb) && !s0.fitxers.some(x => x.ruta === 'cerebro/marca.json'), 'sense marca, la web és byte a byte la de sempre');
+  const logo = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>';
+  const mc = { color: '#ffd166', lletra: 'serif', forma: 'recta', lema: 'Vins petits, <gent> gran', presentacio: 'Triem vins de petits cellers i els expliquem.', logoSvg: logo,
+    portes: { 'El visitant': { nom: 'Visites', intro: 'Vine a tastar.' }, 'Qui no hi és': { nom: 'X' } }, contacte: { adreca: 'Plaça Major 1', telefon: '+34 600 00 00 00', horari: 'De dijous a diumenge' } };
+  const s1 = S.webASite(web, { mapa, marca: mc, url: 'https://celler.example/' }), f = r => (s1.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  const acc = /--acc:(#[0-9a-f]{6})\}/.exec(f('estil.css'))[1], accF = /prefers-color-scheme:dark\)\{:root\{[^}]*--acc:(#[0-9a-f]{6})\}/.exec(f('estil.css'))[1];
+  ok(acc !== '#ffd166' && S.marcaContrast(acc, '#fbfaf7') >= 4.5 && S.marcaContrast(accF, '#161512') >= 4.5, 'un groc que no es llegeix s\'enfosqueix fins a 4,5:1, i al mode fosc també');
+  ok(/Palatino/.test(f('estil.css')) && /border-radius:3px/.test(f('estil.css')) && !/border-radius:999px/.test(f('estil.css')), 'la lletra i la forma, al full d\'estil, sense fonts externes');
+  ok(/<img src="logo.svg" alt="">/.test(f('index.html')) && f('logo.svg') === logo + '\n' && /<p class="lema">Vins petits, &lt;gent&gt; gran<\/p>/.test(f('index.html')), 'el logo i el lema a la capçalera, escapats');
+  ok(/<p>Triem vins de petits cellers/.test(f('index.html')) && /name="description" content="Triem vins/.test(f('index.html')), 'la presentació, a la portada i a la descripció');
+  ok(/<a href="el-visitant.html"[^>]*>Visites<\/a>/.test(f('index.html')) && /<h1>Visites<\/h1>\n<p>Vine a tastar.<\/p>/.test(f('el-visitant.html')), 'el nom curt de la porta al menú i la seva introducció');
+  ok(/<a href="tel:\+34600000000">/.test(f('index.html')) && /"telephone":"\+34 600 00 00 00"/.test(f('index.html')) && /"streetAddress":"Plaça Major 1"/.test(f('index.html')) && /"logo":"https:\/\/celler\.example\/logo\.svg"/.test(f('index.html')),
+    'on sou, a la portada i al JSON-LD');
+  const mj = JSON.parse(f('cerebro/marca.json'));
+  ok(mj.logo === '../logo.svg' && !mj.logoSvg && mj.color === '#ffd166' && !mj.portes['Qui no hi és'].intro && JSON.parse(f('cerebro/indice.json')).entradas.some(x => x.ruta === 'cerebro/marca.json' && x.capa === 'equip'),
+    'cerebro/marca.json viatja amb el repositori i surt a l\'índex del cervell');
+  ok(!S.marcaSvg('<svg onload="x()"></svg>') && !S.marcaSvg('<svg><script>x</script></svg>') && !S.marcaSvg('<svg><a href="https://x">a</a></svg>') && !S.marcaSvg('<p>no</p>') && S.marcaSvg(logo),
+    'un SVG amb scripts, gestors o enllaços no s\'hi posa');
+  ok(J(S.marcaNeta({ color: 'vermell', lletra: 'comic', forma: 'x', portes: 3 })) === '{}', 'el que no és vàlid es descarta en silenci: la web surt igual');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
+  const { createHash } = await import('node:crypto');
+  const des = await cli.genera(EXEMPLE, { marca: mc });
+  const pw = await S.ambPermaweb(S.webASite(web, { mapa, marca: mc, codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } }), async b => createHash('sha256').update(b).digest('hex'));
+  ok(J(des) === J(pw), 'web-del-mapa.js amb la marca fa la mateixa web que l\'editor');
+}
+
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

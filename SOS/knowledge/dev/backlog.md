@@ -343,6 +343,120 @@ la millora contínua del SOS.
 **Com es tanca:** els tres pilots fets, amb les hores i el cost d'IA de cada
 flux apuntats, i el que se n'aprengui escrit com a veda.
 
+### El cervell reutilitzable · el valor afegit dels serveis (demanat 09/10/2026)
+
+**Demanat per l'Àlvar:** «que el model de cervell del projecte sigui
+reutilitzable» (també ho va demanar al projecte d'Events Penedès), «aplica les
+bones pràctiques ja aplicades a SOS i que sigui el valor afegit d'aquests
+serveis», i «que el que aprenguem ara ho reutilitzem i passi a les vedes, al
+blog i al servei, que s'ha de continuar desenvolupant i millorant en disseny,
+UX, seguiment i desenvolupament de l'estratègia».
+
+**Fet (aquest PR):**
+
+- **Una eina per a tots:** `SOS/tools/cervell.js`, configurada per
+  `cervell.json`. Genera el mapa (abans `build-mapa.js`, que queda d'àlies) i
+  comprova el contracte: tot el que citen els fitxers de lectura existeix, i el
+  que diuen que no hi és no hi és. Mapa en català o castellà.
+- **La plantilla** i el model, a `SOS/knowledge/cervell/`, i `--nou <dir>` per
+  instal·lar-la en un projecte amb l'eina inclosa.
+- **La prova trencant-la a posta:** `SOS/tests/test-cervell.mjs`, catorze casos, al CI.
+- **La veda 161** i un article al blog.
+- **L'herència** (demanat el mateix dia: «més contingut, més intel·ligència
+  aplicada de les vedes i els sabers, més les IA»): 58 vedes per tema, el saber
+  del mapa de valor, la skill i el prompt de revisió, declarats a
+  `SOS/knowledge/cervell/heretat.json`, generats a cada `--nou` i
+  `--actualitza`, i passats pel sedàs. **Queda:** traduir les heretades al
+  castellà sense fer-ne una segona còpia (avui arriben en català).
+- **La proposta inicial sense API** (demanat el mateix dia): la skill
+  `propuesta-inicial` (de la web que hi ha a l'esborrany del mapa revisat, les
+  preguntes i la web que surt del mapa) i `SOS/tools/revisa-mapa.js` (el
+  diagnòstic de l'editor des de Node). L'editor i les dues eines s'hereten a
+  `herramientas/`, i la prova de punta a punta corre al CI. **Queda:** fer-la
+  servir amb un negoci de debò i escriure aquí el que ensenyi; i el pas manual
+  de donar accés al client al projecte de Claude, que no es pot automatitzar
+  des d'aquí.
+- **Primera proposta de debò: La Bodega de Sara (09/10/2026).** Fet amb la
+  skill en un cervell instal·lat amb `--nou`; queda a la carpeta compartida del
+  projecte, no en aquest repositori. El que ha ensenyat:
+  1. **La regla 9 va aturar el primer esborrany** per un nom propi a l'abast i a
+     una troballa. El bucle revisar-corregir funciona: el mapa no va sortir fins
+     que va passar.
+  2. **El diagnòstic parla només en català**, i la proposta és en castellà: les
+     troballes s'han de traduir a mà. Cal la llengua al diagnòstic, com ja la té
+     la web (`--llengua`).
+  3. **El menú de la web són els noms dels rols** («Quien lo vende para casa»).
+     Al mapa estan bé; en una web, «Para vinotecas» es llegeix millor. ✓ Fet el
+     10/10/2026: el nom curt de cada porta va a `marca.json` (`portes`), no al
+     mapa ni a l'HTML.
+  4. **El diagnòstic va trobar com a conversió una cosa que ja es cobra** (la
+     formació de sala). La skill ha de dir que es miri el catàleg del negoci
+     abans de proposar una conversió com a nova.
+- Cobreix el punt 1 del bloc `for-ai/` de sota per a fitxers i funcions citats;
+  hi queden els números de veda citats i les deu regles.
+
+**El servei de web, personalitzable i automàtic (demanat el 10/10/2026):**
+«acaba el servei de desenvolupament de web de forma que es pugui personalitzar i
+automatitzar tot el que puguis el disseny i els continguts, així com un sistema
+automàtic d'anàlisi dels continguts proporcionats i d'elaboració de l'esborrany
+de la web».
+
+- ✓ **La marca** (`marca.json`, bloc VS-SITE de l'editor): color (amb el
+  contrast ajustat sol a 4,5:1, també al mode fosc), lletra del sistema, forma,
+  logo SVG net, lema, presentació, nom curt i introducció de cada porta, i on
+  són (també al JSON-LD). A l'editor (pestanya Web) i a `web-del-mapa.js
+  --marca`, amb el mateix codi. Sense marca, la web és byte a byte la d'abans.
+- ✓ **L'anàlisi de les fonts** (`SOS/tools/analitza-contingut.js`): candidats a
+  rol i a lliurament amb la frase on surten, les preguntes del que la web no
+  diu, la marca que se'n desprèn i un esbós de mapa. Sense model ni xarxa;
+  `--baixa` desa la web amb curl.
+- ✓ **Un sol ordre** (`SOS/tools/proposta.js`): de les fonts a l'esbós de web
+  (`web-esbozo/`) i, amb un `mapa.json` que passa, a la web per lliurar
+  (`web/`), amb `estado.md` dient el que falta. S'hereta als cervells nous.
+- ✓ Provat a La Bodega de Sara: la web nova porta el color del tema, la lletra i
+  els noms del seu menú (Catas, Restaurantes, Bodegas).
+- ✓ **El que es lliura és el backoffice** (l'Àlvar, 10/10/2026: «ja hi ha una web,
+  i el que has fet és el backoffice que ha de poder fer servir per seguir
+  millorant el negoci, els serveis i la web»). `proposta.js` escriu
+  `EMPIEZA-AQUI.html` a l'arrel del cervell: la primera mitja hora, cada mes i
+  amb Claude, amb la proposta i les preguntes renderitzades dels seus .md i
+  l'estil de la seva marca. La web que surt del mapa passa a dir-se «el que el
+  mapa proposa per a la teva web». `--nou --nom` ja posa el nom al `CLAUDE.md`.
+- **Queda:** l'editor del mapa parla català i porta el menú de TeamTowers (els
+  enllaços no funcionen sense internet); per a un client que escriu en
+  castellà caldria l'editor en la seva llengua. La llengua al diagnòstic (les troballes surten en català); llegir
+  el text literal de la web quan l'entorn no deixa baixar-la (avui la lectura
+  web de Claude en dona un resum); fons i segon color a la marca; fotos (avui
+  només el logo SVG, per la CSP i la permaweb).
+
+**Mesurat el primer dia:** 163 referències revisades als fitxers de lectura de
+SOS; la guarda va trobar la taxonomia citant `knowledge/cervell/README.md` abans
+que existís.
+
+**Pendent:**
+
+1. **Events Penedès hi entra.** El repositori privat de tarifes ja té
+   comunicació, backlog i guardes; li falten taxonomia, mapa i codex. Se li
+   escriu el `cervell.json` apuntant al que ja té i se li copia l'eina, en un PR
+   allà, quan aquell projecte ho validi.
+2. **El servei, dissenyat:** la pàgina «el teu cervell» ja es genera
+   (`pagina` a `cervell.json`; la plantilla la porta a `saber/cervell.html`):
+   les peces i si hi són, l'ordre de lectura, les cares, les vedes i el
+   backlog, en una pàgina sola que s'obre amb doble clic, i el CI peta si ha
+   quedat vella. **Queda:** la UX de la primera hora amb el cervell nou, i
+   decidir si TeamTowers publica la seva (avui no: el backlog porta noms de
+   pilots que no han de sortir a la web).
+3. **El seguiment com a servei recurrent:** portar la versió nova de l'eina i de
+   la plantilla a cada client, i tornar aquí el que s'hi aprèn. Encaixa amb
+   «Ingressos recurrents» (més avall).
+4. **L'estratègia:** `/mapa-web/` ja diu «el cerebro de tu negocio» i la
+   comprovació que avisa; queda posar el cervell al catàleg públic com el que
+   s'emporta el client a cada servei, alineat amb el pla del repositori d'estratègia, sense
+   xifres que l'Àlvar no hagi publicat.
+
+**Com es tanca:** l'eina al CI en verd aquí i a Events Penedès, la plantilla
+instal·lada en un client, i el catàleg dient què és el cervell.
+
 ### `for-ai/` · el contracte de la IA, antifràgil (demanat 09/10/2026)
 
 **Demanat per l'Àlvar:** «actualitzar els arxius de `SOS/knowledge/for-ai` per a

@@ -1,0 +1,55 @@
+{
+  "nom": "TeamTowers",
+  "eina": "SOS/tools/cervell.js",
+  "taxonomia": "SOS/knowledge/taxonomia.md",
+  "mapa": "SOS/knowledge/MAPA.md",
+  "baixa": [
+    "SOS",
+    "SOS/knowledge"
+  ],
+  "fora": [
+    ".github/workflows"
+  ],
+  "lectura": [
+    {
+      "path": "SOS/knowledge/MAPA.md",
+      "diu": "què hi ha"
+    },
+    {
+      "path": "SOS/knowledge/codex.md",
+      "diu": "la llei"
+    },
+    {
+      "path": "SOS/knowledge/for-ai/README.md",
+      "diu": "el contracte de treball"
+    },
+    {
+      "path": "SOS/knowledge/taxonomia.md",
+      "diu": "on va cada cosa"
+    }
+  ],
+  "backlog": "SOS/knowledge/dev/backlog.md",
+  "comunicacio": "CLAUDE.md",
+  "noHiEs": [
+    "package.json",
+    "json/",
+    "md/",
+    "misc/",
+    "altres/",
+    "temp/",
+    "nou/",
+    "arxiu/"
+  ],
+  "solts": {
+    "ext": ".html",
+    "titol": "pàgines HTML",
+    "diu": [
+      "Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.",
+      "No són referència de com es fan les coses ara."
+    ]
+  },
+  "bases": [
+    "SOS"
+  ],
+  "codex": "SOS/knowledge/codex.md"
+}
