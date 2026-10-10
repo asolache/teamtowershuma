@@ -47,6 +47,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-patch.mjs` | V68 | El relé porta apunts signats: que no llegeixi, no inventi nodes ni coli apunts sense firma |
 | `test-llengua.mjs` | V69 | La capa de segona llengua, i sobretot el pitjor cas: què surt quan no hi ha traducció |
 | `test-home.mjs` | V70 | La home pel rol: què NO desapareix, i que sempre es pugui veure tot |
+| `test-arrencada.mjs` | pla-millora-sos 1 | Que l'app arrenqui amb tota la xarxa de fora penjada, i amb les fonts pròpies de `fonts/` |
 | `test-sortir.mjs` | V73 | Que se't pugui trobar: cada estat diu el motiu i el següent pas |
 | `test-enllac.mjs` | V74 | Connectar el que penja de tu **sense doble comptatge** |
 | `test-comando.mjs` | V77 | Que el relat sigui una capa: que es guanyi, i que apagar-lo no tregui res |

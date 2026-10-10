@@ -163,6 +163,46 @@ repositori del client. Netlify en detecta els formularis sol.
   `CLAUDE.md`, `netlify.toml`, la 404, `robots.txt` i, amb l'adreça, el sitemap.
 - ✓ El registre viu de transaccions (fase 2 del pla): vegeu el punt 3b.
 
+## 3a · Fet: la marca i la proposta automàtica
+
+**Demanat per l'Àlvar (10/10/2026):** que el disseny i els continguts de la web
+es puguin personalitzar i automatitzar al màxim, i un sistema automàtic que
+analitzi el que dona el client i en faci l'esborrany de la web.
+
+**La marca.** El mapa dona l'estructura; `marca.json` hi posa la cara, sense
+tocar cap HTML:
+
+| Camp | A la web |
+|---|---|
+| `color` | El color d'accent, els botons i el menú. Si no arriba a 4,5:1 sobre el fons, s'enfosqueix (o s'aclareix al mode fosc) fins que hi arriba |
+| `lletra` | `sans`, `serif`, `rodona` o `mono`, sempre del sistema: cap font externa |
+| `forma` | `rodona` o `recta` |
+| `logo` | Un SVG al costat de `marca.json`. Si porta scripts o enllaços, no s'hi posa |
+| `lema`, `presentacio` | Sota el nom, a la portada i a la descripció |
+| `portes` | Per a cada rol: el nom curt al menú i un paràgraf d'introducció |
+| `contacte` | Adreça, telèfon i horari, a la portada i al JSON-LD |
+
+A l'editor, la pestanya Web té el color, la lletra, la forma i dos camps per
+carregar `marca.json` i el logo. Des de Node, `web-del-mapa.js --marca
+marca.json`. El zip la desa a `cerebro/marca.json`: és l'altra font del
+repositori del client.
+
+**L'anàlisi i l'esborrany, d'un sol ordre:**
+
+```bash
+node SOS/tools/proposta.js propuesta/ --llengua es [--baixa https://el-negoci.example]
+```
+
+Llegeix `propuesta/fuentes/` (les pàgines desades, el catàleg, el CSS, el logo),
+escriu `analisis.md` (qui hi surt i què s'hi dona, amb la frase on surt, i el
+que la web no diu), `marca.json` i un esbós de mapa, i en fa la web: a
+`web-esbozo/` mentre no hi hagi un `mapa.json` que passi les regles dures, i a
+`web/` quan n'hi ha. `estado.md` diu el que falta. A l'arrel del cervell
+escriu `EMPIEZA-AQUI.html`, **el backoffice del client**: si el negoci ja té
+web, el que se li lliura no és una web nova sinó on segueix millorant-la. El que és criteri (els
+intangibles, els noms dels rols) ho fa la sessió de Claude amb la skill
+`propuesta-inicial`.
+
 ## 3b · Fet: el registre viu, el mapa real que surt de l'ús
 
 Fase 2 del pla. Fins ara el mapa real sortia del taller, de la memòria de qui
@@ -294,14 +334,15 @@ pogués treballar-hi amb Claude sense nosaltres al costat.
 - **Les dades personals, amb dos panys.** Correus, telèfons, DNI i IBAN
   s'amaguen al text. D'una taula, per defecte, només entra la capçalera i
   quantes files té: cada columna que hi va, la tria una persona (a l'editor, o
-  `--columnes`), i una columna de persona no hi entra ni triada (veda 161).
+  `--columnes`), i una columna de persona no hi entra ni triada (veda 162).
 - **Una web, només amb permís.** El rastrejador demana `--autoritzat <domini>`
   i no llegeix cap altre domini. L'autorització escrita del client va al CRM:
   en importar la seva web, en som encarregats del tractament.
 - **Els continguts** (`cerebro/continguts/<id>.md`): el text de la portada, de
   serveis, de cada porta o de pàgines noves, en un Markdown petit que no pot
   trencar la web (res d'HTML, enllaços nets, imatges només pròpies). Un
-  contingut amb un correu o un telèfon no surt, i el generador diu per què.
+  contingut amb un correu o un telèfon no surt, i el generador diu per què;
+  només hi poden sortir el correu de la web i el telèfon de `cerebro/marca.json`.
 - **Les tasques per a la IA** (`cerebro/tasques-ia.md` i `.json`): la regla de
   l'app (`VS-TASQUES`), copiada tal com és. Només compten els lliuraments que
   fa un rol de casa; un intangible no el fa mai la IA; el tipus surt del nom
@@ -335,8 +376,6 @@ que surt ja parla com ell. No es promet res que no s'hagi escrit i acordat.
   no d'aquesta eina.
 - **«pagament» i «factura» porten a `comanda`**, i un pagament no es redacta.
   Proposat al backlog.
-- **El telèfon de l'empresa** no pot sortir a un contingut (bloqueja com un de
-  persona). Si cal, serà un camp de la web, com el correu.
 - **PDF i Word** no es llegeixen: es llisten perquè els llegeixi la IA.
 
 ## 4 · La IA, pagada per ús
@@ -385,6 +424,7 @@ projecte de claude.ai que llegeix el repositori, i el client puja el que surt.
 
 1. ✓ El mapa dona la web (`web.json`).
 2. ✓ La web de debò, en un zip o des de Node (`web-del-mapa.js`).
+   ✓ La marca i la proposta automàtica (`marca.json`, `proposta.js`).
    ✓ El registre viu (`llegeix-registre.js`, fase 2 del pla).
    ✓ L'API, els avisos signats i el servidor MCP del cervell (fase 3).
 3. ✓ El repositori plantilla i el camí B: el botó de Netlify funciona sense que

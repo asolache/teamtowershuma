@@ -292,7 +292,10 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
      es fa, on anar després, i la prova al final— i el que marxa té la seva
      pàgina. La llista vella es queda escrita a sota perquè es vegi què se'n
      va i on, que és el que una llista esborrada no diu. */
-  const ESPINA = ['enfoc', 'dues-vistes', 'decideix', 'com', 'camins', 'clients'];
+  /* ⚠ 10/10/2026 · «Tres camins» (catàleg, qui som, el SOS) repetia el menú i
+     se'n va. Al seu lloc, just després del hero, «Tres serveis»: les tres
+     ofertes de la barra del lloc. */
+  const ESPINA = ['serveis', 'enfoc', 'dues-vistes', 'decideix', 'com', 'clients'];
   /* On ha anat cada un dels que hi havia:
        rengles, rols, fentpinya, xarxa  → /SOS/vna.html   (el mètode)
        glossari, aprenent, cataleg, cost → cataleg.html    (la compra)
@@ -401,7 +404,8 @@ console.log('\n8 · El que encara no existeix, es diu');
     /* ⚠ **La banda del SOS se'n va a `SOS/intro.html`** (04/10/2026). A la
        portada queda el pont, a «els tres camins», i és allà on ha de dir què
        s'hi troba: que l'eina existeix encara que no ens contractin. */
-    const sos = document.querySelector('.cami[href*="intro"]');
+    /* Des del 10/10/2026 el pont és la tercera targeta de «Tres serveis». */
+    const sos = [...document.querySelectorAll('.srv')].find(x => x.querySelector('a[href="/SOS/"]'));
     return {
       txtSos: sos ? sos.textContent.replace(/\s+/g, ' ') : '',
       lliure: sos ? /gratu|lliure|no ens contractis/i.test(sos.textContent) : false,

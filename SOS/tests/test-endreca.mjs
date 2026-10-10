@@ -94,7 +94,7 @@ console.log('\n1 · Cap secció perduda: hi són allà, i no aquí');
    tenen. */
 console.log('\n2 · Cap bloc sense el seu CSS');
 {
-  for (const [url, sel] of [[CAT, '.paquet'], [QS, '.faq-item'], [PORTADA, '.cami']]) {
+  for (const [url, sel] of [[CAT, '.paquet'], [QS, '.faq-item'], [PORTADA, '.srv']]) {
     const { ctx, p } = await obre(url);
     const r = await p.evaluate(s => {
       const el = document.querySelector(s);
@@ -149,28 +149,29 @@ console.log('\n3 · Les tres portes, i el sector que no es perd pel camí');
 /* ── 4 · La portada porta a les tres pàgines, fora del menú ───────────────
    *Un enllaç al peu és una nota, no un pont.* I una entrada al desplegable és
    un índex: hi són totes les pàgines del lloc, i per tant no diu res. */
-console.log('\n4 · Els tres camins són ponts i no notes');
+console.log('\n4 · Els tres serveis són ponts i no notes');
+/* Des del 10/10/2026 la portada parla de tres ofertes —el diagnòstic i el mapa
+   de valor, la web i el SOS com a formació— i els ponts són cap a elles. Un
+   enllaç dins de la seva targeta ja diu què s'hi troba: la targeta ho explica. */
 {
   const { ctx, p } = await obre(PORTADA);
   const r = await p.evaluate(() => {
     const dins = sel => [...document.querySelectorAll(sel)]
       .filter(a => !a.closest('nav') && !a.closest('footer'))
       .map(a => { const b = a.getBoundingClientRect();
-        return { y: b.top + scrollY, txt: a.innerText.replace(/\s+/g, ' ').trim() }; });
+        return { y: b.top + scrollY, txt: a.innerText.replace(/\s+/g, ' ').trim(), srv: !!a.closest('.srv') }; });
     return {
       alt: document.body.scrollHeight,
-      cataleg: dins('a[href^="/cataleg"]'),
-      quisom: dins('a[href^="/qui-som"]'),
-      sos: dins('a[href="/SOS/intro.html"]')
+      diag: dins('a[href="/SOS/diagnostic.html"]'),
+      web: dins('a[href="/mapa-web/"]'),
+      sos: dins('a[href="/SOS/"]')
     };
   });
-  [['el catàleg', r.cataleg], ['qui som', r.quisom], ['el SOS', r.sos]].forEach(([nom, l]) => {
+  [['el diagnòstic', r.diag], ['la web', r.web], ['el SOS', r.sos]].forEach(([nom, l]) => {
     ok(l.length > 0, `hi ha camí cap a ${nom} fora del menú i del peu (${l.length})`);
     if (l.length) ok(Math.min(...l.map(x => x.y)) < r.alt / 2,
       `  i el primer és a la primera meitat (${Math.round(Math.min(...l.map(x => x.y)))} de ${r.alt})`);
-    /* I que digui què s'hi troba: tres enllaços que diguin «catàleg», «qui som»
-       i «el SOS» són un índex, i un índex no fa travessar res. */
-    const diu = l.some(x => x.txt.length > 24);
+    const diu = l.some(x => x.txt.length > 24 || x.srv);
     if (l.length) ok(diu, `  i algun diu què s'hi troba, no només com es diu`);
   });
   await ctx.close();

@@ -125,14 +125,22 @@ const { src, cos, cosVis, sCa } = P.portada;
    Es comproven **les que es fan servir contra les que es declaren**. Les
    variables amb valor per defecte —`var(--x, red)`— no entren: aquelles ja
    diuen què fer si no hi són. */
-{
-  const declarades = new Set([...src.matchAll(/(--[\w-]+)\s*:/g)].map(m => m[1]));
-  const usades = [...src.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map(m => m[1]);
+/* Des del 10/10/2026 es mira a les tres pàgines d'arrel i no només a la
+   portada: els àlies vells (`--white`, `--accent-*`, `--bg-*`) se'n van de
+   totes tres, i una regla copiada d'una pàgina a l'altra amb un àlies que ja
+   no hi és es quedaria sense color sense que res petés. */
+Object.values(P).filter(x => x && x.src && x.fitxer).forEach(pg => {
+  const declarades = new Set([...pg.src.matchAll(/(--[\w-]+)\s*:/g)].map(m => m[1]));
+  const usades = [...pg.src.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map(m => m[1]);
   const orfes = [...new Set(usades.filter(v => !declarades.has(v)))];
-  if (!orfes.length) ok(`${declarades.size} variables de color i mida, totes les que es fan servir existeixen`);
-  else bad(`${pl(orfes.length, 'variable que no existeix', 'variables que no existeixen')} (${mostra(orfes)}) `
+  if (!orfes.length) ok(`${pg.fitxer}: ${declarades.size} variables de color i mida, totes les que es fan servir existeixen`);
+  else bad(`${pg.fitxer}: ${pl(orfes.length, 'variable que no existeix', 'variables que no existeixen')} (${mostra(orfes)}) `
     + '— el navegador descarta la regla sense avisar i allò no es pinta');
-}
+  /* I els àlies vells no tornen: un àlies és un segon nom per al mateix
+     color, i dos noms per a una cosa és com va començar la deriva de la pell. */
+  const vells = [...new Set([...pg.src.matchAll(/(--(?:white|accent-[a-z]+|bg-(?:dark|panel|elevated)))\s*:/g)].map(m => m[1]))];
+  if (vells.length) bad(`${pg.fitxer}: torna a declarar àlies vells de la pell (${mostra(vells)}) — fes servir els noms de la pell`);
+});
 
 /* ── 4 · El catàleg no pot vendre serveis a mitges ─────────────────────────
    Un servei explica què és; un paquet diu qui el compra, quant dura, què

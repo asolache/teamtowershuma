@@ -346,18 +346,16 @@ function build() {
    dues guardes que es contradiuen, i cap de les dues equivocada. L'arquitectura
    es declara un sol cop a `build-nav.js` i aquí només s'hi aplica. */
 const { posa } = require('./build-nav.js');
-const html = posa(build(), 'vedes.html');
+/* I la pell, igual: es declara a `build-pell.js` i aquí només s'hi escriu. */
+const { bloc: pell } = require('./build-pell.js');
+const html = posa(build(), 'vedes.html')
+  .replace('/*TT-PELL*/\n/*/TT-PELL*/', () => '/*TT-PELL*/\n' + pell() + '\n/*/TT-PELL*/');
 if (process.argv.includes('--check')) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
-  /* La comparació buida el bloc de la pell abans de comparar: aquest generador
-     escriu les marques i **`build-pell.js` les omple després**. Comparant el
-     fitxer lletra per lletra, la guarda demanava tornar a generar la pàgina,
-     i generar-la tornava a buidar la paleta — dues passades que es desfan
-     l'una a l'altra i que no acaben mai. Cada generador només respon del que
-     escriu ell. */
-  const senseP = t => t.replace(/\/\*TT-PELL\*\/[\s\S]*?\/\*\/TT-PELL\*\//,
-    '/*TT-PELL*/\n/*/TT-PELL*/');
-  if (senseP(have) !== senseP(html)) {
+  /* Des del 10/10/2026 aquest generador escriu la pell ell mateix, i per tant
+     la comparació és lletra per lletra: abans buidava el bloc perquè l'omplia
+     `build-pell.js`, que no corria al CI, i la pàgina sortia sense colors. */
+  if (have !== html) {
     console.error('\n❌ SOS/vedes.html no correspon a SOS/knowledge/codex.md.');
     console.error('   El codex ha canviat i la pàgina no s\'ha tornat a generar.');
     console.error('   Arregla-ho amb:  node SOS/tools/build-vedes.js\n');

@@ -239,8 +239,15 @@ jobs:
       # un mapa fals vas. I aquí qui llegeix sovint és una IA, que no pregunta:
       # llegeix el nom de la carpeta i escriu. Crear una carpeta sense dir què
       # és deixa la pregunta «on va això?» sense resposta, i això peta.
-      - name: Guarda del mapa (cap carpeta sense cara)
-        run: node SOS/tools/build-mapa.js --check
+      #
+      # El mateix cop es comprova que el contracte no menteix: el que els
+      # fitxers de lectura citen existeix. I el cervell que s'instal·la als
+      # clients ha de passar la mateixa guarda que el nostre, i petar quan toca.
+      - name: Guarda del cervell (cap carpeta sense cara, cap cita falsa)
+        run: |
+          node SOS/tools/cervell.js --check
+          node SOS/tests/test-cervell.mjs
+          node SOS/tests/test-proposta.mjs
 
       # La pàgina de la MATRIU explica un mètode i promet, a la primera
       # pantalla, que cada criteri és una comprovació que l'app fa de debò. Una
@@ -257,6 +264,14 @@ jobs:
         run: node SOS/tools/build-nav.js --check
       - name: Guarda de l'embut (per on començar a les pàgines públiques)
         run: node SOS/tools/build-embut.js --check
+      # La paleta es declara un cop a build-pell.js. Fins al 10/10/2026 aquesta
+      # guarda no corria al CI i /vedes es publicava sense cap color de la pell.
+      - name: Guarda de la pell (una paleta a totes les pàgines)
+        run: node SOS/tools/build-pell.js --check
+      # El terra de 15 px (--t0) a les pàgines que venen les tres ofertes: el
+      # 10/10/2026 n'hi havia 325 mides per sota, escrites a mà, i cap guarda.
+      - name: Guarda del terra (cap text per sota de 15 px a les pàgines que venen)
+        run: node SOS/tools/check-terra.js
 
       # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
       # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una

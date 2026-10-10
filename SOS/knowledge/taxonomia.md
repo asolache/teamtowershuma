@@ -84,10 +84,12 @@ patró; vol dir que ho va ser.
 Un document com aquest, sol, dura fins a la primera setmana amb feina. El que el
 sosté és que **el mapa és derivat**:
 
-- `SOS/tools/build-mapa.js` recorre l'arbre de debò i escriu `MAPA.md`.
+- `SOS/tools/cervell.js` (o el seu àlies `build-mapa.js`) recorre l'arbre de
+  debò i escriu `MAPA.md`. És l'eina del cervell reutilitzable
+  (`knowledge/cervell/README.md`) i es configura a `cervell.json`.
 - La cara de cada carpeta es declara **aquí**, en aquest fitxer, a la taula de
   la secció següent — un sol lloc.
-- `build-mapa.js --check` peta al CI si hi ha una carpeta sense cara declarada,
+- `cervell.js --check` peta al CI si hi ha una carpeta sense cara declarada,
   o una cara declarada per a una carpeta que ja no existeix.
 
 O sigui que **crear una carpeta nova sense dir què és** trenca el CI. No és
@@ -105,6 +107,7 @@ aquesta llista i res més.
 - `SOS/knowledge/references` · saber · Els referents conceptuals, citats i no copiats
 - `SOS/knowledge/vision` · saber · Decisions d'arquitectura vives i auditories fetes
 - `SOS/knowledge/dev` · saber · El backlog i la guia d'estil per a qui hi escriu
+- `SOS/knowledge/cervell` · saber · El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la
 - `SOS/knowledge/for-ai` · saber · El contracte de treball per a una IA que hi contribueix
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
@@ -118,6 +121,7 @@ aquesta llista i res més.
 - `SOS/canal` · obra · Paquets de canal per tema, xifrats
 - `SOS/atles` · obra · Dades geogràfiques i institucionals del territori
 - `SOS/media` · obra · Imatges i material que serveixen les pàgines
+- `SOS/fonts` · obra · Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora
 - `SOS/plantilla-web` · obra · La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany

@@ -2200,6 +2200,7 @@ const KIT_TXT = {
       '- **`cerebro/fonts/`**: el que ja hi havia (la web d\'abans, documents, un CSV), importat en Markdown. L\'índex és `cerebro/fonts/index.md`.',
       '- **`cerebro/dossier.md`**: què és el negoci, què ofereix i a qui. Cada afirmació porta l\'enllaç a la seva font.',
       '- **`cerebro/decisiones.md`**: el que s\'acorda i per què, amb la data.',
+      '- **`cerebro/marca.json`**, si n\'hi ha: el color, la lletra, la forma, el logo (SVG), els textos propis i on sou (adreça, telèfon de la casa, horari). El telèfon de la web va aquí, no als continguts.',
       '- **`CEREBRO.md`**: l\'índex de tot el cervell, per tema i per capa.', '',
       '## Regenerar', '',
       '- `node eines/genera.mjs` (Node 18 o més nou) torna a fer la web i el cervell. Fes-ho després de canviar una font, i posa\'n el resultat a la mateixa PR.',
@@ -2377,6 +2378,7 @@ const KIT_TXT = {
       '- **`cerebro/fonts/`**: lo que ya había (la web de antes, documentos, un CSV), importado en Markdown. El índice es `cerebro/fonts/index.md`.',
       '- **`cerebro/dossier.md`**: qué es el negocio, qué ofrece y a quién. Cada afirmación lleva el enlace a su fuente.',
       '- **`cerebro/decisiones.md`**: lo que se acuerda y por qué, con la fecha.',
+      '- **`cerebro/marca.json`**, si lo hay: el color, la letra, la forma, el logo (SVG), los textos propios y dónde estáis (dirección, teléfono de la casa, horario). El teléfono de la web va aquí, no en los contenidos.',
       '- **`CEREBRO.md`**: el índice de todo el cerebro, por tema y por capa.', '',
       '## Regenerar', '',
       '- `node eines/genera.mjs` (Node 18 o más nuevo) vuelve a hacer la web y el cerebro. Hazlo después de cambiar una fuente, y pon el resultado en la misma PR.',
@@ -2568,7 +2570,7 @@ const SITE_TXT = {
       ia: 'Qui el prepara', iaSi: 'La IA en prepara l\'esborrany ({tipus}) i l\'accepta una persona del rol {rol}.', iaNo: '{motiu}' },
     idx: { titol: 'Cervell · {nom}', generat: 'Índex generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
       intro: 'Tots els documents del projecte, per tema. **Pública**: la web que troba qualsevol. **Per enllaç**: pàgines que no s\'indexen i es donen a qui toca. **Equip**: el que només viu al repositori.',
-      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web',
+      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web', marca: 'La marca: el disseny i els textos propis',
       temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', tasques: 'Tasques per a la IA', continguts: 'Continguts', fonts: 'El que ja hi havia', regles: 'Regles', eines: 'Eines i API' },
       capes: { publica: 'pública', enllac: 'per enllaç', equip: 'equip' } },
     api: { cap: 'Generat del mapa de valor amb la web. No s\'edita a mà: es regenera.', web: 'https://la-teva-web/',
@@ -2594,6 +2596,7 @@ const SITE_TXT = {
         'Les funcions demanen que la web es publiqui des del repositori: Netlify Drop no les desplega.', '',
         '## Per a Claude Code', '',
         '`.mcp.json` hi connecta `eines/mcp.mjs`, un servidor MCP sense dependències amb tres eines: `cervell_index`, `cervell_llegeix` i `registre_informe`. Només llegeix el que surt a l\'índex del cervell.'] },
+
     llegeix: ['# {nom}', '', 'Web feta a partir del mapa de valor.', '', '## Publicar-la', '',
       '- **Ara mateix:** arrossega la carpeta a https://app.netlify.com/drop.',
       '- **Amb historial:** puja-la a un repositori de GitHub i connecta\'l a Netlify (Add new site › Import an existing project). El `netlify.toml` ja hi és.',
@@ -2603,7 +2606,8 @@ const SITE_TXT = {
     pas: { coneix: ['Coneix-nos', 'Què et donem i què et demanem.'], compte: ['Crea el teu compte', 'Amb un compte veus el que és teu i en dius la teva.'],
       'sense-compte': ['Sense compte', 'Llegir i escriure\'ns n\'hi ha prou.'], connecta: ['Connecta el que ja fas servir', ''],
       primer: ['El primer que rebràs', ''], demanem: ['El primer que et demanarem', ''] },
-    cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' } },
+    cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' },
+    contacte: 'On som', adreca: 'Adreça', telefon: 'Telèfon', horari: 'Horari' },
   es: { inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo', salta: 'Saltar al contenido', menu: 'Menú',
     contPersonal: 'cerebro/continguts/{id}.md tiene un correo, un teléfono, un DNI o un IBAN: la página no sale. Los datos personales van al CRM, y el contacto de la web es el formulario.',
     contReservat: 'cerebro/continguts/{id}.md: este nombre no se puede usar (minúsculas, cifras y guiones; ni equip, registre, gracies, 404, estil, web o index).',
@@ -2625,7 +2629,7 @@ const SITE_TXT = {
       ia: 'Quién lo prepara', iaSi: 'La IA prepara el borrador ({tipus}) y lo acepta una persona del rol {rol}.', iaNo: '{motiu}' },
     idx: { titol: 'Cerebro · {nom}', generat: 'Índice generado del mapa de valor. No se edita a mano: se regenera con la web.',
       intro: 'Todos los documentos del proyecto, por tema. **Pública**: la web que encuentra cualquiera. **Por enlace**: páginas que no se indexan y se dan a quien toca. **Equipo**: lo que solo vive en el repositorio.',
-      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web',
+      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web', marca: 'La marca: el diseño y los textos propios',
       temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', tasques: 'Tareas para la IA', continguts: 'Contenidos', fonts: 'Lo que ya había', regles: 'Reglas', eines: 'Herramientas y API' },
       capes: { publica: 'pública', enllac: 'por enlace', equip: 'equipo' } },
     api: { cap: 'Generado del mapa de valor con la web. No se edita a mano: se regenera.', web: 'https://tu-web/',
@@ -2651,6 +2655,7 @@ const SITE_TXT = {
         'Las funciones piden que la web se publique desde el repositorio: Netlify Drop no las despliega.', '',
         '## Para Claude Code', '',
         '`.mcp.json` conecta `eines/mcp.mjs`, un servidor MCP sin dependencias con tres herramientas: `cervell_index`, `cervell_llegeix` y `registre_informe`. Solo lee lo que sale en el índice del cerebro.'] },
+
     llegeix: ['# {nom}', '', 'Web hecha a partir del mapa de valor.', '', '## Publicarla', '',
       '- **Ahora mismo:** arrastra la carpeta a https://app.netlify.com/drop.',
       '- **Con historial:** súbela a un repositorio de GitHub y conéctalo a Netlify (Add new site › Import an existing project). El `netlify.toml` ya está.',
@@ -2660,7 +2665,8 @@ const SITE_TXT = {
     pas: { coneix: ['Conócenos', 'Qué te damos y qué te pedimos.'], compte: ['Crea tu cuenta', 'Con una cuenta ves lo tuyo y das tu opinión.'],
       'sense-compte': ['Sin cuenta', 'Basta con leer y escribirnos.'], connecta: ['Conecta lo que ya usas', ''],
       primer: ['Lo primero que recibirás', ''], demanem: ['Lo primero que te pediremos', ''] },
-    cat: { crm: 'CRM', cobros: 'Cobros', venta: 'Tienda', oficina: 'Agenda', comunica: 'Mensajes', web: 'Datos propios' } }
+    cat: { crm: 'CRM', cobros: 'Cobros', venta: 'Tienda', oficina: 'Agenda', comunica: 'Mensajes', web: 'Datos propios' },
+    contacte: 'Dónde estamos', adreca: 'Dirección', telefon: 'Teléfono', horari: 'Horario' }
 };
 const SITE_CSS = [
   ':root{color-scheme:light dark;--bg:#fbfaf7;--fg:#1d1b18;--mut:#5d584f;--lin:#d9d4ca;--acc:#4338ca}',
@@ -2689,6 +2695,94 @@ const SITE_CSS = [
   '.ocult{display:none}',
   'footer{border-top:1px solid var(--lin);color:var(--mut);font-size:.9rem}'
 ].join('\n') + '\n';
+
+/* La marca: el disseny i els textos propis del client, sense tocar l'HTML.
+ * Demanat per l'Àlvar (10/10/2026): que el disseny i els continguts de la web
+ * es puguin personalitzar i automatitzar al màxim. El mapa segueix donant
+ * l'estructura (portes, serveis, benvinguda); `marca.json` hi posa la cara:
+ *
+ *   { "color": "#7a1f3d", "lletra": "serif|sans|rodona|mono", "forma": "rodona|recta",
+ *     "logo": "logo.svg", "lema": "…", "presentacio": "…",
+ *     "portes": { "Rol del mapa": { "nom": "Nom curt al menú", "intro": "…" } },
+ *     "contacte": { "adreca": "…", "telefon": "…", "horari": "…" } }
+ *
+ *  · **El color no pot trencar el contrast.** Si no arriba a 4,5:1 (WCAG AA)
+ *    sobre el fons, s'enfosqueix (o s'aclareix, al mode fosc) fins que hi
+ *    arriba. La marca no pot fer una web que no es llegeix.
+ *  · **Lletres del sistema i prou.** Cap font externa: la CSP no ho deixaria i
+ *    la permaweb no ho vol.
+ *  · **El logo, en SVG i net.** Sense scripts ni gestors d'esdeveniments; si en
+ *    porta, no s'hi posa.
+ *  · **Sense marca, la web és byte a byte la de sempre.** */
+const MARCA_LLETRES = {
+  sans: 'system-ui,-apple-system,"Segoe UI",sans-serif',
+  serif: '"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif',
+  rodona: 'ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif',
+  mono: 'ui-monospace,"SF Mono",Menlo,Consolas,monospace'
+};
+function marcaHex(x) {
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(x || '').trim());
+  if (!m) return '';
+  const h = m[1].length === 3 ? m[1].replace(/./g, c => c + c) : m[1];
+  return '#' + h.toLowerCase();
+}
+function marcaLlum(hex) {
+  const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function marcaContrast(a, b) { const x = marcaLlum(a), y = marcaLlum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+/* Barreja el color cap al negre (o el blanc) a passos petits fins que fa 4,5:1
+   amb el fons. Determinista: el mateix color dona sempre el mateix resultat. */
+function marcaAjusta(hex, fons, cap) {
+  const rgb = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), dest = cap === 'blanc' ? 255 : 0;
+  for (let k = 0; k <= 20; k++) {
+    const c = '#' + rgb.map(v => Math.round(v + (dest - v) * k / 20).toString(16).padStart(2, '0')).join('');
+    if (marcaContrast(c, fons) >= 4.5) return c;
+  }
+  return cap === 'blanc' ? '#ffffff' : '#000000';
+}
+function marcaSvg(svg) {
+  const s = String(svg || '').trim();
+  if (!/^(<\?xml[^>]*>\s*)?<svg[\s>]/i.test(s) || !/<\/svg>\s*$/i.test(s)) return '';
+  if (/<script|<foreignObject|\son[a-z]+\s*=|javascript:|<!ENTITY|xlink:href\s*=\s*["']?(?!#)|\shref\s*=\s*["']?(?!#)/i.test(s)) return '';
+  return s.length <= 100000 ? s + '\n' : '';
+}
+function marcaNeta(m) {
+  const x = m && typeof m === 'object' ? m : {}, t = v => (typeof v === 'string' ? v.trim().slice(0, 600) : '');
+  const out = {};
+  if (marcaHex(x.color)) out.color = marcaHex(x.color);
+  if (MARCA_LLETRES[x.lletra]) out.lletra = x.lletra;
+  if (x.forma === 'recta' || x.forma === 'rodona') out.forma = x.forma;
+  if (t(x.lema)) out.lema = t(x.lema);
+  if (t(x.presentacio)) out.presentacio = t(x.presentacio);
+  const svg = marcaSvg(x.logoSvg);
+  if (svg) out.logoSvg = svg;
+  const portes = {};
+  Object.keys(x.portes && typeof x.portes === 'object' ? x.portes : {}).forEach(r => {
+    const p = x.portes[r] || {}, q = {};
+    if (t(p.nom)) q.nom = t(p.nom).slice(0, 40);
+    if (t(p.intro)) q.intro = t(p.intro);
+    if (q.nom || q.intro) portes[r] = q;
+  });
+  if (Object.keys(portes).length) out.portes = portes;
+  const c = x.contacte && typeof x.contacte === 'object' ? x.contacte : {}, cc = {};
+  ['adreca', 'telefon', 'horari'].forEach(k => { if (t(c[k])) cc[k] = t(c[k]).slice(0, 200); });
+  if (Object.keys(cc).length) out.contacte = cc;
+  return out;
+}
+function siteCss(m) {
+  if (!m.color && !m.lletra && !m.forma) return SITE_CSS;
+  let css = SITE_CSS;
+  if (m.color) {
+    const clar = marcaAjusta(m.color, '#fbfaf7', 'negre'), fosc = marcaAjusta(m.color, '#161512', 'blanc');
+    css = css.replace('--acc:#4338ca}', '--acc:' + clar + '}').replace('--acc:#a5b4fc}', '--acc:' + fosc + '}')
+      + 'header{border-bottom:3px solid var(--acc)}\n'
+      + 'nav a[aria-current=page],button{background:var(--acc);border-color:var(--acc);color:var(--bg)}\n';
+  }
+  if (m.lletra) css = css.replace('font:1rem/1.55 system-ui,-apple-system,"Segoe UI",sans-serif', 'font:1rem/1.55 ' + MARCA_LLETRES[m.lletra]);
+  if (m.forma === 'recta') css = css.replace('border-radius:999px', 'border-radius:3px').replace(/border-radius:8px/g, 'border-radius:2px');
+  return css + '.marca img{height:2.5rem;width:auto;vertical-align:middle;margin-right:.5rem}\n.lema{margin:-.25rem 0 .75rem;color:var(--mut)}\n';
+}
 
 /* El cervell del projecte, com el preveu el pla (cerebro/ al repositori del
    client): el mapa real i l'ideal, i una fitxa per rol, per lliurament i per
@@ -2961,6 +3055,10 @@ function webASite(web, opts) {
   const e = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const correu = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(o.correu || '') ? o.correu : '';
   const nom = String(o.nom || (web.casa || [])[0] || web.titol || 'La web').trim();
+  const MC = marcaNeta(o.marca), MP = MC.portes || {}, CT = MC.contacte || {};
+  const porta = id => (web.portes || []).find(p => p.id === id);
+  const etiqueta = p => (MP[p.rol] && MP[p.rol].nom) || p.rol;
+  const descripcio = MC.presentacio ? MC.presentacio.slice(0, 160) : web.titol || nom;
   const ruta = id => (id === 'inici' ? 'index.html' : id + '.html');
   /* Amb l'adreça definitiva, cada pàgina diu quina és la seva (canonical i
      Open Graph) i surt el sitemap. Sense, tot segueix sent relatiu. */
@@ -2974,13 +3072,13 @@ function webASite(web, opts) {
      noves. El mapa en dona l'estructura i els continguts, les paraules. */
   const RESERVATS = ['equip', 'registre', 'gracies', '404', 'estil', 'web', 'index'], cont = {}, avisa = typeof o.avisa === 'function' ? o.avisa : () => {};
   /* Un sol sedàs per a les dades personals, el de l'importador (VS-IMPORTA):
-     un contingut amb un correu (que no sigui el de la web), un telèfon, un DNI
+     un contingut amb un correu o un telèfon (que no siguin els de la web), un DNI
      o un IBAN no surt. Bloqueja, no avisa només; i sense sedàs no surt cap. */
   if ((o.continguts || []).length && typeof amagaPersonal !== 'function') throw new Error('Falta el bloc VS-IMPORTA: sense amagaPersonal, els continguts no surten.');
   (o.continguts || []).forEach(c => {
     const id = String(c.id || '').toLowerCase(), t = String(c.text == null ? '' : c.text);
     if (!/^[a-z0-9][a-z0-9-]{0,59}$/.test(id) || RESERVATS.includes(id)) return avisa(L.contReservat.replace('{id}', id || '?'));
-    const p = amagaPersonal(correu ? t.split(correu).join('') : t);
+    const p = amagaPersonal([correu, CT.telefon].filter(Boolean).reduce((x, d) => x.split(d).join(''), t));
     if (p.correus + p.telefons + p.altres) return avisa(L.contPersonal.replace('{id}', id));
     cont[id] = llegeixContingut(t);
   });
@@ -2992,13 +3090,14 @@ function webASite(web, opts) {
   const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
-    + '<meta name="description" content="' + e(web.titol || nom) + '">\n' + (extra || '')
+    + '<meta name="description" content="' + e(descripcio) + '">\n' + (extra || '')
     + (url ? '<link rel="canonical" href="' + e(abs(ruta(id))) + '">\n<meta property="og:type" content="website">\n<meta property="og:title" content="' + e(titol) + '">\n'
-      + '<meta property="og:description" content="' + e(web.titol || nom) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
+      + '<meta property="og:description" content="' + e(descripcio) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
     + '<link rel="stylesheet" href="estil.css">\n<link rel="alternate" type="application/json" href="web.json" title="' + e(L.dades) + '">\n'
     + ld(dades) + '\n</head>\n<body>\n<a class="salta" href="#contingut">' + e(L.salta) + '</a>\n'
-    + '<header>\n<p class="marca"><a href="index.html">' + e(nom) + '</a></p>\n<nav aria-label="' + e(L.menu) + '"><ul>'
-    + menu.map(x => '<li><a href="' + ruta(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : x.t) + '</a></li>').join('')
+    + '<header>\n<p class="marca"><a href="index.html">' + (MC.logoSvg ? '<img src="logo.svg" alt="">' : '') + e(nom) + '</a></p>\n'
+    + (MC.lema ? '<p class="lema">' + e(MC.lema) + '</p>\n' : '') + '<nav aria-label="' + e(L.menu) + '"><ul>'
+    + menu.map(x => '<li><a href="' + ruta(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
     + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(titol) + '</h1>\n' + cos + '\n</main>\n'
     + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (correu ? ' · <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>' : '') + '</p>\n</footer>\n</body>\n</html>\n';
   const formulari = p => {
@@ -3017,9 +3116,15 @@ function webASite(web, opts) {
   const servei = sv => ({ '@type': 'Service', name: sv.nom, description: sv.d || undefined, provider: { '@type': 'Organization', name: nom } });
 
   posa('index.html', pagina('inici', nom,
-    (web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici') + '<h2>' + e(L.perCadascu) + '</h2>\n'
-      + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(p.rol) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>'),
-    { '@type': 'Organization', name: nom, description: web.titol || undefined,
+    (MC.presentacio ? '<p>' + e(MC.presentacio) + '</p>\n' : web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici') + '<h2>' + e(L.perCadascu) + '</h2>\n'
+      + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(etiqueta(p)) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>')
+      + (CT.adreca || CT.telefon || CT.horari ? '\n<h2>' + e(L.contacte) + '</h2>\n<ul>'
+        + (CT.adreca ? '<li>' + e(L.adreca) + ': ' + e(CT.adreca) + '</li>' : '')
+        + (CT.telefon ? '<li>' + e(L.telefon) + ': <a href="tel:' + e(CT.telefon.replace(/[^\d+]/g, '')) + '">' + e(CT.telefon) + '</a></li>' : '')
+        + (CT.horari ? '<li>' + e(L.horari) + ': ' + e(CT.horari) + '</li>' : '') + '</ul>' : ''),
+    { '@type': 'Organization', name: nom, description: MC.presentacio || web.titol || undefined, slogan: MC.lema || undefined,
+      logo: MC.logoSvg && url ? url + 'logo.svg' : undefined, telephone: CT.telefon || undefined,
+      address: CT.adreca ? { '@type': 'PostalAddress', streetAddress: CT.adreca } : undefined,
       makesOffer: (web.serveis || []).map(sv => ({ '@type': 'Offer', itemOffered: servei(sv) })) }));
   (web.portes || []).forEach(p => {
     const con = p.connexions.map(c => L.cat[c.cat] || c.nom);
@@ -3027,8 +3132,9 @@ function webASite(web, opts) {
       const t = L.pas[b.pas] || [b.t, b.d], d = b.pas === 'connecta' ? con.join(', ') + '.' : t[1] || b.d;
       return '<li><strong>' + e(t[0]) + '.</strong> ' + e(d) + '</li>';
     });
-    posa(ruta(p.id), pagina(p.id, p.rol,
-      text(p.id) + (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
+    posa(ruta(p.id), pagina(p.id, etiqueta(p),
+      (MP[p.rol] && MP[p.rol].intro ? '<p>' + e(MP[p.rol].intro) + '</p>\n' : '')
+        + text(p.id) + (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
         + (p.rep.length ? '<h2>' + e(L.donem) + '</h2>\n' + llista(p.rep, f => lli(f)) + '\n' : '')
         + (p.dona.length ? '<h2>' + e(L.dones) + '</h2>\n' + llista(p.dona, f => lli(f)) + '\n' : '')
         + (p.xarxa.length ? '<h2>' + e(L.xarxa) + '</h2>\n' + llista(p.xarxa, f => lli(f, f.de + ' → ' + f.a)) + '\n' : '')
@@ -3074,7 +3180,8 @@ function webASite(web, opts) {
     { '@type': 'WebPage', name: R.titol }, '<meta name="robots" content="noindex">\n'));
   posa('gracies.html', pagina('gracies', L.gracies, '<p>' + e(L.rebut) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.gracies }, '<meta name="robots" content="noindex">\n'));
-  posa('estil.css', SITE_CSS, 'text/css');
+  posa('estil.css', siteCss(MC), 'text/css');
+  if (MC.logoSvg) posa('logo.svg', MC.logoSvg, 'image/svg+xml');
   posa('web.json', JSON.stringify(web, null, 2) + '\n', 'application/json');
   /* El que fa del zip un repositori: la font, les regles, com publicar-lo i
      la configuració de Netlify. */
@@ -3097,6 +3204,11 @@ function webASite(web, opts) {
       .map(r => '[[redirects]]\n  from = "' + r + '"\n  to = "/404.html"\n  status = 404\n  force = true\n')).join('\n'), 'text/plain');
   const K = KIT_TXT[llengua];
   if (o.mapa) cervell(o.mapa, L.cb, K.tasques, nom, web.casa).forEach(f => posa(f.ruta, f.cos, f.tipus));
+  /* La marca viatja amb el repositori, com el mapa: és l'altra font. */
+  if (Object.keys(MC).length) {
+    const desa = Object.assign({}, MC); delete desa.logoSvg; if (MC.logoSvg) desa.logo = '../logo.svg';
+    posa('cerebro/marca.json', JSON.stringify(desa, null, 2) + '\n', 'application/json');
+  }
   const md = a => a.join('\n').split('{nom}').join(nom) + '\n';
   /* El kit de Claude: les regles, la guia (gratis, amb Claude Code o amb
      TeamTowers) i les tres skills que fan la feina de rutina. */
@@ -3129,6 +3241,7 @@ function indexCervell(fitxers, nom, T) {
     if (/^cerebro\/mapa-real\.json$/.test(f.ruta)) return T.real;
     if (/^cerebro\/mapa-ideal\.json$/.test(f.ruta)) return T.ideal;
     if (f.ruta === 'web.json') return T.dades;
+    if (f.ruta === 'cerebro/marca.json') return T.marca;
     const m = /^# (.+)$/m.exec(f.cos) || /<h1>([^<]*)<\/h1>/.exec(f.cos);
     return m ? m[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"') : f.ruta;
   };
@@ -3139,6 +3252,7 @@ function indexCervell(fitxers, nom, T) {
     : /^cerebro\/entregables\//.test(r) ? ['lliuraments', 'equip']
     : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
     : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
+    : r === 'cerebro/marca.json' ? ['web', 'equip']
     : /^cerebro\/(tasques-ia\.(md|json)|esborranys\/.+\.md)$/.test(r) ? ['tasques', 'equip']
     : /^cerebro\/continguts\/[^/]+\.md$/.test(r) ? ['continguts', 'equip']
     : /^cerebro\/(fonts\/.+\.(md|json)|dossier\.md)$/.test(r) ? ['fonts', 'equip']

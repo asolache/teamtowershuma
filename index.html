@@ -76,25 +76,11 @@
   --t4           : clamp(1.75rem,4vw,2.6rem);
   --t5           : clamp(2.1rem,6vw,3.5rem);
 /*/TT-PELL*/
-            /* ── ELS NOMS VELLS D'AQUESTA PÀGINA ───────────────────────────
-               La portada fa servir `--bg-dark`, `--white` i `--accent-*` en
-               **631 llocs**. Reanomenar-los aquí seria un canvi de sis-centes
-               línies que no es veu, barrejat amb el canvi de pell, i llavors
-               cap dels dos es podria llegir a la revisió.
-
-               Per això apunten als de la pell i prou. Dos ja no volen dir el
-               que diuen —`--bg-dark` és paper i `--white` és tinta— i això és
-               exactament el motiu pel qual aquest bloc ha de desaparèixer.
-               Entrada oberta al backlog. */
-            --bg-dark:       var(--bg);
-            --bg-panel:      var(--panel);
-            --bg-elevated:   var(--card);
-            --white:         var(--text);
-            --accent-indigo: var(--indigo);
-            --accent-blue:   var(--blue);
-            --accent-purple: var(--purple);
-            --accent-green:  var(--green);
-            --accent-orange: var(--orange);
+            /* ── ELS VELS DELS ACCENTS ──────────────────────────────────────
+               Els noms vells d'aquesta pàgina (`--white`, `--accent-*`,
+               `--bg-*`) eren àlies dels de la pell i se'n van el 10/10/2026:
+               les regles ja fan servir els de la pell directament. El que es
+               queda són els vels, que no són àlies sinó colors propis. */
             --indigo-dim:    rgba(79,70,229,0.10);
             --blue-dim:      rgba(0,102,179,0.10);
             --purple-dim:    rgba(163,24,127,0.10);
@@ -104,45 +90,46 @@
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 16px; scroll-behavior: smooth; }
-        body { background: var(--bg-dark); color: var(--white); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--accent-indigo); }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--indigo); }
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity:.4; }
         .container { max-width:1160px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
         section { position:relative; z-index:1; }
         /* La barra és fixa: sense això, saltar a una àncora deixava el títol de la
            secció just a sota i semblava que t'haguessis passat de llarg. */
         section[id] { scroll-margin-top:64px; }
-        .hero-note { font-size:.8rem; color:var(--muted); margin:.8rem 0 0; }
-        .cta-mail { font-size:.9rem; color:var(--muted); margin-top:1.2rem; }
-        .cta-mail a { color:var(--accent-indigo); border-bottom:1px solid var(--indigo-dim); text-decoration:none; }
-        .cta-mail a:hover { border-color:var(--accent-blue); }
+        .hero-note { font-size:var(--t0); color:var(--muted); margin:.8rem 0 0; }
+        .cta-mail { font-size:var(--t0); color:var(--muted); margin-top:1.2rem; }
+        .cta-mail a { color:var(--indigo); border-bottom:1px solid var(--indigo-dim); text-decoration:none; }
+        .cta-mail a:hover { border-color:var(--blue); }
 
         /* BTNS */
-        .btn-primary { background:var(--accent-indigo); color:var(--on-accent); font-family:var(--sans); font-weight:600; font-size:.85rem; letter-spacing:.03em; padding:.9rem 2rem; border:none; cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
-        .btn-primary:hover { background:var(--accent-blue); transform:translateY(-2px); }
-        .btn-ghost { background:transparent; color:var(--light); font-family:var(--sans); font-weight:500; font-size:.85rem; letter-spacing:.03em; padding:.9rem 2rem; border:1px solid var(--border); cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; }
-        .btn-ghost:hover { border-color:var(--accent-indigo); color:var(--accent-blue); }
+        .btn-primary { background:var(--indigo); color:var(--on-accent); font-family:var(--sans); font-weight:600; font-size:var(--t0); letter-spacing:.03em; padding:.9rem 2rem; border:none; cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
+        .btn-primary:hover { background:var(--blue); transform:translateY(-2px); }
+        .btn-ghost { background:transparent; color:var(--light); font-family:var(--sans); font-weight:500; font-size:var(--t0); letter-spacing:.03em; padding:.9rem 2rem; border:1px solid var(--border); cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; }
+        .btn-ghost:hover { border-color:var(--indigo); color:var(--blue); }
 
         /* HERO */
-        .hero { min-height:calc(100vh - 4rem); display:flex; align-items:center; padding:2.5rem 0 4rem; }
+        /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
+        .hero { min-height:calc(100vh - 4rem); display:flex; align-items:center; padding:1rem 0 4rem; }
         @media (max-width:860px) { .hero { padding:1rem 0 2.5rem; min-height:calc(100vh - 6rem); } }
         /* Tres blocs i no dos, perquè al mòbil la imatge ha d'anar entremig.
            Amb dues columnes, en una sola columna la imatge queda l'última i el
            que explica el negoci d'un cop d'ull cau a la segona pantalla. */
-        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 6rem; align-items:center;
+        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 4rem; align-items:center;
             grid-template-areas:'cap vis' 'cos vis'; }
         .hero-cap { grid-area:cap; } .hero-cos { grid-area:cos; } .hero-visual { grid-area:vis; }
-        .hero-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.5rem; display:flex; align-items:center; gap:.75rem; }
-        .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--accent-indigo); }
+        .hero-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1rem; display:flex; align-items:center; gap:.75rem; }
+        .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--indigo); }
         /* L'escala respon a la llargada del titular, no al revés. El titular va
            passar de 54 a 76 caràcters i a 1440 px se n'anava a quatre línies,
            que empenyien el botó principal per sota del plec —la cosa que la
            prova de la primera pantalla vigila. Baixar el sostre i el mínim és
            la resposta tipogràfica normal a un text més llarg; escurçar el que
            s'ha de dir per encabir-hi una mida seria fer-ho al revés. */
-        .hero h1 { font-family:var(--sans); font-size:clamp(1.85rem,3vw,3rem); font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:1.3rem; }
-        .hero h1 em { font-style:normal; color:var(--accent-blue); }
-        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1.6rem; max-width:540px; }
+        .hero h1 { font-family:var(--sans); font-size:clamp(1.85rem,3vw,3rem); font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:1rem; }
+        .hero h1 em { font-style:normal; color:var(--blue); }
+        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1rem; max-width:540px; }
 
         /* ── L'EVOLUCIÓ, EN TRES PASSOS ───────────────────────────────────────
            Tres caselles de costat, no una llista: de costat es llegeixen com un
@@ -152,19 +139,19 @@
 
            La tercera va marcada en verd perquè és on som: sense això, «2005» és
            el que crida i el que es ven queda com el final d'una història. */
-        .hero-evo { list-style:none; padding:0; margin:0 0 1.4rem; max-width:560px;
-            display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; }
+        .hero-evo { list-style:none; padding:0; margin:0 0 1rem; max-width:560px;
+            display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem 1.2rem; }
         .hero-evo li { position:relative; display:flex; flex-direction:column; gap:.3rem;
             padding-top:.55rem; border-top:1px solid var(--border); }
-        .hero-evo li:last-child { border-top-color:var(--accent-green); }
-        .hero-evo li + li::after { content:'→'; position:absolute; left:-.8rem; top:50%; transform:translateY(-50%);
-            font-size:.72rem; line-height:1; color:var(--accent-indigo); }
-        .hero-evo .evo-k { font-family:var(--mono); font-size:.66rem; letter-spacing:.06em;
+        .hero-evo li:last-child { border-top-color:var(--green); }
+        .hero-evo li + li::after { content:'→'; position:absolute; left:-.6rem; top:50%; transform:translate(-50%,-50%);
+            font-size:var(--t0); line-height:1; color:var(--indigo); }
+        .hero-evo .evo-k { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
             text-transform:uppercase; color:var(--muted); line-height:1.35; min-height:2.7em; }
-        .hero-evo li:last-child .evo-k { color:var(--accent-green); }
-        .hero-evo li span + span { font-size:.8rem; color:var(--light); line-height:1.5; }
+        .hero-evo li:last-child .evo-k { color:var(--green); }
+        .hero-evo li span + span { font-size:var(--t0); color:var(--light); line-height:1.4; }
 
-        .hero-actions { display:flex; gap:1rem; flex-wrap:wrap; }
+        .hero-actions { display:flex; gap:.5rem 1rem; flex-wrap:wrap; }
         .hero-visual { position:relative; }
 
         /* ── Els dos castells ─────────────────────────────────────────────────
@@ -183,11 +170,11 @@
         .ct-est { font-family:var(--mono); font-size:12.5px; font-weight:700; }
         .ct-amaga { display:none; }
         .ct-peu { display:flex; flex-direction:column; align-items:flex-start; gap:.75rem; margin-top:.4rem; }
-        .ct-btn { font-family:var(--mono); font-size:.78rem; letter-spacing:.04em; cursor:pointer;
-            background:var(--bg-elevated); color:var(--white); border:1px solid var(--border);
+        .ct-btn { font-family:var(--mono); font-size:var(--t0); letter-spacing:.04em; cursor:pointer;
+            background:var(--card); color:var(--text); border:1px solid var(--border);
             border-radius:8px; padding:.6rem 1rem; transition:border-color .15s, background .15s; }
-        .ct-btn:hover { border-color:var(--accent-indigo); background:var(--indigo-dim); }
-        .ct-llegenda { font-size:.86rem; color:var(--muted); line-height:1.65; max-width:460px; }
+        .ct-btn:hover { border-color:var(--indigo); background:var(--indigo-dim); }
+        .ct-llegenda { font-size:var(--t0); color:var(--muted); line-height:1.65; max-width:460px; }
         .ct-llegenda strong { color:var(--light); font-weight:600; }
         /* Qui ha demanat menys moviment veu el mateix, quiet. */
         @media (prefers-reduced-motion: reduce) {
@@ -200,18 +187,18 @@
            sense poder-hi anar, i entre els uns i les altres el botó principal
            queia per sota del plec. Una llista del que fas val menys que una
            porta cap a on és. */
-        .hero-finan { font-size:.88rem; color:var(--light); line-height:1.6; margin:0 0 1.6rem;
-            border-left:2px solid var(--accent-green); padding:.15rem 0 .15rem .9rem; max-width:480px; }
-        .hero-finan strong { color:var(--accent-green); font-weight:600; }
+        .hero-finan { font-size:var(--t0); color:var(--light); line-height:1.6; margin:0 0 1.6rem;
+            border-left:2px solid var(--green); padding:.15rem 0 .15rem .9rem; max-width:480px; }
+        .hero-finan strong { color:var(--green); font-weight:600; }
         /* La prova al costat de la primera crida: tres xifres en una línia,
            amb el número gran i el que vol dir a sota, en petit. */
         .hero-proves { list-style:none; padding:.9rem 0 0; margin:.4rem 0 1.2rem; display:flex; flex-wrap:wrap; gap:1rem 1.6rem; border-top:1px solid var(--border); }
         .hero-proves li { display:flex; flex-direction:column; gap:.1rem; flex:1 1 120px; }
-        .hero-proves b { font-family:var(--mono); font-size:1.15rem; font-weight:700; color:var(--accent-green); line-height:1.2; }
-        .hero-proves span { font-size:.72rem; color:var(--muted); line-height:1.4; max-width:150px; }
+        .hero-proves b { font-family:var(--mono); font-size:1.15rem; font-weight:700; color:var(--green); line-height:1.2; }
+        .hero-proves span { font-size:var(--t0); color:var(--muted); line-height:1.4; max-width:150px; }
         /* Les crides repetides enmig de la pàgina. Una franja i no una secció:
            no té titular perquè no explica res nou, només torna a obrir la porta. */
-        .cta-band { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-panel); }
+        .cta-band { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--panel); }
         /* Només l'alçada: el `padding` lateral el posa `.container`, i una
            declaració curta de `padding` aquí el tornaria a zero. */
         .cta-band-inner { display:flex; align-items:center; justify-content:space-between; gap:2rem; padding-top:2rem; padding-bottom:2rem; flex-wrap:wrap; }
@@ -229,15 +216,15 @@
 
         /* SECTION HEADERS */
         .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
-        .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.25rem; }
+        .section-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1.25rem; }
         .section-header h2 { font-family:var(--sans); font-size:clamp(2.1rem,4vw,3.2rem); font-weight:700; line-height:1.15; margin-bottom:1.25rem; }
-        .section-header h2 em { font-style:normal; color:var(--accent-blue); }
+        .section-header h2 em { font-style:normal; color:var(--blue); }
         .section-header p { font-size:1rem; color:var(--light); line-height:1.8; }
 
         /* PROBLEMA / ENFOQUE */
         .enfoc { padding:9rem 0 8rem; }
-        .tx-card.intangible{ border-top:2px solid var(--accent-indigo); }
-        .tx-card.intangible .tx-label { color:var(--accent-indigo); }
+        .tx-card.intangible{ border-top:2px solid var(--indigo); }
+        .tx-card.intangible .tx-label { color:var(--indigo); }
 
         /* LES TRES BANDES · el mateix patró amb tres vocabularis
            El lead va a tota amplada i sobre les columnes perquè és la conclusió
@@ -248,54 +235,54 @@
             line-height:1.75; color:var(--muted); }
         .bandes-lead strong { color:var(--light); font-weight:600; }
         .bandes-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.5rem; }
-        .banda { background:var(--bg-panel); border:1px solid var(--border); padding:1.75rem 1.75rem 1.5rem;
+        .banda { background:var(--panel); border:1px solid var(--border); padding:1.75rem 1.75rem 1.5rem;
             display:flex; flex-direction:column; }
         /* El color va per `data-sec` i no per `:first-child`. Amb la posició, la
            banda del mig d'un grup de tres es quedava sense color i ningú ho
            hauria vist petar; i reordenar les columnes els hauria canviat el
            color sense tocar cap regla. */
-        .banda[data-sec="admin"]   { border-top:2px solid var(--accent-blue); }
-        .banda[data-sec="tercer"]  { border-top:2px solid var(--accent-green); }
-        .banda[data-sec="empresa"] { border-top:2px solid var(--accent-indigo); }
-        .banda-k { font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+        .banda[data-sec="admin"]   { border-top:2px solid var(--blue); }
+        .banda[data-sec="tercer"]  { border-top:2px solid var(--green); }
+        .banda[data-sec="empresa"] { border-top:2px solid var(--indigo); }
+        .banda-k { font-family:var(--mono); font-size:var(--t0); letter-spacing:.08em; text-transform:uppercase;
             color:var(--muted); margin-bottom:1.2rem; }
-        .banda[data-sec="admin"]   .banda-k { color:var(--accent-blue); }
-        .banda[data-sec="tercer"]  .banda-k { color:var(--accent-green); }
-        .banda[data-sec="empresa"] .banda-k { color:var(--accent-indigo); }
+        .banda[data-sec="admin"]   .banda-k { color:var(--blue); }
+        .banda[data-sec="tercer"]  .banda-k { color:var(--green); }
+        .banda[data-sec="empresa"] .banda-k { color:var(--indigo); }
         .banda-dl { margin:0 0 1.4rem; flex:1; }
-        .banda-dl dt { font-family:var(--mono); font-size:.68rem; letter-spacing:.09em; text-transform:uppercase;
+        .banda-dl dt { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); opacity:.75; }
-        .banda-dl dd { margin:.25rem 0 1rem; font-size:.9rem; line-height:1.6; color:var(--light); }
+        .banda-dl dd { margin:.25rem 0 1rem; font-size:var(--t0); line-height:1.6; color:var(--light); }
         .banda-dl dd:last-child { margin-bottom:0; }
-        .banda-cta { margin-top:auto; font-size:.85rem; font-weight:600; text-decoration:none; color:var(--accent-indigo); }
-        .banda[data-sec="admin"]  .banda-cta { color:var(--accent-blue); }
-        .banda[data-sec="tercer"] .banda-cta { color:var(--accent-green); }
+        .banda-cta { margin-top:auto; font-size:var(--t0); font-weight:600; text-decoration:none; color:var(--indigo); }
+        .banda[data-sec="admin"]  .banda-cta { color:var(--blue); }
+        .banda[data-sec="tercer"] .banda-cta { color:var(--green); }
         .banda-cta:hover { text-decoration:underline; }
         /* A 1.000 px tres columnes deixen el text a sis paraules per línia i
            les tres fitxes es llegeixen pitjor que dues: baixen a una. */
         @media (max-width:1000px) { .bandes-grid { grid-template-columns:1fr; } }
         @media (max-width:900px) { }
         .pk-fam { margin-bottom:4.5rem; }
-        .paquet { background:var(--bg-panel); padding:2rem 1.8rem; display:flex; flex-direction:column;
+        .paquet { background:var(--panel); padding:2rem 1.8rem; display:flex; flex-direction:column;
             transition:background .2s; }
-        .paquet:hover { background:var(--bg-elevated); }
+        .paquet:hover { background:var(--card); }
         .paquet header { display:flex; align-items:flex-start; justify-content:space-between; gap:.8rem;
             margin-bottom:.9rem; }
         .paquet h4 { font-family:var(--sans); font-size:1.15rem; font-weight:700; margin:0; line-height:1.3; }
         .paquet h4 a { color:inherit; text-decoration:underline; text-underline-offset:3px;
             text-decoration-color:var(--border); }
-        .paquet h4 a:hover { text-decoration-color:var(--accent-green); }
+        .paquet h4 a:hover { text-decoration-color:var(--green); }
 
         /* ── EL FILTRE DE SECTOR ──────────────────────────────────────────
            Sense JavaScript els botons no fan res i surten tots els paquets,
            que és l'estat correcte: un filtre que amaga per defecte és una
            pàgina que amaga oferta a qui no pot executar scripts. */
         .pk-filtre { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin:0 0 3rem; }
-        .pk-f { font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
+        .pk-f { font-family:var(--mono); font-size:var(--t0); letter-spacing:.08em; text-transform:uppercase;
             color:var(--muted); background:transparent; border:1px solid var(--border);
             border-radius:100px; padding:.55rem 1.1rem; cursor:pointer; transition:.15s; }
-        .pk-f:hover { color:var(--white); border-color:var(--muted); }
-        .pk-f.on { color:var(--bg-dark); background:var(--accent-green); border-color:var(--accent-green);
+        .pk-f:hover { color:var(--text); border-color:var(--muted); }
+        .pk-f.on { color:var(--bg); background:var(--green); border-color:var(--green);
             font-weight:600; }
         .pk-fam[hidden], .paquet[hidden] { display:none; }
 
@@ -323,51 +310,52 @@
            llegeixen igual de bé. El que es perd al mòbil és el matís, no la
            prova. */
         .cl-mur { border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-            background:var(--bg-panel); padding:2.6rem 0 2.2rem; }
-        .clm-lbl { font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase;
-            color:var(--accent-green); margin:0 0 .5rem; }
+            background:var(--panel); padding:2.6rem 0 2.2rem; }
+        .clm-lbl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
+            color:var(--green); margin:0 0 .5rem; }
         .clm-h2 { font-size:1.45rem; line-height:1.28; margin:0 0 1.7rem; font-weight:700; max-width:24ch; }
-        .clm-h2 em { font-style:normal; color:var(--accent-indigo); }
+        .clm-h2 em { font-style:normal; color:var(--indigo); }
         .clm-g { margin-bottom:1.5rem; }
         .clm-g:last-of-type { margin-bottom:0; }
-        .clm-gl { font-family:var(--mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase;
+        .clm-gl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); margin:0 0 .55rem; display:flex; align-items:center; gap:.5rem; }
         .clm-gl::before { content:''; width:14px; height:2px; border-radius:1px; background:var(--clc); }
-        .clm-g[data-g="empreses"] { --clc:var(--accent-indigo); }
-        .clm-g[data-g="universitats"] { --clc:var(--accent-green); }
-        .clm-g[data-g="escoles"] { --clc:var(--accent-purple); }
-        .clm-g[data-g="agencies"] { --clc:var(--accent-orange); }
-        .clm-g[data-g="public"] { --clc:var(--accent-blue); }
-        .clm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:.5rem; }
+        .clm-g[data-g="empreses"] { --clc:var(--indigo); }
+        .clm-g[data-g="universitats"] { --clc:var(--green); }
+        .clm-g[data-g="escoles"] { --clc:var(--purple); }
+        .clm-g[data-g="agencies"] { --clc:var(--orange); }
+        .clm-g[data-g="public"] { --clc:var(--blue); }
+        .clm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:.5rem; }
         .clm-c { background:var(--bg-elevated,rgba(21,19,15,.025)); border:1px solid var(--border);
             border-top:2px solid var(--clc); border-radius:8px; padding:.6rem .7rem .55rem;
             display:flex; flex-direction:column; gap:.15rem; min-width:0; }
-        .clm-n { font-size:.93rem; font-weight:700; letter-spacing:.01em; color:var(--white);
+        .clm-n { font-size:var(--t0); font-weight:700; letter-spacing:.01em; color:var(--text);
             overflow-wrap:anywhere; }
         .clm-c.dest .clm-n { font-size:1.06rem; }
-        .clm-s { font-size:.66rem; line-height:1.4; color:var(--muted); }
-        .clm-nota { font-size:.74rem; color:var(--muted); line-height:1.6; margin:1.4rem 0 0; max-width:66ch; }
+        .clm-s { font-size:var(--t0); line-height:1.4; color:var(--muted); }
+        .clm-nota { font-size:var(--t0); color:var(--muted); line-height:1.6; margin:1.4rem 0 0; max-width:66ch; }
         .clm-nota a { color:var(--muted); }
-        .clm-nota strong { color:var(--white); font-weight:600; }
+        .clm-nota strong { color:var(--text); font-weight:600; }
         @media (max-width:768px) {
             .cl-mur { padding:1.9rem 0 1.6rem; }
             .clm-h2 { font-size:1.2rem; margin-bottom:1.3rem; }
-            .clm-grid { grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:.4rem; }
-            .clm-n { font-size:.84rem; }
-            .clm-c.dest .clm-n { font-size:.92rem; }
+            .clm-grid { grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:.4rem; }
+            .clm-n { font-size:var(--t0); }
+            .clm-c.dest .clm-n { font-size:var(--t1); }
         }
         @media (max-width:560px) {
             .clm-s { display:none; }
             .clm-c { padding:.45rem .55rem; }
+            .clm-grid { grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); }
         }
-        .hero-disc { font-family:var(--font-mono,monospace); font-size:.7rem; letter-spacing:.16em;
-            text-transform:uppercase; color:var(--accent-green); margin:0 0 .5rem; font-weight:600; }
+        .hero-disc { font-family:var(--font-mono,monospace); font-size:var(--t0); letter-spacing:.06em;
+            text-transform:uppercase; color:var(--green); margin:0 0 .5rem; font-weight:600; line-height:1.3; }
         /* A mòbil aquesta línia costa 26 px i el dibuix del hero ja hi cabia
            just: amb ella a la mida de sobretaula queia 15 px per sota del plec.
            Es cenyeix en comptes de treure-la —dir de què vivim val aquells
            píxels— i `test-portada` en mesura les dues amplades. */
         @media (max-width:768px) {
-            .hero-disc { font-size:.6rem; letter-spacing:.12em; margin:0; }
+            .hero-disc { font-size:var(--t0); letter-spacing:.06em; margin:0; }
             .hero-eyebrow.hero-portes { margin-bottom:1rem; }
             /* Amb la tercera porta, les tres queien en tres línies a 390 px i el
                botó del dibuix se n'anava 2 px per sota del plec. El que costa
@@ -384,12 +372,13 @@
            dues coses que aquí no diuen res —el guió decoratiu de
            `.hero-eyebrow`, que etiqueta un títol i no una fila d'enllaços, i
            80 punts de `letter-spacing`. */
-        .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; letter-spacing:.1em; }
+        .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem 1.25rem; letter-spacing:.06em; line-height:1.3; }
         .hero-portes::before { display:none; }
         .hero-portes a { color:inherit; text-decoration:none;
             border-bottom:1px dashed var(--border); transition:.15s; }
-        .hero-portes a:hover { color:var(--accent-green); border-bottom-color:var(--accent-green); }
-        .hero-portes span { opacity:.5; }
+        .hero-portes a:hover { color:var(--green); border-bottom-color:var(--green); }
+        /* A 15 px no sempre hi caben seguides: sense el «·», el salt no deixa res penjant. */
+        .hero-portes span { display:none; }
         .mv-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:3rem; align-items:center; }
         .mv-viz { position:relative; }
         .mv-svg { width:100%; height:auto; display:block; }
@@ -411,8 +400,8 @@
         :root[lang="es"] .mv-svg .mv-ca, :root[lang="es"] .pl-svg .mv-ca { display:none; }
         :root[lang="es"] .mv-svg .mv-es, :root[lang="es"] .pl-svg .mv-es { display:inline; }
         .mv-leg { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-top:.6rem;
-            font-family:var(--mono); font-size:.68rem; color:var(--muted); }
-        .mv-lt { color:var(--accent-blue); } .mv-li { color:var(--accent-purple); }
+            font-family:var(--mono); font-size:var(--t0); color:var(--muted); }
+        .mv-lt { color:var(--blue); } .mv-li { color:var(--purple); }
         .mv-lc { margin-left:auto; }
 
         /* ── EL POLS · el mapa com un cos, no com una foto ──────────────────
@@ -426,10 +415,10 @@
            Els polsos no es toquen amb el ratolí: els `<title>` de les fletxes
            de sota han de seguir sortint. */
         .mv-pols { pointer-events:none; }
-        .mv-p { fill:none; stroke:var(--accent-blue); stroke-width:3.5; stroke-linecap:round;
+        .mv-p { fill:none; stroke:var(--blue); stroke-width:3.5; stroke-linecap:round;
             stroke-dasharray:7 93; stroke-dashoffset:100;
             animation:mv-flueix 3.4s linear infinite; }
-        .mv-p.i { stroke:var(--accent-purple); stroke-width:3; stroke-dasharray:5 95; }
+        .mv-p.i { stroke:var(--purple); stroke-width:3; stroke-dasharray:5 95; }
         @keyframes mv-flueix { to { stroke-dashoffset:0; } }
         .mv-svg.aturat .mv-p { animation-play-state:paused; }
 
@@ -438,7 +427,7 @@
            el mateix mapa, o la comparació no es pot fer. */
         .mv-svg.encallat .mv-p[data-para] { animation-play-state:paused; opacity:0; }
         .mv-svg.encallat .mv-f[data-para] { stroke:var(--border-strong) !important; opacity:.28 !important; }
-        .mv-svg.encallat .mv-n[data-para] circle { stroke:var(--accent-orange); stroke-width:2.4;
+        .mv-svg.encallat .mv-n[data-para] circle { stroke:var(--orange); stroke-width:2.4;
             stroke-dasharray:5 4; }
         .mv-svg.encallat .mv-n[data-sec] { opacity:.42; }
         .mv-svg .mv-n, .mv-svg .mv-f, .mv-svg .mv-p { transition:opacity .45s ease, stroke .45s ease; }
@@ -449,33 +438,33 @@
            és poder canviar, no el contingut. */
         .dues-vistes { padding:5rem 0; border-top:1px solid var(--border); }
         .dv-tria { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin:0 0 1.8rem; }
-        .dv-t { font-family:var(--mono); font-size:.76rem; color:var(--muted); cursor:pointer;
-            background:var(--bg-elevated); border:1px solid var(--border); border-radius:999px;
+        .dv-t { font-family:var(--mono); font-size:var(--t0); color:var(--muted); cursor:pointer;
+            background:var(--card); border:1px solid var(--border); border-radius:999px;
             padding:.5rem 1.1rem; transition:border-color .2s, color .2s, background .2s; }
-        .dv-t:hover { border-color:var(--accent-indigo); color:var(--white); }
-        .dv-t.on { border-color:var(--accent-indigo); color:var(--white); background:rgba(99,102,241,.12); }
+        .dv-t:hover { border-color:var(--indigo); color:var(--text); }
+        .dv-t.on { border-color:var(--indigo); color:var(--text); background:rgba(99,102,241,.12); }
         .dv-pan[hidden] { display:none; }
-        .dv-peu { max-width:62ch; margin:2rem auto 0; text-align:center; font-size:.9rem;
+        .dv-peu { max-width:62ch; margin:2rem auto 0; text-align:center; font-size:var(--t0);
             line-height:1.75; color:var(--muted); }
-        .dv-peu b { color:var(--white); font-weight:600; }
+        .dv-peu b { color:var(--text); font-weight:600; }
 
         /* Els cinc estats. Numerats pel CSS i no a mà: el dia que n'hi hagi
            quatre o sis, la numeració no quedarà mentint. */
         .dv-flux { max-width:900px; margin:3rem auto 0; padding-top:2.2rem;
             border-top:1px solid var(--border); }
-        .dv-fk { font-family:var(--mono); font-size:.64rem; letter-spacing:.14em;
-            text-transform:uppercase; color:var(--accent-orange); text-align:center; margin-bottom:1.3rem; }
+        .dv-fk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
+            text-transform:uppercase; color:var(--orange); text-align:center; margin-bottom:1.3rem; }
         .dv-fl { list-style:none; padding:0; margin:0; counter-reset:dvf;
             display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:.9rem; }
-        .dv-fl li { counter-increment:dvf; background:var(--bg-panel); border:1px solid var(--border);
+        .dv-fl li { counter-increment:dvf; background:var(--panel); border:1px solid var(--border);
             border-radius:10px; padding:.9rem .95rem; position:relative; }
-        .dv-fl li::before { content:counter(dvf); font-family:var(--mono); font-size:.6rem;
-            color:var(--accent-indigo); position:absolute; top:.55rem; right:.65rem; }
-        .dv-fl b { display:block; font-size:.82rem; color:var(--white); margin-bottom:.35rem; }
-        .dv-fl span { font-size:.76rem; line-height:1.6; color:var(--muted); }
-        .dv-fr { max-width:68ch; margin:1.3rem auto 0; text-align:center; font-size:.82rem;
+        .dv-fl li::before { content:counter(dvf); font-family:var(--mono); font-size:var(--t0);
+            color:var(--indigo); position:absolute; top:.55rem; right:.65rem; }
+        .dv-fl b { display:block; font-size:var(--t0); color:var(--text); margin-bottom:.35rem; }
+        .dv-fl span { font-size:var(--t0); line-height:1.6; color:var(--muted); }
+        .dv-fr { max-width:68ch; margin:1.3rem auto 0; text-align:center; font-size:var(--t0);
             line-height:1.7; color:var(--muted); }
-        .dv-fr b { color:var(--accent-orange); font-weight:600; }
+        .dv-fr b { color:var(--orange); font-weight:600; }
 
         /* ══ LA VISTA CASTELL DEL CAS ══════════════════════════════════════
            La planta porta els noms dels nodes i per això demana més espai que
@@ -486,12 +475,12 @@
         .pl-nom { font-family:var(--mono); font-size:9px; fill:var(--muted); }
         .cv-men { margin-top:1rem; }
         .cv-txt h3 { font-size:1.15rem; margin:0 0 .6rem; }
-        .cv-k { font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; color:var(--muted);
-            background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
+        .cv-k { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--muted);
+            background:var(--card); border:1px solid var(--border); border-radius:8px;
             padding:.5rem .7rem; margin:1rem 0; }
-        .cv-k b { color:var(--white); }
-        .cv-t { width:100%; border-collapse:collapse; font-size:.74rem; margin-bottom:1.1rem; }
-        .cv-t th { font-family:var(--mono); font-size:.6rem; letter-spacing:.08em;
+        .cv-k b { color:var(--text); }
+        .cv-t { width:100%; border-collapse:collapse; font-size:var(--t0); margin-bottom:1.1rem; }
+        .cv-t th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.08em;
             text-transform:uppercase; color:var(--muted); text-align:left; font-weight:400;
             padding:.35rem .4rem; border-bottom:1px solid var(--border); }
         .cv-t td { padding:.38rem .4rem; border-bottom:1px solid var(--border); color:var(--light); }
@@ -499,26 +488,36 @@
         /* Un zero i un excés es llegeixen diferent, i per això es pinten
            diferent: el buit s'apaga i el que no hi cap crida. */
         .cv-0 { color:var(--border) !important; }
-        .cv-x { color:var(--accent-orange) !important; font-weight:600; }
-        .cv-sob { font-family:var(--mono); font-size:.6rem; opacity:.7; font-weight:400; }
+        .cv-x { color:var(--orange) !important; font-weight:600; }
+        .cv-sob { font-family:var(--mono); font-size:var(--t0); opacity:.7; font-weight:400; }
         .cv-ll { list-style:none; padding:0; margin:0 0 1rem; }
-        .cv-ll li { font-size:.82rem; line-height:1.7; color:var(--muted); padding-left:1rem;
+        .cv-ll li { font-size:var(--t0); line-height:1.7; color:var(--muted); padding-left:1rem;
             position:relative; margin-bottom:.7rem; }
-        .cv-ll li::before { content:'\2022'; position:absolute; left:0; color:var(--accent-orange); }
-        .cv-ll b { color:var(--white); font-weight:600; }
+        .cv-ll li::before { content:'\2022'; position:absolute; left:0; color:var(--orange); }
+        .cv-ll b { color:var(--text); font-weight:600; }
 
         /* Les dues vistes s'apaguen alhora: el mateix atribut que al graf. */
         .pl-svg [data-para] { transition:opacity .45s ease; }
         .pl-svg.encallat [data-para] { opacity:.12; }
-        .pl-svg.encallat .pl-baix[data-para] { opacity:1; stroke:var(--accent-orange);
+        .pl-svg.encallat .pl-baix[data-para] { opacity:1; stroke:var(--orange);
             stroke-width:2.4; }
-        .pl-svg.encallat .pl-nom[data-para] { opacity:1; fill:var(--accent-orange); }
+        .pl-svg.encallat .pl-nom[data-para] { opacity:1; fill:var(--orange); }
 
         @media (max-width:860px) {
-            .cv-grid { grid-template-columns:1fr; }
+            .cv-grid { grid-template-columns:minmax(0,1fr); }
         }
+        @media (max-width:560px) {
+            .cv-t th { letter-spacing:0; }
+            .cv-t th, .cv-t td { padding-left:.25rem; padding-right:.25rem; }
+        }
+        /* Per sota de 380 px no hi cap amb paraules senceres: es cenyeix, i a 320 es parteix. */
+        @media (max-width:379px) {
+            .cv-t th { letter-spacing:-.04em; }
+            .cv-t th, .cv-t td { padding-left:.2rem; padding-right:.2rem; }
+        }
+        @media (max-width:340px) { .cv-t th { overflow-wrap:anywhere; } }
 
-        .hero-evok { font-family:var(--mono); font-size:.62rem; letter-spacing:.12em;
+        .hero-evok { font-family:var(--mono); font-size:var(--t0); letter-spacing:.04em;
             text-transform:uppercase; color:var(--muted); margin:0 0 .6rem; }
 
         /* ══ EL QUE DECIDEIXES ═════════════════════════════════════════════
@@ -528,37 +527,37 @@
         .decideix { padding:5rem 0; border-top:1px solid var(--border); }
         .vd-wrap { max-width:1000px; margin:0 auto; }
         .vd-t { width:100%; border-collapse:collapse; }
-        .vd-t th { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em;
+        .vd-t th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
             text-transform:uppercase; color:var(--muted); text-align:left; font-weight:400;
             padding:.5rem .8rem; border-bottom:1px solid var(--border); width:50%; }
         .vd-t td { padding:.85rem .8rem; border-bottom:1px solid var(--border);
-            font-size:.86rem; line-height:1.65; vertical-align:top; }
+            font-size:var(--t0); line-height:1.65; vertical-align:top; }
         /* L'esquerra apagada i la dreta encesa: es llegeix sola de quin costat
            vols estar, sense haver-ho d'escriure. */
         .vd-c { color:var(--muted); }
         .vd-a { color:var(--light); }
-        .vd-a b { color:var(--white); font-weight:600; }
-        .vd-avis { max-width:70ch; margin:1.4rem auto 0; text-align:center; font-size:.8rem;
+        .vd-a b { color:var(--text); font-weight:600; }
+        .vd-avis { max-width:70ch; margin:1.4rem auto 0; text-align:center; font-size:var(--t0);
             line-height:1.7; color:var(--muted); }
         .vd-avis b { color:var(--light); font-weight:600; }
         .vd-prova { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
             gap:1rem; margin-top:2.4rem; padding-top:2rem; border-top:1px solid var(--border); }
         .vd-p { border:1px solid var(--border); border-radius:12px; padding:1.1rem 1.2rem;
-            background:var(--bg-panel); }
-        .vd-pk { font-family:var(--mono); font-size:.62rem; letter-spacing:.11em;
-            text-transform:uppercase; color:var(--accent-green); margin-bottom:.5rem; }
-        .vd-p b { display:block; font-size:.95rem; color:var(--white); margin-bottom:.5rem; }
-        .vd-p p { margin:0; font-size:.8rem; line-height:1.7; color:var(--muted); }
+            background:var(--panel); }
+        .vd-pk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em;
+            text-transform:uppercase; color:var(--green); margin-bottom:.5rem; }
+        .vd-p b { display:block; font-size:.95rem; color:var(--text); margin-bottom:.5rem; }
+        .vd-p p { margin:0; font-size:var(--t0); line-height:1.7; color:var(--muted); }
         .vd-p p b { display:inline; font-size:inherit; color:var(--light); }
         @media (max-width:700px) {
             .vd-t, .vd-t tbody, .vd-t tr, .vd-t td { display:block; width:100%; }
             .vd-t thead { display:none; }
             .vd-t tr { border-bottom:1px solid var(--border); padding:.6rem 0; }
             .vd-t td { border:none; padding:.2rem 0; }
-            .vd-c::before { content:'Avui: '; font-family:var(--mono); font-size:.62rem;
+            .vd-c::before { content:'Avui: '; font-family:var(--mono); font-size:var(--t0);
                 text-transform:uppercase; letter-spacing:.08em; opacity:.6; }
-            .vd-a::before { content:'Amb el mapa: '; font-family:var(--mono); font-size:.62rem;
-                text-transform:uppercase; letter-spacing:.08em; color:var(--accent-green); }
+            .vd-a::before { content:'Amb el mapa: '; font-family:var(--mono); font-size:var(--t0);
+                text-transform:uppercase; letter-spacing:.08em; color:var(--green); }
         }
 
 
@@ -566,17 +565,17 @@
            fila es torna una fitxa i la primera cel·la fa de títol. */
         .operatiu { padding:5rem 0; border-top:1px solid var(--border); }
         .op-wrap { max-width:1000px; margin:0 auto; }
-        .op-origen { border:1px solid var(--border); border-left:3px solid var(--accent-green); border-radius:0 12px 12px 0;
-            padding:1.2rem 1.4rem; background:var(--bg-panel); margin-bottom:2.4rem; }
-        .op-origen b { display:block; font-size:1.05rem; color:var(--white); margin-bottom:.5rem; }
-        .op-origen p { margin:0; font-size:.88rem; line-height:1.75; color:var(--light); }
+        .op-origen { border:1px solid var(--border); border-left:3px solid var(--green); border-radius:0 12px 12px 0;
+            padding:1.2rem 1.4rem; background:var(--panel); margin-bottom:2.4rem; }
+        .op-origen b { display:block; font-size:1.05rem; color:var(--text); margin-bottom:.5rem; }
+        .op-origen p { margin:0; font-size:var(--t0); line-height:1.75; color:var(--light); }
         .op-origen p b { display:inline; font-size:inherit; }
         .op-t { width:100%; border-collapse:collapse; margin-bottom:1rem; }
-        .op-t thead th { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+        .op-t thead th { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); text-align:left; font-weight:400; padding:.5rem .8rem; border-bottom:1px solid var(--border); }
-        .op-t td, .op-t tbody th { padding:.8rem; border-bottom:1px solid var(--border); font-size:.86rem;
+        .op-t td, .op-t tbody th { padding:.8rem; border-bottom:1px solid var(--border); font-size:var(--t0);
             line-height:1.6; vertical-align:top; text-align:left; }
-        .op-t tbody th { color:var(--white); font-weight:600; }
+        .op-t tbody th { color:var(--text); font-weight:600; }
         .op-avui { color:var(--muted); }
         .op-ara { color:var(--light); }
         .op-qui { margin-top:2.4rem; }
@@ -585,20 +584,20 @@
         .op-nou th, .op-nou td { background:var(--green-dim); }
         .op-h3 { font-size:1.15rem; font-weight:700; margin:2.6rem 0 1rem; }
         .op-cicle { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(5,1fr); gap:.8rem; counter-reset:op; }
-        .op-cicle li { counter-increment:op; border:1px solid var(--border); border-top:2px solid var(--accent-indigo);
-            border-radius:0 0 10px 10px; padding:1rem; background:var(--bg-panel); font-size:.8rem; line-height:1.6; color:var(--muted); }
-        .op-cicle li b { display:block; color:var(--white); font-size:.92rem; margin-bottom:.35rem; }
-        .op-cicle li b::before { content:counter(op) ' · '; font-family:var(--mono); color:var(--accent-indigo); font-weight:400; }
-        .op-nota { font-size:.82rem; line-height:1.7; color:var(--muted); margin-top:1rem; }
+        .op-cicle li { counter-increment:op; border:1px solid var(--border); border-top:2px solid var(--indigo);
+            border-radius:0 0 10px 10px; padding:1rem; background:var(--panel); font-size:var(--t0); line-height:1.6; color:var(--muted); }
+        .op-cicle li b { display:block; color:var(--text); font-size:var(--t0); margin-bottom:.35rem; }
+        .op-cicle li b::before { content:counter(op) ' · '; font-family:var(--mono); color:var(--indigo); font-weight:400; }
+        .op-nota { font-size:var(--t0); line-height:1.7; color:var(--muted); margin-top:1rem; }
         .op-nota b { color:var(--light); }
-        .op-nota a { color:var(--accent-blue); }
+        .op-nota a { color:var(--blue); }
         .op-paquet { display:grid; grid-template-columns:1.6fr 1fr; gap:2rem; align-items:start; }
-        .op-llista { margin:0; padding-left:1.3rem; display:grid; gap:.55rem; font-size:.88rem; line-height:1.6; color:var(--light); }
-        aside.op-preu { border:1px solid var(--border); border-top:3px solid var(--accent-green);
-            border-radius:0 0 12px 12px; padding:1.4rem; background:var(--bg-panel); margin-top:2.6rem; display:flex; flex-direction:column; gap:.7rem; }
-        aside.op-preu strong { font-size:2.2rem; line-height:1; color:var(--white); }
-        aside.op-preu small { font-size:.8rem; color:var(--muted); font-weight:400; }
-        aside.op-preu p { margin:0; font-size:.8rem; line-height:1.65; color:var(--muted); }
+        .op-llista { margin:0; padding-left:1.3rem; display:grid; gap:.55rem; font-size:var(--t0); line-height:1.6; color:var(--light); }
+        aside.op-preu { border:1px solid var(--border); border-top:3px solid var(--green);
+            border-radius:0 0 12px 12px; padding:1.4rem; background:var(--panel); margin-top:2.6rem; display:flex; flex-direction:column; gap:.7rem; }
+        aside.op-preu strong { font-size:2.2rem; line-height:1; color:var(--text); }
+        aside.op-preu small { font-size:var(--t0); color:var(--muted); font-weight:400; }
+        aside.op-preu p { margin:0; font-size:var(--t0); line-height:1.65; color:var(--muted); }
         @media (max-width:860px) {
             .op-cicle { grid-template-columns:1fr; }
             .op-paquet { grid-template-columns:1fr; gap:0; }
@@ -613,13 +612,13 @@
 
         .mv-pols-ui { margin-top:.7rem; }
         .mv-pu-b { display:flex; flex-wrap:wrap; gap:.45rem; }
-        .mv-b { font-family:var(--mono); font-size:.72rem; color:var(--light); cursor:pointer;
-            background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px;
+        .mv-b { font-family:var(--mono); font-size:var(--t0); color:var(--light); cursor:pointer;
+            background:var(--card); border:1px solid var(--border); border-radius:8px;
             padding:.4rem .7rem; transition:border-color .2s, color .2s; }
-        .mv-b:hover { border-color:var(--accent-indigo); color:var(--white); }
-        .mv-b[aria-pressed="true"] { border-color:var(--accent-orange); color:var(--white);
+        .mv-b:hover { border-color:var(--indigo); color:var(--text); }
+        .mv-b[aria-pressed="true"] { border-color:var(--orange); color:var(--text);
             background:color-mix(in srgb, var(--orange) 10%, transparent); }
-        .mv-pu-t { font-size:.76rem; line-height:1.65; color:var(--muted); margin:.55rem 0 0; }
+        .mv-pu-t { font-size:var(--t0); line-height:1.65; color:var(--muted); margin:.55rem 0 0; }
         .mv-pu-t b { color:var(--light); font-weight:600; }
 
         /* Qui ha demanat que les coses no es moguin, no se li mouen. El mapa
@@ -637,25 +636,25 @@
            primer perquè és la vista nova, i és l'argument. */
         .rengles { padding:5rem 0; border-top:1px solid var(--border); }
         .ct-tria { display:flex; flex-wrap:wrap; gap:.45rem; justify-content:center; margin-bottom:1.4rem; }
-        .ct-t { font-family:var(--mono); font-size:.72rem; color:var(--muted); cursor:pointer;
-            background:var(--bg-elevated); border:1px solid var(--border); border-radius:999px;
+        .ct-t { font-family:var(--mono); font-size:var(--t0); color:var(--muted); cursor:pointer;
+            background:var(--card); border:1px solid var(--border); border-radius:999px;
             padding:.42rem .85rem; display:inline-flex; align-items:center; gap:.4rem;
             transition:border-color .2s, color .2s; }
-        .ct-t:hover { border-color:var(--accent-indigo); color:var(--white); }
-        .ct-t.on { border-color:var(--accent-indigo); color:var(--white); background:rgba(99,102,241,.12); }
+        .ct-t:hover { border-color:var(--indigo); color:var(--text); }
+        .ct-t.on { border-color:var(--indigo); color:var(--text); background:rgba(99,102,241,.12); }
         .pl-svg, .al-svg { width:100%; height:auto; display:block; }
         /* Els anells fan comptable la fondària: sense ells, «quatre fons» i
            «sis fons» es llegeixen igual i la planta torna a ser decoració. */
         .pl-primera, .pl-lateral, .pl-vent { }
         .pl-anell { fill:none; stroke:var(--border); stroke-width:1; opacity:.5; }
-        .pl-baix { fill:var(--white); opacity:.9; }
+        .pl-baix { fill:var(--text); opacity:.9; }
         .pl-g { opacity:.95; }
         .ct-men { display:flex; flex-wrap:wrap; gap:.5rem 1.4rem; justify-content:center;
             margin:1.6rem 0 0; padding-top:1.3rem; border-top:1px solid var(--border); }
-        .ct-m { display:inline-flex; align-items:center; gap:.45rem; font-size:.74rem;
+        .ct-m { display:inline-flex; align-items:center; gap:.45rem; font-size:var(--t0);
             color:var(--muted); max-width:30ch; line-height:1.5; }
         .ct-m i { width:22px; border-radius:2px; flex-shrink:0; }
-        .ct-m b { color:var(--white); font-weight:600; }
+        .ct-m b { color:var(--text); font-weight:600; }
 
         .mv-txt h3 { font-family:var(--sans); font-size:clamp(1.3rem,2.2vw,1.75rem); font-weight:700;
             line-height:1.2; margin-bottom:.8rem; }
@@ -664,61 +663,61 @@
            de costat: llegides alhora es veu que el que canvia no és el preu,
            és quina mena de lliurament es paga. */
         .mv-cmp { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-bottom:1.2rem; }
-        .mv-c { background:var(--bg-panel); border:1px solid var(--border); border-radius:10px; padding:.8rem .9rem; }
+        .mv-c { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:.8rem .9rem; }
         .mv-c.canal { border-top:2px solid var(--muted); }
-        .mv-c.visita { border-top:2px solid var(--accent-green); }
-        .mv-ck { font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+        .mv-c.visita { border-top:2px solid var(--green); }
+        .mv-ck { font-family:var(--mono); font-size:var(--t0); letter-spacing:.08em; text-transform:uppercase;
             color:var(--muted); line-height:1.35; min-height:2.6em; }
         .mv-cv { font-family:var(--mono); font-size:1.35rem; font-weight:700; margin:.2rem 0 .25rem; }
-        .mv-c.canal .mv-cv { color:var(--muted); } .mv-c.visita .mv-cv { color:var(--accent-green); }
-        .mv-cd { font-size:.74rem; color:var(--light); line-height:1.45; }
-        .mv-tesi { font-size:.9rem; color:var(--light); line-height:1.65; margin:0 0 .9rem;
-            border-left:2px solid var(--accent-green); padding-left:.9rem; }
-        .mv-tesi b { color:var(--white); font-weight:600; }
-        .mv-avis { font-size:.76rem; color:var(--muted); line-height:1.55; margin:0 0 1.2rem; }
+        .mv-c.canal .mv-cv { color:var(--muted); } .mv-c.visita .mv-cv { color:var(--green); }
+        .mv-cd { font-size:var(--t0); color:var(--light); line-height:1.45; }
+        .mv-tesi { font-size:var(--t0); color:var(--light); line-height:1.65; margin:0 0 .9rem;
+            border-left:2px solid var(--green); padding-left:.9rem; }
+        .mv-tesi b { color:var(--text); font-weight:600; }
+        .mv-avis { font-size:var(--t0); color:var(--muted); line-height:1.55; margin:0 0 1.2rem; }
         .mv-avis b { color:var(--light); font-weight:600; }
         /* El repartiment del cas: qui fa cada lliurament. Tres línies i tres
            colors, els mateixos que fa servir l'app a la barra de salut, perquè
            qui vegi la portada i després obri el SOS reconegui el mateix. */
         .mv-qui { border:1px solid var(--border); border-radius:10px; padding:.75rem .9rem; margin:0 0 1.2rem;
-            background:var(--bg-panel); }
-        .mv-qk { font-family:var(--mono); font-size:.62rem; letter-spacing:.09em; text-transform:uppercase;
+            background:var(--panel); }
+        .mv-qk { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
             color:var(--muted); margin-bottom:.45rem; }
-        .mv-qr { display:flex; gap:.5rem; align-items:baseline; font-size:.76rem; color:var(--light);
+        .mv-qr { display:flex; gap:.5rem; align-items:baseline; font-size:var(--t0); color:var(--light);
             line-height:1.5; padding:.15rem 0; }
-        .mv-qr b { font-family:var(--mono); min-width:1.4rem; font-size:.9rem; }
-        .mv-qr b.mq { color:var(--accent-green); } .mv-qr b.ms { color:var(--muted); }
-        .mv-qr b.mp { color:var(--accent-purple); }
-        .mv-qr span b { font-family:inherit; font-size:inherit; min-width:0; color:var(--white); font-weight:600; }
+        .mv-qr b { font-family:var(--mono); min-width:1.4rem; font-size:var(--t0); }
+        .mv-qr b.mq { color:var(--green); } .mv-qr b.ms { color:var(--muted); }
+        .mv-qr b.mp { color:var(--purple); }
+        .mv-qr span b { font-family:inherit; font-size:inherit; min-width:0; color:var(--text); font-weight:600; }
 
         .mv-ctas { display:flex; gap:.7rem; flex-wrap:wrap; }
-        .mv-cta { font-size:.84rem; font-weight:600; text-decoration:none; padding:.55rem .95rem;
-            border-radius:9px; border:1px solid var(--border); background:var(--bg-elevated); color:var(--white); }
-        .mv-cta.pri { background:var(--accent-indigo); border-color:var(--accent-indigo); color:var(--on-accent); }
+        .mv-cta { font-size:var(--t0); font-weight:600; text-decoration:none; padding:.55rem .95rem;
+            border-radius:9px; border:1px solid var(--border); background:var(--card); color:var(--text); }
+        .mv-cta.pri { background:var(--indigo); border-color:var(--indigo); color:var(--on-accent); }
         @media (max-width:1080px) { .mv-grid { grid-template-columns:1fr; gap:2rem; } }
         @media (max-width:520px) { .mv-cmp { grid-template-columns:1fr; } .mv-ck { min-height:0; } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
         /* CLIENTS / TRAJECTÒRIA */
         .clients { padding:8rem 0; }
-        .cl-stat .l { font-size:.78rem; color:var(--muted); margin-top:.5rem; line-height:1.4; }
+        .cl-stat .l { font-size:var(--t0); color:var(--muted); margin-top:.5rem; line-height:1.4; }
 
         /* CTA FINAL */
         .cta-final { padding:10rem 0; text-align:center; position:relative; overflow:hidden; }
         .cta-final::before { content:'SOS'; position:absolute; font-family:var(--sans); font-size:26vw; font-weight:700; color:rgba(99,102,241,0.03); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap; }
         .cta-final h2 { font-family:var(--sans); font-size:clamp(2.3rem,5vw,4.6rem); font-weight:700; line-height:1.12; margin-bottom:1.5rem; position:relative; }
-        .cta-final h2 em { font-style:normal; color:var(--accent-blue); }
+        .cta-final h2 em { font-style:normal; color:var(--blue); }
         .cta-final .actions { position:relative; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
 
         /* FOOTER */
         footer { padding:3rem 0; border-top:1px solid var(--border); }
         .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--white); }
-        .footer-logo span { color:var(--accent-indigo); }
-        .footer-copy { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.08em; }
+        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--text); }
+        .footer-logo span { color:var(--indigo); }
+        .footer-copy { font-family:var(--mono); font-size:var(--t0); color:var(--muted); letter-spacing:.08em; }
         .footer-links { display:flex; flex-wrap:wrap; justify-content:center; gap:.9rem 2rem; list-style:none; }
-        .footer-links a { font-size:.78rem; color:var(--muted); text-decoration:none; transition:color .2s; }
-        .footer-links a:hover { color:var(--accent-indigo); }
+        .footer-links a { font-size:var(--t0); color:var(--muted); text-decoration:none; transition:color .2s; }
+        .footer-links a:hover { color:var(--indigo); }
 
         /* ANIMATIONS */
         .fade-up { opacity:1; transform:translateY(0); transition:opacity .7s ease,transform .7s ease; }
@@ -736,7 +735,7 @@
            queia per sota del plec i la primera pantalla es feia el doble de
            llarga. Són dos problemes diferents i ara tenen dos llindars. */
         @media (max-width:1080px) {
-            .hero-grid { grid-template-columns:1fr; gap:2.2rem; grid-template-areas:'cap' 'vis' 'cos'; }
+            .hero-grid { grid-template-columns:1fr; gap:1.6rem; grid-template-areas:'cap' 'vis' 'cos'; }
             /* Tres columnes de 150px no caben en un mòbil i partirien cada
                frase en columnes d'una paraula. En vertical segueix llegint-se
                com un recorregut perquè cada casella porta el seu moment
@@ -744,6 +743,8 @@
             .hero-evo { grid-template-columns:1fr; gap:.75rem; }
             .hero-evo li + li::after { display:none; }
             .hero-evo .evo-k { min-height:0; }
+            /* En una columna el marge de la descripció se sumava al `gap`. */
+            .hero-desc { margin-bottom:0; }
         }
         @media (max-width:1340px) {
         }
@@ -752,18 +753,18 @@
            L'estructura d'una pàgina de venda de la guia d'estil demana un «com»
            de 3-4 passos, i era l'únic bloc que faltava. Qui decideix un
            pressupost necessita saber què passa, quan i quanta feina li tocarà. */
-        .passos { background:var(--bg-dark); }
+        .passos { background:var(--bg); }
         .passos-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.2rem; margin-top:3rem; }
-        .pas { background:var(--bg-panel); border:1px solid var(--border); border-top:2px solid var(--accent-indigo); border-radius:0 0 10px 10px; padding:1.8rem 1.5rem; display:flex; flex-direction:column; gap:.6rem; }
-        .pas-n { font-family:var(--mono); font-size:.7rem; letter-spacing:.1em; color:var(--accent-indigo); }
+        .pas { background:var(--panel); border:1px solid var(--border); border-top:2px solid var(--indigo); border-radius:0 0 10px 10px; padding:1.8rem 1.5rem; display:flex; flex-direction:column; gap:.6rem; }
+        .pas-n { font-family:var(--mono); font-size:var(--t0); letter-spacing:.1em; color:var(--indigo); }
         .pas h3 { font-size:1.1rem; font-weight:700; line-height:1.3; }
-        .pas p { font-size:.87rem; color:var(--muted); line-height:1.65; flex:1; }
+        .pas p { font-size:var(--t0); color:var(--muted); line-height:1.65; flex:1; }
         .pas-meta { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.4rem; }
-        .pas-meta span { font-family:var(--mono); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase; padding:.28rem .55rem; border:1px solid var(--border); border-radius:3px; color:var(--light); }
-        .pas-meta .t-endus { color:var(--accent-green); border-color:color-mix(in srgb, var(--green) 40%, transparent); }
+        .pas-meta span { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase; padding:.28rem .55rem; border:1px solid var(--border); border-radius:3px; color:var(--light); }
+        .pas-meta .t-endus { color:var(--green); border-color:color-mix(in srgb, var(--green) 40%, transparent); }
         /* El quart pas és el que ven de veritat —marxar— i es marca en verd. */
-        .pas.pas-final { border-top-color:var(--accent-green); }
-        .pas.pas-final .pas-n { color:var(--accent-green); }
+        .pas.pas-final { border-top-color:var(--green); }
+        .pas.pas-final .pas-n { color:var(--green); }
 
         /* ── Prova honesta al CTA ────────────────────────────────────────────
            Abans hi havia una cita inventada, retolada com a inventada («el que
@@ -771,10 +772,10 @@
            lloc de més conversió de la pàgina, resta en comptes de sumar. Es
            canvia per allò que sí que es pot comprovar. */
         .proves { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); max-width:820px; margin:0 auto 2.5rem; }
-        .prova { background:var(--bg-dark); padding:1.5rem 1.2rem; text-align:left; }
-        .prova-n { font-family:var(--mono); font-size:1.5rem; font-weight:700; color:var(--accent-green); line-height:1.2; }
-        .prova-l { font-size:.8rem; color:var(--muted); line-height:1.55; margin-top:.35rem; }
-        .proves-nota { font-size:.85rem; color:var(--muted); max-width:820px; margin:0 auto 2.5rem; line-height:1.7; }
+        .prova { background:var(--bg); padding:1.5rem 1.2rem; text-align:left; }
+        .prova-n { font-family:var(--mono); font-size:1.5rem; font-weight:700; color:var(--green); line-height:1.2; }
+        .prova-l { font-size:var(--t0); color:var(--muted); line-height:1.55; margin-top:.35rem; }
+        .proves-nota { font-size:var(--t0); color:var(--muted); max-width:820px; margin:0 auto 2.5rem; line-height:1.7; }
         @media (max-width:600px) {
             .glos-item, .pas { padding:1.35rem; }
         }
@@ -785,20 +786,18 @@
            —es llegeix com un índex, i un índex no fa travessar res.
            Tota la targeta és l'enllaç: una fletxa de 12 px com a única zona
            clicable és un objectiu que a mòbil es falla. */
-        .camins { padding:6rem 0; background:var(--bg-panel); border-top:1px solid var(--border); }
-        .camins-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.25rem; }
-        .cami { display:flex; flex-direction:column; gap:.5rem; text-decoration:none;
-            background:var(--bg); border:1px solid var(--border); border-radius:12px;
-            padding:1.6rem 1.5rem 1.4rem; transition:border-color .2s, transform .2s; }
-        .cami:hover { border-color:var(--accent-indigo); transform:translateY(-2px); }
-        .cami-k { font-family:var(--mono); font-size:.7rem; letter-spacing:.12em;
-            text-transform:uppercase; color:var(--accent-indigo); }
-        .cami-t { font-size:1.02rem; font-weight:650; color:var(--text); line-height:1.35; }
-        .cami-d { font-size:.88rem; color:var(--light); line-height:1.6; flex:1; }
-        .cami-d b { color:var(--text); font-weight:650; }
-        .cami-go { margin-top:.4rem; font-size:.85rem; font-weight:600; color:var(--accent-indigo); }
-        .cami:hover .cami-go { text-decoration:underline; }
-        @media (max-width:900px) { .camins-grid { grid-template-columns:1fr; } .camins { padding:4rem 0; } }
+        .serveis { padding:6rem 0; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .serveis-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.25rem; }
+        .srv { display:flex; flex-direction:column; gap:.6rem; padding:1.6rem 1.5rem;
+               background:var(--card); border:1px solid var(--border); border-radius:14px; }
+        .srv-k { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); font-weight:600; }
+        .srv-t { font-size:var(--t2); font-weight:650; color:var(--text); line-height:1.3; margin:0; }
+        .srv-d { font-size:var(--t0); color:var(--light); line-height:1.6; flex:1; margin:0; }
+        .srv-go { display:flex; flex-wrap:wrap; gap:.5rem 1.1rem; align-items:center; margin-top:.4rem; font-size:var(--t0); }
+        .srv-go a { color:var(--light); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+        .srv-go a.srv-a { color:var(--on-accent); background:var(--indigo); padding:.5rem .95rem; border-radius:9px; text-decoration:none; }
+        .srv-go a.srv-a:hover { filter:brightness(1.1); }
+        @media (max-width:900px) { .serveis-grid { grid-template-columns:1fr; } .serveis { padding:4rem 0; } }
     </style>
 </head>
 <body>
@@ -816,6 +815,9 @@
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
 .tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
 .tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .tt-nav .tn-g{position:relative}
@@ -854,6 +856,7 @@
      l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
      partia i la barra passava de dues files a tres. */
   .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
   /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
      El primer intent posava els cinc grups **en columna** a mòbil, oberts
      sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
@@ -907,7 +910,7 @@
 <nav class="tt-nav" aria-label="Navegació del lloc">
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
-  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span data-i18n="nv.g.sos">El SOS</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.apren">Formació</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span data-i18n="nv.g.mon">Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
   <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
 </nav>
@@ -964,8 +967,8 @@
                      Ara diu el recorregut i l'objecte: **dels castells al flux
                      de valor**. El recorregut és el que fa creïble el mètode i
                      l'objecte és el que es compra. -->
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">El mapa de valor de la teva organització, <em>funcionant cada dia</em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">L'equip dibuixa junt per on ha de fluir el valor —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l'ideal. Te'n vas amb el negoci funcionant, no amb un informe.</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l'equip se'l queda.</p>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">El teu mapa de valor, <em>funcionant cada dia</em></h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">L'equip dibuixa junt el <em>flux de valor</em> —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l'ideal. Te'n vas amb el negoci funcionant, no amb un informe.</strong>. El <em>flux de valor</em> es redissenya amb la gent que hi ha, i l'equip se'l queda.</p>
             </div>
             <div class="hero-cos">
                 <!-- Les dues portes. Existeixen perquè la pàgina venia a dues
@@ -1010,7 +1013,7 @@
                 </ol>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
                     <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Diagnostica la teva organització · 3 min</a>
-                    <a href="#operatiu" class="btn-ghost" data-i18n="hero.cta2">El teu negoci operatiu →</a>
+                    <a href="/SOS/pressupost.html" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero.cta2">Demana pressupost →</a>
                 </div>
                 <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
                 <!-- La prova, al costat de la primera crida i no al peu. Les tres
@@ -1140,6 +1143,52 @@
      de pime. La sala segueix sent humana; l'execució la fa el sistema.
      Les xifres de l'escala són les de `/mapa-web/` (sessió i taller) i la del
      paquet nou; cap altra xifra no surt aquí. -->
+<!-- ELS TRES SERVEIS (10/10/2026) ──────────────────────────────────────────
+     La portada parlava de moltes coses i Àlvaro va demanar que en digués tres:
+     el diagnòstic i la millora amb el mapa de valor, el desenvolupament web i
+     el SOS com a formació acció. Són les tres portes de la barra del lloc
+     (`build-nav.js`, `LLOC`), en el mateix ordre i amb el mateix destí; les
+     eines del SOS una per una viuen a dins del SOS. Substitueix «Tres camins»,
+     que repetia el menú amb el catàleg, qui som i el SOS. -->
+<section class="serveis" id="serveis">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="srv.eyebrow">Què fem</div>
+            <h2 data-i18n-html="srv.h2">Tres serveis, <em>un mateix mètode</em></h2>
+            <p data-i18n="srv.intro">Tot surt del mapa de valor: qui dona què a qui, també els favors i la confiança. A partir d'aquí, el millorem, en fem la web o l'aprens a mantenir viu.</p>
+        </div>
+        <div class="serveis-grid fade-up">
+            <article class="srv">
+                <span class="srv-k" data-i18n="srv.1k">1 · Diagnòstic i millora</span>
+                <h3 class="srv-t" data-i18n="srv.1t">El mapa de valor de la teva organització</h3>
+                <p class="srv-d" data-i18n="srv.1d">Analitzem com flueix el valor entre els rols, en fem el diagnòstic i l'equip acorda on millorar-lo: el mapa real al costat de l'ideal, amb les zones calentes marcades.</p>
+                <div class="srv-go">
+                    <a href="/SOS/diagnostic.html" class="srv-a" data-i18n="srv.1a">Fes el diagnòstic →</a>
+                    <a href="/SOS/vna.html" data-i18n="srv.1b">El mètode</a>
+                </div>
+            </article>
+            <article class="srv">
+                <span class="srv-k" data-i18n="srv.2k">2 · Desenvolupament web</span>
+                <h3 class="srv-t" data-i18n="srv.2t">La teva web, sortida del mapa</h3>
+                <p class="srv-d" data-i18n="srv.2d">Ens passes el que ja tens —la web, els documents, l'àudio— i en surt un primer esborrany amb una porta per a cada rol. El disseny i els textos els afinem junts, i la web és teva.</p>
+                <div class="srv-go">
+                    <a href="/mapa-web/" class="srv-a" data-i18n="srv.2a">Mapa i web en una hora →</a>
+                    <a href="/conecta/" data-i18n="srv.2b">Serveis connectables</a>
+                </div>
+            </article>
+            <article class="srv">
+                <span class="srv-k" data-i18n="srv.3k">3 · Formació acció</span>
+                <h3 class="srv-t" data-i18n="srv.3t">El SOS, après fent-lo servir</h3>
+                <p class="srv-d" data-i18n="srv.3d">Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l'eina lliure on viu el que surt de cada sessió.</p>
+                <div class="srv-go">
+                    <a href="/SOS/" class="srv-a" data-i18n="srv.3a">Entra al SOS →</a>
+                    <a href="/SOS/formacio.html" data-i18n="srv.3b">Els mòduls</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
 <section class="operatiu" id="operatiu">
     <div class="container">
         <div class="section-header fade-up">
@@ -1150,8 +1199,8 @@
         <div class="op-wrap fade-up">
             <div class="op-origen">
                 <div class="vd-pk" data-i18n="op.or.k">D'on surt</div>
-                <b data-i18n="op.or.t">A IKEA, el valor no va ser el dibuix</b>
-                <p data-i18n-html="op.or.d">Dos mapes —el de la direcció i el de l'àrea de serveis— van fer que l'equip directiu veiés el mateix flux de valor i s'acordés on havia de fluir millor. <b>El flux va millorar abans de canviar cap procés.</b> Però aquell efecte durava el que durava el taller, i després depenia de la memòria de l'equip. Això és el que ara es queda.</p>
+                <b data-i18n="op.or.t">El valor no és el dibuix</b>
+                <p data-i18n-html="op.or.d">Quan un equip directiu veu junt el mateix flux de valor, s'acorda on ha de fluir millor. <b>El flux va millorar abans de canviar cap procés.</b> Però aquell efecte durava el que durava el taller, i després depenia de la memòria de l'equip. Això és el que ara es queda.</p>
             </div>
             <table class="op-t">
                 <thead><tr><th scope="col" data-i18n="op.t1.c0">La feina</th><th scope="col" data-i18n="op.t1.c1">Abans, a mà</th><th scope="col" data-i18n="op.t1.c2">Ara, amb el sistema</th></tr></thead>
@@ -1179,7 +1228,7 @@
                     <h3 class="op-h3" data-i18n="op.pq.h">Què inclou</h3>
                     <ol class="op-llista">
                 <li data-i18n="op.pq.0">Un primer esborrany del mapa fet amb el material que ja teniu.</li>
-                <li data-i18n="op.pq.1">Dos mapes: el de la direcció i el de l'àrea on el valor s'encalla. Real i ideal, amb les zones calentes marcades.</li>
+                <li data-i18n="op.pq.1">El mapa de la direcció i el de l'àrea on el valor s'encalla. Real i ideal, amb les zones calentes marcades.</li>
                 <li data-i18n="op.pq.2">El cervell del projecte, ordenat per rol: què dona i què rep cadascú, els lliuraments i els processos.</li>
                 <li data-i18n="op.pq.3">La web de xarxa: una porta per rol, publicada a nom vostre.</li>
                 <li data-i18n="op.pq.4">Una o dues eines internes: el registre de lliuraments i el tauler de cada rol.</li>
@@ -1460,7 +1509,7 @@
                 <div class="pas-n" data-i18n="com.p2.n">Pas 02</div>
                 <h3 data-i18n="com.p2.h">Dibuixeu el mapa a la sala</h3>
                 <p data-i18n="com.p2.p">L'equip dibuixa junt el mapa de la direcció i el de l'àrea on el valor s'encalla, el real i l'ideal, i marca les zones calentes. Aquesta conversa és el producte, i no l'automatitza res.</p>
-                <div class="pas-meta"><span data-i18n="com.p2.m1">Presencial</span><span data-i18n="com.p2.m2">Amb l'equip</span><span class="t-endus" data-i18n="com.p2.m3">T'endús: els dos mapes</span></div>
+                <div class="pas-meta"><span data-i18n="com.p2.m1">Presencial</span><span data-i18n="com.p2.m2">Amb l'equip</span><span class="t-endus" data-i18n="com.p2.m3">T'endús: el mapa real i l'ideal</span></div>
             </div>
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p3.n">Pas 03</div>
@@ -1515,36 +1564,6 @@
      Cada camí diu **què s'hi troba**, i no com es diu. Tres targetes que
      diguessin «catàleg», «qui som» i «el SOS» serien un índex, i un índex no
      fa travessar res. -->
-<section class="camins" id="camins">
-    <div class="container">
-        <div class="section-header fade-up">
-            <div class="section-eyebrow" data-i18n="cam.eyebrow">I a partir d'aquí</div>
-            <h2 data-i18n-html="cam.h2">Tres camins, <em>segons què necessitis ara</em></h2>
-        </div>
-        <div class="camins-grid fade-up">
-            <a class="cami" href="/cataleg">
-                <span class="cami-k" data-i18n="cam.1k">El catàleg</span>
-                <span class="cami-t" data-i18n="cam.1t">Vint-i-un paquets amb preu, durada i entregable escrits</span>
-                <span class="cami-d" data-i18n="cam.1d">I el mapa de cost, per calcular el que no porta xifra tancada.</span>
-                <span class="cami-go" data-i18n="cam.go">Mira'l →</span>
-            </a>
-            <a class="cami" href="/qui-som">
-                <span class="cami-k" data-i18n="cam.2k">Qui som</span>
-                <span class="cami-t" data-i18n="cam.2t">Vint anys, els clients amb font i d'on ve el mètode</span>
-                <span class="cami-d" data-i18n="cam.2d">Amb les preguntes que es fan abans de contractar, respostes.</span>
-                <span class="cami-go" data-i18n="cam.go">Mira'l →</span>
-            </a>
-            <a class="cami" href="/SOS/intro.html">
-                <span class="cami-k" data-i18n="cam.3k">El SOS</span>
-                <span class="cami-t" data-i18n="cam.3t">L'eina lliure on viu el que surt d'una sessió</span>
-                <span class="cami-d" data-i18n-html="cam.3d">Què és, per a qui, i què canvia. Existeix <b>encara que no ens contractis</b>, i s'hi treballa sobre el teu projecte i no sobre un cas inventat.</span>
-                <span class="cami-go" data-i18n="cam.go">Mira'l →</span>
-            </a>
-        </div>
-    </div>
-</section>
-
-
 <!-- LA PARET DE CLIENTS, AL FINAL ─────────────────────────────────────────
      Era la segona pantalla de la pàgina. La prova no obre una venda: la tanca.
      Qui acaba de llegir què es compra i com es fa és qui li treu profit, i qui
@@ -1697,9 +1716,10 @@
                      és—, i qui hi clica es pensa que la pàgina no li respon.
                      Ara són **els cinc destins**, i tots són pàgines. -->
                 <li><a href="/SOS/vna.html" data-i18n="peu.vna">Mapa de valor</a></li>
-                <li><a href="/cataleg" data-i18n="peu.cataleg">El catàleg</a></li>
+                <li><a href="/mapa-web/" data-i18n="peu.web">La teva web</a></li>
                 <li><a href="/SOS/formacio.html" data-i18n="peu.formacio">Formació</a></li>
-                <li><a href="/SOS/intro.html" data-i18n="peu.sos">El SOS</a></li>
+                <li><a href="/SOS/" data-i18n="peu.sos">El SOS</a></li>
+                <li><a href="/cataleg" data-i18n="peu.cataleg">El catàleg</a></li>
                 <li><a href="/qui-som" data-i18n="peu.quisom">Qui som</a></li>
             </ul>
             <p class="footer-copy">© 2026 TeamTowers Humà · Força · Equilibri · Valor · Seny</p>
@@ -1713,13 +1733,13 @@ var T = {
 ca: {
 /* El negoci operatiu (estratègia d'octubre del 2026) */
   'hero.evo3.d':'El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d\'on s\'encalla el valor.',
-  'hero.cta2':'El teu negoci operatiu →',
+  'hero.cta2':'Demana pressupost →',
   'op.eyebrow':'La proposta',
   'op.h2':'Del taller al sistema viu: <em>el teu negoci operatiu</em>',
   'op.intro':'Una organització petita o mitjana surt amb el seu model de negoci funcionant, no amb un informe. La sala la seguim fent les persones; la feina que abans costava setmanes la fa el sistema.',
   'op.or.k':'D\'on surt',
-  'op.or.t':'A IKEA, el valor no va ser el dibuix',
-  'op.or.d':'Dos mapes —el de la direcció i el de l\'àrea de serveis— van fer que l\'equip directiu veiés el mateix flux de valor i s\'acordés on havia de fluir millor. <b>El flux va millorar abans de canviar cap procés.</b> Però aquell efecte durava el que durava el taller, i després depenia de la memòria de l\'equip. Això és el que ara es queda.',
+  'op.or.t':'El valor no és el dibuix',
+  'op.or.d':'Quan un equip directiu veu junt el mateix flux de valor, s\'acorda on ha de fluir millor. <b>El flux va millorar abans de canviar cap procés.</b> Però aquell efecte durava el que durava el taller, i després depenia de la memòria de l\'equip. Això és el que ara es queda.',
   'op.t1.c0':'La feina',
   'op.t1.c1':'Abans, a mà',
   'op.t1.c2':'Ara, amb el sistema',
@@ -1752,7 +1772,7 @@ ca: {
   'op.ci.nota':'Cada persona tria el seu rol i veu només la seva part: el que dona, el que rep i el que té pendent. Quan surt un lliurament o un rol que ningú havia dibuixat, el sistema proposa afegir-lo i una persona l\'accepta. <b>El mapa creix amb l\'ús, i mai sense revisió humana.</b>',
   'op.pq.h':'Què inclou',
   'op.pq.0':'Un primer esborrany del mapa fet amb el material que ja teniu.',
-  'op.pq.1':'Dos mapes: el de la direcció i el de l\'àrea on el valor s\'encalla. Real i ideal, amb les zones calentes marcades.',
+  'op.pq.1':'El mapa de la direcció i el de l\'àrea on el valor s\'encalla. Real i ideal, amb les zones calentes marcades.',
   'op.pq.2':'El cervell del projecte, ordenat per rol: què dona i què rep cadascú, els lliuraments i els processos.',
   'op.pq.3':'La web de xarxa: una porta per rol, publicada a nom vostre.',
   'op.pq.4':'Una o dues eines internes: el registre de lliuraments i el tauler de cada rol.',
@@ -1802,91 +1822,57 @@ ca: {
   'peu.formacio':'Formació',
   'peu.sos':'El SOS',
   'peu.quisom':'Qui som',
-  'cam.eyebrow':'I a partir d\'aquí',
-  'cam.h2':'Tres camins, <em>segons què necessitis ara</em>',
-  'cam.1k':'El catàleg',
-  'cam.1t':'Vint-i-un paquets amb preu, durada i entregable escrits',
-  'cam.1d':'I el mapa de cost, per calcular el que no porta xifra tancada.',
-  'cam.2k':'Qui som',
-  'cam.2t':'Vint anys, els clients amb font i d\'on ve el mètode',
-  'cam.2d':'Amb les preguntes que es fan abans de contractar, respostes.',
-  'cam.3k':'El SOS',
-  'cam.3t':'L\'eina lliure on viu el que surt d\'una sessió',
-  'cam.3d':'Què és, per a qui, i què canvia. Existeix <b>encara que no ens contractis</b>, i s\'hi treballa sobre el teu projecte i no sobre un cas inventat.',
-  'cam.go':'Mira\'l →',
+  'srv.eyebrow':'Què fem',
+  'srv.h2':'Tres serveis, <em>un mateix mètode</em>',
+  'srv.intro':'Tot surt del mapa de valor: qui dona què a qui, també els favors i la confiança. A partir d\'aquí, el millorem, en fem la web o l\'aprens a mantenir viu.',
+  'srv.1k':'1 · Diagnòstic i millora',
+  'srv.1t':'El mapa de valor de la teva organització',
+  'srv.1d':'Analitzem com flueix el valor entre els rols, en fem el diagnòstic i l\'equip acorda on millorar-lo: el mapa real al costat de l\'ideal, amb les zones calentes marcades.',
+  'srv.1a':'Fes el diagnòstic →',
+  'srv.1b':'El mètode',
+  'srv.2k':'2 · Desenvolupament web',
+  'srv.2t':'La teva web, sortida del mapa',
+  'srv.2d':'Ens passes el que ja tens —la web, els documents, l\'àudio— i en surt un primer esborrany amb una porta per a cada rol. El disseny i els textos els afinem junts, i la web és teva.',
+  'srv.2a':'Mapa i web en una hora →',
+  'srv.2b':'Serveis connectables',
+  'srv.3k':'3 · Formació acció',
+  'srv.3t':'El SOS, après fent-lo servir',
+  'srv.3d':'Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l\'eina lliure on viu el que surt de cada sessió.',
+  'srv.3a':'Entra al SOS →',
+  'srv.3b':'Els mòduls',
+  'peu.web':'La teva web',
 
 /*TT-NAV-I18N-CA*/
   'nv.g.valor':'Mapa de valor',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
   'nv.t.vna':'El mètode',
   'nv.d.vna':'Què és un mapa de valor, sobre un cas',
   'nv.t.vna-suport':'Fer-ne un',
   'nv.d.vna-suport':'L\'editor visual: rols, lliuraments, real i ideal',
-  'nv.t.carpeta-mapa-web':'Mapa i web en una hora',
-  'nv.d.carpeta-mapa-web':'El servei: el mapa del teu negoci i la web, en una sessió',
-  'nv.t.carpeta-conecta':'Serveis connectables',
-  'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
   'nv.t.arrel-cataleg':'El catàleg',
   'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
   'nv.t.pressupost':'Preus i contractació',
   'nv.d.pressupost':'De l\'esborrany al negoci operatiu, i la resta a mida',
-  'nv.t.diagnostic':'Diagnòstic',
-  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
-  'nv.g.sos':'El SOS',
-  'nv.t.intro':'De què va',
-  'nv.d.intro':'El SOS en setze plans',
-  'nv.t.app':'Obre l\'aplicació',
-  'nv.d.app':'Sense compte, i les dades al teu aparell',
-  'nv.t.matriu':'La MATRIU',
-  'nv.d.matriu':'La incubadora: etapes, portes i propietat',
-  'nv.t.banc-temps':'El Banc de Temps',
-  'nv.d.banc-temps':'Una hora val una hora, i el saldo que ho diu',
-  'nv.t.biblioteca':'La Biblioteca de les Coses',
-  'nv.d.biblioteca':'Donar o deixar, i què val cada préstec',
-  'nv.t.compra':'La Compra',
-  'nv.d.compra':'Grup de consum i compra col·lectiva',
-  'nv.t.energia':'L\'Energia',
-  'nv.d.energia':'Comunitat energètica i autoconsum compartit',
-  'nv.t.habitatge':'L\'Habitatge',
-  'nv.d.habitatge':'Cessió d\'ús: quota, entrada i sortida',
-  'nv.t.online':'El directori',
-  'nv.d.online':'Qui hi ha al territori, què ofereix i què busca',
-  'nv.g.apren':'Formació',
-  'nv.t.formacio':'Els 16 mòduls',
-  'nv.d.formacio':'De N0 a N3, i el certificat és teu',
+  'nv.g.web':'La teva web',
+  'nv.t.carpeta-mapa-web':'Mapa i web en una hora',
+  'nv.d.carpeta-mapa-web':'El mapa del teu negoci i la web, en una sessió',
+  'nv.t.carpeta-conecta':'Serveis connectables',
+  'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
+  'nv.g.formacio':'SOS i formació',
+  'nv.t.app':'Entra al SOS',
+  'nv.d.app':'El sistema que manté viu el mapa, sense compte',
+  'nv.t.formacio':'Formació acció',
+  'nv.d.formacio':'Els mòduls, de N0 a N3, i el certificat és teu',
   'nv.t.ia':'Fluxos amb IA',
   'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
-  'nv.t.vedes':'Les vedes',
-  'nv.d.vedes':'Les regles, amb el motiu al costat',
-  'nv.t.blog':'Blog',
-  'nv.d.blog':'Cada capacitat, explicada',
-  'nv.g.mon':'Molekulon',
-  'nv.t.fora-inici':'El Comando',
-  'nv.d.fora-inici':'La pel·lícula que farem 150.000',
-  'nv.t.fora-historia':'La història',
-  'nv.d.fora-historia':'Els dos còmics i l\'acte III',
-  'nv.t.fora-personatges':'Els 14 herois',
-  'nv.d.fora-personatges':'Poder, superarma i què vol dir en un equip',
-  'nv.t.fora-peli':'La pel·lícula',
-  'nv.d.fora-peli':'El guió de 15 plans, i què falta filmar',
-  'nv.t.fora-musica':'La banda',
-  'nv.d.fora-musica':'Onze videoclips i els directes',
-  'nv.t.fora-comic':'El còmic',
-  'nv.d.fora-comic':'Els números publicats i on es compren',
-  'nv.t.molekulandia':'Molekulandia',
-  'nv.d.molekulandia':'El poble sencer i les nou professions',
-  'nv.t.molekulon':'Un estat líquid',
-  'nv.d.molekulon':'Set federacions, i 19 nodes contra 47',
-  'nv.t.escola':'La Fàbrica de Superherois',
-  'nv.d.escola':'De 6 a 13 anys, i cap nom real de cap criatura',
-  'nv.t.joc':'El joc',
-  'nv.d.joc':'La plaça, a ritme',
-  'nv.t.uneix-te':'Uneix-t\'hi',
-  'nv.d.uneix-te':'El que ja fas al barri, comptat',
   'nv.g.casa':'Qui som',
   'nv.t.arrel-qui-som':'Qui som',
   'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
   'nv.t.arrel-premsa':'Premsa',
   'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
   'nv.cta':'Fes el diagnòstic',
   'nv.menu':'Menú',
 /*/TT-NAV-I18N-CA*/
@@ -2015,8 +2001,8 @@ ca: {
   'vd.p2.t':'A Pantheon Work, des del 2019',
   'vd.p2.d':'L\'Álvaro Solache hi dirigeix projectes de consultoria amb aquest mètode, i en va cocrear la pràctica: venda, planificació, producció i formació. <b>Les fases, el full i les preguntes d\'aquesta pàgina surten del guió d\'una sessió real amb un equip de direcció</b>, no d\'un manual.',
 /*/TT-VD-I18N-CA*/
-  'hero.h1':'El mapa de valor de la teva organització, <em>funcionant cada dia</em>',
-  'hero.desc':'L\'equip dibuixa junt per on ha de fluir el valor —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L\'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l\'ideal. Te\'n vas amb el negoci funcionant, no amb un informe.',
+  'hero.h1':'El teu mapa de valor, <em>funcionant cada dia</em>',
+  'hero.desc':'L\'equip dibuixa junt el <em>flux de valor</em> —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L\'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l\'ideal. Te\'n vas amb el negoci funcionant, no amb un informe.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
   'hero.evo3.k':'Avui · TeamTowers Humà',
@@ -2104,7 +2090,7 @@ ca: {
   'com.p2.p':'L\'equip dibuixa junt el mapa de la direcció i el de l\'àrea on el valor s\'encalla, el real i l\'ideal, i marca les zones calentes. Aquesta conversa és el producte, i no l\'automatitza res.',
   'com.p2.m1':'Presencial',
   'com.p2.m2':'Amb l\'equip',
-  'com.p2.m3':'T\'endús: els dos mapes',
+  'com.p2.m3':'T\'endús: el mapa real i l\'ideal',
   'com.p3.n':'Pas 03',
   'com.p3.h':'Muntem el sistema',
   'com.p3.p':'El cervell del projecte per rol, la web de xarxa, el registre de lliuraments, el tauler de cada rol i l\'API connectada a una eina vostra. El que abans eren setmanes de feina ho fa el sistema, amb guardes que ho comproven.',
@@ -2124,13 +2110,13 @@ ca: {
 },
 es: {
   'hero.evo3.d':'El mismo método convertido en un sistema vivo: cada rol registra lo que da y recibe, y el mapa avisa de dónde se atasca el valor.',
-  'hero.cta2':'Tu negocio operativo →',
+  'hero.cta2':'Pide presupuesto →',
   'op.eyebrow':'La propuesta',
   'op.h2':'Del taller al sistema vivo: <em>tu negocio operativo</em>',
   'op.intro':'Una organización pequeña o mediana sale con su modelo de negocio funcionando, no con un informe. La sala la seguimos haciendo las personas; el trabajo que antes costaba semanas lo hace el sistema.',
   'op.or.k':'De dónde sale',
-  'op.or.t':'En IKEA, el valor no fue el dibujo',
-  'op.or.d':'Dos mapas —el de dirección y el del área de servicios— hicieron que el equipo directivo viera el mismo flujo de valor y se pusiera de acuerdo en dónde tenía que fluir mejor. <b>El flujo mejoró antes de cambiar ningún proceso.</b> Pero ese efecto duraba lo que duraba el taller, y después dependía de la memoria del equipo. Eso es lo que ahora se queda.',
+  'op.or.t':'El valor no es el dibujo',
+  'op.or.d':'Cuando un equipo directivo ve junto el mismo flujo de valor, se pone de acuerdo en dónde tiene que fluir mejor. <b>El flujo mejoró antes de cambiar ningún proceso.</b> Pero ese efecto duraba lo que duraba el taller, y después dependía de la memoria del equipo. Eso es lo que ahora se queda.',
   'op.t1.c0':'El trabajo',
   'op.t1.c1':'Antes, a mano',
   'op.t1.c2':'Ahora, con el sistema',
@@ -2163,7 +2149,7 @@ es: {
   'op.ci.nota':'Cada persona elige su rol y ve solo su parte: lo que da, lo que recibe y lo que tiene pendiente. Cuando aparece una entrega o un rol que nadie había dibujado, el sistema propone añadirlo y una persona lo acepta. <b>El mapa crece con el uso, y nunca sin revisión humana.</b>',
   'op.pq.h':'Qué incluye',
   'op.pq.0':'Un primer borrador del mapa hecho con el material que ya tenéis.',
-  'op.pq.1':'Dos mapas: el de dirección y el del área donde el valor se atasca. Real e ideal, con las zonas calientes marcadas.',
+  'op.pq.1':'El mapa de dirección y el del área donde el valor se atasca. Real e ideal, con las zonas calientes marcadas.',
   'op.pq.2':'El cerebro del proyecto, ordenado por rol: qué da y qué recibe cada uno, las entregas y los procesos.',
   'op.pq.3':'La web de red: una puerta por rol, publicada a vuestro nombre.',
   'op.pq.4':'Una o dos herramientas internas: el registro de entregas y el panel de cada rol.',
@@ -2213,91 +2199,57 @@ es: {
   'peu.formacio':'Formación',
   'peu.sos':'El SOS',
   'peu.quisom':'Quiénes somos',
-  'cam.eyebrow':'Y a partir de aquí',
-  'cam.h2':'Tres caminos, <em>según qué necesites ahora</em>',
-  'cam.1k':'El catálogo',
-  'cam.1t':'Veintiún paquetes con precio, duración y entregable escritos',
-  'cam.1d':'Y el mapa de coste, para calcular lo que no lleva cifra cerrada.',
-  'cam.2k':'Quiénes somos',
-  'cam.2t':'Veinte años, los clientes con fuente y de dónde viene el método',
-  'cam.2d':'Con las preguntas que se hacen antes de contratar, respondidas.',
-  'cam.3k':'El SOS',
-  'cam.3t':'La herramienta libre donde vive lo que sale de una sesión',
-  'cam.3d':'Qué es, para quién, y qué cambia. Existe <b>aunque no nos contrates</b>, y se trabaja sobre tu proyecto y no sobre un caso inventado.',
-  'cam.go':'Míralo →',
+  'srv.eyebrow':'Qué hacemos',
+  'srv.h2':'Tres servicios, <em>un mismo método</em>',
+  'srv.intro':'Todo sale del mapa de valor: quién da qué a quién, también los favores y la confianza. A partir de ahí, lo mejoramos, hacemos la web o aprendes a mantenerlo vivo.',
+  'srv.1k':'1 · Diagnóstico y mejora',
+  'srv.1t':'El mapa de valor de tu organización',
+  'srv.1d':'Analizamos cómo fluye el valor entre los roles, hacemos el diagnóstico y el equipo acuerda dónde mejorarlo: el mapa real junto al ideal, con las zonas calientes marcadas.',
+  'srv.1a':'Haz el diagnóstico →',
+  'srv.1b':'El método',
+  'srv.2k':'2 · Desarrollo web',
+  'srv.2t':'Tu web, salida del mapa',
+  'srv.2d':'Nos pasas lo que ya tienes —la web, los documentos, el audio— y sale un primer borrador con una puerta para cada rol. El diseño y los textos los afinamos juntos, y la web es tuya.',
+  'srv.2a':'Mapa y web en una hora →',
+  'srv.2b':'Servicios conectables',
+  'srv.3k':'3 · Formación acción',
+  'srv.3t':'El SOS, aprendido usándolo',
+  'srv.3d':'Formación sobre tu proyecto y no sobre un caso inventado: módulos de N0 a N3 con certificado, y la herramienta libre donde vive lo que sale de cada sesión.',
+  'srv.3a':'Entra al SOS →',
+  'srv.3b':'Los módulos',
+  'peu.web':'Tu web',
 
 /*TT-NAV-I18N-ES*/
   'nv.g.valor':'Mapa de valor',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
   'nv.t.vna':'El método',
   'nv.d.vna':'Qué es un mapa de valor, sobre un caso',
   'nv.t.vna-suport':'Hacer uno',
   'nv.d.vna-suport':'El editor visual: roles, entregables, real e ideal',
-  'nv.t.carpeta-mapa-web':'Mapa y web en una hora',
-  'nv.d.carpeta-mapa-web':'El servicio: el mapa de tu negocio y la web, en una sesión',
-  'nv.t.carpeta-conecta':'Servicios conectables',
-  'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
   'nv.t.arrel-cataleg':'El catálogo',
   'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
   'nv.t.pressupost':'Precios y contratación',
   'nv.d.pressupost':'Del borrador al negocio operativo, y el resto a medida',
-  'nv.t.diagnostic':'Diagnóstico',
-  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
-  'nv.g.sos':'El SOS',
-  'nv.t.intro':'De qué va',
-  'nv.d.intro':'El SOS en dieciséis planos',
-  'nv.t.app':'Abre la aplicación',
-  'nv.d.app':'Sin cuenta, y los datos en tu dispositivo',
-  'nv.t.matriu':'La MATRIU',
-  'nv.d.matriu':'La incubadora: etapas, puertas y propiedad',
-  'nv.t.banc-temps':'El Banco de Tiempo',
-  'nv.d.banc-temps':'Una hora vale una hora, y el saldo que lo dice',
-  'nv.t.biblioteca':'La Biblioteca de las Cosas',
-  'nv.d.biblioteca':'Dar o dejar, y qué vale cada préstamo',
-  'nv.t.compra':'La Compra',
-  'nv.d.compra':'Grupo de consumo y compra colectiva',
-  'nv.t.energia':'La Energía',
-  'nv.d.energia':'Comunidad energética y autoconsumo compartido',
-  'nv.t.habitatge':'La Vivienda',
-  'nv.d.habitatge':'Cesión de uso: cuota, entrada y salida',
-  'nv.t.online':'El directorio',
-  'nv.d.online':'Quién hay en el territorio, qué ofrece y qué busca',
-  'nv.g.apren':'Formación',
-  'nv.t.formacio':'Los 16 módulos',
-  'nv.d.formacio':'De N0 a N3, y el certificado es tuyo',
+  'nv.g.web':'Tu web',
+  'nv.t.carpeta-mapa-web':'Mapa y web en una hora',
+  'nv.d.carpeta-mapa-web':'El mapa de tu negocio y la web, en una sesión',
+  'nv.t.carpeta-conecta':'Servicios conectables',
+  'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
+  'nv.g.formacio':'SOS y formación',
+  'nv.t.app':'Entra al SOS',
+  'nv.d.app':'El sistema que mantiene vivo el mapa, sin cuenta',
+  'nv.t.formacio':'Formación acción',
+  'nv.d.formacio':'Los módulos, de N0 a N3, y el certificado es tuyo',
   'nv.t.ia':'Flujos con IA',
   'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
-  'nv.t.vedes':'Las vedas',
-  'nv.d.vedes':'Las reglas, con el motivo al lado',
-  'nv.t.blog':'Blog',
-  'nv.d.blog':'Cada capacidad, explicada',
-  'nv.g.mon':'Molekulon',
-  'nv.t.fora-inici':'El Comando',
-  'nv.d.fora-inici':'La película que haremos 150.000',
-  'nv.t.fora-historia':'La historia',
-  'nv.d.fora-historia':'Los dos cómics y el acto III',
-  'nv.t.fora-personatges':'Los 14 héroes',
-  'nv.d.fora-personatges':'Poder, superarma y qué significa en un equipo',
-  'nv.t.fora-peli':'La película',
-  'nv.d.fora-peli':'El guion de 15 planos, y qué falta filmar',
-  'nv.t.fora-musica':'La banda',
-  'nv.d.fora-musica':'Once videoclips y los directos',
-  'nv.t.fora-comic':'El cómic',
-  'nv.d.fora-comic':'Los números publicados y dónde se compran',
-  'nv.t.molekulandia':'Molekulandia',
-  'nv.d.molekulandia':'El pueblo entero y las nueve profesiones',
-  'nv.t.molekulon':'Un estado líquido',
-  'nv.d.molekulon':'Siete federaciones, y 19 nodos contra 47',
-  'nv.t.escola':'La Fábrica de Superhéroes',
-  'nv.d.escola':'De 6 a 13 años, y ningún nombre real de ninguna criatura',
-  'nv.t.joc':'El juego',
-  'nv.d.joc':'La plaza, a ritmo',
-  'nv.t.uneix-te':'Únete',
-  'nv.d.uneix-te':'Lo que ya haces en el barrio, contado',
   'nv.g.casa':'Quiénes somos',
   'nv.t.arrel-qui-som':'Quiénes somos',
   'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
   'nv.t.arrel-premsa':'Prensa',
   'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
   'nv.cta':'Haz el diagnóstico',
   'nv.menu':'Menú',
 /*/TT-NAV-I18N-ES*/
@@ -2426,8 +2378,8 @@ es: {
   'vd.p2.t':'En Pantheon Work, desde 2019',
   'vd.p2.d':'Álvaro Solache dirige allí proyectos de consultoría con este método, y cocreó su práctica: venta, planificación, producción y formación. <b>Las fases, la hoja y las preguntas de esta página salen del guion de una sesión real con un equipo de dirección</b>, no de un manual.',
 /*/TT-VD-I18N-ES*/
-  'hero.h1':'El mapa de valor de tu organización, <em>funcionando cada día</em>',
-  'hero.desc':'El equipo dibuja junto por dónde tiene que fluir el valor —también los favores y la confianza— y lo mira <strong>como un sistema, no como la suma de lo que hace cada uno</strong>. Al día siguiente, cada entrega entre roles queda registrada y el <em>mapa real</em> se compara solo con el ideal. Te vas con el negocio funcionando, no con un informe.',
+  'hero.h1':'Tu mapa de valor, <em>funcionando cada día</em>',
+  'hero.desc':'El equipo dibuja junto el <em>flujo de valor</em> —también los favores y la confianza— y lo mira <strong>como un sistema, no como la suma de lo que hace cada uno</strong>. Al día siguiente, cada entrega entre roles queda registrada y el <em>mapa real</em> se compara solo con el ideal. Te vas con el negocio funcionando, no con un informe.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vivo donde el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
   'hero.evo3.k':'Hoy · TeamTowers Humà',
@@ -2515,7 +2467,7 @@ es: {
   'com.p2.p':'El equipo dibuja junto el mapa de dirección y el del área donde el valor se atasca, el real y el ideal, y marca las zonas calientes. Esa conversación es el producto, y no la automatiza nada.',
   'com.p2.m1':'Presencial',
   'com.p2.m2':'Con el equipo',
-  'com.p2.m3':'Te llevas: los dos mapas',
+  'com.p2.m3':'Te llevas: el mapa real y el ideal',
   'com.p3.n':'Paso 03',
   'com.p3.h':'Montamos el sistema',
   'com.p3.p':'El cerebro del proyecto por rol, la web de red, el registro de entregas, el panel de cada rol y la API conectada a una herramienta vuestra. Lo que antes eran semanas de trabajo lo hace el sistema, con guardas que lo comprueban.',

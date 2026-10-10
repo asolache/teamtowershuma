@@ -9,15 +9,20 @@
  *
  *   node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom "Nom"] [--correu x@y.z]
  *        [--llengua ca|es] [--url https://…] [--casa "Rol 1" --casa "Rol 2"]
- *        [--continguts cerebro/continguts/]
+ *        [--marca marca.json] [--continguts cerebro/continguts/]
  *
  * `mapa.json` és el que dona «Copia el JSON» a l'editor (o el web.json de la
  * pestanya Web: també s'accepta). Escriu a la carpeta la web i el que en fa un
  * repositori: `mapa.json`, `CLAUDE.md`, `netlify.toml`, `robots.txt` (i el
- * sitemap, amb --url) i `permaweb.json`, l'empremta SHA-256 de cada fitxer. */
+ * sitemap, amb --url) i `permaweb.json`, l'empremta SHA-256 de cada fitxer.
+ *
+ * `--marca` hi posa el disseny i els textos propis (color, lletra, forma, logo
+ * SVG, lema, presentació, nom curt i introducció de cada porta, on sou): el
+ * format és al bloc VS-SITE (`marcaNeta`). El logo es llegeix al costat de
+ * `marca.json`. */
 'use strict';
 const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
-const { join, dirname } = require('node:path');
+const { join, dirname, resolve } = require('node:path');
 const { createHash } = require('node:crypto');
 
 const html = readFileSync(join(__dirname, '..', 'vna-suport.html'), 'utf8');
@@ -38,12 +43,21 @@ function genera(entrada, opts) {
 }
 /* El motor i el genera.mjs que porta el repositori del client (i la plantilla de Netlify). */
 const codiRepositori = () => motor.codiRepositori(sencer, exemple);
-module.exports = { genera, codiRepositori, exemple, KIT_TXT: motor.KIT_TXT };
+/* marca.json, amb el logo llegit del disc: el bloc VS-SITE només rep text. */
+function llegeixMarca(fitxer) {
+  const m = JSON.parse(readFileSync(fitxer, 'utf8'));
+  if (typeof m.logo === 'string' && /\.svg$/i.test(m.logo) && !/^[a-z]+:/i.test(m.logo)) {
+    try { m.logoSvg = readFileSync(resolve(dirname(fitxer), m.logo), 'utf8'); } catch (e) { console.error('⚠ No trobo el logo ' + m.logo); }
+  }
+  return m;
+}
+module.exports = { genera, llegeixMarca, codiRepositori, exemple, KIT_TXT: motor.KIT_TXT };
 
 if (require.main === module) {
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--casa') opts.casa.push(a[++i]);
+    else if (a[i] === '--marca') opts.marca = llegeixMarca(a[++i]);
     else if (a[i] === '--continguts') {
       /* Els textos de les pàgines (cerebro/continguts/<id>.md), com els llegeix genera.mjs. */
       const d = a[++i];
@@ -52,7 +66,7 @@ if (require.main === module) {
     else if (/^--(nom|correu|llengua|url)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
     else pos.push(a[i]);
   }
-  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …] [--continguts cerebro/continguts/]'); process.exit(2); }
+  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …] [--marca marca.json] [--continguts cerebro/continguts/]'); process.exit(2); }
   opts.avisa = m => console.warn('⚠️  ' + m);
   genera(JSON.parse(readFileSync(pos[0], 'utf8')), opts).then(fitxers => {
     fitxers.forEach(f => { const r = join(pos[1], f.ruta); mkdirSync(dirname(r), { recursive: true }); writeFileSync(r, f.cos); });
