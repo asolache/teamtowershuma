@@ -1333,6 +1333,8 @@ camí crític d'una eina que ha de funcionar sense xarxa.
 
 El punt 3 del pla (les portes per sobre del plec) no hi és: xoca amb el tour
 de la V76, que es va posar davant de tot a posta, i ho ha de decidir l'Àlvar.
+Hi ha un esborrany amb l'opció del pla (el tour en 3, després del perfil) que
+no es fusiona fins que triï.
 
 ---
 
