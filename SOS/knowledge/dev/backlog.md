@@ -44,6 +44,45 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+### L'arrencada amb IA: importar el que ja hi ha, i el kit de Claude (demanat 10/10/2026)
+
+**Demanat per l'Àlvar:** revisar el servei de creació de webs perquè el client
+hi pugui treballar amb la versió gratuïta de Claude, amb suport per crear
+l'estructura, els continguts i l'MVP del sistema adaptat a ell; i un MVP del
+model que aporti valor des del primer dia, important el que ja existeix perquè
+la feina de rutina la gestionin les IA tal com ho defineix el SOS.
+
+**Fet** (detall a `alta-en-un-toc.md` §3e):
+
+| | Abans | Ara |
+|---|---|---|
+| El que el client ja té | no entrava enlloc | «El que ja teniu» a la pestanya Web, `SOS/tools/importa.js` i `eines/importa.mjs` (bloc `VS-IMPORTA`): web, documents i CSV a `cerebro/fonts/` |
+| Dades personals d'un CSV | — | llista blanca: només les columnes triades; les de persona, mai (veda 161) |
+| Llegir una web | — | només amb `--autoritzat <domini>`, robots.txt i una pàgina per segon |
+| El text de les pàgines | només el que surt del mapa | `cerebro/continguts/<id>.md`, Markdown segur; amb dades personals no surt |
+| La feina de rutina | — | `cerebro/tasques-ia.md`: la regla de l'app (`VS-TASQUES`), només el que lliura la casa |
+| Claude | un `CLAUDE.md` | regles, guia (gratis, Claude Code o TeamTowers) i tres skills: `/importa`, `/continguts`, `/tasca` |
+| Repositori del client | es refeia al zip | `eines/genera.mjs` el refà sol i no trepitja el que s'escriu a mà |
+| Proves | — | M31 al motor (27 assercions, 363 en total), 7F al navegador (6, 212 en total), importador 181, continguts 60, kit 3.626 |
+
+**Les decisions, i per què:**
+- **«Gestionar» vol dir preparar.** La IA en fa l'esborrany i una persona del rol
+  l'accepta (la PR és l'acceptació). Cap text promet una IA que faci la feina sola.
+- **Claude Code no és gratis.** La guia ho diu amb la data i l'enllaç als plans;
+  el camí gratuït és un projecte de claude.ai que llegeix el repositori.
+- **Els tipus no s'inventen.** Al celler d'exemple la IA no pot preparar cap
+  lliurament: la taxonomia del SOS és de comunitat.
+
+**Pendent de l'Àlvar:**
+- **Tipus de lliurament de negoci** (pressupost, proposta, resposta a una
+  consulta…) a `ENTREGABLES` de `SOS/index.html`, la font única. Sense, en un
+  negoci la IA gairebé no pot preparar res.
+- **Treure «pagament», «cobrament» i «factura» de la pista de `comanda`:** un
+  pagament no es redacta (ho va trobar la revisió).
+- **Provar la sessió 0 amb el primer pilot** (teamtowershuma).
+
+**Per fer:** el telèfon de l'empresa com a camp de la web; llegir PDF i Word.
+
 ### L'editor del mapa · pantalla completa i els patrons del flux (09/10/2026)
 
 **Fet.** Demanat per l'Àlvar: que `/sos/vna-suport` es presenti com l'eina per

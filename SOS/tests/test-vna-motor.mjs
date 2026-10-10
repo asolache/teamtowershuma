@@ -708,7 +708,7 @@ console.log('\nM24 · Els patrons del flux');
 }
 
 console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
-{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite, zipFitxers, crc32, ambPermaweb };')();
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite, zipFitxers, crc32, ambPermaweb };')();
   const web = S.webDelMapa(celler()), abans = J(web);
   const site = S.webASite(web, { nom: 'Celler <prova>', correu: 'hola@exemple.cat' });
   const f = r => (site.fitxers.find(x => x.ruta === r) || {}).cos || '';
@@ -730,7 +730,7 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
     'el formulari de la porta va a Netlify Forms (i d\'allà al correu)');
   ok(/<label for="porta-el-visitant-correu">/.test(fv) && /id="porta-el-visitant-correu" name="correu" type="email"/.test(fv) && /Demana el teu compte/.test(fv), 'camps amb etiqueta, i qui té compte el demana aquí');
   ok(/mailto:hola@exemple.cat/.test(fv) && !/<form/.test(f('el-distribuidor.html')), 'el correu, a la vista; i una porta buida no té formulari');
-  ok(!/mailto/.test(S.webASite(web, { correu: 'no és un correu' }).fitxers.map(x => x.cos).join('')), 'un correu que no ho és no s\'hi posa');
+  ok(!/mailto/.test(S.webASite(web, { correu: 'no és un correu' }).fitxers.filter(x => x.tipus === 'text/html').map(x => x.cos).join('')), 'un correu que no ho és no s\'hi posa');
   const es = S.webASite(web, { llengua: 'es' }).fitxers.find(x => x.ruta === 'el-visitant.html').cos;
   ok(/<html lang="es">/.test(es) && /Qué te damos/.test(es) && /Crea tu cuenta/.test(es), 'també en castellà');
   ok(J(JSON.parse(f('web.json'))) === abans, 'web.json va dins, igual');
@@ -756,13 +756,13 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
   const op = { nom: 'Celler <prova>', correu: 'hola@exemple.cat' };
   const des = await cli.genera(EXEMPLE, op);
   const sha = async b => createHash('sha256').update(b).digest('hex');
-  const ambMapa = await S.ambPermaweb(S.webASite(web, Object.assign({ mapa: M.exporta(M.importa(EXEMPLE).arbre), codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } }, op)), sha);
+  const ambMapa = await S.ambPermaweb(S.webASite(web, Object.assign({ mapa: M.exporta(M.importa(EXEMPLE).arbre), codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP'), imp: bloc('VS-IMPORTA'), repo: cli.codiRepositori() } }, op)), sha);
   ok(J(des) === J(ambMapa), 'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web, mapa.json inclòs: un sol codi');
   ok(J(await cli.genera(JSON.parse(f('web.json')), op)) === J(pw), 'i també la fa a partir d\'un web.json (sense mapa.json: no en porta)');
 }
 
 console.log('\nM25 · El zip ja és el repositori del client');
-{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite };')();
   const web = S.webDelMapa(celler()), mapa = M.exporta(M.importa(EXEMPLE).arbre);
   const s0 = S.webASite(web, {}), s1 = S.webASite(web, { url: 'https://celler.example/', mapa, llengua: 'es', nom: 'Celler' });
   const f = (s, r) => (s.fitxers.find(x => x.ruta === r) || {}).cos;
@@ -781,13 +781,13 @@ console.log('\nM25 · El zip ja és el repositori del client');
   const toml = f(s0, 'netlify.toml');
   ok(/publish = "\."/.test(toml) && /default-src 'none'/.test(toml) && /form-action 'self'/.test(toml) && /frame-ancestors 'none'/.test(toml) && /nosniff/.test(toml),
     'netlify.toml: publica la carpeta i tanca la porta (CSP sense scripts, formularis a la mateixa web)');
-  ok(/No s'edita a mà/.test(f(s0, 'CLAUDE.md')) && /mapa-real\.json/.test(f(s0, 'CLAUDE.md')) && /Cap clau al repositori/.test(f(s0, 'CLAUDE.md')), 'CLAUDE.md diu les regles: el mapa és la font i cap clau al repositori');
-  ok(/No se edita a mano/.test(f(s1, 'CLAUDE.md')) && f(s1, 'LEEME.md') && !f(s1, 'LLEGEIX.md') && /^# Celler/.test(f(s1, 'LEEME.md')), 'en castellà, CLAUDE.md i LEEME.md també');
+  ok(/no s'edita a mà/i.test(f(s0, 'CLAUDE.md')) && /mapa-real\.json/.test(f(s0, 'CLAUDE.md')) && /Cap clau al repositori/.test(f(s0, 'CLAUDE.md')), 'CLAUDE.md diu les regles: el mapa és la font i cap clau al repositori');
+  ok(/no se edita a mano/i.test(f(s1, 'CLAUDE.md')) && f(s1, 'LEEME.md') && !f(s1, 'LLEGEIX.md') && /^# Celler/.test(f(s1, 'LEEME.md')), 'en castellà, CLAUDE.md i LEEME.md també');
   ok(/<meta name="robots" content="noindex">/.test(f(s0, '404.html')) && /href="index.html"/.test(f(s0, '404.html')), 'la 404 no s\'indexa i torna a l\'inici');
 }
 
 console.log('\nM26 · El cervell del projecte, com el preveu el pla (cerebro/)');
-{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite };')();
   const arbre = M.importa(Object.assign(clona(EXEMPLE), { ideal: EXEMPLE })).arbre, mapa = M.exporta(arbre), abans = J(mapa);
   const st = S.webASite(S.webDelMapa(celler()), { mapa }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos;
   const de = pre => st.fitxers.filter(x => x.ruta.startsWith(pre)).map(x => x.ruta);
@@ -806,11 +806,11 @@ console.log('\nM26 · El cervell del projecte, com el preveu el pla (cerebro/)')
   const v = f('cerebro/procesos/visita.md').split('\n').filter(l => /^1\. /.test(l));
   ok(v.length === 4 && /el vi, la verema/.test(v[0]) && /què demana un client/.test(v[3]), 'el procés, amb els passos en ordre');
   ok(/El poble dona i no rep/.test(f('cerebro/decisiones.md')) && /conserva el que ja tens/.test(f('cerebro/decisiones.md')), 'les troballes del mapa passen a decisions pendents, i el fitxer diu que es conserva');
-  ok(/cerebro\/mapa-real\.json/.test(f('CLAUDE.md')) && /Van al CRM/.test(f('CLAUDE.md')), 'CLAUDE.md apunta al cervell i diu què va al CRM');
+  ok(/cerebro\/mapa-real\.json/.test(f('CLAUDE.md')) && /van al CRM/i.test(f('CLAUDE.md')), 'CLAUDE.md apunta al cervell i diu què va al CRM');
 }
 
 console.log('\nM27 · L\'índex del cervell: cada document amb el seu tema i la seva capa');
-{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite };')();
   const mapa = M.exporta(M.importa(EXEMPLE).arbre), web = S.webDelMapa(celler());
   const st = S.webASite(web, { mapa, nom: 'Celler' }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos;
   const ix = JSON.parse(f('cerebro/indice.json')), md = f('CEREBRO.md'), per = r => ix.entradas.find(x => x.ruta === r);
@@ -828,7 +828,7 @@ console.log('\nM27 · L\'índex del cervell: cada document amb el seu tema i la 
 }
 console.log('\nM28 · El registre viu: el mapa real surt de l\'ús (fase 2)');
 { const R = new Function('\'use strict\';\n' + bloc('VS-REG') + '\nreturn { llegeixRegistre, observaRegistre };')();
-  const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite };')();
   const mapa = M.exporta(M.importa(EXEMPLE).arbre), abans = J(mapa);
   const csv = ['created_at,de,a,entregable,mena,valor,evidencia,nom,correu,ip',
     '2026-10-01T10:00:00Z,Qui fa el vi,Qui rep i explica,"el vi, la verema i el celler obert",tangible,4,https://exemple.cat/foto,Pere,pere@exemple.cat,1.2.3.4',
@@ -886,7 +886,7 @@ console.log('\nM28 · El registre viu: el mapa real surt de l\'ús (fase 2)');
 }
 
 console.log('\nM29 · L\'API i els avisos: la web els envia signats, i el cervell parla amb Claude Code (fase 3)');
-{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\n' + bloc('VS-TASQUES') + '\nreturn { webDelMapa, webASite };')();
   const codi = { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') };
   const mapa = M.exporta(M.importa(EXEMPLE).arbre);
   const st = S.webASite(S.webDelMapa(celler()), { mapa, codi, nom: 'Celler', url: 'https://celler.example' }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos || '';
@@ -1006,6 +1006,88 @@ console.log('\nM30 · El camí B: la plantilla de Netlify fa la web del mapa a n
   const d4 = nova(), r4 = corre(d4, { URL: 'https://celler.netlify.app' });
   ok(r4.status === 0 && /<link rel="canonical" href="https:\/\/celler\.netlify\.app\/">/.test(readFileSync(join(d4, 'index.html'), 'utf8')) && existsSync(join(d4, 'sitemap.xml')), 'l\'adreça de Netlify (URL) dona canonical i sitemap sols');
   [d1, d2, d3, d4].forEach(d => rmSync(d, { recursive: true, force: true }));
+}
+
+console.log('\nM31 · L\'arrencada amb IA: continguts, el que ja hi havia, les tasques i el kit de Claude');
+{ const S = new Function('\'use strict\';\n' + ['VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-IMPORTA'].map(bloc).join('\n') + '\nreturn { webDelMapa, webASite };')();
+  const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync, cpSync, existsSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { spawnSync } = await import('node:child_process');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
+  const codi = { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP'), imp: bloc('VS-IMPORTA'), repo: cli.codiRepositori() };
+  const CASA = ['Qui fa el vi', 'Qui rep i explica'];
+  const web = S.webDelMapa(celler(), { casa: CASA }), porta = web.portes[0].id;
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const mapa2 = Object.assign(clona(mapa), { pairs: mapa.pairs.concat([['Qui rep i explica', 'El visitant', 'tangible', 'la convocatòria de la verema', '', '']]) });
+  const avisos = [];
+  const cont = [
+    { id: 'inici', text: '---\ntitol: No compta\n---\n## Benvinguts\n\nUn celler **petit**.' },
+    { id: porta, text: 'Per a tu, [el web](https://exemple.cat).' },
+    { id: 'qui-som', text: '---\ntitol: Qui som\nmenu: si\nfet: esborrany fet amb IA (Claude), 2026-10-10\n---\nDes de 1920.' },
+    { id: 'amagada', text: '---\nmenu: no\n---\nNomés per enllaç.' },
+    { id: 'contacte', text: 'Truca al 600 123 456.' },
+    { id: 'equip', text: 'Text reservat' },
+    { id: 'Mal Nom', text: 'x' },
+    { id: 'correu', text: 'Escriu a hola@exemple.cat.' }
+  ];
+  const st = S.webASite(web, { mapa: mapa2, codi, continguts: cont, nom: 'Celler', correu: 'hola@exemple.cat', url: 'https://celler.example', avisa: m => avisos.push(m) });
+  const f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  ok(/<h2>Benvinguts<\/h2>\n<p>Un celler <strong>petit<\/strong>.<\/p>/.test(f('index.html')), 'el text d\'inici, en Markdown, dins la portada');
+  ok(f(porta + '.html').includes('<a href="https://exemple.cat" rel="noopener">el web</a>'), 'i el de la porta d\'un rol');
+  ok(/<h1>Qui som<\/h1>/.test(f('qui-som.html')) && /href="qui-som.html"/.test(f('index.html')) && f('amagada.html') && !/href="amagada.html"/.test(f('index.html')), 'una pàgina nova surt al menú, si no diu menu: no');
+  ok(/qui-som\.html/.test(f('sitemap.xml')) && /"@type":"WebPage"/.test(f('qui-som.html')), 'i al sitemap, amb el seu JSON-LD');
+  ok(!f('contacte.html') && avisos.some(m => /contacte\.md/.test(m) && /CRM/.test(m)), 'un contingut amb un telèfon no surt, i ho diu');
+  ok(f('correu.html').includes('hola@exemple.cat'), 'el correu de la web sí que hi pot sortir');
+  ok(!/Text reservat/.test(f('equip.html')) && avisos.some(m => /equip\.md/.test(m)) && avisos.some(m => /mal nom\.md/.test(m)), 'un nom reservat o mal escrit no fa cap pàgina, i ho diu');
+  ok((() => { try { new Function('\'use strict\';\n' + ['VS-WEB', 'VS-SITE', 'VS-TASQUES'].map(bloc).join('\n') + '\nreturn webASite;')()(web, { continguts: cont }); return false; } catch (e) { return /VS-IMPORTA/.test(e.message); } })(),
+    'sense el sedàs de dades personals, cap contingut surt: falla, no passa');
+  const tq = JSON.parse(f('cerebro/tasques-ia.json')), tmd = f('cerebro/tasques-ia.md');
+  ok(tq.formato === 'tt-tasques-1' && tq.total === mapa2.pairs.reduce((n, p) => n + (p[3] ? 1 : 0) + (p[5] ? 1 : 0), 0) && tq.total === tq.maquina + tq.persona + tq.senseTipus + tq.deFora, 'tasques-ia.json: tots els lliuraments, cadascun a la seva llista');
+  ok(tq.tasques.every(x => (x.motiu === 'de fora') === !CASA.includes(x.de)), 'només compten els que lliura un rol de casa: el que arriba de fora, el prepara qui l\'envia');
+  ok(tq.tasques.every(x => x.mena !== 'intangible' || !x.pot), 'cap intangible el fa la IA');
+  const cv = tq.tasques.find(x => x.q === 'la convocatòria de la verema');
+  ok(tq.maquina === 1 && cv.pot && cv.tipus === 'convocatoria' && cv.accepta === 'Qui rep i explica' && cv.perParaula === 'convoc', 'un tangible de casa amb tipus: la IA en prepara l\'esborrany i l\'accepta el rol que el lliura');
+  ok(/«convoc»/.test(tmd) && /confirmeu-los a la sala/.test(tmd) && /\*\*1 de 15 lliuraments/.test(tmd), 'el tipus surt del nom, i es diu per confirmar');
+  ok(/La IA en prepara l'esborrany \(Convocatòria\) i l'accepta una persona del rol Qui rep i explica\./.test(f('cerebro/entregables/' + cv.id + '.md')), 'la fitxa del lliurament diu qui el prepara');
+  ok(/^# Celler · regles/.test(f('CLAUDE.md')) && /TREBALLAR-AMB-CLAUDE\.md/.test(f('CLAUDE.md')) && /^# Treballar amb Claude a la web de Celler/.test(f('TREBALLAR-AMB-CLAUDE.md')), 'les regles i la guia, amb el nom de la web');
+  ok(['importa', 'continguts', 'tasca'].every(n => f('.claude/skills/' + n + '/SKILL.md').startsWith('---\nname: ' + n + '\n')), 'les tres skills a .claude/skills/');
+  const es = S.webASite(web, { mapa, codi, llengua: 'es', nom: 'Celler' }).fitxers.map(x => x.ruta);
+  ok(es.includes('TRABAJAR-CON-CLAUDE.md') && !es.includes('TREBALLAR-AMB-CLAUDE.md'), 'en castellà, la guia es diu TRABAJAR-CON-CLAUDE.md');
+  ok(['/.claude/*', '/TREBALLAR-AMB-CLAUDE.md', '/TRABAJAR-CON-CLAUDE.md'].every(r => f('netlify.toml').includes('from = "' + r + '"\n  to = "/404.html"')), 'la web no serveix les skills ni la guia');
+  ok(/importaFonts, rastreja \};/.test(f('eines/nucli.mjs')) && f('eines/importa.mjs').startsWith('#!/usr/bin/env node\n') && /--autoritzat/.test(f('eines/importa.mjs')), 'el repositori porta l\'importador (eines/importa.mjs), amb el codi de l\'editor');
+  const ix = JSON.parse(f('cerebro/indice.json'));
+  ok(['cerebro/tasques-ia.md', '.claude/skills/tasca/SKILL.md', 'TREBALLAR-AMB-CLAUDE.md'].every(r => ix.entradas.some(x => x.ruta === r && x.capa === 'equip')), 'l\'índex del cervell hi és tot');
+  const fonts = [{ ruta: 'cerebro/fonts/docs/a.md', cos: '# A\n' }, { ruta: 'cerebro/fonts/../x.md', cos: 'no' }, { ruta: 'index.html', cos: 'no' }];
+  const sf = S.webASite(web, { mapa, codi, fonts }).fitxers;
+  ok(sf.some(x => x.ruta === 'cerebro/fonts/docs/a.md') && !sf.some(x => x.ruta === 'cerebro/fonts/../x.md') && sf.find(x => x.ruta === 'index.html').cos !== 'no', 'el que s\'ha importat a l\'editor va al zip, i només a cerebro/fonts/');
+  // El repositori del client: es refà sol, llegeix els continguts i no trepitja el que s'escriu a mà.
+  const PL = join(DIR, '..', 'plantilla-web');
+  ok(readFileSync(join(PL, 'CLAUDE.md'), 'utf8').includes('node eines/genera.mjs') && existsSync(join(PL, '.claude/skills/importa/SKILL.md')), 'la plantilla ja porta les regles curtes i les skills, abans de generar res');
+  const d = mkdtempSync(join(tmpdir(), 'tt-arrencada-'));
+  cpSync(PL, d, { recursive: true });
+  mkdirSync(join(d, 'cerebro/continguts'), { recursive: true });
+  mkdirSync(join(d, 'cerebro/esborranys'), { recursive: true });
+  writeFileSync(join(d, 'cerebro/mapa-real.json'), J(mapa));
+  writeFileSync(join(d, 'cerebro/continguts/qui-som.md'), '---\ntitol: Qui som\nmenu: si\n---\nDes de 1920.\n');
+  writeFileSync(join(d, 'cerebro/continguts/contacte.md'), 'Truca al 600 123 456.\n');
+  writeFileSync(join(d, 'cerebro/dossier.md'), '# El dossier\n');
+  writeFileSync(join(d, 'cerebro/esborranys/2026-10-10-x.md'), '# Esborrany\n');
+  const corre = () => spawnSync(process.execPath, ['eines/genera.mjs'], { cwd: d, encoding: 'utf8', env: Object.assign({}, process.env, { URL: '', NETLIFY: '' }) });
+  const r1 = corre();
+  ok(r1.status === 0 && /amb 2 continguts/.test(r1.stdout) && existsSync(join(d, 'qui-som.html')) && !existsSync(join(d, 'contacte.html')) && /contacte\.md/.test(r1.stderr), 'genera.mjs fa la web amb els continguts, i el que porta dades personals no surt: ' + r1.stderr.slice(0, 120));
+  ok(readFileSync(join(d, 'cerebro/dossier.md'), 'utf8') === '# El dossier\n' && readFileSync(join(d, 'cerebro/continguts/qui-som.md'), 'utf8').startsWith('---\ntitol: Qui som'), 'i no trepitja el dossier ni els continguts');
+  ok(['cerebro/dossier.md', 'cerebro/continguts/qui-som.md', 'cerebro/esborranys/2026-10-10-x.md'].every(r => JSON.parse(readFileSync(join(d, 'cerebro/indice.json'), 'utf8')).entradas.some(x => x.ruta === r)), 'i els posa a l\'índex del cervell');
+  const motor1 = readFileSync(join(d, 'eines/motor.mjs'), 'utf8'), gen1 = readFileSync(join(d, 'eines/genera.mjs'), 'utf8');
+  const r2 = corre();
+  ok(r2.status === 0 && readFileSync(join(d, 'eines/motor.mjs'), 'utf8') === motor1 && readFileSync(join(d, 'eines/genera.mjs'), 'utf8') === gen1 && motor1 === readFileSync(join(PL, 'eines/motor.mjs'), 'utf8'),
+    'el motor es refà igual, byte a byte: el repositori es copia a si mateix i segueix sent el codi de l\'editor');
+  mkdirSync(join(d, 'proves'));
+  writeFileSync(join(d, 'proves/preus.csv'), 'Producte;Preu;Email\nPa;2;a@b.cat\n');
+  const r3 = spawnSync(process.execPath, ['eines/importa.mjs', 'proves', '--columnes', 'Producte,Email'], { cwd: d, encoding: 'utf8' });
+  const pm = existsSync(join(d, 'cerebro/fonts/dades/preus.md')) ? readFileSync(join(d, 'cerebro/fonts/dades/preus.md'), 'utf8') : '';
+  ok(r3.status === 0 && /\| Producte \|/.test(pm) && !/a@b\.cat|Email \|/.test(pm), 'eines/importa.mjs al repositori del client: només les columnes triades, mai les de persona: ' + r3.stderr.slice(0, 80));
+  rmSync(d, { recursive: true, force: true });
 }
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));

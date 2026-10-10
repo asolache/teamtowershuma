@@ -14,11 +14,11 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 253 · 17630 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 261 · 17903 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
-| `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 4 · 230 KB |
+| `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 337 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
@@ -33,8 +33,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 30 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 103 · 1338 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 55 · 1203 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 106 · 1399 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 56 · 1205 KB |
 
 ## saber
 
@@ -42,8 +42,8 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 41 · 950 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 5 · 306 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 41 · 958 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 5 · 313 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |

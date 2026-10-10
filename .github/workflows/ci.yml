@@ -336,6 +336,16 @@ jobs:
       - name: El pagament de l'alta · Stripe Checkout
         run: node SOS/tests/test-stripe.mjs
 
+      # L'arrencada amb IA: el que el client ja té entra al cervell sense dades
+      # personals (un CSV, per llista blanca; una web, només amb el domini
+      # autoritzat), els continguts no poden trencar la web, i el kit de Claude
+      # diu la veritat dels plans i que la IA prepara i una persona accepta.
+      - name: L'arrencada amb IA · importador, continguts i kit de Claude
+        run: |
+          node SOS/tests/test-importa.mjs
+          node SOS/tests/test-continguts.mjs
+          node SOS/tests/test-kit-claude.mjs
+
       # Els municipis surten de les taules de l'app, que és qui les fa servir
       # per construir l'arbre de territoris. Dues llistes divergirien i la que
       # es quedaria enrere seria la del directori, que ningú manté.

@@ -1,4 +1,4 @@
-// Generat per SOS/tools/build-plantilla.js des de SOS/vna-suport.html (repositori asolache/teamtowershuma). No s'edita a mà.
+// Generat des de SOS/vna-suport.html (repositori asolache/teamtowershuma). No s'edita a mà: es refà amb node eines/genera.mjs.
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 const EXEMPLE = {
@@ -2183,8 +2183,373 @@ function webDelMapa(m, opts) {
  *  · **W3C.** `lang`, `charset`, `viewport`, enllaç per saltar al contingut,
  *    `header`/`nav`/`main`/`footer`, `aria-current`, etiquetes als camps,
  *    focus visible, mode fosc i objectius de 44 px. */
+/* El kit de Claude del repositori del client: les regles (CLAUDE.md), la guia
+   per treballar-hi (gratis, amb Claude Code o amb TeamTowers), les tres skills
+   i les etiquetes de cerebro/tasques-ia.md. Tot en català i en castellà.
+   «La màquina proposa, una persona accepta»: cap text promet que la IA faci
+   la feina sola. Els plans de Claude canvien: es diu la data i s'enllaça
+   https://claude.com/pricing, mai un preu. '{nom}' és el nom de la web i pot
+   sortir més d'un cop: cal substituir-lo tot (split/join), no amb un replace. */
+const KIT_TXT = {
+  ca: {
+    claude: ['# {nom} · regles per a qui hi treballa, persona o IA', '',
+      'Aquesta web surt del mapa de valor i d\'uns quants textos. **L\'HTML no s\'edita a mà:** es canvia la font i es torna a generar.', '',
+      '## Les fonts', '',
+      '- **`cerebro/mapa-real.json`** (i `cerebro/mapa-ideal.json`, si n\'hi ha): el mapa. Mana sobre les pàgines, els rols i els serveis. Es canvia a l\'editor del mapa de valor, i s\'hi desa el que dona «Copia el JSON».',
+      '- **`cerebro/continguts/<id>.md`**: el text de les pàgines. `<id>` és `inici`, `serveis`, la porta d\'un rol (el nom del seu `.html`) o una pàgina nova.',
+      '- **`cerebro/fonts/`**: el que ja hi havia (la web d\'abans, documents, un CSV), importat en Markdown. L\'índex és `cerebro/fonts/index.md`.',
+      '- **`cerebro/dossier.md`**: què és el negoci, què ofereix i a qui. Cada afirmació porta l\'enllaç a la seva font.',
+      '- **`cerebro/decisiones.md`**: el que s\'acorda i per què, amb la data.',
+      '- **`CEREBRO.md`**: l\'índex de tot el cervell, per tema i per capa.', '',
+      '## Regenerar', '',
+      '- `node eines/genera.mjs` (Node 18 o més nou) torna a fer la web i el cervell. Fes-ho després de canviar una font, i posa\'n el resultat a la mateixa PR.',
+      '- **Si no hi ha `cerebro/mapa-real.json`, para.** Demana a la persona que hi enganxi el JSON de l\'editor del mapa de valor («Copia el JSON»). Sense mapa surt la web d\'exemple.',
+      '- Tot el que es genera es sobreescriu, **excepte**: `netlify.toml`, `cerebro/mapa-real.json`, `cerebro/mapa-ideal.json`, `cerebro/decisiones.md`, `cerebro/dossier.md` i tot el que hi ha a `cerebro/fonts/`, `cerebro/continguts/` i `cerebro/esborranys/`. Això no es genera mai: s\'escriu.', '',
+      '## Les tres skills (`.claude/skills/`)', '',
+      '- **`/importa <url o carpeta>`**: porta al cervell el que ja hi ha i escriu el dossier. El primer dia, o quan arriba material nou.',
+      '- **`/continguts [pàgina]`**: escriu o actualitza el text de les pàgines des del dossier, les fonts i el mapa.',
+      '- **`/tasca <lliurament o id>`**: prepara l\'esborrany d\'una tasca de rutina de `cerebro/tasques-ia.md`.', '',
+      '## La feina de rutina: la màquina proposa, una persona accepta', '',
+      '`cerebro/tasques-ia.md` surt del mapa i diu quins lliuraments pot esborranyar la IA i quins no.', '',
+      '- **Cap lliurament intangible es fa amb IA.** Mai. El fa una persona del rol.',
+      '- **La IA només fa esborranys**, a `cerebro/esborranys/`. No envia, no publica, no paga ni signa res.',
+      '- **L\'accepta una persona del rol que el produeix.** Fins llavors, l\'esborrany no existeix.',
+      '- **El que no saps, `[a completar]`.** No t\'inventis cap dada, xifra ni cita.',
+      '- **Rols, mai noms de persona.**', '',
+      '## Privadesa i seguretat', '',
+      '- **Dades personals, preus pactats i contractes van al CRM.** Mai al repositori: el llegeixen màquines i pot acabar sent públic.',
+      '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
+      '- **HTML i CSS estàtics, sense JavaScript.** Cada pàgina porta les seves dades en JSON-LD (schema.org), i `web.json` les té totes.',
+      '- **Els formularis són de Netlify Forms** i arriben per correu.', '',
+      '## Com es treballa', '',
+      '- **Cada canvi, en una PR.** Netlify en publica una vista prèvia, i qui decideix la mira abans d\'acceptar-la.',
+      '- **L\'API i els avisos són a `API.md`.** `.mcp.json` connecta `eines/mcp.mjs`, un servidor MCP que només llegeix el que surt a l\'índex del cervell.',
+      '- **El registre viu.** Cada lliurament entre rols s\'anota a `registre.html`. El CSV de Netlify va a `cerebro/registro/registre.csv`, i `node eines/registre.mjs` en treu l\'informe i la desviació.',
+      '- **Com treballar amb Claude**, gratis o amb Claude Code: `TREBALLAR-AMB-CLAUDE.md`.'],
+    stub: ['# Abans de generar la web · Antes de generar la web', '',
+      '**ca.** Aquí encara falta gairebé tot: les pàgines, `cerebro/` i les skills apareixen en executar `node eines/genera.mjs` (Node 18 o més nou). Netlify ho fa a cada publicació, però no ho desa al repositori.', '',
+      '1. Primer ha d\'existir `cerebro/mapa-real.json`: desa-hi el que dona l\'editor del mapa de valor («Copia el JSON»). Sense mapa surt la web d\'exemple.',
+      '2. Després, `node eines/genera.mjs`.',
+      '3. En acabar, el `CLAUDE.md` complet substitueix aquest, i les skills `/importa`, `/continguts` i `/tasca` apareixen a `.claude/skills/`.', '',
+      'Cap clau ni dada personal al repositori. Cada canvi, en una PR.', '',
+      '---', '',
+      '**es.** Aquí todavía falta casi todo: las páginas, `cerebro/` y las skills aparecen al ejecutar `node eines/genera.mjs` (Node 18 o más nuevo). Netlify lo hace en cada publicación, pero no lo guarda en el repositorio.', '',
+      '1. Primero tiene que existir `cerebro/mapa-real.json`: guarda en él lo que da el editor del mapa de valor («Copia el JSON»). Sin mapa sale la web de ejemplo.',
+      '2. Después, `node eines/genera.mjs`.',
+      '3. Al terminar, el `CLAUDE.md` completo sustituye a este, y las skills `/importa`, `/continguts` y `/tasca` aparecen en `.claude/skills/`.', '',
+      'Ninguna clave ni dato personal en el repositorio. Cada cambio, en una PR.'],
+    guia: ['# Treballar amb Claude a la web de {nom}', '',
+      'Hi ha tres maneres. Totes fan servir les mateixes regles (`CLAUDE.md`) i el mateix cervell (`cerebro/`). I en totes, **la màquina proposa i una persona accepta**: res es publica sense una PR que algú ha mirat.', '',
+      'Els plans de Claude canvien. Això és com era a l\'octubre de 2026. Els plans i els preus de cada moment: https://claude.com/pricing.', '',
+      '**El repositori, privat.** El cervell parla del negoci: a GitHub, Settings › General › Danger Zone › Change visibility › Private. Netlify i Claude hi treballen igual.', '',
+      '## 1 · Gratis, amb claude.ai (pla Free)', '',
+      '**Claude Code no és al pla gratuït (Free).** El pla Free sí que deixa treballar amb el cervell de la web, llegint-lo:', '',
+      '1. A claude.ai, crea un projecte: «Web de {nom}».',
+      '2. Copia el text de `CLAUDE.md` a les instruccions del projecte.',
+      '3. Afegeix el repositori al coneixement del projecte amb la integració de GitHub. Tria `CLAUDE.md`, `CEREBRO.md` i la carpeta `cerebro/`.',
+      '4. Després de cada canvi al repositori, prem **Sync** perquè Claude vegi la versió nova.',
+      '5. Puja les skills. A GitHub, Code › Download ZIP. Dins hi ha `.claude/skills/` (és una carpeta oculta): fes un zip de cada carpeta (`importa`, `continguts`, `tasca`) i puja\'ls a l\'apartat de skills de la configuració de Claude. Cal tenir activat «Code execution and file creation».', '',
+      '**Què pot fer:** llegir el mapa, les fonts i el dossier, i escriure el dossier, el text de les pàgines, els esborranys de les tasques o una proposta de mapa.', '',
+      '**Què no pot fer:** escriure al repositori. La integració de GitHub només llegeix. Claude et dona els fitxers, i tu:', '',
+      '- Els puges a GitHub: entra a la carpeta (per exemple `cerebro/continguts/`), **Add file › Upload files**, i tria «Create a new branch… and start a pull request». Netlify en publica la vista prèvia.',
+      '- O els envies a TeamTowers i els hi pugem nosaltres.', '',
+      '**Els límits:**', '',
+      '- Menys ús que als plans de pagament. Quan s\'acaba, cal esperar.',
+      '- Fins a 5 projectes.',
+      '- No hi ha ordres amb barra (`/importa`). Demana-ho amb paraules («importa aquesta web») i Claude tria la skill.',
+      '- Tot el que poses al projecte ha de cabre en el context de la conversa. Si el cervell és gran, tria només el que cal.',
+      '- No executa les eines del repositori sobre la teva web. Per importar, li enganxes o puges el text de les pàgines i els documents.', '',
+      '## 2 · Amb Claude Code (pla de pagament o clau d\'API)', '',
+      'Claude Code ve amb els plans de pagament (Pro o superior) o amb una clau d\'API de la Claude Console, que es paga per ús. Els comptes nous de la Console de vegades porten una mica de crèdit de prova.', '',
+      '- **Al navegador:** claude.ai/code, amb el repositori de GitHub.',
+      '- **A l\'ordinador:** l\'aplicació d\'escriptori, o l\'ordre `claude` dins la carpeta del repositori.', '',
+      '`CLAUDE.md`, les skills de `.claude/skills/` i `.mcp.json` es carreguen sols. El servidor MCP (`eines/mcp.mjs`) demana permís abans de funcionar. Claude executa les eines i obre la PR; qui decideix l\'accepta o no.', '',
+      'Una sessió típica:', '',
+      '1. `/importa https://la-web-actual`: porta la web d\'ara a `cerebro/fonts/` i escriu `cerebro/dossier.md`.',
+      '2. Llegeixes el dossier i la llista «Per confirmar».',
+      '3. `/continguts`: escriu el text de les pàgines a `cerebro/continguts/`.',
+      '4. `node eines/genera.mjs`: torna a fer la web (Node 18 o més nou).',
+      '5. Una PR. Mires la vista prèvia de Netlify i l\'acceptes o no.', '',
+      'Per a la rutina, `/tasca <lliurament>` prepara un esborrany i l\'accepta una persona del rol que el produeix.', '',
+      '## 3 · Amb TeamTowers', '',
+      '- A la primera sessió fem la importació i els primers continguts, amb tu.',
+      '- Després podem mantenir en marxa les tasques de rutina («Sistema viu»): la IA prepara els esborranys i una persona del rol els accepta. Sempre.',
+      '- El repositori i la web te\'ls pots endur quan vulguis.', '',
+      '## Què va on', '',
+      '| Què | On |', '| --- | --- |',
+      '| El mapa, real i ideal | `cerebro/mapa-real.json` i `cerebro/mapa-ideal.json`. Es canvia a l\'editor del mapa de valor |',
+      '| El text de les pàgines | `cerebro/continguts/` |',
+      '| El que ja tenies: web, documents, CSV | `cerebro/fonts/` |',
+      '| Què és el negoci, amb les fonts | `cerebro/dossier.md` |',
+      '| El que s\'acorda i per què | `cerebro/decisiones.md` |',
+      '| Els esborranys de la rutina | `cerebro/esborranys/` |',
+      '| Dades personals, preus pactats, contractes | Al CRM. Mai al repositori |'],
+    skills: {
+      importa: ['---', 'name: importa',
+        'description: Porta al cervell el que ja hi ha (la web d\'ara, documents, un CSV) i escriu el dossier amb la font de cada afirmació. Fes-la servir el primer dia o quan arriba material nou.',
+        'argument-hint: "<url o carpeta>"', '---', '',
+        '# Importar el que ja hi ha', '',
+        'Que tot el que se sap del negoci sigui a `cerebro/fonts/`, i que `cerebro/dossier.md` ho resumeixi dient d\'on surt cada cosa.', '',
+        '## Passos', '',
+        '1. **Importa.** Executa `node eines/importa.mjs $ARGUMENTS` (Node 18 o més nou; `--max 30` limita les pàgines). Escriu `cerebro/fonts/web/`, `cerebro/fonts/docs/`, `cerebro/fonts/dades/`, `cerebro/fonts/index.md` i `cerebro/fonts/fonts.json`.',
+        '   - **Una web, només la de qui t\'ho demana i amb el seu permís:** afegeix `--autoritzat <domini>` (el mateix domini que llegeixes). Si no és la seva web, para.',
+        '   - **D\'una taula (.csv) només entra la capçalera** i quantes files té. Pregunta quines columnes calen i torna-la a importar amb `--columnes "a,b"`. Les de persona no hi entren mai.',
+        '   - Si no pots executar ordres (per exemple, a claude.ai), demana a la persona que t\'enganxi o pugi el text de les pàgines i dels documents. Escriu tu els fitxers, amb el mateix format: un `.md` per font a `web/`, `docs/` o `dades/`, que comença així, i afegeix cada font a `cerebro/fonts/index.md`:',
+        '', '   ```markdown', '   ---', '   font: https://la-web-actual/serveis (o el nom del fitxer)', '   tipus: web', '   titol: Serveis', '   importat: AAAA-MM-DD', '   ---', '   ```', '', '   `tipus` és `web`, `doc` o `dades`.',
+        '2. **Llegeix `cerebro/fonts/index.md`**, i després les fonts que hi surten.',
+        '3. **El que no s\'ha pogut llegir.** A `cerebro/fonts/fonts.json`, la llista `fora` diu què ha quedat fora (els PDF i els Word, per exemple). Fes-ne la llista i demana-ho a la persona, enganxat com a text o pujat.',
+        '4. **Escriu o actualitza `cerebro/dossier.md`:** què és el negoci, què ofereix, a qui i com hi treballa. **Cada afirmació porta l\'enllaç a la seva font**, per exemple `([font](fonts/web/serveis.md))`. Sense font, no s\'escriu: va a la llista «Per confirmar», al final. Si el dossier ja existeix, conserva el que hi ha i afegeix-hi.',
+        '5. **Cap dada personal.** L\'importador amaga correus i telèfons: no els tornis a posar. No copiïs noms de persones, ni de clients ni de l\'equip: parla de rols. Els preus pactats i els contractes van al CRM.',
+        '6. **Si encara no hi ha mapa** (`cerebro/mapa-real.json`), proposa\'n un esborrany a `cerebro/proposta-mapa.json`, amb el format de l\'editor del mapa de valor:',
+        '   `{"abast": "…", "roles": ["…"], "pairs": [["A", "B", "tangible", "el que va d\'A a B", "intangible", "el que torna de B a A"]], "processos": [{"id": "…", "nom": "…", "d": "…"}], "seq": {"A→B": ["id del procés", 1]}, "troballes": [{"t": "…", "d": "…"}], "dubtes": []}`',
+        '   - A `seq`, cada flux porta `[procés, pas]` o `"sempre"`.',
+        '   - De 6 a 12 rols. Un rol és el que algú fa, no una persona ni un càrrec.',
+        '   - Com a mínim un terç dels lliuraments, intangibles.',
+        '   - Tot vincle és recíproc: cada parell porta un lliurament en cada sentit.',
+        '   - Cap nom propi de persona ni d\'empresa.',
+        '   - És una proposta. La persona la carrega a l\'editor i es valida a la sessió. No la copiïs a `mapa-real.json`.',
+        '7. **Acaba amb un resum:** què s\'ha importat (quantes fonts de cada tipus i quantes dades amagades), què falta i la llista «Per confirmar».'],
+      continguts: ['---', 'name: continguts',
+        'description: Escriu o actualitza el text de les pàgines de la web (cerebro/continguts) a partir del dossier, les fonts i el mapa. Fes-la servir després d\'importar o quan cal canviar el text d\'una pàgina.',
+        'argument-hint: "[pàgina]"', '---', '',
+        '# Escriure el text de la web', '',
+        'Les pàgines surten del mapa. El text de dins surt d\'aquí: un fitxer per pàgina a `cerebro/continguts/<id>.md`. El generador el fa HTML i no el sobreescriu mai.', '',
+        '## Quines pàgines', '',
+        '- `inici`: la portada.',
+        '- `serveis`: la pàgina de serveis.',
+        '- La porta de cada rol: el nom del seu fitxer a la web generada, sense `.html` (si hi ha `qui-compra.html`, l\'id és `qui-compra`).',
+        '- Pàgines noves, amb un id curt en minúscules i guions (`qui-som`, `preguntes-frequents`) i `menu: si` perquè surtin al menú.',
+        '- Aquests id no es poden fer servir: `equip`, `registre`, `gracies`, `404`, `estil`, `web`, `index`.', '',
+        'Si et diuen una pàgina (`$ARGUMENTS`), treballa només en aquella. Si no, proposa la llista i comença per `inici`.', '',
+        '## El format', '',
+        '```markdown', '---', 'titol: Qui som', 'menu: si', 'font: cerebro/fonts/web/qui-som.md, cerebro/dossier.md', 'fet: esborrany fet amb IA (Claude), AAAA-MM-DD', '---', '',
+        '## Un títol de secció', '', 'Un paràgraf.', '```', '',
+        'Només aquest Markdown: `##` i `###`, paràgrafs, llistes, **negreta**, *cursiva*, enllaços `http(s)`, `mailto:` o relatius, i imatges només relatives, dins `imatges/`. La resta surt com a text: res d\'HTML.', '',
+        '## Passos', '',
+        '1. Llegeix `cerebro/dossier.md`, `cerebro/fonts/index.md`, el mapa (`cerebro/mapa-real.json`) i el contingut que ja té la pàgina, si en té.',
+        '2. Escriu només el que diuen les fonts, i posa-les a `font:`. Res inventat: ni xifres, ni clients, ni cites, ni promeses.',
+        '3. On falta alguna cosa, `[a completar]`. Digues-ho al resum.',
+        '4. Cap dada personal (noms de persona, correus, telèfons) ni cap preu pactat. Això va al CRM.',
+        '5. Escriu en la llengua de qui visita la web i amb el to que ja fa servir la casa a les fonts. Frases curtes, paraules planes.',
+        '6. Executa `node eines/genera.mjs` i mira la pàgina generada (`<id>.html`, o `index.html` per a `inici`): que es llegeixi bé i que els enllaços vagin.',
+        '7. Obre una PR amb el canvi, mai directament a la branca principal: la persona mira la vista prèvia de Netlify i decideix. **Acceptar la PR és acceptar el text**, i queda dit qui ho ha fet. Si no pots obrir-la, dona-li els fitxers perquè els pugi.'],
+      tasca: ['---', 'name: tasca',
+        'description: Prepara l\'esborrany d\'una tasca de rutina de cerebro/tasques-ia.md perquè l\'accepti una persona del rol que la produeix. Fes-la servir quan toca un lliurament tangible que la IA pot esborranyar.',
+        'argument-hint: "<lliurament o id>"', '---', '',
+        '# Preparar l\'esborrany d\'una tasca', '',
+        'La màquina proposa, una persona accepta. Aquesta skill només fa esborranys: no envia, no publica, no paga ni signa res.', '',
+        '## Passos', '',
+        '1. Llegeix `cerebro/tasques-ia.json` i busca la tasca (`$ARGUMENTS`) pel seu `id` o pel lliurament (`q`). Si n\'hi encaixa més d\'una, pregunta quina. Si no n\'hi ha cap, digues-ho i para.',
+        '2. **Si no té `pot: true`, explica per què i para:**',
+        '   - Intangible: el fa una persona del rol, mai la IA. Cap esborrany, ni «només per ajudar».',
+        '   - Tangible sense tipus declarat, o sense mena: cal decidir-ne el tipus a la sessió i anotar-lo al mapa.',
+        '   - El tipus no surt d\'una màquina: el redacta qui hi ha estat.',
+        '3. Mira què demana `cal` i pregunta a la persona el que falti. Si alguna dada porta noms de persona, demana-la per rols.',
+        '4. Escriu l\'esborrany a `cerebro/esborranys/AAAA-MM-DD-<id>.md` (la data d\'avui), amb la forma que diu `surt`. Comença amb aquesta capçalera, perquè digui qui l\'ha fet:',
+        '', '   ```markdown', '   ---', '   tasca: <id>', '   tipus: <tipus>', '   de: <rol que el produeix>', '   a: <rol que el rep>',
+        '   fet: esborrany fet amb IA (Claude), AAAA-MM-DD', '   accepta: <rol>', '   estat: esborrany', '   ---', '   ```', '',
+        '5. Cada dada que no tens, `[a completar]`. No t\'inventis cap xifra, data, acord ni nom. Cap nom de persona: només rols. Ni preus pactats ni dades personals.',
+        '6. Digues qui l\'ha d\'acceptar: una persona del rol de `accepta`, que és qui produeix el lliurament.',
+        '7. Obre una PR amb l\'esborrany, o dona el fitxer si no pots. Quan aquella persona l\'accepta, a la mateixa PR passa a `estat: acceptat AAAA-MM-DD`.',
+        '8. **Fins que l\'accepta, l\'esborrany no existeix:** no es fa servir, no s\'envia i no es publica.'] },
+    tasques: { titol: 'Tasques per a la IA · {nom}',
+      generat: 'Generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
+      regla: 'La regla és una: **la màquina proposa, una persona accepta.** Un lliurament intangible (confiança, un consell, un avís, un favor) no el fa mai la IA: el fa una persona del rol. Un lliurament tangible, amb un tipus declarat que pot sortir d\'una màquina, pot tenir un esborrany fet amb IA, i només si el lliura un rol de casa. Tres frens: la IA només fa esborranys i no envia, no publica ni signa res; cap intangible es fa amb IA, mai; i cada esborrany diu que l\'ha fet una IA, quin dia i quin rol l\'ha d\'acceptar. Fins que l\'accepta una persona del rol que el produeix, l\'esborrany no existeix.',
+      recompte: '{m} de {t} lliuraments: la IA en pot preparar l\'esborrany',
+      maquina: 'La IA en pot preparar l\'esborrany',
+      persona: ['Els fa una persona', 'Són intangibles, o el seu tipus no surt d\'una màquina: la IA no hi entra.'],
+      senseTipus: ['Per decidir', 'Són tangibles però encara no tenen tipus declarat: decidiu-ne el tipus a la sala.'],
+      deFora: ['Arriben de fora', 'Els prepara qui els envia. El que en feu vosaltres (respondre, servir-ho) és un altre lliurament del mapa.'],
+      perConfirmar: 'Els tipus surten del nom de cada lliurament (la paraula entre cometes): confirmeu-los a la sala abans de fer-los servir.',
+      cols: { q: 'Lliurament', deA: 'De → a', tipus: 'Tipus', cal: 'Què cal', surt: 'Què en surt', accepta: 'Qui l\'accepta' },
+      motius: { intangible: 'És intangible: el fa una persona del rol, mai la IA.',
+        'mena desconeguda': 'El mapa no diu si és tangible o intangible: decidiu-ho a la sala.',
+        'sense entregable declarat': 'Encara no té tipus declarat: decidiu-ne el tipus a la sala.',
+        'el tipus no surt d\'una màquina': 'El seu tipus no surt d\'una màquina: el redacta qui hi ha estat.',
+        'de fora': 'Arriba d\'un rol de fora: el prepara qui l\'envia.' } }
+  },
+  es: {
+    claude: ['# {nom} · reglas para quien trabaja en ella, persona o IA', '',
+      'Esta web sale del mapa de valor y de unos cuantos textos. **El HTML no se edita a mano:** se cambia la fuente y se vuelve a generar.', '',
+      '## Las fuentes', '',
+      '- **`cerebro/mapa-real.json`** (y `cerebro/mapa-ideal.json`, si lo hay): el mapa. Manda sobre las páginas, los roles y los servicios. Se cambia en el editor del mapa de valor, y se guarda en él lo que da «Copia el JSON».',
+      '- **`cerebro/continguts/<id>.md`**: el texto de las páginas. `<id>` es `inici`, `serveis`, la puerta de un rol (el nombre de su `.html`) o una página nueva.',
+      '- **`cerebro/fonts/`**: lo que ya había (la web de antes, documentos, un CSV), importado en Markdown. El índice es `cerebro/fonts/index.md`.',
+      '- **`cerebro/dossier.md`**: qué es el negocio, qué ofrece y a quién. Cada afirmación lleva el enlace a su fuente.',
+      '- **`cerebro/decisiones.md`**: lo que se acuerda y por qué, con la fecha.',
+      '- **`CEREBRO.md`**: el índice de todo el cerebro, por tema y por capa.', '',
+      '## Regenerar', '',
+      '- `node eines/genera.mjs` (Node 18 o más nuevo) vuelve a hacer la web y el cerebro. Hazlo después de cambiar una fuente, y pon el resultado en la misma PR.',
+      '- **Si no hay `cerebro/mapa-real.json`, para.** Pide a la persona que pegue en él el JSON del editor del mapa de valor («Copia el JSON»). Sin mapa sale la web de ejemplo.',
+      '- Todo lo que se genera se sobrescribe, **excepto**: `netlify.toml`, `cerebro/mapa-real.json`, `cerebro/mapa-ideal.json`, `cerebro/decisiones.md`, `cerebro/dossier.md` y todo lo que hay en `cerebro/fonts/`, `cerebro/continguts/` y `cerebro/esborranys/`. Eso no se genera nunca: se escribe.', '',
+      '## Las tres skills (`.claude/skills/`)', '',
+      '- **`/importa <url o carpeta>`**: trae al cerebro lo que ya hay y escribe el dossier. El primer día, o cuando llega material nuevo.',
+      '- **`/continguts [página]`**: escribe o actualiza el texto de las páginas desde el dossier, las fuentes y el mapa.',
+      '- **`/tasca <entregable o id>`**: prepara el borrador de una tarea de rutina de `cerebro/tasques-ia.md`.', '',
+      '## El trabajo de rutina: la máquina propone, una persona acepta', '',
+      '`cerebro/tasques-ia.md` sale del mapa y dice qué entregables puede preparar en borrador la IA y cuáles no.', '',
+      '- **Ningún entregable intangible se hace con IA.** Nunca. Lo hace una persona del rol.',
+      '- **La IA solo hace borradores**, en `cerebro/esborranys/`. No envía, no publica, no paga ni firma nada.',
+      '- **Lo acepta una persona del rol que lo produce.** Hasta entonces, el borrador no existe.',
+      '- **Lo que no sabes, `[a completar]`.** No te inventes ningún dato, cifra ni cita.',
+      '- **Roles, nunca nombres de persona.**', '',
+      '## Privacidad y seguridad', '',
+      '- **Datos personales, precios pactados y contratos van al CRM.** Nunca al repositorio: lo leen máquinas y puede acabar siendo público.',
+      '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
+      '- **HTML y CSS estáticos, sin JavaScript.** Cada página lleva sus datos en JSON-LD (schema.org), y `web.json` los tiene todos.',
+      '- **Los formularios son de Netlify Forms** y llegan por correo.', '',
+      '## Cómo se trabaja', '',
+      '- **Cada cambio, en una PR.** Netlify publica una vista previa, y quien decide la mira antes de aceptarla.',
+      '- **La API y los avisos están en `API.md`.** `.mcp.json` conecta `eines/mcp.mjs`, un servidor MCP que solo lee lo que sale en el índice del cerebro.',
+      '- **El registro vivo.** Cada entregable entre roles se anota en `registre.html`. El CSV de Netlify va a `cerebro/registro/registre.csv`, y `node eines/registre.mjs` saca el informe y la desviación.',
+      '- **Cómo trabajar con Claude**, gratis o con Claude Code: `TRABAJAR-CON-CLAUDE.md`.'],
+    stub: ['# Abans de generar la web · Antes de generar la web', '',
+      '**ca.** Aquí encara falta gairebé tot: les pàgines, `cerebro/` i les skills apareixen en executar `node eines/genera.mjs` (Node 18 o més nou). Netlify ho fa a cada publicació, però no ho desa al repositori.', '',
+      '1. Primer ha d\'existir `cerebro/mapa-real.json`: desa-hi el que dona l\'editor del mapa de valor («Copia el JSON»). Sense mapa surt la web d\'exemple.',
+      '2. Després, `node eines/genera.mjs`.',
+      '3. En acabar, el `CLAUDE.md` complet substitueix aquest, i les skills `/importa`, `/continguts` i `/tasca` apareixen a `.claude/skills/`.', '',
+      'Cap clau ni dada personal al repositori. Cada canvi, en una PR.', '',
+      '---', '',
+      '**es.** Aquí todavía falta casi todo: las páginas, `cerebro/` y las skills aparecen al ejecutar `node eines/genera.mjs` (Node 18 o más nuevo). Netlify lo hace en cada publicación, pero no lo guarda en el repositorio.', '',
+      '1. Primero tiene que existir `cerebro/mapa-real.json`: guarda en él lo que da el editor del mapa de valor («Copia el JSON»). Sin mapa sale la web de ejemplo.',
+      '2. Después, `node eines/genera.mjs`.',
+      '3. Al terminar, el `CLAUDE.md` completo sustituye a este, y las skills `/importa`, `/continguts` y `/tasca` aparecen en `.claude/skills/`.', '',
+      'Ninguna clave ni dato personal en el repositorio. Cada cambio, en una PR.'],
+    guia: ['# Trabajar con Claude en la web de {nom}', '',
+      'Hay tres maneras. Todas usan las mismas reglas (`CLAUDE.md`) y el mismo cerebro (`cerebro/`). Y en todas, **la máquina propone y una persona acepta**: nada se publica sin una PR que alguien ha mirado.', '',
+      'Los planes de Claude cambian. Esto es como era a octubre de 2026. Los planes y los precios de cada momento: https://claude.com/pricing.', '',
+      '**El repositorio, privado.** El cerebro habla del negocio: en GitHub, Settings › General › Danger Zone › Change visibility › Private. Netlify y Claude trabajan igual.', '',
+      '## 1 · Gratis, con claude.ai (plan Free)', '',
+      '**Claude Code no está en el plan gratuito (Free).** El plan Free sí deja trabajar con el cerebro de la web, leyéndolo:', '',
+      '1. En claude.ai, crea un proyecto: «Web de {nom}».',
+      '2. Copia el texto de `CLAUDE.md` en las instrucciones del proyecto.',
+      '3. Añade el repositorio al conocimiento del proyecto con la integración de GitHub. Elige `CLAUDE.md`, `CEREBRO.md` y la carpeta `cerebro/`.',
+      '4. Después de cada cambio en el repositorio, pulsa **Sync** para que Claude vea la versión nueva.',
+      '5. Sube las skills. En GitHub, Code › Download ZIP. Dentro está `.claude/skills/` (es una carpeta oculta): haz un zip de cada carpeta (`importa`, `continguts`, `tasca`) y súbelos al apartado de skills de la configuración de Claude. Hay que tener activado «Code execution and file creation».', '',
+      '**Qué puede hacer:** leer el mapa, las fuentes y el dossier, y escribir el dossier, el texto de las páginas, los borradores de las tareas o una propuesta de mapa.', '',
+      '**Qué no puede hacer:** escribir en el repositorio. La integración de GitHub solo lee. Claude te da los ficheros, y tú:', '',
+      '- Los subes a GitHub: entra en la carpeta (por ejemplo `cerebro/continguts/`), **Add file › Upload files**, y elige «Create a new branch… and start a pull request». Netlify publica la vista previa.',
+      '- O se los envías a TeamTowers y los subimos nosotros.', '',
+      '**Los límites:**', '',
+      '- Menos uso que en los planes de pago. Cuando se acaba, hay que esperar.',
+      '- Hasta 5 proyectos.',
+      '- No hay órdenes con barra (`/importa`). Pídelo con palabras («importa esta web») y Claude elige la skill.',
+      '- Todo lo que pones en el proyecto tiene que caber en el contexto de la conversación. Si el cerebro es grande, elige solo lo que hace falta.',
+      '- No ejecuta las herramientas del repositorio sobre tu web. Para importar, le pegas o subes el texto de las páginas y los documentos.', '',
+      '## 2 · Con Claude Code (plan de pago o clave de API)', '',
+      'Claude Code viene con los planes de pago (Pro o superior) o con una clave de API de la Claude Console, que se paga por uso. Las cuentas nuevas de la Console a veces traen un poco de crédito de prueba.', '',
+      '- **En el navegador:** claude.ai/code, con el repositorio de GitHub.',
+      '- **En el ordenador:** la aplicación de escritorio, o la orden `claude` dentro de la carpeta del repositorio.', '',
+      '`CLAUDE.md`, las skills de `.claude/skills/` y `.mcp.json` se cargan solos. El servidor MCP (`eines/mcp.mjs`) pide permiso antes de funcionar. Claude ejecuta las herramientas y abre la PR; quien decide la acepta o no.', '',
+      'Una sesión típica:', '',
+      '1. `/importa https://la-web-actual`: trae la web de ahora a `cerebro/fonts/` y escribe `cerebro/dossier.md`.',
+      '2. Lees el dossier y la lista «Por confirmar».',
+      '3. `/continguts`: escribe el texto de las páginas en `cerebro/continguts/`.',
+      '4. `node eines/genera.mjs`: vuelve a hacer la web (Node 18 o más nuevo).',
+      '5. Una PR. Miras la vista previa de Netlify y la aceptas o no.', '',
+      'Para la rutina, `/tasca <entregable>` prepara un borrador y lo acepta una persona del rol que lo produce.', '',
+      '## 3 · Con TeamTowers', '',
+      '- En la primera sesión hacemos la importación y los primeros contenidos, contigo.',
+      '- Después podemos mantener en marcha las tareas de rutina («Sistema viu»): la IA prepara los borradores y una persona del rol los acepta. Siempre.',
+      '- El repositorio y la web te los puedes llevar cuando quieras.', '',
+      '## Qué va dónde', '',
+      '| Qué | Dónde |', '| --- | --- |',
+      '| El mapa, real e ideal | `cerebro/mapa-real.json` y `cerebro/mapa-ideal.json`. Se cambia en el editor del mapa de valor |',
+      '| El texto de las páginas | `cerebro/continguts/` |',
+      '| Lo que ya tenías: web, documentos, CSV | `cerebro/fonts/` |',
+      '| Qué es el negocio, con las fuentes | `cerebro/dossier.md` |',
+      '| Lo que se acuerda y por qué | `cerebro/decisiones.md` |',
+      '| Los borradores de la rutina | `cerebro/esborranys/` |',
+      '| Datos personales, precios pactados, contratos | En el CRM. Nunca en el repositorio |'],
+    skills: {
+      importa: ['---', 'name: importa',
+        'description: Trae al cerebro lo que ya hay (la web de ahora, documentos, un CSV) y escribe el dossier con la fuente de cada afirmación. Úsala el primer día o cuando llega material nuevo.',
+        'argument-hint: "<url o carpeta>"', '---', '',
+        '# Importar lo que ya hay', '',
+        'Que todo lo que se sabe del negocio esté en `cerebro/fonts/`, y que `cerebro/dossier.md` lo resuma diciendo de dónde sale cada cosa.', '',
+        '## Pasos', '',
+        '1. **Importa.** Ejecuta `node eines/importa.mjs $ARGUMENTS` (Node 18 o más nuevo; `--max 30` limita las páginas). Escribe `cerebro/fonts/web/`, `cerebro/fonts/docs/`, `cerebro/fonts/dades/`, `cerebro/fonts/index.md` y `cerebro/fonts/fonts.json`.',
+        '   - **Una web, solo la de quien te lo pide y con su permiso:** añade `--autoritzat <dominio>` (el mismo dominio que lees). Si no es su web, para.',
+        '   - **De una tabla (.csv) solo entra la cabecera** y cuántas filas tiene. Pregunta qué columnas hacen falta y vuelve a importarla con `--columnes "a,b"`. Las de persona no entran nunca.',
+        '   - Si no puedes ejecutar órdenes (por ejemplo, en claude.ai), pide a la persona que te pegue o suba el texto de las páginas y de los documentos. Escribe tú los ficheros, con el mismo formato: un `.md` por fuente en `web/`, `docs/` o `dades/`, que empieza así, y añade cada fuente a `cerebro/fonts/index.md`:',
+        '', '   ```markdown', '   ---', '   font: https://la-web-actual/servicios (o el nombre del fichero)', '   tipus: web', '   titol: Servicios', '   importat: AAAA-MM-DD', '   ---', '   ```', '', '   `tipus` es `web`, `doc` o `dades`.',
+        '2. **Lee `cerebro/fonts/index.md`**, y después las fuentes que salen en él.',
+        '3. **Lo que no se ha podido leer.** En `cerebro/fonts/fonts.json`, la lista `fora` dice qué ha quedado fuera (los PDF y los Word, por ejemplo). Haz la lista y pídeselo a la persona, pegado como texto o subido.',
+        '4. **Escribe o actualiza `cerebro/dossier.md`:** qué es el negocio, qué ofrece, a quién y cómo trabaja. **Cada afirmación lleva el enlace a su fuente**, por ejemplo `([fuente](fonts/web/serveis.md))`. Sin fuente, no se escribe: va a la lista «Por confirmar», al final. Si el dossier ya existe, conserva lo que hay y añade.',
+        '5. **Ningún dato personal.** El importador oculta correos y teléfonos: no los vuelvas a poner. No copies nombres de personas, ni de clientes ni del equipo: habla de roles. Los precios pactados y los contratos van al CRM.',
+        '6. **Si todavía no hay mapa** (`cerebro/mapa-real.json`), propón un borrador en `cerebro/proposta-mapa.json`, con el formato del editor del mapa de valor:',
+        '   `{"abast": "…", "roles": ["…"], "pairs": [["A", "B", "tangible", "lo que va de A a B", "intangible", "lo que vuelve de B a A"]], "processos": [{"id": "…", "nom": "…", "d": "…"}], "seq": {"A→B": ["id del proceso", 1]}, "troballes": [{"t": "…", "d": "…"}], "dubtes": []}`',
+        '   - En `seq`, cada flujo lleva `[proceso, paso]` o `"sempre"`.',
+        '   - De 6 a 12 roles. Un rol es lo que alguien hace, no una persona ni un cargo.',
+        '   - Como mínimo un tercio de los entregables, intangibles.',
+        '   - Todo vínculo es recíproco: cada par lleva un entregable en cada sentido.',
+        '   - Ningún nombre propio de persona ni de empresa.',
+        '   - Es una propuesta. La persona la carga en el editor y se valida en la sesión. No la copies a `mapa-real.json`.',
+        '7. **Acaba con un resumen:** qué se ha importado (cuántas fuentes de cada tipo y cuántos datos ocultos), qué falta y la lista «Por confirmar».'],
+      continguts: ['---', 'name: continguts',
+        'description: Escribe o actualiza el texto de las páginas de la web (cerebro/continguts) a partir del dossier, las fuentes y el mapa. Úsala después de importar o cuando hay que cambiar el texto de una página.',
+        'argument-hint: "[página]"', '---', '',
+        '# Escribir el texto de la web', '',
+        'Las páginas salen del mapa. El texto de dentro sale de aquí: un fichero por página en `cerebro/continguts/<id>.md`. El generador lo convierte en HTML y no lo sobrescribe nunca.', '',
+        '## Qué páginas', '',
+        '- `inici`: la portada.',
+        '- `serveis`: la página de servicios.',
+        '- La puerta de cada rol: el nombre de su fichero en la web generada, sin `.html` (si hay `quien-compra.html`, el id es `quien-compra`).',
+        '- Páginas nuevas, con un id corto en minúsculas y guiones (`quienes-somos`, `preguntas-frecuentes`) y `menu: si` para que salgan en el menú.',
+        '- Estos id no se pueden usar: `equip`, `registre`, `gracies`, `404`, `estil`, `web`, `index`.', '',
+        'Si te dicen una página (`$ARGUMENTS`), trabaja solo en esa. Si no, propón la lista y empieza por `inici`.', '',
+        '## El formato', '',
+        '```markdown', '---', 'titol: Quiénes somos', 'menu: si', 'font: cerebro/fonts/web/quienes-somos.md, cerebro/dossier.md', 'fet: esborrany fet amb IA (Claude), AAAA-MM-DD', '---', '',
+        '## Un título de sección', '', 'Un párrafo.', '```', '',
+        'Solo este Markdown: `##` y `###`, párrafos, listas, **negrita**, *cursiva*, enlaces `http(s)`, `mailto:` o relativos, e imágenes solo relativas, dentro de `imatges/`. El resto sale como texto: nada de HTML.', '',
+        '## Pasos', '',
+        '1. Lee `cerebro/dossier.md`, `cerebro/fonts/index.md`, el mapa (`cerebro/mapa-real.json`) y el contenido que ya tiene la página, si lo tiene.',
+        '2. Escribe solo lo que dicen las fuentes, y ponlas en `font:`. Nada inventado: ni cifras, ni clientes, ni citas, ni promesas.',
+        '3. Donde falte algo, `[a completar]`. Dilo en el resumen.',
+        '4. Ningún dato personal (nombres de persona, correos, teléfonos) ni ningún precio pactado. Eso va al CRM.',
+        '5. Escribe en la lengua de quien visita la web y con el tono que ya usa la casa en las fuentes. Frases cortas, palabras llanas.',
+        '6. Ejecuta `node eines/genera.mjs` y mira la página generada (`<id>.html`, o `index.html` para `inici`): que se lea bien y que los enlaces funcionen.',
+        '7. Abre una PR con el cambio, nunca directamente en la rama principal: la persona mira la vista previa de Netlify y decide. **Aceptar la PR es aceptar el texto**, y queda dicho quién lo ha hecho. Si no puedes abrirla, dale los ficheros para que los suba.'],
+      tasca: ['---', 'name: tasca',
+        'description: Prepara el borrador de una tarea de rutina de cerebro/tasques-ia.md para que lo acepte una persona del rol que la produce. Úsala cuando toca un entregable tangible que la IA puede preparar en borrador.',
+        'argument-hint: "<entregable o id>"', '---', '',
+        '# Preparar el borrador de una tarea', '',
+        'La máquina propone, una persona acepta. Esta skill solo hace borradores: no envía, no publica, no paga ni firma nada.', '',
+        '## Pasos', '',
+        '1. Lee `cerebro/tasques-ia.json` y busca la tarea (`$ARGUMENTS`) por su `id` o por el entregable (`q`). Si encaja más de una, pregunta cuál. Si no hay ninguna, dilo y para.',
+        '2. **Si no tiene `pot: true`, explica por qué y para:**',
+        '   - Intangible: lo hace una persona del rol, nunca la IA. Ningún borrador, ni «solo para ayudar».',
+        '   - Tangible sin tipo declarado, o sin mena: hay que decidir su tipo en la sesión y anotarlo en el mapa.',
+        '   - El tipo no sale de una máquina: lo redacta quien ha estado.',
+        '3. Mira qué pide `cal` y pregunta a la persona lo que falte. Si algún dato lleva nombres de persona, pídelo por roles.',
+        '4. Escribe el borrador en `cerebro/esborranys/AAAA-MM-DD-<id>.md` (la fecha de hoy), con la forma que dice `surt`. Empieza con esta cabecera, para que diga quién lo ha hecho:',
+        '', '   ```markdown', '   ---', '   tasca: <id>', '   tipus: <tipo>', '   de: <rol que lo produce>', '   a: <rol que lo recibe>',
+        '   fet: borrador hecho con IA (Claude), AAAA-MM-DD', '   accepta: <rol>', '   estat: esborrany', '   ---', '   ```', '',
+        '5. Cada dato que no tienes, `[a completar]`. No te inventes ninguna cifra, fecha, acuerdo ni nombre. Ningún nombre de persona: solo roles. Ni precios pactados ni datos personales.',
+        '6. Di quién tiene que aceptarlo: una persona del rol de `accepta`, que es quien produce el entregable.',
+        '7. Abre una PR con el borrador, o da el fichero si no puedes. Cuando esa persona lo acepta, en la misma PR pasa a `estat: acceptat AAAA-MM-DD`.',
+        '8. **Hasta que lo acepta, el borrador no existe:** no se usa, no se envía y no se publica.'] },
+    tasques: { titol: 'Tareas para la IA · {nom}',
+      generat: 'Generado del mapa de valor. No se edita a mano: se regenera con la web.',
+      regla: 'La regla es una: **la máquina propone, una persona acepta.** Un entregable intangible (confianza, un consejo, un aviso, un favor) no lo hace nunca la IA: lo hace una persona del rol. Un entregable tangible, con un tipo declarado que puede salir de una máquina, puede tener un borrador hecho con IA, y solo si lo entrega un rol de casa. Tres frenos: la IA solo hace borradores y no envía, no publica ni firma nada; ningún intangible se hace con IA, nunca; y cada borrador dice que lo ha hecho una IA, qué día y qué rol tiene que aceptarlo. Hasta que lo acepta una persona del rol que lo produce, el borrador no existe.',
+      recompte: '{m} de {t} entregables: la IA puede preparar el borrador',
+      maquina: 'La IA puede preparar el borrador',
+      persona: ['Los hace una persona', 'Son intangibles, o su tipo no sale de una máquina: la IA no entra.'],
+      senseTipus: ['Por decidir', 'Son tangibles pero todavía no tienen tipo declarado: decidid su tipo en la sala.'],
+      deFora: ['Llegan de fuera', 'Los prepara quien los envía. Lo que hacéis vosotros con ellos (responder, servirlo) es otro entregable del mapa.'],
+      perConfirmar: 'Los tipos salen del nombre de cada entregable (la palabra entre comillas): confirmadlos en la sala antes de usarlos.',
+      cols: { q: 'Entregable', deA: 'De → a', tipus: 'Tipo', cal: 'Qué hace falta', surt: 'Qué sale', accepta: 'Quién lo acepta' },
+      motius: { intangible: 'Es intangible: lo hace una persona del rol, nunca la IA.',
+        'mena desconeguda': 'El mapa no dice si es tangible o intangible: decididlo en la sala.',
+        'sense entregable declarat': 'Todavía no tiene tipo declarado: decidid su tipo en la sala.',
+        'el tipus no surt d\'una màquina': 'Su tipo no sale de una máquina: lo redacta quien ha estado.',
+        'de fora': 'Llega de un rol de fuera: lo prepara quien lo envía.' } }
+  }
+};
 const SITE_TXT = {
   ca: { inici: 'Inici', serveis: 'Serveis', equip: 'Per a l\'equip', salta: 'Salta al contingut', menu: 'Menú',
+    contPersonal: 'cerebro/continguts/{id}.md té un correu, un telèfon, un DNI o un IBAN: la pàgina no surt. Les dades personals van al CRM, i el contacte de la web és el formulari.',
+    contReservat: 'cerebro/continguts/{id}.md: aquest nom no es pot fer servir (minúscules, xifres i guions; ni equip, registre, gracies, 404, estil, web o index).',
     donem: 'Què et donem', dones: 'Què ens dones', xarxa: 'Amb la resta de la xarxa', benvinguda: 'La benvinguda',
     connecta: 'Es connecta amb', perCadascu: 'Una porta per a cadascú', sempre: 'Tot el temps', dins: 'El que passa a dins',
     escriu: 'Escriu-nos', nom: 'Nom', correu: 'Correu electrònic', missatge: 'Missatge', envia: 'Envia', alta: 'Demana el teu compte',
@@ -2199,11 +2564,12 @@ const SITE_TXT = {
       habD: 'Per omplir a la sala. L\'encaix de cada persona amb el rol és dada personal: va al CRM, no aquí.',
       qui: 'Qui el produeix', perA: 'Qui el rep', tipus: 'Tipus', flux: 'Al flux', tangible: 'tangible', intangible: 'intangible',
       dec: 'Decisions', decD: 'El que s\'acorda i per què. Una entrada per decisió, amb la data. És l\'únic fitxer que s\'escriu a mà: en regenerar la web, conserva el que ja tens i afegeix-hi només les troballes noves.',
-      trob: 'Troballes del mapa, per decidir', senseP: 'Encara sense passos.' },
+      trob: 'Troballes del mapa, per decidir', senseP: 'Encara sense passos.',
+      ia: 'Qui el prepara', iaSi: 'La IA en prepara l\'esborrany ({tipus}) i l\'accepta una persona del rol {rol}.', iaNo: '{motiu}' },
     idx: { titol: 'Cervell · {nom}', generat: 'Índex generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
       intro: 'Tots els documents del projecte, per tema. **Pública**: la web que troba qualsevol. **Per enllaç**: pàgines que no s\'indexen i es donen a qui toca. **Equip**: el que només viu al repositori.',
       doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web',
-      temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', regles: 'Regles', eines: 'Eines i API' },
+      temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', tasques: 'Tasques per a la IA', continguts: 'Continguts', fonts: 'El que ja hi havia', regles: 'Regles', eines: 'Eines i API' },
       capes: { publica: 'pública', enllac: 'per enllaç', equip: 'equip' } },
     api: { cap: 'Generat del mapa de valor amb la web. No s\'edita a mà: es regenera.', web: 'https://la-teva-web/',
       doc: ['# {nom} · l\'API i els avisos', '',
@@ -2228,18 +2594,6 @@ const SITE_TXT = {
         'Les funcions demanen que la web es publiqui des del repositori: Netlify Drop no les desplega.', '',
         '## Per a Claude Code', '',
         '`.mcp.json` hi connecta `eines/mcp.mjs`, un servidor MCP sense dependències amb tres eines: `cervell_index`, `cervell_llegeix` i `registre_informe`. Només llegeix el que surt a l\'índex del cervell.'] },
-    claude: ['# {nom} · regles per a qui hi treballa, persona o IA', '',
-      'Aquesta web surt del mapa de valor. **No s\'edita a mà.**', '',
-      '- **La font és `cerebro/mapa-real.json`** (i `cerebro/mapa-ideal.json`, si n\'hi ha). Per canviar la web, canvia el mapa a l\'editor del mapa de valor del SOS (pestanya Web) o, des del repositori de TeamTowers, amb `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Després, substitueix-ho tot.',
-      '- **El cervell del projecte és `cerebro/`**, i surt del mateix mapa: una fitxa per rol (`roles/`), una per lliurament (`entregables/`), una per procés (`procesos/`) i `decisiones.md`. `decisiones.md` s\'escriu a mà i es conserva en regenerar; la resta es regenera. L\'índex de tot, per tema i per capa (pública, per enllaç, equip), és `CEREBRO.md`.',
-      '- **Què no va aquí:** dades personals, preus pactats i contractes. Van al CRM.',
-      '- **HTML i CSS estàtics, sense JavaScript.** Cada pàgina porta les seves dades en JSON-LD (schema.org), i `web.json` les té totes.',
-      '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
-      '- **Els formularis són de Netlify Forms** i arriben per correu. Cap dada personal es desa aquí.',
-      '- **Permaweb.** `permaweb.json` té l\'empremta SHA-256 de cada fitxer. Si un fitxer no hi quadra, la web no és la que va sortir del mapa.',
-      '- **El registre viu.** Cada lliurament entre rols s\'anota a `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, i `node eines/registre.mjs` en treu `informe.md`, `mapa-observat.json` (s\'obre a l\'editor i ensenya la desviació) i `avisos.json`. Del CSV només es queden rols, lliurament, tipus, data, evidència i valor.',
-      '- **L\'API i els avisos són a `API.md`.** Cada anotació envia un avís signat a les adreces de `TT_WEBHOOKS`. Per a Claude Code, `.mcp.json` connecta el cervell (`eines/mcp.mjs`). El codi d\'`eines/` i `netlify/` també es regenera.',
-      '- **Cada canvi, en una PR.** Netlify en publica una vista prèvia, i qui decideix la mira abans d\'acceptar-la.'],
     llegeix: ['# {nom}', '', 'Web feta a partir del mapa de valor.', '', '## Publicar-la', '',
       '- **Ara mateix:** arrossega la carpeta a https://app.netlify.com/drop.',
       '- **Amb historial:** puja-la a un repositori de GitHub i connecta\'l a Netlify (Add new site › Import an existing project). El `netlify.toml` ja hi és.',
@@ -2251,6 +2605,8 @@ const SITE_TXT = {
       primer: ['El primer que rebràs', ''], demanem: ['El primer que et demanarem', ''] },
     cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' } },
   es: { inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo', salta: 'Saltar al contenido', menu: 'Menú',
+    contPersonal: 'cerebro/continguts/{id}.md tiene un correo, un teléfono, un DNI o un IBAN: la página no sale. Los datos personales van al CRM, y el contacto de la web es el formulario.',
+    contReservat: 'cerebro/continguts/{id}.md: este nombre no se puede usar (minúsculas, cifras y guiones; ni equip, registre, gracies, 404, estil, web o index).',
     donem: 'Qué te damos', dones: 'Qué nos das', xarxa: 'Con el resto de la red', benvinguda: 'La bienvenida',
     connecta: 'Se conecta con', perCadascu: 'Una puerta para cada uno', sempre: 'Todo el tiempo', dins: 'Lo que pasa dentro',
     escriu: 'Escríbenos', nom: 'Nombre', correu: 'Correo electrónico', missatge: 'Mensaje', envia: 'Enviar', alta: 'Pide tu cuenta',
@@ -2265,11 +2621,12 @@ const SITE_TXT = {
       habD: 'Por rellenar en la sala. El encaje de cada persona con el rol es dato personal: va al CRM, no aquí.',
       qui: 'Quién lo produce', perA: 'Quién lo recibe', tipus: 'Tipo', flux: 'En el flujo', tangible: 'tangible', intangible: 'intangible',
       dec: 'Decisiones', decD: 'Lo que se acuerda y por qué. Una entrada por decisión, con la fecha. Es el único fichero que se escribe a mano: al regenerar la web, conserva el que ya tienes y añade solo los hallazgos nuevos.',
-      trob: 'Hallazgos del mapa, por decidir', senseP: 'Todavía sin pasos.' },
+      trob: 'Hallazgos del mapa, por decidir', senseP: 'Todavía sin pasos.',
+      ia: 'Quién lo prepara', iaSi: 'La IA prepara el borrador ({tipus}) y lo acepta una persona del rol {rol}.', iaNo: '{motiu}' },
     idx: { titol: 'Cerebro · {nom}', generat: 'Índice generado del mapa de valor. No se edita a mano: se regenera con la web.',
       intro: 'Todos los documentos del proyecto, por tema. **Pública**: la web que encuentra cualquiera. **Por enlace**: páginas que no se indexan y se dan a quien toca. **Equipo**: lo que solo vive en el repositorio.',
       doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web',
-      temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', regles: 'Reglas', eines: 'Herramientas y API' },
+      temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', tasques: 'Tareas para la IA', continguts: 'Contenidos', fonts: 'Lo que ya había', regles: 'Reglas', eines: 'Herramientas y API' },
       capes: { publica: 'pública', enllac: 'por enlace', equip: 'equipo' } },
     api: { cap: 'Generado del mapa de valor con la web. No se edita a mano: se regenera.', web: 'https://tu-web/',
       doc: ['# {nom} · la API y los avisos', '',
@@ -2294,18 +2651,6 @@ const SITE_TXT = {
         'Las funciones piden que la web se publique desde el repositorio: Netlify Drop no las despliega.', '',
         '## Para Claude Code', '',
         '`.mcp.json` conecta `eines/mcp.mjs`, un servidor MCP sin dependencias con tres herramientas: `cervell_index`, `cervell_llegeix` y `registre_informe`. Solo lee lo que sale en el índice del cerebro.'] },
-    claude: ['# {nom} · reglas para quien trabaja en ella, persona o IA', '',
-      'Esta web sale del mapa de valor. **No se edita a mano.**', '',
-      '- **La fuente es `cerebro/mapa-real.json`** (y `cerebro/mapa-ideal.json`, si lo hay). Para cambiar la web, cambia el mapa en el editor del mapa de valor del SOS (pestaña Web) o, desde el repositorio de TeamTowers, con `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Después, sustitúyelo todo.',
-      '- **El cerebro del proyecto es `cerebro/`**, y sale del mismo mapa: una ficha por rol (`roles/`), una por entregable (`entregables/`), una por proceso (`procesos/`) y `decisiones.md`. `decisiones.md` se escribe a mano y se conserva al regenerar; el resto se regenera. El índice de todo, por tema y por capa (pública, por enlace, equipo), es `CEREBRO.md`.',
-      '- **Qué no va aquí:** datos personales, precios pactados y contratos. Van al CRM.',
-      '- **HTML y CSS estáticos, sin JavaScript.** Cada página lleva sus datos en JSON-LD (schema.org), y `web.json` los tiene todos.',
-      '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
-      '- **Los formularios son de Netlify Forms** y llegan por correo. Ningún dato personal se guarda aquí.',
-      '- **Permaweb.** `permaweb.json` tiene la huella SHA-256 de cada fichero. Si un fichero no cuadra, la web no es la que salió del mapa.',
-      '- **El registro vivo.** Cada entregable entre roles se anota en `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, y `node eines/registre.mjs` saca `informe.md`, `mapa-observat.json` (se abre en el editor y enseña la desviación) y `avisos.json`. Del CSV solo se quedan roles, entregable, tipo, fecha, evidencia y valor.',
-      '- **La API y los avisos están en `API.md`.** Cada anotación envía un aviso firmado a las direcciones de `TT_WEBHOOKS`. Para Claude Code, `.mcp.json` conecta el cerebro (`eines/mcp.mjs`). El código de `eines/` y `netlify/` también se regenera.',
-      '- **Cada cambio, en una PR.** Netlify publica una vista previa, y quien decide la mira antes de aceptarla.'],
     llegeix: ['# {nom}', '', 'Web hecha a partir del mapa de valor.', '', '## Publicarla', '',
       '- **Ahora mismo:** arrastra la carpeta a https://app.netlify.com/drop.',
       '- **Con historial:** súbela a un repositorio de GitHub y conéctalo a Netlify (Add new site › Import an existing project). El `netlify.toml` ya está.',
@@ -2350,7 +2695,7 @@ const SITE_CSS = [
    procés, més decisiones.md. Surt del mapa exportat per l'editor, que té la
    mateixa forma que el que llegeix el model. Tot és publicable: el que és
    confidencial va al CRM. */
-function cervell(mapa, T) {
+function cervell(mapa, T, TQ, nom, casa) {
   const real = Object.assign({}, mapa); delete real.ideal;
   const out = [{ ruta: 'cerebro/mapa-real.json', tipus: 'application/json', cos: JSON.stringify(real, null, 2) + '\n' }];
   if (mapa.ideal) out.push({ ruta: 'cerebro/mapa-ideal.json', tipus: 'application/json', cos: JSON.stringify(mapa.ideal, null, 2) + '\n' });
@@ -2376,17 +2721,121 @@ function cervell(mapa, T) {
       ps.length ? ['', '## ' + T.procs, ''].concat(ps.map(x => '- ' + (x[0].nom || x[0].id) + ': ' + T.pas + ' ' + x[1].sort((a, b) => a - b).join(', '))) : [],
       ['', '## ' + T.hab, '', T.habD]));
   });
+  /* Qui fa cada lliurament, amb la regla de l'app (VS-TASQUES): la IA en
+     prepara l'esborrany o el fa una persona. */
+  /* Només compta el que lliura un rol de casa, i l'accepta una persona d'aquest
+     rol. El que arriba de fora (una comanda, un pagament) el prepara qui l'envia. */
+  const deCasa = casa || [];
+  fl.forEach(f => {
+    f.ia = deCasa.includes(f.de) ? fluxAutomatitzable({ kind: f.mena, label: f.q }) : { pot: false, motiu: 'de fora', tipus: null };
+    f.accepta = f.de;
+  });
+  const iaDe = f => (f.ia.pot ? T.iaSi.replace('{tipus}', entregableMeta(f.ia.tipus).nom).replace('{rol}', f.accepta) : T.iaNo.replace('{motiu}', TQ.motius[f.ia.motiu] || f.ia.motiu));
   fl.forEach(f => md('cerebro/entregables/' + f.id + '.md', ['# ' + f.q, '', '> ' + T.fitxa, '',
-    '- **' + T.qui + ':** ' + f.de, '- **' + T.perA + ':** ' + f.a, '- **' + T.tipus + ':** ' + mena(f.mena)].concat(on(f) ? ['- **' + T.flux + ':** ' + on(f)] : [])));
+    '- **' + T.qui + ':** ' + f.de, '- **' + T.perA + ':** ' + f.a, '- **' + T.tipus + ':** ' + mena(f.mena)].concat(on(f) ? ['- **' + T.flux + ':** ' + on(f)] : [], ['- **' + T.ia + ':** ' + iaDe(f)])));
   procs.forEach(p => {
     const passos = Object.keys(seq).filter(k => Array.isArray(seq[k]) && seq[k][0] === p.id).sort((a, b) => seq[a][1] - seq[b][1])
       .map(k => { const [de, a] = k.split('→'), f = fl.find(x => x.de === de && x.a === a); return '1. **' + (f ? f.q : '?') + '** · ' + de + ' → ' + a; });
     md('cerebro/procesos/' + webSlug(p.id || p.nom) + '.md', ['# ' + (p.nom || p.id), '', '> ' + T.fitxa, ''].concat(p.d ? [p.d, ''] : [], passos.length ? passos : [T.senseP]));
   });
+  tasquesIa(fl, TQ, nom).forEach(f => out.push(f));
   md('cerebro/decisiones.md', ['# ' + T.dec, '', T.decD].concat((real.troballes || []).length
     ? ['', '## ' + T.trob, ''].concat(real.troballes.map(t => '- **' + t.t + '**' + (t.d ? ': ' + t.d : ''))) : []));
   return out;
 }
+/* La feina rutinària del mapa: què en pot preparar la IA i què fa una persona.
+   És el número que diu si el mapa està prou ben fet per treure feina de sobre
+   (X de N), i la llista que fa servir /tasca al repositori del client. */
+function tasquesIa(fl, T, nom) {
+  const cel = s => String(s).replace(/\|/g, '\\|');
+  const tasques = fl.map(f => {
+    const m = f.ia.tipus ? entregableMeta(f.ia.tipus) : null;
+    /* El tipus surt del nom del lliurament: es diu quina paraula l'ha donat,
+       perquè es confirmi a la sala i no passi per una dada. */
+    const h = f.ia.tipus && ENTREGABLE_HINTS.find(e => e[1] === f.ia.tipus && e[0].test(f.q));
+    return { id: f.id, q: f.q, de: f.de, a: f.a, mena: isIntangible(f.mena) ? 'intangible' : menaExplicita(f.mena) ? 'tangible' : '', tipus: f.ia.tipus || null,
+      perParaula: h ? h[0].exec(f.q)[0].toLowerCase() : null, pot: f.ia.pot, motiu: f.ia.motiu || '', accepta: f.ia.pot ? f.accepta : null,
+      cal: f.ia.pot ? m.cal.slice() : [], surt: f.ia.pot ? m.surt : '' };
+  });
+  const persona = ['intangible', 'el tipus no surt d\'una màquina'];
+  const maq = tasques.filter(x => x.pot), per = tasques.filter(x => persona.includes(x.motiu)), fora = tasques.filter(x => x.motiu === 'de fora'),
+    sense = tasques.filter(x => !x.pot && !persona.includes(x.motiu) && x.motiu !== 'de fora');
+  const fila = x => '| ' + cel(x.q) + ' | ' + cel(x.de + ' → ' + x.a) + ' |';
+  const md = ['# ' + T.titol.split('{nom}').join(nom), '', '> ' + T.generat, '', T.regla, '',
+    '**' + T.recompte.replace('{m}', maq.length).replace('{t}', tasques.length) + '**', ''];
+  if (maq.length) md.push('## ' + T.maquina, '', '| ' + [T.cols.q, T.cols.deA, T.cols.tipus, T.cols.cal, T.cols.surt, T.cols.accepta].join(' | ') + ' |', '| --- | --- | --- | --- | --- | --- |',
+    ...maq.map(x => '| ' + [x.q, x.de + ' → ' + x.a, entregableMeta(x.tipus).nom + (x.perParaula ? ' («' + x.perParaula + '»)' : ''), x.cal.join(', '), x.surt, x.accepta].map(cel).join(' | ') + ' |'),
+    '', T.perConfirmar, '');
+  if (per.length) md.push('## ' + T.persona[0], '', T.persona[1], '', '| ' + T.cols.q + ' | ' + T.cols.deA + ' |', '| --- | --- |', ...per.map(fila), '');
+  if (sense.length) md.push('## ' + T.senseTipus[0], '', T.senseTipus[1], '', '| ' + T.cols.q + ' | ' + T.cols.deA + ' |', '| --- | --- |', ...sense.map(fila), '');
+  if (fora.length) md.push('## ' + T.deFora[0], '', T.deFora[1], '', '| ' + T.cols.q + ' | ' + T.cols.deA + ' |', '| --- | --- |', ...fora.map(fila), '');
+  const json = { formato: 'tt-tasques-1', total: tasques.length, maquina: maq.length, persona: per.length, senseTipus: sense.length, deFora: fora.length, tasques };
+  return [{ ruta: 'cerebro/tasques-ia.md', tipus: 'text/markdown', cos: md.join('\n') }, { ruta: 'cerebro/tasques-ia.json', tipus: 'application/json', cos: JSON.stringify(json, null, 2) + '\n' }];
+}
+/* L'eina que importa el que el client ja té (eines/importa.mjs). El que fa és
+   del bloc VS-IMPORTA (a eines/nucli.mjs); aquí només hi ha com es crida. */
+const IMP_CLI = String.raw`// Porta el que el projecte ja té a cerebro/fonts/: una web, documents (.html .md .txt) i taules (.csv).
+// node eines/importa.mjs <url|carpeta|fitxer>… [--autoritzat <domini>] [--columnes "a,b"] [--max 30] [--surt <arrel del repositori>]
+// Una web, només amb --autoritzat i el seu domini: la de qui us ho demana, amb la seva autorització escrita (va al CRM).
+// D'una taula (.csv) només entra la capçalera i quantes files té, si no es trien les columnes amb --columnes.
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { join, basename, relative, resolve, dirname, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { importaFonts, rastreja } from './nucli.mjs';
+const a = process.argv.slice(2), o = { max: 30, surt: fileURLToPath(new URL('../', import.meta.url)), urls: [], camins: [], autoritzat: '', columnes: [] };
+for (let i = 0; i < a.length; i++) {
+  if (a[i] === '--max') o.max = parseInt(a[++i], 10) || 30;
+  else if (a[i] === '--surt') o.surt = resolve(a[++i] || '.');
+  else if (a[i] === '--autoritzat') o.autoritzat = a[++i] || '';
+  else if (a[i] === '--columnes') o.columnes = String(a[++i] || '').split(',').map(x => x.trim()).filter(Boolean);
+  else if (/^https?:\/\//i.test(a[i])) o.urls.push(a[i]);
+  else o.camins.push(a[i]);
+}
+if (!o.urls.length && !o.camins.length) { console.error('node eines/importa.mjs <url|carpeta|fitxer>… [--autoritzat <domini>] [--columnes "a,b"] [--max 30] [--surt <carpeta>]'); process.exit(1); }
+if (o.urls.length && !o.autoritzat) { console.error('Per llegir una web cal --autoritzat <domini> / Para leer una web hace falta --autoritzat <dominio>'); process.exit(1); }
+if (o.urls.length && typeof fetch !== 'function') { console.error('Cal Node 18 o més per llegir webs'); process.exit(1); }
+// De les carpetes es llegeixen els textos i les taules; PDF, Word i fulls de càlcul només es llisten, per llegir-los amb la IA.
+// El nom que queda és relatiu a la carpeta donada: un camí absolut porta el nom d'usuari de qui importa.
+const TEXT = /\.(html?|md|markdown|txt|csv|tsv)$/i, LLEGIR = /\.(pdf|docx?|xlsx?|odt|ods|odp|pptx?|rtf)$/i, MAX = 5 * 1024 * 1024;
+const fonts = resolve(o.surt, 'cerebro', 'fonts'), entrades = [], docs = [], fora = [];
+const llegeix = (fitxer, nom, explicit) => {
+  if (resolve(fitxer).startsWith(fonts + sep)) return;   // el que ja és a cerebro/fonts/ no es torna a importar
+  if (!TEXT.test(fitxer)) { if (explicit || LLEGIR.test(fitxer)) entrades.push({ tipus: 'doc', font: nom, nom, cos: '' }); return; }
+  if (statSync(fitxer).size > MAX) { fora.push({ font: nom, motiu: '> 5 MB' }); return; }
+  entrades.push({ tipus: /\.(csv|tsv)$/i.test(fitxer) ? 'dades' : 'doc', font: nom, nom, cos: readFileSync(fitxer, 'utf8') });
+};
+const recorre = (dir, arrel) => readdirSync(dir, { withFileTypes: true }).sort((x, y) => (x.name < y.name ? -1 : 1)).forEach(d => {
+  const p = join(dir, d.name);
+  if (d.name[0] === '.' || d.name === 'node_modules') return;
+  if (d.isDirectory()) recorre(p, arrel); else if (d.isFile()) llegeix(p, relative(arrel, p).split(sep).join('/'), false);
+});
+for (const c of o.camins) {
+  let st = null;
+  try { st = statSync(c); } catch (e) { console.error('⚠️ ' + c + ' ?'); continue; }
+  if (st.isDirectory()) recorre(resolve(c), dirname(resolve(c))); else llegeix(c, basename(c), true);
+}
+for (const u of o.urls) {
+  const r = await rastreja(u, { fetch, max: o.max, autoritzat: o.autoritzat, avis: x => console.error('· ' + x) });
+  r.pagines.forEach(p => entrades.push({ tipus: 'web', font: p.url, nom: p.url, cos: p.html }));
+  docs.push(...r.docs);
+  fora.push(...r.fora);
+}
+// L'índex d'abans es completa, no es perd: importar la web avui i un CSV demà.
+let previ = null;
+try { previ = JSON.parse(readFileSync(join(fonts, 'fonts.json'), 'utf8')); } catch (e) { previ = null; }
+const r = importaFonts(entrades, { ara: new Date().toISOString().slice(0, 10), previ, docs, fora, columnes: o.columnes }), i = r.informe;
+for (const f of r.fitxers) {
+  if (!/^cerebro\/fonts\/([a-z]+\/)?[a-z0-9-]+\.(md|json)$/.test(f.ruta)) continue;   // res fora de cerebro/fonts/
+  mkdirSync(dirname(join(o.surt, f.ruta)), { recursive: true });
+  writeFileSync(join(o.surt, f.ruta), f.cos);
+}
+const altres = i.fora.length - i.perLlegir;
+console.log('✅ ' + i.web + ' web, ' + i.docs + ' docs, ' + i.dades + ' CSV → cerebro/fonts/. Ocult/oculto: ' + i.correus + ' e-mail, ' + i.telefons + ' tel., ' + i.altres + ' DNI/IBAN.'
+  + (i.columnesFora.length ? ' Columnes/columnas fora: ' + i.columnesFora.join(', ') + '.' : '')
+  + (i.perLlegir ? ' PDF/Word per a la IA / para la IA: ' + i.perLlegir + '.' : '')
+  + (altres ? ' No importat/importado: ' + altres + '.' : '') + ' Detall/detalle: cerebro/fonts/index.md');
+process.exit(i.web + i.docs + i.dades + i.perLlegir ? 0 : 1);
+`;
 /* L'API i els avisos (fase 3 del pla): el codi que corre fora del navegador.
    Surt dels blocs VS-REG, VS-API i VS-MCP de l'editor tal com hi són, perquè
    hi hagi un sol codi; aquí només s'hi afegeix com es crida. */
@@ -2395,8 +2844,10 @@ function einesDelSite(o, L, nom, url) {
   const env = 'urls: process.env.TT_WEBHOOKS, secret: process.env.TT_WEBHOOK_SECRET, web: process.env.URL || ' + JSON.stringify(web);
   const mapa = { pairs: (o.mapa.pairs || []).map(p => p.slice(0, 6)) };
   return [
-    { ruta: 'eines/nucli.mjs', cos: cap + c.reg + '\n' + c.api
-      + '\nexport { REG_TXT, llegeixRegistre, observaRegistre, fluxosDelMapa, avisosDelFormulari, signaAvis, verificaAvis, enviaAvisos, TT_AVISOS };\n' },
+    { ruta: 'eines/nucli.mjs', cos: cap + c.reg + '\n' + c.api + (c.imp ? '\n' + c.imp : '')
+      + '\nexport { REG_TXT, llegeixRegistre, observaRegistre, fluxosDelMapa, avisosDelFormulari, signaAvis, verificaAvis, enviaAvisos, TT_AVISOS'
+      + (c.imp ? ', IMP_PERSONAL, amagaPersonal, htmlAText, sitemapUrls, robotsPermet, robotsEspera, robotsSitemaps, llegeixCsv, csvAMd, fontMd, importaFonts, rastreja' : '') + ' };\n' },
+    ...(c.imp ? [{ ruta: 'eines/importa.mjs', cos: '#!/usr/bin/env node\n' + cap + IMP_CLI }] : []),
     { ruta: 'eines/registre.mjs', cos: '#!/usr/bin/env node\n' + cap
       + '// node eines/registre.mjs [cerebro/registro/registre.csv] [--llengua ca|es] [--envia]\n'
       + 'import { readFileSync, writeFileSync, mkdirSync } from \'node:fs\';\nimport { llegeixRegistre, observaRegistre, enviaAvisos } from \'./nucli.mjs\';\n'
@@ -2436,9 +2887,74 @@ function einesDelSite(o, L, nom, url) {
       + '  const r = await enviaAvisos([{ tipus: \'cerebro.actualizado\', dades }], { ' + env + ' });\n'
       + '  if (r.errors.length) console.error(r.errors.join(\'\\n\'));\n'
       + '  return { statusCode: 200, body: JSON.stringify({ enviats: r.enviats, motiu: r.motiu }) };\n}\n' },
+    /* El repositori es refà sol: el mateix motor que l'editor i el genera.mjs de Netlify. */
+    ...(c.repo ? [{ ruta: 'eines/motor.mjs', cos: c.repo.motor }, { ruta: 'eines/genera.mjs', cos: c.repo.genera }] : []),
     { ruta: '.mcp.json', tipus: 'application/json', cos: JSON.stringify({ mcpServers: { cervell: { type: 'stdio', command: 'node', args: ['eines/mcp.mjs'] } } }, null, 2) + '\n' },
     { ruta: 'API.md', tipus: 'text/markdown', cos: L.api.doc.join('\n').replace(/\{nom\}/g, nom).replace(/\{url\}/g, url || L.api.web) + '\n' }
   ].map(f => Object.assign({ tipus: 'text/javascript' }, f));
+}
+/* Els continguts de la web: cerebro/continguts/<id>.md. El text de les
+   pàgines el pot escriure una persona o una IA a partir del que s'ha importat,
+   i aquí es fa HTML. Un subconjunt petit de Markdown i res més: la web no té
+   JavaScript i la CSP només deixa imatges pròpies, així que tot el que no és
+   d'aquest subconjunt —HTML cru, enllaços estranys, imatges de fora— surt com
+   a text. Un contingut no pot trencar la web ni colar-hi res. */
+function llegeixContingut(text) {
+  const t = String(text == null ? '' : text).replace(/^﻿/, '').replace(/\r\n?/g, '\n');
+  const meta = {}, m = /^---\n([\s\S]*?)\n---(?:\n|$)/.exec(t);
+  if (!m) return { meta, cos: t };
+  m[1].split('\n').forEach(l => {
+    const k = /^\s*([a-zA-Zà-ú]+)\s*:\s*(.*?)\s*$/.exec(l);
+    if (!k) return;
+    const c = k[1].toLowerCase(), v = k[2].replace(/^(['"])(.*)\1$/, '$2');
+    if (c === 'menu') meta.menu = /^(si|sí|yes|true|1)$/i.test(v) ? true : /^(no|false|0)$/i.test(v) ? false : undefined;
+    else if (c === 'titol' || c === 'títol' || c === 'titulo' || c === 'título') meta.titol = v;
+    else if (c === 'font') meta.font = v;
+  });
+  return { meta, cos: t.slice(m[0].length) };
+}
+function mdAHtml(md) {
+  const e = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  /* Un enllaç només si és web, correu o una ruta de la mateixa web. Es mira
+     el text cru, sense descodificar entitats ni treure espais: el que no
+     comença net per un d'aquests tres no és enllaç, és text. */
+  const bo = h => /^(https?:\/\/[^\s"'<>]+|mailto:[^\s"'<>:]+@[^\s"'<>]+|(?![a-z][a-z0-9+.-]*:)(?!\/\/)[^\s"'<>:]*)$/i.test(h) && h !== '';
+  const propia = h => bo(h) && !/^(https?|mailto):/i.test(h);
+  const enLinia = s => {
+    const parts = [];
+    const guarda = h => '\u0000' + (parts.push(h) - 1) + '\u0000';
+    let x = String(s).replace(/`([^`]+)`/g, (_, c) => guarda('<code>' + e(c) + '</code>'));
+    x = x.replace(/!\[([^\]]*)\]\(([^)\s]*)\)/g, (_, alt, src) => guarda(propia(src) ? '<img src="' + e(src) + '" alt="' + e(alt) + '" loading="lazy">' : e(alt)));
+    x = x.replace(/\[([^\]]+)\]\(([^)\s]*)\)/g, (_, t, h) => guarda(bo(h)
+      ? '<a href="' + e(h) + '"' + (/^https?:/i.test(h) ? ' rel="noopener"' : '') + '>' + estil(e(t)) + '</a>' : estil(e(t))));
+    return estil(e(x)).replace(/\u0000(\d+)\u0000/g, (_, i) => parts[+i]);
+  };
+  const estil = s => s.replace(/\*\*(?=\S)([^*]+?)\*\*/g, '<strong>$1</strong>').replace(/(^|[^\w*])[*_](?=\S)([^*_]+?)[*_](?![\w*])/g, '$1<em>$2</em>');
+  const linies = String(md == null ? '' : md).replace(/\u0000/g, '').replace(/\r\n?/g, '\n').split('\n'), out = [];
+  let par = [], llista = null;
+  const tancaPar = () => { if (par.length) out.push('<p>' + enLinia(par.join(' ')) + '</p>'); par = []; };
+  const tancaLl = () => { if (llista) out.push('<' + llista.t + '>' + llista.items.map(i => '<li>' + enLinia(i) + '</li>').join('') + '</' + llista.t + '>'); llista = null; };
+  linies.forEach(l => {
+    const t = l.trim();
+    let m;
+    if (!t) { tancaPar(); tancaLl(); return; }
+    if ((m = /^(#{1,4})\s+(.+?)\s*#*$/.exec(t))) { tancaPar(); tancaLl(); const n = Math.max(2, m[1].length); out.push('<h' + n + '>' + enLinia(m[2]) + '</h' + n + '>'); return; }
+    if (/^(-{3,}|\*{3,})$/.test(t)) { tancaPar(); tancaLl(); out.push('<hr>'); return; }
+    if ((m = /^>\s?(.*)$/.exec(t))) { tancaPar(); tancaLl(); if (m[1]) out.push('<blockquote><p>' + enLinia(m[1]) + '</p></blockquote>'); return; }
+    if ((m = /^([-*]|\d{1,3}[.)])\s+(.+)$/.exec(t))) {
+      const tag = /^\d/.test(m[1]) ? 'ol' : 'ul';
+      tancaPar();
+      if (llista && llista.t !== tag) tancaLl();
+      if (!llista) llista = { t: tag, items: [] };
+      llista.items.push(m[2]);
+      return;
+    }
+    if (llista && /^\s{2,}/.test(l)) { llista.items[llista.items.length - 1] += ' ' + t; return; }
+    tancaLl();
+    par.push(t);
+  });
+  tancaPar(); tancaLl();
+  return out.join('\n');
 }
 function webASite(web, opts) {
   const o = opts || {}, L = SITE_TXT[o.llengua] || SITE_TXT.ca, llengua = SITE_TXT[o.llengua] ? o.llengua : 'ca';
@@ -2453,7 +2969,26 @@ function webASite(web, opts) {
   const ld = x => '<script type="application/ld+json">' + JSON.stringify(Object.assign({ '@context': 'https://schema.org' }, x)).replace(/</g, '\\u003c') + '<\/script>';
   const llista = (a, f) => (a.length ? '<ul>' + a.map(f).join('') + '</ul>' : '');
   const lli = (x, cap) => '<li>' + e(x.q) + (cap ? ' <small>' + e(cap) + '</small>' : '') + '</li>';
-  const menu = (web.menu || []).filter(x => x.id !== 'equip');
+  /* Els continguts (cerebro/continguts/<id>.md): el text que la casa vol dir,
+     importat o escrit, dins de les pàgines que surten del mapa o en pàgines
+     noves. El mapa en dona l'estructura i els continguts, les paraules. */
+  const RESERVATS = ['equip', 'registre', 'gracies', '404', 'estil', 'web', 'index'], cont = {}, avisa = typeof o.avisa === 'function' ? o.avisa : () => {};
+  /* Un sol sedàs per a les dades personals, el de l'importador (VS-IMPORTA):
+     un contingut amb un correu (que no sigui el de la web), un telèfon, un DNI
+     o un IBAN no surt. Bloqueja, no avisa només; i sense sedàs no surt cap. */
+  if ((o.continguts || []).length && typeof amagaPersonal !== 'function') throw new Error('Falta el bloc VS-IMPORTA: sense amagaPersonal, els continguts no surten.');
+  (o.continguts || []).forEach(c => {
+    const id = String(c.id || '').toLowerCase(), t = String(c.text == null ? '' : c.text);
+    if (!/^[a-z0-9][a-z0-9-]{0,59}$/.test(id) || RESERVATS.includes(id)) return avisa(L.contReservat.replace('{id}', id || '?'));
+    const p = amagaPersonal(correu ? t.split(correu).join('') : t);
+    if (p.correus + p.telefons + p.altres) return avisa(L.contPersonal.replace('{id}', id));
+    cont[id] = llegeixContingut(t);
+  });
+  const deMapa = ['inici'].concat((web.portes || []).map(p => p.id), (web.serveis || []).length ? ['serveis'] : []);
+  const noves = Object.keys(cont).sort().filter(id => !deMapa.includes(id));
+  const titolNova = id => cont[id].meta.titol || (id === 'serveis' ? L.serveis : id.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase()));
+  const text = id => (cont[id] && deMapa.includes(id) ? mdAHtml(cont[id].cos) + '\n' : '');
+  const menu = (web.menu || []).filter(x => x.id !== 'equip').concat(noves.filter(id => cont[id].meta.menu !== false).map(id => ({ id, t: titolNova(id) })));
   const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
@@ -2482,7 +3017,7 @@ function webASite(web, opts) {
   const servei = sv => ({ '@type': 'Service', name: sv.nom, description: sv.d || undefined, provider: { '@type': 'Organization', name: nom } });
 
   posa('index.html', pagina('inici', nom,
-    (web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + '<h2>' + e(L.perCadascu) + '</h2>\n'
+    (web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici') + '<h2>' + e(L.perCadascu) + '</h2>\n'
       + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(p.rol) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>'),
     { '@type': 'Organization', name: nom, description: web.titol || undefined,
       makesOffer: (web.serveis || []).map(sv => ({ '@type': 'Offer', itemOffered: servei(sv) })) }));
@@ -2493,7 +3028,7 @@ function webASite(web, opts) {
       return '<li><strong>' + e(t[0]) + '.</strong> ' + e(d) + '</li>';
     });
     posa(ruta(p.id), pagina(p.id, p.rol,
-      (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
+      text(p.id) + (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
         + (p.rep.length ? '<h2>' + e(L.donem) + '</h2>\n' + llista(p.rep, f => lli(f)) + '\n' : '')
         + (p.dona.length ? '<h2>' + e(L.dones) + '</h2>\n' + llista(p.dona, f => lli(f)) + '\n' : '')
         + (p.xarxa.length ? '<h2>' + e(L.xarxa) + '</h2>\n' + llista(p.xarxa, f => lli(f, f.de + ' → ' + f.a)) + '\n' : '')
@@ -2505,11 +3040,12 @@ function webASite(web, opts) {
   });
   if ((web.serveis || []).length) {
     posa('serveis.html', pagina('serveis', L.serveis,
-      web.serveis.map(sv => '<h2>' + e(sv.nom) + '</h2>\n' + (sv.d ? '<p>' + e(sv.d) + '</p>\n' : '')
+      text('serveis') + web.serveis.map(sv => '<h2>' + e(sv.nom) + '</h2>\n' + (sv.d ? '<p>' + e(sv.d) + '</p>\n' : '')
         + (sv.passos.length ? '<ol>' + sv.passos.map(x => lli(x, x.de + ' → ' + x.a)).join('') + '</ol>' : '')).join('\n')
         + ((web.sempre || []).length ? '\n<h2>' + e(L.sempre) + '</h2>\n' + llista(web.sempre, x => lli(x, x.de + ' → ' + x.a)) : ''),
       { '@type': 'ItemList', name: L.serveis, itemListElement: web.serveis.map((sv, i) => ({ '@type': 'ListItem', position: i + 1, item: servei(sv) })) }));
   }
+  noves.forEach(id => posa(ruta(id), pagina(id, titolNova(id), mdAHtml(cont[id].cos), { '@type': 'WebPage', name: titolNova(id) })));
   /* L'equip no és per al públic: hi és perquè la web sencera surti del mapa,
      però els cercadors no la indexen i el menú no la mostra. */
   posa('equip.html', pagina('equip', L.equip,
@@ -2544,7 +3080,7 @@ function webASite(web, opts) {
      la configuració de Netlify. */
   posa('404.html', pagina('404', L.noHi, '<p>' + e(L.noHiD) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.noHi }, '<meta name="robots" content="noindex">\n'));
-  const publiques = ['index.html'].concat((web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : []);
+  const publiques = ['index.html'].concat((web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta));
   posa('robots.txt', 'User-agent: *\nAllow: /\nDisallow: /equip.html\nDisallow: /registre.html\n' + (url ? 'Sitemap: ' + url + 'sitemap.xml\n' : ''), 'text/plain');
   if (url) posa('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + publiques.map(r => '<url><loc>' + e(abs(r)) + '</loc></url>\n').join('') + '</urlset>\n', 'application/xml');
@@ -2557,14 +3093,26 @@ function webASite(web, opts) {
     '    Permissions-Policy = "camera=(), microphone=(), geolocation=()"', '',
     '[functions]', '  directory = "netlify/functions"', '',
     '# El cervell, les eines i les regles són de l\'equip: viuen al repositori i la web no els serveix.']
-    .concat(['/cerebro/*', '/eines/*', '/netlify/*', '/.mcp.json', '/CLAUDE.md', '/CEREBRO.md', '/API.md', '/LLEGEIX.md', '/LEEME.md']
+    .concat(['/cerebro/*', '/eines/*', '/netlify/*', '/.claude/*', '/.mcp.json', '/CLAUDE.md', '/CEREBRO.md', '/API.md', '/LLEGEIX.md', '/LEEME.md', '/TREBALLAR-AMB-CLAUDE.md', '/TRABAJAR-CON-CLAUDE.md']
       .map(r => '[[redirects]]\n  from = "' + r + '"\n  to = "/404.html"\n  status = 404\n  force = true\n')).join('\n'), 'text/plain');
-  if (o.mapa) cervell(o.mapa, L.cb).forEach(f => posa(f.ruta, f.cos, f.tipus));
-  const md = a => a.join('\n').replace(/\{nom\}/g, nom) + '\n';
-  posa('CLAUDE.md', md(L.claude), 'text/markdown');
+  const K = KIT_TXT[llengua];
+  if (o.mapa) cervell(o.mapa, L.cb, K.tasques, nom, web.casa).forEach(f => posa(f.ruta, f.cos, f.tipus));
+  const md = a => a.join('\n').split('{nom}').join(nom) + '\n';
+  /* El kit de Claude: les regles, la guia (gratis, amb Claude Code o amb
+     TeamTowers) i les tres skills que fan la feina de rutina. */
+  posa('CLAUDE.md', md(K.claude), 'text/markdown');
+  posa(llengua === 'es' ? 'TRABAJAR-CON-CLAUDE.md' : 'TREBALLAR-AMB-CLAUDE.md', md(K.guia), 'text/markdown');
+  Object.keys(K.skills).forEach(n => posa('.claude/skills/' + n + '/SKILL.md', md(K.skills[n]), 'text/markdown'));
   posa(llengua === 'es' ? 'LEEME.md' : 'LLEGEIX.md', md(L.llegeix), 'text/markdown');
   if (o.mapa && o.codi) einesDelSite(o, L, nom, url).forEach(f => posa(f.ruta, f.cos, f.tipus));
-  if (o.mapa) indexCervell(fitxers, nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
+  /* El que ja és al repositori (fonts, continguts, dossier, esborranys) no es
+     torna a escriure, però surt a l'índex: el servidor MCP només llegeix el
+     que hi surt. */
+  /* El que s'ha importat a l'editor (cerebro/fonts/) va al zip; al repositori ja hi és. */
+  (o.fonts || []).filter(f => /^cerebro\/fonts\/[a-z0-9._/-]+$/.test(f.ruta) && f.ruta.indexOf('..') < 0)
+    .forEach(f => posa(f.ruta, f.cos, /\.json$/.test(f.ruta) ? 'application/json' : 'text/markdown'));
+  const repo = (o.repo || []).filter(f => !fitxers.some(x => x.ruta === f.ruta));
+  if (o.mapa) indexCervell(fitxers.concat(repo), nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
   return { nom, llengua, fitxers };
 }
 
@@ -2573,7 +3121,7 @@ function webASite(web, opts) {
    donen a qui toca; equip, el que només viu al repositori. Surt dels fitxers
    que ja hi ha, així que no pot dir res que no hi sigui. És el mateix model que
    el cervell d'Events Penedès (cerebro/indice.json + CEREBRO.md). */
-const IDX_TEMES = ['web', 'mapa', 'rols', 'lliuraments', 'processos', 'decisions', 'regles', 'eines'];
+const IDX_TEMES = ['web', 'mapa', 'rols', 'lliuraments', 'processos', 'decisions', 'tasques', 'continguts', 'fonts', 'regles', 'eines'];
 const IDX_CAPES = ['publica', 'enllac', 'equip'];
 function indexCervell(fitxers, nom, T) {
   const ent = [];
@@ -2591,7 +3139,10 @@ function indexCervell(fitxers, nom, T) {
     : /^cerebro\/entregables\//.test(r) ? ['lliuraments', 'equip']
     : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
     : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
-    : /^(CLAUDE|LLEGEIX|LEEME)\.md$/.test(r) ? ['regles', 'equip']
+    : /^cerebro\/(tasques-ia\.(md|json)|esborranys\/.+\.md)$/.test(r) ? ['tasques', 'equip']
+    : /^cerebro\/continguts\/[^/]+\.md$/.test(r) ? ['continguts', 'equip']
+    : /^cerebro\/(fonts\/.+\.(md|json)|dossier\.md)$/.test(r) ? ['fonts', 'equip']
+    : /^(CLAUDE|LLEGEIX|LEEME|TREBALLAR-AMB-CLAUDE|TRABAJAR-CON-CLAUDE)\.md$|^\.claude\/skills\/[^/]+\/SKILL\.md$/.test(r) ? ['regles', 'equip']
     : /^(eines|netlify)\/|^\.mcp\.json$|^API\.md$/.test(r) ? ['eines', 'equip'] : null;
   fitxers.forEach(f => {
     const c = classifica(f.ruta);
@@ -2653,6 +3204,97 @@ async function ambPermaweb(site, digest) {
   return site.fitxers.concat([{ ruta: 'permaweb.json', tipus: 'application/json', cos: JSON.stringify(manifest, null, 2) + '\n' }]);
 }
 /*/VS-SITE*/
+/*VS-TASQUES*/
+/* GENERAT per SOS/tools/build-vna-suport.js des de SOS/index.html · no s'edita a mà.
+   La regla de qui fa cada lliurament, tal com és a l'app: un intangible no
+   el fa mai la màquina, i un tangible només si el seu tipus en pot sortir. */
+const normKind=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+  return(m==='i'||m==='intangible')?'intangible':'tangible';};
+const menaExplicita=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+  return m==='t'||m==='tangible'||m==='i'||m==='intangible';};
+const isIntangible=k=>normKind(k)==='intangible';
+const ENTREGABLES=[
+  {id:'acta',nom:'Acta de reunió',ic:'📋',maquina:true,
+   que:'El que s\'ha decidit, qui hi era i què queda pendent, amb data.',
+   cal:['assistents','punts tractats','acords'],
+   surt:'Data, assistents, acords numerats i pendents amb responsable i termini.'},
+  {id:'informe',nom:'Informe periòdic',ic:'📊',maquina:true,
+   que:'El que s\'ha mogut en un període, amb les xifres que ja hi ha al registre.',
+   cal:['període','apunts del ledger','rols actius'],
+   surt:'Resum, taula d\'activitat, comparació amb el període anterior i avisos.'},
+  {id:'justificacio',nom:'Justificació de subvenció',ic:'🧾',maquina:true,
+   que:'El que demana la convocatòria, omplert amb el que consta al registre.',
+   cal:['convocatòria','despeses','activitat realitzada'],
+   surt:'Memòria d\'activitat i taula de despesa, en el format que demani la plantilla.'},
+  {id:'inventari',nom:'Inventari',ic:'📦',maquina:true,
+   que:'Què hi ha, de qui és, en quin estat i on para.',
+   cal:['objectes','estat','ubicació'],
+   surt:'Taula amb valor estimat, desgast acumulat i qui n\'és responsable.'},
+  {id:'convocatoria',nom:'Convocatòria',ic:'📣',maquina:true,
+   que:'Cridar la gent a una cosa concreta, amb tot el que cal saber per venir.',
+   cal:['què','quan','on','qui hi ha d\'anar'],
+   surt:'Text curt per als canals, amb data, lloc, ordre del dia i com confirmar.'},
+  {id:'comanda',nom:'Comanda o repartiment',ic:'🛒',maquina:true,
+   que:'Qui ha demanat què, quant costa i com es reparteix.',
+   cal:['peticions','preus','punt de repartiment'],
+   surt:'Full de comanda per llar, total per proveïdor i full de repartiment.'},
+  {id:'fitxa',nom:'Fitxa pública',ic:'🪪',maquina:true,
+   que:'Com s\'explica a fora el que fa un node o una dinàmica.',
+   cal:['què ofereix','a qui','com s\'hi arriba'],
+   surt:'Fitxa breu per al directori, sense cap dada personal.'},
+  /* L'únic de la llista que no pot sortir d'una màquina, i el motiu escrit.
+     Sense aquesta entrada, la taxonomia semblaria dir que tot és automatitzable
+     i que els que falten és que encara no els hem fet. */
+  {id:'acord',nom:'Acord o decisió',ic:'⚖️',maquina:false,
+   que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
+   cal:['debat','vots','qui ho sosté'],
+   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'}
+];
+const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
+
+/* Quin entregable demana un flux, deduït de com està escrit. Mateix patró que
+   `RETURN_HINTS`: no s'inventa res, es proposa i es pot corregir a mà posant
+   `entregable` a l'intercanvi. Un flux sense tipus reconegut **no és
+   automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
+   s'ha de produir. */
+const ENTREGABLE_HINTS=[
+  [/acta|reuni|assemblea/i,'acta'],
+  [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
+  [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
+  [/inventari|estoc|material|objecte|eina|préstec|prestec/i,'inventari'],
+  [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
+  [/comanda|compra|cistell|repartiment|liquidació|liquidacio|factur|pagament|cobrament/i,'comanda'],
+  [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
+  [/acord|decisió|decisio|vot|aprovació|aprovacio/i,'acord']
+];
+const entregableDe=x=>{
+  if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;
+  const h=ENTREGABLE_HINTS.find(e=>e[0].test((x&&x.label)||''));
+  return h?h[1]:null;
+};
+
+/* Qui ha de fer una carta: la màquina o una persona.
+   L'ordre de les comprovacions **és la regla**, i per això l'intangible va
+   primer: cap etiqueta, cap tipus i cap configuració el pot convertir en
+   candidat. Si algun dia aquesta condició es mou de lloc, el que es trencarà
+   no és una funció — és la promesa de la casa. */
+function fluxAutomatitzable(x){
+  if(!x)return{pot:false,motiu:'sense flux'};
+  /* Doble pany, i els dos abans de mirar cap tipus. El primer és la regla: un
+     intangible no s'automatitza mai. El segon és el que la fa sòlida: no n'hi
+     ha prou de descartar el que sabem que és intangible, cal **exigir que sigui
+     explícitament tangible**. Una mena desconeguda o mal escrita cau del costat
+     segur, que és el de la persona, i ho diu amb el seu nom en comptes de
+     fer-la passar per intangible. */
+  if(isIntangible(x.kind))return{pot:false,motiu:'intangible',tipus:null};
+  if(!menaExplicita(x.kind))return{pot:false,motiu:'mena desconeguda',tipus:null};
+  const t=entregableDe(x);
+  if(!t)return{pot:false,motiu:'sense entregable declarat',tipus:null};
+  const m=entregableMeta(t);
+  if(!m.maquina)return{pot:false,motiu:'el tipus no surt d\'una màquina',tipus:t};
+  return{pot:true,motiu:'',tipus:t};
+}
+/*/VS-TASQUES*/
 /*VS-REG*/
 /* ── El registre viu: el mapa real surt de l'ús ─────────────────────────────
  * Fase 2 del pla (el detall és al repositori privat d'estratègia): cada
@@ -2898,6 +3540,344 @@ function creaMcp(opts) {
   };
 }
 /*/VS-MCP*/
+/*VS-IMPORTA*/
+/* ── Importar el que el client ja té ───────────────────────────────────────
+ * La web d'ara, documents i CSV, en text a `cerebro/fonts/` (el generador no
+ * hi toca), perquè la IA n'escrigui el dossier i els continguts citant la font.
+ *  · **Només text.** Un fitxer per font, amb una capçalera que diu d'on surt i
+ *    quan. PDF i Word no es llegeixen aquí: es llisten per a la IA.
+ *  · **Cap dada personal.** Correus, telèfons, IBAN i DNI s'amaguen, i les
+ *    columnes de persona d'un CSV no hi entren: el repositori pot ser públic.
+ *  · **Educat amb la web d'origen.** robots.txt, una petició cada cop amb pausa.
+ *  · **Sense DOM ni imports**: el `fetch` i la pausa els posa qui crida. */
+/* Noms de columna de persona, sense accents ni signes. «Nom del producte» no
+   és ningú: nom/name/nombre, i client, contacte, soci…, només compten sols o
+   amb un qualificatiu de persona («nom complet», «nom del client»); cognom o
+   first/last name, sempre. Una columna plena de correus o telèfons cau igual. */
+const IMP_PERSONAL = [
+  /\b(e ?mail|correu|correo|mail)\b/, /\b(telefons?|telefonos?|phone|mobil|movil|tel|celular|whatsapp)\b/,
+  /^(nom|name|nombre)( (complet|completo|i cognoms?|y apellidos?|de pila))?( (de |del |de la )?(client|cliente|contacte|contacto|persona|usuari|usuario|alumne|alumno|soci|socio|responsable))?$/,
+  /^(client|cliente|customer|contacte|contacto|contact|persona|usuari|usuario|user|alumne|alumno|soci|socio|autor|author)$/,
+  /\b(cognoms?|apellidos?|surname|(first|last|full|given|family|contact|customer|user) ?name)\b/, /\b(dni|nif|nie|passaport|pasaporte|passport)\b/,
+  /\b(adreca|direccion|address|domicili|domicilio)\b/, /\b(iban|compte|cuenta bancaria|numero de cuenta|bank account)\b/,
+  /\b(naixement|nacimiento|birth|birthday|birthdate|aniversari|cumpleanos)\b/, /\bip\b/
+];
+const impNorm = s => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+const columnaPersonal = nom => IMP_PERSONAL.some(re => re.test(impNorm(nom)));
+/* Correus i IBAN primer, que porten xifres que semblarien telèfons. Un telèfon
+   són 9 xifres que comencen per 6-9, en grups 3-3-3, 3-2-2-2 o 2-3-2-2, o de 9
+   a 15 amb prefix (+34, 0034): així no hi cauen anys, preus ni codis postals. */
+function amagaPersonal(text) {
+  const r = { text: String(text == null ? '' : text), correus: 0, telefons: 0, altres: 0 };
+  const posa = (re, k, per, bo) => { r.text = r.text.replace(re, m => { if (bo && !bo(m.replace(/\D/g, ''))) return m; r[k]++; return per; }); };
+  posa(/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g, 'correus', '[correu]');
+  posa(/\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){3,7}(?: ?[A-Z0-9]{1,3})?\b/g, 'altres', '[dada personal]');
+  posa(/\b(?:[XYZ][ -]?\d{7}|\d{8})[ -]?[TRWAGMYFPDXBNJZSQVHLCKE]\b/g, 'altres', '[dada personal]');
+  posa(/\(?(?:\+|\b00)\d{1,3}\)?(?:[ .-]?\(?\d+\)?){1,6}/g, 'telefons', '[telèfon]', d => { const n = d.replace(/^00/, '').length; return n >= 9 && n <= 15; });
+  posa(/\b[6789]\d(?:\d(?:[ .-]?\d{3}){2}|\d(?:[ .-]?\d{2}){3}|[ .-]?\d{3}(?:[ .-]?\d{2}){2})\b/g, 'telefons', '[telèfon]', d => !/0{6}$/.test(d));
+  return r;
+}
+/* Les vocals amb accent (&eacute; &Agrave; &iuml;…) es componen, no s'escriuen una a una. */
+const IMP_ENT = { nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', apos: '\'', laquo: '«', raquo: '»', middot: '·', hellip: '…', mdash: '—', ndash: '–', lsquo: '‘',
+  rsquo: '’', ldquo: '“', rdquo: '”', euro: '€', copy: '©', reg: '®', deg: '°', iexcl: '¡', iquest: '¿', bull: '•', ordf: 'ª', ordm: 'º', shy: '', ccedil: 'ç', Ccedil: 'Ç',
+  ntilde: 'ñ', Ntilde: 'Ñ', ...Object.fromEntries([].concat(...'aeiouAEIOU'.split('').map(v => ['acute\u0301', 'grave\u0300', 'uml\u0308', 'circ\u0302']
+    .map(x => [v + x.slice(0, -1), (v + x.slice(-1)).normalize('NFC')])))) };
+const impEnt = s => String(s == null ? '' : s).replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]*);/gi, (m, e) => { const n = e[0] !== '#' ? -1 : /x/i.test(e[1]) ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+  return n < 0 ? (Object.prototype.hasOwnProperty.call(IMP_ENT, e) ? IMP_ENT[e] : m) : n > 0 && n < 0x110000 && !(n >= 0xd800 && n < 0xe000) ? String.fromCodePoint(n) : ''; });
+const impUrl = (h, base) => { try { const u = new URL(String(h).trim(), base || undefined); return /^(https?|mailto):$/.test(u.protocol) ? u : null; } catch (e) { return null; } };
+const impWeb = u => !!u && /^https?:$/.test(u.protocol), impHost = u => u.hostname.replace(/^www\./, '');   // amb www o sense, és el mateix lloc
+const IMP_DOC = /\.(pdf|docx?|xlsx?|odt|ods|odp|pptx?|rtf)$/i, IMP_ACTIU = /\.(jpe?g|png|gif|svg|webp|avif|ico|bmp|zip|rar|gz|mp3|mp4|m4a|mov|webm|ogg|wav|css|m?js|json|xml|rss|woff2?|ttf|eot)$/i;
+const impAttr = (a, nom) => { const m = new RegExp('(?:^|\\s)' + nom + '\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\'|([^\\s>]+))', 'i').exec(a || '');
+  return m ? impEnt(m[1] != null ? m[1] : m[2] != null ? m[2] : m[3]) : null; };
+/* webSlug és de VS-WEB, que no va a eines/nucli.mjs: allà es fa el mateix aquí. */
+const impSlug = s => (typeof webSlug === 'function' ? webSlug(s) : impNorm(s).replace(/ /g, '-') || 'pagina');
+/* Treu elements sencers de dins cap a fora (un <header> dins d'un altre no deixa anar text); `deixa(dins)` en salva un tros. */
+function impTreu(html, tags, deixa) {
+  for (let t = null, re = new RegExp('<(' + tags + ')\\b[^>]*>((?:(?!<\\1\\b)[\\s\\S])*?)</\\1\\s*>', 'gi'); t !== html;) { t = html; html = html.replace(re, (x, tag, d) => (deixa ? deixa(d) : '')); }
+  return html;
+}
+const IMP_BLOC = /^(p|div|section|article|main|aside|blockquote|figure|figcaption|address|form|fieldset|dl|dt|dd|hr|pre|center|details|summary)$/;
+/* L'HTML ja net, a Markdown, amb una màquina d'estats petita: dins d'un títol,
+   d'un element de llista o d'una cel·la tot va en una línia. */
+function impMd(html, base, imatges) {
+  const out = [], enl = [], taules = [], re = /<(\/?)([a-zA-Z][\w:-]*)((?:"[^"]*"|'[^']*'|[^'">])*)>|([^<]+)|</g;
+  let ll = 0, li = 0, tit = 0, fila = null, cel = -1, m;
+  const linia = () => tit || li || cel >= 0;
+  const tancaCel = () => { if (cel >= 0) { fila.push(out.splice(cel).join('').replace(/\s+/g, ' ').trim().replace(/\|/g, '\\|')); cel = -1; } };
+  const fiFila = () => { tancaCel(); if (fila && fila.length) { out.push('\n| ' + fila.join(' | ') + ' |'); if (taules.length && taules[taules.length - 1]++ === 0) out.push('\n|' + ' --- |'.repeat(fila.length)); } fila = null; };
+  while ((m = re.exec(html))) {
+    if (m[2] == null) { out.push((m[4] != null ? impEnt(m[4]) : '<').replace(/\s+/g, ' ')); continue; }
+    const tanca = m[1] === '/', tag = m[2].toLowerCase(), at = m[3];
+    if (/^h[1-6]$/.test(tag)) { out.push(tanca ? '\n\n' : '\n\n' + '#'.repeat(+tag[1]) + ' '); tit = tanca ? 0 : 1; }
+    else if (tag === 'br') out.push(linia() ? ' ' : '\n');
+    else if (tag === 'ul' || tag === 'ol') { ll = Math.max(0, ll + (tanca ? -1 : 1)); li = Math.min(li, ll); out.push('\n'); }
+    else if (tag === 'li') { li = tanca ? Math.max(0, ll - 1) : Math.max(ll, 1); if (!tanca) out.push('\n' + '  '.repeat(Math.max(0, ll - 1)) + '- '); }
+    else if (tag === 'a' && !tanca) { const h = impAttr(at, 'href'); enl.push({ u: h && h.trim()[0] !== '#' ? impUrl(h, base) : null, i: out.length }); }
+    else if (tag === 'a' && enl.length) {
+      /* Una targeta enllaçada (títol i text) no cap en [text](url): queda el bloc i l'adreça al darrere. */
+      const e = enl.pop(), cru = out.splice(e.i).join(''), t = cru.replace(/\s+/g, ' ').trim(), h = e.u ? e.u.href.replace(/\)/g, '%29') : '';
+      out.push(!t || !h ? cru : /\n/.test(cru) ? cru + '\n\n<' + h + '>\n\n' : '[' + t.replace(/[[\]]/g, '\\$&') + '](' + h + ')');
+    }
+    else if (tag === 'img') { const u = impUrl(impAttr(at, 'data-src') || impAttr(at, 'src') || '', base);
+      if (impWeb(u) && !imatges.some(x => x.src === u.href)) imatges.push({ src: u.href, alt: (impAttr(at, 'alt') || '').replace(/\s+/g, ' ').trim() }); }
+    else if (tag === 'table') { fiFila(); if (tanca) taules.pop(); else taules.push(0); out.push('\n\n'); }
+    else if (tag === 'tr') { fiFila(); if (!tanca) fila = []; }
+    else if (tag === 'td' || tag === 'th') { tancaCel(); if (!tanca) { fila = fila || []; cel = out.length; } }
+    else if (IMP_BLOC.test(tag)) out.push(linia() ? ' ' : '\n\n');
+  }
+  fiFila();
+  /* El sagnat de les llistes niades va abans del guió: es conserva a cada línia. */
+  return out.join('').split('\n').map(l => (/^(?: {2})+(?=- )/.exec(l) || [''])[0] + l.replace(/[ \t\u00a0]+/g, ' ').trim())
+    .filter(l => !/^(#{1,6}|-)$/.test(l.trim())).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+/* Els enllaços es cullen de tota la pàgina (el menú és on n'hi ha més); el text,
+   sense menú ni capçalera, però amb l'h1 del <header> (el d'un article sol ser-hi)
+   i el peu al final: hi solen ser l'adreça i l'horari (el personal s'amaga després). */
+function htmlAText(html, base) {
+  const s = String(html == null ? '' : html).replace(/<!-{2}[\s\S]*?-{2}>/g, '').replace(/<!\[CDATA\[[\s\S]*?\]\]>/g, '').replace(/<[!?][^>]*>/g, '');
+  const pren = re => { const m = re.exec(s); return m ? m[1] : ''; }, net = x => String(x || '').replace(/\s+/g, ' ').trim();
+  const metes = s.match(/<meta\b(?:"[^"]*"|'[^']*'|[^'">])*>/gi) || [], meta = k => metes.find(x => (impAttr(x, 'name') || impAttr(x, 'property') || '').toLowerCase() === k);
+  const md = meta('description') || meta('og:description'), bt = impAttr(pren(/<base\b([^>]*)>/i), 'href');
+  let b = impUrl(base || '', null);
+  if (bt) b = impUrl(bt, b ? b.href : null) || b;
+  const bh = impWeb(b) ? b.href : null, codi = impTreu(s, 'script|style|noscript|template|svg').replace(/<(script|style)\b[\s\S]*$/i, ''), enllacos = [], docs = [], vist = {}, peus = [], imatges = [];
+  for (let m, re = /<a\b((?:"[^"]*"|'[^']*'|[^'">])*)>/gi; bh && (m = re.exec(codi));) {
+    const h = impAttr(m[1], 'href'), u = h && h.trim()[0] !== '#' ? impUrl(h, bh) : null;
+    if (!impWeb(u) || impHost(u) !== impHost(b)) continue;
+    u.hash = '';
+    if (!vist[u.href]) { vist[u.href] = 1; if (IMP_DOC.test(u.pathname)) docs.push(u.href); else if (!IMP_ACTIU.test(u.pathname)) enllacos.push(u.href); }
+  }
+  const cos = impTreu(impTreu(impTreu(codi, 'head|nav|iframe|select|textarea|object|canvas|dialog'), 'header', d => (d.match(/<h1\b[\s\S]*?<\/h1\s*>/gi) || []).join('')),
+    'footer', d => { peus.push(d); return ''; }).replace(/<title\b[^>]*>[\s\S]*?<\/title\s*>/gi, '');
+  const text = impMd(cos, bh, imatges), peu = impMd(peus.join('<p>'), bh, imatges);
+  return { titol: net(impEnt(pren(/<title\b[^>]*>([\s\S]*?)<\/title\s*>/i))), descripcio: md ? net(impAttr(md, 'content')) : '',
+    llengua: pren(/<html\b[^>]*\blang\s*=\s*["']?([A-Za-z]+)/i).toLowerCase(), text: (text + (peu ? '\n\n## Peu\n\n' + peu : '')).trim(), enllacos, docs, imatges };
+}
+/* Un sitemap dona pàgines; un índex de sitemaps, altres sitemaps. */
+function sitemapUrls(xml) {
+  const r = { urls: [], sitemaps: [] }, re = /<(url|sitemap)\b[^>]*>[\s\S]*?<loc\b[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/loc\s*>/gi;
+  for (let m, u; (m = re.exec(String(xml || '')));) if ((u = impEnt(m[2]).trim())) r[/^url$/i.test(m[1]) ? 'urls' : 'sitemaps'].push(u);
+  return r;
+}
+/* Només el grup «*». La regla més llarga que encaixa mana i, a igualtat,
+   guanya Allow (com fa Google). Admet * i $ final. Sense regles, tot permès. */
+function robotsPermet(txt, path) {
+  const u = /^https?:/i.test(path) && impUrl(path, null), p = u ? u.pathname + u.search : String(path || '/'), grups = [];
+  let g = null, ua = false, millor = null;
+  String(txt || '').split(/\r?\n/).forEach(l => {
+    const x = /^\s*([a-z-]+)\s*:\s*(.*?)\s*$/i.exec(l.replace(/#.*/, '')), k = x ? x[1].toLowerCase() : '';
+    if (k === 'user-agent') { if (!ua) grups.push(g = { ua: [], regles: [] }); g.ua.push(x[2].toLowerCase()); ua = true; return; }
+    if (x) ua = false;   // una altra línia tanca la llista d'agents del grup
+    if ((k === 'allow' || k === 'disallow') && g && x[2]) g.regles.push({ si: k === 'allow', r: x[2] });
+  });
+  grups.filter(x => x.ua.indexOf('*') >= 0).forEach(x => x.regles.forEach(rg => {
+    const fi = /\$$/.test(rg.r), cos = (fi ? rg.r.slice(0, -1) : rg.r).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\*/g, '.*');
+    if (new RegExp('^' + cos + (fi ? '$' : '')).test(p) && (!millor || rg.r.length > millor.r.length || (rg.r.length === millor.r.length && rg.si))) millor = rg;
+  }));
+  return !millor || millor.si;
+}
+/* El Crawl-delay del grup «*», en segons (com a molt 30). */
+function robotsEspera(txt) {
+  let dins = false, ua = false, s = 0;
+  String(txt || '').split(/\r?\n/).forEach(l => {
+    const x = /^\s*([a-z-]+)\s*:\s*(.*?)\s*(?:#.*)?$/i.exec(l), k = x && x[1].toLowerCase();
+    if (k === 'user-agent') { if (!ua) dins = false; ua = true; if (x[2] === '*') dins = true; return; }
+    if (x) ua = false;
+    if (k === 'crawl-delay' && dins && Number(x[2]) > 0) s = Math.min(30, Number(x[2]));
+  });
+  return s;
+}
+const robotsSitemaps = txt => String(txt || '').split(/\r?\n/).map(l => /^\s*sitemap\s*:\s*(\S+)/i.exec(l)).filter(Boolean).map(x => x[1]);
+/* El separador, el més comptat fora de cometes a la primera línia; a igualtat, ';' (l'Excel d'aquí) i el tabulador. */
+function llegeixCsv(text) {
+  const t = String(text || '').replace(/^\uFEFF/, ''), n = { ';': 0, '\t': 0, ',': 0 }, files = [];
+  let dins = false, fila = [], camp = '';
+  for (let i = 0; i < t.length && (dins || !/[\r\n]/.test(t[i])); i++) { if (t[i] === '"') dins = !dins; else if (!dins && t[i] in n) n[t[i]]++; }
+  const tria = [';', '\t', ','].reduce((a, c) => (n[c] > n[a] ? c : a), ';'), sep = n[tria] ? tria : ',';
+  dins = false;
+  for (let i = 0, c; i <= t.length; i++) {
+    c = t[i];
+    if (dins && c !== undefined) { if (c !== '"') camp += c; else if (t[i + 1] === '"') { camp += '"'; i++; } else dins = false; }
+    else if (c === '"' && !camp) dins = true;
+    else if (c === sep) { fila.push(camp); camp = ''; }
+    else if (c === '\n' || c === '\r' || c === undefined) { if (c === '\r' && t[i + 1] === '\n') i++; fila.push(camp); files.push(fila); fila = []; camp = ''; }
+    else camp += c;
+  }
+  const bones = files.filter(f => f.some(x => x.trim()));
+  return { sep, capcalera: (bones.shift() || []).map(x => x.trim()), files: bones };
+}
+/* Una taula entra per llista blanca: sense columnes triades, només la capçalera i
+   quantes files té. Una columna «Observacions» pot portar salut o notes d'un client,
+   i cap llista negra no ho veu. Les de persona (pel nom o per les cel·les) no hi
+   entren ni triades. */
+function csvAMd(text, nom, opts) {
+  const o = opts || {}, T = IMP_TXT[o.llengua] || IMP_TXT.ca, c = llegeixCsv(text), cap = c.capcalera.map((h, i) => h || 'columna ' + (i + 1)), fora = [], queden = [], lliures = [];
+  const triades = (o.columnes || []).map(impNorm);
+  cap.forEach((h, i) => {
+    const plenes = c.files.map(f => String(f[i] || '').trim()).filter(Boolean);
+    const amb = plenes.filter(x => { const a = amagaPersonal(x); return a.correus + a.telefons + a.altres > 0; }).length;
+    if (columnaPersonal(h) || amb * 2 > plenes.length) fora.push(i);
+    else { lliures.push(i); if (triades.indexOf(impNorm(h)) >= 0) queden.push(i); }
+  });
+  const esc = s => String(s == null ? '' : s).trim().replace(/\|/g, '\\|').replace(/\r\n|\r|\n/g, '<br>'), fila = f => '| ' + queden.map(i => esc(f[i])).join(' | ') + ' |';
+  const md = (nom ? ['# ' + String(nom).replace(/\s+/g, ' ').trim(), ''] : []).concat(queden.length ? [fila(cap), '|' + ' --- |'.repeat(queden.length)].concat(c.files.slice(0, 200).map(fila))
+    : lliures.length ? [T.triaCol.replace('{n}', c.files.length).replace('{cols}', lliures.map(i => esc(cap[i])).join(', '))] : [T.capCol]);
+  if (queden.length && c.files.length > 200) md.push('', '… ' + (c.files.length - 200) + ' ' + T.mes);
+  return { md: md.join('\n'), fora: fora.map(i => cap[i]), files: c.files.length, columnes: lliures.map(i => cap[i]), triades: queden.map(i => cap[i]) };
+}
+/* La capçalera és nostra: valors d'una línia (entre cometes si YAML s'hi confondria) i cap «---»
+   al cos, perquè un text importat no la pugui tancar ni imitar. «- - -» és la mateixa ratlla. */
+function fontMd(f) {
+  const v = x => { const s = String(x == null ? '' : x).replace(/\s+/g, ' ').trim(); return /^["'`#&*!|>%@,?:[\]{}-]|: | #/.test(s) ? JSON.stringify(s) : s; };
+  return '---\nfont: ' + v(f.font) + '\ntipus: ' + v(f.tipus) + '\ntitol: ' + v(f.titol) + '\nimportat: ' + v(f.importat) + '\n---\n\n'
+    + String(f.text == null ? '' : f.text).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').replace(/^[ \t]*-{3,}[ \t]*$/gm, '- - -').trim() + '\n';
+}
+const IMP_TXT = {
+  ca: { titol: 'Fonts importades', importat: 'Importat el', intro: 'El que el projecte ja tenia, en text perquè la IA ho llegeixi, amb les dades personals amagades. Reimportar una font sobreescriu el seu fitxer. El dossier (cerebro/dossier.md) diu d\'on surt cada cosa.',
+    resum: '{web} pàgines web, {docs} documents i {dades} taules · amagats: {correus} correus, {telefons} telèfons i {altres} dades personals més.', cap: '| Fitxer | D\'on surt | Tipus | Títol | Paraules | Amagat |',
+    columnes: 'Columnes retirades per dades personals', llegirT: 'Documents per llegir amb la IA', llegirD: 'Aquí no es llegeixen PDF ni Word: dona\'ls a la IA i que en deixi el text a cerebro/fonts/docs/.',
+    fora: 'El que no s\'ha importat', perLlegir: 'document per llegir amb la IA', format: 'format no suportat', buit: 'sense text (potser la web es pinta amb JavaScript)', mes: 'files més', capCol: 'Cap columna sense dades personals.',
+    triaCol: '{n} files. Columnes: {cols}. Per importar-ne les files, tria les columnes que calen (a l\'editor, o amb --columnes "a,b"): una taula entra per llista blanca.',
+    autoritzat: 'cal --autoritzat amb el domini: només la web de qui us ho demana, amb la seva autorització escrita',
+    robots: 'robots.txt no ho permet', xarxa: 'error de xarxa', noHtml: 'no és una pàgina', foraLloc: 'porta fora del lloc', adreca: 'adreça no vàlida', fetch: 'cal Node 18 o més per llegir webs' },
+  es: { titol: 'Fuentes importadas', importat: 'Importado el', intro: 'Lo que el proyecto ya tenía, en texto para que la IA lo lea, con los datos personales ocultos. Reimportar una fuente sobrescribe su fichero. El dosier (cerebro/dossier.md) dice de dónde sale cada cosa.',
+    resum: '{web} páginas web, {docs} documentos y {dades} tablas · ocultos: {correus} correos, {telefons} teléfonos y {altres} datos personales más.', cap: '| Fichero | De dónde sale | Tipo | Título | Palabras | Oculto |',
+    columnes: 'Columnas retiradas por datos personales', llegirT: 'Documentos para leer con la IA', llegirD: 'Aquí no se leen PDF ni Word: dáselos a la IA y que deje el texto en cerebro/fonts/docs/.',
+    fora: 'Lo que no se ha importado', perLlegir: 'documento para leer con la IA', format: 'formato no soportado', buit: 'sin texto (quizá la web se pinta con JavaScript)', mes: 'filas más', capCol: 'Ninguna columna sin datos personales.',
+    triaCol: '{n} filas. Columnas: {cols}. Para importar sus filas, elige las columnas que hacen falta (en el editor, o con --columnes "a,b"): una tabla entra por lista blanca.',
+    autoritzat: 'hace falta --autoritzat con el dominio: solo la web de quien os lo pide, con su autorización escrita',
+    robots: 'robots.txt no lo permite', xarxa: 'error de red', noHtml: 'no es una página', foraLloc: 'lleva fuera del sitio', adreca: 'dirección no válida', fetch: 'hace falta Node 18 o más para leer webs' }
+};
+/* La sortida no depèn de l'ordre d'arribada: es trien per tipus i per font. Amb `previ`
+   (el fonts.json d'abans) l'índex conserva el que avui no es reimporta: la web avui i un
+   CSV demà. La font també passa per amagaPersonal: una adreça pot portar un correu. */
+function importaFonts(entrades, opts) {
+  const o = opts || {}, T = IMP_TXT[o.llengua] || IMP_TXT.ca, ara = o.ara || new Date().toISOString().slice(0, 10);
+  const ORDRE = { web: 0, doc: 1, dades: 2 }, CARP = { web: 'web', doc: 'docs', dades: 'dades' }, cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+  const llista = (entrades || []).filter(e => e && ORDRE[e.tipus] != null).map(e => Object.assign({}, e, { font: amagaPersonal(e.font || e.nom || '').text }))
+    .sort((a, b) => ORDRE[a.tipus] - ORDRE[b.tipus] || cmp(a.font, b.font));
+  const previ = o.previ && Array.isArray(o.previ.fonts) ? o.previ : { fonts: [], fora: [] }, araF = {}, usats = {}, vist = {};
+  llista.forEach(e => { araF[e.font] = 1; });
+  const queden = previ.fonts.filter(f => f && /^cerebro\/fonts\/(web|docs|dades)\/[a-z0-9-]+\.md$/.test(f.ruta) && ORDRE[f.tipus] != null && !araF[f.font]);
+  queden.forEach(f => { usats[f.ruta] = 1; });
+  const ruta = (tipus, base) => { const b = 'cerebro/fonts/' + CARP[tipus] + '/' + impSlug(base).slice(0, 60).replace(/-$/, '');
+    let k = b + '.md';
+    for (let n = 2; usats[k]; n++) k = b + '-' + n + '.md';
+    return (usats[k] = 1) && k; };
+  const fitxers = [], fonts = [], fora = [], inf = { web: 0, docs: 0, dades: 0, correus: 0, telefons: 0, altres: 0, columnesFora: [], taules: [], fora, perLlegir: 0 };
+  const col = e => (Array.isArray(o.columnes) ? o.columnes : (o.columnes || {})[e.nom || e.font] || []);
+  const treu = (font, motiu) => { if (!fora.some(f => f.font === font && f.motiu === motiu)) fora.push({ font, motiu }); };
+  llista.forEach(e => {
+    const font = e.font, fitx = String(e.nom || font).split(/[?#]/)[0].split(/[\\/]/).pop(), ext = ((/\.([a-z0-9]+)$/i.exec(fitx) || [])[1] || '').toLowerCase();
+    if (vist[font]) return;
+    vist[font] = 1;
+    let titol = '', text = '', base = fitx.replace(/\.[a-z0-9]+$/i, '') || 'font';
+    if (e.tipus === 'web') {
+      const h = htmlAText(e.cos, font), u = impUrl(font, null);
+      titol = h.titol; text = (h.descripcio ? '> ' + h.descripcio + '\n\n' : '') + h.text;
+      if (impWeb(u)) base = (u.pathname.replace(/\.(html?|php|aspx?)$/i, '').replace(/^\/+|\/+$/g, '') || 'inici') + u.search;
+    } else if (e.tipus === 'dades') {
+      const c = csvAMd(e.cos, base, { llengua: o.llengua, columnes: col(e) });
+      inf.taules.push({ font, files: c.files, columnes: c.columnes, triades: c.triades, fora: c.fora });
+      text = c.md + (c.fora.length ? '\n\n' + T.columnes + ': ' + c.fora.join(', ') + '.' : '');
+      c.fora.forEach(x => { if (inf.columnesFora.indexOf(x) < 0) inf.columnesFora.push(x); });
+    } else if (/^html?$/.test(ext)) { const h = htmlAText(e.cos, /^https?:/i.test(font) ? font : null); titol = h.titol; text = h.text; }
+    else if (/^(md|markdown|txt|text)$/.test(ext)) {
+      /* La capçalera d'un .md importat no és nostra: se'n salva el títol i prou. */
+      const t = String(e.cos || '').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n'), fm = /^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)/.exec(t);
+      text = fm ? t.slice(fm[0].length) : t;
+      titol = fm ? (/^(?:title|t[ií]tol|t[ií]tulo)[ \t]*:[ \t]*["']?(.*?)["']?[ \t]*$/im.exec(fm[1]) || [])[1] || '' : '';
+    } else { treu(font, IMP_DOC.test('.' + ext) ? T.perLlegir : T.format + (ext ? ' (.' + ext + ')' : '')); return; }
+    if (!titol) titol = ((/^#{1,6}[ \t]+(.+)$/m.exec(text) || [])[1] || base).replace(/[#*_`[\]]/g, '');
+    const a = amagaPersonal(text), at = amagaPersonal(String(titol).replace(/\s+/g, ' ').trim());
+    if (!/\S/.test(a.text)) { treu(font, T.buit); return; }
+    const r = ruta(e.tipus, base), am = { correus: a.correus + at.correus, telefons: a.telefons + at.telefons, altres: a.altres + at.altres };
+    fitxers.push({ ruta: r, cos: fontMd({ font, tipus: e.tipus, titol: at.text, importat: ara, text: a.text }) });
+    fonts.push({ ruta: r, font, tipus: e.tipus, titol: at.text, paraules: (a.text.match(/\S+/g) || []).length, amagats: am });
+    inf[CARP[e.tipus]]++;
+    Object.keys(am).forEach(k => { inf[k] += am[k]; });
+  });
+  (o.docs || []).forEach(u => treu(amagaPersonal(u).text, T.perLlegir));
+  (o.fora || []).forEach(f => treu(amagaPersonal(f.font).text, String(f.motiu)));
+  inf.perLlegir = fora.filter(f => f.motiu === T.perLlegir).length;
+  const totes = queden.concat(fonts).sort((x, y) => ORDRE[x.tipus] - ORDRE[y.tipus] || cmp(x.ruta, y.ruta));
+  const foraT = (previ.fora || []).filter(f => f && f.font && !araF[f.font] && !fora.some(x => x.font === f.font)).map(f => ({ font: String(f.font), motiu: String(f.motiu) })).concat(fora);
+  const cel = s => String(s).replace(/\|/g, '\\|'), quants = { web: 0, docs: 0, dades: 0 }, suma = k => totes.reduce((s, f) => s + (Number((f.amagats || {})[k]) || 0), 0);
+  totes.forEach(f => { quants[CARP[f.tipus]]++; });
+  const md = ['# ' + T.titol, '', '> ' + T.importat + ' ' + ara + '. ' + T.intro, '', T.resum.replace(/\{(\w+)\}/g, (x, k) => (k in quants ? quants[k] : suma(k))), '', T.cap, '| --- | --- | --- | --- | ---: | ---: |']
+    .concat(totes.map(f => { const rel = f.ruta.slice(14), am = f.amagats || {};
+      return '| [' + rel + '](' + rel + ') | ' + cel(f.font) + ' | ' + f.tipus + ' | ' + cel(f.titol) + ' | ' + f.paraules + ' | ' + ((am.correus || 0) + (am.telefons || 0) + (am.altres || 0)) + ' |'; }));
+  const llegir = foraT.filter(f => f.motiu === T.perLlegir), altres = foraT.filter(f => f.motiu !== T.perLlegir);
+  if (inf.columnesFora.length) md.push('', '## ' + T.columnes, '', inf.columnesFora.map(cel).join(', '));
+  if (llegir.length) md.push('', '## ' + T.llegirT, '', T.llegirD, '', ...llegir.map(f => '- ' + f.font));
+  if (altres.length) md.push('', '## ' + T.fora, '', ...altres.map(f => '- ' + f.font + ' · ' + f.motiu));
+  fitxers.push({ ruta: 'cerebro/fonts/index.md', cos: md.join('\n') + '\n' },
+    { ruta: 'cerebro/fonts/fonts.json', cos: JSON.stringify({ formato: 'tt-fonts-1', importat: ara, fonts: totes, fora: foraT }, null, 2) + '\n' });
+  return { fitxers, informe: inf };
+}
+/* Una petició cada cop, amb `dormir(espera)` entre totes (un segon, o el Crawl-delay si és més). L'ordre: l'inici, els seus
+   enllaços (el menú porta a les pàgines que compten), el sitemap (que sovint comença
+   pel blog) i la resta per amplada. Un error de xarxa va a «fora» i segueix. */
+async function rastreja(inici, opts) {
+  const o = opts || {}, T = IMP_TXT[o.llengua] || IMP_TXT.ca, max = Number(o.max) > 0 ? Math.floor(Number(o.max)) : 30;
+  let espera = o.espera == null ? 1000 : Number(o.espera) || 0;
+  const dormir = o.dormir || (ms => new Promise(r => setTimeout(r, ms)));
+  const agent = o.agent || 'TeamTowers-importa/1 (+https://teamtowershuma.com)', res = { pagines: [], docs: [], fora: [] };
+  const fora = (font, motiu) => { res.fora.push({ font, motiu }); }, u0 = impUrl(inici, null);
+  if (!impWeb(u0) || typeof o.fetch !== 'function') { fora(String(inici), impWeb(u0) ? T.fetch : T.adreca); return res; }
+  /* Només la web de qui ens ho demana: el domini autoritzat ha de ser el que es llegeix. */
+  if (String(o.autoritzat || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/[/:].*$/, '').replace(/^www\./, '') !== impHost(u0)) { fora(String(inici), T.autoritzat); return res; }
+  let n = 0, sembrat = false;
+  const demana = async url => {
+    if (n++) await dormir(espera);
+    try {
+      const temps = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? { signal: AbortSignal.timeout(o.temps || 20000) } : {};   // un servidor encallat no ens encalla
+      const r = await o.fetch(url, Object.assign({ headers: { 'User-Agent': agent, Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5' } }, temps));
+      const ct = String((r.headers && r.headers.get && r.headers.get('content-type')) || ''), ok = r.status >= 200 && r.status < 300, llegeix = ok && (!ct || /html|xml|text\//i.test(ct));
+      if (!llegeix && r.body && r.body.cancel) r.body.cancel().catch(() => {});   // els binaris no es baixen
+      return { ok, status: r.status, ct, url: r.url || url, text: llegeix ? await r.text() : '' };
+    } catch (e) { fora(url, T.xarxa + ': ' + String((e && e.message) || e).slice(0, 120)); return null; }
+  };
+  const rb = await demana(u0.origin + '/robots.txt'), robots = rb && rb.ok && !/html/i.test(rb.ct) ? rb.text : '';
+  espera = Math.max(espera, robotsEspera(robots) * 1000);
+  const sm = robotsSitemaps(robots), llavor = [], vist = {}, fetes = {}, cua = [];
+  if (!sm.length) sm.push(u0.origin + '/sitemap.xml');
+  for (let i = 0, fets = 0; i < sm.length && fets < 5; i++) {   // un índex en pot portar molts: amb 5 n'hi ha prou
+    const u = impUrl(sm[i], u0.href), r = impWeb(u) && impHost(u) === impHost(u0) && !/\.gz$/i.test(u.pathname) && ++fets && await demana(u.href);
+    const x = r && r.ok ? sitemapUrls(r.text) : { urls: [], sitemaps: [] };
+    x.urls.forEach(s => { if (llavor.length < max * 5) llavor.push(s); });
+    x.sitemaps.forEach(s => { if (sm.indexOf(s) < 0) sm.push(s); });
+  }
+  /* A la cua només hi entra una pàgina nova del lloc que robots.txt deixa demanar. */
+  const posa = l => l.forEach(s => {
+    const u = impUrl(s, u0.href);
+    if (!impWeb(u) || impHost(u) !== impHost(u0) || vist[u.href.split('#')[0]]) return;
+    u.hash = '';
+    vist[u.href] = 1;
+    if (IMP_DOC.test(u.pathname)) res.docs.push(u.href);
+    else if (!IMP_ACTIU.test(u.pathname)) { if (robotsPermet(robots, u.pathname + u.search)) cua.push(u.href); else fora(u.href, T.robots); }
+  });
+  const sembra = () => { if (!sembrat) { sembrat = true; posa(llavor); } };
+  posa([u0.href]);
+  for (let intents = 0; res.pagines.length < max && intents < max * 3 + 10; intents++) {
+    if (!cua.length) { if (sembrat) break; sembra(); continue; }
+    const url = cua.shift(), r = await demana(url), fi = r && (impUrl(r.url, null) || impUrl(url, null));
+    if (!r) continue;
+    if (!r.ok) { fora(url, 'HTTP ' + r.status); continue; }
+    if (!impWeb(fi) || impHost(fi) !== impHost(u0)) { fora(url, T.foraLloc); continue; }
+    if (/pdf|msword|officedocument|opendocument/i.test(r.ct)) { res.docs.push(url); continue; }
+    if (!/text\/html|xhtml/i.test(r.ct) && (r.ct || !/^\s*</.test(r.text))) { fora(url, T.noHtml + ' (' + (r.ct.split(';')[0] || '?') + ')'); continue; }
+    fi.hash = '';
+    if (fetes[fi.href]) continue;   // dues adreces que porten a la mateixa pàgina
+    fetes[fi.href] = vist[fi.href] = 1;
+    res.pagines.push({ url: fi.href, html: r.text });
+    if (o.avis) o.avis(fi.href);
+    const h = htmlAText(r.text, fi.href);
+    posa(h.docs.concat(h.enllacos)); sembra();
+  }
+  return res;
+}
+/*/VS-IMPORTA*/
 /*VS-GENERA*/
 /* ── La web d'un client des del seu mapa, sense navegador ───────────────────
  * El que fan `SOS/tools/web-del-mapa.js` i la plantilla del botó de Netlify
@@ -2912,11 +3892,65 @@ async function generaWeb(entrada, opts, eines) {
   const web = webDelMapa(M.llegeixTextos(arbre.real.t), { casa: o.casa || [] });
   return ambPermaweb(webASite(web, Object.assign({}, o, { mapa: M.exporta(arbre), codi: e.codi })), e.sha);
 }
+/* El codi que fa que el repositori d'un client es refaci sol: `eines/motor.mjs`
+   (els blocs d'aquest fitxer, tal com hi són, i l'exemple) i `eines/genera.mjs`,
+   que Netlify executa a cada publicació i qualsevol pot executar en local. El
+   fan servir la plantilla de Netlify (`build-plantilla.js`), el zip de l'editor
+   i el mateix motor quan es refà, i per això ha de donar sempre els mateixos
+   bytes: un motor que es copia a si mateix i canvia ja no és el de l'editor.
+   `tros(nom)` dona un bloc amb les dues marques; `exemple`, el text de l'exemple. */
+const REPO_BLOCS = ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-REG', 'VS-API', 'VS-MCP', 'VS-IMPORTA', 'VS-GENERA'];
+function codiRepositori(tros, exemple) {
+  const cap = '// Generat des de SOS/vna-suport.html (repositori asolache/teamtowershuma). No s\'edita a mà: es refà amb node eines/genera.mjs.\n';
+  const motor = cap + 'import { readFileSync } from \'node:fs\';\nimport { createHash } from \'node:crypto\';\n'
+    + exemple + '\n' + REPO_BLOCS.map(tros).join('\n') + '\n'
+    + '/* El codi que va a eines/ i netlify/ del client: els blocs d\'aquest mateix fitxer, tal com hi són. */\n'
+    + 'const font = readFileSync(new URL(import.meta.url), \'utf8\');\n'
+    + 'const tros = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\'));\n'
+    + 'const sencer = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\') + nom.length + 5);\n'
+    + 'const exemple = font.slice(font.indexOf(\'const EXEMPLE = {\'), font.indexOf(\'};\', font.indexOf(\'const EXEMPLE = {\')) + 2);\n'
+    + 'export { EXEMPLE };\n'
+    + 'export function genera(entrada, opts) {\n'
+    + '  return generaWeb(entrada, opts, { sha: async b => createHash(\'sha256\').update(b).digest(\'hex\'),\n'
+    + '    codi: { reg: tros(\'VS-REG\'), api: tros(\'VS-API\'), mcp: tros(\'VS-MCP\'), imp: tros(\'VS-IMPORTA\'), repo: codiRepositori(sencer, exemple) } });\n}\n';
+  const genera = '#!/usr/bin/env node\n' + cap
+    + '// Fa la web del mapa i la deixa a l\'arrel. Netlify l\'executa a cada publicació; en local, amb Node 18 o més.\n'
+    + 'import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from \'node:fs\';\nimport { inflateRawSync } from \'node:zlib\';\n'
+    + 'import { genera, EXEMPLE } from \'./motor.mjs\';\n'
+    + 'const arrel = new URL(\'../\', import.meta.url), e = process.env, hi = r => existsSync(new URL(r, arrel));\n'
+    + 'const llegeix = r => (hi(r) ? JSON.parse(readFileSync(new URL(r, arrel), \'utf8\')) : null);\n'
+    + '/* El que és del repositori i la web no genera: els continguts, el que s\'ha importat, el dossier i els esborranys. */\n'
+    + 'const sota = d => (hi(d) ? readdirSync(new URL(d, arrel), { withFileTypes: true }).map(x => (x.isDirectory() ? sota(d + x.name + \'/\') : /\\.(md|json)$/.test(x.name) ? [d + x.name] : [])).reduce((a, b) => a.concat(b), []).sort() : []);\n'
+    + 'const repo = [\'cerebro/continguts/\', \'cerebro/fonts/\', \'cerebro/esborranys/\'].map(sota).reduce((a, b) => a.concat(b), [])\n'
+    + '  .concat(hi(\'cerebro/dossier.md\') ? [\'cerebro/dossier.md\'] : []).map(ruta => ({ ruta, cos: readFileSync(new URL(ruta, arrel), \'utf8\') }));\n'
+    + 'const continguts = repo.filter(f => /^cerebro\\/continguts\\/[^/]+\\.md$/.test(f.ruta)).map(f => ({ id: f.ruta.slice(19, -3), text: f.cos }));\n'
+    + 'let mapa = llegeix(\'cerebro/mapa-real.json\'), font = \'cerebro/mapa-real.json\';\n'
+    + 'if (!mapa && e.TT_MAPA) { mapa = JSON.parse(inflateRawSync(Buffer.from(e.TT_MAPA, \'base64url\')).toString(\'utf8\')); font = \'TT_MAPA\'; }\n'
+    + 'if (!mapa) {\n  mapa = EXEMPLE; font = \'l\\\'exemple del celler\';\n'
+    + '  if (!e.NETLIFY) console.warn(\'⚠️  Falta cerebro/mapa-real.json: surt la web de l\\\'exemple. Desa-hi el JSON de l\\\'editor del mapa («Copia el JSON»).\');\n}\n'
+    + 'const ideal = llegeix(\'cerebro/mapa-ideal.json\');\n'
+    + 'if (ideal) mapa = Object.assign({}, mapa, { ideal });\n'
+    + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : undefined; } catch (x) { casa = undefined; }\n'
+    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM, correu: e.TT_CORREU, llengua: e.TT_LLENGUA, url: e.TT_URL || e.URL, casa: Array.isArray(casa) ? casa : undefined, continguts, repo, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + '/* El que és del repositori no es trepitja: la configuració, el mapa, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
+    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
+    + 'const escrit = r => /^cerebro\\/(fonts|continguts|esborranys)\\//.test(r);\n'
+    + 'let n = 0;\n'
+    + 'for (const f of fitxers) {\n'
+    + '  const u = new URL(f.ruta, arrel);\n'
+    + '  if ((propis.includes(f.ruta) || escrit(f.ruta)) && existsSync(u)) continue;\n'
+    + '  mkdirSync(new URL(\'.\', u), { recursive: true });\n  writeFileSync(u, f.cos);\n  n++;\n}\n'
+    + 'console.log(\'✅ \' + n + \' fitxers, des de \' + font + (continguts.length ? \', amb \' + continguts.length + \' continguts\' : \'\'));\n';
+  return { motor, genera };
+}
 /*/VS-GENERA*/
 /* El codi que va a eines/ i netlify/ del client: els blocs d'aquest mateix fitxer, tal com hi són. */
 const font = readFileSync(new URL(import.meta.url), 'utf8');
 const tros = nom => font.slice(font.indexOf('/*' + nom + '*/'), font.indexOf('/*/' + nom + '*/'));
+const sencer = nom => font.slice(font.indexOf('/*' + nom + '*/'), font.indexOf('/*/' + nom + '*/') + nom.length + 5);
+const exemple = font.slice(font.indexOf('const EXEMPLE = {'), font.indexOf('};', font.indexOf('const EXEMPLE = {')) + 2);
 export { EXEMPLE };
 export function genera(entrada, opts) {
-  return generaWeb(entrada, opts, { sha: async b => createHash('sha256').update(b).digest('hex'), codi: { reg: tros('VS-REG'), api: tros('VS-API'), mcp: tros('VS-MCP') } });
+  return generaWeb(entrada, opts, { sha: async b => createHash('sha256').update(b).digest('hex'),
+    codi: { reg: tros('VS-REG'), api: tros('VS-API'), mcp: tros('VS-MCP'), imp: tros('VS-IMPORTA'), repo: codiRepositori(sencer, exemple) } });
 }
