@@ -118,6 +118,7 @@ aquesta llista i res més.
 - `SOS/canal` · obra · Paquets de canal per tema, xifrats
 - `SOS/atles` · obra · Dades geogràfiques i institucionals del territori
 - `SOS/media` · obra · Imatges i material que serveixen les pàgines
+- `SOS/plantilla-web` · obra · La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany

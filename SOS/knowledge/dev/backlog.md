@@ -128,6 +128,16 @@ avisos del pla signats amb HMAC-SHA256; `.mcp.json` connecta el cervell a
 Claude Code amb `eines/mcp.mjs`. Un sol codi: blocs `VS-API` i `VS-MCP`.
 El cervell ja no es publica (404 a `netlify.toml`). Vint-i-quatre proves.
 Següent: provar els avisos amb el primer pilot i els comptes de debò.
+**Fet, camí B de l'alta:** «Publica-la a nom teu (Netlify)» a la pestanya Web.
+El botó «Deploy to Netlify» clona `SOS/plantilla-web/` al GitHub del client,
+amb el mapa comprimit, i Netlify hi fa la web a cada publicació amb el codi de
+l'editor (`build-plantilla.js`, guarda a la CI).
+**Fet, pas 4 de l'alta:** el pagament amb Stripe Checkout (Apple Pay i Google
+Pay), en mode de prova. «Paga i publica-la a nom teu» a la pestanya Web; dues
+funcions de Netlify (`checkout`, `checkout-completat`) i l'avís de Stripe
+amb la signatura comprovada. Sense claus, publica sense pagar. Pendent de
+l'Àlvar: posar les claus de prova a Netlify i crear el preu a Stripe.
+Següent de l'ordre: el camí A (tokens de servei).
 **Fet (demanat per l'Àlvar el 09/10/2026):** la vista prèvia de la web al
 navegador. A la pestanya Web, «Vista prèvia» ensenya la web de debò (el mateix
 codi que el zip) pàgina a pàgina, sense descarregar res.
