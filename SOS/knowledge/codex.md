@@ -5184,14 +5184,14 @@ peta abans que la portada digui una cosa i el número una altra.
 
 **Après el 10/10/2026, preparant l'informe de proves** que va demanar l'Àlvar.
 
-El zip del client desava la marca a `cerebro/marca.json` amb un comentari que
+El zip del client desava la marca a «cerebro/marca.json» amb un comentari que
 deia «viatja amb el repositori, com el mapa: és l'altra font». Però
-`eines/genera.mjs` no la llegia, i el nom, la llengua i els rols de casa ni tan
+«eines/genera.mjs» no la llegia, i el nom, la llengua i els rols de casa ni tan
 sols es desaven. Refer la web en local, que és el que CLAUDE.md mana després de
 cada canvi, la tornava al català, al rol que més lliura i sense marca.
 
 **Una font que només s'escriu és decoració.** Ara el que es va triar va a
-`cerebro/configuracio.json`, `genera.mjs` el llegeix amb la marca, i la prova
+«cerebro/configuracio.json», «genera.mjs» el llegeix amb la marca, i la prova
 és la que hauria trobat el forat: generar el zip, refer-lo sense variables i
 comprovar que cap fitxer canvia. I el mateix al revés: l'exemple, que és una
 font per veure la web, ja no es desa com si fos el mapa del client.
