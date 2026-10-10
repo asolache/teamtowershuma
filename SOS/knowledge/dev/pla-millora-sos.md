@@ -19,7 +19,7 @@ Mesurat sobre `main`, no recordat. El text de sota és el del 10/09 i no es toca
 |---|---|---|
 | 1 · La font | **Fet (#219)** | `SOS/fonts/`, `test-arrencada.mjs`: arrenca en ~340 ms amb tota la xarxa de fora penjada |
 | 2 · Sense xarxa | **Fet** | `manifest.webmanifest`, `sw.js` amb empremta generada, `test-sw.mjs` |
-| 3 · El primer botó | **En esborrany, ho decideix l'Àlvar** | El botó ja hi és («Apunta-t'hi», y = 468 en escriptori i 593 en mòbil). Xocava amb el tour de 6 pantalles que s'obria abans de res, posat davant de tot a posta (V76). L'esborrany treu l'obertura sola i ofereix el tour en 3 a la benvinguda, després de crear el perfil; sencer surt quan es demana. `test-inici.mjs` |
+| 3 · El primer botó | **Fet (#225)** | El botó hi és («Apunta-t'hi», y = 468 en escriptori i 593 en mòbil) i ja no el tapa res. Xocava amb el tour de 6 pantalles posat davant de tot a la V76; l'Àlvar va deixar triar i es va seguir el pla: el tour ja no s'obre sol, la benvinguda l'ofereix en 3 després de crear el perfil, i sencer surt quan es demana. `test-inici.mjs` |
 | 4 · Entre dues persones | **Pas 1 fet (#223)** | L'interès. Queden l'acord amb fil (pas 2) i «fet i no apuntat» (pas 3) |
 | 5 · Tasques per defecte | **A mitges** | `homeView:'missions'` ja és el per defecte; l'eix del temps (`sprintsOf`) encara no hi és |
 | 6 · Playtest | Pendent | Cap resultat a `knowledge/` |
