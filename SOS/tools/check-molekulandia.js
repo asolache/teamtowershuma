@@ -67,7 +67,7 @@ else if (!senseEina.length)
   ok(`els ${ambEina.length} edificis porten a una eina`);
 else bad('cap edifici porta enlloc: això és un pòster');
 /* La fitxa i les dues sortides han d'existir al codi de la pàgina. */
-if (/function pintaFitxa\(/.test(PAG) && /class="porta"/.test(PAG))
+if (/function pintaFitxa\(/.test(PAG) && /class="[^"]*\bporta\b[^"]*"/.test(PAG))
   ok('i cada edifici obre una fitxa amb el que és, els seus rols i la seva porta');
 else bad('no hi ha fitxa d\'edifici: des de la pàgina no s\'hi pot entrar a res');
 if (/encara no té eina pròpia/.test(PAG))

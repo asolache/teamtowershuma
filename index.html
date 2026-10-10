@@ -88,6 +88,40 @@
             --orange-dim:    rgba(182,80,10,0.10);
             --sans: 'Space Grotesk', system-ui, sans-serif;
         }
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 16px; scroll-behavior: smooth; }
         body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
@@ -103,11 +137,8 @@
         .cta-mail a { color:var(--indigo); border-bottom:1px solid var(--indigo-dim); text-decoration:none; }
         .cta-mail a:hover { border-color:var(--blue); }
 
-        /* BTNS */
-        .btn-primary { background:var(--indigo); color:var(--on-accent); font-family:var(--sans); font-weight:600; font-size:var(--t0); letter-spacing:.03em; padding:.9rem 2rem; border:none; cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px)); }
-        .btn-primary:hover { background:var(--blue); transform:translateY(-2px); }
-        .btn-ghost { background:transparent; color:var(--light); font-family:var(--sans); font-weight:500; font-size:var(--t0); letter-spacing:.03em; padding:.9rem 2rem; border:1px solid var(--border); cursor:pointer; text-decoration:none; display:inline-block; transition:all .2s; }
-        .btn-ghost:hover { border-color:var(--indigo); color:var(--blue); }
+        /* Els botons (.btn-primary, .btn-ghost) són els compartits del bloc
+           TT-COMPONENTS: aquí només es col·loquen, mai es tornen a pintar. */
 
         /* HERO */
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
@@ -209,17 +240,10 @@
         @media (max-width:768px) {
             .cta-sticky { display:block; position:fixed; left:0; right:0; bottom:0; z-index:90; padding:.6rem 1rem calc(.6rem + env(safe-area-inset-bottom)); background:color-mix(in srgb,var(--bg) 94%,transparent); backdrop-filter:blur(12px); border-top:1px solid var(--border); }
             .cta-sticky[hidden] { display:none; }
-            .cta-sticky .btn-primary { display:block; text-align:center; width:100%; }
+            .cta-sticky .btn-primary { display:flex; width:100%; }
             .cta-band-inner { padding-top:1.6rem; padding-bottom:1.6rem; }
-            .cta-band .btn-primary { display:block; width:100%; box-sizing:border-box; text-align:center; }
+            .cta-band .btn-primary { display:flex; width:100%; }
         }
-
-        /* SECTION HEADERS */
-        .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
-        .section-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1.25rem; }
-        .section-header h2 { font-family:var(--sans); font-size:clamp(2.1rem,4vw,3.2rem); font-weight:700; line-height:1.15; margin-bottom:1.25rem; }
-        .section-header h2 em { font-style:normal; color:var(--blue); }
-        .section-header p { font-size:1rem; color:var(--light); line-height:1.8; }
 
         /* PROBLEMA / ENFOQUE */
         .enfoc { padding:9rem 0 8rem; }
@@ -710,14 +734,6 @@
         .cta-final .actions { position:relative; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
 
         /* FOOTER */
-        footer { padding:3rem 0; border-top:1px solid var(--border); }
-        .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--text); }
-        .footer-logo span { color:var(--indigo); }
-        .footer-copy { font-family:var(--mono); font-size:var(--t0); color:var(--muted); letter-spacing:.08em; }
-        .footer-links { display:flex; flex-wrap:wrap; justify-content:center; gap:.9rem 2rem; list-style:none; }
-        .footer-links a { font-size:var(--t0); color:var(--muted); text-decoration:none; transition:color .2s; }
-        .footer-links a:hover { color:var(--indigo); }
 
         /* ANIMATIONS */
         .fade-up { opacity:1; transform:translateY(0); transition:opacity .7s ease,transform .7s ease; }
@@ -788,15 +804,12 @@
            clicable és un objectiu que a mòbil es falla. */
         .serveis { padding:6rem 0; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
         .serveis-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1.25rem; }
-        .srv { display:flex; flex-direction:column; gap:.6rem; padding:1.6rem 1.5rem;
-               background:var(--card); border:1px solid var(--border); border-radius:14px; }
-        .srv-k { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); font-weight:600; }
-        .srv-t { font-size:var(--t2); font-weight:650; color:var(--text); line-height:1.3; margin:0; }
-        .srv-d { font-size:var(--t0); color:var(--light); line-height:1.6; flex:1; margin:0; }
+        /* La targeta i el botó són els compartits (TT-COMPONENTS): aquesta
+           targeta n'és el model. Aquí només hi queda que la descripció empeny
+           les crides al peu, perquè les tres s'alineïn. */
+        .srv .targeta-d { flex:1; }
         .srv-go { display:flex; flex-wrap:wrap; gap:.5rem 1.1rem; align-items:center; margin-top:.4rem; font-size:var(--t0); }
-        .srv-go a { color:var(--light); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
-        .srv-go a.srv-a { color:var(--on-accent); background:var(--indigo); padding:.5rem .95rem; border-radius:9px; text-decoration:none; }
-        .srv-go a.srv-a:hover { filter:brightness(1.1); }
+        .srv-go a:not(.btn-primary) { color:var(--light); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
         @media (max-width:900px) { .serveis-grid { grid-template-columns:1fr; } .serveis { padding:4rem 0; } }
     </style>
 </head>
@@ -1012,7 +1025,7 @@
                     </li>
                 </ol>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
-                    <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Diagnostica la teva organització · 3 min</a>
+                    <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Diagnostica la teva organització · 3&nbsp;min</a>
                     <a href="/SOS/pressupost.html" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero.cta2">Demana pressupost →</a>
                 </div>
                 <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
@@ -1158,30 +1171,30 @@
             <p data-i18n="srv.intro">Tot surt del mapa de valor: qui dona què a qui, també els favors i la confiança. A partir d'aquí, el millorem, en fem la web o l'aprens a mantenir viu.</p>
         </div>
         <div class="serveis-grid fade-up">
-            <article class="srv">
-                <span class="srv-k" data-i18n="srv.1k">1 · Diagnòstic i millora</span>
-                <h3 class="srv-t" data-i18n="srv.1t">El mapa de valor de la teva organització</h3>
-                <p class="srv-d" data-i18n="srv.1d">Analitzem com flueix el valor entre els rols, en fem el diagnòstic i l'equip acorda on millorar-lo: el mapa real al costat de l'ideal, amb les zones calentes marcades.</p>
+            <article class="srv targeta">
+                <span class="targeta-k" data-i18n="srv.1k">1 · Diagnòstic i millora</span>
+                <h3 class="targeta-t" data-i18n="srv.1t">El mapa de valor de la teva organització</h3>
+                <p class="targeta-d" data-i18n="srv.1d">Analitzem com flueix el valor entre els rols, en fem el diagnòstic i l'equip acorda on millorar-lo: el mapa real al costat de l'ideal, amb les zones calentes marcades.</p>
                 <div class="srv-go">
-                    <a href="/SOS/diagnostic.html" class="srv-a" data-i18n="srv.1a">Fes el diagnòstic →</a>
+                    <a href="/SOS/diagnostic.html" class="btn-primary btn-sm" data-i18n="srv.1a">Fes el diagnòstic →</a>
                     <a href="/SOS/vna.html" data-i18n="srv.1b">El mètode</a>
                 </div>
             </article>
-            <article class="srv">
-                <span class="srv-k" data-i18n="srv.2k">2 · Desenvolupament web</span>
-                <h3 class="srv-t" data-i18n="srv.2t">La teva web, sortida del mapa</h3>
-                <p class="srv-d" data-i18n="srv.2d">Ens passes el que ja tens —la web, els documents, l'àudio— i en surt un primer esborrany amb una porta per a cada rol. El disseny i els textos els afinem junts, i la web és teva.</p>
+            <article class="srv targeta">
+                <span class="targeta-k" data-i18n="srv.2k">2 · Desenvolupament web</span>
+                <h3 class="targeta-t" data-i18n="srv.2t">La teva web, sortida del mapa</h3>
+                <p class="targeta-d" data-i18n="srv.2d">Ens passes el que ja tens —la web, els documents, l'àudio— i en surt un primer esborrany amb una porta per a cada rol. El disseny i els textos els afinem junts, i la web és teva.</p>
                 <div class="srv-go">
-                    <a href="/mapa-web/" class="srv-a" data-i18n="srv.2a">Mapa i web en una hora →</a>
+                    <a href="/mapa-web/" class="btn-primary btn-sm" data-i18n="srv.2a">Mapa i web en una hora →</a>
                     <a href="/conecta/" data-i18n="srv.2b">Serveis connectables</a>
                 </div>
             </article>
-            <article class="srv">
-                <span class="srv-k" data-i18n="srv.3k">3 · Formació acció</span>
-                <h3 class="srv-t" data-i18n="srv.3t">El SOS, après fent-lo servir</h3>
-                <p class="srv-d" data-i18n="srv.3d">Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l'eina lliure on viu el que surt de cada sessió.</p>
+            <article class="srv targeta">
+                <span class="targeta-k" data-i18n="srv.3k">3 · Formació acció</span>
+                <h3 class="targeta-t" data-i18n="srv.3t">El SOS, après fent-lo servir</h3>
+                <p class="targeta-d" data-i18n="srv.3d">Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l'eina lliure on viu el que surt de cada sessió.</p>
                 <div class="srv-go">
-                    <a href="/SOS/" class="srv-a" data-i18n="srv.3a">Entra al SOS →</a>
+                    <a href="/SOS/" class="btn-primary btn-sm" data-i18n="srv.3a">Entra al SOS →</a>
                     <a href="/SOS/formacio.html" data-i18n="srv.3b">Els mòduls</a>
                 </div>
             </article>
@@ -1703,29 +1716,42 @@
 </div>
 
 <!-- FOOTER -->
-<footer>
-    <div class="container">
-        <div class="footer-inner">
-            <div class="footer-logo">Team<span>Towers</span> Humà</div>
-            <ul class="footer-links">
-                <!-- EL PEU, I ELS CINC DESTINS ──────────────────────────────
-                     Portava vuit àncores a seccions de la portada, i l'endreça
-                     en va deixar cinc apuntant a seccions que ja no hi són:
-                     `#fentpinya`, `#aprenentatge`, `#beneficis`… Un enllaç
-                     mort al peu no peta i no es nota —el navegador es queda on
-                     és—, i qui hi clica es pensa que la pàgina no li respon.
-                     Ara són **els cinc destins**, i tots són pàgines. -->
-                <li><a href="/SOS/vna.html" data-i18n="peu.vna">Mapa de valor</a></li>
-                <li><a href="/mapa-web/" data-i18n="peu.web">La teva web</a></li>
-                <li><a href="/SOS/formacio.html" data-i18n="peu.formacio">Formació</a></li>
-                <li><a href="/SOS/" data-i18n="peu.sos">El SOS</a></li>
-                <li><a href="/cataleg" data-i18n="peu.cataleg">El catàleg</a></li>
-                <li><a href="/qui-som" data-i18n="peu.quisom">Qui som</a></li>
-            </ul>
-            <p class="footer-copy">© 2026 TeamTowers Humà · Força · Equilibri · Valor · Seny</p>
-        </div>
-    </div>
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span data-i18n="nv.t.diagnostic">Diagnòstic</span></a></li><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">El mètode</span></a></li><li><a href="/SOS/vna-suport.html"><span data-i18n="nv.t.vna-suport">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">El catàleg</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
+  </div>
 </footer>
+<!--/TT-PEU-->
 
 <script>
 // ── Traduccions ──────────────────────────────────────────────────────────────
@@ -1817,11 +1843,6 @@ ca: {
   'op.es.5.p':'Preu de gran compte',
   'op.es.5.q':'Direccions d\'empreses grans, ara amb el sistema inclòs',
   'op.es.nota':'Els preus es confirmen amb els primers pilots. La sessió i el taller són els de <a href="/mapa-web/">Mapa i web en una hora</a>.',
-  'peu.vna':'Mapa de valor',
-  'peu.cataleg':'El catàleg',
-  'peu.formacio':'Formació',
-  'peu.sos':'El SOS',
-  'peu.quisom':'Qui som',
   'srv.eyebrow':'Què fem',
   'srv.h2':'Tres serveis, <em>un mateix mètode</em>',
   'srv.intro':'Tot surt del mapa de valor: qui dona què a qui, també els favors i la confiança. A partir d\'aquí, el millorem, en fem la web o l\'aprens a mantenir viu.',
@@ -1840,7 +1861,6 @@ ca: {
   'srv.3d':'Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l\'eina lliure on viu el que surt de cada sessió.',
   'srv.3a':'Entra al SOS →',
   'srv.3b':'Els mòduls',
-  'peu.web':'La teva web',
 
 /*TT-NAV-I18N-CA*/
   'nv.g.valor':'Mapa de valor',
@@ -1875,6 +1895,7 @@ ca: {
   'nv.d.blog':'Cada capacitat, explicada',
   'nv.cta':'Fes el diagnòstic',
   'nv.menu':'Menú',
+  'nv.peu.mail':'Escriu-nos',
 /*/TT-NAV-I18N-CA*/
 /*TT-CT-I18N-CA*/
   'ct.plm.plCeller':'La mateixa casa vista des de dalt: 7 pilars —un per node del mapa— i 28 rengles obertes, de les quals 11 tenen algú. Cada rengla és un lliurament del mapa: les primeres mans, el que es factura; els laterals, el que no; i els vents, el que lliga dues àrees alhora.',
@@ -2031,7 +2052,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Diagnostica la teva organització · 3 min','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Diagnostica la teva organització · 3\u00a0min','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
@@ -2194,11 +2215,6 @@ es: {
   'op.es.5.p':'Precio de gran cuenta',
   'op.es.5.q':'Direcciones de empresas grandes, ahora con el sistema incluido',
   'op.es.nota':'Los precios se confirman con los primeros pilotos. La sesión y el taller son los de <a href="/mapa-web/">Mapa y web en una hora</a>.',
-  'peu.vna':'Mapa de valor',
-  'peu.cataleg':'El catálogo',
-  'peu.formacio':'Formación',
-  'peu.sos':'El SOS',
-  'peu.quisom':'Quiénes somos',
   'srv.eyebrow':'Qué hacemos',
   'srv.h2':'Tres servicios, <em>un mismo método</em>',
   'srv.intro':'Todo sale del mapa de valor: quién da qué a quién, también los favores y la confianza. A partir de ahí, lo mejoramos, hacemos la web o aprendes a mantenerlo vivo.',
@@ -2217,7 +2233,6 @@ es: {
   'srv.3d':'Formación sobre tu proyecto y no sobre un caso inventado: módulos de N0 a N3 con certificado, y la herramienta libre donde vive lo que sale de cada sesión.',
   'srv.3a':'Entra al SOS →',
   'srv.3b':'Los módulos',
-  'peu.web':'Tu web',
 
 /*TT-NAV-I18N-ES*/
   'nv.g.valor':'Mapa de valor',
@@ -2252,6 +2267,7 @@ es: {
   'nv.d.blog':'Cada capacidad, explicada',
   'nv.cta':'Haz el diagnóstico',
   'nv.menu':'Menú',
+  'nv.peu.mail':'Escríbenos',
 /*/TT-NAV-I18N-ES*/
 /*TT-CT-I18N-ES*/
   'ct.plm.plCeller':'La misma casa vista desde arriba: 7 pilares —uno por nodo del mapa— y 28 rengles abiertas, de las cuales 11 tienen a alguien. Cada rengla es una entrega del mapa: las primeras manos, lo que se factura; los laterales, lo que no; y los vents, lo que liga dos áreas a la vez.',
@@ -2408,7 +2424,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Diagnostica tu organización · 3 min','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Diagnostica tu organización · 3\u00a0min','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',

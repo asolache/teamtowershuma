@@ -131,11 +131,18 @@ PAGINES.forEach(f => {
 /* ── 1 · Cap regla que no pinti res ───────────────────────────────────────
    És el rastre d'una secció retirada sense el seu estil. No peta, no es veu i
    no pinta res: només pesa. */
+/* Els components comuns (`build-components.js`) no compten: el bloc és el
+   mateix a totes les pàgines a posta, i una pàgina sense targetes porta la
+   regla de la targeta igual que una pàgina sense taules porta el reset de les
+   taules. Demanar-li que se la tregui seria demanar-li que torni a tenir la
+   seva còpia. */
+const { NOMS: COMPONENTS } = require('./build-components.js');
+const comuna = r => r.n.every(x => COMPONENTS.includes(x));
 Object.entries(estat).forEach(([f, e]) => {
   const orfes = [];
   let bytes = 0;
   e.rs.forEach(r => {
-    if (!r.n.length) return;
+    if (!r.n.length || comuna(r)) return;
     if (!r.n.some(x => e.vius.has(x))) { orfes.push(r.sel.slice(0, 48)); bytes += r.b; }
   });
   if (!orfes.length) ok(`${f}: cap regla de CSS que no pinti res`);

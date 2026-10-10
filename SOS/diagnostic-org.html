@@ -33,6 +33,40 @@
   --t5           : clamp(2.1rem,6vw,3.5rem);
 /*/TT-PELL*/
 }
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6}
 .wrap{max-width:800px;margin:0 auto;padding:2rem 1.2rem 4rem}
@@ -90,11 +124,6 @@ textarea{min-height:88px;resize:vertical}
 .chip:hover{border-color:var(--indigo);color:var(--text)}
 .chip.sel{background:rgba(99,102,241,.18);border-color:var(--indigo);color:var(--text);font-weight:600}
 .nav-btns{display:flex;gap:.6rem;justify-content:space-between;margin-top:1.4rem;flex-wrap:wrap}
-.btn{background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:.65rem 1.3rem;font:inherit;font-size:var(--t0);cursor:pointer;transition:all .13s;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
-.btn:hover{border-color:var(--indigo)}
-.btn-primary{background:linear-gradient(90deg,var(--indigo),#7c7ef5);border-color:transparent;font-weight:600}
-.btn-primary:hover{filter:brightness(1.1)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
 @media(max-width:600px){.grid2{grid-template-columns:1fr}}
 /* Les portes: on continuar, ara i sense enviar res */
@@ -162,20 +191,16 @@ footer a{color:var(--indigo);text-decoration:none}
 .env-ko{color:var(--orange);font-size:var(--t0);margin:.5rem 0 0}
 
 /* ── Els botons de pas, a tota mida ─────────────────────────────────────────
-   `.acts` i `.btn-g` eren al marcatge i no tenien cap regla: «Enrere» i
-   «Següent» sortien com dos botons iguals i desalineats, i el principal no es
-   distingia. Ara el que fa avançar és ple i l'altre és fantasma. */
+   «Enrere» i «Següent» sortien com dos botons iguals i desalineats, i el
+   principal no es distingia. Ara el que fa avançar és el primari i l'altre el
+   fantasma, tots dos els de la casa (`build-components.js`); aquí només es
+   col·loquen. */
 .acts{display:flex;gap:.6rem;justify-content:space-between;align-items:center;margin-top:1.4rem}
 .acts>span:empty{flex:0}
-.acts .btn{justify-content:center}
-.btn-g{background:transparent;border-color:transparent;color:var(--muted)}
-.btn-g:hover{color:var(--text);border-color:var(--border)}
-[data-next],#doDx,#bNet{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);font-weight:600;flex:1;max-width:320px;margin-left:auto}
-[data-next]:hover,#doDx:hover,#bNet:hover{filter:brightness(1.08);border-color:var(--indigo)}
+[data-next],#doDx,#bNet{flex:1;max-width:320px;margin-left:auto}
 input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.6rem .75rem;font:inherit;font-size:var(--t0)}
 /* El que no cal per respondre, plegat. Ho munta el JS (`plegaOpcionals`). */
 #result .acts{flex-wrap:wrap;justify-content:flex-start}
-#result .btn-g{border-color:var(--border);color:var(--text)}
 #bNet{margin-left:0}
 .mes{margin:.2rem 0 1rem;border:1px dashed var(--border);border-radius:10px;padding:.2rem .8rem}
 .mes>summary{cursor:pointer;color:var(--indigo);font-size:var(--t0);font-weight:600;padding:.6rem 0;list-style:none}
@@ -207,8 +232,8 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
   input[type=text],input[type=email],input[type=tel],input[type=number],input[type=url],input[type=date],select,textarea{font-size:16px;padding:.75rem .8rem}
   .acts{position:sticky;bottom:0;z-index:5;margin:1.2rem -1rem 0;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom));
     background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--border)}
-  [data-next],#doDx{max-width:none;min-height:50px;font-size:1rem}
-  .btn-g{padding:.65rem .6rem}
+  [data-next],#doDx{max-width:none;min-height:50px}
+  .acts .btn-ghost{padding:.65rem .6rem}
   #result{padding:1rem}
   .dx,.sec,.send{padding:1.1rem 1rem;border-radius:12px}
   .dx h2{font-size:1.25rem}
@@ -216,7 +241,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
   #result .acts{position:static;display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:1rem 0 0;padding:0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
   #result .btn{width:100%;justify-content:center;padding:.65rem .5rem}
   .env .acts{grid-template-columns:1fr}
-  #bNet{min-height:50px;font-size:1rem}
+  #bNet{min-height:50px}
   footer{padding:1.5rem 1rem 2rem}
 }
 
@@ -389,7 +414,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 <textarea id="ampliacio" name="ampliacio" rows="3" data-i18n-ph="dx.ph.ampliacio" placeholder="p.ex. «és les dues coses alhora: obrim una convenció, però el que ens preocupa de debò és que l'equip no s'ha refet de la fusió»"></textarea>
 <div class="hint" data-i18n="dx.h.ampliacio">Opcional. Això no ho calcula res: ho llegim nosaltres abans de preparar-te la proposta, i sol ser el que la fa encertar.</div></div>
 <p class="err" id="e1" data-i18n="dx.e1">Tria què vols que passi.</p>
-<div class="acts"><span></span><button type="button" class="btn" data-next="2" data-i18n="dx.seg">Següent →</button></div>
+<div class="acts"><span></span><button type="button" class="btn btn-primary" data-next="2" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <section class="step" id="s2" hidden>
@@ -419,7 +444,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 <div class="f"><label for="persones" data-i18n="fo.l.persones">Quantes persones sou</label><input type="number" id="persones" name="persones" min="0" step="1" data-i18n-ph="fo.ph.persones" placeholder="p.ex. 45"><div class="hint" data-i18n="fo.h.persones">De tota l'organització, no només de l'equip que hi entraria.</div></div>
 <!--/FORM-ORG-->
 <p class="err" id="e2" data-i18n="dx.e2">Tria quin tipus d'organització sou i digues on sou.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="1" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="3" data-i18n="dx.seg">Següent →</button></div>
+<div class="acts"><button type="button" class="btn btn-ghost" data-back="1" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-next="3" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <section class="step" id="s3" hidden>
@@ -480,7 +505,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 </div>
 
 <p class="err" id="e3" data-i18n="dx.e3">Digue'ns qui pot dir que sí: és el que ens permet preparar-ho bé.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="2" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" data-next="4" data-i18n="dx.seg">Següent →</button></div>
+<div class="acts"><button type="button" class="btn btn-ghost" data-back="2" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn btn-primary" data-next="4" data-i18n="dx.seg">Següent →</button></div>
 </section>
 
 <!-- EL CONTACTE, AL FINAL (09/10/2026) ──────────────────────────────────
@@ -514,7 +539,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 <div class="f"><label for="carrec" data-i18n="fo.l.carrec">Com se'n diu exactament</label><input type="text" id="carrec" name="carrec" data-i18n-ph="fo.ph.carrec" placeholder="p.ex. tècnica de participació" autocomplete="organization-title"><div class="hint" data-i18n="fo.h.carrec">Opcional. Serveix per adreçar-nos-hi com toca.</div></div>
 <!--/FORM-QUI-->
 <p class="err" id="e4" data-i18n="dx.e4">Ens falta el nom i un correu que sembli un correu.</p>
-<div class="acts"><button type="button" class="btn btn-g" data-back="3" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn" id="doDx" data-i18n="dx.veure">Veure el diagnòstic →</button></div>
+<div class="acts"><button type="button" class="btn btn-ghost" data-back="3" data-i18n="dx.enrere">← Enrere</button><button type="button" class="btn btn-primary" id="doDx" data-i18n="dx.veure">Veure el diagnòstic →</button></div>
 </section>
 
 </form>
@@ -557,8 +582,8 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 <div class="env">
   <b data-i18n="dx.env.h">Envia'ns-ho i et preparem la proposta</b>
   <div class="acts" style="margin-top:.6rem">
-    <button type="button" class="btn" id="bNet" data-i18n="dx.env.btn">Envia'ns el diagnòstic</button>
-    <a class="btn btn-g" id="bSend" href="#" data-i18n="dx.env.mail">O per correu</a>
+    <button type="button" class="btn btn-primary" id="bNet" data-i18n="dx.env.btn">Envia'ns el diagnòstic</button>
+    <a class="btn btn-ghost" id="bSend" href="#" data-i18n="dx.env.mail">O per correu</a>
   </div>
   <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
   <p class="env-ok" id="envOk" hidden data-i18n="dx.env.ok">Rebut. Et responem en un dia laborable.</p>
@@ -566,10 +591,10 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
 </div>
 
 <div class="acts" style="margin-top:1rem">
-  <a class="btn btn-g" href="pressupost.html" id="bPressu" data-i18n="dx.b.pressu">Demana pressupost →</a>
-  <button type="button" class="btn btn-g" id="bCopy" data-i18n="dx.b.copia">Copia'l</button>
-  <button type="button" class="btn btn-g" id="bJson" data-i18n="dx.b.baixa">Descarrega'l</button>
-  <button type="button" class="btn btn-g" id="bAgain" data-i18n="dx.b.torna">Torna a començar</button>
+  <a class="btn btn-ghost" href="pressupost.html" id="bPressu" data-i18n="dx.b.pressu">Demana pressupost →</a>
+  <button type="button" class="btn btn-ghost" id="bCopy" data-i18n="dx.b.copia">Copia'l</button>
+  <button type="button" class="btn btn-ghost" id="bJson" data-i18n="dx.b.baixa">Descarrega'l</button>
+  <button type="button" class="btn btn-ghost" id="bAgain" data-i18n="dx.b.torna">Torna a començar</button>
 </div>
 </div>
 </section>
@@ -585,6 +610,42 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
   <input name="objectiu"><input name="termini"><input name="decideix">
   <textarea name="ampliacio"></textarea><textarea name="resum"></textarea>
 </form>
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span data-i18n="nv.t.diagnostic">Diagnòstic</span></a></li><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">El mètode</span></a></li><li><a href="/SOS/vna-suport.html"><span data-i18n="nv.t.vna-suport">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">El catàleg</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
+  </div>
+</footer>
+<!--/TT-PEU-->
 
 <script type="module">
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -754,6 +815,7 @@ ca: {
   'nv.d.blog':'Cada capacitat, explicada',
   'nv.cta':'Fes el diagnòstic',
   'nv.menu':'Menú',
+  'nv.peu.mail':'Escriu-nos',
 /*/NAV-I18N-CA*/
   'dx.av.k':'El que hem llegit',
   'dx.av.pk':'Hi encaixa',
@@ -936,6 +998,7 @@ es: {
   'nv.d.blog':'Cada capacidad, explicada',
   'nv.cta':'Haz el diagnóstico',
   'nv.menu':'Menú',
+  'nv.peu.mail':'Escríbenos',
 /*/NAV-I18N-ES*/
   'dx.av.k':'Lo que hemos leído',
   'dx.av.pk':'Encaja',

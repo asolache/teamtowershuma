@@ -268,6 +268,11 @@ jobs:
       # guarda no corria al CI i /vedes es publicava sense cap color de la pell.
       - name: Guarda de la pell (una paleta a totes les pàgines)
         run: node SOS/tools/build-pell.js --check
+      # Els components (botons, capçalera de secció, targeta) declarats un cop:
+      # el 10/10/2026 hi havia set .btn-primary diferents. Peta si una pàgina
+      # en torna a declarar un fora del bloc generat.
+      - name: Guarda dels components (un botó és el mateix a totes les pàgines)
+        run: node SOS/tools/build-components.js --check
       # El terra de 15 px (--t0) a les pàgines que venen les tres ofertes: el
       # 10/10/2026 n'hi havia 325 mides per sota, escrites a mà, i cap guarda.
       - name: Guarda del terra (cap text per sota de 15 px a les pàgines que venen)

@@ -230,8 +230,10 @@ details.ctx-i{border:1px solid var(--border);border-radius:10px;padding:.6rem .9
 details.ctx-i summary{cursor:pointer;font-weight:600}
 .hidden{display:none}
 .empty{color:var(--muted);padding:2rem 0}
-footer{border-top:1px solid var(--border);margin-top:3rem;padding:1.6rem 0 3rem;color:var(--muted);font-size:.88rem}
-footer a{color:var(--light)}
+/* D'on surt la pàgina. Era el seu \`<footer>\`; des del 10/10/2026 el peu és el
+   del lloc (\`build-nav.js\`) i això és una nota del contingut, just a sobre. */
+.font{border-top:1px solid var(--border);margin-top:3rem;padding:1.6rem 1.2rem 0;color:var(--muted);font-size:var(--t0)}
+.font a{color:var(--light)}
 @media print{.tools,nav.idx,.skip{display:none}article.veda{page-break-inside:avoid}body{background:#fff;color:#000}}
 `;
 
@@ -331,10 +333,11 @@ function build() {
   </section>
 </main>
 
-<footer><div class="wrap">
+<div class="wrap font">
   <p>Aquesta pàgina es genera des de <a href="${FONT}"><code>SOS/knowledge/codex.md</code></a>. Si hi ha diferència entre les dues, mana el codex —i la guarda del CI no deixa que passi.</p>
-  <p><a href="/SOS/">Obre el SOS</a> · <a href="/SOS/uneix-te.html">Què és i com s'hi entra</a> · <a href="/">TeamTowers</a></p>
-</div></footer>
+</div>
+<!--TT-PEU-->
+<!--/TT-PEU-->
 <script>${JS}</script>
 </body>
 </html>
@@ -348,8 +351,11 @@ function build() {
 const { posa } = require('./build-nav.js');
 /* I la pell, igual: es declara a `build-pell.js` i aquí només s'hi escriu. */
 const { bloc: pell } = require('./build-pell.js');
-const html = posa(build(), 'vedes.html')
-  .replace('/*TT-PELL*/\n/*/TT-PELL*/', () => '/*TT-PELL*/\n' + pell() + '\n/*/TT-PELL*/');
+/* I els components (`build-components.js`), pel mateix motiu: si no els
+   escrivís aquest, la pàgina sortiria sense el bloc i aquella guarda petaria. */
+const { posa: components } = require('./build-components.js');
+const html = components(posa(build(), 'vedes.html')
+  .replace('/*TT-PELL*/\n/*/TT-PELL*/', () => '/*TT-PELL*/\n' + pell() + '\n/*/TT-PELL*/'));
 if (process.argv.includes('--check')) {
   const have = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
   /* Des del 10/10/2026 aquest generador escriu la pell ell mateix, i per tant

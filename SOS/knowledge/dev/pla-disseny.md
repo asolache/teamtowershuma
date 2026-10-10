@@ -18,9 +18,10 @@
    codi: la del lloc (tres ofertes, qui som i el diagnòstic) i la del SOS (les
    eines, aprèn, Molekulon i «Obre el SOS»). Quina porta cada pàgina és a
    `PAGINES_LLOC`.
-3. **El que no és declarat és tot el que hi ha entre la barra i el peu.** Cada
-   pàgina té el seu `<style>` amb els seus botons, targetes, capçaleres i mides.
-   La paleta és comuna i els components no.
+3. **Els components i el peu, també (des de la fase 2 i 4).** `build-components.js`
+   declara els botons, la capçalera de secció i la targeta, i `build-nav.js`
+   genera el peu des dels mateixos grups que la barra. El que queda de cada
+   pàgina és la seva maquetació.
 4. **Dues pàgines del servei web viuen fora de tot**: `/mapa-web/` i `/conecta/`
    tenen capçalera pròpia, no porten la barra ni la pell i són en castellà.
 
@@ -64,8 +65,9 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
 
 - **`build-components.js`**, mateix patró que la pell i la barra: declara un
   cop `.btn-primary`, `.btn-ghost`, `.section-header`, `.section-eyebrow`,
-  `.targeta` (la de «Tres serveis» n'és el model) i `.peu`, i els escriu entre
-  marques `<!--TT-COMPONENTS-->` a totes les pàgines amb pell.
+  `.targeta` (la de «Tres serveis» n'és el model), i els escriu entre
+  marques `/*TT-COMPONENTS*/` a totes les pàgines amb pell. El peu va a la
+  fase 4, amb la barra.
 - **Les pàgines esborren la seva còpia** d'aquests selectors. És un canvi gran
   en línies i petit en risc, i per això va sol.
 - **Guarda:** cap pàgina declara aquests selectors fora del bloc (com ja fa
@@ -122,3 +124,24 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
   pantalla a 1280 × 860 i a 390 × 844). Les etiquetes en majúscules
   monoespaiades baixen l'espaiat a `.06em`: a 15 px, `.2em` cridava. Guarda
   nova al CI: `check-terra.js`, amb les 19 regles de text SVG declarades.
+
+## 5 · Fet (fases 2 i 4)
+
+- **Fase 2.** `build-components.js` declara `.btn`, `.btn-primary`,
+  `.btn-ghost`, `.btn-sm`, `.section-header`, `.section-eyebrow` i `.targeta`
+  (amb `-k`, `-t`, `-d`) i els escriu a les 27 pàgines amb pell, just després
+  del `:root`. Les pàgines han esborrat les seves còpies: el `.b`/`.b-pri` del
+  SOS, el `.cta` del mètode i de `uneix-te`, el `.btn-g` dels diagnòstics, els
+  degradats cap a un lila que la pell no té. Un primari per pantalla (guia §6) i
+  44 px d'alçada mínima. Guarda al CI: `build-components.js --check` peta si una
+  pàgina en torna a declarar un fora del bloc (el context davant, com `.hero
+  .btn-primary`, sí que es pot).
+- **Fase 4, el peu.** `build-nav.js` genera el peu entre `<!--TT-PEU-->` a les
+  27 pàgines, amb els mateixos grups que la barra: `LLOC` a les pàgines
+  públiques (més «Escriu-nos» i el ©) i `SOS_GRUPS` a les del SOS (amb el camí
+  de tornada a la portada). Els peus escrits a mà i les seves claus d'idioma
+  orfes han sortit. La guarda de la barra també vigila el peu.
+- **Queda:** els botons de dins dels blocs generats per altres eines (`.mv-cta`
+  del mapa de valor a la portada i al mètode, `.ct-btn` del contacte), l'avís
+  legal (necessita les dades de l'empresa), la capçalera de pàgina comuna de la
+  fase 4, i `mapa-web/` i `conecta/`.
