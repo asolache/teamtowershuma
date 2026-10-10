@@ -5111,3 +5111,25 @@ comprovació nova a l'eina si es pot comprovar, un article al blog i la versió
 nova del cervell al seguiment del client. El cervell és el valor afegit del
 servei: el client s'emporta un projecte que avisa sol quan el que diu deixa de
 ser cert.
+
+## Veda 162 — El que entra de fora, per llista blanca
+
+**Après el 10/10/2026, important el que un client ja té** (la web d'ara, un
+full de clients) perquè la IA n'escrigui els continguts.
+
+La primera versió de l'importador treia les columnes de persona pel nom
+(«Email», «Telèfon», «Nom del client») i amagava correus i telèfons a les
+cel·les. Semblava prou, i no ho era: una columna «Observacions» amb notes de
+salut d'un client no té cap nom sospitós ni cap patró, i hauria entrat sencera
+al repositori. **Una llista negra només veu el que ja coneix.**
+
+Per això, el que entra de fora entra **per llista blanca**: d'una taula, per
+defecte, només la capçalera i quantes files té; cada columna que hi va, l'ha
+triada una persona. La llista negra no desapareix: és el segon pany, i una
+columna de persona no hi entra ni triada. És el mateix doble pany de
+`fluxAutomatitzable` (cal ser **explícitament** tangible, no n'hi ha prou de no
+ser intangible) i la mateixa lliçó que la veda 159: davant d'una dada que pot
+ser d'algú, es bloqueja, no s'avisa.
+
+El mateix val per a la xarxa: l'importador només llegeix la web d'un domini
+que s'ha dit en veu alta (`--autoritzat`), i el permís escrit va al CRM.

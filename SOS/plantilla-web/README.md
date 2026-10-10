@@ -6,6 +6,8 @@ Aquest repositori és teu: el va crear el botó «Deploy to Netlify». A cada pu
 
 **Es configura a Netlify** (Site configuration › Environment variables): `TT_NOM`, `TT_CORREU`, `TT_LLENGUA` (`ca` o `es`) i, per als avisos, `TT_WEBHOOKS` i `TT_WEBHOOK_SECRET`. Cap clau al repositori.
 
+**Fes-lo privat.** El cervell parla del negoci: GitHub › Settings › General › Danger Zone › Change visibility › Private.
+
 En cada publicació es generen les regles (`CLAUDE.md`), l'API (`API.md`) i el cervell (`cerebro/`). `cerebro/decisiones.md`, si el poses al repositori, es conserva.
 
 ---
@@ -17,5 +19,7 @@ Este repositorio es tuyo: lo creó el botón «Deploy to Netlify». En cada publ
 **El mapa es la fuente.** Guarda lo que da el editor del mapa de valor («Copia el JSON») en `cerebro/mapa-real.json` y haz una PR. Netlify publica una vista previa; cuando la aceptas, es la web. Mientras no esté, la web sale de la variable `TT_MAPA` (la pone el botón) o del ejemplo.
 
 **Se configura en Netlify** (Site configuration › Environment variables): `TT_NOM`, `TT_CORREU`, `TT_LLENGUA` (`ca` o `es`) y, para los avisos, `TT_WEBHOOKS` y `TT_WEBHOOK_SECRET`. Ninguna clave en el repositorio.
+
+**Hazlo privado.** El cerebro habla del negocio: GitHub › Settings › General › Danger Zone › Change visibility › Private.
 
 En cada publicación se generan las reglas (`CLAUDE.md`), la API (`API.md`) y el cerebro (`cerebro/`). `cerebro/decisiones.md`, si lo pones en el repositorio, se conserva.
