@@ -2201,6 +2201,7 @@ const KIT_TXT = {
       '- **`cerebro/dossier.md`**: què és el negoci, què ofereix i a qui. Cada afirmació porta l\'enllaç a la seva font.',
       '- **`cerebro/decisiones.md`**: el que s\'acorda i per què, amb la data.',
       '- **`cerebro/marca.json`**, si n\'hi ha: el color, la lletra, la forma, el logo (SVG), els textos propis i on sou (adreça, telèfon de la casa, horari). El telèfon de la web va aquí, no als continguts.',
+      '- **`cerebro/configuracio.json`**: el que es va triar a l\'editor (nom, llengua, rols de casa, correu dels formularis, adreça). `eines/genera.mjs` el llegeix; una variable `TT_*` hi passa per sobre.',
       '- **`CEREBRO.md`**: l\'índex de tot el cervell, per tema i per capa.', '',
       '## Regenerar', '',
       '- `node eines/genera.mjs` (Node 18 o més nou) torna a fer la web i el cervell. Fes-ho després de canviar una font, i posa\'n el resultat a la mateixa PR.',
@@ -2379,6 +2380,7 @@ const KIT_TXT = {
       '- **`cerebro/dossier.md`**: qué es el negocio, qué ofrece y a quién. Cada afirmación lleva el enlace a su fuente.',
       '- **`cerebro/decisiones.md`**: lo que se acuerda y por qué, con la fecha.',
       '- **`cerebro/marca.json`**, si lo hay: el color, la letra, la forma, el logo (SVG), los textos propios y dónde estáis (dirección, teléfono de la casa, horario). El teléfono de la web va aquí, no en los contenidos.',
+      '- **`cerebro/configuracio.json`**: lo que se eligió en el editor (nombre, idioma, roles de casa, correo de los formularios, dirección). `eines/genera.mjs` lo lee; una variable `TT_*` pasa por encima.',
       '- **`CEREBRO.md`**: el índice de todo el cerebro, por tema y por capa.', '',
       '## Regenerar', '',
       '- `node eines/genera.mjs` (Node 18 o más nuevo) vuelve a hacer la web y el cerebro. Hazlo después de cambiar una fuente, y pon el resultado en la misma PR.',
@@ -2570,7 +2572,7 @@ const SITE_TXT = {
       ia: 'Qui el prepara', iaSi: 'La IA en prepara l\'esborrany ({tipus}) i l\'accepta una persona del rol {rol}.', iaNo: '{motiu}' },
     idx: { titol: 'Cervell · {nom}', generat: 'Índex generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
       intro: 'Tots els documents del projecte, per tema. **Pública**: la web que troba qualsevol. **Per enllaç**: pàgines que no s\'indexen i es donen a qui toca. **Equip**: el que només viu al repositori.',
-      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web', marca: 'La marca: el disseny i els textos propis',
+      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web', marca: 'La marca: el disseny i els textos propis', config: 'El que es va triar a l\'editor: nom, llengua, rols de casa, correu i adreça',
       temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', tasques: 'Tasques per a la IA', continguts: 'Continguts', fonts: 'El que ja hi havia', regles: 'Regles', eines: 'Eines i API' },
       capes: { publica: 'pública', enllac: 'per enllaç', equip: 'equip' } },
     api: { cap: 'Generat del mapa de valor amb la web. No s\'edita a mà: es regenera.', web: 'https://la-teva-web/',
@@ -2629,7 +2631,7 @@ const SITE_TXT = {
       ia: 'Quién lo prepara', iaSi: 'La IA prepara el borrador ({tipus}) y lo acepta una persona del rol {rol}.', iaNo: '{motiu}' },
     idx: { titol: 'Cerebro · {nom}', generat: 'Índice generado del mapa de valor. No se edita a mano: se regenera con la web.',
       intro: 'Todos los documentos del proyecto, por tema. **Pública**: la web que encuentra cualquiera. **Por enlace**: páginas que no se indexan y se dan a quien toca. **Equipo**: lo que solo vive en el repositorio.',
-      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web', marca: 'La marca: el diseño y los textos propios',
+      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web', marca: 'La marca: el diseño y los textos propios', config: 'Lo que se eligió en el editor: nombre, idioma, roles de casa, correo y dirección',
       temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', tasques: 'Tareas para la IA', continguts: 'Contenidos', fonts: 'Lo que ya había', regles: 'Reglas', eines: 'Herramientas y API' },
       capes: { publica: 'pública', enllac: 'por enlace', equip: 'equipo' } },
     api: { cap: 'Generado del mapa de valor con la web. No se edita a mano: se regenera.', web: 'https://tu-web/',
@@ -3209,6 +3211,18 @@ function webASite(web, opts) {
     const desa = Object.assign({}, MC); delete desa.logoSvg; if (MC.logoSvg) desa.logo = '../logo.svg';
     posa('cerebro/marca.json', JSON.stringify(desa, null, 2) + '\n', 'application/json');
   }
+  /* I el que es va triar a l'editor, perquè `eines/genera.mjs` no ho perdi en
+     refer la web: abans tornava al català, al rol que més lliura i sense correu.
+     Només el que es va dir; el que es dedueix es torna a deduir. */
+  if (o.mapa) {
+    const conf = {}, casa = (Array.isArray(o.casa) ? o.casa : []).filter(x => typeof x === 'string' && x.trim());
+    if (String(o.nom || '').trim()) conf.nom = nom;
+    if (SITE_TXT[o.llengua]) conf.llengua = llengua;
+    if (casa.length) conf.casa = casa;
+    if (correu) conf.correu = correu;
+    if (url) conf.url = url;
+    if (Object.keys(conf).length) posa('cerebro/configuracio.json', JSON.stringify(conf, null, 2) + '\n', 'application/json');
+  }
   const md = a => a.join('\n').split('{nom}').join(nom) + '\n';
   /* El kit de Claude: les regles, la guia (gratis, amb Claude Code o amb
      TeamTowers) i les tres skills que fan la feina de rutina. */
@@ -3223,6 +3237,9 @@ function webASite(web, opts) {
   /* El que s'ha importat a l'editor (cerebro/fonts/) va al zip; al repositori ja hi és. */
   (o.fonts || []).filter(f => /^cerebro\/fonts\/[a-z0-9._/-]+$/.test(f.ruta) && f.ruta.indexOf('..') < 0)
     .forEach(f => posa(f.ruta, f.cos, /\.json$/.test(f.ruta) ? 'application/json' : 'text/markdown'));
+  /* Sense mapa del client (la plantilla amb l'exemple), el de l'exemple no es
+     desa com a seu: ni al repositori, ni a l'índex, ni a l'empremta. */
+  if (o.sensemapa) for (let i = fitxers.length - 1; i >= 0; i--) if (/^cerebro\/mapa-(real|ideal)\.json$/.test(fitxers[i].ruta)) fitxers.splice(i, 1);
   const repo = (o.repo || []).filter(f => !fitxers.some(x => x.ruta === f.ruta));
   if (o.mapa) indexCervell(fitxers.concat(repo), nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
   return { nom, llengua, fitxers };
@@ -3242,6 +3259,7 @@ function indexCervell(fitxers, nom, T) {
     if (/^cerebro\/mapa-ideal\.json$/.test(f.ruta)) return T.ideal;
     if (f.ruta === 'web.json') return T.dades;
     if (f.ruta === 'cerebro/marca.json') return T.marca;
+    if (f.ruta === 'cerebro/configuracio.json') return T.config;
     const m = /^# (.+)$/m.exec(f.cos) || /<h1>([^<]*)<\/h1>/.exec(f.cos);
     return m ? m[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"') : f.ruta;
   };
@@ -3252,7 +3270,7 @@ function indexCervell(fitxers, nom, T) {
     : /^cerebro\/entregables\//.test(r) ? ['lliuraments', 'equip']
     : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
     : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
-    : r === 'cerebro/marca.json' ? ['web', 'equip']
+    : r === 'cerebro/marca.json' || r === 'cerebro/configuracio.json' ? ['web', 'equip']
     : /^cerebro\/(tasques-ia\.(md|json)|esborranys\/.+\.md)$/.test(r) ? ['tasques', 'equip']
     : /^cerebro\/continguts\/[^/]+\.md$/.test(r) ? ['continguts', 'equip']
     : /^cerebro\/(fonts\/.+\.(md|json)|dossier\.md)$/.test(r) ? ['fonts', 'equip']
@@ -4051,14 +4069,14 @@ function codiRepositori(tros, exemple) {
     + 'const tros = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\'));\n'
     + 'const sencer = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\') + nom.length + 5);\n'
     + 'const exemple = font.slice(font.indexOf(\'const EXEMPLE = {\'), font.indexOf(\'};\', font.indexOf(\'const EXEMPLE = {\')) + 2);\n'
-    + 'export { EXEMPLE };\n'
+    + 'export { EXEMPLE, marcaSvg };\n'
     + 'export function genera(entrada, opts) {\n'
     + '  return generaWeb(entrada, opts, { sha: async b => createHash(\'sha256\').update(b).digest(\'hex\'),\n'
     + '    codi: { reg: tros(\'VS-REG\'), api: tros(\'VS-API\'), mcp: tros(\'VS-MCP\'), imp: tros(\'VS-IMPORTA\'), repo: codiRepositori(sencer, exemple) } });\n}\n';
   const genera = '#!/usr/bin/env node\n' + cap
     + '// Fa la web del mapa i la deixa a l\'arrel. Netlify l\'executa a cada publicació; en local, amb Node 18 o més.\n'
     + 'import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from \'node:fs\';\nimport { inflateRawSync } from \'node:zlib\';\n'
-    + 'import { genera, EXEMPLE } from \'./motor.mjs\';\n'
+    + 'import { genera, EXEMPLE, marcaSvg } from \'./motor.mjs\';\n'
     + 'const arrel = new URL(\'../\', import.meta.url), e = process.env, hi = r => existsSync(new URL(r, arrel));\n'
     + 'const llegeix = r => (hi(r) ? JSON.parse(readFileSync(new URL(r, arrel), \'utf8\')) : null);\n'
     + '/* El que és del repositori i la web no genera: els continguts, el que s\'ha importat, el dossier i els esborranys. */\n'
@@ -4066,16 +4084,22 @@ function codiRepositori(tros, exemple) {
     + 'const repo = [\'cerebro/continguts/\', \'cerebro/fonts/\', \'cerebro/esborranys/\'].map(sota).reduce((a, b) => a.concat(b), [])\n'
     + '  .concat(hi(\'cerebro/dossier.md\') ? [\'cerebro/dossier.md\'] : []).map(ruta => ({ ruta, cos: readFileSync(new URL(ruta, arrel), \'utf8\') }));\n'
     + 'const continguts = repo.filter(f => /^cerebro\\/continguts\\/[^/]+\\.md$/.test(f.ruta)).map(f => ({ id: f.ruta.slice(19, -3), text: f.cos }));\n'
-    + 'let mapa = llegeix(\'cerebro/mapa-real.json\'), font = \'cerebro/mapa-real.json\';\n'
+    + 'let mapa = llegeix(\'cerebro/mapa-real.json\'), font = \'cerebro/mapa-real.json\', exemple = false;\n'
     + 'if (!mapa && e.TT_MAPA) { mapa = JSON.parse(inflateRawSync(Buffer.from(e.TT_MAPA, \'base64url\')).toString(\'utf8\')); font = \'TT_MAPA\'; }\n'
-    + 'if (!mapa) {\n  mapa = EXEMPLE; font = \'l\\\'exemple del celler\';\n'
+    + 'if (!mapa) {\n  mapa = EXEMPLE; font = \'l\\\'exemple del celler\'; exemple = true;\n'
     + '  if (!e.NETLIFY) console.warn(\'⚠️  Falta cerebro/mapa-real.json: surt la web de l\\\'exemple. Desa-hi el JSON de l\\\'editor del mapa («Copia el JSON»).\');\n}\n'
     + 'const ideal = llegeix(\'cerebro/mapa-ideal.json\');\n'
     + 'if (ideal) mapa = Object.assign({}, mapa, { ideal });\n'
-    + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : undefined; } catch (x) { casa = undefined; }\n'
-    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM, correu: e.TT_CORREU, llengua: e.TT_LLENGUA, url: e.TT_URL || e.URL, casa: Array.isArray(casa) ? casa : undefined, continguts, repo, avisa: m => console.warn(\'⚠️  \' + m) });\n'
-    + '/* El que és del repositori no es trepitja: la configuració, el mapa, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
-    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
+    + '/* El que es va triar a l\'editor i la marca viatgen amb el repositori: sense llegir-los, refer la web la tornava al català, al rol que més lliura i sense marca. Les variables TT_* hi passen per sobre. */\n'
+    + 'const prova = r => { try { return llegeix(r); } catch (x) { console.warn(\'⚠️  \' + r + \' no és JSON vàlid: no es fa servir.\'); return null; } };\n'
+    + 'const conf = prova(\'cerebro/configuracio.json\') || {}, marca = prova(\'cerebro/marca.json\');\n'
+    + 'if (marca && marca.logo === \'../logo.svg\') {\n'
+    + '  if (hi(\'logo.svg\')) marca.logoSvg = readFileSync(new URL(\'logo.svg\', arrel), \'utf8\');\n'
+    + '  if (!marcaSvg(marca.logoSvg)) console.warn(\'⚠️  cerebro/marca.json demana logo.svg, però \' + (hi(\'logo.svg\') ? \'no és un SVG que es pugui posar (porta scripts o enllaços, o passa de 100 kB)\' : \'no hi és\') + \': la web surt sense logo.\');\n}\n'
+    + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }\n'
+    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + '/* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
+    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
     + 'const escrit = r => /^cerebro\\/(fonts|continguts|esborranys)\\//.test(r);\n'
     + 'let n = 0;\n'
     + 'for (const f of fitxers) {\n'
@@ -4091,7 +4115,7 @@ const font = readFileSync(new URL(import.meta.url), 'utf8');
 const tros = nom => font.slice(font.indexOf('/*' + nom + '*/'), font.indexOf('/*/' + nom + '*/'));
 const sencer = nom => font.slice(font.indexOf('/*' + nom + '*/'), font.indexOf('/*/' + nom + '*/') + nom.length + 5);
 const exemple = font.slice(font.indexOf('const EXEMPLE = {'), font.indexOf('};', font.indexOf('const EXEMPLE = {')) + 2);
-export { EXEMPLE };
+export { EXEMPLE, marcaSvg };
 export function genera(entrada, opts) {
   return generaWeb(entrada, opts, { sha: async b => createHash('sha256').update(b).digest('hex'),
     codi: { reg: tros('VS-REG'), api: tros('VS-API'), mcp: tros('VS-MCP'), imp: tros('VS-IMPORTA'), repo: codiRepositori(sencer, exemple) } });
