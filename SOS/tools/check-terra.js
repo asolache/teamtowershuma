@@ -156,6 +156,18 @@ Object.entries(troballes).forEach(([rel, l]) =>
 if (!total) ok(`les ${PAGINES.length} pàgines: cap text propi per sota de 15 px` +
   (Object.keys(SVG).length ? ` (i ${Object.values(SVG).reduce((a, o) => a + Object.keys(o).length, 0)} regles de dibuix SVG, amb el motiu)` : ''));
 
+/* I la tipografia es serveix des de casa. Amb el <link> a Google Fonts, cada
+   visita feia arribar l'adreça IP a Google sense cap necessitat: els mateixos
+   fitxers ja eren a SOS/fonts/ per al SOS. L'avís legal (10/10/2026) diu que
+   no passa, i aquesta guarda és el que ho manté cert. */
+console.log('\nLa tipografia, servida des del lloc');
+/* Més `home-nova.html`, que no entra al terra però la genera build-vitrina.js. */
+const google = PAGINES.concat(['home-nova.html']).filter(rel => existsSync(join(ARREL, rel))
+  && /fonts\.(googleapis|gstatic)\.com/.test(readFileSync(join(ARREL, rel), 'utf8')));
+if (google.length) google.forEach(rel =>
+  bad(`${rel}: carrega Google Fonts — fes servir <link rel="stylesheet" href="/SOS/fonts/fonts.css">`));
+else ok(`les ${PAGINES.length + 1} pàgines: cap petició a Google Fonts`);
+
 console.log(fails ? `\n❌ ${total} mida(es) per sota del terra. Fes servir var(--t0) o més: el terra és 15 px.`
   : '\n✅ Cap text per sota del terra a les pàgines que venen.');
 process.exit(fails ? 1 : 0);

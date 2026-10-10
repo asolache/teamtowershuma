@@ -19,11 +19,9 @@
     <meta name="twitter:description" content="Qui és el titular del lloc, quines dades ens arriben i què en fem.">
 
     <!-- La tipografia, servida des del mateix domini (les del SOS) i no des de
-         Google Fonts: és la pàgina que explica a qui fa arribar dades cada
-         visita, i aquesta no n'ha de fer arribar a ningú. -->
+         Google Fonts: una visita no fa arribar dades a ningú més. -->
+    <link rel="stylesheet" href="/SOS/fonts/fonts.css">
     <style>
-        @font-face { font-family: 'Space Grotesk'; font-style: normal; font-weight: 400 700; font-display: swap; src: url(/SOS/fonts/space-grotesk-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-        @font-face { font-family: 'Space Grotesk'; font-style: normal; font-weight: 400 700; font-display: swap; src: url(/SOS/fonts/space-grotesk-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
         :root {
 /*TT-PELL*/
   --bg           : #fbfaf7;   /* el paper */
@@ -284,7 +282,7 @@
             <div><dt data-i18n="al.tit.nom.t">Titular</dt><dd data-i18n-html="al.tit.nom.v">Alvaro Solache, professional autònom.</dd></div>
             <div><dt data-i18n="al.tit.marca.t">Marques</dt><dd data-i18n-html="al.tit.marca.v">TeamTowers i TeamTowers Humà.</dd></div>
             <div><dt data-i18n="al.tit.act.t">Activitat</dt><dd data-i18n-html="al.tit.act.v">Consultoria, formació i dinamització d'organitzacions i territoris: mapes de valor, desenvolupament web i formació amb el SOS.</dd></div>
-            <div><dt data-i18n="al.tit.mail.t">Correu</dt><dd data-i18n-html="al.tit.mail.v"><a class="js-mail" href="/qui-som"><span class="js-adr">escriu-nos</span></a></dd></div>
+            <div><dt data-i18n="al.tit.mail.t">Correu</dt><dd data-i18n-html="al.tit.mail.v"><a class="js-mail" href="#titular"><span class="js-adr">escriu-nos</span></a><noscript> (asolache [arroba] mac [punt] com)</noscript></dd></div>
             <div><dt data-i18n="al.tit.web.t">Lloc web</dt><dd data-i18n-html="al.tit.web.v">teamtowershuma.com</dd></div>
         </dl>
         <p class="al-data" data-i18n="al.data">Actualitzat el 10 d'octubre de 2026.</p>
@@ -292,7 +290,7 @@
         <h2 id="us" data-i18n="al.us.h">Fer servir aquest lloc</h2>
         <p data-i18n-html="al.us.1">Pots llegir, enllaçar i compartir el que hi ha en aquest lloc. Els textos expliquen què fem i com ho fem, però no són una oferta tancada: les condicions d'un encàrrec —què inclou, quan es fa i a quin preu— són les que confirmem per escrit, per correu o en un pressupost.</p>
         <p data-i18n-html="al.us.2">Hi ha enllaços a llocs d'altres, com molekulon.org o les peces de premsa. El que diuen és responsabilitat de qui els publica.</p>
-        <p data-i18n-html="al.us.3">Fem el possible perquè el lloc funcioni i perquè el que diu sigui cert i al dia. Si hi trobes un error, <a class="js-mail" href="/qui-som">escriu-nos</a> i el corregim.</p>
+        <p data-i18n-html="al.us.3">Fem el possible perquè el lloc funcioni i perquè el que diu sigui cert i al dia. Si hi trobes un error, <a class="js-mail" href="#titular">escriu-nos</a> i el corregim.</p>
 
         <h2 id="autoria" data-i18n="al.aut.h">De qui és el que hi ha aquí</h2>
         <p data-i18n-html="al.aut.1">Els textos, els dibuixos i el codi d'aquest lloc són d'Alvaro Solache (TeamTowers Humà), llevat dels que porten una altra autoria. El codi és públic i es pot fer servir com a referència per aprendre; qualsevol ús comercial necessita la nostra autorització abans.</p>
@@ -300,42 +298,47 @@
 
         <h2 id="dades" data-i18n="al.dad.h">Les teves dades</h2>
         <p data-i18n-html="al.dad.1">El responsable de les dades personals que ens arriben per aquest lloc és Alvaro Solache, amb el correu de dalt. La regla de la casa és demanar només el que cal per respondre't, i que el que escrius als formularis no surti del teu navegador fins que tu prems el botó d'enviar.</p>
+        <p data-i18n-html="al.dad.2">Els camps amb asterisc calen per respondre't: sense ells no et podem preparar la proposta. La resta són opcionals. Si hi ha encàrrec, per fer la factura necessitem el nom o la raó social, el NIF i l'adreça fiscal: ho demana la llei, i sense aquestes dades no podem facturar.</p>
 
         <h3 data-i18n="al.que.h">Què ens arriba, i quan</h3>
         <ul class="al-llista">
             <li data-i18n-html="al.que.form"><strong>El diagnòstic i la comanda.</strong> Quan prems el botó d'enviar del diagnòstic de l'organització o de la comanda de la pàgina de preus, ens arriba el que hi has escrit: el nom, el correu, el telèfon si l'has posat, el càrrec, l'organització i les respostes. Passa pel formulari del nostre allotjament (Netlify) i d'allà al nostre CRM (Zoho CRM).</li>
             <li data-i18n-html="al.que.mail"><strong>El correu.</strong> Si ens escrius, des d'un enllaç «Escriu-nos» o amb l'opció de correu dels formularis, ens arriba el missatge amb el que hi hagis posat.</li>
-            <li data-i18n-html="al.que.online"><strong>El directori del SOS.</strong> Si hi publiques la teva fitxa, es guarda a Supabase el que tu hi escrius —el nom o àlies, el municipi i el país, el que ofereixes i el que busques— amb les claus públiques que la signen. La fitxa és <strong>pública</strong>: qualsevol la pot llegir. No hi demanem ni correu, ni telèfon, ni adreça. «Retira'm» l'amaga del directori, però les versions anteriors queden guardades: si vols que les esborrem, escriu-nos.</li>
+            <li data-i18n-html="al.que.online"><strong>El directori del SOS.</strong> Si hi publiques la teva fitxa, es guarda a Supabase el que tu hi escrius —el nom o àlies, el municipi i el país, el que ofereixes i el que busques— amb les claus públiques que la signen. La fitxa és <strong>pública</strong>: qualsevol la pot llegir, també directament a la base de dades. No hi demanem ni correu, ni telèfon, ni adreça. El botó «Retira'm del directori» la treu de la llista, però no l'esborra: les versions que ja havies publicat continuen a la base de dades i es poden llegir. Si vols que les esborrem del tot, <a class="js-mail" href="#titular">escriu-nos</a> i ho fem en un mes com a màxim.</li>
             <li data-i18n-html="al.que.xat"><strong>El xat del directori.</strong> Els missatges es xifren al teu navegador i viatgen xifrats a través de Supabase. Nosaltres no en podem llegir el contingut, i no es guarden.</li>
-            <li data-i18n-html="al.que.pag"><strong>El pagament a l'editor del mapa.</strong> Si pagues per publicar la teva web, ho fas a la pàgina de Stripe, que és qui rep les dades de pagament. A nosaltres ens arriba si el pagament s'ha fet, l'import i la moneda, però no la targeta.</li>
-            <li data-i18n-html="al.que.ia"><strong>El material del servei «Mapa i web».</strong> Si ens encarregues el servei, el material que ens dones (la teva web, documents, notes) el treballem amb Claude, d'Anthropic. Si ens envies un àudio, abans el passa a text una altra eina, i et diem quina.</li>
-            <li data-i18n-html="al.que.visita"><strong>La visita.</strong> Com qualsevol allotjament, Netlify rep l'adreça IP i el navegador de cada visita per poder servir les pàgines. Les pàgines principals carreguen les tipografies de Google Fonts, i en demanar-les el teu navegador fa arribar la teva adreça IP a Google. El directori del SOS, en obrir-se, llegeix les fitxes publicades de Supabase.</li>
+            <li data-i18n-html="al.que.pag"><strong>El pagament a l'editor del mapa.</strong> Si pagues per publicar la teva web, ho fas a la pàgina de Stripe, que és qui rep la targeta. A nosaltres ens arriba, a través de Stripe, si el pagament s'ha fet, l'import i la moneda, i les dades que Stripe et demana per cobrar: el correu, el nom, el país, i la marca i les quatre últimes xifres de la targeta. El número sencer, no. Stripe també tracta aquestes dades pel seu compte, per prevenir el frau i complir les seves obligacions.</li>
+            <li data-i18n-html="al.que.ia"><strong>El material del servei «Mapa i web».</strong> Si ens encarregues el servei, el material que ens dones (la teva web, documents, notes) el treballem amb Claude, d'Anthropic. Si ens vols enviar un àudio, abans et diem quina eina el passa a text i on, i no ens l'envies fins que hi estiguis d'acord.</li>
+            <li data-i18n-html="al.que.visita"><strong>La visita.</strong> Com qualsevol allotjament, Netlify rep l'adreça IP i el navegador de cada visita per poder servir les pàgines. Les tipografies es serveixen des d'aquest mateix lloc, i no des de Google. El directori del SOS, en obrir-se, llegeix les fitxes publicades de Supabase. Algunes pàgines antigues que encara són publicades (/ia, /finances.html i les versions /v2 a /v9) carreguen biblioteques de jsDelivr, cdnjs (Cloudflare), unpkg o Tailwind, que també reben la teva adreça IP.</li>
         </ul>
 
         <h3 data-i18n="al.per.h">Per a què, i amb quina base</h3>
         <ul class="al-llista">
             <li data-i18n-html="al.per.1">Per respondre't i preparar el pressupost o l'encàrrec que demanes, que són mesures precontractuals a petició teva (art. 6.1.b del RGPD), i, si tira endavant, per fer-lo (execució del contracte).</li>
+            <li data-i18n-html="al.per.1b">Si ens escrius en nom d'una organització, les teves dades de contacte les fem servir per l'interès legítim de respondre i tractar amb aquella organització (art. 6.1.f del RGPD i art. 19 de la LOPDGDD).</li>
             <li data-i18n-html="al.per.2">Per publicar la teva fitxa al directori, perquè ho demanes tu (consentiment, art. 6.1.a). El pots retirar quan vulguis.</li>
-            <li data-i18n-html="al.per.3">Per complir les obligacions legals, com les fiscals i les comptables (art. 6.1.c).</li>
-            <li data-i18n-html="al.per.4">Per a res més: no t'enviem publicitat, no venem ni cedim les dades, i no prenem cap decisió automatitzada sobre tu.</li>
+            <li data-i18n-html="al.per.2b">Si ens ho demanes, per avisar-te de les novetats del SOS i convidar-te a les demostracions (consentiment, art. 6.1.a). Ho pots deixar quan vulguis.</li>
+            <li data-i18n-html="al.per.3">Si hi ha encàrrec, per fer la factura i guardar-la amb els llibres que demana Hisenda (Llei 58/2003 General Tributària i Reial decret 1619/2012 de facturació). És una obligació legal (art. 6.1.c).</li>
+            <li data-i18n-html="al.per.3b">Per servir les pàgines, mantenir el lloc segur i respondre els correus que no són un encàrrec: és el nostre interès legítim de fer funcionar el lloc i atendre qui ens escriu (art. 6.1.f). T'hi pots oposar escrivint-nos.</li>
+            <li data-i18n-html="al.per.4">Per a res més: no t'enviem publicitat que no hagis demanat, no venem ni cedim les dades, i no prenem cap decisió automatitzada sobre tu.</li>
         </ul>
 
         <h3 data-i18n="al.qui.h">Qui més les veu</h3>
-        <p data-i18n-html="al.qui.1">Només els proveïdors que fan funcionar el lloc i el servei, cadascun per a la seva part i per encàrrec nostre: Netlify (allotjament i formularis), Zoho (CRM), Supabase (directori), Stripe (pagaments), Anthropic (la IA del servei «Mapa i web») i el proveïdor del nostre correu. No les donem a ningú més, llevat que una llei ens hi obligui.</p>
-        <p data-i18n-html="al.qui.2">Alguns d'aquests proveïdors, i Google per les tipografies, són als Estats Units o hi poden tractar dades. Quan és així, la transferència es fa amb les garanties que preveu el RGPD, com el Marc de privacitat de dades UE-EUA o les clàusules contractuals tipus de la Comissió Europea.</p>
+        <p data-i18n-html="al.qui.1">Només els proveïdors que fan funcionar el lloc i el servei, cadascun per a la seva part: Netlify (allotjament i formularis), Zoho (CRM), Supabase (directori), Anthropic (la IA del servei «Mapa i web»), Stripe (pagaments) i Apple (el nostre correu, iCloud). Els quatre primers les tracten per encàrrec nostre; Stripe i Apple, en part pel seu compte i amb les seves condicions. No les donem a ningú més, llevat que una llei ens hi obligui.</p>
+        <p data-i18n-html="al.qui.2">Alguns d'aquests proveïdors són als Estats Units o hi poden tractar dades. Quan és així, la transferència es fa amb les garanties que preveu el RGPD, com el Marc de privacitat de dades UE-EUA o les clàusules contractuals tipus de la Comissió Europea. Si vols saber quina fa servir cada proveïdor o tenir-ne una còpia, <a class="js-mail" href="#titular">escriu-nos</a> i te l'enviem.</p>
 
         <h3 data-i18n="al.temps.h">Quant de temps</h3>
-        <p data-i18n-html="al.temps.1">El que ens envies per demanar un pressupost, el temps que calgui per respondre't. Si l'encàrrec tira endavant, mentre duri i, després, el temps que exigeixin les obligacions legals. La fitxa del directori, fins que demanis que l'esborrem.</p>
+        <p data-i18n-html="al.temps.1">El que ens envies per demanar un pressupost, si no hi ha encàrrec, fins a un any després de l'últim contacte; després l'esborrem del CRM, de l'historial de formularis i del correu. Si l'encàrrec tira endavant, mentre duri; i les factures i les dades que hi surten, el temps que demana la llei fiscal (en general, quatre anys des que acaba el termini per declarar l'impost, art. 66 i 70 de la Llei General Tributària). La fitxa del directori surt a la llista fins que la retiris, i es queda a la base de dades, amb les versions anteriors, fins que ens demanis esborrar-la.</p>
 
         <h3 data-i18n="al.sos.h">Les eines del SOS</h3>
-        <p data-i18n-html="al.sos.1">Les eines del SOS, llevat del directori, guarden les dades al teu navegador i no a cap servidor nostre. Algunes es poden connectar a serveis d'altres si tu ho actives: la IA d'Anthropic amb la teva pròpia clau, GitHub amb el teu compte, repetidors públics de Nostr, un servidor de Google per connectar dos dispositius teus, o Netlify per publicar una web al teu nom. Aquí la relació és entre tu i aquell servei, amb les seves condicions, i si hi poses dades d'altres persones, ets tu qui les tracta.</p>
+        <p data-i18n-html="al.sos.1">Les eines del SOS, llevat del directori, guarden les dades al teu navegador i no a cap servidor nostre. Algunes es poden connectar a serveis d'altres si tu ho actives: la IA d'Anthropic amb la teva pròpia clau, GitHub amb el teu compte, repetidors públics de Nostr, un servidor de Google (STUN) per connectar directament el teu SOS amb el d'altres persones o amb un altre dispositiu teu —en connectar-vos, cadascú veu l'adreça IP de l'altre—, un servidor Supabase que posi la teva comunitat per veure qui hi és i xatejar, o Netlify per publicar una web al teu nom. Aquí la relació és entre tu i aquell servei, amb les seves condicions, i si hi poses dades d'altres persones, ets tu qui les tracta.</p>
+        <p data-i18n-html="al.sos.2">Les versions antigues del SOS que encara són publicades (/ia i les carpetes /v2 a /v9) en són l'excepció: s'hi poden connectar també OpenAI, Google Gemini o DeepSeek amb la teva clau, i a /ia la clau i el que demanes a Anthropic passen per una funció nostra a Netlify, que no ho guarda, abans d'arribar-hi.</p>
 
         <h2 id="navegador" data-i18n="al.nav.h">Galetes i el teu navegador</h2>
-        <p data-i18n-html="al.nav.1">Aquest lloc no instal·la galetes pròpies ni fa servir cap eina d'analítica, publicitat o seguiment. Al teu navegador (l'emmagatzematge local) només guardem el que fa funcionar el que demanes: la llengua que tries, les dades de contacte que escrius als formularis perquè no les hagis de tornar a escriure —no s'envien soles—, i el que fas a les eines del SOS. Ho pots esborrar quan vulguis des de la configuració del navegador.</p>
+        <p data-i18n-html="al.nav.1">Aquest lloc no instal·la galetes pròpies ni fa servir cap eina d'analítica, publicitat o seguiment. Al teu navegador només guardem el que fa funcionar el que demanes: la llengua que tries, el que tries a les pàgines interactives, el que fas a les eines del SOS i, només mentre tens la pestanya oberta, les dades de contacte que escrius als formularis, perquè no les hagis de tornar a escriure d'una pàgina a l'altra —no s'envien soles—. Ho pots esborrar quan vulguis des de la configuració del navegador.</p>
         <p data-i18n-html="al.nav.2">La pàgina de pagament de Stripe és seva, i hi aplica les seves pròpies galetes i condicions.</p>
 
         <h2 id="drets" data-i18n="al.dre.h">Els teus drets</h2>
-        <p data-i18n-html="al.dre.1">Pots demanar-nos veure les dades que tenim teves, corregir-les, esborrar-les, limitar-ne el tractament o oposar-t'hi, i rebre-les en un format que puguis portar a un altre lloc. Si vas donar el consentiment, el pots retirar quan vulguis. N'hi ha prou que ens <a class="js-mail" href="/qui-som">escriguis</a>.</p>
+        <p data-i18n-html="al.dre.1">Pots demanar-nos veure les dades que tenim teves, corregir-les, esborrar-les, limitar-ne el tractament o oposar-t'hi, i rebre-les en un format que puguis portar a un altre lloc. Si vas donar el consentiment, el pots retirar quan vulguis. N'hi ha prou que ens <a class="js-mail" href="#titular">escriguis</a>.</p>
         <p data-i18n-html="al.dre.2">Si creus que no les hem tractat bé, pots reclamar a l'Agència Espanyola de Protecció de Dades, a <a href="https://www.aepd.es" rel="noopener">aepd.es</a>.</p>
     </div>
 </section>
@@ -398,7 +401,7 @@ ca: {
   'al.tit.act.t':'Activitat',
   'al.tit.act.v':'Consultoria, formació i dinamització d\'organitzacions i territoris: mapes de valor, desenvolupament web i formació amb el SOS.',
   'al.tit.mail.t':'Correu',
-  'al.tit.mail.v':'<a class="js-mail" href="/qui-som"><span class="js-adr">escriu-nos</span></a>',
+  'al.tit.mail.v':'<a class="js-mail" href="#titular"><span class="js-adr">escriu-nos</span></a><noscript> (asolache [arroba] mac [punt] com)</noscript>',
   'al.tit.web.t':'Lloc web',
   'al.tit.web.v':'teamtowershuma.com',
   'al.tit.h':'Qui és el titular',
@@ -406,37 +409,42 @@ ca: {
   'al.us.h':'Fer servir aquest lloc',
   'al.us.1':'Pots llegir, enllaçar i compartir el que hi ha en aquest lloc. Els textos expliquen què fem i com ho fem, però no són una oferta tancada: les condicions d\'un encàrrec —què inclou, quan es fa i a quin preu— són les que confirmem per escrit, per correu o en un pressupost.',
   'al.us.2':'Hi ha enllaços a llocs d\'altres, com molekulon.org o les peces de premsa. El que diuen és responsabilitat de qui els publica.',
-  'al.us.3':'Fem el possible perquè el lloc funcioni i perquè el que diu sigui cert i al dia. Si hi trobes un error, <a class="js-mail" href="/qui-som">escriu-nos</a> i el corregim.',
+  'al.us.3':'Fem el possible perquè el lloc funcioni i perquè el que diu sigui cert i al dia. Si hi trobes un error, <a class="js-mail" href="#titular">escriu-nos</a> i el corregim.',
   'al.aut.h':'De qui és el que hi ha aquí',
   'al.aut.1':'Els textos, els dibuixos i el codi d\'aquest lloc són d\'Alvaro Solache (TeamTowers Humà), llevat dels que porten una altra autoria. El codi és públic i es pot fer servir com a referència per aprendre; qualsevol ús comercial necessita la nostra autorització abans.',
   'al.aut.2':'Les marques i els logotips d\'altres —clients, mitjans, entitats— són dels seus titulars. Les tipografies Space Grotesk i JetBrains Mono tenen la seva pròpia llicència lliure (SIL Open Font License).',
   'al.dad.h':'Les teves dades',
   'al.dad.1':'El responsable de les dades personals que ens arriben per aquest lloc és Alvaro Solache, amb el correu de dalt. La regla de la casa és demanar només el que cal per respondre\'t, i que el que escrius als formularis no surti del teu navegador fins que tu prems el botó d\'enviar.',
+  'al.dad.2':'Els camps amb asterisc calen per respondre\'t: sense ells no et podem preparar la proposta. La resta són opcionals. Si hi ha encàrrec, per fer la factura necessitem el nom o la raó social, el NIF i l\'adreça fiscal: ho demana la llei, i sense aquestes dades no podem facturar.',
   'al.que.h':'Què ens arriba, i quan',
   'al.que.form':'<strong>El diagnòstic i la comanda.</strong> Quan prems el botó d\'enviar del diagnòstic de l\'organització o de la comanda de la pàgina de preus, ens arriba el que hi has escrit: el nom, el correu, el telèfon si l\'has posat, el càrrec, l\'organització i les respostes. Passa pel formulari del nostre allotjament (Netlify) i d\'allà al nostre CRM (Zoho CRM).',
   'al.que.mail':'<strong>El correu.</strong> Si ens escrius, des d\'un enllaç «Escriu-nos» o amb l\'opció de correu dels formularis, ens arriba el missatge amb el que hi hagis posat.',
-  'al.que.online':'<strong>El directori del SOS.</strong> Si hi publiques la teva fitxa, es guarda a Supabase el que tu hi escrius —el nom o àlies, el municipi i el país, el que ofereixes i el que busques— amb les claus públiques que la signen. La fitxa és <strong>pública</strong>: qualsevol la pot llegir. No hi demanem ni correu, ni telèfon, ni adreça. «Retira\'m» l\'amaga del directori, però les versions anteriors queden guardades: si vols que les esborrem, escriu-nos.',
+  'al.que.online':'<strong>El directori del SOS.</strong> Si hi publiques la teva fitxa, es guarda a Supabase el que tu hi escrius —el nom o àlies, el municipi i el país, el que ofereixes i el que busques— amb les claus públiques que la signen. La fitxa és <strong>pública</strong>: qualsevol la pot llegir, també directament a la base de dades. No hi demanem ni correu, ni telèfon, ni adreça. El botó «Retira\'m del directori» la treu de la llista, però no l\'esborra: les versions que ja havies publicat continuen a la base de dades i es poden llegir. Si vols que les esborrem del tot, <a class="js-mail" href="#titular">escriu-nos</a> i ho fem en un mes com a màxim.',
   'al.que.xat':'<strong>El xat del directori.</strong> Els missatges es xifren al teu navegador i viatgen xifrats a través de Supabase. Nosaltres no en podem llegir el contingut, i no es guarden.',
-  'al.que.pag':'<strong>El pagament a l\'editor del mapa.</strong> Si pagues per publicar la teva web, ho fas a la pàgina de Stripe, que és qui rep les dades de pagament. A nosaltres ens arriba si el pagament s\'ha fet, l\'import i la moneda, però no la targeta.',
-  'al.que.ia':'<strong>El material del servei «Mapa i web».</strong> Si ens encarregues el servei, el material que ens dones (la teva web, documents, notes) el treballem amb Claude, d\'Anthropic. Si ens envies un àudio, abans el passa a text una altra eina, i et diem quina.',
-  'al.que.visita':'<strong>La visita.</strong> Com qualsevol allotjament, Netlify rep l\'adreça IP i el navegador de cada visita per poder servir les pàgines. Les pàgines principals carreguen les tipografies de Google Fonts, i en demanar-les el teu navegador fa arribar la teva adreça IP a Google. El directori del SOS, en obrir-se, llegeix les fitxes publicades de Supabase.',
+  'al.que.pag':'<strong>El pagament a l\'editor del mapa.</strong> Si pagues per publicar la teva web, ho fas a la pàgina de Stripe, que és qui rep la targeta. A nosaltres ens arriba, a través de Stripe, si el pagament s\'ha fet, l\'import i la moneda, i les dades que Stripe et demana per cobrar: el correu, el nom, el país, i la marca i les quatre últimes xifres de la targeta. El número sencer, no. Stripe també tracta aquestes dades pel seu compte, per prevenir el frau i complir les seves obligacions.',
+  'al.que.ia':'<strong>El material del servei «Mapa i web».</strong> Si ens encarregues el servei, el material que ens dones (la teva web, documents, notes) el treballem amb Claude, d\'Anthropic. Si ens vols enviar un àudio, abans et diem quina eina el passa a text i on, i no ens l\'envies fins que hi estiguis d\'acord.',
+  'al.que.visita':'<strong>La visita.</strong> Com qualsevol allotjament, Netlify rep l\'adreça IP i el navegador de cada visita per poder servir les pàgines. Les tipografies es serveixen des d\'aquest mateix lloc, i no des de Google. El directori del SOS, en obrir-se, llegeix les fitxes publicades de Supabase. Algunes pàgines antigues que encara són publicades (/ia, /finances.html i les versions /v2 a /v9) carreguen biblioteques de jsDelivr, cdnjs (Cloudflare), unpkg o Tailwind, que també reben la teva adreça IP.',
   'al.per.h':'Per a què, i amb quina base',
   'al.per.1':'Per respondre\'t i preparar el pressupost o l\'encàrrec que demanes, que són mesures precontractuals a petició teva (art. 6.1.b del RGPD), i, si tira endavant, per fer-lo (execució del contracte).',
+  'al.per.1b':'Si ens escrius en nom d\'una organització, les teves dades de contacte les fem servir per l\'interès legítim de respondre i tractar amb aquella organització (art. 6.1.f del RGPD i art. 19 de la LOPDGDD).',
   'al.per.2':'Per publicar la teva fitxa al directori, perquè ho demanes tu (consentiment, art. 6.1.a). El pots retirar quan vulguis.',
-  'al.per.3':'Per complir les obligacions legals, com les fiscals i les comptables (art. 6.1.c).',
-  'al.per.4':'Per a res més: no t\'enviem publicitat, no venem ni cedim les dades, i no prenem cap decisió automatitzada sobre tu.',
+  'al.per.2b':'Si ens ho demanes, per avisar-te de les novetats del SOS i convidar-te a les demostracions (consentiment, art. 6.1.a). Ho pots deixar quan vulguis.',
+  'al.per.3':'Si hi ha encàrrec, per fer la factura i guardar-la amb els llibres que demana Hisenda (Llei 58/2003 General Tributària i Reial decret 1619/2012 de facturació). És una obligació legal (art. 6.1.c).',
+  'al.per.3b':'Per servir les pàgines, mantenir el lloc segur i respondre els correus que no són un encàrrec: és el nostre interès legítim de fer funcionar el lloc i atendre qui ens escriu (art. 6.1.f). T\'hi pots oposar escrivint-nos.',
+  'al.per.4':'Per a res més: no t\'enviem publicitat que no hagis demanat, no venem ni cedim les dades, i no prenem cap decisió automatitzada sobre tu.',
   'al.qui.h':'Qui més les veu',
-  'al.qui.1':'Només els proveïdors que fan funcionar el lloc i el servei, cadascun per a la seva part i per encàrrec nostre: Netlify (allotjament i formularis), Zoho (CRM), Supabase (directori), Stripe (pagaments), Anthropic (la IA del servei «Mapa i web») i el proveïdor del nostre correu. No les donem a ningú més, llevat que una llei ens hi obligui.',
-  'al.qui.2':'Alguns d\'aquests proveïdors, i Google per les tipografies, són als Estats Units o hi poden tractar dades. Quan és així, la transferència es fa amb les garanties que preveu el RGPD, com el Marc de privacitat de dades UE-EUA o les clàusules contractuals tipus de la Comissió Europea.',
+  'al.qui.1':'Només els proveïdors que fan funcionar el lloc i el servei, cadascun per a la seva part: Netlify (allotjament i formularis), Zoho (CRM), Supabase (directori), Anthropic (la IA del servei «Mapa i web»), Stripe (pagaments) i Apple (el nostre correu, iCloud). Els quatre primers les tracten per encàrrec nostre; Stripe i Apple, en part pel seu compte i amb les seves condicions. No les donem a ningú més, llevat que una llei ens hi obligui.',
+  'al.qui.2':'Alguns d\'aquests proveïdors són als Estats Units o hi poden tractar dades. Quan és així, la transferència es fa amb les garanties que preveu el RGPD, com el Marc de privacitat de dades UE-EUA o les clàusules contractuals tipus de la Comissió Europea. Si vols saber quina fa servir cada proveïdor o tenir-ne una còpia, <a class="js-mail" href="#titular">escriu-nos</a> i te l\'enviem.',
   'al.temps.h':'Quant de temps',
-  'al.temps.1':'El que ens envies per demanar un pressupost, el temps que calgui per respondre\'t. Si l\'encàrrec tira endavant, mentre duri i, després, el temps que exigeixin les obligacions legals. La fitxa del directori, fins que demanis que l\'esborrem.',
+  'al.temps.1':'El que ens envies per demanar un pressupost, si no hi ha encàrrec, fins a un any després de l\'últim contacte; després l\'esborrem del CRM, de l\'historial de formularis i del correu. Si l\'encàrrec tira endavant, mentre duri; i les factures i les dades que hi surten, el temps que demana la llei fiscal (en general, quatre anys des que acaba el termini per declarar l\'impost, art. 66 i 70 de la Llei General Tributària). La fitxa del directori surt a la llista fins que la retiris, i es queda a la base de dades, amb les versions anteriors, fins que ens demanis esborrar-la.',
   'al.sos.h':'Les eines del SOS',
-  'al.sos.1':'Les eines del SOS, llevat del directori, guarden les dades al teu navegador i no a cap servidor nostre. Algunes es poden connectar a serveis d\'altres si tu ho actives: la IA d\'Anthropic amb la teva pròpia clau, GitHub amb el teu compte, repetidors públics de Nostr, un servidor de Google per connectar dos dispositius teus, o Netlify per publicar una web al teu nom. Aquí la relació és entre tu i aquell servei, amb les seves condicions, i si hi poses dades d\'altres persones, ets tu qui les tracta.',
+  'al.sos.1':'Les eines del SOS, llevat del directori, guarden les dades al teu navegador i no a cap servidor nostre. Algunes es poden connectar a serveis d\'altres si tu ho actives: la IA d\'Anthropic amb la teva pròpia clau, GitHub amb el teu compte, repetidors públics de Nostr, un servidor de Google (STUN) per connectar directament el teu SOS amb el d\'altres persones o amb un altre dispositiu teu —en connectar-vos, cadascú veu l\'adreça IP de l\'altre—, un servidor Supabase que posi la teva comunitat per veure qui hi és i xatejar, o Netlify per publicar una web al teu nom. Aquí la relació és entre tu i aquell servei, amb les seves condicions, i si hi poses dades d\'altres persones, ets tu qui les tracta.',
+  'al.sos.2':'Les versions antigues del SOS que encara són publicades (/ia i les carpetes /v2 a /v9) en són l\'excepció: s\'hi poden connectar també OpenAI, Google Gemini o DeepSeek amb la teva clau, i a /ia la clau i el que demanes a Anthropic passen per una funció nostra a Netlify, que no ho guarda, abans d\'arribar-hi.',
   'al.nav.h':'Galetes i el teu navegador',
-  'al.nav.1':'Aquest lloc no instal·la galetes pròpies ni fa servir cap eina d\'analítica, publicitat o seguiment. Al teu navegador (l\'emmagatzematge local) només guardem el que fa funcionar el que demanes: la llengua que tries, les dades de contacte que escrius als formularis perquè no les hagis de tornar a escriure —no s\'envien soles—, i el que fas a les eines del SOS. Ho pots esborrar quan vulguis des de la configuració del navegador.',
+  'al.nav.1':'Aquest lloc no instal·la galetes pròpies ni fa servir cap eina d\'analítica, publicitat o seguiment. Al teu navegador només guardem el que fa funcionar el que demanes: la llengua que tries, el que tries a les pàgines interactives, el que fas a les eines del SOS i, només mentre tens la pestanya oberta, les dades de contacte que escrius als formularis, perquè no les hagis de tornar a escriure d\'una pàgina a l\'altra —no s\'envien soles—. Ho pots esborrar quan vulguis des de la configuració del navegador.',
   'al.nav.2':'La pàgina de pagament de Stripe és seva, i hi aplica les seves pròpies galetes i condicions.',
   'al.dre.h':'Els teus drets',
-  'al.dre.1':'Pots demanar-nos veure les dades que tenim teves, corregir-les, esborrar-les, limitar-ne el tractament o oposar-t\'hi, i rebre-les en un format que puguis portar a un altre lloc. Si vas donar el consentiment, el pots retirar quan vulguis. N\'hi ha prou que ens <a class="js-mail" href="/qui-som">escriguis</a>.',
+  'al.dre.1':'Pots demanar-nos veure les dades que tenim teves, corregir-les, esborrar-les, limitar-ne el tractament o oposar-t\'hi, i rebre-les en un format que puguis portar a un altre lloc. Si vas donar el consentiment, el pots retirar quan vulguis. N\'hi ha prou que ens <a class="js-mail" href="#titular">escriguis</a>.',
   'al.dre.2':'Si creus que no les hem tractat bé, pots reclamar a l\'Agència Espanyola de Protecció de Dades, a <a href="https://www.aepd.es" rel="noopener">aepd.es</a>.',
 
 /*TT-NAV-I18N-CA*/
@@ -494,7 +502,7 @@ es: {
   'al.tit.act.t':'Actividad',
   'al.tit.act.v':'Consultoría, formación y dinamización de organizaciones y territorios: mapas de valor, desarrollo web y formación con el SOS.',
   'al.tit.mail.t':'Correo',
-  'al.tit.mail.v':'<a class="js-mail" href="/qui-som"><span class="js-adr">escríbenos</span></a>',
+  'al.tit.mail.v':'<a class="js-mail" href="#titular"><span class="js-adr">escríbenos</span></a><noscript> (asolache [arroba] mac [punto] com)</noscript>',
   'al.tit.web.t':'Sitio web',
   'al.tit.web.v':'teamtowershuma.com',
   'al.tit.h':'Quién es el titular',
@@ -502,37 +510,42 @@ es: {
   'al.us.h':'Usar este sitio',
   'al.us.1':'Puedes leer, enlazar y compartir lo que hay en este sitio. Los textos explican qué hacemos y cómo lo hacemos, pero no son una oferta cerrada: las condiciones de un encargo —qué incluye, cuándo se hace y a qué precio— son las que confirmamos por escrito, por correo o en un presupuesto.',
   'al.us.2':'Hay enlaces a sitios de otros, como molekulon.org o las piezas de prensa. Lo que dicen es responsabilidad de quien los publica.',
-  'al.us.3':'Hacemos lo posible para que el sitio funcione y para que lo que dice sea cierto y esté al día. Si encuentras un error, <a class="js-mail" href="/qui-som">escríbenos</a> y lo corregimos.',
+  'al.us.3':'Hacemos lo posible para que el sitio funcione y para que lo que dice sea cierto y esté al día. Si encuentras un error, <a class="js-mail" href="#titular">escríbenos</a> y lo corregimos.',
   'al.aut.h':'De quién es lo que hay aquí',
   'al.aut.1':'Los textos, los dibujos y el código de este sitio son de Alvaro Solache (TeamTowers Humà), salvo los que llevan otra autoría. El código es público y se puede usar como referencia para aprender; cualquier uso comercial necesita nuestra autorización previa.',
   'al.aut.2':'Las marcas y los logotipos de otros —clientes, medios, entidades— son de sus titulares. Las tipografías Space Grotesk y JetBrains Mono tienen su propia licencia libre (SIL Open Font License).',
   'al.dad.h':'Tus datos',
   'al.dad.1':'El responsable de los datos personales que nos llegan por este sitio es Alvaro Solache, con el correo de arriba. La regla de la casa es pedir solo lo necesario para responderte, y que lo que escribes en los formularios no salga de tu navegador hasta que pulsas el botón de enviar.',
+  'al.dad.2':'Los campos con asterisco son necesarios para responderte: sin ellos no podemos prepararte la propuesta. El resto son opcionales. Si hay encargo, para hacer la factura necesitamos el nombre o la razón social, el NIF y la dirección fiscal: lo exige la ley, y sin esos datos no podemos facturar.',
   'al.que.h':'Qué nos llega, y cuándo',
   'al.que.form':'<strong>El diagnóstico y el pedido.</strong> Cuando pulsas el botón de enviar del diagnóstico de la organización o del pedido de la página de precios, nos llega lo que has escrito: el nombre, el correo, el teléfono si lo has puesto, el cargo, la organización y las respuestas. Pasa por el formulario de nuestro alojamiento (Netlify) y de ahí a nuestro CRM (Zoho CRM).',
   'al.que.mail':'<strong>El correo.</strong> Si nos escribes, desde un enlace «Escríbenos» o con la opción de correo de los formularios, nos llega el mensaje con lo que hayas puesto.',
-  'al.que.online':'<strong>El directorio del SOS.</strong> Si publicas tu ficha, se guarda en Supabase lo que tú escribes —el nombre o alias, el municipio y el país, lo que ofreces y lo que buscas— con las claves públicas que la firman. La ficha es <strong>pública</strong>: cualquiera puede leerla. No pedimos ni correo, ni teléfono, ni dirección. «Retírame» la oculta del directorio, pero las versiones anteriores quedan guardadas: si quieres que las borremos, escríbenos.',
+  'al.que.online':'<strong>El directorio del SOS.</strong> Si publicas tu ficha, se guarda en Supabase lo que escribes —el nombre o alias, el municipio y el país, lo que ofreces y lo que buscas— con las claves públicas que la firman. La ficha es <strong>pública</strong>: cualquiera puede leerla, también directamente en la base de datos. No pedimos correo, ni teléfono, ni dirección. El botón «Retira\'m del directori» la quita de la lista, pero no la borra: las versiones que ya habías publicado siguen en la base de datos y se pueden leer. Si quieres que las borremos del todo, <a class="js-mail" href="#titular">escríbenos</a> y lo hacemos en un mes como máximo.',
   'al.que.xat':'<strong>El chat del directorio.</strong> Los mensajes se cifran en tu navegador y viajan cifrados a través de Supabase. Nosotros no podemos leer su contenido, y no se guardan.',
-  'al.que.pag':'<strong>El pago en el editor del mapa.</strong> Si pagas para publicar tu web, lo haces en la página de Stripe, que es quien recibe los datos de pago. A nosotros nos llega si el pago se ha hecho, el importe y la moneda, pero no la tarjeta.',
-  'al.que.ia':'<strong>El material del servicio «Mapa y web».</strong> Si nos encargas el servicio, el material que nos das (tu web, documentos, notas) lo trabajamos con Claude, de Anthropic. Si nos mandas un audio, antes lo pasa a texto otra herramienta, y te decimos cuál.',
-  'al.que.visita':'<strong>La visita.</strong> Como cualquier alojamiento, Netlify recibe la dirección IP y el navegador de cada visita para poder servir las páginas. Las páginas principales cargan las tipografías de Google Fonts, y al pedirlas tu navegador hace llegar tu dirección IP a Google. El directorio del SOS, al abrirse, lee las fichas publicadas de Supabase.',
+  'al.que.pag':'<strong>El pago en el editor del mapa.</strong> Si pagas para publicar tu web, lo haces en la página de Stripe, que es quien recibe la tarjeta. A nosotros nos llega, a través de Stripe, si el pago se ha hecho, el importe y la moneda, y los datos que Stripe te pide para cobrar: el correo, el nombre, el país, y la marca y las cuatro últimas cifras de la tarjeta. El número completo, no. Stripe también trata estos datos por su cuenta, para prevenir el fraude y cumplir sus obligaciones.',
+  'al.que.ia':'<strong>El material del servicio «Mapa y web».</strong> Si nos encargas el servicio, el material que nos das (tu web, documentos, notas) lo trabajamos con Claude, de Anthropic. Si nos quieres mandar un audio, antes te decimos qué herramienta lo pasa a texto y dónde, y no nos lo mandas hasta que estés de acuerdo.',
+  'al.que.visita':'<strong>La visita.</strong> Como cualquier alojamiento, Netlify recibe la dirección IP y el navegador de cada visita para poder servir las páginas. Las tipografías se sirven desde este mismo sitio, y no desde Google. El directorio del SOS, al abrirse, lee las fichas publicadas de Supabase. Algunas páginas antiguas que aún están publicadas (/ia, /finances.html y las versiones /v2 a /v9) cargan bibliotecas de jsDelivr, cdnjs (Cloudflare), unpkg o Tailwind, que también reciben tu dirección IP.',
   'al.per.h':'Para qué, y con qué base',
   'al.per.1':'Para responderte y preparar el presupuesto o el encargo que pides, que son medidas precontractuales a petición tuya (art. 6.1.b del RGPD), y, si sale adelante, para hacerlo (ejecución del contrato).',
+  'al.per.1b':'Si nos escribes en nombre de una organización, usamos tus datos de contacto por el interés legítimo de responder y tratar con esa organización (art. 6.1.f del RGPD y art. 19 de la LOPDGDD).',
   'al.per.2':'Para publicar tu ficha en el directorio, porque lo pides tú (consentimiento, art. 6.1.a). Puedes retirarlo cuando quieras.',
-  'al.per.3':'Para cumplir las obligaciones legales, como las fiscales y las contables (art. 6.1.c).',
-  'al.per.4':'Para nada más: no te enviamos publicidad, no vendemos ni cedemos los datos, y no tomamos ninguna decisión automatizada sobre ti.',
+  'al.per.2b':'Si nos lo pides, para avisarte de las novedades del SOS e invitarte a las demostraciones (consentimiento, art. 6.1.a). Puedes dejarlo cuando quieras.',
+  'al.per.3':'Si hay encargo, para hacer la factura y guardarla con los libros que pide Hacienda (Ley 58/2003 General Tributaria y Real Decreto 1619/2012 de facturación). Es una obligación legal (art. 6.1.c).',
+  'al.per.3b':'Para servir las páginas, mantener el sitio seguro y responder los correos que no son un encargo: es nuestro interés legítimo de hacer funcionar el sitio y atender a quien nos escribe (art. 6.1.f). Puedes oponerte escribiéndonos.',
+  'al.per.4':'Para nada más: no te enviamos publicidad que no hayas pedido, no vendemos ni cedemos los datos, y no tomamos ninguna decisión automatizada sobre ti.',
   'al.qui.h':'Quién más los ve',
-  'al.qui.1':'Solo los proveedores que hacen funcionar el sitio y el servicio, cada uno para su parte y por encargo nuestro: Netlify (alojamiento y formularios), Zoho (CRM), Supabase (directorio), Stripe (pagos), Anthropic (la IA del servicio «Mapa y web») y el proveedor de nuestro correo. No los damos a nadie más, salvo que una ley nos obligue.',
-  'al.qui.2':'Algunos de estos proveedores, y Google por las tipografías, están en Estados Unidos o pueden tratar datos allí. Cuando es así, la transferencia se hace con las garantías que prevé el RGPD, como el Marco de privacidad de datos UE-EE. UU. o las cláusulas contractuales tipo de la Comisión Europea.',
+  'al.qui.1':'Solo los proveedores que hacen funcionar el sitio y el servicio, cada uno para su parte: Netlify (alojamiento y formularios), Zoho (CRM), Supabase (directorio), Anthropic (la IA del servicio «Mapa y web»), Stripe (pagos) y Apple (nuestro correo, iCloud). Los cuatro primeros los tratan por encargo nuestro; Stripe y Apple, en parte por su cuenta y con sus condiciones. No los damos a nadie más, salvo que una ley nos obligue.',
+  'al.qui.2':'Algunos de estos proveedores están en Estados Unidos o pueden tratar datos allí. Cuando es así, la transferencia se hace con las garantías que prevé el RGPD, como el Marco de privacidad de datos UE-EE. UU. o las cláusulas contractuales tipo de la Comisión Europea. Si quieres saber cuál usa cada proveedor o tener una copia, <a class="js-mail" href="#titular">escríbenos</a> y te la enviamos.',
   'al.temps.h':'Cuánto tiempo',
-  'al.temps.1':'Lo que nos envías para pedir un presupuesto, el tiempo necesario para responderte. Si el encargo sale adelante, mientras dure y, después, el tiempo que exijan las obligaciones legales. La ficha del directorio, hasta que pidas que la borremos.',
+  'al.temps.1':'Lo que nos envías para pedir un presupuesto, si no hay encargo, hasta un año después del último contacto; después lo borramos del CRM, del historial de formularios y del correo. Si el encargo sale adelante, mientras dure; y las facturas y los datos que figuran en ellas, el tiempo que pide la ley fiscal (en general, cuatro años desde que acaba el plazo para declarar el impuesto, art. 66 y 70 de la Ley General Tributaria). La ficha del directorio sale en la lista hasta que la retires, y se queda en la base de datos, con las versiones anteriores, hasta que nos pidas borrarla.',
   'al.sos.h':'Las herramientas del SOS',
-  'al.sos.1':'Las herramientas del SOS, salvo el directorio, guardan los datos en tu navegador y no en ningún servidor nuestro. Algunas se pueden conectar a servicios de otros si tú lo activas: la IA de Anthropic con tu propia clave, GitHub con tu cuenta, repetidores públicos de Nostr, un servidor de Google para conectar dos dispositivos tuyos, o Netlify para publicar una web a tu nombre. Aquí la relación es entre tú y ese servicio, con sus condiciones, y si pones datos de otras personas, eres tú quien los trata.',
+  'al.sos.1':'Las herramientas del SOS, salvo el directorio, guardan los datos en tu navegador y no en ningún servidor nuestro. Algunas se pueden conectar a servicios de otros si tú lo activas: la IA de Anthropic con tu propia clave, GitHub con tu cuenta, repetidores públicos de Nostr, un servidor de Google (STUN) para conectar directamente tu SOS con el de otras personas o con otro dispositivo tuyo —al conectaros, cada uno ve la dirección IP del otro—, un servidor Supabase que ponga tu comunidad para ver quién está y chatear, o Netlify para publicar una web a tu nombre. Aquí la relación es entre tú y ese servicio, con sus condiciones, y si pones datos de otras personas, eres tú quien los trata.',
+  'al.sos.2':'Las versiones antiguas del SOS que aún están publicadas (/ia y las carpetas /v2 a /v9) son la excepción: también se pueden conectar a OpenAI, Google Gemini o DeepSeek con tu clave, y en /ia la clave y lo que pides a Anthropic pasan por una función nuestra en Netlify, que no lo guarda, antes de llegar allí.',
   'al.nav.h':'Cookies y tu navegador',
-  'al.nav.1':'Este sitio no instala cookies propias ni usa ninguna herramienta de analítica, publicidad o seguimiento. En tu navegador (el almacenamiento local) solo guardamos lo que hace funcionar lo que pides: el idioma que eliges, los datos de contacto que escribes en los formularios para que no tengas que volver a escribirlos —no se envían solos—, y lo que haces en las herramientas del SOS. Puedes borrarlo cuando quieras desde la configuración del navegador.',
+  'al.nav.1':'Este sitio no instala cookies propias ni usa ninguna herramienta de analítica, publicidad o seguimiento. En tu navegador solo guardamos lo que hace funcionar lo que pides: el idioma que eliges, lo que eliges en las páginas interactivas, lo que haces en las herramientas del SOS y, solo mientras tienes la pestaña abierta, los datos de contacto que escribes en los formularios, para que no tengas que volver a escribirlos de una página a otra —no se envían solos—. Puedes borrarlo cuando quieras desde la configuración del navegador.',
   'al.nav.2':'La página de pago de Stripe es suya, y aplica sus propias cookies y condiciones.',
   'al.dre.h':'Tus derechos',
-  'al.dre.1':'Puedes pedirnos ver los datos que tenemos tuyos, corregirlos, borrarlos, limitar su tratamiento u oponerte a él, y recibirlos en un formato que puedas llevar a otro sitio. Si diste el consentimiento, puedes retirarlo cuando quieras. Basta con que nos <a class="js-mail" href="/qui-som">escribas</a>.',
+  'al.dre.1':'Puedes pedirnos ver los datos que tenemos tuyos, corregirlos, borrarlos, limitar su tratamiento u oponerte a él, y recibirlos en un formato que puedas llevar a otro sitio. Si diste el consentimiento, puedes retirarlo cuando quieras. Basta con que nos <a class="js-mail" href="#titular">escribas</a>.',
   'al.dre.2':'Si crees que no los hemos tratado bien, puedes reclamar ante la Agencia Española de Protección de Datos, en <a href="https://www.aepd.es" rel="noopener">aepd.es</a>.',
 
 /*TT-NAV-I18N-ES*/
@@ -576,7 +589,8 @@ es: {
 
 // ── Correu ofuscat ────────────────────────────────────────────────────────────
 // Muntat en temps d'execució perquè no viatgi en clar dins de l'HTML. Sense
-// JavaScript, els enllaços porten a /qui-som, on hi ha el contacte.
+// JavaScript, els enllaços porten a la fitxa del titular, on el <noscript>
+// l'escriu a mà (LSSI art. 10: el correu ha de ser accessible sempre).
 var u = 'asolache', d = 'mac' + '.' + 'com';
 function wireMail(l) {
     document.querySelectorAll('.js-mail').forEach(function (a) {
@@ -588,6 +602,9 @@ function wireMail(l) {
 
 var currentLang = 'ca';
 try { currentLang = localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
+// ?lang=es o ?lang=ca mana: s'hi arriba des de les pàgines en castellà
+// (/mapa-web/, /conecta/) i des de /aviso-legal, que no escriuen `tt_lang`.
+try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'ca' || q === 'es') currentLang = q; } catch (e) {}
 function applyLang(l) {
     currentLang = l;
     try { localStorage.setItem('tt_lang', l); } catch (e) {}

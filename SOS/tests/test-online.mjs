@@ -171,13 +171,16 @@ console.log('\n3 · El sedàs deixa passar la vàlida més nova, i prou');
     const baixa = await fer('Marta', '2026-09-01T00:00:00.000Z', { retirada: true });
     const r2 = await O.tamisar([{ did: jo.did, fitxa: nova }, { did: jo.did, fitxa: baixa }]);
     return { n1: r1.fitxes.length, nom1: r1.fitxes[0] && r1.fitxes[0].nom, desc: r1.descartades.length,
-      n2: r2.fitxes.length, retirades: r2.retirades };
+      n2: r2.fitxes.length, retirades: r2.retirades,
+      baixa: [baixa.nom, baixa.nick, baixa.municipi, baixa.pais, baixa.ofereix.length, baixa.busca.length].join('|') };
   });
   ok(r.n1 === 1 && r.nom1 === 'Marta (nova)',
     'de tres files en surt una: la vàlida més nova (' + r.nom1 + ')');
   ok(r.desc === 1, 'i la falsificada més nova cau abans de competir: no guanya per ser posterior');
   ok(r.n2 === 0 && r.retirades === 1,
     'retirar-se funciona encara que la fitxa anterior segueixi a la taula');
+  ok(r.baixa === '||||0|0',
+    'la fila de baixa no torna a publicar el nom, el municipi ni el que oferies (' + r.baixa + ')');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

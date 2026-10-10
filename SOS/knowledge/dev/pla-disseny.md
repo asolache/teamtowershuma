@@ -152,7 +152,12 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
   autònom (10/10/2026). Explica què recull el lloc segons el codi: els dos
   formularis (Netlify → Zoho CRM), el directori (Supabase), el pagament
   (Stripe) i el que es queda al navegador. El peu de les 30 pàgines l'enllaça
-  (`nv.peu.legal`) i `/aviso-legal`, `/privacitat` i `/privacidad` hi porten.
+  (`nv.peu.legal`, amb `?lang=es` des de les pàgines en castellà) i
+  `/aviso-legal`, `/privacitat` i `/privacidad` hi porten. Per fer cert el que
+  diu: les tipografies es serveixen des del lloc (`SOS/fonts/fonts.css`) i no
+  des de Google Fonts (guarda a `check-terra.js`), «Retira'm» del directori ja
+  no torna a publicar el nom, i les dades de contacte dels formularis passen
+  d'un a l'altre només dins de la pestanya (`sessionStorage`).
 - **Queda:** el NIF i el domicili de l'avís legal (LSSI art. 10, quan l'Alvaro
   els doni), els botons de dins dels blocs generats per altres eines (`.mv-cta`
   del mapa de valor a la portada i al mètode, `.ct-btn` del contacte) i la

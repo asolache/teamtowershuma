@@ -837,7 +837,9 @@ function peu(pagina) {
     /* L'avís legal va a **tots** els peus, els del lloc i els del SOS: és on
        es busca, i el titular i la privacitat són els mateixos a tot arreu. */
     + `    <div class="tp-marca">${marca}<p class="tp-c">© 2026 TeamTowers Humà</p>`
-    + `<a class="tp-legal" href="${hrefDe('avis-legal.html')}"${hrefDe('avis-legal.html') === jo ? ' aria-current="page"' : ''}>`
+    /* Des d'una pàgina en castellà, l'avís s'obre en castellà: la pàgina tria
+       la llengua per `tt_lang`, i les carpetes en castellà no l'escriuen. */
+    + `<a class="tp-legal" href="${hrefDe('avis-legal.html')}${ll === 'es' ? '?lang=es' : ''}"${hrefDe('avis-legal.html') === jo ? ' aria-current="page"' : ''}>`
     + `<span${i18n('nv.peu.legal')}>${ll === 'es' ? 'Aviso legal y privacidad' : 'Avís legal i privacitat'}</span></a></div>\n`
     + `    <div class="tp-cols">${(lloc ? LLOC : SOS_GRUPS).map(col).join('')}</div>\n`
     + `  </div>\n</footer>\n` + P_TANCA;

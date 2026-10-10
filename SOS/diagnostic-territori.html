@@ -1047,15 +1047,20 @@ const st={org:'',have:new Set(),serveis:new Set(),need:new Set()};
    dades bloquejades), no passa res —simplement l'altre formulari començarà en
    blanc, que és com començava abans. */
 const PONT='tt.form.qui';
+/* A la pestanya i no al navegador (avís legal, 10/10/2026): el pont serveix per
+   passar d'un formulari a l'altre, i el nom, el correu i el telèfon no s'han de
+   quedar desats per a la visita següent sense haver-ho demanat. Se n'esborra la
+   còpia que hi havien deixat les versions anteriors. */
+try{localStorage.removeItem(PONT);}catch(e){}
 function desaPont(){
-  try{ localStorage.setItem(PONT, JSON.stringify({
+  try{ sessionStorage.setItem(PONT, JSON.stringify({
     nom:$('#nom').value, rol:$('#rol')?$('#rol').value:'', carrec:$('#carrec').value,
     mail:$('#mail').value, tel:$('#tel').value, org:st.org, orgNom:$('#orgNom').value,
     municipi:$('#municipi').value, comarca:$('#comarca').value, poblacio:$('#poblacio').value
   })); }catch(e){}
 }
 function llegeixPont(){
-  let d=null; try{ d=JSON.parse(localStorage.getItem(PONT)||'null'); }catch(e){}
+  let d=null; try{ d=JSON.parse(sessionStorage.getItem(PONT)||'null'); }catch(e){}
   if(!d)return;
   ['nom','carrec','mail','tel','orgNom','municipi','comarca','poblacio'].forEach(k=>{
     const el=$('#'+k); if(el&&d[k]&&!el.value)el.value=d[k];

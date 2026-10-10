@@ -503,6 +503,9 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
            no és un paquet agregat sinó una fitxa amb nom, i per això aquesta
            pantalla importa encara més. -->
       <div class="previ" id="previ" aria-live="polite"></div>
+      <!-- La primera capa de l'avís de privacitat (LOPDGDD art. 11), al lloc on
+           es dona el consentiment i no només al peu. -->
+      <p class="mini" id="privAlta">La fitxa és pública: qualsevol la pot llegir. Responsable: Alvaro Solache. La publiques perquè tu ho decideixes, i la pots retirar quan vulguis: «Retira'm» la treu de la llista, però la fitxa i les versions anteriors es poden continuar llegint a la base de dades fins que ens demanis esborrar-les. Tot el que en fem, a l'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.</p>
     </div>
     <div class="dlg-peu">
       <button type="button" class="btn" id="btnRetira" hidden>Retira'm del directori</button>
@@ -972,7 +975,11 @@ function bastirFitxa({nom,nick,municipi,pais,ofereix,busca,retirada,did,exPub}){
     pais:String(pais||'').trim().toLowerCase().slice(0,3),
     ofereix:neteja(ofereix),busca:neteja(busca),
     exPub:exPub||null,at:now()};
-  if(retirada)f.retirada=true;
+  /* Retirar-se no torna a publicar qui ets. La fila de baixa és pública com
+     totes, i abans es bastia amb el formulari: repetia el nom, el municipi i el
+     que oferies i buscaves just quan demanaves sortir. Ara només porta el did,
+     l'hora i la firma (avís legal, 10/10/2026). */
+  if(retirada){f.retirada=true;f.nom='';f.nick='';f.municipi='';f.pais='';f.ofereix=[];f.busca=[];f.exPub=null;}
   const fora={};CAMPS.forEach(k=>{if(f[k]!==undefined)fora[k]=f[k];});
   return fora;
 }

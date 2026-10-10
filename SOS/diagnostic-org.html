@@ -585,7 +585,7 @@ input[type=url],input[type=date]{width:100%;background:var(--bg);border:1px soli
     <button type="button" class="btn btn-primary" id="bNet" data-i18n="dx.env.btn">Envia'ns el diagnòstic</button>
     <a class="btn btn-ghost" id="bSend" href="#" data-i18n="dx.env.mail">O per correu</a>
   </div>
-  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues.</p>
+  <p class="env-q" data-i18n-html="dx.env.q">S'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te'l descarregues. Responsable: Alvaro Solache, per respondre't i preparar la proposta; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.</p>
   <p class="env-ok" id="envOk" hidden data-i18n="dx.env.ok">Rebut. Et responem en un dia laborable.</p>
   <p class="env-ko" id="envKo" hidden></p>
 </div>
@@ -895,7 +895,7 @@ ca: {
   'dx.env.h':'Envia\'ns-ho i et preparem la proposta',
   'dx.env.btn':'Envia\'ns el diagnòstic',
   'dx.env.mail':'O per correu',
-  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues.',
+  'dx.env.q':'S\'envia <b>el que has escrit en aquestes quatre pantalles</b> —què vols que passi, la teva organització, el termini i el teu contacte— al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM (Zoho) i ens arriba a nosaltres. <b>Res més.</b> Si prefereixes no passar per allà, el correu obre el teu programa amb tot escrit, o te\'l descarregues. Responsable: Alvaro Solache, per respondre\'t i preparar la proposta; pots veure, corregir o esborrar les teves dades escrivint-nos. Tot, a l\'<a href="/avis-legal.html#dades">avís legal i privacitat</a>.',
   'dx.env.ok':'Rebut. Et responem en un dia laborable.',
   'dx.env.enviat':'Enviat ✓',
   'dx.env.ko':'No s\'ha pogut enviar. Prova «O per correu», que obre el teu programa amb tot escrit — el diagnòstic el tens igualment.',
@@ -1079,7 +1079,7 @@ es: {
   'dx.env.h':'Envíanoslo y te preparamos la propuesta',
   'dx.env.btn':'Envíanos el diagnóstico',
   'dx.env.mail':'O por correo',
-  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —qué quieres que pase, tu organización, el plazo y tu contacto— al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM (Zoho) y nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas.',
+  'dx.env.q':'Se envía <b>lo que has escrito en estas cuatro pantallas</b> —qué quieres que pase, tu organización, el plazo y tu contacto— al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM (Zoho) y nos llega a nosotros. <b>Nada más.</b> Si prefieres no pasar por ahí, el correo abre tu programa con todo escrito, o te lo descargas. Responsable: Alvaro Solache, para responderte y preparar la propuesta; puedes ver, corregir o borrar tus datos escribiéndonos. Todo, en el <a href="/avis-legal.html#dades">aviso legal y privacidad</a>.',
   'dx.env.ok':'Recibido. Te respondemos en un día laborable.',
   'dx.env.enviat':'Enviado ✓',
   'dx.env.ko':'No se ha podido enviar. Prueba «O por correo», que abre tu programa con todo escrito — el diagnóstico lo tienes igualmente.',
@@ -1110,8 +1110,13 @@ let pas=1,current=null;
    d'aquí no ha de tornar a escriure com es diu. Dins d'un try perquè a finestra
    privada llegir localStorage llança i s'emporta la pàgina sencera. */
 const PONT='tt.form.qui';
+/* A la pestanya i no al navegador (avís legal, 10/10/2026): el pont serveix per
+   passar d'un formulari a l'altre, i el nom, el correu i el telèfon no s'han de
+   quedar desats per a la visita següent sense haver-ho demanat. Se n'esborra la
+   còpia que hi havien deixat les versions anteriors. */
+try{localStorage.removeItem(PONT);}catch(e){}
 function desaPont(){
-  try{localStorage.setItem(PONT,JSON.stringify({
+  try{sessionStorage.setItem(PONT,JSON.stringify({
     nom:$('#nom').value.trim(),rol:$('#rol').value,mail:$('#mail').value.trim(),
     tel:$('#tel').value.trim(),carrec:$('#carrec').value.trim(),
     org:st.org,orgNom:$('#orgNom').value.trim(),
@@ -1119,7 +1124,7 @@ function desaPont(){
     municipi:$('#municipi').value.trim(),comarca:$('#comarca').value.trim()}));}catch(e){}
 }
 function llegeixPont(){
-  try{const r=localStorage.getItem(PONT);if(!r)return;const d=JSON.parse(r);
+  try{const r=sessionStorage.getItem(PONT);if(!r)return;const d=JSON.parse(r);
     ['nom','rol','mail','tel','carrec','orgNom','web','dediqueu','municipi','comarca'].forEach(k=>{
       const el=$('#'+k);if(el&&d[k])el.value=d[k];});
     if(d.org){const b=$$('#orgType .opt').find(x=>x.dataset.v===d.org);

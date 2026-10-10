@@ -36,16 +36,23 @@ const port = await p1.evaluate(() => {
        El que segueix sent cert, i és el que es comprova: el producte és a la
        **primera meitat** i no a la quarta pantalla, que és d'on venia.
        `#fentpinya` i els castells ja no són a la portada: viuen a `/vna`, i
-       la portada hi porta. */
-    primer: ids.indexOf('dues-vistes') <= 1,
-    desDelRepte: ids.indexOf('enfoc') === 0 && ids.indexOf('dues-vistes') === 1,
+       la portada hi porta.
+
+       ⚠ **I des del 10/10/2026 la portada l'obren els tres serveis** (pla de
+       disseny, #216): el diagnòstic i el mapa de valor, la web i el SOS com a
+       formació. El repte i el mapa venen després, però **junts i en aquest
+       ordre**, que és el que aquesta prova vigila. */
+    primer: ids.indexOf('dues-vistes') >= 0 && ids.indexOf('dues-vistes') < ids.length / 2,
+    desDelRepte: ids.indexOf('enfoc') >= 0 && ids.indexOf('dues-vistes') === ids.indexOf('enfoc') + 1,
+    serveis: ids[0] === 'serveis',
     capCastell: ids.indexOf('fentpinya') < 0 && ids.indexOf('rengles') < 0,
     nodes: mv ? mv.querySelectorAll('.mv-n').length : 0,
     fletxes: mv ? mv.querySelectorAll('.mv-svg path[marker-end]').length : 0,
     text: mv ? mv.innerText : ''
   };
 });
-ok(port.desDelRepte, 'el repte obre la pàgina i el mapa ve just després: primer el problema, després la resposta');
+ok(port.serveis, 'els tres serveis obren la portada (' + port.ids.slice(0, 4).join(' · ') + ')');
+ok(port.desDelRepte, 'el mapa ve just després del repte: primer el problema, després la resposta');
 ok(port.primer, 'i el producte és a la primera meitat, no a la quarta pantalla');
 ok(port.capCastell, 'i els castells ja no són a la portada: viuen a /vna, que és on viu el mètode');
 ok(port.nodes === 7, `el mapa del celler porta ${port.nodes} nodes`);
