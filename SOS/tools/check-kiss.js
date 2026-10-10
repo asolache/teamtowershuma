@@ -131,7 +131,19 @@ const src = readFileSync(APP, 'utf8');
 
    Es puja a 546 i no a 560 pel motiu de sempre: un sostre que no s'acosta mai
    no força cap mesura. */
-const MAX_GZIP_KB = 546;   // baixat un cop i cachejat (sw.js), no a cada visita
+
+/* ── 546 → 548 KB (10/10/2026) · l'interès entre dues persones ─────────────
+   Mesurat: 545,2 → 546,4 KB, o sigui 1,2 KB, i el sostre arrodonit quedava a
+   0,06 KB de petar al pròxim canvi de qualsevol.
+
+   El que es compra és **un pas en fals menys**: «m'interessa» davant d'una
+   oferta obria «Registra un intercanvi» i demanava les hores d'una feina que
+   no havia passat. Ara deixa un interès que no toca el registre, i el
+   formulari d'apuntar és el de sempre, quan ja està fet. No hi ha cap
+   pantalla nova al llançador ni cap ruta: una mena de tasca i un modal petit.
+   Es puja 2 KB i no més: el pròxim tram (l'acord amb fil) és més gros i
+   haurà de tornar a mesurar. */
+const MAX_GZIP_KB = 548;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;

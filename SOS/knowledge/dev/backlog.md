@@ -43,6 +43,9 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > **Pla de millora del SOS, mesurat (10/09/2026):** `pla-millora-sos.md`. Deu
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
+> **Estat al 10/10/2026** a la capçalera del pla: fets l'1 (#219), el 2, el 10
+> i el primer pas del 4 (#223); el 3 xoca amb una decisió anterior i l'ha de
+> resoldre l'Àlvar.
 
 > **Pla de disseny (10/10/2026):** `pla-disseny.md`. Cinc costures mesurades
 > (mides sota el terra, àlies de la pell vella, components copiats a mà, les
@@ -100,8 +103,8 @@ com a formació acció— i que tot el SOS quedi a dins del SOS i dels seus men�
   Aprèn · Molekulon, i «Obre el SOS», amb tornada a la portada). Quina barra
   porta cada pàgina ho diu `PAGINES_LLOC`.
 - La portada: «Tres serveis» just després del hero, en lloc de «Tres camins».
-- Pendent: `/mapa-web/` i `/conecta/` encara no porten la barra ni la pell
-  (fase 1 del pla de disseny, la porta el fil del servei web).
+- ~~Pendent: `/mapa-web/` i `/conecta/` encara no porten la barra ni la pell~~
+  · **fet al #222** (fase 1 del pla de disseny).
 
 ### L'editor del mapa · pantalla completa i els patrons del flux (09/10/2026)
 
@@ -563,6 +566,12 @@ explicat aquí amb la seva mesura.
 **Demanat per l'Àlvar:** «desenvolupament de passarel·la de pagament per a
 pagament de serveis com Claude Code, Netlify, GitHub si es requereix».
 
+**Estat (10/10/2026):** els punts 1 i 2 ja estan fets. El proveïdor és Stripe
+Checkout (Apple Pay i Google Pay), en mode de prova, amb les funcions
+`netlify/functions/checkout.mjs` i `checkout-completat.mjs` (#218, bloc «La web
+surt del mapa»). Falta que l'Àlvar posi les claus de prova i creï el preu. El
+paràgraf de sota és el punt de partida del 09/10, i no l'estat d'avui.
+
 **Avui no es cobra res des de la web.** Cap pàgina té passarel·la (`SOS/compra.html`
 ho diu en clar: «Aquí no es cobra res»), `/mapa-web/` diu que una botiga amb
 passarel·la és un projecte a part, i l'únic que corre al servidor és la funció de
@@ -619,10 +628,25 @@ generar ingressos recurrents dels serveis de teamtowershuma».
    Les dades personals i els preus pactats es queden al CRM, mai a l'API pública
    ni al repositori.
 
+**Decidit per l'Àlvar (10/10/2026):** hi ha **un sol pla de negoci** per a
+TeamTowers, TeamTowers Humà i Events Penedès, i **cobra tant als clients com
+als proveïdors** (espais i serveis). El pla, amb els imports, viu al repositori
+d'estratègia i no aquí. El que això canvia en aquest bloc:
+
+5. **Els proveïdors també paguen.** La mateixa infraestructura (passarel·la,
+   registre, CRM) ha de distingir **client** i **proveïdor**. La comissió es
+   declara, com ja diu `/conecta/`, i surt apuntada al registre com les altres.
+6. **Proposta, per validar:** una sola fitxa per persona per a les tres marques.
+   Un lead d'Events Penedès i un de TeamTowers Humà no haurien de ser dues fitxes
+   de la mateixa persona; la marca seria un camp, no un CRM per marca.
+
 **Com es tanca:** el primer client amb quota cobrada i el seu informe mensual
 generat sol; una clau d'API d'un pilot escrivint transaccions; i una comissió
 de prova apuntada i liquidada. Abans de construir res, l'Àlvar decideix Zoho o
 el nostre (és la pregunta oberta del pla del CRM), perquè canvia on viu la fitxa.
+**De fet, el pilot 1 ja escriu leads a Zoho** (`submission-created.mjs`, bloc
+«Serveis connectables»): si la resposta és «el nostre», aquella funció canvia de
+destí; si és Zoho, la fitxa única de les tres marques hi ha de cabre.
 
 ### L'editor del mapa · el vol de falcó i ordenar el flux arrossegant (demanat i fet 09/10/2026)
 
@@ -1267,6 +1291,10 @@ d'arquitectura és escrita a `vision/molekulon-estat-liquid.md`: **fork del
 model, no del codi** (veda 153). Esquelet de 19 nodes contra els 47 de
 Catalunya; guarda `build-molekulon.js --check` amb vuit regles.
 
+**Potser ja no cal (10/10/2026):** Molekulon ja té casa pròpia a molekulon.org
+(bloc «Les cinc portes»), i els seus `_redirects` ens porten trànsit. Abans de
+crear el subdomini, l'Àlvar ha de dir si encara el vol.
+
 **Queda una cosa, i no és de codi:** el subdomini
 `molekulon.teamtowershuma.com` necessita un *domain alias* a Netlify i un CNAME
 al DNS de `teamtowershuma.com`. Mentre no hi sigui, l'adreça canònica és
@@ -1290,9 +1318,31 @@ cara pública**, que és la que dona tracció però és **irreversible**; (4) al
 el que **depèn de tercers** (relés, trackers, proveïdors), que no pot ser mai el
 camí crític d'una eina que ha de funcionar sense xarxa.
 
+**La llista (10/10/2026)**, per al SOS, la de `pla-millora-sos.md` en aquest ordre:
+
+1. ~~La font deixa de bloquejar l'arrencada~~ · **fet (#219)**.
+2. ~~«M'interessa» deixa un interès i no obre el registre~~ · **fet (#223)**,
+   primer pas dels estats entre dues persones.
+3. **L'acord, amb el seu fil**, visible només per a les dues parts (pas 2 del
+   mateix punt, uns quatre dies). És el que fa que l'interès arribi a l'altra
+   persona.
+4. **El playtest amb cinc persones** (punt 6). No és codi, i ja no hi ha res
+   barat pendent que hagi d'anar abans.
+5. **Decidir la segona llengua del cos de l'app** (punt 8). És l'únic deute
+   que creix sol.
+
+El punt 3 del pla (les portes per sobre del plec) no hi és: xoca amb el tour
+de la V76, que es va posar davant de tot a posta, i ho ha de decidir l'Àlvar.
+
 ---
 
 ### Un CRM que s'actualitza sol · Zoho o el nostre, i què bloqueja cadascun
+
+**Estat (10/10/2026):** la ingesta automàtica (punt 2 de sota) ja existeix:
+`netlify/functions/submission-created.mjs` passa el diagnòstic a lead de Zoho al
+pilot 1, i falten les claus. L'enriquiment amb IA (punt 1) està per fer. La
+decisió del punt 3 continua oberta i ara la porta el bloc «Ingressos
+recurrents», amb el pla únic de les tres marques.
 
 **Demanat per l'Àlvar (28/09/2026):** «integra'm amb Zoho o tenir muntat un
 excel·lent CRM autoactualitzable en la seva màxima expressió», i **analitzar
@@ -2588,8 +2638,12 @@ I el sostre: `SOS/index.html` va molt just de mida (`check-kiss.js`). Això no �
 una miniapp més, és treure passos de sobre; però si cal pujar el sostre, es puja
 amb el motiu escrit al commit, com diu el CI.
 
-**Res d'això s'ha implementat.** És l'anàlisi que es va demanar, per poder
-decidir l'ordre; el primer pas barat i aïllat és el botó de la tasca.
+**Primer pas fet (10/10/2026, #223).** El botó en fals no era a la tasca sinó a
+la coincidència: «Ofereix-te a cobrir-ho» i «Demana-li hores» obrien el registre.
+Ara diuen «M'interessa» i deixen l'estat 1, que viu al navegador de qui el diu,
+surt a «Les meves tasques» i s'apunta pel camí de sempre quan ja està fet
+(`test-interes.mjs`). Queden l'acord amb el seu fil (estat 2), «fet i encara no
+apuntat» (estat 3) i l'eix del temps a la pantalla de tasques.
 
 ---
 
