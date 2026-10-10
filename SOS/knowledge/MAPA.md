@@ -14,7 +14,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 248 · 17283 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 249 · 17292 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
@@ -31,9 +31,9 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 29 KB |
+| `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 30 KB |
 | `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 102 · 1321 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 54 · 1199 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 55 · 1207 KB |
 
 ## saber
 

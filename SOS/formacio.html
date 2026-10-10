@@ -39,7 +39,7 @@ body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:va
 header{padding:3rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rgba(21,19,15,.07)}
 header h1{font-size:2.2rem;margin:0 0 .6rem;background:linear-gradient(90deg,var(--indigo),var(--green),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent}
 header p{color:var(--muted);margin:0 auto;font-size:1.05rem;max-width:640px}
-nav{margin-top:1.4rem;font-size:.9rem}
+nav{margin-top:1.4rem;font-size:var(--t0)}
 nav a{color:var(--indigo);text-decoration:none;margin:0 .5rem;white-space:nowrap}
 nav a:hover{text-decoration:underline}
 .toc{background:var(--card);border-radius:12px;padding:1.4rem;margin-bottom:2rem;border:1px solid var(--border)}
@@ -48,7 +48,7 @@ nav a:hover{text-decoration:underline}
 .toc ol li{margin:.35rem 0}
 .toc ol li a{color:var(--text);text-decoration:none}
 .toc ol li a:hover{color:var(--indigo)}
-.toc ol li em{color:var(--muted);font-style:normal;font-size:.85rem}
+.toc ol li em{color:var(--muted);font-style:normal;font-size:var(--t0)}
 .module{background:var(--card);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.8rem;border:1px solid var(--border);border-left:4px solid var(--indigo)}
 .module.mod-1{border-left-color:var(--indigo)} .module.mod-2{border-left-color:var(--blue)} .module.mod-3{border-left-color:var(--green)} .module.mod-4{border-left-color:var(--gold)}
 .module.mod-5{border-left-color:var(--orange)} .module.mod-6{border-left-color:var(--red)} .module.mod-7{border-left-color:var(--purple)} .module.mod-8{border-left-color:#00e5ff}
@@ -61,33 +61,33 @@ nav a:hover{text-decoration:underline}
 .module.mod-manual h3.section{color:#a3e635;border-top:1px solid rgba(163,230,53,.15);padding-top:1.2rem;margin-top:1.8rem}
 .module.mod-manual h3.section:first-of-type{border-top:0;padding-top:0}
 .module.mod-manual pre{max-width:100%}
-.module .num{color:var(--muted);font-size:.85rem;font-family:'SF Mono',Monaco,monospace;letter-spacing:.1em}
+.module .num{color:var(--muted);font-size:var(--t0);font-family:'SF Mono',Monaco,monospace;letter-spacing:.1em}
 .module h2{margin:.2rem 0 .3rem;font-size:1.5rem}
 .module .subtitle{color:var(--light);font-size:1rem;margin:0 0 1.2rem}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
 @media(max-width:720px){.grid2{grid-template-columns:1fr}}
 .box{background:rgba(21,19,15,.03);padding:1rem 1.2rem;border-radius:8px}
-.box h4{margin:0 0 .5rem;font-size:.75rem;color:var(--indigo);letter-spacing:.1em;text-transform:uppercase}
+.box h4{margin:0 0 .5rem;font-size:var(--t0);color:var(--indigo);letter-spacing:.06em;text-transform:uppercase}
 .box.skills h4{color:var(--green)}
 .box.aptituds h4{color:var(--orange)}
 .box.eines h4{color:var(--purple)}
 .box.metode h4{color:var(--blue)}
 .box.exercici h4{color:var(--red)}
 .box ul{margin:.3rem 0;padding-left:1.2rem;color:var(--light)}
-.box ul li{margin:.2rem 0;font-size:.9rem}
-.box p{margin:.3rem 0;color:var(--light);font-size:.9rem}
-.box code{background:rgba(99,102,241,.15);padding:.05rem .35rem;border-radius:4px;font-size:.85em;color:var(--indigo)}
+.box ul li{margin:.2rem 0;font-size:var(--t0)}
+.box p{margin:.3rem 0;color:var(--light);font-size:var(--t0)}
+.box code{background:rgba(99,102,241,.15);padding:.05rem .35rem;border-radius:4px;font-size:var(--t0);color:var(--indigo)}
 /* Un fragment de codi llarg (una llista de relés, per exemple) empenyia la
    pàgina sencera en horitzontal a 360 px, l'amplada de molts Androids. La
    formació es llegeix al mòbil: que parteixi el codi abans que la pàgina. */
 code{overflow-wrap:anywhere;word-break:break-word}
 h3.section{color:var(--indigo);font-size:1rem;letter-spacing:.05em;text-transform:uppercase;margin:1.5rem 0 .5rem}
 .lead{font-size:1.02rem;color:var(--light);margin:.5rem 0}
-.tag{display:inline-block;background:rgba(99,102,241,.15);color:var(--indigo);padding:.15rem .55rem;border-radius:20px;font-size:.72rem;margin-right:.3rem}
+.tag{display:inline-block;background:rgba(99,102,241,.15);color:var(--indigo);padding:.15rem .55rem;border-radius:20px;font-size:var(--t0);margin-right:.3rem}
 .tag.done{background:rgba(0,230,118,.15);color:var(--green)}
-.stack{background:linear-gradient(90deg,rgba(99,102,241,.08),rgba(0,230,118,.05));padding:.6rem .9rem;border-radius:8px;margin:.6rem 0;font-size:.88rem;color:var(--light)}
+.stack{background:linear-gradient(90deg,rgba(99,102,241,.08),rgba(0,230,118,.05));padding:.6rem .9rem;border-radius:8px;margin:.6rem 0;font-size:var(--t0);color:var(--light)}
 .stack strong{color:var(--text)}
-footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:.85rem;border-top:1px solid rgba(21,19,15,.05);margin-top:2rem}
+footer{text-align:center;color:var(--muted);padding:2.5rem 1rem 3rem;font-size:var(--t0);border-top:1px solid rgba(21,19,15,.05);margin-top:2rem}
 footer a{color:var(--indigo);text-decoration:none}
 /* Model acció-formació + nivells */
 .model,.itineraris,.gestor,.mentoria,.recursos{background:var(--card);border-radius:14px;padding:1.8rem 2rem;margin-bottom:1.8rem;border:1px solid var(--border)}
@@ -101,54 +101,56 @@ footer a{color:var(--indigo);text-decoration:none}
 .lvl{background:rgba(21,19,15,.03);border-radius:10px;padding:.9rem 1rem;border-top:3px solid var(--muted)}
 .lvl.l0{border-top-color:var(--muted)}.lvl.l1{border-top-color:var(--green)}
 .lvl.l2{border-top-color:var(--indigo)}.lvl.l3{border-top-color:var(--purple)}
-.lvl-id{font-family:'SF Mono',Monaco,monospace;font-size:.7rem;letter-spacing:.1em;color:var(--muted)}
+.lvl-id{font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);letter-spacing:.1em;color:var(--muted)}
 .lvl-nm{font-size:1rem;font-weight:700;margin:.15rem 0}
-.lvl-ds{font-size:.82rem;color:var(--light);line-height:1.45}
-.lvl-ev{font-size:.7rem;color:var(--muted);margin-top:.4rem;font-style:italic;line-height:1.4}
+.lvl-ds{font-size:var(--t0);color:var(--light);line-height:1.45}
+.lvl-ev{font-size:var(--t0);color:var(--muted);margin-top:.4rem;font-style:italic;line-height:1.4}
 .toc-x{margin:.3rem 0 0;padding-left:1.2rem;color:var(--light)}
 .toc-x li{margin:.3rem 0}
 .toc-x li a{color:var(--text);text-decoration:none}
 .toc-x li a:hover{color:var(--indigo)}
-.toc-x li em{color:var(--muted);font-style:normal;font-size:.85rem}
+.toc-x li em{color:var(--muted);font-style:normal;font-size:var(--t0)}
 /* Taula de rols / calendari / fonts */
-.rt{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:.86rem;display:block;overflow-x:auto}
-.rt th{text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap}
+.rt{width:100%;border-collapse:collapse;margin-top:.7rem;font-size:var(--t0);display:block;overflow-x:auto}
+.rt th{text-align:left;font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap}
+/* A l'escriptori la capçalera parteix perquè la taula hi càpiga; al mòbil la taula ja llisca */
+@media(min-width:721px){.rt th{white-space:normal}}
 .rt td{padding:.6rem .7rem;border-bottom:1px solid rgba(21,19,15,.05);color:var(--light);line-height:1.5;vertical-align:top}
 .rt tbody tr:hover{background:rgba(21,19,15,.02)}
 .rt-r{font-weight:600;color:var(--c,var(--text));white-space:nowrap}
-.rt-s{display:block;font-weight:400;font-size:.74rem;color:var(--muted);white-space:normal;margin-top:.15rem}
+.rt-s{display:block;font-weight:400;font-size:var(--t0);color:var(--muted);white-space:normal;margin-top:.15rem}
 /* Programa de gestor */
 .g-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin:1rem 0}
-.g-tile{background:rgba(21,19,15,.03);border-radius:10px;padding:.8rem;text-align:center}
+.g-tile{background:rgba(21,19,15,.03);border-radius:10px;padding:.8rem .5rem;text-align:center}
 .g-n{font-size:1.35rem;font-weight:700;color:var(--gold);line-height:1}
-.g-l{font-family:'SF Mono',Monaco,monospace;font-size:.6rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.g-l{font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);letter-spacing:0;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
 .comp{background:rgba(21,19,15,.03);border-radius:12px;padding:1.2rem 1.3rem;margin-bottom:1rem;border-left:3px solid var(--gold)}
 .comp.c1{border-left-color:var(--green)}.comp.c2{border-left-color:var(--blue)}.comp.c3{border-left-color:var(--indigo)}
 .comp.c4{border-left-color:var(--orange)}.comp.c5{border-left-color:var(--purple)}.comp.c6{border-left-color:#00e5ff}
 .comp-hd{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap;margin-bottom:.4rem}
-.comp-n{font-family:'SF Mono',Monaco,monospace;font-size:.75rem;letter-spacing:.1em;color:var(--muted)}
+.comp-n{font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);letter-spacing:.1em;color:var(--muted)}
 .comp-hd h4{margin:0;font-size:1.12rem;flex:1;min-width:180px}
-.comp-m{font-family:'SF Mono',Monaco,monospace;font-size:.65rem;color:var(--muted);white-space:nowrap}
-.comp-d{color:var(--light);font-size:.92rem;margin:.2rem 0 .6rem;line-height:1.6}
-.comp .box h4{font-size:.7rem}
+.comp-m{font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);color:var(--muted);white-space:nowrap}
+.comp-d{color:var(--light);font-size:var(--t0);margin:.2rem 0 .6rem;line-height:1.6}
+.comp .box h4{font-size:var(--t0)}
 /* Sessió de mentoria */
 .sess{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem}
-.s-row{display:flex;gap:.85rem;align-items:flex-start;background:rgba(21,19,15,.03);border-radius:8px;padding:.7rem .9rem;font-size:.87rem;color:var(--light);line-height:1.55}
-.s-min{font-family:'SF Mono',Monaco,monospace;font-size:.75rem;font-weight:700;color:var(--orange);min-width:34px;flex-shrink:0}
+.s-row{display:flex;gap:.85rem;align-items:flex-start;background:rgba(21,19,15,.03);border-radius:8px;padding:.7rem .9rem;font-size:var(--t0);color:var(--light);line-height:1.55}
+.s-min{font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);font-weight:700;color:var(--orange);min-width:34px;flex-shrink:0}
 /* Recursos */
 .res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem;margin-top:.6rem}
 .res{display:flex;flex-direction:column;gap:.2rem;background:rgba(21,19,15,.03);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;text-decoration:none;transition:border-color .14s,transform .14s}
 .res:hover{border-color:var(--purple);transform:translateY(-2px)}
-.res-t{font-size:.9rem;font-weight:700;color:var(--text);line-height:1.3}
-.res-d{font-size:.78rem;color:var(--muted);line-height:1.45}
-.res-k{font-family:'SF Mono',Monaco,monospace;font-size:.58rem;letter-spacing:.06em;text-transform:uppercase;color:var(--purple);margin-top:.2rem}
+.res-t{font-size:var(--t0);font-weight:700;color:var(--text);line-height:1.3}
+.res-d{font-size:var(--t0);color:var(--muted);line-height:1.45}
+.res-k{font-family:'SF Mono',Monaco,monospace;font-size:var(--t0);letter-spacing:.04em;text-transform:uppercase;color:var(--purple);margin-top:.2rem}
 .expert-cert{background:linear-gradient(135deg,rgba(224,64,251,.15),rgba(99,102,241,.1));border:2px solid var(--purple);border-radius:14px;padding:2rem;margin-top:2rem;text-align:center}
 .expert-cert h2{margin:0 0 .5rem;background:linear-gradient(90deg,var(--purple),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent}
 /*TT-EMBUT-CSS*/
 /* GENERAT per SOS/tools/build-embut.js · l'embut «Per on començar» */
 .emb{padding:4rem 1.25rem;border-top:1px solid var(--border);background:var(--panel)}
 .emb-in{max-width:1080px;margin:0 auto}
-.emb-k{font-family:var(--mono);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
+.emb-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
 .emb h2{font-size:var(--t4);line-height:1.15;margin:0 0 .8rem;color:var(--text)}
 .emb h2 em{font-style:normal;color:var(--indigo)}
 .emb-d{font-size:var(--t1);line-height:1.6;color:var(--light);max-width:62ch;margin:0 0 1.8rem}
@@ -156,7 +158,7 @@ footer a{color:var(--indigo);text-decoration:none}
 .emb-p{display:flex;flex-direction:column;gap:.45rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.25rem;color:var(--text);text-decoration:none}
 a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 .emb-c{grid-column:1/-1;border-color:var(--green);border-top-width:3px}
-.emb-pk{font-family:var(--mono);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo)}
+.emb-pk{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;text-transform:uppercase;color:var(--indigo)}
 .emb-c .emb-pk{color:var(--green)}
 .emb-pt{font-size:var(--t2);font-weight:700;line-height:1.3;margin:0;color:var(--text)}
 .emb-pd{font-size:var(--t0);line-height:1.6;color:var(--light);margin:0;max-width:72ch}
@@ -1378,7 +1380,7 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 
 <h3 class="section">I · Debugging &amp; recovery</h3>
 <div class="box eines"><h4>🧰 Snippets DevTools útils</h4>
-<pre style="background:rgba(0,0,0,.4);padding:.8rem 1rem;border-radius:6px;overflow-x:auto;font-size:.82rem;color:var(--light);margin:.5rem 0"><code>// Veure tot l'estat
+<pre style="background:rgba(0,0,0,.4);padding:.8rem 1rem;border-radius:6px;overflow-x:auto;font-size:var(--t0);color:var(--light);margin:.5rem 0"><code>// Veure tot l'estat
 window.__SOS.state
 
 // Exportar backup complet
@@ -1476,9 +1478,9 @@ Object.keys(window.__SOS).length</code></pre>
 <div class="expert-cert" id="cert">
 <h2>🎓 Expert/a SOS · llibre obert</h2>
 <p style="color:var(--light);margin:.4rem 0 1rem">Has completat els 8 mòduls. Domines:</p>
-<p style="color:var(--muted);font-size:.9rem"><span class="tag done">Filosofia + codex</span><span class="tag done">Criptografia W3C</span><span class="tag done">VNA Verna Allee</span><span class="tag done">Recursos comunitaris</span><span class="tag done">Governança federativa</span><span class="tag done">Slicing Pie + Mondragón</span><span class="tag done">Comando + narrativa</span><span class="tag done">Nostr + IPFS + IA</span></p>
+<p style="color:var(--muted);font-size:var(--t0)"><span class="tag done">Filosofia + codex</span><span class="tag done">Criptografia W3C</span><span class="tag done">VNA Verna Allee</span><span class="tag done">Recursos comunitaris</span><span class="tag done">Governança federativa</span><span class="tag done">Slicing Pie + Mondragón</span><span class="tag done">Comando + narrativa</span><span class="tag done">Nostr + IPFS + IA</span></p>
 <p style="color:var(--light);margin-top:1rem">Estàs preparat/da per <strong>implementar SOS a qualsevol comunitat</strong> i per <strong>mentorar la següent promoció</strong>. La certificació no la dona ningú: surt del teu propi <strong>ledger signat</strong>. Cada hora, cada mapa, cada decisió votada és una prova que qualsevol pot verificar amb un Anchor Pack — sense confiar en TeamTowers ni en cap tribunal.</p>
-<p style="color:var(--muted);font-size:.88rem;margin-top:.8rem">Al SOS: <strong>launcher → 🎓 Prepara la meva mentoria</strong> per veure el teu nivell, els teus buits i el guió de la propera sessió.</p>
+<p style="color:var(--muted);font-size:var(--t0);margin-top:.8rem">Al SOS: <strong>launcher → 🎓 Prepara la meva mentoria</strong> per veure el teu nivell, els teus buits i el guió de la propera sessió.</p>
 <p style="margin-top:1.2rem"><a href="index.html" style="background:linear-gradient(90deg,#e040fb,#6366f1);color:#fff;padding:.7rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">Obre SOS i comença →</a></p>
 </div>
 
