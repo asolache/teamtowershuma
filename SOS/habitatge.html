@@ -36,6 +36,40 @@
   --t5           : clamp(2.1rem,6vw,3.5rem);
 /*/TT-PELL*/
 }
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
@@ -74,13 +108,10 @@ section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
 .mono{font-family:var(--mono)}
 
 .taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
-input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+input,select{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
   border-radius:8px;padding:.4rem .55rem}
 input[type=number]{width:88px;text-align:right;font-family:var(--mono)}
 input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
-button.b{cursor:pointer}
-button.b:hover{border-color:var(--indigo)}
-.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
 .fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
 
 table{width:100%;border-collapse:collapse;font-size:.83rem}
@@ -310,7 +341,7 @@ tr.min td:first-child{border-left:2px solid var(--purple);padding-left:.35rem}
       <label>persones <input id="inPers" type="number" min="1" max="10" step="1" value="2"></label>
       <label>ingressos nets/mes <input id="inIng" type="number" min="0" max="20000" step="100" value="2200"></label>
       <label>pot posar <input id="inPot" type="number" min="0" max="200000" step="1000" value="20000"></label>
-      <button class="b b-pri" id="btnLlar">Dona-la d'alta</button>
+      <button class="btn btn-primary" id="btnLlar">Dona-la d'alta</button>
     </div>
     <p class="mut" id="llarsAvis"></p>
     <div class="taula"><table id="tLlars"></table></div>
@@ -540,12 +571,42 @@ tr.min td:first-child{border-left:2px solid var(--purple);padding-left:.35rem}
 
 </main>
 
-<footer style="border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem">
-  <a href="index.html" style="color:var(--indigo)">SOS</a> ·
-  <a href="energia.html" style="color:var(--indigo)">L'Energia</a> ·
-  <a href="compra.html" style="color:var(--indigo)">La Compra</a> ·
-  les xifres porten data i font
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/habitatge.html" aria-current="page"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html"><span>Formació acció</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Molekulon</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>El Comando</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>La Fàbrica de Superherois</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+  </div>
 </footer>
+<!--/TT-PEU-->
 
 <script type="module">
 /* ══ L'Habitatge · cessió d'ús, quota i aportació retornable ══════════════
@@ -902,7 +963,7 @@ function pintaLlars(){
       '<td class="n">'+num(f.quota)+'</td>'+
       '<td class="n" style="color:'+(f.esforc==null?'var(--muted)':f.esforc<=ESFORC_MAX?'var(--green)':'var(--red)')+'">'+
       (f.esforc==null?'—':un(f.esforc)+'%')+'</td>'+
-      '<td class="n"><button class="b" data-fora="'+f.l.id+'">treu</button></td></tr>').join('')
+      '<td class="n"><button class="btn btn-sm" data-fora="'+f.l.id+'">treu</button></td></tr>').join('')
      :'<tr><td colspan="8" class="mut">Encara cap llar.</td></tr>')+
     '<tr><td><strong>Total</strong></td><td class="n"><strong>'+ent(m2Privats())+'</strong></td>'+
     '<td class="n"><strong>'+G.llars.reduce((t,l)=>t+l.persones,0)+'</strong></td><td></td>'+

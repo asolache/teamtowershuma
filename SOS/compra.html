@@ -36,6 +36,40 @@
   --t5           : clamp(2.1rem,6vw,3.5rem);
 /*/TT-PELL*/
 }
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);line-height:1.55;
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
@@ -97,13 +131,10 @@ td.n,th.n{text-align:right;font-family:var(--mono);white-space:nowrap}
 .taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
 tr.no80 td:first-child{border-left:2px solid var(--orange);padding-left:.35rem}
 
-input,select,button.b{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
+input,select{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
   border-radius:8px;padding:.4rem .55rem}
 input[type=number]{width:78px;text-align:right;font-family:var(--mono)}
 input:focus,select:focus{outline:2px solid var(--indigo);outline-offset:1px}
-button.b{cursor:pointer}
-button.b:hover{border-color:var(--indigo)}
-.b-pri{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
 .fila{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
 
 .xips{display:flex;gap:.35rem;flex-wrap:wrap;margin:.3rem 0 .6rem}
@@ -116,7 +147,6 @@ button.b:hover{border-color:var(--indigo)}
 .soci .nm{font-weight:700;font-size:.92rem}
 .soci .xf{font-family:var(--mono);font-size:.78rem;color:var(--light);margin-top:.25rem}
 .soci .ac{display:flex;gap:.35rem;margin-top:.5rem}
-.soci .ac button{font-size:.72rem;padding:.25rem .5rem}
 
 .prodbox{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:.8rem .9rem;margin-bottom:.7rem}
 .prodbox.curt{border-color:rgba(255,82,82,.5)}
@@ -164,15 +194,12 @@ ol.passos li{margin-bottom:.2rem}
 .enc .dd{font-size:.79rem;color:var(--light);margin-top:.3rem;line-height:1.5}
 .enc .dd em{color:var(--muted);font-style:italic}
 .enc .ac{margin-top:.45rem}
-.enc .ac button{font-size:.76rem;padding:.3rem .6rem}
 
 .metode{font-size:.9rem;color:var(--light)}
 .metode h4{margin:1rem 0 .3rem;font-size:.95rem;color:var(--text)}
 .metode ul{margin:.2rem 0 .6rem;padding-left:1.1rem}
 .metode li{margin-bottom:.3rem}
 .metode strong{color:var(--text)}
-
-footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:center;color:var(--muted);font-size:.8rem}
 @media(max-width:520px){
   .hero{padding:2.4rem 1rem 1.6rem}
   .wrap{padding:0 .8rem 3rem}
@@ -350,7 +377,7 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
     <div class="fila">
       <label>Persones a la llar
         <select id="selLlar"></select></label>
-      <button class="b" id="btnDefecte">Torna a la cistella per defecte</button>
+      <button class="btn" id="btnDefecte">Torna a la cistella per defecte</button>
     </div>
   </section>
 
@@ -382,7 +409,7 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
     <div class="fila">
       <input id="inNom" placeholder="Nom de la llar" maxlength="24">
       <label>persones <input id="inLlar" type="number" min="1" max="12" value="2"></label>
-      <button class="b b-pri" id="btnSoci">Dona d'alta</button>
+      <button class="btn btn-primary" id="btnSoci">Dona d'alta</button>
     </div>
     <p class="mut" id="socisAvis"></p>
     <div class="socis" id="socis"></div>
@@ -475,7 +502,7 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
     menys el tram de volum. El sobrant de format hi va inclòs perquè el grup l'ha de posar igualment; el
     que se'n fa després (rebost comú o repartir el fresc) és una decisió vostra, no una xifra.</p>
     <div id="caixaAra"></div>
-    <div class="fila"><button class="b b-pri" id="btnTanca">Tanca la comanda</button></div>
+    <div class="fila"><button class="btn btn-primary" id="btnTanca">Tanca la comanda</button></div>
     <p class="mut" id="caixaAvis"></p>
     <h4 style="margin:1.2rem 0 .3rem;font-size:.9rem">Comandes tancades</h4>
     <div id="caixaComandes"></div>
@@ -491,7 +518,7 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
       <select id="movSoci"></select>
       <label>€ <input id="movEur" type="number" min="0" step="0.01" value="0"></label>
       <input id="movNota" placeholder="nota (opcional)" maxlength="40">
-      <button class="b b-pri" id="btnMov">Apunta-ho a la caixa</button>
+      <button class="btn" id="btnMov">Apunta-ho a la caixa</button>
     </div>
     <p class="mut" id="movAvis"></p>
     <div id="movs"></div>
@@ -579,11 +606,42 @@ footer{border-top:1px solid var(--border);padding:1.6rem 1.2rem;text-align:cente
 
 </main>
 
-<footer>
-  La Compra · una eina del <a href="index.html">SOS</a> de <a href="../index.html">TeamTowers Humà</a> ·
-  <a href="formacio.html">Formació</a> · <a href="escola.html">Escoles</a> ·
-  <a href="vna.html">Mapa de valor</a> · <a href="joc.html">El joc</a>
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html" aria-current="page"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html"><span>Formació acció</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Molekulon</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>El Comando</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>La Fàbrica de Superherois</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+  </div>
 </footer>
+<!--/TT-PEU-->
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1309,7 +1367,7 @@ function encaixosHTML(din){
         ' — o algú que ho porti.</em>':'.')+
       '<br>Si l\'agafes, el que hi poses són <strong>'+dona.length+' lliuraments</strong>: '+
       dona.map(l=>esc(l.que)).join(' · ')+'.</div>'+
-      '<div class="ac"><button class="b'+(meu===x.rol?'':' b-pri')+'" data-agafa="'+esc(x.rol)+
+      '<div class="ac"><button class="btn btn-sm" data-agafa="'+esc(x.rol)+
       '" data-din="'+din+'">'+(meu===x.rol?'És el teu rol — deixa\'l':'Agafo aquest rol')+
       '</button></div></div>';
   }).join('')+'</div>'+
@@ -1453,8 +1511,8 @@ function pintaSocis(){
       '<div class="mut">'+s.llar+' '+(s.llar===1?'persona':'persones')+'</div>'+
       '<div class="xf">'+eur(d.tot)+' / setmana · <span style="color:'+
         (d.pct>=80?'var(--green)':'var(--orange)')+'">'+pc(d.pct)+'%</span></div>'+
-      '<div class="ac"><button class="b" data-veu="'+s.id+'">Veure</button>'+
-      '<button class="b" data-fora="'+s.id+'">Treure</button></div></div>';
+      '<div class="ac"><button class="btn btn-sm" data-veu="'+s.id+'">Veure</button>'+
+      '<button class="btn btn-sm" data-fora="'+s.id+'">Treure</button></div></div>';
   }).join('');
 
   const s=G.socis.find(x=>x.id===sociSel);
@@ -1601,7 +1659,7 @@ function pintaCaixa(){
       '<span class="mut">'+c.llars+' llars · '+c.perProductor.length+' productors</span>'+
       '<span class="est">'+eur(c.total)+'</span></div>'+
       (c.sotaMinim?'<p class="nota mal">'+c.sotaMinim+' per sota del mínim quan es va tancar.</p>':'')+
-      '<div class="fila"><button class="b" data-obre="'+c.id+'">Torna-la a obrir</button></div>'+
+      '<div class="fila"><button class="btn btn-sm" data-obre="'+c.id+'">Torna-la a obrir</button></div>'+
       '</div>').join('');
 
   /* Els comptes. Qui deu i qui té a favor, i cap dels dos amagat. */
@@ -1627,7 +1685,7 @@ function pintaCaixa(){
         const s2=G.socis.find(x=>x.id===m.soci);
         return '<tr><td>'+esc(m.quan)+'</td><td>'+esc(s2?s2.nom:'llar donada de baixa')+'</td>'+
           '<td class="mut">'+esc(m.nota||'—')+'</td><td class="n">'+num(m.eur)+'</td>'+
-          '<td class="n"><button class="b" data-treu="'+m.id+'">treu</button></td></tr>';
+          '<td class="n"><button class="btn btn-sm" data-treu="'+m.id+'">treu</button></td></tr>';
       }).join('')+'</tbody></table></div>';
 
   $('#caixaCapes').innerHTML=

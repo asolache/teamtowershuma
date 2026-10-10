@@ -89,8 +89,8 @@ const AMB_HTML = ['emb.h', 'emb.c.n'];
    per on començar no els ha de llegir tots per trobar el primer pas. */
 const PAGINES = [
   { f: 'cataleg.html', dic: true, abans: '<!-- EL CATÀLEG ─' },
-  { f: 'qui-som.html', dic: true, abans: '<footer>' },
-  { f: 'premsa.html', dic: true, abans: '<footer>' },
+  { f: 'qui-som.html', dic: true, abans: '<!--TT-PEU-->' },
+  { f: 'premsa.html', dic: true, abans: '<!--TT-PEU-->' },
   { f: 'SOS/ia.html', dic: false, abans: '</main>' },
   { f: 'SOS/formacio.html', dic: false, abans: '</main>' },
   { f: 'SOS/blog.html', dic: false, abans: '</main>' }
@@ -131,7 +131,7 @@ function bloc(dic) {
     [1, 2, 3, 4, 5].map(pas).join('\n'),
     '        </ol>',
     '        <p class="emb-acc">',
-    `          <a class="emb-cta" href="/SOS/diagnostic.html"${a('emb.c.a')}>${t('emb.c.a')}</a>`,
+    `          <a class="btn-primary emb-cta" href="/SOS/diagnostic.html"${a('emb.c.a')}>${t('emb.c.a')}</a>`,
     `          <a class="emb-sec" href="/SOS/pressupost.html"${a('emb.c.b')}>${t('emb.c.b')}</a>`,
     '        </p>',
     `        <p class="emb-n"${a('emb.c.n')}>${t('emb.c.n')}</p>`,
@@ -173,8 +173,8 @@ const CSS = [
   '.emb-r li b{display:block;color:var(--text)}',
   '.emb-r li b::before{content:counter(emb) " · ";font-family:var(--mono);font-weight:400;color:var(--green)}',
   '.emb-acc{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin:.6rem 0 0}',
-  '.emb-cta{display:inline-flex;align-items:center;min-height:44px;padding:.6rem 1.2rem;border-radius:8px;background:var(--green);color:var(--on-accent);font-weight:700;text-decoration:none;touch-action:manipulation}',
-  '.emb-cta:hover,.emb-cta:focus-visible{background:var(--text)}',
+  /* El botó és el comú (`build-components.js`) des del 10/10/2026: era verd i
+     amb el seu radi, i a la mateixa pàgina el de la portada era indi. */
   '.emb-sec{display:inline-flex;align-items:center;min-height:44px;color:var(--indigo);font-weight:600}',
   '.emb-n,.emb-peu{font-size:var(--t0);line-height:1.6;color:var(--muted);margin:0}',
   '.emb-n a{color:var(--indigo)}',
@@ -221,7 +221,7 @@ PAGINES.forEach(({ f, dic, abans }) => {
   }
   /* Una sola porta principal: si la pàgina ja en té una altra de verda al
      mateix bloc, n'hi hauria dues del mateix pes. */
-  const n = (bloc(dic).match(/class="emb-cta"/g) || []).length;
+  const n = (bloc(dic).match(/class="btn-primary emb-cta"/g) || []).length;
   if (n !== 1) bad(`${f}: el bloc porta ${n} botons principals`);
   if (/\d\s*€/.test(bloc(dic))) bad(`${f}: el bloc ensenya un preu en euros`);
   if (nou === html) return;

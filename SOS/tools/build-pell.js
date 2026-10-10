@@ -108,13 +108,6 @@ function bloc() {
     `  ${k.padEnd(ample)}: ${v};${per ? '   /* ' + per + ' */' : ''}`).join('\n');
 }
 
-/* `bloc` també s'exporta: `build-vedes.js` regenera la seva pàgina sencera i
-   ha d'escriure-hi la paleta ell mateix. Abans hi deixava les marques buides
-   esperant que aquest fitxer les omplís després, i com que aquest no corria
-   al CI, `/vedes` es publicava sense cap color de la pell. */
-module.exports = { PELL, bloc };
-if (require.main !== module) return;
-
 /* ══ QUI LA PORTA, I QUI NO ══════════════════════════════════════════════════
    La llista és explícita a posta: afegir una pàgina ha de ser una decisió que
    inclogui dir de quin color és. */
@@ -139,6 +132,15 @@ const PAGINES = [].concat(
   readdirSync(ARREL).filter(f => /\.html$/.test(f)),
   readdirSync(SOS).filter(f => /\.html$/.test(f)).map(f => 'SOS/' + f)
 ).filter(f => !FORA_DE_LA_PELL[f]).sort();
+
+/* `bloc` també s'exporta: `build-vedes.js` regenera la seva pàgina sencera i
+   ha d'escriure-hi la paleta ell mateix. Abans hi deixava les marques buides
+   esperant que aquest fitxer les omplís després, i com que aquest no corria
+   al CI, `/vedes` es publicava sense cap color de la pell. */
+/* I la llista de pàgines, perquè `build-components.js` escriu els components
+   exactament a les mateixes: qui té la pell té els botons. */
+module.exports = { PELL, bloc, PAGINES, FORA_DE_LA_PELL };
+if (require.main !== module) return;
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════
    Les marques van **dins del `:root`** de cada pàgina, i el que hi hagi fora

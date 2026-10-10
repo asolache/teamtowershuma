@@ -461,7 +461,10 @@ function diccionari(l) {
   const fix = {
     'nv.cta': { ca: txt(CTA[1], 'ca'), es: txt(CTA[1], 'es') },
     /* El resum del desplegable de mòbil. A sobretaula no es veu. */
-    'nv.menu': { ca: 'Menú', es: 'Menú' }
+    'nv.menu': { ca: 'Menú', es: 'Menú' },
+    /* L'enllaç de correu del peu, que és l'únic text del peu que la barra no
+       porta. */
+    'nv.peu.mail': { ca: 'Escriu-nos', es: 'Escríbenos' }
   };
   Object.entries(fix).forEach(([k, v]) => f.push(`  '${k}':'${esc2(v[l])}',`));
   return f.join('\n');
@@ -727,22 +730,129 @@ const CSS = `<style>
 }
 </style>`;
 
+/* ══ EL PEU (10/10/2026) ══════════════════════════════════════════════════
+   Fins avui cada pàgina en tenia un d'escrit a mà, i n'hi havia de tres menes:
+   la portada, el catàleg i qui som amb una fila de cinc o sis enllaços —cada
+   un amb **una llista diferent**: el catàleg i qui som portaven «El SOS» a la
+   intro i la portada a l'aplicació—; el SOS amb una línia de text i tres
+   enllaços triats per a cada pàgina; i quatre pàgines sense peu. És la fase 4
+   del pla de disseny (`knowledge/dev/pla-disseny.md`).
+
+   El peu **no declara cap destí nou**: surt dels mateixos grups que la barra
+   (`LLOC` i `SOS_GRUPS`), i per això no pot dir una cosa diferent del menú.
+   La barra és per anar-hi; el peu és el mapa sencer, a la vista, per a qui ha
+   arribat al final i encara no sap on anar.
+
+   Les pàgines del SOS hi porten els seus grups, i els destins de l'altra casa
+   en un sol enllaç: onze enllaços de Molekulon al peu d'una eina del banc de
+   temps serien el menú d'un altre lloc.
+
+   Els peus que diuen alguna cosa —la font del mètode a l'editor, què veu qui
+   allotja el directori, d'on surt la pàgina de les vedes— **no són aquest
+   peu**: són contingut de la pàgina i es queden on són, a sobre. */
+const P_OBRE = '<!--TT-PEU-->', P_TANCA = '<!--/TT-PEU-->';
+
+/* Mateixa regla que la barra: només tokens de la pell i cap mida per sota del
+   terra. I amb **totes** les propietats de caixa escrites: el peu substitueix
+   `<footer>`s que tenien el seu `footer{…}` al full de la pàgina (centrat, a
+   .8rem, amb un altre padding), i el que el bloc no digui ho diria aquell. */
+const PEU_CSS = `<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>`;
+
+function peu(pagina) {
+  const lloc = esLloc(pagina);
+  /* Les claus són **les de la barra** (`nv.g.*`, `nv.t.*`): el peu no porta cap
+     text que la barra no tingui ja traduït, i per tant no hi ha cap clau nova
+     que pugui quedar-se sense entrada. L'única és el correu. */
+  const i18n = k => lloc ? ` data-i18n="${k}"` : '';
+  const jo = hrefDe(pagina);
+  const col = g => {
+    const primerFora = g.links.findIndex(l => esFora(l[0]));
+    const ls = g.links.filter((l, i) => !esFora(l[0]) || i === primerFora);
+    return `<div class="tp-col"><p class="tp-g"><span${i18n('nv.g.' + g.id)}>${esc(txt(g.lbl, 'ca'))}</span></p><ul>`
+      + ls.map(([h, t]) => {
+        const f = esFora(h);
+        return `<li><a href="${hrefDe(h)}"${f ? ' rel="noopener"' : ''}${hrefDe(h) === jo ? ' aria-current="page"' : ''}>`
+          + `<span${i18n('nv.t.' + clauDe(h))}>${esc(txt(t, 'ca'))}</span>${f ? '&nbsp;↗' : ''}</a></li>`;
+      }).join('') + `</ul></div>`;
+  };
+  const marca = lloc
+    ? `<a class="tp-logo" href="/">Team<b>Towers</b> Humà</a>`
+      + `<p class="tp-lema">Força · Equilibri · Valor · Seny</p>`
+      /* El correu va ofuscat: les pàgines que tenen el script (`.js-mail`)
+         el munten en temps d'execució, i a la resta l'enllaç porta a qui som,
+         que és on es diu a qui s'escriu. */
+      + `<a class="tp-mail js-mail" href="/qui-som"><span${i18n('nv.peu.mail')}>Escriu-nos</span></a>`
+    : `<a class="tp-logo" href="/SOS/">El <b>SOS</b></a>`
+      + `<p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p>`
+      + `<a class="tp-casa" href="/">← TeamTowers Humà</a>`;
+  return P_OBRE + '\n' + PEU_CSS + '\n'
+    + `<footer class="tt-peu">\n  <div class="tp-in">\n`
+    + `    <div class="tp-marca">${marca}<p class="tp-c">© 2026 TeamTowers Humà</p></div>\n`
+    + `    <div class="tp-cols">${(lloc ? LLOC : SOS_GRUPS).map(col).join('')}</div>\n`
+    + `  </div>\n</footer>\n` + P_TANCA;
+}
+
 /* ══ Aplicar ═════════════════════════════════════════════════════════════ */
 /* `build-vedes.js` genera `vedes.html` sencer des del codex, o sigui que
    escriuria per sobre del menú i les dues guardes es contradirien: la del menú
    diria que hi és i la dels vedes que la pàgina no correspon al codex. Per això
    el menú s'exporta i el generador dels vedes l'aplica ell mateix — una sola
    declaració, dos que la fan servir. */
-module.exports = { posa, nav, PAGINES, PAGINES_LLOC, EXCEPCIONS, FORA_DEL_MENU, GRUPS, LLOC, SOS_GRUPS, CTA, SOS_CTA, EINES };
+module.exports = { posa, nav, peu, PEU_CSS, PAGINES, PAGINES_LLOC, EXCEPCIONS, FORA_DEL_MENU, GRUPS, LLOC, SOS_GRUPS, CTA, SOS_CTA, EINES };
 if (require.main !== module) return;
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m);
 const bad = m => { fails++; console.log('  ✗ ' + m); };
 
+/* La barra i el peu, en una passada: les dues coses surten de la mateixa
+   declaració i una pàgina que en porta una ha de portar l'altra. Torna `null`
+   si no es poden posar —sense `<body>` o sense les marques del peu—, i qui la
+   crida diu quin dels dos. */
+function posa(html, pagina) {
+  const n = posaNav(html, pagina);
+  return n === null ? null : posaPeu(n, pagina);
+}
+/* El peu va **on la pàgina posa les marques**, i no s'insereix sol: on acaba
+   el contingut d'una pàgina ho sap la pàgina —abans o després d'un peu propi
+   que diu alguna cosa, abans dels scripts— i endevinar-ho aquí és com es
+   perden les coses. */
+function posaPeu(html, pagina) {
+  const i = html.indexOf(P_OBRE), j = html.indexOf(P_TANCA);
+  if (i < 0 || j <= i) return null;
+  return html.slice(0, i) + peu(pagina) + html.slice(j + P_TANCA.length);
+}
+
 /* Un menú nou substitueix el que hi havia. Els `<nav class="top">` i els menús
    de capçalera antics es treuen: deixar-los seria tenir-ne dos. */
-function posa(html, pagina) {
+function posaNav(html, pagina) {
   const bloc = nav(pagina);
   /* Les marques d'avui, i les velles el primer cop. `TT-PAGINES` era el
      desplegable que vivia **dins** del `<nav>` escrit a mà de les pàgines
@@ -877,7 +987,7 @@ PAGINES.forEach(p => {
   const html = readFileSync(f, 'utf8');
   let nou = posa(html, p);
   if (nou !== null) nou = posaDicSos(nou, p);
-  if (nou === null) { bad(`${p} no té <body>: no s'hi pot posar el menú`); return; }
+  if (nou === null) { bad(`${p} no té <body> o les marques del peu ${P_OBRE} … ${P_TANCA}: no s'hi pot posar el menú`); return; }
   if (CHECK) {
     if (nou === html) return;
     bad(`${p} no porta el menú declarat, o l'ha canviat pel seu compte`);
@@ -896,7 +1006,7 @@ PAGINES.forEach(p => {
     let nou = posa(html, nom);
     if (nou !== null) nou = posaDicArrel(nou);
     if (nou === null) {
-      bad(`${nom} no es pot muntar: li falta el <body> o les marques /*TT-NAV-I18N-CA*/ … `
+      bad(`${nom} no es pot muntar: li falta el <body>, les marques del peu ${P_OBRE} o les /*TT-NAV-I18N-CA*/ … `
         + 'i sense diccionari la barra es quedaria en català sobre una pàgina traduïda');
       totesBe = false;
     } else if (CHECK) {
@@ -957,7 +1067,10 @@ if (CHECK) {
       if (!existsSync(f)) return;
       const src = readFileSync(f, 'utf8');
       const i = src.indexOf(OBRE), j = src.indexOf(TANCA);
-      const fora = i < 0 ? src : src.slice(0, i) + src.slice(j + TANCA.length);
+      let fora = i < 0 ? src : src.slice(0, i) + src.slice(j + TANCA.length);
+      /* I sense el peu, que porta la seva classe i és generat igual. */
+      const pi = fora.indexOf(P_OBRE), pj = fora.indexOf(P_TANCA);
+      if (pi >= 0 && pj > pi) fora = fora.slice(0, pi) + fora.slice(pj + P_TANCA.length);
       /* No es prohibeix qualsevol `<nav>`: un índex de pàgina, una molla de
          pa i una fila d'enllaços del peu són `<nav>` i han de ser-ho. El que
          es prohibeix és **una segona barra del lloc**, i una barra del lloc es
@@ -968,6 +1081,10 @@ if (CHECK) {
       ['nav-links', 'tt-pagines', 'sos-nav', 'nav-burger', 'tt-nav', 'tn-gs'].forEach(c => {
         if (fora.includes(c)) q.push('.' + c);
       });
+      /* El peu es busca al **marcatge**: una pàgina pot nomenar-lo al seu CSS
+         per col·locar-lo (l'editor l'amaga a pantalla completa), i això no és
+         un segon peu. */
+      if (/class="[^"]*\btt-peu\b/.test(fora)) q.push('un segon .tt-peu');
       [...fora.matchAll(/<nav[\s\S]*?<\/nav>/g)].forEach(m => {
         const n = (m[0].match(/<summary/g) || []).length;
         if (n > 1) q.push(`un <nav> amb ${n} desplegables`);
@@ -1007,10 +1124,10 @@ if (CHECK) {
   {
     const { PELL } = require('./build-pell.js');
     const declarats = new Set((PELL || []).map(t => t[0]));
-    const usats = [...new Set([...CSS.matchAll(/var\((--[a-z0-9-]+)/g)].map(m => m[1]))];
+    const usats = [...new Set([...(CSS + PEU_CSS).matchAll(/var\((--[a-z0-9-]+)/g)].map(m => m[1]))];
     const forasters = usats.filter(t => !declarats.has(t));
     if (!declarats.size) bad('no es poden llegir els tokens de la pell: la guarda 3 no mira res');
-    else if (!forasters.length) ok(`els ${usats.length} tokens de la barra són tots de la pell`);
+    else if (!forasters.length) ok(`els ${usats.length} tokens de la barra i el peu són tots de la pell`);
     else bad(`la barra fa servir tokens que la pell no declara: ${forasters.join(', ')}`
       + ' — a les pàgines que no els declaren no peta: deixa el text sense color');
   }
@@ -1019,8 +1136,8 @@ if (CHECK) {
      .78rem, .65rem, .62rem i .7rem —12,5, 10,4, 9,9 i 11,2 px— i el terra del
      lloc són 15. Una mida escrita en `rem` a la barra se salta l'escala. */
   {
-    const literals = [...CSS.matchAll(/font-size:\s*(\.[0-9]+rem|[0-9.]+rem)/g)].map(m => m[1]);
-    if (!literals.length) ok('cap mida de la barra escrita a mà: totes surten de l\'escala');
+    const literals = [...(CSS + PEU_CSS).matchAll(/font-size:\s*(\.[0-9]+rem|[0-9.]+rem)/g)].map(m => m[1]);
+    if (!literals.length) ok('cap mida de la barra ni del peu escrita a mà: totes surten de l\'escala');
     else bad(`la barra porta ${literals.length} mida(es) fora de l'escala: ${literals.join(', ')}`
       + ' — el terra del lloc és var(--t0), 15 px, i un rem literal se\'l salta');
   }

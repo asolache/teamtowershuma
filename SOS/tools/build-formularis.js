@@ -539,10 +539,6 @@ const PRESSU = {
   'pr.pisos.4': { ca: '4 pisos', es: '4 pisos' },
   'pr.pisos.5': { ca: '5 pisos', es: '5 pisos' },
   'pr.pisos.6': { ca: '6 pisos', es: '6 pisos' },
-  'pr.peu': {
-    ca: 'SOS · Sistema Operatiu Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnòstic</a> · <a href="../index.html#cost">El mapa de cost</a>',
-    es: 'SOS · Sistema Operativo Social · <a href="../index.html">TeamTowers Humà</a> · <a href="diagnostic.html">Diagnóstico</a> · <a href="../index.html#cost">El mapa de coste</a>'
-  },
   'pr.mida.lloc.h': { ca: 'El desplaçament de l\'equip entra al pressupost al seu preu, sense marge a sobre.', es: 'El desplazamiento del equipo entra al presupuesto a su precio, sin margen encima.' },
   'pr.mida.cap': {
     ca: 'Aquestes preguntes surten quan demanes una activitat amb gent, data i lloc. Amb el que has triat ara, no calen.',
