@@ -73,10 +73,25 @@ console.log('\nL\'ordre sencer: de les fonts a l\'esborrany de web');
   ok(r2.status === 0 && f('web/index.html') && !existsSync(join(dir, 'web-esbozo')), 'amb un mapa.json que passa, la web va a web/ i l\'esbós s\'esborra');
   ok(/>Visitas<\/a>/.test(f('web/index.html')) && /<p>Ven a probar\.<\/p>/.test(f('web/el-visitant.html')) && f('web/cerebro/marca.json'), 'amb la marca que s\'ha retocat a mà: el nom curt i la introducció de la porta');
   ok(/Qui rep i explica/.test(f('README.md')) && /web\/index.html/.test(f('README.md')) && !/\d+\s?€/.test(f('README.md')), 'el README es refà amb el mapa nou, i sense imports');
+  const bo = f('EMPIEZA-AQUI.html');
+  const rutes = [...bo.matchAll(/href="([^"#]+)"/g)].map(m => m[1]).filter(h => !/^(https?:|mailto:)/.test(h));
+  ok(/<html lang="es">/.test(bo) && /Tu web sigue siendo la tuya/.test(bo) && /<h2 id="t-preguntas">/.test(bo) && /La web publica 1 precio/.test(bo) && /Qui rep i explica/.test(bo),
+    'EMPIEZA-AQUI.html: el backoffice del client, amb la proposta i les preguntes tal com són');
+  ok(rutes.length >= 4 && rutes.every(h => existsSync(join(dir, h))) && rutes.includes('web/estil.css') && /teamtowershuma\.com\/SOS\/vna-suport\.html/.test(bo),
+    'amb la marca de la web (el seu estil.css) i cap enllaç trencat: ' + rutes.join(', '));
   writeFileSync(join(dir, 'README.md'), '# El meu\n');
   corre('--llengua', 'es');
   ok(f('README.md') === '# El meu\n' && JSON.parse(f('marca.json')).portes, 'el que una persona ha fet seu (sense la marca de generat) no es trepitja');
   rmSync(dir, { recursive: true, force: true });
+}
+
+console.log('\nEl Markdown del backoffice');
+{
+  const { mdHtml } = req('../tools/proposta.js');
+  const h = mdHtml('# T\n\nUn **fort** i `codi` <script>x</script> [enllaç](mapa.json)\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n1. u\n   segueix\n2. dos\n\n> cita', 'propuesta', 1);
+  ok(/<h2>T<\/h2>/.test(h) && /<strong>fort<\/strong>/.test(h) && /<code>codi<\/code>/.test(h) && !/<script>/.test(h) && /&lt;script&gt;/.test(h), 'títols un nivell avall, negreta, codi, i l\'HTML escapat');
+  ok(/<a href="propuesta\/mapa.json">enllaç<\/a>/.test(h) && /<th scope="col">a<\/th>/.test(h) && /<td>2<\/td>/.test(h) && /<li>u segueix<\/li>/.test(h) && /<blockquote>/.test(h), 'enllaços relatius a la carpeta, taules, llistes i cites');
+  ok(!/<a /.test(mdHtml('[x](javascript:alert(1))')) && /<a href="https:\/\/x.example">/.test(mdHtml('[x](https://x.example)')), 'un enllaç javascript: no es converteix en enllaç; un https sí');
 }
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));

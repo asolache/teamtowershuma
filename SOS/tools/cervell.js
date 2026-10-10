@@ -122,6 +122,9 @@ if (opcio('--nou')) {
   const conf = JSON.parse(readFileSync(join(desti, 'cervell.json'), 'utf8'));
   if (opcio('--nom')) conf.nom = opcio('--nom');
   writeFileSync(join(desti, 'cervell.json'), JSON.stringify(conf, null, 2) + '\n');
+  /* El nom també al CLAUDE.md de la plantilla, si encara porta el de mostra. */
+  const claude = join(desti, conf.comunicacio || 'CLAUDE.md');
+  if (opcio('--nom') && existsSync(claude)) writeFileSync(claude, readFileSync(claude, 'utf8').replace(/NOMBRE-DEL-PROYECTO/g, conf.nom));
   mkdirSync(dirname(join(desti, conf.eina)), { recursive: true });
   copyFileSync(__filename, join(desti, conf.eina));
   /* El zip de la web que surt del mapa ja porta les seves carpetes: `cerebro/`

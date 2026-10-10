@@ -186,7 +186,9 @@ Llegeix `propuesta/fuentes/` (les pàgines desades, el catàleg, el CSS, el logo
 escriu `analisis.md` (qui hi surt i què s'hi dona, amb la frase on surt, i el
 que la web no diu), `marca.json` i un esbós de mapa, i en fa la web: a
 `web-esbozo/` mentre no hi hagi un `mapa.json` que passi les regles dures, i a
-`web/` quan n'hi ha. `estado.md` diu el que falta. El que és criteri (els
+`web/` quan n'hi ha. `estado.md` diu el que falta. A l'arrel del cervell
+escriu `EMPIEZA-AQUI.html`, **el backoffice del client**: si el negoci ja té
+web, el que se li lliura no és una web nova sinó on segueix millorant-la. El que és criteri (els
 intangibles, els noms dels rols) ho fa la sessió de Claude amb la skill
 `propuesta-inicial`.
 

@@ -405,7 +405,16 @@ de la web».
   (`web/`), amb `estado.md` dient el que falta. S'hereta als cervells nous.
 - ✓ Provat a La Bodega de Sara: la web nova porta el color del tema, la lletra i
   els noms del seu menú (Catas, Restaurantes, Bodegas).
-- **Queda:** la llengua al diagnòstic (les troballes surten en català); llegir
+- ✓ **El que es lliura és el backoffice** (l'Àlvar, 10/10/2026: «ja hi ha una web,
+  i el que has fet és el backoffice que ha de poder fer servir per seguir
+  millorant el negoci, els serveis i la web»). `proposta.js` escriu
+  `EMPIEZA-AQUI.html` a l'arrel del cervell: la primera mitja hora, cada mes i
+  amb Claude, amb la proposta i les preguntes renderitzades dels seus .md i
+  l'estil de la seva marca. La web que surt del mapa passa a dir-se «el que el
+  mapa proposa per a la teva web». `--nou --nom` ja posa el nom al `CLAUDE.md`.
+- **Queda:** l'editor del mapa parla català i porta el menú de TeamTowers (els
+  enllaços no funcionen sense internet); per a un client que escriu en
+  castellà caldria l'editor en la seva llengua. La llengua al diagnòstic (les troballes surten en català); llegir
   el text literal de la web quan l'entorn no deixa baixar-la (avui la lectura
   web de Claude en dona un resum); fons i segon color a la marca; fotos (avui
   només el logo SVG, per la CSP i la permaweb).

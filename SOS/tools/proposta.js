@@ -19,7 +19,13 @@
  *      vegi i ningú no el confongui amb el que es lliura;
  *   5. escriu `preguntas.md` i `README.md` mentre portin la marca de generat
  *      (qui els fa seus esborra la línia de la marca i ja no es toquen més), i
- *      `estado.md` sempre.
+ *      `estado.md` sempre;
+ *   6. escriu `EMPIEZA-AQUI.html` a l'arrel del cervell: **el backoffice del
+ *      client**. Demanat per l'Àlvar (10/10/2026): el negoci ja té web, i el que
+ *      se li lliura és on segueix millorant el negoci, els serveis i la web. Una
+ *      pàgina que s'obre amb doble clic, amb la seva marca, que porta la
+ *      proposta i les preguntes tal com són (surten dels .md, no es copien) i
+ *      diu què fer la primera mitja hora, cada mes i amb Claude.
  *
  *   node SOS/tools/proposta.js propuesta/ [--nom "Nom"] [--llengua es|ca] [--url https://…]
  *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example]
@@ -28,7 +34,7 @@
  * l'esbós: el que falta és feina de criteri, i `estado.md` diu quina. */
 'use strict';
 const { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } = require('node:fs');
-const { join, dirname } = require('node:path');
+const { join, dirname, relative, basename } = require('node:path');
 const A = require('./analitza-contingut.js');
 const { diagnostica } = require('./revisa-mapa.js');
 const W = require('./web-del-mapa.js');
@@ -53,7 +59,7 @@ const TXT = {
     deFonts: 'De lo que dice (y no dice) la web', deDiag: 'Del diagnóstico del mapa (en catalán: tradúcelas sin cambiarles el sentido)',
     rd: 'Propuesta inicial · {nom} · BORRADOR', rdD: 'Borrador para revisar antes de enviarlo. Generado por `proposta.js` a partir del mapa y del diagnóstico.',
     r1: 'El flujo que hemos mirado', r2: 'El mapa', r2D: 'Ábrelo en el editor: https://teamtowershuma.com/SOS/vna-suport.html, botón «Obre un fitxer .json», con `mapa.json`.',
-    r3: 'Lo que ha encontrado el diagnóstico', r4: 'Las preguntas', r4D: 'En [preguntas.md](preguntas.md).', r5: 'La web propuesta', r5D: 'Abre `{web}/index.html` con doble clic. El diseño y los textos propios salen de `marca.json`.',
+    r3: 'Lo que ha encontrado el diagnóstico', r4: 'Las preguntas', r4D: 'En [preguntas.md](preguntas.md).', r5: 'Lo que el mapa propone para tu web', r5D: 'Tu web sigue siendo la tuya. En `{web}/index.html` (doble clic) está lo que el mapa propone añadirle: una puerta para cada rol, lo que da y lo que recibe, datos para buscadores e IA y formularios que llegan por correo. Coge lo que te sirva. El diseño y los textos salen de `marca.json`.',
     r6: 'Los siguientes pasos', r6D: 'Por flujos: una sesión para cerrar el mapa, un taller con quien hace la red, o el acompañamiento. Sin importes: el precio sale del presupuesto por flujos.',
     da: 'da', torna: 'devuelve', met: '{r} roles · {d} % de densidad · {i} % intangibles'
   },
@@ -72,11 +78,133 @@ const TXT = {
     deFonts: 'Del que diu (i no diu) la web', deDiag: 'Del diagnòstic del mapa',
     rd: 'Proposta inicial · {nom} · ESBORRANY', rdD: 'Esborrany per revisar abans d\'enviar-lo. Generat per `proposta.js` a partir del mapa i del diagnòstic.',
     r1: 'El flux que hem mirat', r2: 'El mapa', r2D: 'Obre\'l a l\'editor: https://teamtowershuma.com/SOS/vna-suport.html, botó «Obre un fitxer .json», amb `mapa.json`.',
-    r3: 'El que ha trobat el diagnòstic', r4: 'Les preguntes', r4D: 'A [preguntas.md](preguntas.md).', r5: 'La web proposada', r5D: 'Obre `{web}/index.html` amb doble clic. El disseny i els textos propis surten de `marca.json`.',
+    r3: 'El que ha trobat el diagnòstic', r4: 'Les preguntes', r4D: 'A [preguntas.md](preguntas.md).', r5: 'El que el mapa proposa per a la teva web', r5D: 'La teva web segueix sent la teva. A `{web}/index.html` (doble clic) hi ha el que el mapa proposa afegir-hi: una porta per a cada rol, el que dona i el que rep, dades per a cercadors i IA i formularis que arriben per correu. Agafa el que et serveixi. El disseny i els textos surten de `marca.json`.',
     r6: 'Els passos següents', r6D: 'Per fluxos: una sessió per tancar el mapa, un taller amb qui fa la xarxa, o l\'acompanyament. Sense imports: el preu surt del pressupost per fluxos.',
     da: 'dona', torna: 'torna', met: '{r} rols · {d} % de densitat · {i} % intangibles'
   }
 };
+
+/* El backoffice del client: textos de la pàgina d'inici. */
+const BO = {
+  es: { titol: 'Tu backoffice', lang: 'es',
+    intro: 'Tu web sigue siendo la tuya. Esto es lo que hay detrás: lo que sabe tu negocio, escrito para que tú, tu equipo y cualquier IA lo uséis para seguir mejorando el negocio, los servicios y la web.',
+    nav: { empieza: 'Empieza', propuesta: 'La propuesta', preguntas: 'Las preguntas', mes: 'Cada mes', claude: 'Con Claude', carpeta: 'Qué hay aquí' },
+    empieza: 'La primera media hora',
+    pasos: ['**Lee la propuesta**, aquí debajo: el flujo que hemos mirado, tu mapa y lo que ha encontrado el diagnóstico.',
+      '**Contesta las preguntas.** Con tus respuestas el mapa deja de ser un borrador. Basta con escribirlas en un correo o en tu proyecto de Claude.',
+      '**Mira tu mapa** en [el editor]({editor}): se abre con doble clic y funciona sin internet. Pulsa «Obre un fitxer .json» y elige `{mapa}`. Si algo no es así, dilo: se corrige el mapa y todo lo demás sale de él.',
+      '**Mira lo que el mapa propone para tu web** en [{webTxt}]({web}). No sustituye a tu web: coge lo que te sirva.'],
+    mes: 'Cada mes, para seguir mejorando',
+    mesL: ['**Cuando cambie algo de verdad** (un servicio nuevo, un canal, alguien con quien trabajas), cambia el mapa. El diagnóstico dice qué se ha movido y dónde se atasca.',
+      '**Elige una pregunta** de la lista y llévala a tu web: una página, un párrafo, un formulario. Una al mes ya cambia mucho.',
+      '**Apunta lo que decides y por qué** en [las decisiones]({decisiones}). Es lo único que se escribe a mano, y es lo que hace que la siguiente mejora no empiece de cero.',
+      '**Lo que aprendes con tus clientes vuelve al mapa.** Quién pide qué, qué no se entiende, qué se repite: así el mapa sigue diciendo la verdad.'],
+    claude: 'Con Claude',
+    claudeD: 'Esta carpeta está preparada para trabajar con Claude: antes de tocar nada lee `CLAUDE.md` y el cerebro (`saber/`), y una comprobación avisa sola si algo de lo escrito deja de ser cierto. Pídele las cosas como se las pedirías a alguien de tu equipo:',
+    ejemplos: ['«Escribe un texto para mi web que conteste la pregunta 1»', '«He empezado a trabajar con alguien nuevo: añádelo al mapa y dime qué cambia»',
+      '«Revisa mi web actual contra las preguntas y dime qué falta»', '«Prepara un artículo a partir de lo que ha pasado esta semana»'],
+    claudeF: 'Cada cambio llega como propuesta y tú decides si entra.',
+    carpeta: 'Qué hay en esta carpeta',
+    carpetaL: [['{prop}/', 'La propuesta, el mapa, las preguntas y lo que el mapa propone para tu web'], ['saber/', 'El cerebro: lo que una IA lee antes de tocar nada. Su página: [saber/cervell.html](saber/cervell.html)'],
+      ['herramientas/', 'El editor del mapa y las herramientas que lo rehacen todo a partir de él'], ['guardas/', 'La comprobación que avisa cuando algo de lo escrito deja de ser cierto'],
+      ['CLAUDE.md', 'Las reglas para quien trabaje aquí, persona o IA']],
+    noVa: '**Lo que no va aquí:** datos personales de tus clientes, precios pactados y contratos. Van a tu CRM o a tu correo.',
+    gen: 'Página generada a partir de la propuesta: se rehace cada vez que cambian el mapa, la propuesta o las preguntas.' },
+  ca: { titol: 'El teu backoffice', lang: 'ca',
+    intro: 'La teva web segueix sent la teva. Això és el que hi ha darrere: el que sap el teu negoci, escrit perquè tu, el teu equip i qualsevol IA ho feu servir per seguir millorant el negoci, els serveis i la web.',
+    nav: { empieza: 'Comença', propuesta: 'La proposta', preguntas: 'Les preguntes', mes: 'Cada mes', claude: 'Amb Claude', carpeta: 'Què hi ha aquí' },
+    empieza: 'La primera mitja hora',
+    pasos: ['**Llegeix la proposta**, aquí sota: el flux que hem mirat, el teu mapa i el que ha trobat el diagnòstic.',
+      '**Contesta les preguntes.** Amb les teves respostes el mapa deixa de ser un esborrany. N\'hi ha prou d\'escriure-les en un correu o al teu projecte de Claude.',
+      '**Mira el teu mapa** a [l\'editor]({editor}): s\'obre amb doble clic i funciona sense internet. Prem «Obre un fitxer .json» i tria `{mapa}`. Si alguna cosa no és així, digues-ho: es corregeix el mapa i tota la resta en surt.',
+      '**Mira el que el mapa proposa per a la teva web** a [{webTxt}]({web}). No substitueix la teva web: agafa el que et serveixi.'],
+    mes: 'Cada mes, per seguir millorant',
+    mesL: ['**Quan canviï alguna cosa de debò** (un servei nou, un canal, algú amb qui treballes), canvia el mapa. El diagnòstic diu què s\'ha mogut i on s\'encalla.',
+      '**Tria una pregunta** de la llista i porta-la a la teva web: una pàgina, un paràgraf, un formulari. Una al mes ja canvia molt.',
+      '**Apunta el que decideixes i per què** a [les decisions]({decisiones}). És l\'únic que s\'escriu a mà, i és el que fa que la millora següent no comenci de zero.',
+      '**El que aprens amb els teus clients torna al mapa.** Qui demana què, què no s\'entén, què es repeteix: així el mapa segueix dient la veritat.'],
+    claude: 'Amb Claude',
+    claudeD: 'Aquesta carpeta està preparada per treballar amb Claude: abans de tocar res llegeix `CLAUDE.md` i el cervell (`saber/`), i una comprovació avisa sola si alguna cosa del que hi ha escrit deixa de ser certa. Demana-li les coses com les demanaries a algú del teu equip:',
+    ejemplos: ['«Escriu un text per a la meva web que contesti la pregunta 1»', '«He començat a treballar amb algú nou: afegeix-lo al mapa i digues-me què canvia»',
+      '«Revisa la meva web actual contra les preguntes i digues-me què hi falta»', '«Prepara un article a partir del que ha passat aquesta setmana»'],
+    claudeF: 'Cada canvi arriba com a proposta i tu decideixes si entra.',
+    carpeta: 'Què hi ha en aquesta carpeta',
+    carpetaL: [['{prop}/', 'La proposta, el mapa, les preguntes i el que el mapa proposa per a la teva web'], ['saber/', 'El cervell: el que una IA llegeix abans de tocar res. La seva pàgina: [saber/cervell.html](saber/cervell.html)'],
+      ['herramientas/', 'L\'editor del mapa i les eines que ho refan tot a partir d\'ell'], ['guardas/', 'La comprovació que avisa quan alguna cosa del que hi ha escrit deixa de ser certa'],
+      ['CLAUDE.md', 'Les regles per a qui hi treballi, persona o IA']],
+    noVa: '**El que no va aquí:** dades personals dels teus clients, preus pactats i contractes. Van al teu CRM o al teu correu.',
+    gen: 'Pàgina generada a partir de la proposta: es refà cada vegada que canvien el mapa, la proposta o les preguntes.' }
+};
+/* Prou Markdown per a la proposta i les preguntes: títols, paràgrafs, llistes,
+   taules, cites, negreta, cursiva, codi i enllaços. Tot s'escapa abans. */
+function mdHtml(md, base, nivell) {
+  const e = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const enl = h => (/^(https?:|mailto:|#)/.test(h) ? h : (base ? base + '/' : '') + h);
+  const inl = s => e(s).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, t, h) => (/^[a-z][a-z0-9+.-]*:/i.test(h) && !/^(https?|mailto):/i.test(h) ? t : '<a href="' + enl(h) + '">' + t + '</a>'))
+    .replace(/(^|[\s(])(https:\/\/[^\s<)]+)/g, '$1<a href="$2">$2</a>');
+  const out = [], ls = String(md).replace(/<!--[\s\S]*?-->\n?/g, '').split('\n');
+  for (let i = 0; i < ls.length;) {
+    const l = ls[i];
+    if (!l.trim()) { i++; continue; }
+    const h = /^(#{1,6})\s+(.*)$/.exec(l);
+    if (h) { const n = Math.min(6, h[1].length + (nivell || 0)); out.push('<h' + n + '>' + inl(h[2]) + '</h' + n + '>'); i++; continue; }
+    if (/^\|/.test(l)) {
+      const fil = []; while (i < ls.length && /^\|/.test(ls[i])) fil.push(ls[i++]);
+      const cel = r => r.replace(/^\||\|$/g, '').split(/(?<!\\)\|/).map(c => inl(c.trim().replace(/\\\|/g, '|')));
+      const cap = cel(fil[0]), cos = fil.slice(/^\|[\s:|-]+\|$/.test(fil[1] || '') ? 2 : 1).map(cel);
+      out.push('<div class="taula"><table><thead><tr>' + cap.map(c => '<th scope="col">' + c + '</th>').join('') + '</tr></thead><tbody>'
+        + cos.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>'); continue;
+    }
+    const li = /^(\s*)([-*]|\d+\.)\s+(.*)$/.exec(l);
+    if (li) {
+      const ord = /\d/.test(li[2]), items = [];
+      while (i < ls.length && /^\s*([-*]|\d+\.)\s+/.test(ls[i])) {
+        let t = ls[i++].replace(/^\s*([-*]|\d+\.)\s+/, '');
+        while (i < ls.length && /^\s{2,}\S/.test(ls[i]) && !/^\s*([-*]|\d+\.)\s+/.test(ls[i])) t += ' ' + ls[i++].trim();
+        items.push('<li>' + inl(t) + '</li>');
+      }
+      out.push((ord ? '<ol>' : '<ul>') + items.join('') + (ord ? '</ol>' : '</ul>')); continue;
+    }
+    if (/^>\s?/.test(l)) { const q = []; while (i < ls.length && /^>\s?/.test(ls[i])) q.push(ls[i++].replace(/^>\s?/, '')); out.push('<blockquote><p>' + inl(q.join(' ')) + '</p></blockquote>'); continue; }
+    if (/^```/.test(l)) { const c = []; i++; while (i < ls.length && !/^```/.test(ls[i])) c.push(ls[i++]); i++; out.push('<pre><code>' + e(c.join('\n')) + '</code></pre>'); continue; }
+    const p = []; while (i < ls.length && ls[i].trim() && !/^(#{1,6}\s|\||>|```|\s*([-*]|\d+\.)\s)/.test(ls[i])) p.push(ls[i++].trim());
+    out.push('<p>' + inl(p.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+/* EMPIEZA-AQUI.html: el backoffice, a l'arrel del cervell (o a la carpeta de la
+   proposta si no n'hi ha). Fa servir el full d'estil de la web que surt del
+   mapa: la mateixa marca, cap estil copiat. */
+function paginaInici(dir, desti, nom, llengua) {
+  const T = BO[llengua] || BO.es, arrel = existsSync(join(dir, '..', 'cervell.json')) ? join(dir, '..') : dir;
+  const rel = f => relative(arrel, f).split('\\').join('/') || '.', prop = rel(dir), web = rel(desti);
+  const editor = existsSync(join(arrel, 'herramientas', 'vna-suport.html')) ? 'herramientas/vna-suport.html' : 'https://teamtowershuma.com/SOS/vna-suport.html';
+  const omple = s => s.replace('{editor}', editor).replace('{mapa}', (prop === '.' ? '' : prop + '/') + 'mapa.json').replace('{webTxt}', web + '/index.html').replace('{web}', web + '/index.html')
+    .replace('{decisiones}', web + '/cerebro/decisiones.md').replace('{prop}', prop);
+  const md = (f, n) => (existsSync(join(dir, f)) ? mdHtml(readFileSync(join(dir, f), 'utf8'), prop === '.' ? '' : prop, n) : '');
+  const l = s => mdHtml(omple(s)).replace(/^<p>|<\/p>$/g, '');
+  const lema = (() => { try { return JSON.parse(readFileSync(join(dir, 'marca.json'), 'utf8')).lema || ''; } catch (x) { return ''; } })();
+  const e = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const sec = (id, h, cos) => '<section id="' + id + '" aria-labelledby="t-' + id + '">\n<h2 id="t-' + id + '">' + e(h) + '</h2>\n' + cos + '\n</section>';
+  const html = '<!DOCTYPE html>\n<html lang="' + T.lang + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+    + '<meta name="robots" content="noindex">\n<title>' + e(T.titol + ' · ' + nom) + '</title>\n<link rel="stylesheet" href="' + e(web + '/estil.css') + '">\n'
+    + '<style>section{margin-top:2.2rem}.taula{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.95rem}th,td{border-bottom:1px solid var(--lin);padding:.45rem .5rem;text-align:left;vertical-align:top}'
+    + 'blockquote{margin:1rem 0;padding:.25rem 1rem;border-left:3px solid var(--acc);color:var(--mut)}code{font-size:.9em}.ex li{font-style:italic}.intro{font-size:1.1rem}</style>\n</head>\n<body>\n'
+    + '<header>\n<p class="marca">' + e(nom) + '</p>\n' + (lema ? '<p class="lema">' + e(lema) + '</p>\n' : '') + '<nav aria-label="' + e(T.titol) + '"><ul>'
+    + Object.keys(T.nav).map(k => '<li><a href="#' + k + '">' + e(T.nav[k]) + '</a></li>').join('') + '</ul></nav>\n</header>\n<main id="contingut">\n'
+    + '<h1>' + e(T.titol) + '</h1>\n<p class="intro">' + e(T.intro) + '</p>\n'
+    + sec('empieza', T.empieza, '<ol>' + T.pasos.map(x => '<li>' + l(x) + '</li>').join('') + '</ol>') + '\n'
+    + sec('propuesta', T.nav.propuesta, md('README.md', 1)) + '\n'
+    + sec('preguntas', T.nav.preguntas, md('preguntas.md', 1)) + '\n'
+    + sec('mes', T.mes, '<ul>' + T.mesL.map(x => '<li>' + l(x) + '</li>').join('') + '</ul>') + '\n'
+    + sec('claude', T.claude, '<p>' + l(T.claudeD) + '</p>\n<ul class="ex">' + T.ejemplos.map(x => '<li>' + e(x) + '</li>').join('') + '</ul>\n<p>' + e(T.claudeF) + '</p>') + '\n'
+    + sec('carpeta', T.carpeta, '<div class="taula"><table><tbody>' + T.carpetaL.filter(([a]) => existsSync(join(arrel, omple(a)))).map(([a, b]) => '<tr><th scope="row"><code>' + e(omple(a)) + '</code></th><td>' + l(b) + '</td></tr>').join('')
+      + '</tbody></table></div>\n<p>' + l(T.noVa) + '</p>') + '\n'
+    + '</main>\n<footer>\n<p>' + e(T.gen) + '</p>\n</footer>\n</body>\n</html>\n';
+  writeFileSync(join(arrel, 'EMPIEZA-AQUI.html'), html);
+  return join(arrel, 'EMPIEZA-AQUI.html');
+}
 
 async function proposta(dir, opts) {
   const o = opts || {}, fonts = join(dir, 'fuentes');
@@ -131,9 +259,10 @@ async function proposta(dir, opts) {
     '## ' + T.mapa, '', (propi ? T.propi : T.esbos) + ' · ' + (diag.provisional ? T.prov : T.passa)]
     .concat(dures.map(r => '- ✗ ' + r.t + ': ' + r.diu), ['', '## ' + T.web, '', final ? T.webOk : T.webEsb, '', '## ' + T.falta, ''],
       falta.map((x, i) => (i + 1) + '. ' + x)).join('\n') + '\n');
-  return { final, provisional: diag.provisional, propi, web: desti, fitxers: fitxers.length, analisi: an };
+  const inici = paginaInici(dir, desti, nom, llengua);
+  return { final, provisional: diag.provisional, propi, web: desti, fitxers: fitxers.length, analisi: an, inici };
 }
-module.exports = { proposta };
+module.exports = { proposta, mdHtml };
 
 if (require.main === module) {
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
@@ -145,7 +274,8 @@ if (require.main === module) {
   if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://…]'); process.exit(2); }
   proposta(pos[0], opts).then(r => {
     console.log((r.final ? '✅ Web per lliurar' : '◐ De moment, l\'esbós') + ': ' + r.fitxers + ' fitxers a ' + r.web
-      + ' · ' + r.analisi.rols.length + ' candidats a rol · ' + r.analisi.preguntes.length + ' preguntes · el que falta, a ' + join(pos[0], 'estado.md'));
+      + ' · ' + r.analisi.rols.length + ' candidats a rol · ' + r.analisi.preguntes.length + ' preguntes · el que falta, a ' + join(pos[0], 'estado.md')
+      + ' · el backoffice del client, a ' + r.inici);
     process.exit(r.final ? 0 : 3);
   }).catch(e => { console.error('❌ ' + e.message); process.exit(1); });
 }

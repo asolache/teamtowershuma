@@ -146,6 +146,17 @@ esa línea y ya no se toca (igual con `preguntas.md`):
   («Los antipatrones que hemos cometido de verdad») y, si vale para todos los
   proyectos, se propone a TeamTowers como veda. Así vuelve heredada a todos.
 
+## Lo que se entrega: el backoffice, no una web nueva
+
+Si el negocio **ya tiene web**, la web que sale del mapa es una propuesta de
+mejora, no un sustituto. Lo que se le entrega es su backoffice: la carpeta del
+cerebro entera, que se abre por `EMPIEZA-AQUI.html` (lo escribe `proposta.js`
+en la raíz). Esa página, con su marca, le dice qué hacer la primera media hora,
+cada mes y con Claude, y lleva la propuesta y las preguntas tal como son.
+
+Antes de enviarla: `node guardas/cervell.js --check` en verde, y ningún dato
+personal ni importe en la carpeta.
+
 ## Lo que nunca entra
 
 - **Datos personales** de quien pide la propuesta, ni en el mapa ni en el repositorio.

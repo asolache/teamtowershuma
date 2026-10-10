@@ -118,10 +118,12 @@ cas('un idioma sense textos peta', a => {
   const p1 = spawnSync(process.execPath, [eina('proposta.js'), prop], { encoding: 'utf8' }).status;
   writeFileSync(join(prop, 'mapa.json'), ex.stdout);
   const p2 = spawnSync(process.execPath, [eina('proposta.js'), prop], { encoding: 'utf8' }).status;
-  const bo4 = p1 === 3 && p2 === 0 && existsSync(join(prop, 'analisis.md')) && existsSync(join(prop, 'web', 'index.html')) && existsSync(join(prop, 'README.md'));
+  const bo4 = p1 === 3 && p2 === 0 && existsSync(join(prop, 'analisis.md')) && existsSync(join(prop, 'web', 'index.html')) && existsSync(join(prop, 'README.md'))
+    && /href="herramientas\/vna-suport\.html"/.test(readFileSync(join(arrel, 'EMPIEZA-AQUI.html'), 'utf8')) && /href="propuesta\/web\/estil\.css"/.test(readFileSync(join(arrel, 'EMPIEZA-AQUI.html'), 'utf8'))
+;
   const bo = bo1 && bo2 && bo3 && bo4;
   if (!bo) fails++;
-  console.log(`  ${bo ? '✓' : '✗'} al client, el mapa es revisa amb les regles de la casa, s'atura si en trenca una de dura, en surt la web, i proposta.js va de les fonts a l'esbós i del mapa a la web`);
+  console.log(`  ${bo ? '✓' : '✗'} al client, el mapa es revisa amb les regles de la casa, s'atura si en trenca una de dura, en surt la web, i proposta.js va de les fonts a l'esbós, del mapa a la web i deixa EMPIEZA-AQUI.html (el backoffice) a l'arrel`);
   rmSync(arrel, { recursive: true, force: true });
 }
 
@@ -133,7 +135,7 @@ cas('un idioma sense textos peta', a => {
   writeFileSync(join(arrel, 'mapa.json'), ex);
   spawnSync(process.execPath, [join(DIR, '..', 'tools', 'web-del-mapa.js'), join(arrel, 'mapa.json'), join(arrel, 'web')], { encoding: 'utf8' });
   const web = join(arrel, 'web');
-  spawnSync(process.execPath, [EINA, '--nou', web], { encoding: 'utf8' });
+  spawnSync(process.execPath, [EINA, '--nou', web, '--nom', 'El celler'], { encoding: 'utf8' });
   spawnSync(process.execPath, [INSTAL(web), '--arrel', web], { encoding: 'utf8' });
   const bo = comprova(web).status === 0 && /^- `cerebro`/m.test(readFileSync(join(web, 'saber', 'taxonomia.md'), 'utf8'));
   if (!bo) fails++;
