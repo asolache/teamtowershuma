@@ -30,6 +30,25 @@ eso: el mismo cerebro, las mismas vedas, las mismas herramientas.
 una frase de lo que hace basta para empezar. El contacto se pide, si hace
 falta, al entregar la propuesta, nunca al principio.
 
+## El atajo: lo mecánico, de un solo orden
+
+```bash
+node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" [--baixa https://su-web.example]
+```
+
+Lee `propuesta/fuentes/` (las páginas guardadas, el catálogo, el CSS, el logo en
+SVG; con `--baixa` las descarga con curl), escribe `analisis.md` (quién sale y
+qué se da, con la frase donde sale, y lo que la web no dice), propone
+`marca.json` y un esbozo de mapa, revisa el mapa y saca la web: a `web-esbozo/`
+mientras no haya un `mapa.json` que pase las reglas duras, y a `web/` cuando lo
+hay. `estado.md` dice lo que falta. Sale con 3 mientras solo haya esbozo.
+
+Si el entorno no deja descargar la web, se lee con la herramienta de lectura
+web y se guarda en `fuentes/` como `.md`, diciendo que es un resumen y no el
+texto literal. Lo que queda es criterio, y son los pasos de abajo: **el mapa
+(pasos 2 y 3) y la marca (paso 5)**. `proposta.js` no inventa intangibles: por
+eso el esbozo sale siempre provisional.
+
 ## Los siete pasos
 
 ### 1 · Leer lo que hay
@@ -79,20 +98,35 @@ dice o no**, con la fuente del paso 1. Más las preguntas del diagnóstico. Como
 mucho diez, ordenadas por lo que más valor mueve. Van en
 `propuesta/preguntas.md`.
 
-### 5 · La web que sale del mapa
+### 5 · La web que sale del mapa, con su cara
+
+Revisar `propuesta/marca.json` (lo propone el análisis; solo lo que dicen las
+fuentes):
+
+- `color`, `lletra` (`sans`, `serif`, `rodona`, `mono`), `forma` (`rodona`,
+  `recta`) y `logo` (un SVG, relativo a `marca.json`). Si el color no se lee
+  sobre el fondo, la web lo ajusta sola.
+- `lema` y `presentacio`, con las palabras del negocio.
+- `portes`: para cada rol del mapa, **el nombre corto del menú** («Catas»,
+  «Restaurantes»: las palabras de su menú actual) y una `intro`.
+- `contacte`: dirección, teléfono y horario del negocio, si la web los publica.
 
 ```bash
-node SOS/tools/web-del-mapa.js propuesta/mapa.json propuesta/web/ --llengua es --nom "Nombre del negocio"
+node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio"
 ```
+
+(o, solo la web: `node SOS/tools/web-del-mapa.js propuesta/mapa.json propuesta/web/ --llengua es --nom "…" --marca propuesta/marca.json`)
 
 Una puerta por rol que no es de casa (`--casa "Rol"` marca los de casa), HTML
 del W3C sin JavaScript, JSON-LD en cada página, formularios de Netlify y
 `permaweb.json` con la huella de cada fichero. **No se editan los HTML a mano:**
-si algo de la web está mal, lo que está mal es el mapa.
+si algo de la web está mal, lo que está mal es el mapa o la marca.
 
 ### 6 · La propuesta, en una página
 
-`propuesta/README.md`, marcada como **borrador**:
+`propuesta/README.md`, marcada como **borrador**. `proposta.js` escribe uno
+con esta estructura mientras lleve su línea de marca; al hacerlo tuyo, borra
+esa línea y ya no se toca (igual con `preguntas.md`):
 
 1. En una frase, el flujo que se ha mirado y por qué ese.
 2. El mapa: roles y lo que se dan, y cómo abrirlo en el editor

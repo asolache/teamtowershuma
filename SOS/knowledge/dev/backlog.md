@@ -371,13 +371,39 @@ UX, seguiment i desenvolupament de l'estratègia».
      troballes s'han de traduir a mà. Cal la llengua al diagnòstic, com ja la té
      la web (`--llengua`).
   3. **El menú de la web són els noms dels rols** («Quien lo vende para casa»).
-     Al mapa estan bé; en una web, «Para vinotecas» es llegeix millor. Cal una
-     etiqueta curta per porta, declarada al mapa i no escrita a la web.
+     Al mapa estan bé; en una web, «Para vinotecas» es llegeix millor. ✓ Fet el
+     10/10/2026: el nom curt de cada porta va a `marca.json` (`portes`), no al
+     mapa ni a l'HTML.
   4. **El diagnòstic va trobar com a conversió una cosa que ja es cobra** (la
      formació de sala). La skill ha de dir que es miri el catàleg del negoci
      abans de proposar una conversió com a nova.
 - Cobreix el punt 1 del bloc `for-ai/` de sota per a fitxers i funcions citats;
   hi queden els números de veda citats i les deu regles.
+
+**El servei de web, personalitzable i automàtic (demanat el 10/10/2026):**
+«acaba el servei de desenvolupament de web de forma que es pugui personalitzar i
+automatitzar tot el que puguis el disseny i els continguts, així com un sistema
+automàtic d'anàlisi dels continguts proporcionats i d'elaboració de l'esborrany
+de la web».
+
+- ✓ **La marca** (`marca.json`, bloc VS-SITE de l'editor): color (amb el
+  contrast ajustat sol a 4,5:1, també al mode fosc), lletra del sistema, forma,
+  logo SVG net, lema, presentació, nom curt i introducció de cada porta, i on
+  són (també al JSON-LD). A l'editor (pestanya Web) i a `web-del-mapa.js
+  --marca`, amb el mateix codi. Sense marca, la web és byte a byte la d'abans.
+- ✓ **L'anàlisi de les fonts** (`SOS/tools/analitza-contingut.js`): candidats a
+  rol i a lliurament amb la frase on surten, les preguntes del que la web no
+  diu, la marca que se'n desprèn i un esbós de mapa. Sense model ni xarxa;
+  `--baixa` desa la web amb curl.
+- ✓ **Un sol ordre** (`SOS/tools/proposta.js`): de les fonts a l'esbós de web
+  (`web-esbozo/`) i, amb un `mapa.json` que passa, a la web per lliurar
+  (`web/`), amb `estado.md` dient el que falta. S'hereta als cervells nous.
+- ✓ Provat a La Bodega de Sara: la web nova porta el color del tema, la lletra i
+  els noms del seu menú (Catas, Restaurantes, Bodegas).
+- **Queda:** la llengua al diagnòstic (les troballes surten en català); llegir
+  el text literal de la web quan l'entorn no deixa baixar-la (avui la lectura
+  web de Claude en dona un resum); fons i segon color a la marca; fotos (avui
+  només el logo SVG, per la CSP i la permaweb).
 
 **Mesurat el primer dia:** 163 referències revisades als fitxers de lectura de
 SOS; la guarda va trobar la taxonomia citant `knowledge/cervell/README.md` abans

@@ -90,6 +90,8 @@
     ".claude/skills/propuesta-inicial/SKILL.md": ".claude/skills/propuesta-inicial/SKILL.md",
     "herramientas/vna-suport.html": "SOS/vna-suport.html",
     "herramientas/tools/revisa-mapa.js": "SOS/tools/revisa-mapa.js",
-    "herramientas/tools/web-del-mapa.js": "SOS/tools/web-del-mapa.js"
+    "herramientas/tools/web-del-mapa.js": "SOS/tools/web-del-mapa.js",
+    "herramientas/tools/analitza-contingut.js": "SOS/tools/analitza-contingut.js",
+    "herramientas/tools/proposta.js": "SOS/tools/proposta.js"
   }
 }

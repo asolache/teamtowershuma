@@ -110,9 +110,34 @@ cas('un idioma sense textos peta', a => {
   const bo2 = spawnSync(process.execPath, [eina('revisa-mapa.js'), mal], { encoding: 'utf8' }).status === 1;
   const w = spawnSync(process.execPath, [eina('web-del-mapa.js'), mapa, join(arrel, 'web'), '--llengua', 'es'], { encoding: 'utf8' });
   const bo3 = w.status === 0 && existsSync(join(arrel, 'web', 'index.html')) && existsSync(join(arrel, 'web', 'permaweb.json'));
-  const bo = bo1 && bo2 && bo3;
+  /* I l'ordre sencer, amb les eines heretades: de les fonts a l'esbós, i del
+     mapa revisat a la web per lliurar. */
+  const prop = join(arrel, 'propuesta');
+  mkdirSync(join(prop, 'fuentes'), { recursive: true });
+  writeFileSync(join(prop, 'fuentes', 'web.md'), '# El celler\n\nFem vins i els expliquem als visitants que vénen al poble. Els restaurants ens demanen el vi.');
+  const p1 = spawnSync(process.execPath, [eina('proposta.js'), prop], { encoding: 'utf8' }).status;
+  writeFileSync(join(prop, 'mapa.json'), ex.stdout);
+  const p2 = spawnSync(process.execPath, [eina('proposta.js'), prop], { encoding: 'utf8' }).status;
+  const bo4 = p1 === 3 && p2 === 0 && existsSync(join(prop, 'analisis.md')) && existsSync(join(prop, 'web', 'index.html')) && existsSync(join(prop, 'README.md'));
+  const bo = bo1 && bo2 && bo3 && bo4;
   if (!bo) fails++;
-  console.log(`  ${bo ? '✓' : '✗'} al client, el mapa es revisa amb les regles de la casa, s'atura si en trenca una de dura i en surt la web`);
+  console.log(`  ${bo ? '✓' : '✗'} al client, el mapa es revisa amb les regles de la casa, s'atura si en trenca una de dura, en surt la web, i proposta.js va de les fonts a l'esbós i del mapa a la web`);
+  rmSync(arrel, { recursive: true, force: true });
+}
+
+/* El zip de la web ja és el repositori del client, amb `cerebro/`. Instal·lar-hi
+   el cervell no pot fer petar la primera comprovació per una carpeta nostra. */
+{
+  const arrel = mkdtempSync(join(tmpdir(), 'cervell-zip-'));
+  const ex = spawnSync(process.execPath, [join(DIR, '..', 'tools', 'revisa-mapa.js'), '--exemple'], { encoding: 'utf8' }).stdout;
+  writeFileSync(join(arrel, 'mapa.json'), ex);
+  spawnSync(process.execPath, [join(DIR, '..', 'tools', 'web-del-mapa.js'), join(arrel, 'mapa.json'), join(arrel, 'web')], { encoding: 'utf8' });
+  const web = join(arrel, 'web');
+  spawnSync(process.execPath, [EINA, '--nou', web], { encoding: 'utf8' });
+  spawnSync(process.execPath, [INSTAL(web), '--arrel', web], { encoding: 'utf8' });
+  const bo = comprova(web).status === 0 && /^- `cerebro`/m.test(readFileSync(join(web, 'saber', 'taxonomia.md'), 'utf8'));
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} el cervell s'instal·la sobre el zip de la web, i declara cerebro/ sol`);
   rmSync(arrel, { recursive: true, force: true });
 }
 

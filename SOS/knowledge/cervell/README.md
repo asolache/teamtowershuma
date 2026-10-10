@@ -64,8 +64,10 @@ vam pagar. Per això cada projecte hereta, declarat a
   `.claude/skills/`, on les troba Claude) i el prompt de revisió de PR.
 - **Les eines per treballar sense API:** l'editor del mapa
   (`herramientas/vna-suport.html`, s'obre amb doble clic), `revisa-mapa.js`
-  (el mateix diagnòstic que l'editor, des de Node) i `web-del-mapa.js` (la web
-  que surt del mapa, amb el mateix codi que el botó de l'editor).
+  (el mateix diagnòstic que l'editor, des de Node), `web-del-mapa.js` (la web
+  que surt del mapa, amb el mateix codi que el botó de l'editor),
+  `analitza-contingut.js` (l'anàlisi de les fonts del client) i `proposta.js`
+  (tot plegat, d'un sol ordre).
 
 No es copia a mà: `--nou` i `--actualitza` ho treuen del codex i dels fitxers
 de debò cada vegada. Les rutes de SOS es reescriuen cap a la còpia, si s'hereta,
@@ -92,6 +94,11 @@ treu un mapa d'un flux amb la skill `mapa-de-valor`, el passa per
 preguntes que la web no contesta i en genera la web amb
 `SOS/tools/web-del-mapa.js`. Tot queda a `propuesta/` del repositori del
 projecte, marcat com a esborrany i sense imports.
+
+Des del 10/10/2026 la part mecànica és un sol ordre, `SOS/tools/proposta.js`:
+analitza les fonts (`analitza-contingut.js`), proposa la marca i un esbós de
+mapa, revisa el mapa i en treu la web amb el disseny i els textos de
+`marca.json`. La skill queda per al que demana criteri.
 
 **Sense API** vol dir que ho fa la sessió de Claude del projecte, no la web: la
 persona entra al projecte de Claude que té el seu repositori amb cervell, i hi

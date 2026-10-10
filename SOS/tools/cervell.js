@@ -124,6 +124,15 @@ if (opcio('--nou')) {
   writeFileSync(join(desti, 'cervell.json'), JSON.stringify(conf, null, 2) + '\n');
   mkdirSync(dirname(join(desti, conf.eina)), { recursive: true });
   copyFileSync(__filename, join(desti, conf.eina));
+  /* El zip de la web que surt del mapa ja porta `cerebro/` (les fitxes, la
+     marca i les decisions). Si s'hi instal·la el cervell, es declara: si no, la
+     primera comprovació petaria per una carpeta que ha posat la nostra eina. */
+  const tax = join(desti, conf.taxonomia || '');
+  if (conf.taxonomia && existsSync(join(desti, 'cerebro', 'mapa-real.json')) && existsSync(tax) && !/^- `cerebro`/m.test(readFileSync(tax, 'utf8'))) {
+    writeFileSync(tax, readFileSync(tax, 'utf8').replace(/\n*$/, '\n') + '- `cerebro` · saber · ' + (conf.idioma === 'es'
+      ? 'El cerebro que sale del mapa de valor con la web: el mapa real, una ficha por rol, entregable y proceso, la marca y las decisiones'
+      : 'El cervell que surt del mapa de valor amb la web: el mapa real, una fitxa per rol, lliurament i procés, la marca i les decisions') + '\n');
+  }
   hereta(desti, conf);
   console.log(`✅ Cervell instal·lat a ${desti}. Ara:  node ${conf.eina}  i després  node ${conf.eina} --check`);
   process.exit(0);

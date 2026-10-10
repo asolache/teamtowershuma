@@ -242,6 +242,7 @@ jobs:
         run: |
           node SOS/tools/cervell.js --check
           node SOS/tests/test-cervell.mjs
+          node SOS/tests/test-proposta.mjs
 
       # La pàgina de la MATRIU explica un mètode i promet, a la primera
       # pantalla, que cada criteri és una comprovació que l'app fa de debò. Una
