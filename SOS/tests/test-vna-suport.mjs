@@ -1086,6 +1086,59 @@ console.log('\n7C.8 · Pantalla completa, amb la definició al costat');
   ok(!f.ple && f.pare, 'en sortir, els sis camps tornen al seu lloc');
 }
 
+console.log('\n7E · El pagament de l\'alta (Stripe, amb les funcions falses)');
+{
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 1000 } });
+  const arrel = join(DIR, '..', '..'), crides = [];
+  let pagat = true;
+  await ctx.route('https://tt.test/**', async route => {
+    const u = new URL(route.request().url());
+    if (u.pathname === '/.netlify/functions/checkout') {
+      const m = route.request().method(), sid = u.searchParams.get('session_id');
+      crides.push(m + (sid ? ' ' + sid : ''));
+      const cos = m === 'POST' ? { url: 'https://checkout.stripe.com/c/pay/cs_test_x' } : sid ? { pagat, prova: true } : { cobra: true, prova: true };
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cos) });
+    }
+    try { return route.fulfill({ status: 200, contentType: /\.html$/.test(u.pathname) ? 'text/html' : undefined, body: readFileSync(join(arrel, decodeURIComponent(u.pathname))) }); }
+    catch (e) { return route.fulfill({ status: 404, body: '' }); }
+  });
+  await ctx.route('https://checkout.stripe.com/**', route => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>Stripe</title><p>Checkout fals</p>' }));
+  const s = await ctx.newPage();
+  s.on('pageerror', e => errs.push(e.message));
+  const WEB = 'https://tt.test/SOS/vna-suport.html';
+  await s.goto(WEB + '#editor');
+  await s.evaluate(() => document.querySelector('#btExemple').click());
+  await s.click('#edTabWeb');
+  await s.waitForFunction(() => /^Paga i publica/.test(document.querySelector('#edWebNetlify').textContent));
+  const n0 = await s.textContent('#edWebPagament');
+  ok(/Apple Pay/.test(n0) && /Mode de prova/.test(n0), 'si la web cobra, el botó diu «Paga i publica-la a nom teu» i explica com, en mode de prova');
+  await s.fill('#edWebNom', 'Celler pagat');
+  await Promise.all([s.waitForURL(/checkout\.stripe\.com/), s.click('#edWebNetlify')]);
+  ok(crides.includes('POST'), 'el botó crea la sessió i porta a la pàgina de pagament de Stripe');
+  await s.goto(WEB + '?alta=cancel#editor');
+  await s.waitForFunction(() => /cancel·lat/.test((document.querySelector('#edWebPagament') || {}).textContent || ''));
+  ok(await s.evaluate(() => !document.querySelector('#edPanWeb').hidden && location.search === '' && document.querySelector('#edWebNom').value === 'Celler pagat'),
+    'si es cancel·la, torna a la pestanya Web, amb el nom, i diu que no s\'ha cobrat res');
+  await s.goto(WEB + '?alta=cs_test_abc123#editor');
+  await s.waitForFunction(() => /Pagament fet/.test((document.querySelector('#edWebPagament') || {}).textContent || ''));
+  const t = await s.evaluate(() => ({ boto: document.querySelector('#edWebNetlify').textContent, href: document.querySelector('#edWebNetlify').href, q: location.search, hash: location.hash }));
+  ok(crides.includes('GET cs_test_abc123') && t.q === '' && t.hash === '#editor', 'en tornar, pregunta a la funció si s\'ha pagat i neteja l\'adreça');
+  await s.waitForFunction(() => /TT_MAPA=/.test(document.querySelector('#edWebNetlify').href));
+  const h2 = await s.evaluate(() => document.querySelector('#edWebNetlify').href);
+  ok(/^Publica-la a nom teu/.test(t.boto) && new URLSearchParams(h2.split('#')[1]).get('TT_NOM') === 'Celler pagat', 'pagat, el botó torna a ser «Publica-la a nom teu», amb el mapa i el nom');
+  await s.reload();
+  await s.click('#edTabWeb');
+  ok(/Pagament fet/.test(await s.textContent('#edWebPagament')), 'i recarregar la pàgina no fa tornar a pagar');
+  pagat = false;
+  const s2 = await ctx.newPage();
+  await s2.goto(WEB + '?alta=cs_test_zzz#editor');
+  await s2.waitForFunction(() => /no confirma/.test((document.querySelector('#edWebPagament') || {}).textContent || ''));
+  ok(/^Paga i publica/.test(await s2.textContent('#edWebNetlify')), 'si Stripe no confirma el pagament, el botó continua demanant-lo');
+  await ctx.close();
+  const f0 = await p.evaluate(() => ({ t: document.querySelector('#edWebNetlify') && document.querySelector('#edWebNetlify').textContent, n: document.querySelector('#edWebPagament') && document.querySelector('#edWebPagament').textContent }));
+  ok(!f0.t || (/^Publica-la/.test(f0.t) && !f0.n), 'des del disc no hi ha pagament: el botó publica com sempre');
+}
+
 console.log('\n7B.12 · Al mòbil (390 px)');
 {
   const m = await b.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
@@ -1134,12 +1187,14 @@ console.log('\n7B.13 · Res es trenca');
 console.log('\n6 · El fre');
 {
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
-  const net = await p.evaluate(() => ({
-    fetch: /fetch\s*\(/.test(document.documentElement.innerHTML),
-    clau: /x-api-key|anthropic/i.test(document.documentElement.innerHTML)
-  }));
-  ok(!net.fetch && !net.clau,
-    'la consola no crida cap API ni demana cap clau: prepara el text i qui el fa servir decideix on el porta');
+  /* L'única crida és a la funció de pagament de la mateixa web (7E), que no
+     porta cap clau: les claus de Stripe viuen a Netlify. */
+  const net = await p.evaluate(() => {
+    const h = document.documentElement.innerHTML, crides = h.match(/fetch\s*\([^,)]*/g) || [];
+    return { fora: crides.filter(c => !/^fetch\s*\(CHECKOUT/.test(c)), propia: /const CHECKOUT = '\/\.netlify\/functions\/checkout'/.test(h), clau: /x-api-key|anthropic|sk_(test|live)_/i.test(h) };
+  });
+  ok(!net.fora.length && net.propia && !net.clau,
+    'la consola no crida cap API de fora ni demana cap clau: prepara el text i qui el fa servir decideix on el porta' + (net.fora.length ? ': ' + net.fora[0] : ''));
 }
 
 await b.close();
