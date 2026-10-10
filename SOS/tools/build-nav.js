@@ -87,44 +87,80 @@ const T = (ca, es) => ({ ca, es });
    cada un al seu repositori i el navegador donant voltes. La frontera, amb la
    revisió llegida, és a `knowledge/negoci/frontera-molekulon.md`. */
 const MOLEKULON = 'https://molekulon.org';
-const GRUPS = [
-  /* ══ 1 · QUÈ COMPRO ══════════════════════════════════════════════════ */
-  { id: 'valor', lbl: T('Mapa de valor', 'Mapa de valor'), ic: '🗺', links: [
-    ['vna.html', T('El mètode', 'El método'),
-      T('Què és un mapa de valor, sobre un cas', 'Qué es un mapa de valor, sobre un caso')],
-    /* L'eina i la pàgina que l'explica són dues coses i van juntes: `/vna` diu
-       què és un mapa de valor i `vna-suport` el fa. Separades al menú, qui
-       acaba de llegir el mètode no troba on aplicar-lo. */
-    ['vna-suport.html', T('Fer-ne un', 'Hacer uno'),
-      T('L\'editor visual: rols, lliuraments, real i ideal', 'El editor visual: roles, entregables, real e ideal')],
-    /* El servei, en esborrany: la pàgina porta `noindex` fins que Àlvaro
-       validi els preus, però des del menú s'hi ha de poder arribar. Fora de
-       la llista de l'app, com les de l'arrel: és una pàgina de venda. */
-    ['/mapa-web/', T('Mapa i web en una hora', 'Mapa y web en una hora'),
-      T('El servei: el mapa del teu negoci i la web, en una sessió', 'El servicio: el mapa de tu negocio y la web, en una sesión')],
-    /* El prototip de serveis connectables, també en esborrany i `noindex`:
-       la pila per rol, el catàleg de serveis i el cost real de l'IA. */
-    ['/conecta/', T('Serveis connectables', 'Servicios conectables'),
-      T('La teva web amb la teva IA, el CRM i els cobraments', 'Tu web con tu IA, el CRM y los cobros')],
-    ['cataleg.html', T('El catàleg', 'El catálogo'),
-      T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
-    ['pressupost.html', T('Preus i contractació', 'Precios y contratación'),
-      T('De l\'esborrany al negoci operatiu, i la resta a mida', 'Del borrador al negocio operativo, y el resto a medida')],
-    /* Un sol enllaç al menú i no tres: al menú hi va la porta, i la porta ja
-       pregunta si ets una organització o un territori. Posar-hi els dos
-       diagnòstics obligaria a triar abans de saber què els distingeix. */
-    ['diagnostic.html', T('Diagnòstic', 'Diagnóstico'),
-      T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')]
-  ] },
-  /* ══ 2 · AMB QUINA EINA ═══════════════════════════════════════════════
-     L'aplicació i les seves dinàmiques. `online.html` —el directori— ve de
-     `xarxa` i és aquí perquè **és la dinàmica `cens_entitats` de la taula
-     `EINES`**: una pàgina que s'opera, no un món que es llegeix. */
-  { id: 'sos', lbl: T('El SOS', 'El SOS'), ic: '🖥', links: [
+/* ══ DUES BARRES I NO UNA (10/10/2026) ══════════════════════════════════════
+   La barra única portava cinc portes i quaranta destins a totes les pàgines:
+   la portada que ven el mapa de valor oferia el Banc de Temps, l'Habitatge i
+   els catorze herois de Molekulon al mateix nivell que el servei. Àlvaro ho va
+   dir així: «que todo lo de SOS quede dentro de SOS y sus menús, para
+   simplificar la experiencia y facilitar el plan estratègic».
+
+   Ara n'hi ha **dues, declarades aquí i generades del mateix codi**:
+
+   · `LLOC` · la cara pública. Parla de **tres coses que es compren** —el
+     mapa de valor (diagnòstic, mapa i millora), la web i el SOS com a
+     formació acció— més qui som. L'acció és el diagnòstic.
+   · `SOS_GRUPS` · a dins de `/SOS/`. Les eines, com s'aprèn i l'altre món.
+     L'acció és obrir el SOS, i la marca porta a la portada del SOS.
+
+   Quina barra porta cada pàgina ho decideix `PAGINES_LLOC`: les pàgines que
+   **venen** una de les tres ofertes porten la del lloc encara que el fitxer
+   visqui a `SOS/`. La formació i els fluxos amb IA surten a les dues barres a
+   posta: són el pont entre la tercera oferta i el SOS. */
+const L = {
+  diagnostic: ['diagnostic.html', T('Diagnòstic', 'Diagnóstico'),
+    T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')],
+  vna: ['vna.html', T('El mètode', 'El método'),
+    T('Què és un mapa de valor, sobre un cas', 'Qué es un mapa de valor, sobre un caso')],
+  editor: ['vna-suport.html', T('Fer-ne un', 'Hacer uno'),
+    T('L\'editor visual: rols, lliuraments, real i ideal', 'El editor visual: roles, entregables, real e ideal')],
+  cataleg: ['cataleg.html', T('El catàleg', 'El catálogo'),
+    T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
+  preus: ['pressupost.html', T('Preus i contractació', 'Precios y contratación'),
+    T('De l\'esborrany al negoci operatiu, i la resta a mida', 'Del borrador al negocio operativo, y el resto a medida')],
+  mapaWeb: ['/mapa-web/', T('Mapa i web en una hora', 'Mapa y web en una hora'),
+    T('El mapa del teu negoci i la web, en una sessió', 'El mapa de tu negocio y la web, en una sesión')],
+  conecta: ['/conecta/', T('Serveis connectables', 'Servicios conectables'),
+    T('La teva web amb la teva IA, el CRM i els cobraments', 'Tu web con tu IA, el CRM y los cobros')],
+  formacio: ['formacio.html', T('Formació acció', 'Formación acción'),
+    T('Els mòduls, de N0 a N3, i el certificat és teu', 'Los módulos, de N0 a N3, y el certificado es tuyo')],
+  ia: ['ia.html', T('Fluxos amb IA', 'Flujos con IA'),
+    T('Automatitzar el tangible, valorar l\'intangible', 'Automatizar lo tangible, valorar lo intangible')],
+  app: ['/SOS/', T('Entra al SOS', 'Entra al SOS'),
+    T('El sistema que manté viu el mapa, sense compte', 'El sistema que mantiene vivo el mapa, sin cuenta')]
+};
+const LLOC = [
+  /* ══ 1 · DIAGNÒSTIC, MAPA I MILLORA ══════════════════════════════════
+     El producte. L'ordre és el camí de client: saber on ets, entendre el
+     mètode, fer-ne un, i després què es compra i a quin preu. */
+  { id: 'valor', lbl: T('Mapa de valor', 'Mapa de valor'), ic: '🗺',
+    links: [L.diagnostic, L.vna, L.editor, L.cataleg, L.preus] },
+  /* ══ 2 · LA WEB ═══════════════════════════════════════════════════════
+     El servei de desenvolupament web: la web surt del mapa. Les dues pàgines
+     són esborranys `noindex`, però des del menú s'hi ha de poder arribar. */
+  { id: 'web', lbl: T('La teva web', 'Tu web'), ic: '🌐',
+    links: [L.mapaWeb, L.conecta] },
+  /* ══ 3 · EL SOS COM A FORMACIÓ ACCIÓ ══════════════════════════════════
+     No les eines una per una: la porta del SOS, la formació i els fluxos. Qui
+     hi entra troba a dins la barra del SOS amb la resta. */
+  { id: 'formacio', lbl: T('SOS i formació', 'SOS y formación'), ic: '🎓',
+    links: [L.app, L.formacio, L.ia] },
+  /* ══ 4 · QUI HO SIGNA ═════════════════════════════════════════════════ */
+  { id: 'casa', lbl: T('Qui som', 'Quiénes somos'), ic: '🏛', links: [
+    ['qui-som.html', T('Qui som', 'Quiénes somos'),
+      T('Vint anys, els clients i d\'on ve el mètode', 'Veinte años, los clientes y de dónde viene el método')],
+    ['premsa.html', T('Premsa', 'Prensa'),
+      T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')],
+    ['blog.html', 'Blog',
+      T('Cada capacitat, explicada', 'Cada capacidad, explicada')]
+  ] }
+];
+const SOS_GRUPS = [
+  /* ══ 1 · AMB QUINA EINA ═══════════════════════════════════════════════
+     L'aplicació i les seves dinàmiques. `online.html` —el directori— és aquí
+     perquè **és la dinàmica `cens_entitats` de la taula `EINES`**. */
+  { id: 'sos', lbl: T('Les eines', 'Las herramientas'), ic: '🖥', links: [
     ['intro.html', T('De què va', 'De qué va'),
       T('El SOS en setze plans', 'El SOS en dieciséis planos')],
-    ['/SOS/', T('Obre l\'aplicació', 'Abre la aplicación'),
-      T('Sense compte, i les dades al teu aparell', 'Sin cuenta, y los datos en tu dispositivo')],
     ['matriu.html', T('La MATRIU', 'La MATRIU'),
       T('La incubadora: etapes, portes i propietat', 'La incubadora: etapas, puertas y propiedad')],
     ['banc-temps.html', T('El Banc de Temps', 'El Banco de Tiempo'),
@@ -140,28 +176,18 @@ const GRUPS = [
     ['online.html', T('El directori', 'El directorio'),
       T('Qui hi ha al territori, què ofereix i què busca', 'Quién hay en el territorio, qué ofrece y qué busca')]
   ] },
-  /* ══ 3 · COM S'APRÈN ═════════════════════════════════════════════════
-     `ia.html` es queda aquí i no a «El SOS»: explica com el SOS fa servir la
-     IA, i explicar no és operar. */
-  { id: 'apren', lbl: T('Formació', 'Formación'), ic: '🎓', links: [
-    ['formacio.html', T('Els 16 mòduls', 'Los 16 módulos'),
-      T('De N0 a N3, i el certificat és teu', 'De N0 a N3, y el certificado es tuyo')],
-    ['ia.html', T('Fluxos amb IA', 'Flujos con IA'),
-      T('Automatitzar el tangible, valorar l\'intangible', 'Automatizar lo tangible, valorar lo intangible')],
+  /* ══ 2 · COM S'APRÈN ═════════════════════════════════════════════════ */
+  { id: 'apren', lbl: T('Aprèn', 'Aprende'), ic: '📚', links: [
+    L.formacio, L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
-      T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
-    ['blog.html', 'Blog',
-      T('Cada capacitat, explicada', 'Cada capacidad, explicada')]
+      T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')]
   ] },
-  /* ══ 4 · I L'ALTRE MÓN ════════════════════════════════════════════════
+  /* ══ 3 · I L'ALTRE MÓN ════════════════════════════════════════════════
      Una sola porta per a tot el Comando, i cada destí **a la casa on és
      canònic**. Els sis primers són de molekulon.org —hi tenen els mitjans i
      la història— i els cinc darrers d'aquí, perquè és on l'altra casa els
-     envia. `comando.html` **no hi és**: la tesi dels 150.000, els sis eixos,
-     els catorze herois i els onze vídeos són la portada d'allà més
-     `/personatges` més `/musica`, i dues pàgines sobre el mateix no en diuen
-     cap. La seva adreça fa 301 cap allà, i és l'únic 301 d'anada que no fa
-     bucle —comprovat contra el seu `_redirects`. */
+     envia. `comando.html` **no hi és**: la seva adreça fa 301 cap allà, i és
+     l'únic 301 d'anada que no fa bucle —comprovat contra el seu `_redirects`. */
   { id: 'mon', lbl: 'Molekulon', ic: '🌀', links: [
     [MOLEKULON + '/', T('El Comando', 'El Comando'),
       T('La pel·lícula que farem 150.000', 'La película que haremos 150.000')],
@@ -185,21 +211,11 @@ const GRUPS = [
       T('La plaça, a ritme', 'La plaza, a ritmo')],
     ['uneix-te.html', T('Uneix-t\'hi', 'Únete'),
       T('El que ja fas al barri, comptat', 'Lo que ya haces en el barrio, contado')]
-  ] },
-  /* ══ 5 · QUI HO SIGNA ═════════════════════════════════════════════════
-     ⚠ `curs_vna.html` —«El laboratori de VNA»— se'n va el 03/10/2026. Era una
-     segona pàgina sobre el mateix mètode. L'adreça té un 301 cap a `/vna`.
-
-     La resta de l'arrel segueix fora del menú i **amb el motiu escrit**
-     (`FORA_DEL_MENU_ARREL`): una pàgina publicada i no enllaçada ha de ser una
-     decisió, no un oblit. */
-  { id: 'casa', lbl: T('Qui som', 'Quiénes somos'), ic: '🏛', links: [
-    ['qui-som.html', T('Qui som', 'Quiénes somos'),
-      T('Vint anys, els clients i d\'on ve el mètode', 'Veinte años, los clientes y de dónde viene el método')],
-    ['premsa.html', T('Premsa', 'Prensa'),
-      T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')]
   ] }
 ];
+/* Totes dues, per a qui necessita el mapa sencer de pàgines (la porta del SOS,
+   les guardes d'orfes i de destins morts). */
+const GRUPS = SOS_GRUPS.concat(LLOC);
 /* Llegir una etiqueta en una llengua. Una cadena simple val per a totes dues:
    és el cas dels noms propis, que no es tradueixen. */
 const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
@@ -217,6 +233,17 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    (`build-embut.js`). L'aplicació no es perd: és al grup «El SOS» del menú. */
 const CTA = ['/SOS/diagnostic.html', T('Fes el diagnòstic', 'Haz el diagnóstico')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
+/* ── A dins del SOS ──────────────────────────────────────────────────────────
+   L'acció és obrir-lo i la marca porta a la seva portada, que és l'embut de
+   client amb les tres entrades. La tornada a la casa és un enllaç discret al
+   costat de la marca: qui és a dins no ha de perdre el camí de sortida. */
+const SOS_CTA = ['/SOS/', T('Obre el SOS', 'Abre el SOS')];
+const SOS_MARCA = ['/SOS/', 'El ', 'SOS', ''];
+
+/* Les pàgines de `SOS/` que **venen** una de les tres ofertes, i que per tant
+   porten la barra del lloc. La resta de `PAGINES` porta la del SOS. */
+const PAGINES_LLOC = ['blog.html', 'diagnostic.html', 'diagnostic-org.html', 'diagnostic-territori.html',
+  'pressupost.html', 'vna.html', 'vna-suport.html'];
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
@@ -411,7 +438,9 @@ const clauDe = h => {
    s'escriu a les dues llengües, i `--check` peta si s'han desviat. */
 function diccionari(l) {
   const f = [];
-  GRUPS.forEach(g => {
+  /* Només la barra del lloc: les pàgines del SOS són monolingües i la seva
+     barra no porta claus. */
+  LLOC.forEach(g => {
     /* Sense la icona: ara va al seu propi element al marcatge. */
     f.push(`  'nv.g.${g.id}':'${esc2(txt(g.lbl, l))}',`);
     g.links.forEach(([h, t, d]) => {
@@ -471,7 +500,13 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
      sent correcta a la vista. Era l'última costura que es veia mirant. */
   'vna.html'];
 
+const esLloc = p => PORTADES.indexOf(p) >= 0 || PAGINES_LLOC.indexOf(p) >= 0;
 function nav(pagina) {
+  const lloc = esLloc(pagina);
+  const grups = lloc ? LLOC : SOS_GRUPS, cta = lloc ? CTA : SOS_CTA, marca = lloc ? MARCA : SOS_MARCA;
+  /* La barra del SOS no porta claus de traducció: les seves pàgines no tenen
+     diccionari, i una clau sense entrada només fa soroll a les guardes. */
+  const i18n = k => lloc ? ` data-i18n="${k}"` : '';
   const jo = hrefDe(pagina);
   const aqui = h => hrefDe(h) === jo;
   const grup = g => {
@@ -489,7 +524,7 @@ function nav(pagina) {
        perdre la traducció pel camí. */
     return `<details class="tn-g${dins ? ' tn-here' : ''}"><summary>`
       + `<i class="tn-i" aria-hidden="true">${g.ic}</i>`
-      + `<span data-i18n="nv.g.${g.id}">${esc(txt(g.lbl, 'ca'))}</span></summary>` +
+      + `<span${i18n('nv.g.' + g.id)}>${esc(txt(g.lbl, 'ca'))}</span></summary>` +
       `<div class="tn-p">` + g.links.map(([h, t, d]) => {
         const id = clauDe(h);
         /* Els destins de l'altra casa porten `rel` i una fletxa: qui el prem
@@ -498,8 +533,8 @@ function nav(pagina) {
            sentits i obrir-ne una de nova faria pensar que és un lloc de fora. */
         const f = esFora(h);
         return `<a href="${hrefDe(h)}"${f ? ' rel="noopener"' : ''}${aqui(h) ? ' aria-current="page"' : ''}>`
-          + `<b data-i18n="nv.t.${id}">${esc(txt(t, 'ca'))}</b>`
-          + `<span data-i18n="nv.d.${id}">${esc(txt(d, 'ca'))}</span>`
+          + `<b${i18n('nv.t.' + id)}>${esc(txt(t, 'ca'))}</b>`
+          + `<span${i18n('nv.d.' + id)}>${esc(txt(d, 'ca'))}</span>`
           + (f ? '<i class="tn-f" aria-hidden="true">molekulon.org ↗</i>' : '') + `</a>`;
       }).join('') + `</div></details>`;
   };
@@ -512,7 +547,8 @@ function nav(pagina) {
      petava contra la seva pròpia sortida. */
   return OBRE + '\n' + CSS + '\n' +
     `<nav class="tt-nav" aria-label="Navegació del lloc">\n` +
-    `  <a class="tn-brand" href="${MARCA[0]}">${esc(MARCA[1])}<span>${esc(MARCA[2])}</span> ${esc(MARCA[3])}</a>\n` +
+    `  <a class="tn-brand" href="${marca[0]}">${esc(marca[1])}<span>${esc(marca[2])}</span>${marca[3] ? ' ' + esc(marca[3]) : ''}</a>\n` +
+    (lloc ? '' : `  <a class="tn-casa" href="/">TeamTowers</a>\n`) +
     /* ── EL «MENÚ» DE MÒBIL, I PER QUÈ PORTA SCRIPT (05/10/2026) ──────────
        Cinc portes no caben en una barra curta a 360–414 px, i els tres camins
        es van mesurar abans de triar:
@@ -537,10 +573,10 @@ function nav(pagina) {
        surt en línia amb CSS. */
     `  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs"`
     + ` data-i18n="nv.menu">Menú</button>\n` +
-    `  <div class="tn-gs" id="tt-gs">${GRUPS.map(grup).join('')}</div>\n` +
+    `  <div class="tn-gs" id="tt-gs">${grups.map(grup).join('')}</div>\n` +
     llengua +
-    `  <a class="tn-cta" href="${CTA[0]}"${jo === CTA[0] ? ' aria-current="page"' : ''}>`
-    + `<span data-i18n="nv.cta">${esc(txt(CTA[1], 'ca'))}</span> →</a>\n` +
+    `  <a class="tn-cta" href="${cta[0]}"${jo === cta[0] ? ' aria-current="page"' : ''}>`
+    + `<span${i18n('nv.cta')}>${esc(txt(cta[1], 'ca'))}</span> →</a>\n` +
     `</nav>\n` + JS + '\n' + TANCA;
 }
 
@@ -596,6 +632,9 @@ const CSS = `<style>
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
 .tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
 .tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .tt-nav .tn-g{position:relative}
@@ -634,6 +673,7 @@ const CSS = `<style>
      l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
      partia i la barra passava de dues files a tres. */
   .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
   /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
      El primer intent posava els cinc grups **en columna** a mòbil, oberts
      sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
@@ -691,7 +731,7 @@ const CSS = `<style>
    diria que hi és i la dels vedes que la pàgina no correspon al codex. Per això
    el menú s'exporta i el generador dels vedes l'aplica ell mateix — una sola
    declaració, dos que la fan servir. */
-module.exports = { posa, nav, PAGINES, EXCEPCIONS, FORA_DEL_MENU, GRUPS, CTA, EINES };
+module.exports = { posa, nav, PAGINES, PAGINES_LLOC, EXCEPCIONS, FORA_DEL_MENU, GRUPS, LLOC, SOS_GRUPS, CTA, SOS_CTA, EINES };
 if (require.main !== module) return;
 
 let fails = 0;
@@ -747,10 +787,17 @@ function blocApp() {
        oferir-les aquí seria vendre màrqueting com a eina i deixaria qui hi
        clica fora de l'app sense avisar. A la barra sí que hi van, perquè allà
        la feina de la llista és dir **on és tot**. */
-    grups: GRUPS.map(g => ({ lbl: g.lbl, ic: g.ic,
-      links: g.links.filter(l => !esFora(l[0]) && !esArrel(l[0]) && l[0] !== APP && !l[0].startsWith('/'))
-        .map(([h, t, d]) => ({ h, t, d })) }))
-      .filter(g => g.links.length),
+    /* Les dues barres, primer la del SOS, i cada pàgina un sol cop: la
+       formació i els fluxos surten a totes dues barres i a l'app no s'han de
+       veure dues vegades. */
+    grups: (() => {
+      const vist = new Set();
+      return GRUPS.map(g => ({ lbl: g.lbl, ic: g.ic,
+        links: g.links.filter(l => !esFora(l[0]) && !esArrel(l[0]) && l[0] !== APP && !l[0].startsWith('/'))
+          .filter(l => !vist.has(l[0]) && vist.add(l[0]))
+          .map(([h, t, d]) => ({ h, t, d })) }))
+        .filter(g => g.links.length);
+    })(),
     eines: EINES
   };
   return A_OBRE + '\n<script id="sos-eines" type="application/json">\n' +
@@ -933,13 +980,20 @@ if (CHECK) {
   /* 2 · Cap destí a dues portes. Un fitxer a dos grups és la barreja tornant:
      qui el busca no sap a quin calaix és i qui el mou en deixa una còpia. */
   {
-    const vist = new Map();
-    GRUPS.forEach(g => g.links.forEach(l => {
-      const k = hrefDe(l[0]);
-      vist.set(k, (vist.get(k) || []).concat(g.id));
-    }));
-    const dobles = [...vist].filter(([, gs]) => gs.length > 1);
-    if (!dobles.length) ok(`els ${vist.size} destins tenen una sola porta`);
+    /* Per barra: la formació surt a les dues a posta, però dins de cada una
+       un destí té una sola porta. */
+    const dobles = [];
+    let n = 0;
+    [LLOC, SOS_GRUPS].forEach(gs => {
+      const vist = new Map();
+      gs.forEach(g => g.links.forEach(l => {
+        const k = hrefDe(l[0]);
+        vist.set(k, (vist.get(k) || []).concat(g.id));
+      }));
+      n += vist.size;
+      dobles.push(...[...vist].filter(([, x]) => x.length > 1));
+    });
+    if (!dobles.length) ok(`els ${n} destins de les dues barres tenen una sola porta a cada barra`);
     else bad(`destins a més d'una porta: ${dobles.map(([k, gs]) => `${k} (${gs.join(' i ')})`).join(', ')}`);
   }
 
@@ -1019,7 +1073,10 @@ if (CHECK) {
   }
 
   const totes = PAGINES.length;
-  if (!fails) ok(`les ${totes} pàgines porten exactament el mateix menú`);
+  if (!fails) ok(`les ${totes} pàgines porten la barra declarada per a elles`);
+  const soltes = PAGINES_LLOC.filter(p => PAGINES.indexOf(p) < 0);
+  if (!soltes.length) ok(`${PAGINES_LLOC.length} pàgines del SOS porten la barra del lloc i ${PAGINES.length - PAGINES_LLOC.length} la del SOS`);
+  else bad(`${soltes.join(', ')} és a PAGINES_LLOC i no a PAGINES: no porta cap barra`);
   const exc = Object.keys(EXCEPCIONS);
   const solapa = exc.filter(e => PAGINES.indexOf(e) >= 0);
   if (!solapa.length) ok(`i les ${exc.length} excepcions estan declarades amb el motiu: ${exc.join(', ')}`);
@@ -1039,9 +1096,9 @@ if (CHECK) {
      es comprova és que siguin exactament les pàgines que `frontera-molekulon.md`
      diu que allà existeixen: la guarda de la frontera, més avall. */
   const morts = GRUPS.flatMap(g => g.links.map(l => hrefDe(l[0])))
-    .concat([CTA[0]]).filter(u => !esFora(u))
+    .concat([CTA[0], SOS_CTA[0]]).filter(u => !esFora(u))
     .filter(u => !existsSync(fitxerDe(u)));
-  if (!morts.length) ok(`i els ${GRUPS.reduce((a, g) => a + g.links.length, 0) + 1} destins existeixen tots`);
+  if (!morts.length) ok(`i els ${GRUPS.reduce((a, g) => a + g.links.length, 0) + 2} destins existeixen tots`);
   else bad(`el menú porta a pàgines que no hi són: ${morts.join(', ')}`);
 
   /* ── La taula d'eines per dinàmica ────────────────────────────────────
@@ -1075,4 +1132,4 @@ if (CHECK) {
   process.exit(fails ? 1 : 0);
 }
 console.log(`✅ Menú escrit a ${tocades} pàgina${tocades === 1 ? '' : 's'} de ${PAGINES.length}` +
-  ` · ${GRUPS.length} grups, ${GRUPS.reduce((a, g) => a + g.links.length, 0)} destins i una acció`);
+  ` · barra del lloc amb ${LLOC.length} portes i barra del SOS amb ${SOS_GRUPS.length}`);
