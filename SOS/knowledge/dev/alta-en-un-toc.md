@@ -63,9 +63,20 @@ El client només fa una cosa: pagar amb Apple Pay.
 endur-se-ho tot: GitHub permet transferir un repositori i Netlify permet
 transferir un lloc a un altre equip. Sense això, el camí A seria una presó.
 
-### Camí B · «Ho vull a nom meu»
+### Camí B · «Ho vull a nom meu» (fet, amb el pagament en mode de prova)
 
 Dos tocs més, i tot és seu des del primer minut.
+
+**Ja funciona:** a la pestanya Web, **«Publica-la a nom teu (Netlify)»**. Obre
+el botó «Deploy to Netlify» de la carpeta `SOS/plantilla-web/` d'aquest
+repositori (paràmetre `create_from_path`: no cal cap repositori a part).
+Netlify la copia al GitHub del client i la publica. A cada publicació hi
+executa `node eines/genera.mjs`, que fa la web amb el mateix codi que l'editor.
+El mapa hi va comprimit dins del botó (`TT_MAPA`, al hash de l'adreça, que no
+arriba als registres de Netlify), amb el nom, el correu i la llengua. Quan el
+client desa `cerebro/mapa-real.json` al seu repositori, aquest mana. La
+plantilla es regenera amb `node SOS/tools/build-plantilla.js`, i la CI comprova
+que porta el codi de l'editor tal com és.
 
 1. Paga amb Apple Pay, igual que al camí A.
 2. Botó **«Deploy to Netlify»**. El client entra a Netlify amb el seu GitHub.
@@ -265,6 +276,44 @@ només viu al repositori.
 **Pendent:** donar d'alta els avisos amb el primer pilot (quina eina els
 escolta) i l'accés de les persones de fora, quan hi hagi comptes de debò.
 
+## 3d · Fet: el pagament, amb Stripe Checkout (mode de prova)
+
+**Com es veu.** Si la web té claus de Stripe, el botó de la pestanya Web diu
+**«Paga i publica-la a nom teu»**. Porta a la pàgina de pagament de Stripe
+(targeta, Apple Pay o Google Pay). En tornar, l'editor pregunta si s'ha pagat
+i el botó torna a ser «Publica-la a nom teu», amb el mapa i el nom on eren.
+Sense claus, o des del disc, el botó publica sense pagar, com abans.
+
+**El que es paga és el servei.** La plantilla és oberta (és en aquest
+repositori públic). El pagament és per l'acompanyament, no per l'accés al codi.
+
+**Dues funcions de Netlify, al web principal:**
+
+- `netlify/functions/checkout.mjs`. `POST` crea la sessió de Checkout i en
+  torna l'adreça. `GET ?session_id=cs_…` diu si s'ha pagat. `GET` sol diu si
+  la web cobra. Les tornades surten de la `URL` de Netlify, mai de qui crida.
+- `netlify/functions/checkout-completat.mjs`. L'avís de Stripe
+  (`checkout.session.completed`). Comprova la signatura `Stripe-Signature`
+  (HMAC-SHA256, cinc minuts de marge) abans de llegir res. Ara només ho anota;
+  aquí s'hi penjarà el camí A.
+
+**Variables d'entorn** (Netlify › Site configuration › Environment variables):
+
+| Variable | Què és |
+|---|---|
+| `STRIPE_SECRET_KEY` | `sk_test_…`. Una `sk_live_` no s'accepta sense `STRIPE_LIVE=1` |
+| `STRIPE_PRICE_ID` | `price_…` del producte de l'alta. L'import viu a Stripe, no aquí |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…` de l'avís, a Stripe › Developers › Webhooks |
+| `STRIPE_LIVE` | `1` només quan l'Àlvar decideixi cobrar de debò |
+
+L'avís de Stripe s'apunta a `https://<web>/.netlify/functions/checkout-completat`,
+amb l'esdeveniment `checkout.session.completed`. Per provar: la targeta
+`4242 4242 4242 4242`, qualsevol data futura i qualsevol CVC. Apple Pay surt
+a Safari amb una targeta a la cartera, i en mode de prova no cobra.
+
+Les proves (`SOS/tests/test-stripe.mjs`, sense xarxa) i la pestanya Web amb
+funcions falses (`test-vna-suport.mjs`, 7E) corren a la CI.
+
 ## 4 · La IA, pagada per ús
 
 Dues opcions, i el client tria:
@@ -310,9 +359,9 @@ l'organització a un projecte, i què li cal per entrar-hi.
    ✓ La marca i la proposta automàtica (`marca.json`, `proposta.js`).
    ✓ El registre viu (`llegeix-registre.js`, fase 2 del pla).
    ✓ L'API, els avisos signats i el servidor MCP del cervell (fase 3).
-3. El repositori plantilla i el camí B: el botó de Netlify funciona sense que
-   hàgim de guardar cap permís.
-4. Stripe Checkout en mode de prova i la funció que verifica l'avís.
+3. ✓ El repositori plantilla i el camí B: el botó de Netlify funciona sense que
+   hàgim de guardar cap permís (`SOS/plantilla-web/`).
+4. ✓ Stripe Checkout en mode de prova i la funció que verifica l'avís.
 5. El camí A: crear el repositori i el lloc. Això demana tokens de servei
    de l'Àlvar.
 6. Els crèdits d'IA, quan l'Àlvar hagi decidit el marge.

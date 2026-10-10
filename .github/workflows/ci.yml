@@ -67,6 +67,11 @@ jobs:
       - name: Guarda del mòdul de suport al mapa de valor
         run: node SOS/tools/build-vna-suport.js --check
 
+      # La plantilla del botó «Deploy to Netlify» porta el codi de l'editor
+      # tal com és: si l'editor canvia i la plantilla no, el client rep l'antic.
+      - name: Guarda de la plantilla de Netlify
+        run: node SOS/tools/build-plantilla.js --check
+
       # El motor de l'editor del mapa (model, text, arbre, desviació i
       # diagnòstic) es prova en Node pur: és l'única guarda de l'editor que corre
       # aquí, perquè Playwright no hi corre.
@@ -331,6 +336,12 @@ jobs:
       # que el lead porti el que toca i que el registre no porti cap dada personal.
       - name: Flux de nivell 2 · formulari → Zoho CRM
         run: node SOS/tests/test-zoho-nivell2.mjs
+
+      # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
+      # Sense xarxa: que sense claus no cobri res, que una clau de producció
+      # no passi sense permís i que l'avís de Stripe sense signatura bona no compti.
+      - name: El pagament de l'alta · Stripe Checkout
+        run: node SOS/tests/test-stripe.mjs
 
       # Els municipis surten de les taules de l'app, que és qui les fa servir
       # per construir l'arbre de territoris. Dues llistes divergirien i la que
