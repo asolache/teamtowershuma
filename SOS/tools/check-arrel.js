@@ -146,8 +146,9 @@ const cosDe = src => {
    una regla **forçada** (`!`): sense, Netlify serveix el fitxer que troba. Si
    algú torna a obrir-ne una, l'avís legal ha de tornar a dir-ho. */
 {
-  const ARXIU_WEB = ['ia', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9']
-    .filter(d => existsSync(join(ARREL, d)));
+  // Si alguna carpeta canvia de lloc, la guarda ho ha de saber: no la salta.
+  const ARXIU_WEB = ['ia', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9'];
+  const perdudes = ARXIU_WEB.filter(d => !existsSync(join(ARREL, d)));
   const linies = existsSync(join(ARREL, '_redirects'))
     ? readFileSync(join(ARREL, '_redirects'), 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'))
     : [];
@@ -159,8 +160,17 @@ const cosDe = src => {
   const toml = existsSync(join(ARREL, 'netlify.toml')) ? readFileSync(join(ARREL, 'netlify.toml'), 'utf8') : '';
   const perToml = ARXIU_WEB.filter(d => new RegExp('from\\s*=\\s*"/' + d + '[/"]').test(toml));
   const proxy = existsSync(join(ARREL, 'netlify', 'edge-functions', 'anthropic-proxy.js'));
-  if (!obertes.length && !perToml.length && !proxy)
-    ok(`les ${ARXIU_WEB.length} carpetes d'arxiu (${ARXIU_WEB.join(', ')}) no se serveixen: redirecció forçada al SOS, i cap proxy d'IA desplegat`);
+  // /ia sense barra és ia.html (La Teva Colla), que no es retira. La regla forçada
+  // /ia/* també agafa /ia, així que la de ia.html ha d'anar abans.
+  const iBare = linies.findIndex(l => /^\/ia\s+\/ia\.html\s+200$/.test(l));
+  const iForc = linies.findIndex(l => /^\/ia\/\*\s/.test(l));
+  const iaTapat = existsSync(join(ARREL, 'ia.html')) && (iBare < 0 || (iForc >= 0 && iBare > iForc));
+  if (perdudes.length) bad(`l'arxiu ha canviat de lloc (${perdudes.join(', ')} no és a l'arrel): `
+    + 'actualitza aquesta guarda i _redirects perquè segueixi sense servir-se');
+  else if (iaTapat) bad('/ia (ia.html, La Teva Colla) queda tapada per la redirecció de /ia/*: '
+    + 'a _redirects cal `/ia /ia.html 200` abans de `/ia/* /SOS/ 301!`');
+  else if (!obertes.length && !perToml.length && !proxy)
+    ok(`les ${ARXIU_WEB.length} carpetes d'arxiu (${ARXIU_WEB.join(', ')}) no se serveixen a teamtowershuma.com: redirecció forçada al SOS, /ia segueix sent ia.html, i cap proxy d'IA desplegat`);
   else bad('l\'arxiu torna a ser al web: '
     + [obertes.length ? 'sense redirecció forçada a _redirects: ' + obertes.join(', ') : '',
        perToml.length ? 'netlify.toml en serveix: ' + perToml.join(', ') : '',

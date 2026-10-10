@@ -39,8 +39,9 @@ malament.
 
 `v2`…`v9`, `ia/`, `js/`, `knowledge-base/` i la majoria de les pàgines de
 l'arrel són versions anteriors del projecte. **No s'esborren**: hi ha història
-allà dins. Des del 10/10/2026 `ia/` i `v2`…`v9` ja no se serveixen al web
-públic (`_redirects` porta les seves adreces al SOS d'ara). Però tampoc
+allà dins. Des del 10/10/2026 `ia/` i `v2`…`v9` ja no se serveixen a
+teamtowershuma.com (`_redirects` porta les seves adreces al SOS d'ara; la
+còpia antiga de GitHub Pages és a part i només la pot despublicar l'Alvaro). Però tampoc
 són el projecte, i tenir-les barrejades amb el que sí que ho és fa que qualsevol
 cerca de text doni resultats de fa tres anys amb la mateixa cara de veritat que
 els d'avui.
@@ -144,8 +145,9 @@ aquesta llista i res més.
 ## El que aquesta taxonomia no fa
 
 - **No mou res.** Declara. Moure `v2`…`v9` i `ia/` sota una carpeta `arxiu/` de
-  debò seria més net; des que ja no se serveixen (10/10/2026) no trencaria el
-  web, però continua sent una decisió a part.
+  debò seria més net, però amb `publish = "."` les tornaria a publicar a
+  `/arxiu/…`: caldria una redirecció forçada (`/arxiu/* /SOS/ 301!`) i que la
+  guarda 5 de `check-arrel.js` les busqui al lloc nou. És una decisió a part.
 - **No decideix què s'esborra.** Res del que hi ha aquí diu que l'arxiu sobri.
   Diu que no és el present.
 - **No classifica fitxer a fitxer.** La cara és de la carpeta. Un fitxer que no
