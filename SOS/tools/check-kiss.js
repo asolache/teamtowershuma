@@ -186,7 +186,8 @@ const SOSTRES = [
   ['index.html', 67, 'la portada ven el mapa de valor, el negoci operatiu, i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
   ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
-  ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut']
+  ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut'],
+  ['avis-legal.html', 16, 'el titular, les condicions i la privacitat en dues llengües, la barra i el peu']
 ];
 SOSTRES.forEach(([rel, max, que]) => {
   const f = join(__dirname, '..', '..', rel);

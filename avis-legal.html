@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avís legal i privacitat | TeamTowers Humà</title>
+    <meta name="description" content="Qui és el titular de teamtowershuma.com, quines dades ens arriben, per a què les fem servir, qui més les veu i com pots fer que les corregim o les esborrem.">
+    <meta name="author" content="Álvaro Solache · TeamTowers Humà">
+    <link rel="canonical" href="https://teamtowershuma.com/avis-legal">
+    <meta property="og:title" content="Avís legal i privacitat | TeamTowers Humà">
+    <meta property="og:description" content="Qui és el titular del lloc, quines dades ens arriben i què en fem.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://teamtowershuma.com/avis-legal">
+    <meta property="og:locale" content="ca_ES">
+    <meta property="og:locale:alternate" content="es_ES">
+    <meta property="og:site_name" content="TeamTowers Humà">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Avís legal i privacitat | TeamTowers Humà">
+    <meta name="twitter:description" content="Qui és el titular del lloc, quines dades ens arriben i què en fem.">
+
+    <!-- La tipografia, servida des del mateix domini (les del SOS) i no des de
+         Google Fonts: és la pàgina que explica a qui fa arribar dades cada
+         visita, i aquesta no n'ha de fer arribar a ningú. -->
+    <style>
+        @font-face { font-family: 'Space Grotesk'; font-style: normal; font-weight: 400 700; font-display: swap; src: url(/SOS/fonts/space-grotesk-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: 'Space Grotesk'; font-style: normal; font-weight: 400 700; font-display: swap; src: url(/SOS/fonts/space-grotesk-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        :root {
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+            --sans: 'Space Grotesk', system-ui, sans-serif;
+        }
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 16px; scroll-behavior: smooth; scroll-padding-top: 5rem; }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        .container { max-width: 1160px; margin: 0 auto; padding: 0 2rem; }
+        @media (max-width: 600px) { .container { padding: 0 1rem; } }
+
+        /* La capçalera d'una pàgina interior: la mateixa que a /qui-som i /premsa. */
+        .pg-cap { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+        .pg-eyebrow { font-family: var(--mono); font-size: var(--t0); letter-spacing: .06em; text-transform: uppercase; color: var(--indigo); margin: 0 0 .9rem; }
+        .pg-cap h1 { font-size: var(--t5); line-height: 1.1; margin: 0 0 1.1rem; letter-spacing: -.02em; }
+        .pg-cap h1 em { font-style: normal; color: var(--indigo); }
+        .pg-lead { max-width: 68ch; font-size: var(--t1); line-height: 1.7; color: var(--light); margin: 0 0 1.4rem; }
+        .pg-tornar { margin: 0; font-family: var(--mono); font-size: var(--t0); }
+        .pg-tornar a { color: var(--muted); text-decoration: none; border-bottom: 1px dashed var(--border); }
+        .pg-tornar a:hover { color: var(--text); }
+        @media (max-width: 768px) { .pg-cap { padding: 1.6rem 0 2rem; } }
+
+        /* El text: una sola columna de lectura, amb els apartats a dalt. */
+        .al { padding: 2rem 0 4rem; }
+        .al-in { max-width: 860px; }
+        .al-index { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0 0 1.4rem; margin: 0 0 .6rem; border-bottom: 1px solid var(--border); }
+        .al-index a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .9rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--light); font-size: var(--t0); text-decoration: none; }
+        .al-index a:hover, .al-index a:focus-visible { border-color: var(--indigo); color: var(--indigo); }
+        .al h2 { font-size: var(--t3); line-height: 1.25; margin: 2.6rem 0 .9rem; }
+        .al h3 { font-size: var(--t2); line-height: 1.3; margin: 1.9rem 0 .7rem; }
+        .al p, .al-llista li { font-size: var(--t1); line-height: 1.75; color: var(--light); max-width: 72ch; }
+        .al p + p { margin-top: .9rem; }
+        .al strong { color: var(--text); font-weight: 600; }
+        .al a { color: var(--blue); }
+        .al-fitxa { display: grid; margin: .4rem 0 1rem; border-top: 1px solid var(--border); }
+        .al-fitxa div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 1rem; padding: .75rem 0; border-bottom: 1px solid var(--border); }
+        .al-fitxa dt { font-family: var(--mono); font-size: var(--t0); color: var(--muted); padding-top: .15rem; }
+        .al-fitxa dd { font-size: var(--t1); color: var(--text); overflow-wrap: anywhere; }
+        .al-data { font-family: var(--mono); font-size: var(--t0); color: var(--muted); }
+        .al-llista { list-style: none; display: grid; gap: 1rem; }
+        .al-llista li { padding-left: 1rem; border-left: 2px solid var(--border); }
+        @media (max-width: 600px) { .al-fitxa div { grid-template-columns: 1fr; gap: .15rem; } }
+    </style>
+</head>
+<body>
+
+<!--TT-NAV-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
+   una còpia: hi ha guarda. Només tokens de la pell (build-pell.js), perquè els
+   àlies de les pàgines d'arrel —--white, --accent-indigo, --bg-panel— no
+   existeixen a les 24 del SOS i allà no peten: deixen el text sense color. */
+.tt-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+  padding:.7rem 1.1rem;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
+  text-decoration:none;margin-right:.5rem;white-space:nowrap}
+.tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
+.tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.tt-nav .tn-g{position:relative}
+.tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
+.tt-nav .tn-g>summary::-webkit-details-marker{display:none}
+.tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
+.tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.tt-nav .tn-here>summary{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+.tt-nav .tn-p{position:absolute;top:calc(100% + .35rem);left:0;min-width:272px;z-index:110;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.tt-nav .tn-p a{display:block;padding:.44rem .58rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.tt-nav .tn-p a:hover{background:var(--panel);color:var(--text)}
+.tt-nav .tn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.tt-nav .tn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.tt-nav .tn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.tt-nav .tn-lang{display:flex;align-items:center;gap:2px;margin-left:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px}
+.tt-nav .tn-lang .lang-b{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font:inherit;font-size:var(--t0);padding:.16rem .5rem;border-radius:5px}
+.tt-nav .tn-lang .lang-b.on{background:var(--indigo);color:var(--on-accent);font-weight:700}
+.tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
+/* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
+.tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
+  text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-cta:hover{filter:brightness(1.12)}
+@media(max-width:860px){
+  .tt-nav{padding:.42rem .6rem;gap:.25rem}
+  /* La marca baixa al terra —no per sota— perquè la marca, el commutador i
+     l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
+     partia i la barra passava de dues files a tres. */
+  .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
+  /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
+     El primer intent posava els cinc grups **en columna** a mòbil, oberts
+     sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
+     el dibuix i el botó del hero de la primera pantalla: test-portada.mjs va
+     dir «acaba a 1033 de 844». Una barra no pot costar un quart de pantalla.
+
+     En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
+     d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
+     a sota, que és el que una columna sí que feia. */
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-g>summary{padding:.3rem .5rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
+  .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
+    top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
+}
+</style>
+<nav class="tt-nav" aria-label="Navegació del lloc">
+  <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
+  <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
+  <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
+</nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
+<!--/TT-NAV-->
+
+<!-- L'avís legal (LSSI, art. 10) i la informació de privacitat (RGPD, art. 13)
+     en una sola pàgina, enllaçada des del peu de totes les pàgines.
+
+     Cada cosa que diu aquí s'ha comprovat contra el codi el 10/10/2026: quins
+     formularis envien dades i on (netlify/functions/submission-created.mjs),
+     què guarda el directori (SOS/online.html, SOS/sql/001_online_fitxes.sql),
+     què rep el pagament (netlify/functions/checkout*.mjs) i què es queda al
+     navegador. Si canvia alguna d'aquestes coses, aquest text també. -->
+<section class="pg-cap">
+    <div class="container al-in">
+        <p class="pg-eyebrow" data-i18n="al.eyebrow">Avís legal</p>
+        <h1 data-i18n-html="al.h1">Avís legal i <em>privacitat</em></h1>
+        <p class="pg-lead" data-i18n="al.lead">Qui hi ha darrere d'aquest lloc, quines dades ens arriben, per a què les fem servir i com pots fer que les corregim o les esborrem. Escrit perquè s'entengui.</p>
+        <p class="pg-tornar"><a href="/" data-i18n="pg.tornar">← Tornar a la portada</a></p>
+    </div>
+</section>
+
+<section class="al" id="titular">
+    <div class="container al-in">
+        <ol class="al-index">
+            <li><a href="#titular" data-i18n="al.i.tit">Qui és el titular</a></li>
+            <li><a href="#us" data-i18n="al.i.us">Fer servir aquest lloc</a></li>
+            <li><a href="#autoria" data-i18n="al.i.aut">De qui és el que hi ha aquí</a></li>
+            <li><a href="#dades" data-i18n="al.i.dad">Les teves dades</a></li>
+            <li><a href="#navegador" data-i18n="al.i.nav">Galetes i el teu navegador</a></li>
+            <li><a href="#drets" data-i18n="al.i.dre">Els teus drets</a></li>
+        </ol>
+        <h2 id="t-titular" data-i18n="al.tit.h">Qui és el titular</h2>
+        <!-- Pendent (LSSI art. 10): el NIF i el domicili. No es publiquen fins
+             que l'Alvaro els doni (10/10/2026). -->
+        <dl class="al-fitxa">
+            <div><dt data-i18n="al.tit.nom.t">Titular</dt><dd data-i18n-html="al.tit.nom.v">Alvaro Solache, professional autònom.</dd></div>
+            <div><dt data-i18n="al.tit.marca.t">Marques</dt><dd data-i18n-html="al.tit.marca.v">TeamTowers i TeamTowers Humà.</dd></div>
+            <div><dt data-i18n="al.tit.act.t">Activitat</dt><dd data-i18n-html="al.tit.act.v">Consultoria, formació i dinamització d'organitzacions i territoris: mapes de valor, desenvolupament web i formació amb el SOS.</dd></div>
+            <div><dt data-i18n="al.tit.mail.t">Correu</dt><dd data-i18n-html="al.tit.mail.v"><a class="js-mail" href="/qui-som"><span class="js-adr">escriu-nos</span></a></dd></div>
+            <div><dt data-i18n="al.tit.web.t">Lloc web</dt><dd data-i18n-html="al.tit.web.v">teamtowershuma.com</dd></div>
+        </dl>
+        <p class="al-data" data-i18n="al.data">Actualitzat el 10 d'octubre de 2026.</p>
+
+        <h2 id="us" data-i18n="al.us.h">Fer servir aquest lloc</h2>
+        <p data-i18n-html="al.us.1">Pots llegir, enllaçar i compartir el que hi ha en aquest lloc. Els textos expliquen què fem i com ho fem, però no són una oferta tancada: les condicions d'un encàrrec —què inclou, quan es fa i a quin preu— són les que confirmem per escrit, per correu o en un pressupost.</p>
+        <p data-i18n-html="al.us.2">Hi ha enllaços a llocs d'altres, com molekulon.org o les peces de premsa. El que diuen és responsabilitat de qui els publica.</p>
+        <p data-i18n-html="al.us.3">Fem el possible perquè el lloc funcioni i perquè el que diu sigui cert i al dia. Si hi trobes un error, <a class="js-mail" href="/qui-som">escriu-nos</a> i el corregim.</p>
+
+        <h2 id="autoria" data-i18n="al.aut.h">De qui és el que hi ha aquí</h2>
+        <p data-i18n-html="al.aut.1">Els textos, els dibuixos i el codi d'aquest lloc són d'Alvaro Solache (TeamTowers Humà), llevat dels que porten una altra autoria. El codi és públic i es pot fer servir com a referència per aprendre; qualsevol ús comercial necessita la nostra autorització abans.</p>
+        <p data-i18n-html="al.aut.2">Les marques i els logotips d'altres —clients, mitjans, entitats— són dels seus titulars. Les tipografies Space Grotesk i JetBrains Mono tenen la seva pròpia llicència lliure (SIL Open Font License).</p>
+
+        <h2 id="dades" data-i18n="al.dad.h">Les teves dades</h2>
+        <p data-i18n-html="al.dad.1">El responsable de les dades personals que ens arriben per aquest lloc és Alvaro Solache, amb el correu de dalt. La regla de la casa és demanar només el que cal per respondre't, i que el que escrius als formularis no surti del teu navegador fins que tu prems el botó d'enviar.</p>
+
+        <h3 data-i18n="al.que.h">Què ens arriba, i quan</h3>
+        <ul class="al-llista">
+            <li data-i18n-html="al.que.form"><strong>El diagnòstic i la comanda.</strong> Quan prems el botó d'enviar del diagnòstic de l'organització o de la comanda de la pàgina de preus, ens arriba el que hi has escrit: el nom, el correu, el telèfon si l'has posat, el càrrec, l'organització i les respostes. Passa pel formulari del nostre allotjament (Netlify) i d'allà al nostre CRM (Zoho CRM).</li>
+            <li data-i18n-html="al.que.mail"><strong>El correu.</strong> Si ens escrius, des d'un enllaç «Escriu-nos» o amb l'opció de correu dels formularis, ens arriba el missatge amb el que hi hagis posat.</li>
+            <li data-i18n-html="al.que.online"><strong>El directori del SOS.</strong> Si hi publiques la teva fitxa, es guarda a Supabase el que tu hi escrius —el nom o àlies, el municipi i el país, el que ofereixes i el que busques— amb les claus públiques que la signen. La fitxa és <strong>pública</strong>: qualsevol la pot llegir. No hi demanem ni correu, ni telèfon, ni adreça. «Retira'm» l'amaga del directori, però les versions anteriors queden guardades: si vols que les esborrem, escriu-nos.</li>
+            <li data-i18n-html="al.que.xat"><strong>El xat del directori.</strong> Els missatges es xifren al teu navegador i viatgen xifrats a través de Supabase. Nosaltres no en podem llegir el contingut, i no es guarden.</li>
+            <li data-i18n-html="al.que.pag"><strong>El pagament a l'editor del mapa.</strong> Si pagues per publicar la teva web, ho fas a la pàgina de Stripe, que és qui rep les dades de pagament. A nosaltres ens arriba si el pagament s'ha fet, l'import i la moneda, però no la targeta.</li>
+            <li data-i18n-html="al.que.ia"><strong>El material del servei «Mapa i web».</strong> Si ens encarregues el servei, el material que ens dones (la teva web, documents, notes) el treballem amb Claude, d'Anthropic. Si ens envies un àudio, abans el passa a text una altra eina, i et diem quina.</li>
+            <li data-i18n-html="al.que.visita"><strong>La visita.</strong> Com qualsevol allotjament, Netlify rep l'adreça IP i el navegador de cada visita per poder servir les pàgines. Les pàgines principals carreguen les tipografies de Google Fonts, i en demanar-les el teu navegador fa arribar la teva adreça IP a Google. El directori del SOS, en obrir-se, llegeix les fitxes publicades de Supabase.</li>
+        </ul>
+
+        <h3 data-i18n="al.per.h">Per a què, i amb quina base</h3>
+        <ul class="al-llista">
+            <li data-i18n-html="al.per.1">Per respondre't i preparar el pressupost o l'encàrrec que demanes, que són mesures precontractuals a petició teva (art. 6.1.b del RGPD), i, si tira endavant, per fer-lo (execució del contracte).</li>
+            <li data-i18n-html="al.per.2">Per publicar la teva fitxa al directori, perquè ho demanes tu (consentiment, art. 6.1.a). El pots retirar quan vulguis.</li>
+            <li data-i18n-html="al.per.3">Per complir les obligacions legals, com les fiscals i les comptables (art. 6.1.c).</li>
+            <li data-i18n-html="al.per.4">Per a res més: no t'enviem publicitat, no venem ni cedim les dades, i no prenem cap decisió automatitzada sobre tu.</li>
+        </ul>
+
+        <h3 data-i18n="al.qui.h">Qui més les veu</h3>
+        <p data-i18n-html="al.qui.1">Només els proveïdors que fan funcionar el lloc i el servei, cadascun per a la seva part i per encàrrec nostre: Netlify (allotjament i formularis), Zoho (CRM), Supabase (directori), Stripe (pagaments), Anthropic (la IA del servei «Mapa i web») i el proveïdor del nostre correu. No les donem a ningú més, llevat que una llei ens hi obligui.</p>
+        <p data-i18n-html="al.qui.2">Alguns d'aquests proveïdors, i Google per les tipografies, són als Estats Units o hi poden tractar dades. Quan és així, la transferència es fa amb les garanties que preveu el RGPD, com el Marc de privacitat de dades UE-EUA o les clàusules contractuals tipus de la Comissió Europea.</p>
+
+        <h3 data-i18n="al.temps.h">Quant de temps</h3>
+        <p data-i18n-html="al.temps.1">El que ens envies per demanar un pressupost, el temps que calgui per respondre't. Si l'encàrrec tira endavant, mentre duri i, després, el temps que exigeixin les obligacions legals. La fitxa del directori, fins que demanis que l'esborrem.</p>
+
+        <h3 data-i18n="al.sos.h">Les eines del SOS</h3>
+        <p data-i18n-html="al.sos.1">Les eines del SOS, llevat del directori, guarden les dades al teu navegador i no a cap servidor nostre. Algunes es poden connectar a serveis d'altres si tu ho actives: la IA d'Anthropic amb la teva pròpia clau, GitHub amb el teu compte, repetidors públics de Nostr, un servidor de Google per connectar dos dispositius teus, o Netlify per publicar una web al teu nom. Aquí la relació és entre tu i aquell servei, amb les seves condicions, i si hi poses dades d'altres persones, ets tu qui les tracta.</p>
+
+        <h2 id="navegador" data-i18n="al.nav.h">Galetes i el teu navegador</h2>
+        <p data-i18n-html="al.nav.1">Aquest lloc no instal·la galetes pròpies ni fa servir cap eina d'analítica, publicitat o seguiment. Al teu navegador (l'emmagatzematge local) només guardem el que fa funcionar el que demanes: la llengua que tries, les dades de contacte que escrius als formularis perquè no les hagis de tornar a escriure —no s'envien soles—, i el que fas a les eines del SOS. Ho pots esborrar quan vulguis des de la configuració del navegador.</p>
+        <p data-i18n-html="al.nav.2">La pàgina de pagament de Stripe és seva, i hi aplica les seves pròpies galetes i condicions.</p>
+
+        <h2 id="drets" data-i18n="al.dre.h">Els teus drets</h2>
+        <p data-i18n-html="al.dre.1">Pots demanar-nos veure les dades que tenim teves, corregir-les, esborrar-les, limitar-ne el tractament o oposar-t'hi, i rebre-les en un format que puguis portar a un altre lloc. Si vas donar el consentiment, el pots retirar quan vulguis. N'hi ha prou que ens <a class="js-mail" href="/qui-som">escriguis</a>.</p>
+        <p data-i18n-html="al.dre.2">Si creus que no les hem tractat bé, pots reclamar a l'Agència Espanyola de Protecció de Dades, a <a href="https://www.aepd.es" rel="noopener">aepd.es</a>.</p>
+    </div>
+</section>
+
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escriu-nos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html" aria-current="page"><span data-i18n="nv.peu.legal">Avís legal i privacitat</span></a></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span data-i18n="nv.t.diagnostic">Diagnòstic</span></a></li><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">El mètode</span></a></li><li><a href="/SOS/vna-suport.html"><span data-i18n="nv.t.vna-suport">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">El catàleg</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
+  </div>
+</footer>
+<!--/TT-PEU-->
+
+<script>
+var T = {
+ca: {
+  'al.eyebrow':'Avís legal',
+  'al.h1':'Avís legal i <em>privacitat</em>',
+  'al.lead':'Qui hi ha darrere d\'aquest lloc, quines dades ens arriben, per a què les fem servir i com pots fer que les corregim o les esborrem. Escrit perquè s\'entengui.',
+  'pg.tornar':'← Tornar a la portada',
+  'al.i.tit':'Qui és el titular',
+  'al.i.us':'Fer servir aquest lloc',
+  'al.i.aut':'De qui és el que hi ha aquí',
+  'al.i.dad':'Les teves dades',
+  'al.i.nav':'Galetes i el teu navegador',
+  'al.i.dre':'Els teus drets',
+  'al.tit.nom.t':'Titular',
+  'al.tit.nom.v':'Alvaro Solache, professional autònom.',
+  'al.tit.marca.t':'Marques',
+  'al.tit.marca.v':'TeamTowers i TeamTowers Humà.',
+  'al.tit.act.t':'Activitat',
+  'al.tit.act.v':'Consultoria, formació i dinamització d\'organitzacions i territoris: mapes de valor, desenvolupament web i formació amb el SOS.',
+  'al.tit.mail.t':'Correu',
+  'al.tit.mail.v':'<a class="js-mail" href="/qui-som"><span class="js-adr">escriu-nos</span></a>',
+  'al.tit.web.t':'Lloc web',
+  'al.tit.web.v':'teamtowershuma.com',
+  'al.tit.h':'Qui és el titular',
+  'al.data':'Actualitzat el 10 d\'octubre de 2026.',
+  'al.us.h':'Fer servir aquest lloc',
+  'al.us.1':'Pots llegir, enllaçar i compartir el que hi ha en aquest lloc. Els textos expliquen què fem i com ho fem, però no són una oferta tancada: les condicions d\'un encàrrec —què inclou, quan es fa i a quin preu— són les que confirmem per escrit, per correu o en un pressupost.',
+  'al.us.2':'Hi ha enllaços a llocs d\'altres, com molekulon.org o les peces de premsa. El que diuen és responsabilitat de qui els publica.',
+  'al.us.3':'Fem el possible perquè el lloc funcioni i perquè el que diu sigui cert i al dia. Si hi trobes un error, <a class="js-mail" href="/qui-som">escriu-nos</a> i el corregim.',
+  'al.aut.h':'De qui és el que hi ha aquí',
+  'al.aut.1':'Els textos, els dibuixos i el codi d\'aquest lloc són d\'Alvaro Solache (TeamTowers Humà), llevat dels que porten una altra autoria. El codi és públic i es pot fer servir com a referència per aprendre; qualsevol ús comercial necessita la nostra autorització abans.',
+  'al.aut.2':'Les marques i els logotips d\'altres —clients, mitjans, entitats— són dels seus titulars. Les tipografies Space Grotesk i JetBrains Mono tenen la seva pròpia llicència lliure (SIL Open Font License).',
+  'al.dad.h':'Les teves dades',
+  'al.dad.1':'El responsable de les dades personals que ens arriben per aquest lloc és Alvaro Solache, amb el correu de dalt. La regla de la casa és demanar només el que cal per respondre\'t, i que el que escrius als formularis no surti del teu navegador fins que tu prems el botó d\'enviar.',
+  'al.que.h':'Què ens arriba, i quan',
+  'al.que.form':'<strong>El diagnòstic i la comanda.</strong> Quan prems el botó d\'enviar del diagnòstic de l\'organització o de la comanda de la pàgina de preus, ens arriba el que hi has escrit: el nom, el correu, el telèfon si l\'has posat, el càrrec, l\'organització i les respostes. Passa pel formulari del nostre allotjament (Netlify) i d\'allà al nostre CRM (Zoho CRM).',
+  'al.que.mail':'<strong>El correu.</strong> Si ens escrius, des d\'un enllaç «Escriu-nos» o amb l\'opció de correu dels formularis, ens arriba el missatge amb el que hi hagis posat.',
+  'al.que.online':'<strong>El directori del SOS.</strong> Si hi publiques la teva fitxa, es guarda a Supabase el que tu hi escrius —el nom o àlies, el municipi i el país, el que ofereixes i el que busques— amb les claus públiques que la signen. La fitxa és <strong>pública</strong>: qualsevol la pot llegir. No hi demanem ni correu, ni telèfon, ni adreça. «Retira\'m» l\'amaga del directori, però les versions anteriors queden guardades: si vols que les esborrem, escriu-nos.',
+  'al.que.xat':'<strong>El xat del directori.</strong> Els missatges es xifren al teu navegador i viatgen xifrats a través de Supabase. Nosaltres no en podem llegir el contingut, i no es guarden.',
+  'al.que.pag':'<strong>El pagament a l\'editor del mapa.</strong> Si pagues per publicar la teva web, ho fas a la pàgina de Stripe, que és qui rep les dades de pagament. A nosaltres ens arriba si el pagament s\'ha fet, l\'import i la moneda, però no la targeta.',
+  'al.que.ia':'<strong>El material del servei «Mapa i web».</strong> Si ens encarregues el servei, el material que ens dones (la teva web, documents, notes) el treballem amb Claude, d\'Anthropic. Si ens envies un àudio, abans el passa a text una altra eina, i et diem quina.',
+  'al.que.visita':'<strong>La visita.</strong> Com qualsevol allotjament, Netlify rep l\'adreça IP i el navegador de cada visita per poder servir les pàgines. Les pàgines principals carreguen les tipografies de Google Fonts, i en demanar-les el teu navegador fa arribar la teva adreça IP a Google. El directori del SOS, en obrir-se, llegeix les fitxes publicades de Supabase.',
+  'al.per.h':'Per a què, i amb quina base',
+  'al.per.1':'Per respondre\'t i preparar el pressupost o l\'encàrrec que demanes, que són mesures precontractuals a petició teva (art. 6.1.b del RGPD), i, si tira endavant, per fer-lo (execució del contracte).',
+  'al.per.2':'Per publicar la teva fitxa al directori, perquè ho demanes tu (consentiment, art. 6.1.a). El pots retirar quan vulguis.',
+  'al.per.3':'Per complir les obligacions legals, com les fiscals i les comptables (art. 6.1.c).',
+  'al.per.4':'Per a res més: no t\'enviem publicitat, no venem ni cedim les dades, i no prenem cap decisió automatitzada sobre tu.',
+  'al.qui.h':'Qui més les veu',
+  'al.qui.1':'Només els proveïdors que fan funcionar el lloc i el servei, cadascun per a la seva part i per encàrrec nostre: Netlify (allotjament i formularis), Zoho (CRM), Supabase (directori), Stripe (pagaments), Anthropic (la IA del servei «Mapa i web») i el proveïdor del nostre correu. No les donem a ningú més, llevat que una llei ens hi obligui.',
+  'al.qui.2':'Alguns d\'aquests proveïdors, i Google per les tipografies, són als Estats Units o hi poden tractar dades. Quan és així, la transferència es fa amb les garanties que preveu el RGPD, com el Marc de privacitat de dades UE-EUA o les clàusules contractuals tipus de la Comissió Europea.',
+  'al.temps.h':'Quant de temps',
+  'al.temps.1':'El que ens envies per demanar un pressupost, el temps que calgui per respondre\'t. Si l\'encàrrec tira endavant, mentre duri i, després, el temps que exigeixin les obligacions legals. La fitxa del directori, fins que demanis que l\'esborrem.',
+  'al.sos.h':'Les eines del SOS',
+  'al.sos.1':'Les eines del SOS, llevat del directori, guarden les dades al teu navegador i no a cap servidor nostre. Algunes es poden connectar a serveis d\'altres si tu ho actives: la IA d\'Anthropic amb la teva pròpia clau, GitHub amb el teu compte, repetidors públics de Nostr, un servidor de Google per connectar dos dispositius teus, o Netlify per publicar una web al teu nom. Aquí la relació és entre tu i aquell servei, amb les seves condicions, i si hi poses dades d\'altres persones, ets tu qui les tracta.',
+  'al.nav.h':'Galetes i el teu navegador',
+  'al.nav.1':'Aquest lloc no instal·la galetes pròpies ni fa servir cap eina d\'analítica, publicitat o seguiment. Al teu navegador (l\'emmagatzematge local) només guardem el que fa funcionar el que demanes: la llengua que tries, les dades de contacte que escrius als formularis perquè no les hagis de tornar a escriure —no s\'envien soles—, i el que fas a les eines del SOS. Ho pots esborrar quan vulguis des de la configuració del navegador.',
+  'al.nav.2':'La pàgina de pagament de Stripe és seva, i hi aplica les seves pròpies galetes i condicions.',
+  'al.dre.h':'Els teus drets',
+  'al.dre.1':'Pots demanar-nos veure les dades que tenim teves, corregir-les, esborrar-les, limitar-ne el tractament o oposar-t\'hi, i rebre-les en un format que puguis portar a un altre lloc. Si vas donar el consentiment, el pots retirar quan vulguis. N\'hi ha prou que ens <a class="js-mail" href="/qui-som">escriguis</a>.',
+  'al.dre.2':'Si creus que no les hem tractat bé, pots reclamar a l\'Agència Espanyola de Protecció de Dades, a <a href="https://www.aepd.es" rel="noopener">aepd.es</a>.',
+
+/*TT-NAV-I18N-CA*/
+  'nv.g.valor':'Mapa de valor',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.vna':'El mètode',
+  'nv.d.vna':'Què és un mapa de valor, sobre un cas',
+  'nv.t.vna-suport':'Fer-ne un',
+  'nv.d.vna-suport':'L\'editor visual: rols, lliuraments, real i ideal',
+  'nv.t.arrel-cataleg':'El catàleg',
+  'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
+  'nv.t.pressupost':'Preus i contractació',
+  'nv.d.pressupost':'De l\'esborrany al negoci operatiu, i la resta a mida',
+  'nv.g.web':'La teva web',
+  'nv.t.carpeta-mapa-web':'Mapa i web en una hora',
+  'nv.d.carpeta-mapa-web':'El mapa del teu negoci i la web, en una sessió',
+  'nv.t.carpeta-conecta':'Serveis connectables',
+  'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
+  'nv.g.formacio':'SOS i formació',
+  'nv.t.app':'Entra al SOS',
+  'nv.d.app':'El sistema que manté viu el mapa, sense compte',
+  'nv.t.formacio':'Formació acció',
+  'nv.d.formacio':'Els mòduls, de N0 a N3, i el certificat és teu',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.g.casa':'Qui som',
+  'nv.t.arrel-qui-som':'Qui som',
+  'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.cta':'Fes el diagnòstic',
+  'nv.menu':'Menú',
+  'nv.peu.mail':'Escriu-nos',
+  'nv.peu.legal':'Avís legal i privacitat',
+/*/TT-NAV-I18N-CA*/
+},
+es: {
+  'al.eyebrow':'Aviso legal',
+  'al.h1':'Aviso legal y <em>privacidad</em>',
+  'al.lead':'Quién está detrás de este sitio, qué datos nos llegan, para qué los usamos y cómo puedes hacer que los corrijamos o los borremos. Escrito para que se entienda.',
+  'pg.tornar':'← Volver a la portada',
+  'al.i.tit':'Quién es el titular',
+  'al.i.us':'Usar este sitio',
+  'al.i.aut':'De quién es lo que hay aquí',
+  'al.i.dad':'Tus datos',
+  'al.i.nav':'Cookies y tu navegador',
+  'al.i.dre':'Tus derechos',
+  'al.tit.nom.t':'Titular',
+  'al.tit.nom.v':'Alvaro Solache, profesional autónomo.',
+  'al.tit.marca.t':'Marcas',
+  'al.tit.marca.v':'TeamTowers y TeamTowers Humà.',
+  'al.tit.act.t':'Actividad',
+  'al.tit.act.v':'Consultoría, formación y dinamización de organizaciones y territorios: mapas de valor, desarrollo web y formación con el SOS.',
+  'al.tit.mail.t':'Correo',
+  'al.tit.mail.v':'<a class="js-mail" href="/qui-som"><span class="js-adr">escríbenos</span></a>',
+  'al.tit.web.t':'Sitio web',
+  'al.tit.web.v':'teamtowershuma.com',
+  'al.tit.h':'Quién es el titular',
+  'al.data':'Actualizado el 10 de octubre de 2026.',
+  'al.us.h':'Usar este sitio',
+  'al.us.1':'Puedes leer, enlazar y compartir lo que hay en este sitio. Los textos explican qué hacemos y cómo lo hacemos, pero no son una oferta cerrada: las condiciones de un encargo —qué incluye, cuándo se hace y a qué precio— son las que confirmamos por escrito, por correo o en un presupuesto.',
+  'al.us.2':'Hay enlaces a sitios de otros, como molekulon.org o las piezas de prensa. Lo que dicen es responsabilidad de quien los publica.',
+  'al.us.3':'Hacemos lo posible para que el sitio funcione y para que lo que dice sea cierto y esté al día. Si encuentras un error, <a class="js-mail" href="/qui-som">escríbenos</a> y lo corregimos.',
+  'al.aut.h':'De quién es lo que hay aquí',
+  'al.aut.1':'Los textos, los dibujos y el código de este sitio son de Alvaro Solache (TeamTowers Humà), salvo los que llevan otra autoría. El código es público y se puede usar como referencia para aprender; cualquier uso comercial necesita nuestra autorización previa.',
+  'al.aut.2':'Las marcas y los logotipos de otros —clientes, medios, entidades— son de sus titulares. Las tipografías Space Grotesk y JetBrains Mono tienen su propia licencia libre (SIL Open Font License).',
+  'al.dad.h':'Tus datos',
+  'al.dad.1':'El responsable de los datos personales que nos llegan por este sitio es Alvaro Solache, con el correo de arriba. La regla de la casa es pedir solo lo necesario para responderte, y que lo que escribes en los formularios no salga de tu navegador hasta que pulsas el botón de enviar.',
+  'al.que.h':'Qué nos llega, y cuándo',
+  'al.que.form':'<strong>El diagnóstico y el pedido.</strong> Cuando pulsas el botón de enviar del diagnóstico de la organización o del pedido de la página de precios, nos llega lo que has escrito: el nombre, el correo, el teléfono si lo has puesto, el cargo, la organización y las respuestas. Pasa por el formulario de nuestro alojamiento (Netlify) y de ahí a nuestro CRM (Zoho CRM).',
+  'al.que.mail':'<strong>El correo.</strong> Si nos escribes, desde un enlace «Escríbenos» o con la opción de correo de los formularios, nos llega el mensaje con lo que hayas puesto.',
+  'al.que.online':'<strong>El directorio del SOS.</strong> Si publicas tu ficha, se guarda en Supabase lo que tú escribes —el nombre o alias, el municipio y el país, lo que ofreces y lo que buscas— con las claves públicas que la firman. La ficha es <strong>pública</strong>: cualquiera puede leerla. No pedimos ni correo, ni teléfono, ni dirección. «Retírame» la oculta del directorio, pero las versiones anteriores quedan guardadas: si quieres que las borremos, escríbenos.',
+  'al.que.xat':'<strong>El chat del directorio.</strong> Los mensajes se cifran en tu navegador y viajan cifrados a través de Supabase. Nosotros no podemos leer su contenido, y no se guardan.',
+  'al.que.pag':'<strong>El pago en el editor del mapa.</strong> Si pagas para publicar tu web, lo haces en la página de Stripe, que es quien recibe los datos de pago. A nosotros nos llega si el pago se ha hecho, el importe y la moneda, pero no la tarjeta.',
+  'al.que.ia':'<strong>El material del servicio «Mapa y web».</strong> Si nos encargas el servicio, el material que nos das (tu web, documentos, notas) lo trabajamos con Claude, de Anthropic. Si nos mandas un audio, antes lo pasa a texto otra herramienta, y te decimos cuál.',
+  'al.que.visita':'<strong>La visita.</strong> Como cualquier alojamiento, Netlify recibe la dirección IP y el navegador de cada visita para poder servir las páginas. Las páginas principales cargan las tipografías de Google Fonts, y al pedirlas tu navegador hace llegar tu dirección IP a Google. El directorio del SOS, al abrirse, lee las fichas publicadas de Supabase.',
+  'al.per.h':'Para qué, y con qué base',
+  'al.per.1':'Para responderte y preparar el presupuesto o el encargo que pides, que son medidas precontractuales a petición tuya (art. 6.1.b del RGPD), y, si sale adelante, para hacerlo (ejecución del contrato).',
+  'al.per.2':'Para publicar tu ficha en el directorio, porque lo pides tú (consentimiento, art. 6.1.a). Puedes retirarlo cuando quieras.',
+  'al.per.3':'Para cumplir las obligaciones legales, como las fiscales y las contables (art. 6.1.c).',
+  'al.per.4':'Para nada más: no te enviamos publicidad, no vendemos ni cedemos los datos, y no tomamos ninguna decisión automatizada sobre ti.',
+  'al.qui.h':'Quién más los ve',
+  'al.qui.1':'Solo los proveedores que hacen funcionar el sitio y el servicio, cada uno para su parte y por encargo nuestro: Netlify (alojamiento y formularios), Zoho (CRM), Supabase (directorio), Stripe (pagos), Anthropic (la IA del servicio «Mapa y web») y el proveedor de nuestro correo. No los damos a nadie más, salvo que una ley nos obligue.',
+  'al.qui.2':'Algunos de estos proveedores, y Google por las tipografías, están en Estados Unidos o pueden tratar datos allí. Cuando es así, la transferencia se hace con las garantías que prevé el RGPD, como el Marco de privacidad de datos UE-EE. UU. o las cláusulas contractuales tipo de la Comisión Europea.',
+  'al.temps.h':'Cuánto tiempo',
+  'al.temps.1':'Lo que nos envías para pedir un presupuesto, el tiempo necesario para responderte. Si el encargo sale adelante, mientras dure y, después, el tiempo que exijan las obligaciones legales. La ficha del directorio, hasta que pidas que la borremos.',
+  'al.sos.h':'Las herramientas del SOS',
+  'al.sos.1':'Las herramientas del SOS, salvo el directorio, guardan los datos en tu navegador y no en ningún servidor nuestro. Algunas se pueden conectar a servicios de otros si tú lo activas: la IA de Anthropic con tu propia clave, GitHub con tu cuenta, repetidores públicos de Nostr, un servidor de Google para conectar dos dispositivos tuyos, o Netlify para publicar una web a tu nombre. Aquí la relación es entre tú y ese servicio, con sus condiciones, y si pones datos de otras personas, eres tú quien los trata.',
+  'al.nav.h':'Cookies y tu navegador',
+  'al.nav.1':'Este sitio no instala cookies propias ni usa ninguna herramienta de analítica, publicidad o seguimiento. En tu navegador (el almacenamiento local) solo guardamos lo que hace funcionar lo que pides: el idioma que eliges, los datos de contacto que escribes en los formularios para que no tengas que volver a escribirlos —no se envían solos—, y lo que haces en las herramientas del SOS. Puedes borrarlo cuando quieras desde la configuración del navegador.',
+  'al.nav.2':'La página de pago de Stripe es suya, y aplica sus propias cookies y condiciones.',
+  'al.dre.h':'Tus derechos',
+  'al.dre.1':'Puedes pedirnos ver los datos que tenemos tuyos, corregirlos, borrarlos, limitar su tratamiento u oponerte a él, y recibirlos en un formato que puedas llevar a otro sitio. Si diste el consentimiento, puedes retirarlo cuando quieras. Basta con que nos <a class="js-mail" href="/qui-som">escribas</a>.',
+  'al.dre.2':'Si crees que no los hemos tratado bien, puedes reclamar ante la Agencia Española de Protección de Datos, en <a href="https://www.aepd.es" rel="noopener">aepd.es</a>.',
+
+/*TT-NAV-I18N-ES*/
+  'nv.g.valor':'Mapa de valor',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.vna':'El método',
+  'nv.d.vna':'Qué es un mapa de valor, sobre un caso',
+  'nv.t.vna-suport':'Hacer uno',
+  'nv.d.vna-suport':'El editor visual: roles, entregables, real e ideal',
+  'nv.t.arrel-cataleg':'El catálogo',
+  'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
+  'nv.t.pressupost':'Precios y contratación',
+  'nv.d.pressupost':'Del borrador al negocio operativo, y el resto a medida',
+  'nv.g.web':'Tu web',
+  'nv.t.carpeta-mapa-web':'Mapa y web en una hora',
+  'nv.d.carpeta-mapa-web':'El mapa de tu negocio y la web, en una sesión',
+  'nv.t.carpeta-conecta':'Servicios conectables',
+  'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
+  'nv.g.formacio':'SOS y formación',
+  'nv.t.app':'Entra al SOS',
+  'nv.d.app':'El sistema que mantiene vivo el mapa, sin cuenta',
+  'nv.t.formacio':'Formación acción',
+  'nv.d.formacio':'Los módulos, de N0 a N3, y el certificado es tuyo',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.g.casa':'Quiénes somos',
+  'nv.t.arrel-qui-som':'Quiénes somos',
+  'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.cta':'Haz el diagnóstico',
+  'nv.menu':'Menú',
+  'nv.peu.mail':'Escríbenos',
+  'nv.peu.legal':'Aviso legal y privacidad',
+/*/TT-NAV-I18N-ES*/
+}
+};
+
+// ── Correu ofuscat ────────────────────────────────────────────────────────────
+// Muntat en temps d'execució perquè no viatgi en clar dins de l'HTML. Sense
+// JavaScript, els enllaços porten a /qui-som, on hi ha el contacte.
+var u = 'asolache', d = 'mac' + '.' + 'com';
+function wireMail(l) {
+    document.querySelectorAll('.js-mail').forEach(function (a) {
+        a.href = 'mailto:' + u + '@' + d + '?subject=' +
+            encodeURIComponent(l === 'es' ? 'Aviso legal y privacidad' : 'Avís legal i privacitat');
+    });
+    document.querySelectorAll('.js-adr').forEach(function (s) { s.textContent = u + '@' + d; });
+}
+
+var currentLang = 'ca';
+try { currentLang = localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
+function applyLang(l) {
+    currentLang = l;
+    try { localStorage.setItem('tt_lang', l); } catch (e) {}
+    document.documentElement.lang = l;
+    var t = T[l] || T.ca;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var k = el.getAttribute('data-i18n'); if (t[k] !== undefined) el.textContent = t[k];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+        var k = el.getAttribute('data-i18n-html'); if (t[k] !== undefined) el.innerHTML = t[k];
+    });
+    document.querySelectorAll('.lang-b').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-lang') === l); });
+    // El diccionari reescriu els enllaços de correu: cal tornar-los a muntar.
+    wireMail(l);
+}
+document.querySelectorAll('.lang-b').forEach(function (btn) {
+    btn.addEventListener('click', function () { applyLang(this.getAttribute('data-lang')); });
+});
+applyLang(currentLang);
+</script>
+</body>
+</html>

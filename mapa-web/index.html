@@ -1684,14 +1684,15 @@
 .tt-peu a{color:var(--light);text-decoration:none}
 /* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
    de vint enllaços a 44 px és un peu de mitja pantalla. */
-.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{display:inline-flex;align-items:center;min-height:2rem}
-@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa{min-height:44px}}
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
 .tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
 .tt-peu a[aria-current]{color:var(--text);font-weight:600}
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
 .tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
   color:var(--text);font-weight:600}
 @media (max-width:760px){
@@ -1702,7 +1703,7 @@
 </style>
 <footer class="tt-peu">
   <div class="tp-in">
-    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema" lang="ca">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span>Escríbenos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p></div>
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema" lang="ca">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span>Escríbenos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span>Aviso legal y privacidad</span></a></div>
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span>Diagnóstico</span></a></li><li><a href="/SOS/vna.html"><span>El método</span></a></li><li><a href="/SOS/vna-suport.html"><span>Hacer uno</span></a></li><li><a href="/cataleg.html"><span>El catálogo</span></a></li><li><a href="/SOS/pressupost.html"><span>Precios y contratación</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Tu web</span></p><ul><li><a href="/mapa-web/" aria-current="page"><span>Mapa y web en una hora</span></a></li><li><a href="/conecta/"><span>Servicios conectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>SOS y formación</span></p><ul><li><a href="/SOS/"><span>Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span>Formación acción</span></a></li><li><a href="/SOS/ia.html"><span>Flujos con IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Quiénes somos</span></p><ul><li><a href="/qui-som.html"><span>Quiénes somos</span></a></li><li><a href="/premsa.html"><span>Prensa</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div></div>
   </div>
 </footer>

@@ -148,7 +148,12 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
   `sticky` (ja ho és la barra), i les 82 mides per sota del terra passen a
   `--t0`: `check-terra.js` també les vigila, amb les quatre regles de text del
   dibuix de la xarxa declarades.
-- **Queda:** els botons de dins dels blocs generats per altres eines (`.mv-cta`
-  del mapa de valor a la portada i al mètode, `.ct-btn` del contacte), l'avís
-  legal (necessita les dades del titular) i la capçalera de pàgina comuna de la
-  fase 4.
+- **L'avís legal i la privacitat** (`/avis-legal`). Titular: Alvaro Solache,
+  autònom (10/10/2026). Explica què recull el lloc segons el codi: els dos
+  formularis (Netlify → Zoho CRM), el directori (Supabase), el pagament
+  (Stripe) i el que es queda al navegador. El peu de les 30 pàgines l'enllaça
+  (`nv.peu.legal`) i `/aviso-legal`, `/privacitat` i `/privacidad` hi porten.
+- **Queda:** el NIF i el domicili de l'avís legal (LSSI art. 10, quan l'Alvaro
+  els doni), els botons de dins dels blocs generats per altres eines (`.mv-cta`
+  del mapa de valor a la portada i al mètode, `.ct-btn` del contacte) i la
+  capçalera de pàgina comuna de la fase 4.

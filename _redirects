@@ -179,6 +179,12 @@
 /premsa /premsa.html    200
 /premsa/ /premsa.html    200
 /prensa /premsa.html    301
+# I l'avís legal i la privacitat (10/10/2026), enllaçat des de tots els peus.
+/avis-legal /avis-legal.html    200
+/avis-legal/ /avis-legal.html    200
+/aviso-legal /avis-legal.html    301
+/privacitat /avis-legal.html    301
+/privacidad /avis-legal.html    301
 # I les formes que la gent escriurà igualment.
 /catalogo /cataleg.html    301
 /catàleg /cataleg.html    301

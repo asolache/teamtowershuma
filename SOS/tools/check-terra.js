@@ -35,7 +35,7 @@ const { PAGINES_LLOC, CARPETES } = require('./build-nav.js');
 /* Les pàgines que venen una de les tres ofertes: les quatre d'arrel, les de
    `SOS/` que porten la barra del lloc, la formació, que és la tercera oferta
    encara que porti la barra del SOS, i les dues carpetes de «La teva web». */
-const PAGINES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']
+const PAGINES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html', 'avis-legal.html']
   .concat(PAGINES_LLOC.map(p => 'SOS/' + p), ['SOS/formacio.html'], Object.values(CARPETES));
 
 /* Les regles que només pinten text de dibuixos SVG, amb el motiu. */

@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 287 · 18238 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 287 · 18243 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 7 · 91 KB |
@@ -34,7 +34,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 31 KB |
 | `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 109 · 1429 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1315 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1317 KB |
 
 ## saber
 
@@ -44,7 +44,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 |---|---|---|
 | `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 51 · 998 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 9 · 18 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 332 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 333 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
@@ -75,7 +75,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 
 ## arrel · pàgines HTML
 
-7 pàgines HTML a l'arrel del repositori (`cataleg.html`, `finances.html`, `home-nova.html`, `ia.html`…).
+8 pàgines HTML a l'arrel del repositori (`avis-legal.html`, `cataleg.html`, `finances.html`, `home-nova.html`…).
 Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.
 No són referència de com es fan les coses ara.
 
