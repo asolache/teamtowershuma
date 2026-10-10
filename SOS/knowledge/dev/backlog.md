@@ -2424,7 +2424,7 @@ lluitar-hi. *El criteri de sempre: es puja el sostre quan el que es compra són
 | Peça | On és | Què aporta al zoom |
 |---|---|---|
 | `expandPairs`, `mapFlowsOf` | l'app | el graf: rols i intercanvis amb les dues menes |
-| `ENTREGABLES`, `entregableDe` | l'app i `build-mapavalor.js` | els entregables, que són la tercera cosa que es dibuixa |
+| `ENTREGABLES`, `entregableDe` | l'app (la portada l'executa des de `build-mapavalor.js`) | els entregables, que són la tercera cosa que es dibuixa |
 | `pinyaDeMapa()` | `build-castells.js` | **la segona vista del mateix graf**, ja derivada i provada |
 | `DYNAMICS`, `EINES_SOS`, `einaDe` | `build-nav.js` i l'app | quin edifici correspon a quina dinàmica: **el destí de cada zoom** |
 | `descendants`, `subtreeIds`, `scopeIds`, `rollup` | l'app | l'escala ja existeix com a dada; el que falta és el gest |

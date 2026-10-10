@@ -972,9 +972,9 @@ const cCanal = compta(CANAL), cVisita = compta(VISITA), cTot = compta(flux);
    pot preparar una màquina; si és **intangible**, o el seu tipus no surt d'una
    màquina, és de persona.
 
-   La regla **s'executa, no es copia**: es llegeix de `SOS/index.html` el mateix
-   tros que `build-vna-suport.js` posa al kit i es criden `fluxAutomatitzable` i
-   `repartimentMaquina` tal com són. Fins al 10/10/2026 aquí hi havia una llista
+   La regla **s'executa, no es copia**: es llegeixen de `SOS/index.html` els dos
+   trossos que `build-vna-suport.js` posa al kit, més `repartimentMaquina`, i es
+   criden tal com són. Fins al 10/10/2026 aquí hi havia una llista
    de pistes pròpia, i la guarda només mirava que els seus tipus existissin a
    l'app: la portada en comptava 5 de màquina quan l'app no en comptava cap
    (veda 164). El que l'etiqueta no diu, ho diu `CELLER.tipus`. */
@@ -996,18 +996,26 @@ const REGLA = (() => {
 })();
 // Com un flux del SOS: `entregable` és el tipus triat a mà, i l'app el mira abans que les pistes.
 const comFlux = f => ({ kind: f.mena, label: f.q, entregable: CELLER.tipus[f.q] });
-const QUI = REGLA ? flux.map(f => {
-  const a = REGLA.fluxAutomatitzable(comFlux(f));
-  return { f, qui: a.pot ? 'maquina' : a.motiu === 'intangible' || a.tipus ? 'persona' : 'sense', tipus: a.tipus || null };
-}) : [];
-const REP = REGLA ? REGLA.repartimentMaquina({ vna: { exchanges: flux.map(comFlux) } }) : null;
+let QUI = [], REP = null;
+if (REGLA) try {
+  QUI = flux.map(f => {
+    const a = REGLA.fluxAutomatitzable(comFlux(f));
+    return { f, qui: a.pot ? 'maquina' : a.motiu === 'intangible' || a.tipus ? 'persona' : 'sense', tipus: a.tipus || null };
+  });
+  REP = REGLA.repartimentMaquina({ vna: { exchanges: flux.map(comFlux) } });
+} catch (e) { REGLA_ERR = e.message; QUI = []; REP = null; }
 const cQui = REP ? { maquina: REP.maquina, persona: REP.persona, sense: REP.senseTipus }
   : { maquina: 0, persona: 0, sense: 0 };
 // Els tangibles que són de persona perquè el seu tipus no surt d'una màquina.
 const cDiners = QUI.filter(x => x.qui === 'persona' && x.f.mena !== 'intangible').length;
 /* El que diuen les frases de la portada. Si el repartiment canvia, la guarda 9
    peta i s'han de reescriure: el número canviaria sol i la frase no. */
-const QUI_DIU = { maquina: ['volum a preu de canal'], persona: 'cobrament' };
+const QUI_DIU = {
+  maquina: ['volum a preu de canal'],
+  persona: 'cobrament',
+  diners: ['el que paga per l\'experiència, no per l\'ampolla', 'el que paga pel viatge sencer',
+    'despesa que es queda al municipi']
+};
 const QUI_TXT = {
   maquina: {
     ca: 'el pot preparar una màquina: la comanda del distribuïdor, que és tangible i té un entregable conegut',
@@ -2019,7 +2027,7 @@ function dicVna(l) {
        comparaven els noms dels tipus i no el resultat, i la portada en va
        prometre 5 de màquina on l'app no en feia cap (veda 164). */
 (() => {
-  if (!REGLA) { bad(`no es pot executar la regla de SOS/index.html (${REGLA_ERR}): el repartiment d'aquest cas no es pot calcular`); return; }
+  if (!REP) { bad(`no es pot executar la regla de SOS/index.html (${REGLA_ERR}): el repartiment d'aquest cas no es pot calcular`); return; }
   const ids = REGLA.ENTREGABLES.map(e => e.id), etiquetes = flux.map(f => f.q);
   const li = [];
   Object.entries(CELLER.tipus).forEach(([q, t]) => {
@@ -2039,6 +2047,8 @@ function dicVna(l) {
     bad(`la portada diu que la màquina prepara «${QUI_DIU.maquina.join('», «')}» i l'app hi posa ${maq.length ? '«' + maq.join('», «') + '»' : 'cap lliurament'}: cal reescriure QUI_TXT.maquina`);
   else if (QUI.some(x => x.qui === 'persona' && x.f.mena !== 'intangible' && x.tipus !== QUI_DIU.persona))
     bad(`hi ha tangibles de persona que no són «${QUI_DIU.persona}» i la portada només parla de pagaments: cal reescriure QUI_TXT.persona`);
+  else if (JSON.stringify(QUI.filter(x => x.qui === 'persona' && x.f.mena !== 'intangible').map(x => x.f.q)) !== JSON.stringify(QUI_DIU.diners))
+    bad(`la portada parla de ${QUI_DIU.diners.length} pagaments i l'app n'hi posa ${cDiners}: cal reescriure QUI_TXT.persona`);
   else ok('les frases de qui fa cada lliurament diuen el que surt de la regla');
 })();
 

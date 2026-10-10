@@ -5174,8 +5174,8 @@ no: la portada en prometia 5 i l'app, amb les mateixes etiquetes, cap. «Paga» 
 inventari quan l'inventari de l'app és una taula d'objectes.
 
 **Una guarda que compara noms no veu una regla que divergeix.** Ara la portada
-no té regla: llegeix de l'app el tros que ja es copia al kit i crida
-`fluxAutomatitzable` i `repartimentMaquina` tal com són. El que l'etiqueta no
+no té regla: llegeix de l'app els trossos que ja es copien al kit, i
+`repartimentMaquina`, i els crida tal com són. El que l'etiqueta no
 diu ho declara el cas (`CELLER.tipus`), com qui tria el tipus a mà al Kanban. I
 les frases porten el nom del que diuen: si el repartiment es mou, la guarda 9
 peta abans que la portada digui una cosa i el número una altra.
