@@ -189,7 +189,7 @@ Per ordre, i els tres primers no depenen de ningú.
 | | Què | Per què aquí | Cost | Estat |
 |---|---|---|---|---|
 | **1** | **Desviació contra el mapa de referència** — diff de grafs contra `PROTOTYPE_MAPS`, amb rols i fluxos que falten, i els propis marcats com a propis | És l'entregable de consultoria, **es ven sol** i no necessita IA. Dona valor el primer dia | baix | **fet** (`desviacioMapa`, `openDesviacioMapa`) |
-| **2** | **Taxonomia d'entregables** (`ENTREGABLES`, vuit tipus) + `kind` a la carta del Kanban + `seedSprintPlanFromMap` que l'assigna | És el contracte que fa possible tota la resta. Sense això, la baula 3 no té on agafar-se | baix | **fet** |
+| **2** | **Taxonomia d'entregables** (`ENTREGABLES`: vuit de comunitat, tres de negoci —pressupost, proposta, resposta— i els diners, que no surten d'una màquina) + `kind` a la carta del Kanban + `seedSprintPlanFromMap` que l'assigna | És el contracte que fa possible tota la resta. Sense això, la baula 3 no té on agafar-se | baix | **fet** |
 | **3** | **La regla de repartiment**: tangible+tipus → candidata a màquina; intangible → a la persona del rol. Amb el **comptador**: «d'aquestes 34 cartes, 12 les pot fer la màquina» | **És l'argument de venda.** I és el que fa visible que un mapa millor val més | baix | **fet** (`fluxAutomatitzable`, `repartimentMaquina`) |
 | **4** | **Dos intents d'IA, no vuit**: `acta` i `informe-periodic`. Els més repetitius i els menys arriscats | Provar el patró amb dos abans de declarar-ne vuit | mitjà | **fet** |
 | **5** | **Acceptació i traçabilitat** — el flux proposa → persona accepta → va al registre signat | El que fa defensable l'entregable davant d'una junta | mitjà | **fet** (`openPreparaEntregable`) |
@@ -269,7 +269,8 @@ ràpid es nota l'error*, no per ordre de quant valen.
 **Vuit tipus, set automatitzables, cinc pendents.** `acord` no surt d'una
 màquina i està escrit a la taula amb el motiu: sense aquella entrada la
 taxonomia semblaria dir que tot és automatitzable i que els que falten és que
-encara no els hem fet.
+encara no els hem fet. (10/10/2026: ara en són dotze, amb tres de negoci i els
+diners, `cobrament`, que tampoc no surten d'una màquina.)
 
 ### El que es va trobar construint-ho
 

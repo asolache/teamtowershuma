@@ -1081,6 +1081,22 @@ console.log('\nM32 · L\'arrencada amb IA: continguts, el que ja hi havia, les t
   ok(tq.maquina === 1 && cv.pot && cv.tipus === 'convocatoria' && cv.accepta === 'Qui rep i explica' && cv.perParaula === 'convoc', 'un tangible de casa amb tipus: la IA en prepara l\'esborrany i l\'accepta el rol que el lliura');
   ok(/«convoc»/.test(tmd) && /confirmeu-los a la sala/.test(tmd) && /\*\*1 de 15 lliuraments/.test(tmd), 'el tipus surt del nom, i es diu per confirmar');
   ok(/La IA en prepara l'esborrany \(Convocatòria\) i l'accepta una persona del rol Qui rep i explica\./.test(f('cerebro/entregables/' + cv.id + '.md')), 'la fitxa del lliurament diu qui el prepara');
+  /* Els de negoci. L'EXEMPLE no es toca —el que lliura la casa són béns i
+     serveis, i és bo que no compti—: es proven tres documents de casa i una
+     factura, que té tipus i no surt d'una màquina. */
+  const mapa3 = Object.assign(clona(mapa2), { pairs: mapa2.pairs.concat([
+    ['Qui rep i explica', 'L\'operador de luxe', 'tangible', 'el pressupost del grup', '', ''],
+    ['Qui rep i explica', 'El visitant', 'tangible', 'la resposta a la consulta de reserva', '', ''],
+    ['Qui fa el vi', 'El distribuïdor', 'tangible', 'la proposta de servei per al canal', '', ''],
+    ['Qui fa el vi', 'El distribuïdor', 'tangible', 'la factura', '', '']]) });
+  const f3 = (r => (S.webASite(web, { mapa: mapa3, codi, nom: 'Celler' }).fitxers.find(x => x.ruta === r) || {}).cos || '');
+  const tq3 = JSON.parse(f3('cerebro/tasques-ia.json')), q3 = q => tq3.tasques.find(x => x.q === q) || {};
+  ok(tq3.maquina === 4 && q3('el pressupost del grup').tipus === 'pressupost' && q3('la resposta a la consulta de reserva').tipus === 'resposta'
+    && q3('la proposta de servei per al canal').tipus === 'proposta', 'els documents d\'un negoci que lliura la casa: pressupost, resposta i proposta');
+  ok(q3('la factura').tipus === 'cobrament' && !q3('la factura').pot && tq3.persona === tq.persona + 1,
+    'i la factura té tipus, però la fa una persona: no surt d\'una màquina');
+  ok(/\*\*4 de 19 lliuraments/.test(f3('cerebro/tasques-ia.md')) && /Pressupost \(«el pressupost»\)/.test(f3('cerebro/tasques-ia.md')),
+    'el recompte ho diu, i diu quina paraula ha donat cada tipus');
   ok(/^# Celler · regles/.test(f('CLAUDE.md')) && /TREBALLAR-AMB-CLAUDE\.md/.test(f('CLAUDE.md')) && /^# Treballar amb Claude a la web de Celler/.test(f('TREBALLAR-AMB-CLAUDE.md')), 'les regles i la guia, amb el nom de la web');
   ok(['importa', 'continguts', 'tasca'].every(n => f('.claude/skills/' + n + '/SKILL.md').startsWith('---\nname: ' + n + '\n')), 'les tres skills a .claude/skills/');
   const es = S.webASite(web, { mapa, codi, llengua: 'es', nom: 'Celler' }).fitxers.map(x => x.ruta);

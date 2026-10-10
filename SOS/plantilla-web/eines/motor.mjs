@@ -2344,7 +2344,7 @@ const KIT_TXT = {
         '2. **Si no té `pot: true`, explica per què i para:**',
         '   - Intangible: el fa una persona del rol, mai la IA. Cap esborrany, ni «només per ajudar».',
         '   - Tangible sense tipus declarat, o sense mena: cal decidir-ne el tipus a la sessió i anotar-lo al mapa.',
-        '   - El tipus no surt d\'una màquina: el redacta qui hi ha estat.',
+        '   - El tipus no surt d\'una màquina (un acord, una factura): el fa i en respon una persona.',
         '3. Mira què demana `cal` i pregunta a la persona el que falti. Si alguna dada porta noms de persona, demana-la per rols.',
         '4. Escriu l\'esborrany a `cerebro/esborranys/AAAA-MM-DD-<id>.md` (la data d\'avui), amb la forma que diu `surt`. Comença amb aquesta capçalera, perquè digui qui l\'ha fet:',
         '', '   ```markdown', '   ---', '   tasca: <id>', '   tipus: <tipus>', '   de: <rol que el produeix>', '   a: <rol que el rep>',
@@ -2366,7 +2366,7 @@ const KIT_TXT = {
       motius: { intangible: 'És intangible: el fa una persona del rol, mai la IA.',
         'mena desconeguda': 'El mapa no diu si és tangible o intangible: decidiu-ho a la sala.',
         'sense entregable declarat': 'Encara no té tipus declarat: decidiu-ne el tipus a la sala.',
-        'el tipus no surt d\'una màquina': 'El seu tipus no surt d\'una màquina: el redacta qui hi ha estat.',
+        'el tipus no surt d\'una màquina': 'El seu tipus no surt d\'una màquina (un acord, una factura): el fa i en respon una persona.',
         'de fora': 'Arriba d\'un rol de fora: el prepara qui l\'envia.' } }
   },
   es: {
@@ -2522,7 +2522,7 @@ const KIT_TXT = {
         '2. **Si no tiene `pot: true`, explica por qué y para:**',
         '   - Intangible: lo hace una persona del rol, nunca la IA. Ningún borrador, ni «solo para ayudar».',
         '   - Tangible sin tipo declarado, o sin mena: hay que decidir su tipo en la sesión y anotarlo en el mapa.',
-        '   - El tipo no sale de una máquina: lo redacta quien ha estado.',
+        '   - El tipo no sale de una máquina (un acuerdo, una factura): lo hace y responde de él una persona.',
         '3. Mira qué pide `cal` y pregunta a la persona lo que falte. Si algún dato lleva nombres de persona, pídelo por roles.',
         '4. Escribe el borrador en `cerebro/esborranys/AAAA-MM-DD-<id>.md` (la fecha de hoy), con la forma que dice `surt`. Empieza con esta cabecera, para que diga quién lo ha hecho:',
         '', '   ```markdown', '   ---', '   tasca: <id>', '   tipus: <tipo>', '   de: <rol que lo produce>', '   a: <rol que lo recibe>',
@@ -2544,7 +2544,7 @@ const KIT_TXT = {
       motius: { intangible: 'Es intangible: lo hace una persona del rol, nunca la IA.',
         'mena desconeguda': 'El mapa no dice si es tangible o intangible: decididlo en la sala.',
         'sense entregable declarat': 'Todavía no tiene tipo declarado: decidid su tipo en la sala.',
-        'el tipus no surt d\'una màquina': 'Su tipo no sale de una máquina: lo redacta quien ha estado.',
+        'el tipus no surt d\'una màquina': 'Su tipo no sale de una máquina (un acuerdo, una factura): lo hace y responde de él una persona.',
         'de fora': 'Llega de un rol de fuera: lo prepara quien lo envía.' } }
   }
 };
@@ -3356,13 +3356,31 @@ const ENTREGABLES=[
    que:'Com s\'explica a fora el que fa un node o una dinàmica.',
    cal:['què ofereix','a qui','com s\'hi arriba'],
    surt:'Fitxa breu per al directori, sense cap dada personal.'},
-  /* L'únic de la llista que no pot sortir d'una màquina, i el motiu escrit.
-     Sense aquesta entrada, la taxonomia semblaria dir que tot és automatitzable
-     i que els que falten és que encara no els hem fet. */
+  /* Els de negoci (veda 163): sense eina a l'app encara; al kit, /tasca. */
+  {id:'pressupost',nom:'Pressupost',ic:'🧮',maquina:true,
+   que:'Què es lliurarà i en quina quantitat, perquè qui el rep ho valori abans de dir que sí.',
+   cal:['què demana qui el rep','conceptes i quantitats','tarifa publicada, si n\'hi ha'],
+   surt:'Línies amb concepte, quantitat, unitat i preu de la tarifa publicada o [a completar], què no hi entra i fins quan val. Sense total: la màquina no suma.'},
+  {id:'proposta',nom:'Proposta',ic:'📝',maquina:true,
+   que:'El que s\'ofereix a qui ho ha de decidir: per a què, com, per quins rols i en quins terminis.',
+   cal:['què necessita qui la rep','què s\'ofereix','fases i terminis'],
+   surt:'Necessitat, el que s\'ofereix, fases amb terminis, quin rol fa què i què queda fora. Sense imports: van al pressupost.'},
+  {id:'resposta',nom:'Resposta a una consulta',ic:'💬',maquina:true,
+   que:'La resposta escrita a una pregunta concreta, feta amb el que la casa ja té dit.',
+   cal:['la consulta, sense dades de qui la fa','el que ja consta (web, fitxa, condicions)'],
+   surt:'Text curt que respon punt per punt, marca amb [a completar] el que no se sap i diu com seguir. No promet res que no consti.'},
+  /* Els que no poden sortir d'una màquina, i el motiu escrit. Sense aquestes
+     entrades, la taxonomia semblaria dir que tot és automatitzable i que els
+     que falten és que encara no els hem fet. */
   {id:'acord',nom:'Acord o decisió',ic:'⚖️',maquina:false,
    que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
    cal:['debat','vots','qui ho sosté'],
-   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'}
+   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'},
+  /* Els diners (veda 163): redactar-los seria fer veure que s'ha cobrat. */
+  {id:'cobrament',nom:'Factura o cobrament',ic:'💶',maquina:false,
+   que:'Diners que es cobren o es paguen, i el document que en dona fe. No és el que es demana: és el que es cobra.',
+   cal:['import','document fiscal','qui ho cobra'],
+   surt:'No surt d\'una màquina. La factura la numera el programa de facturació o qui porta els comptes, i un cobrament només el dona per fet qui el rep.'}
 ];
 const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
 
@@ -3370,16 +3388,26 @@ const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
    `RETURN_HINTS`: no s'inventa res, es proposa i es pot corregir a mà posant
    `entregable` a l'intercanvi. Un flux sense tipus reconegut **no és
    automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
-   s'ha de produir. */
+   s'ha de produir.
+
+   Guanya la primera. Les de negoci, estretes i amb PISTA_MAI (veda 163). Res
+   de lookbehind: Safari <16.4 no el compila. */
+const PISTA_MAI='factur|pagament|cobrament|\\bpag(o|os)\\b|\\bcobros?\\b|rebut|recibo|acord|acuerdo|decisi|decidi|vot|aprova|aprob|accept|acept|signa|firma|resoluci|reclamaci|queix|queja|demanda|den[uú]nci|recurs|requeri|legaci|sanci|multa|inspecci|jur[ií]dic|legal|advoca|abogad|laboral|assetja|acoso|p[uú]blic|ciutad|ciudad|municip|ajuntament|ayuntamiento|govern|gobierno|diputaci|generalitat|ministeri|hisenda|hacienda|tribut|fiscal|participati|m[eèé]dic|metge|pacient|salu[td]|sanit|cl[ií]nic|diagn|terap|tractament|tratamiento|psic|veterin';
+const pistaNegoci=(cap,mes)=>new RegExp('^((el|la|els|les|un|una|uns|unes|los|las|nou|nova|nous|noves|nuevo|nueva|nuevos|nuevas) )*'+cap+'(?!.*('+PISTA_MAI+(mes?'|'+mes:'')+'))','i');
 const ENTREGABLE_HINTS=[
-  [/acta|reuni|assemblea/i,'acta'],
+  [/^((el|la|els|les|un|una|uns|unes|los|las) |l')*(factur|pagament|cobrament|pagos?\b|cobros?\b)/i,'cobrament'],
+  [/\bacta|reuni|assemblea/i,'acta'],
   [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
   [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
-  [/inventari|estoc|material|objecte|eina|préstec|prestec/i,'inventari'],
+  [pistaNegoci('(pressupost|presupuest)(?!o?s? [iy] )(os?)?','compte|cuenta|propi|partida|anual|general|despes|gastos|ingress|ingreso|tresorer|tesorer|\\bestat\\b|\\bestado\\b|consell|consejo'),'pressupost'],
+  [pistaNegoci('(respost(a|es)|respuestas?) (al|als|a l\'|a) ?((la|les|una|unes|un|uns|el|los|las) )?(consult|pregunt|dubt|dud|client|interessa|interesa)'),'resposta'],
+  [/inventari|estoc|material|objecte|\beina|préstec|prestec/i,'inventari'],
   [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
-  [/comanda|compra|cistell|repartiment|liquidació|liquidacio|factur|pagament|cobrament/i,'comanda'],
+  [/comanda|comandes|compra|cistell|repartiment|liquidació|liquidacio/i,'comanda'],
+  [/factur|pagament|cobrament|\bpagos?\b|\bcobros?\b/i,'cobrament'],
   [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
-  [/acord|decisió|decisio|vot|aprovació|aprovacio/i,'acord']
+  [/acord|acuerdo|decisió|decisio|vot|aprovació|aprovacio|aprobaci|resoluci/i,'acord'],
+  [pistaNegoci('(propost(a|es)|propuestas?)','econ|de valor|preu|precio|tarif|honorari|salari|\\bsou\\b|sueldo|retribuci|quota|cuota|pressupost|presupuest|licitaci'),'proposta']
 ];
 const entregableDe=x=>{
   if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;

@@ -35,8 +35,8 @@ const t = await page.evaluate(() => {
     inventat: S.entregableMeta('no-existeix')
   };
 });
-ok(t.n === 8, `${t.n} tipus declarats`);
-ok(t.maq === 7 && t.noMaq.length === 1, `${t.maq} els pot preparar una màquina i ${t.noMaq.length} no (${t.noMaq.join(', ')})`);
+ok(t.n === 12, `${t.n} tipus declarats`);
+ok(t.maq === 10 && t.noMaq.length === 2, `${t.maq} els pot preparar una màquina i ${t.noMaq.length} no (${t.noMaq.join(', ')})`);
 ok(t.meta && t.inventat === null, 'un tipus inventat no existeix: la taxonomia és tancada de debò');
 
 console.log('\n2 · Un flux tangible amb entregable reconegut va a la màquina');
@@ -55,6 +55,51 @@ ok(si.informe.pot && si.informe.tipus === 'informe', 'un informe de seguiment, t
 ok(si.comanda.pot && si.comanda.tipus === 'comanda', 'i una liquidació va a comanda');
 ok(!si.sensTipus.pot && /sense entregable/.test(si.sensTipus.motiu),
   'i un tangible que no sabem què produeix NO és candidat: «' + si.sensTipus.motiu + '»');
+
+console.log('\n2b · Els de negoci, i els diners que no es redacten');
+const ng = await page.evaluate(() => {
+  const S = window.__SOS;
+  const cas = l => S.fluxAutomatitzable({ kind: 'tangible', label: l });
+  const r = {};
+  ['el pressupost del grup', 'la proposta de servei', 'resposta a una consulta', 'la factura', 'el pagament',
+    'el cobrament de la quota', 'la comanda i el pagament', 'comandes estables i pagament just', 'proposta d\'acord',
+    'pressupost i comptes', 'pressupostos participatius', 'encàrrec i pressupost', 'serveis i resposta',
+    'resposta a la reclamació'].forEach(l => { r[l] = cas(l); });
+  const node = S.newNode('Prova negoci', 'barri', null);
+  node.vna = { roles: [], exchanges: [
+    { id: '1', from: 'a', to: 'b', kind: 'tangible', label: 'el pressupost del grup' },
+    { id: '2', from: 'a', to: 'b', kind: 'tangible', label: 'la factura' },
+    { id: '3', from: 'a', to: 'b', kind: 'tangible', label: 'una cosa rara' }] };
+  const fl = { id: 'nf', name: 'Prova', ledger: [], ventures: [], vna: {
+    roles: [{ id: 'r1', name: 'Casa' }, { id: 'r2', name: 'Client' }],
+    exchanges: [{ id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'la factura' }] } };
+  return { r, eina: ['pressupost', 'proposta', 'resposta'].filter(t => S.INTENT_ENTREGABLE[t]),
+    rp: S.repartimentMaquina(node),
+    qui: [...S.buildFlowLedger(fl).querySelectorAll('.fl-qui-t')].map(e => e.textContent),
+    boto: [...S.buildFlowLedger(fl).querySelectorAll('.fl-qui .btn')].map(e => e.textContent),
+    mai: ['pressupost aprovat', 'resposta a la votació', 'resposta a la consulta del pacient', 'propuesta de acuerdo',
+      'factura de compra'].map(l => [l, cas(l)]) };
+});
+const N = ng.r;
+ok(N['el pressupost del grup'].pot && N['el pressupost del grup'].tipus === 'pressupost', 'un pressupost es reconeix i el pot preparar la màquina');
+ok(N['la proposta de servei'].pot && N['la proposta de servei'].tipus === 'proposta', 'una proposta, també');
+ok(N['resposta a una consulta'].pot && N['resposta a una consulta'].tipus === 'resposta', 'i la resposta a una consulta');
+ok(['la factura', 'el pagament', 'el cobrament de la quota'].every(l => !N[l].pot && N[l].tipus === 'cobrament' && /no surt d'una màquina/.test(N[l].motiu)),
+  'una factura, un pagament i un cobrament tenen tipus i no surten d\'una màquina: ja no són comanda');
+ok(N['la comanda i el pagament'].tipus === 'comanda' && N['comandes estables i pagament just'].tipus === 'comanda',
+  'una comanda que parla del pagament segueix sent comanda, també en plural');
+ok(!N['proposta d\'acord'].pot && N['proposta d\'acord'].tipus === 'acord', 'una proposta d\'acord és un acord: de persona');
+ok(['pressupost i comptes', 'pressupostos participatius', 'encàrrec i pressupost'].every(l => N[l].tipus === null),
+  'el pressupost que és diner públic no és el pressupost d\'un negoci');
+ok(N['serveis i resposta'].tipus === null && N['resposta a la reclamació'].tipus === null,
+  'ni «serveis i resposta» ni la resposta a una queixa són una resposta a una consulta');
+ok(ng.eina.length === 0, 'cap dels tres té eina a l\'app encara: es fan una per una, mesurant');
+ok(ng.rp.maquina === 1 && ng.rp.persona === 1 && ng.rp.senseTipus === 1,
+  'i el repartiment compta la factura com a feina de persona, no com a «encara no sabem»');
+ok(ng.qui.includes('👤 💶 Factura o cobrament'), 'i la llista de fluxos la pinta així: ' + ng.qui.join(' / '));
+ok(ng.boto.includes('Per què?'), 'i el botó n\'explica el motiu en lloc de demanar-ne el tipus: ' + ng.boto.join(' / '));
+ok(ng.mai.every(([, a]) => !a.pot) && ng.mai.find(([l]) => l === 'factura de compra')[1].tipus === 'cobrament',
+  'una decisió, un vot, la salut o una factura que encapçala no arriben mai a la màquina: ' + ng.mai.map(([l, a]) => l + '→' + a.tipus).join(', '));
 
 console.log('\n3 · La línia que la màquina no creua');
 const no = await page.evaluate(() => {
@@ -185,7 +230,7 @@ const it = await page.evaluate(() => {
       buits: d ? JSON.stringify(d.tool.input_schema.required).includes('buits') : false };
   });
 });
-ok(it.length === 7, `${it.length} tipus tenen eina: tots els que surten d'una màquina`);
+ok(it.length === 7, `${it.length} tipus tenen eina a l'app, i tots surten d'una màquina; la resta, una per una`);
 it.forEach(x => {
   ok(x.hi && x.cost > 0, `\`${x.i}\` existeix i declara el seu cost (${x.cost} tokens)`);
   ok(/\[a completar\]/.test(x.sys), `\`${x.i}\` sap com marcar el que falta`);
@@ -352,8 +397,8 @@ const cp = await page.evaluate(async () => {
   await new Promise(r => setTimeout(r, 60));
   return { ops, maq, pers, desat: x.entregable, pot: S.fluxAutomatitzable(x).pot };
 });
-ok(cp.ops === 9, `${cp.ops} opcions: els vuit tipus i «cap»`);
-ok(cp.maq === 7 && cp.pers === 1, 'i es veu quins surten d\'una màquina i quin no');
+ok(cp.ops === 13, `${cp.ops} opcions: els dotze tipus i «cap»`);
+ok(cp.maq === 10 && cp.pers === 2, 'i es veu quins surten d\'una màquina i quins no');
 ok(cp.desat === 'comanda' && cp.pot === true, 'triar i desar deixa el flux classificat i preparable');
 
 console.log('\n17 · Les pantalles s\'obren amb botons que es poden prémer');

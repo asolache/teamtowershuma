@@ -10853,18 +10853,19 @@ function buildFlowLedger(node){
        contrari: que és de persona a posta i que el sistema no té manera de
        fer-ho d'una altra manera. La pantalla ho explica en obrir-la. */
     const au=fluxAutomatitzable(r.flow),et=au.tipus?entregableMeta(au.tipus):null;
-    const peu=el('div','fl-qui'+(au.pot?' pot':(au.motiu==='intangible'?' pers':' sense')));
+    const pers=au.motiu==='intangible'||(et&&!et.maquina);
+    const peu=el('div','fl-qui'+(au.pot?' pot':(pers?' pers':' sense')));
     peu.appendChild(el('span','fl-qui-t',
-      au.pot?(et.ic+' '+et.nom):(au.motiu==='intangible'?'👤 De persona, sempre':'◇ Sense entregable declarat')));
+      au.pot?(et.ic+' '+et.nom):au.motiu==='intangible'?'👤 De persona, sempre':pers?'👤 '+et.ic+' '+et.nom:'◇ Sense entregable declarat'));
     const pb=el('button','btn btn-ghost btn-sm',
-      au.pot?'🤖 Prepara l\'esborrany':(au.motiu==='intangible'?'Per què?':'Quin entregable és?'));
+      au.pot?'🤖 Prepara l\'esborrany':(pers?'Per què?':'Quin entregable és?'));
     /* Sense tipus, el botó porta a classificar-lo i no a explicar-li per què no
        es pot: el que cal és una decisió, no un cartell. */
-    pb.onclick=()=>(!au.pot&&au.motiu!=='intangible')
+    pb.onclick=()=>(!au.pot&&!pers)
       ?openTipusEntregable(node,r.flow):openPreparaEntregable(node,r.flow);
     peu.appendChild(pb);
     // I un tangible ja classificat es pot reclassificar des de la mateixa etiqueta.
-    if(au.pot){const ed=el('button','fl-qui-ed','canvia');
+    if(au.pot||et){const ed=el('button','fl-qui-ed','canvia');
       ed.title='Canvia quin entregable produeix aquest flux';
       ed.onclick=()=>openTipusEntregable(node,r.flow);
       peu.insertBefore(ed,pb);}
@@ -11129,13 +11130,31 @@ const ENTREGABLES=[
    que:'Com s\'explica a fora el que fa un node o una dinàmica.',
    cal:['què ofereix','a qui','com s\'hi arriba'],
    surt:'Fitxa breu per al directori, sense cap dada personal.'},
-  /* L'únic de la llista que no pot sortir d'una màquina, i el motiu escrit.
-     Sense aquesta entrada, la taxonomia semblaria dir que tot és automatitzable
-     i que els que falten és que encara no els hem fet. */
+  /* Els de negoci (veda 163): sense eina a l'app encara; al kit, /tasca. */
+  {id:'pressupost',nom:'Pressupost',ic:'🧮',maquina:true,
+   que:'Què es lliurarà i en quina quantitat, perquè qui el rep ho valori abans de dir que sí.',
+   cal:['què demana qui el rep','conceptes i quantitats','tarifa publicada, si n\'hi ha'],
+   surt:'Línies amb concepte, quantitat, unitat i preu de la tarifa publicada o [a completar], què no hi entra i fins quan val. Sense total: la màquina no suma.'},
+  {id:'proposta',nom:'Proposta',ic:'📝',maquina:true,
+   que:'El que s\'ofereix a qui ho ha de decidir: per a què, com, per quins rols i en quins terminis.',
+   cal:['què necessita qui la rep','què s\'ofereix','fases i terminis'],
+   surt:'Necessitat, el que s\'ofereix, fases amb terminis, quin rol fa què i què queda fora. Sense imports: van al pressupost.'},
+  {id:'resposta',nom:'Resposta a una consulta',ic:'💬',maquina:true,
+   que:'La resposta escrita a una pregunta concreta, feta amb el que la casa ja té dit.',
+   cal:['la consulta, sense dades de qui la fa','el que ja consta (web, fitxa, condicions)'],
+   surt:'Text curt que respon punt per punt, marca amb [a completar] el que no se sap i diu com seguir. No promet res que no consti.'},
+  /* Els que no poden sortir d'una màquina, i el motiu escrit. Sense aquestes
+     entrades, la taxonomia semblaria dir que tot és automatitzable i que els
+     que falten és que encara no els hem fet. */
   {id:'acord',nom:'Acord o decisió',ic:'⚖️',maquina:false,
    que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
    cal:['debat','vots','qui ho sosté'],
-   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'}
+   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'},
+  /* Els diners (veda 163): redactar-los seria fer veure que s'ha cobrat. */
+  {id:'cobrament',nom:'Factura o cobrament',ic:'💶',maquina:false,
+   que:'Diners que es cobren o es paguen, i el document que en dona fe. No és el que es demana: és el que es cobra.',
+   cal:['import','document fiscal','qui ho cobra'],
+   surt:'No surt d\'una màquina. La factura la numera el programa de facturació o qui porta els comptes, i un cobrament només el dona per fet qui el rep.'}
 ];
 const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
 
@@ -11143,16 +11162,26 @@ const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
    `RETURN_HINTS`: no s'inventa res, es proposa i es pot corregir a mà posant
    `entregable` a l'intercanvi. Un flux sense tipus reconegut **no és
    automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
-   s'ha de produir. */
+   s'ha de produir.
+
+   Guanya la primera. Les de negoci, estretes i amb PISTA_MAI (veda 163). Res
+   de lookbehind: Safari <16.4 no el compila. */
+const PISTA_MAI='factur|pagament|cobrament|\\bpag(o|os)\\b|\\bcobros?\\b|rebut|recibo|acord|acuerdo|decisi|decidi|vot|aprova|aprob|accept|acept|signa|firma|resoluci|reclamaci|queix|queja|demanda|den[uú]nci|recurs|requeri|legaci|sanci|multa|inspecci|jur[ií]dic|legal|advoca|abogad|laboral|assetja|acoso|p[uú]blic|ciutad|ciudad|municip|ajuntament|ayuntamiento|govern|gobierno|diputaci|generalitat|ministeri|hisenda|hacienda|tribut|fiscal|participati|m[eèé]dic|metge|pacient|salu[td]|sanit|cl[ií]nic|diagn|terap|tractament|tratamiento|psic|veterin';
+const pistaNegoci=(cap,mes)=>new RegExp('^((el|la|els|les|un|una|uns|unes|los|las|nou|nova|nous|noves|nuevo|nueva|nuevos|nuevas) )*'+cap+'(?!.*('+PISTA_MAI+(mes?'|'+mes:'')+'))','i');
 const ENTREGABLE_HINTS=[
-  [/acta|reuni|assemblea/i,'acta'],
+  [/^((el|la|els|les|un|una|uns|unes|los|las) |l')*(factur|pagament|cobrament|pagos?\b|cobros?\b)/i,'cobrament'],
+  [/\bacta|reuni|assemblea/i,'acta'],
   [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
   [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
-  [/inventari|estoc|material|objecte|eina|préstec|prestec/i,'inventari'],
+  [pistaNegoci('(pressupost|presupuest)(?!o?s? [iy] )(os?)?','compte|cuenta|propi|partida|anual|general|despes|gastos|ingress|ingreso|tresorer|tesorer|\\bestat\\b|\\bestado\\b|consell|consejo'),'pressupost'],
+  [pistaNegoci('(respost(a|es)|respuestas?) (al|als|a l\'|a) ?((la|les|una|unes|un|uns|el|los|las) )?(consult|pregunt|dubt|dud|client|interessa|interesa)'),'resposta'],
+  [/inventari|estoc|material|objecte|\beina|préstec|prestec/i,'inventari'],
   [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
-  [/comanda|compra|cistell|repartiment|liquidació|liquidacio|factur|pagament|cobrament/i,'comanda'],
+  [/comanda|comandes|compra|cistell|repartiment|liquidació|liquidacio/i,'comanda'],
+  [/factur|pagament|cobrament|\bpagos?\b|\bcobros?\b/i,'cobrament'],
   [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
-  [/acord|decisió|decisio|vot|aprovació|aprovacio/i,'acord']
+  [/acord|acuerdo|decisió|decisio|vot|aprovació|aprovacio|aprobaci|resoluci/i,'acord'],
+  [pistaNegoci('(propost(a|es)|propuestas?)','econ|de valor|preu|precio|tarif|honorari|salari|\\bsou\\b|sueldo|retribuci|quota|cuota|pressupost|presupuest|licitaci'),'proposta']
 ];
 const entregableDe=x=>{
   if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;
@@ -11190,7 +11219,7 @@ function repartimentMaquina(node){
   ex.forEach(x=>{
     const a=fluxAutomatitzable(x);
     if(a.pot){r.maquina++;r.perTipus[a.tipus]=(r.perTipus[a.tipus]||0)+1;}
-    else if(a.motiu==='intangible')r.persona++;
+    else if(a.motiu==='intangible'||a.motiu==='el tipus no surt d\'una màquina')r.persona++;
     else r.senseTipus++;
   });
   r.pct=r.total?Math.round(r.maquina*100/r.total):0;
@@ -11315,7 +11344,7 @@ function buildHealth(node){
       r.appendChild(d);r.appendChild(el('span','',txt));box.appendChild(r);};
     ln('var(--green)',rp.maquina,'les pot preparar la màquina · tangibles amb entregable declarat');
     if(rp.senseTipus)ln('var(--muted)',rp.senseTipus,'tangibles sense entregable: encara no sabem què s\'ha de produir');
-    ln('var(--purple)',rp.persona,'són de persona, sempre · la màquina no toca cap intangible');
+    ln('var(--purple)',rp.persona,'són de persona, sempre · la màquina no toca cap intangible ni cap tipus que no en pugui sortir');
     const dv=el('button','btn btn-sm','🎯 Compara amb el mapa de referència');
     dv.style.cssText='margin-top:.6rem;width:100%';
     dv.onclick=()=>openDesviacioMapa(node);
@@ -11686,9 +11715,11 @@ function openPreparaEntregable(node,x){
   const nomDe=id=>((node.vna.roles||[]).find(r=>r.id===id)||{}).name||'?';
   const flux=nomDe(x.from)+' → '+nomDe(x.to)+(x.label?' · '+x.label:'');
   if(!au.pot){
+    const et=au.tipus&&entregableMeta(au.tipus);
     const perque=au.motiu==='intangible'
       ?'Aquest flux és <b>intangible</b>, i la màquina no en toca cap. El que es passa aquí —confiança, criteri, cura— el sosté una persona, i el sistema no té manera de fer-ho d\'una altra manera.'
-      :'Aquest flux és tangible però <b>encara no sabem quin entregable produeix</b>. Posa-li una etiqueta que ho digui —una acta, un informe, una comanda— i podrà preparar-se sol.';
+      :et?'<b>'+esc(et.nom)+'</b>: '+esc(et.surt)
+      :'Aquest flux és tangible però <b>encara no sabem quin entregable produeix</b>. Posa-li una etiqueta que ho digui —una acta, un pressupost, una comanda— i podrà preparar-se sol.';
     modal('<h2>🤖 Preparar l\'entregable</h2><p class="m-sub">'+esc(flux)+'</p>'+
       '<div class="eb-no">'+perque+'</div>',[{txt:'Entesos',cls:'btn',fn:closeModal}]);
     return;
@@ -11699,7 +11730,8 @@ function openPreparaEntregable(node,x){
       '<div class="eb-no">Aquest tipus encara no té eina que el prepari. N\'hi ha '+
       Object.keys(INTENT_ENTREGABLE).length+' de fetes —'+
       Object.keys(INTENT_ENTREGABLE).map(k=>esc((entregableMeta(k)||{}).nom||k)).join(', ')+
-      '— i les altres s\'aniran fent <b>una per una, mesurant quantes s\'accepten sense tocar</b>. Declarar-les totes de cop seria prometre vuit coses i provar-ne zero.</div>',
+      '— i les altres s\'aniran fent <b>una per una, mesurant quantes s\'accepten sense tocar</b>. Fer-les totes de cop seria prometre-les totes i no provar-ne cap.</div>'+
+      '<div class="eb-cost">Mentrestant es pot escriure a mà amb el que demana —'+esc(meta.cal.join(', '))+'— i amb aquesta forma: '+esc(meta.surt)+'</div>',
       [{txt:'Entesos',cls:'btn',fn:closeModal}]);
     return;
   }
