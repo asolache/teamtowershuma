@@ -972,5 +972,41 @@ console.log('\nM29 · L\'API i els avisos: la web els envia signats, i el cervel
   rmSync(dir, { recursive: true, force: true });
 }
 
+console.log('\nM30 · El camí B: la plantilla de Netlify fa la web del mapa a nom del client');
+{ const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync, cpSync, existsSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { spawnSync } = await import('node:child_process');
+  const { deflateRawSync } = await import('node:zlib');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
+  const PL = join(DIR, '..', 'plantilla-web');
+  const chk = spawnSync(process.execPath, [join(DIR, '..', 'tools', 'build-plantilla.js'), '--check'], { encoding: 'utf8' });
+  ok(chk.status === 0, 'la plantilla és la que surt ara de l\'editor (build-plantilla.js --check)');
+  const toml = readFileSync(join(PL, 'netlify.toml'), 'utf8');
+  ok(/command = "node eines\/genera\.mjs"/.test(toml) && /\[template\.environment\][\s\S]*TT_MAPA/.test(toml) && /from = "\/cerebro\/\*"/.test(toml), 'Netlify la construeix a cada publicació, demana el nom i el mapa, i no serveix el cervell');
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const nova = () => { const d = mkdtempSync(join(tmpdir(), 'tt-plantilla-')); cpSync(PL, d, { recursive: true }); return d; };
+  const corre = (d, env) => spawnSync(process.execPath, ['eines/genera.mjs'], { cwd: d, encoding: 'utf8', env: Object.assign({}, process.env, { URL: '' }, env) });
+  const op = { nom: 'Celler', correu: 'hola@exemple.cat', llengua: 'es' };
+  const d1 = nova(), r1 = corre(d1, { TT_MAPA: deflateRawSync(J(mapa)).toString('base64url'), TT_NOM: op.nom, TT_CORREU: op.correu, TT_LLENGUA: op.llengua });
+  const esperat = await cli.genera(mapa, op);
+  const iguals = esperat.filter(f => f.ruta !== 'netlify.toml').every(f => existsSync(join(d1, f.ruta)) && readFileSync(join(d1, f.ruta), 'utf8') === f.cos);
+  ok(r1.status === 0 && /des de TT_MAPA/.test(r1.stdout) && iguals, 'amb el mapa del botó (TT_MAPA), fa exactament la web que faria l\'editor: ' + (r1.stderr || '').slice(0, 80));
+  ok(readFileSync(join(d1, 'netlify.toml'), 'utf8') === toml && /<html lang="es">/.test(readFileSync(join(d1, 'index.html'), 'utf8')), 'i no trepitja la seva configuració');
+  const d2 = nova();
+  mkdirSync(join(d2, 'cerebro'), { recursive: true });
+  const altre = Object.assign(clona(mapa), { roles: mapa.roles.concat(['La cooperativa']), pairs: mapa.pairs.concat([['La cooperativa', mapa.roles[0], 'tangible', 'raïm', '', '']]) });
+  writeFileSync(join(d2, 'cerebro/mapa-real.json'), J(altre));
+  writeFileSync(join(d2, 'cerebro/decisiones.md'), '# Les nostres decisions\n');
+  const r2 = corre(d2, { TT_MAPA: deflateRawSync(J(mapa)).toString('base64url') });
+  ok(r2.status === 0 && /des de cerebro\/mapa-real\.json/.test(r2.stdout) && existsSync(join(d2, 'la-cooperativa.html')), 'el mapa del repositori mana sobre el del botó');
+  ok(readFileSync(join(d2, 'cerebro/decisiones.md'), 'utf8') === '# Les nostres decisions\n' && readFileSync(join(d2, 'cerebro/mapa-real.json'), 'utf8') === J(altre), 'i les decisions escrites a mà i el mapa es conserven');
+  const d3 = nova(), r3 = corre(d3, {});
+  ok(r3.status === 0 && /exemple/.test(r3.stdout) && existsSync(join(d3, 'el-visitant.html')) && existsSync(join(d3, 'eines/nucli.mjs')), 'sense mapa, publica l\'exemple, ja amb les eines');
+  const d4 = nova(), r4 = corre(d4, { URL: 'https://celler.netlify.app' });
+  ok(r4.status === 0 && /<link rel="canonical" href="https:\/\/celler\.netlify\.app\/">/.test(readFileSync(join(d4, 'index.html'), 'utf8')) && existsSync(join(d4, 'sitemap.xml')), 'l\'adreça de Netlify (URL) dona canonical i sitemap sols');
+  [d1, d2, d3, d4].forEach(d => rmSync(d, { recursive: true, force: true }));
+}
+
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

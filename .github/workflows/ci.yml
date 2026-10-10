@@ -67,6 +67,11 @@ jobs:
       - name: Guarda del mòdul de suport al mapa de valor
         run: node SOS/tools/build-vna-suport.js --check
 
+      # La plantilla del botó «Deploy to Netlify» porta el codi de l'editor
+      # tal com és: si l'editor canvia i la plantilla no, el client rep l'antic.
+      - name: Guarda de la plantilla de Netlify
+        run: node SOS/tools/build-plantilla.js --check
+
       # El motor de l'editor del mapa (model, text, arbre, desviació i
       # diagnòstic) es prova en Node pur: és l'única guarda de l'editor que corre
       # aquí, perquè Playwright no hi corre.

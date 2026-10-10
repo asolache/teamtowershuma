@@ -25,24 +25,14 @@ const bloc = nom => {
   if (a < 0 || b <= a) throw new Error('Falta el bloc ' + nom + ' a vna-suport.html');
   return html.slice(a, b);
 };
-const motor = new Function('\'use strict\';\n' + ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE'].map(bloc).join('\n')
-  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb };')();
+const motor = new Function('\'use strict\';\n' + ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-GENERA'].map(bloc).join('\n')
+  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb, generaWeb };')();
 
-/* De l'entrada, la web i el mapa net (el mateix que exporta l'editor, que és
-   el que va a mapa.json). Un web.json no porta mapa: no se'n pot refer. */
-function webDe(entrada, opts) {
-  if (entrada && entrada.formato === 'tt-web-1') return { web: entrada, mapa: null };
-  const D = motor.creaDiagnosi({ revisa: motor.revisa, fluxos: motor.fluxos });
-  const M = motor.creaModel({ fluxos: motor.fluxos, revisa: motor.revisa, normNom: D.normNom });
-  const arbre = M.importa(entrada).arbre;
-  return { web: motor.webDelMapa(M.llegeixTextos(arbre.real.t), { casa: opts.casa || [] }), mapa: M.exporta(arbre) };
+/* El mateix codi que l'editor (bloc VS-GENERA), amb l'empremta de Node. */
+function genera(entrada, opts) {
+  return motor.generaWeb(entrada, opts, { sha: async b => createHash('sha256').update(b).digest('hex'), codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } });
 }
-async function genera(entrada, opts) {
-  const o = opts || {}, { web, mapa } = webDe(entrada, o);
-  const site = motor.webASite(web, Object.assign({}, o, { mapa: mapa || undefined, codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } }));
-  return motor.ambPermaweb(site, async b => createHash('sha256').update(b).digest('hex'));
-}
-module.exports = { genera, webDe };
+module.exports = { genera };
 
 if (require.main === module) {
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
