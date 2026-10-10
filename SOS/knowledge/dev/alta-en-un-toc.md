@@ -137,6 +137,9 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
   mapa dona sempre els mateixos bytes. `permaweb.json` permet comprovar el que
   s'ha publicat.
 
+**Per veure-la abans:** el botó «Vista prèvia» de la pestanya Web l'ensenya
+al navegador, pàgina a pàgina, amb els enllaços i els formularis.
+
 **Per publicar-la:** arrossega la carpeta a Netlify (Netlify Drop) o puja-la al
 repositori del client. Netlify en detecta els formularis sol.
 
@@ -147,8 +150,43 @@ repositori del client. Netlify en detecta els formularis sol.
 - Els comptes de debò, per als rols de la llista `alta`.
 - ✓ El zip ja és el repositori del client: el cervell (`cerebro/`),
   `CLAUDE.md`, `netlify.toml`, la 404, `robots.txt` i, amb l'adreça, el sitemap.
-- El registre viu de transaccions (fase 2 del pla): que el mapa real es
-  recalculi amb l'ús i es compari amb l'ideal.
+- ✓ El registre viu de transaccions (fase 2 del pla): vegeu el punt 3b.
+
+## 3b · Fet: el registre viu, el mapa real que surt de l'ús
+
+Fase 2 del pla. Fins ara el mapa real sortia del taller, de la memòria de qui
+hi era. Ara pot sortir de l'ús.
+
+**On s'anota.** La web del client porta `registre.html`, fora del menú i dels
+cercadors, enllaçada des de la pàgina de l'equip. És un formulari de Netlify
+Forms: de quin rol a quin, quin lliurament (amb els del mapa per triar),
+tangible o intangible, el valor percebut de 1 a 5, la data i un enllaç
+d'evidència. Cada anotació arriba per correu. Cap servidor ni base de dades.
+
+**Com es llegeix.** Netlify dona el CSV del formulari. Es carrega a la
+pestanya Web de l'editor (camp «El CSV del registre») o es passa per Node:
+
+```bash
+node SOS/tools/llegeix-registre.js cerebro/mapa-real.json cerebro/registro/registre.csv cerebro/registro/ --llengua es
+```
+
+Tots dos fan servir el mateix codi, el bloc `VS-REG` de l'editor.
+
+**Què en surt:**
+
+| Sortida | Què diu |
+|---|---|
+| `informe.md` | Els fluxos vius (vegades, valor percebut, darrera data), els del mapa que no passen, el que passa i no és al mapa, i qui dona sense rebre |
+| `mapa-observat.json` | El mapa que surt del registre, amb el dibuixat com a ideal. A l'editor, «Obre el mapa observat» ensenya la vista Desviació. Es pot desfer |
+| `avisos.json` | El que la fase 3 enviarà per webhook, amb els noms del pla: `rol.sin_reciprocidad` i `desviacion.detectada` (flux sense ús o flux nou) |
+
+**Cap dada personal.** Del CSV només es llegeixen rols, lliurament, tipus,
+data, evidència i valor. Qualsevol altra columna (noms, correus, IP) es
+descarta en llegir-lo, i una prova ho comprova. L'evidència només val si és
+un enllaç `http(s)`.
+
+**Pendent:** que el mapa observat s'actualitzi sol a cada enviament (una
+funció de Netlify que rebi l'avís del formulari) i els webhooks de la fase 3.
 
 ## 4 · La IA, pagada per ús
 
@@ -192,6 +230,7 @@ l'organització a un projecte, i què li cal per entrar-hi.
 
 1. ✓ El mapa dona la web (`web.json`).
 2. ✓ La web de debò, en un zip o des de Node (`web-del-mapa.js`).
+   ✓ El registre viu (`llegeix-registre.js`, fase 2 del pla).
 3. El repositori plantilla i el camí B: el botó de Netlify funciona sense que
    hàgim de guardar cap permís.
 4. Stripe Checkout en mode de prova i la funció que verifica l'avís.

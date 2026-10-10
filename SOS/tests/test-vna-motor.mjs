@@ -826,6 +826,64 @@ console.log('\nM27 · L\'índex del cervell: cada document amb el seu tema i la 
   const es = S.webASite(web, { mapa, nom: 'Celler', llengua: 'es' }), fe = r => (es.fitxers.find(x => x.ruta === r) || {}).cos;
   ok(/^# Cerebro · Celler/.test(fe('CEREBRO.md')) && /por enlace/.test(fe('CEREBRO.md')) && /CEREBRO\.md/.test(fe('CLAUDE.md')) && /CEREBRO\.md/.test(f('CLAUDE.md')), 'en castellà també, i CLAUDE.md hi apunta');
 }
+console.log('\nM28 · El registre viu: el mapa real surt de l\'ús (fase 2)');
+{ const R = new Function('\'use strict\';\n' + bloc('VS-REG') + '\nreturn { llegeixRegistre, observaRegistre };')();
+  const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre), abans = J(mapa);
+  const csv = ['created_at,de,a,entregable,mena,valor,evidencia,nom,correu,ip',
+    '2026-10-01T10:00:00Z,Qui fa el vi,Qui rep i explica,"el vi, la verema i el celler obert",tangible,4,https://exemple.cat/foto,Pere,pere@exemple.cat,1.2.3.4',
+    '2026-10-02T10:00:00Z,Qui rep i explica,El visitant,"La visita, el tast i el relat de la casa",tangible,5,,Anna,anna@exemple.cat,1.2.3.5',
+    '2026-10-03T10:00:00Z,qui rep i explica,El visitant,"la visita,  el tast i el relat de la casa",tangible,3,,,,',
+    '2026-10-04T10:00:00Z,El visitant,Qui rep i explica,una ressenya a internet,intangible,4,javascript:alert(1),,,',
+    '2026-10-05T10:00:00Z,El distribuïdor,Qui fa el vi,la comanda,tangible,9,,,,',
+    '2026-10-05T10:00:00Z,,Qui fa el vi,res,tangible,3,,,,',
+    '2026-10-06T10:00:00Z,Qui fa el vi,Qui fa el vi,res,tangible,3,,,,',
+    '2026-10-06T10:00:00Z,La cooperativa,Qui fa el vi,"raïm ""de veritat""",tangible,4,,,,'].join('\r\n') + '\r\n';
+  const l = R.llegeixRegistre(csv);
+  ok(l.files.length === 6 && l.ignorades === 2, 'llegeix el CSV de Netlify (CRLF, cometes, comes dins el camp) i descarta les files sense rol o d\'un rol a si mateix');
+  ok(l.files[5].q === 'raïm "de veritat"' && l.files[0].q === 'el vi, la verema i el celler obert' && l.files[0].data === '2026-10-01', 'les cometes dobles i la data, ben llegides');
+  ok(l.files.every(x => J(Object.keys(x).sort()) === J(['a', 'data', 'de', 'evidencia', 'mena', 'q', 'valor'])), 'només es queden els camps del registre');
+  ok(l.files[0].evidencia === 'https://exemple.cat/foto' && l.files[3].evidencia === '' && l.files[4].valor === null && l.files[3].mena === 'intangible',
+    'l\'evidència només si és http(s) i el valor només de 1 a 5');
+  const lj = R.llegeixRegistre(J([{ from: 'A', to: 'B', q: 'x', value: '2' }, 'brossa', null]));
+  ok(lj.files.length === 1 && lj.files[0].valor === 2 && lj.ignorades === 2, 'també llegeix un JSON, amb els noms anglesos');
+  ok(R.llegeixRegistre('').files.length === 0 && R.llegeixRegistre('[mal').files.length === 0, 'un registre buit o trencat no peta');
+  const o = R.observaRegistre(mapa, l.files);
+  ok(J(mapa) === abans, 'no toca el mapa dibuixat');
+  const viu = o.vius.find(f => f.de === 'Qui rep i explica' && f.a === 'El visitant');
+  ok(viu && viu.vegades === 2 && viu.valor === 4 && viu.darrera === '2026-10-03', 'un flux viu: vegades, valor mitjà i darrera data, sense que majúscules o espais el despistin');
+  const tots = mapa.pairs.reduce((n, p) => n + (p[3] ? 1 : 0) + (p[5] ? 1 : 0), 0);
+  ok(o.vius.length + o.morts.length === tots, 'cada flux del mapa és viu o adormit');
+  ok(o.nous.length === 3 && J(o.rolsNous) === J(['La cooperativa']), 'el que passa i no és al mapa: fluxos i rols nous');
+  ok(o.senseReciprocitat.includes('La cooperativa') && o.senseReciprocitat.includes('El distribuïdor'), 'qui dona i no rep res registrat');
+  ok(o.avisos.some(a => a.tipus === 'rol.sin_reciprocidad' && a.rol === 'La cooperativa') && o.avisos.some(a => a.tipus === 'desviacion.detectada' && a.motiu === 'flux-nou')
+    && o.avisos.some(a => a.tipus === 'desviacion.detectada' && a.motiu === 'flux-sense-us') && o.avisos.every(a => ['rol.sin_reciprocidad', 'desviacion.detectada'].includes(a.tipus)),
+    'els avisos porten els noms dels webhooks del pla');
+  const im = M.importa(o.mapaObservat);
+  ok(im.arbre && J(M.exporta(im.arbre).roles) === J(o.mapaObservat.roles), 'el mapa observat s\'obre a l\'editor');
+  ok(J(o.mapaObservat.ideal.roles) === J(mapa.roles) && !('ideal' in o.mapaObservat.ideal) && o.mapaObservat.roles.includes('La cooperativa'), 'amb el dibuixat com a ideal, per veure la desviació');
+  const sortida = (J(o) + J(l)).split('https://exemple.cat/foto').join('');
+  ok(!/Pere|Anna|@|1\.2\.3\./.test(sortida), 'cap nom, correu ni IP del CSV arriba a cap sortida');
+  ok(/^# El registre, llegit/.test(o.informe) && /6 transaccions del 2026-10-01 al 2026-10-06/.test(o.informe) && /\| la visita, el tast i el relat de la casa \| Qui rep i explica → El visitant \| 2 \| 4 \| 2026-10-03 \|/.test(o.informe),
+    'l\'informe en Markdown: la taula de fluxos vius');
+  ok(/## Fluxos del mapa que no han passat/.test(o.informe) && /## El que passa i no és al mapa/.test(o.informe) && /\*\*La cooperativa\*\* no és al mapa/.test(o.informe), 'adormits, nous i rols nous');
+  ok(/^# El registro, leído/.test(R.observaRegistre(mapa, l.files, { llengua: 'es' }).informe) && /Encara no hi ha cap/.test(R.observaRegistre(mapa, []).informe), 'en castellà, i sense transaccions ho diu');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/llegeix-registre.js');
+  const c = cli.llegeix(mapa, csv);
+  ok(c.informe === o.informe && J(c.mapaObservat) === J(o.mapaObservat) && c.files === 6 && c.ignorades === 2, 'llegeix-registre.js fa servir el mateix codi: la mateixa sortida');
+  const st = S.webASite(S.webDelMapa(celler()), { mapa }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  const rg = f('registre.html');
+  ok(/<form name="registre" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">/.test(rg) && /name="form-name" value="registre"/.test(rg),
+    'la web porta el formulari del registre, per a Netlify Forms');
+  ok(['de', 'a', 'entregable', 'mena', 'valor', 'data', 'evidencia'].every(n => rg.includes('name="' + n + '"')) && !/name="(nom|correu|email)"/.test(rg),
+    'amb els camps que el lector entén, i cap camp per a dades personals');
+  ok(/<option>Qui fa el vi<\/option>/.test(rg) && /<option value="la visita, el tast i el relat de la casa">/.test(rg), 'els rols i els lliuraments del mapa, per triar');
+  ok(/noindex/.test(rg) && /href="registre.html"/.test(f('equip.html')) && !/href="registre.html"/.test(f('index.html')) && /Disallow: \/registre.html/.test(f('robots.txt')),
+    'fora del menú i dels cercadors; s\'hi arriba des de la pàgina de l\'equip');
+  const fr = R.llegeixRegistre('de,a,entregable,mena,valor,data,evidencia\nQui fa el vi,Qui rep i explica,el vi,tangible,4,2026-10-01,').files;
+  ok(fr.length === 1 && fr[0].data === '2026-10-01', 'el CSV del formulari generat es llegeix tal com surt');
+}
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

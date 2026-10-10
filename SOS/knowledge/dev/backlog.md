@@ -96,7 +96,17 @@ procés, i `decisiones.md`), `CLAUDE.md` amb les regles, `netlify.toml` amb
 CSP, la 404, `robots.txt` i, amb l'adreça definitiva, el sitemap, `canonical`
 i Open Graph. El cervell porta el seu índex (`CEREBRO.md` i `cerebro/indice.json`):
 cada document amb tema i capa (pública, per enllaç, equip), el mateix model que
-el d'Events Penedès. Següent del pla: el registre viu de transaccions (fase 2).
+el d'Events Penedès.
+**Fet, fase 2 del pla:** el registre viu. La web porta `registre.html`
+(Netlify Forms) per anotar cada lliurament entre rols. El CSV es llegeix a la
+pestanya Web o amb `SOS/tools/llegeix-registre.js` (mateix codi, bloc
+`VS-REG`): informe, mapa observat amb el dibuixat com a ideal (vista
+Desviació) i els avisos de la fase 3. Del CSV només es queden rols,
+lliurament, tipus, data, evidència i valor. Vint-i-quatre proves al motor.
+Següent del pla: l'API i els webhooks (fase 3).
+**Fet (demanat per l'Àlvar el 09/10/2026):** la vista prèvia de la web al
+navegador. A la pestanya Web, «Vista prèvia» ensenya la web de debò (el mateix
+codi que el zip) pàgina a pàgina, sense descarregar res.
 Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.

@@ -335,6 +335,9 @@ pre{background:var(--panel);border:1px solid var(--border);border-radius:9px;pad
 .ed-web-xips a{display:inline-flex;align-items:center;min-height:44px;font-size:.75rem;padding:.1rem .7rem;border-radius:999px;border:1px solid var(--border);text-decoration:none}
 .ed-web-fila{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
 .ed-web-dades{display:grid;gap:.5rem;margin:.3rem 0 .2rem}
+.ed-web-previa{border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;margin:.5rem 0}
+.ed-web-previa p{margin:0;padding:.35rem .6rem;background:var(--card);border-bottom:1px solid var(--border-strong);font-size:.85rem}
+.ed-web-previa iframe{display:block;width:100%;height:70vh;min-height:420px;border:0;background:#fff}
 .ed-web-dades label{display:grid;gap:.2rem;margin:0}
 .ed-web-dades input,.ed-web-dades select{font:inherit;min-height:44px;padding:.35rem .55rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--card);color:var(--text)}
 /* ── L'inspector ── */
@@ -3799,6 +3802,9 @@ const SITE_TXT = {
     tambe: 'També ens pots escriure a', gracies: 'Gràcies', rebut: 'Ho hem rebut. Et respondrem per correu.', torna: 'Torna a l\'inici',
     peu: 'Feta a partir del mapa de valor.', dades: 'Les dades d\'aquesta web', buida: 'Encara no hi ha res entre nosaltres i aquest rol.',
     noHi: 'Aquesta pàgina no hi és', noHiD: 'Potser ha canviat de nom quan ha canviat el mapa.',
+    reg: { titol: 'Registra un lliurament', perque: 'Cada lliurament que s\'anota fa que el mapa real surti de l\'ús i no de la memòria.', de: 'De qui surt', a: 'Qui el rep',
+      q: 'Què s\'ha lliurat', mena: 'Tipus', t: 'Tangible', i: 'Intangible', valor: 'Quant valor hi veu qui el rep (1 a 5)', data: 'Quan', ev: 'Evidència (un enllaç, si n\'hi ha)',
+      privat: 'Només rols i lliuraments: cap nom de persona ni dada personal.', envia: 'Registra-ho' },
     cb: { fitxa: 'Fitxa del cervell del projecte. Surt del mapa de valor: es regenera quan canvia el mapa.', dona: 'Què dona', rep: 'Què rep',
       procs: 'Processos on hi és', pas: 'pas', sempre: 'tot el temps', hab: 'Habilitats que demana',
       habD: 'Per omplir a la sala. L\'encaix de cada persona amb el rol és dada personal: va al CRM, no aquí.',
@@ -3819,6 +3825,7 @@ const SITE_TXT = {
       '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
       '- **Els formularis són de Netlify Forms** i arriben per correu. Cap dada personal es desa aquí.',
       '- **Permaweb.** `permaweb.json` té l\'empremta SHA-256 de cada fitxer. Si un fitxer no hi quadra, la web no és la que va sortir del mapa.',
+      '- **El registre viu.** Cada lliurament entre rols s\'anota a `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, i `node SOS/tools/llegeix-registre.js cerebro/mapa-real.json cerebro/registro/registre.csv cerebro/registro/` en treu `informe.md` i `mapa-observat.json` (s\'obre a l\'editor i ensenya la desviació). Del CSV només es queden rols, lliurament, tipus, data, evidència i valor.',
       '- **Cada canvi, en una PR.** Netlify en publica una vista prèvia, i qui decideix la mira abans d\'acceptar-la.'],
     llegeix: ['# {nom}', '', 'Web feta a partir del mapa de valor.', '', '## Publicar-la', '',
       '- **Ara mateix:** arrossega la carpeta a https://app.netlify.com/drop.',
@@ -3837,6 +3844,9 @@ const SITE_TXT = {
     tambe: 'También puedes escribirnos a', gracies: 'Gracias', rebut: 'Lo hemos recibido. Te responderemos por correo.', torna: 'Volver al inicio',
     peu: 'Hecha a partir del mapa de valor.', dades: 'Los datos de esta web', buida: 'Todavía no hay nada entre nosotros y este rol.',
     noHi: 'Esta página no existe', noHiD: 'Quizá cambió de nombre cuando cambió el mapa.',
+    reg: { titol: 'Registra un entregable', perque: 'Cada entregable que se anota hace que el mapa real salga del uso y no de la memoria.', de: 'De quién sale', a: 'Quién lo recibe',
+      q: 'Qué se ha entregado', mena: 'Tipo', t: 'Tangible', i: 'Intangible', valor: 'Cuánto valor ve quien lo recibe (1 a 5)', data: 'Cuándo', ev: 'Evidencia (un enlace, si lo hay)',
+      privat: 'Solo roles y entregables: ningún nombre de persona ni dato personal.', envia: 'Regístralo' },
     cb: { fitxa: 'Ficha del cerebro del proyecto. Sale del mapa de valor: se regenera cuando cambia el mapa.', dona: 'Qué da', rep: 'Qué recibe',
       procs: 'Procesos en los que está', pas: 'paso', sempre: 'todo el tiempo', hab: 'Habilidades que pide',
       habD: 'Por rellenar en la sala. El encaje de cada persona con el rol es dato personal: va al CRM, no aquí.',
@@ -3857,6 +3867,7 @@ const SITE_TXT = {
       '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
       '- **Los formularios son de Netlify Forms** y llegan por correo. Ningún dato personal se guarda aquí.',
       '- **Permaweb.** `permaweb.json` tiene la huella SHA-256 de cada fichero. Si un fichero no cuadra, la web no es la que salió del mapa.',
+      '- **El registro vivo.** Cada entregable entre roles se anota en `registre.html` (Netlify Forms). El CSV de Netlify va a `cerebro/registro/registre.csv`, y `node SOS/tools/llegeix-registre.js cerebro/mapa-real.json cerebro/registro/registre.csv cerebro/registro/` saca `informe.md` y `mapa-observat.json` (se abre en el editor y enseña la desviación). Del CSV solo se quedan roles, entregable, tipo, fecha, evidencia y valor.',
       '- **Cada cambio, en una PR.** Netlify publica una vista previa, y quien decide la mira antes de aceptarla.'],
     llegeix: ['# {nom}', '', 'Web hecha a partir del mapa de valor.', '', '## Publicarla', '',
       '- **Ahora mismo:** arrastra la carpeta a https://app.netlify.com/drop.',
@@ -3887,7 +3898,11 @@ const SITE_CSS = [
   'li{margin:.25rem 0}small{color:var(--mut)}',
   'form{display:grid;gap:.75rem;margin-top:.5rem}',
   'label{display:grid;gap:.25rem;font-weight:600}',
-  'input,textarea,button{font:inherit;min-height:44px;padding:.5rem .7rem;border:1px solid var(--lin);border-radius:8px;background:var(--bg);color:var(--fg)}',
+  'fieldset{display:flex;flex-wrap:wrap;gap:.25rem 1rem;border:1px solid var(--lin);border-radius:8px;margin:0;padding:.4rem .8rem .6rem}',
+  'legend{font-weight:600;padding:0 .3rem}',
+  'fieldset label{display:inline-flex;align-items:center;gap:.4rem;font-weight:400;min-height:44px}',
+  'fieldset input{min-height:auto}',
+  'input,select,textarea,button{font:inherit;min-height:44px;padding:.5rem .7rem;border:1px solid var(--lin);border-radius:8px;background:var(--bg);color:var(--fg)}',
   'button{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600;cursor:pointer;justify-self:start}',
   '.ocult{display:none}',
   'footer{border-top:1px solid var(--lin);color:var(--mut);font-size:.9rem}'
@@ -4008,9 +4023,29 @@ function webASite(web, opts) {
   /* L'equip no és per al públic: hi és perquè la web sencera surti del mapa,
      però els cercadors no la indexen i el menú no la mostra. */
   posa('equip.html', pagina('equip', L.equip,
-    '<p>' + e((web.equip.rols || []).join(', ')) + '</p>\n'
+    '<p>' + e((web.equip.rols || []).join(', ')) + '</p>\n<p><a href="registre.html">' + e(L.reg.titol) + '</a>. ' + e(L.reg.perque) + '</p>\n'
       + (web.equip.intern.length ? '<h2>' + e(L.dins) + '</h2>\n' + llista(web.equip.intern, x => lli(x, x.de + ' → ' + x.a)) : ''),
     { '@type': 'WebPage', name: L.equip }, '<meta name="robots" content="noindex">\n'));
+  /* El registre viu (fase 2): un formulari per anotar cada lliurament entre
+     rols. Fora del menú i dels cercadors: és per a qui fa la xarxa. */
+  const totsRols = (web.casa || []).concat((web.portes || []).map(p => p.rol));
+  const qs = [];
+  (web.portes || []).forEach(p => p.rep.concat(p.dona, p.xarxa).forEach(f => { if (!qs.includes(f.q)) qs.push(f.q); }));
+  ((web.equip || {}).intern || []).forEach(f => { if (!qs.includes(f.q)) qs.push(f.q); });
+  const R = L.reg, opc = totsRols.map(r => '<option>' + e(r) + '</option>').join('');
+  posa('registre.html', pagina('registre', R.titol, '<p>' + e(R.perque) + '</p>\n'
+    + '<form name="registre" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">\n'
+    + '<input type="hidden" name="form-name" value="registre">\n<p class="ocult"><label>No omplis això <input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label></p>\n'
+    + '<label for="reg-de">' + e(R.de) + '</label><select id="reg-de" name="de" required><option value=""></option>' + opc + '</select>\n'
+    + '<label for="reg-a">' + e(R.a) + '</label><select id="reg-a" name="a" required><option value=""></option>' + opc + '</select>\n'
+    + '<label for="reg-q">' + e(R.q) + '</label><input id="reg-q" name="entregable" type="text" list="reg-qs" required>\n'
+    + '<datalist id="reg-qs">' + qs.map(q => '<option value="' + e(q) + '"></option>').join('') + '</datalist>\n'
+    + '<fieldset><legend>' + e(R.mena) + '</legend><label><input type="radio" name="mena" value="tangible" checked> ' + e(R.t) + '</label><label><input type="radio" name="mena" value="intangible"> ' + e(R.i) + '</label></fieldset>\n'
+    + '<fieldset><legend>' + e(R.valor) + '</legend>' + [1, 2, 3, 4, 5].map(v => '<label><input type="radio" name="valor" value="' + v + '"> ' + v + '</label>').join('') + '</fieldset>\n'
+    + '<label for="reg-data">' + e(R.data) + '</label><input id="reg-data" name="data" type="date">\n'
+    + '<label for="reg-ev">' + e(R.ev) + '</label><input id="reg-ev" name="evidencia" type="url" placeholder="https://">\n'
+    + '<p><small>' + e(R.privat) + '</small></p>\n<button type="submit">' + e(R.envia) + '</button>\n</form>',
+    { '@type': 'WebPage', name: R.titol }, '<meta name="robots" content="noindex">\n'));
   posa('gracies.html', pagina('gracies', L.gracies, '<p>' + e(L.rebut) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.gracies }, '<meta name="robots" content="noindex">\n'));
   posa('estil.css', SITE_CSS, 'text/css');
@@ -4020,7 +4055,7 @@ function webASite(web, opts) {
   posa('404.html', pagina('404', L.noHi, '<p>' + e(L.noHiD) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.noHi }, '<meta name="robots" content="noindex">\n'));
   const publiques = ['index.html'].concat((web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : []);
-  posa('robots.txt', 'User-agent: *\nAllow: /\nDisallow: /equip.html\n' + (url ? 'Sitemap: ' + url + 'sitemap.xml\n' : ''), 'text/plain');
+  posa('robots.txt', 'User-agent: *\nAllow: /\nDisallow: /equip.html\nDisallow: /registre.html\n' + (url ? 'Sitemap: ' + url + 'sitemap.xml\n' : ''), 'text/plain');
   if (url) posa('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + publiques.map(r => '<url><loc>' + e(abs(r)) + '</loc></url>\n').join('') + '</urlset>\n', 'application/xml');
   posa('netlify.toml', [
@@ -4122,6 +4157,128 @@ async function ambPermaweb(site, digest) {
   return site.fitxers.concat([{ ruta: 'permaweb.json', tipus: 'application/json', cos: JSON.stringify(manifest, null, 2) + '\n' }]);
 }
 /*/VS-SITE*/
+/*VS-REG*/
+/* ── El registre viu: el mapa real surt de l'ús ─────────────────────────────
+ * Fase 2 del pla (el detall és al repositori privat d'estratègia): cada
+ * lliurament que passa d'un rol a un altre s'anota, i el mapa real es
+ * recalcula des d'aquí, no des de la memòria del taller.
+ *
+ *  · **On s'anota:** al formulari `registre.html` de la web del client
+ *    (Netlify Forms). Arriba per correu i Netlify en dona el CSV. Res de
+ *    servidor ni de base de dades: el correu i la web són la base de dades.
+ *  · **Què es guarda:** de quin rol a quin, quin lliurament, tangible o
+ *    intangible, la data, l'evidència (un enllaç) i el valor percebut per qui
+ *    el rep, de 1 a 5. **Només aquests camps:** qualsevol altra columna del
+ *    CSV (noms, correus, IP) es descarta en llegir-lo.
+ *  · **Què en surt:** el mapa observat (amb el dibuixat com a ideal, perquè
+ *    l'editor ensenyi la desviació), una lectura en Markdown i els avisos que
+ *    la fase 3 enviarà per webhook, amb els noms del pla. */
+const REG_CAMPS = { data: ['data', 'fecha', 'date', 'created_at'], de: ['de', 'from'], a: ['a', 'to', 'para', 'per_a'],
+  q: ['entregable', 'lliurament', 'q'], mena: ['mena', 'tipus', 'tipo'], valor: ['valor', 'value'], evidencia: ['evidencia', 'evidència', 'evidence'] };
+function llegeixRegistre(text) {
+  const t = String(text || '').replace(/^﻿/, '').trim();
+  let files = [];
+  if (/^\[/.test(t)) { try { files = JSON.parse(t); } catch (e) { files = []; } }
+  else if (t) {
+    /* CSV com el que exporta Netlify: capçalera, comes i cometes dobles. */
+    const reg = [], fila = [];
+    let camp = '', dins = false;
+    for (let i = 0; i <= t.length; i++) {
+      const c = t[i];
+      if (dins) { if (c === '"' && t[i + 1] === '"') { camp += '"'; i++; } else if (c === '"') dins = false; else camp += c; continue; }
+      if (c === '"') dins = true;
+      else if (c === ',' ) { fila.push(camp); camp = ''; }
+      else if (c === '\n' || c === '\r' || c === undefined) { if (c === '\r' && t[i + 1] === '\n') i++; fila.push(camp); camp = ''; reg.push(fila.splice(0)); }
+      else camp += c;
+    }
+    const cap = (reg.shift() || []).map(x => x.trim().toLowerCase());
+    files = reg.filter(r => r.some(x => x.trim())).map(r => { const o = {}; cap.forEach((k, i) => { o[k] = r[i]; }); return o; });
+  }
+  const pren = (o, k) => { const n = REG_CAMPS[k].find(x => o[x] != null && String(o[x]).trim() !== ''); return n ? String(o[n]).trim() : ''; };
+  const bones = [];
+  let ignorades = 0;
+  (Array.isArray(files) ? files : []).forEach(o => {
+    if (!o || typeof o !== 'object') { ignorades++; return; }
+    const x = { data: pren(o, 'data').slice(0, 10), de: pren(o, 'de'), a: pren(o, 'a'), q: pren(o, 'q') };
+    if (!x.de || !x.a || !x.q || x.de === x.a) { ignorades++; return; }
+    x.mena = /^i/i.test(pren(o, 'mena')) ? 'intangible' : 'tangible';
+    const v = parseInt(pren(o, 'valor'), 10); x.valor = v >= 1 && v <= 5 ? v : null;
+    const ev = pren(o, 'evidencia'); x.evidencia = /^https?:\/\/\S+$/.test(ev) ? ev : '';
+    bones.push(x);
+  });
+  return { files: bones, ignorades };
+}
+const REG_TXT = {
+  ca: { titol: 'El registre, llegit', de: 'transaccions', del: 'del', al: 'al', font: 'Surt del registre; es regenera cada cop.', vius: 'Fluxos vius',
+    cap: '| Lliurament | De → A | Vegades | Valor percebut | Darrera |', morts: 'Fluxos del mapa que no han passat', nous: 'El que passa i no és al mapa',
+    nousD: 'Proposta: afegir-ho al mapa, si una persona ho accepta.', rols: 'Rols', noRep: 'dona i no rep res registrat.', rolNou: 'no és al mapa.', cap0: 'Encara no hi ha cap transacció registrada.',
+    trobNou: 'Hi ha intercanvis que no són al mapa', trobMort: 'Hi ha fluxos del mapa que no passen', trobRec: 'dona i no rep' },
+  es: { titol: 'El registro, leído', de: 'transacciones', del: 'del', al: 'al', font: 'Sale del registro; se regenera cada vez.', vius: 'Flujos vivos',
+    cap: '| Entregable | De → A | Veces | Valor percibido | Última |', morts: 'Flujos del mapa que no han pasado', nous: 'Lo que pasa y no está en el mapa',
+    nousD: 'Propuesta: añadirlo al mapa, si una persona lo acepta.', rols: 'Roles', noRep: 'da y no recibe nada registrado.', rolNou: 'no está en el mapa.', cap0: 'Todavía no hay ninguna transacción registrada.',
+    trobNou: 'Hay intercambios que no están en el mapa', trobMort: 'Hay flujos del mapa que no pasan', trobRec: 'da y no recibe' }
+};
+function observaRegistre(mapa, files, opts) {
+  const o = opts || {}, T = REG_TXT[o.llengua] || REG_TXT.ca;
+  const n = s => String(s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
+  const roles = (mapa.roles || []).slice(), perNom = {}; roles.forEach(r => { perNom[n(r)] = r; });
+  const fl = [];
+  (mapa.pairs || []).forEach(p => {
+    if (p[0] && p[1] && p[3]) fl.push({ de: p[0], a: p[1], mena: p[2] || 'tangible', q: p[3], tx: [] });
+    if (p[0] && p[1] && p[5]) fl.push({ de: p[1], a: p[0], mena: p[4] || 'tangible', q: p[5], tx: [] });
+  });
+  const nous = {}, rolsNous = [];
+  const rol = x => { const k = n(x); if (!perNom[k]) { perNom[k] = x; rolsNous.push(x); } return perNom[k]; };
+  files.forEach(t => {
+    const de = rol(t.de), a = rol(t.a);
+    const mateix = fl.filter(f => f.de === de && f.a === a);
+    const f = mateix.find(x => n(x.q) === n(t.q));
+    if (f) f.tx.push(t);
+    else { const k = de + '→' + a + '→' + n(t.q); (nous[k] = nous[k] || { de, a, q: t.q, mena: t.mena, tx: [] }).tx.push(t); }
+  });
+  const stat = tx => { const v = tx.filter(t => t.valor).map(t => t.valor); const d = tx.map(t => t.data).filter(Boolean).sort();
+    return { vegades: tx.length, valor: v.length ? Math.round(v.reduce((s, x) => s + x, 0) / v.length * 10) / 10 : null, darrera: d[d.length - 1] || '' }; };
+  const vius = fl.filter(f => f.tx.length).map(f => Object.assign({ de: f.de, a: f.a, q: f.q, mena: f.mena }, stat(f.tx)));
+  const morts = fl.filter(f => !f.tx.length).map(f => ({ de: f.de, a: f.a, q: f.q, mena: f.mena }));
+  const nousL = Object.values(nous).map(x => Object.assign({ de: x.de, a: x.a, q: x.q, mena: x.mena }, stat(x.tx))).sort((x, y) => y.vegades - x.vegades);
+  const obs = vius.concat(nousL);
+  const totsRols = roles.concat(rolsNous);
+  const senseRec = totsRols.filter(r => obs.some(f => f.de === r) && !obs.some(f => f.a === r));
+  /* El mapa observat, en el format de l'editor: per a cada parell i sentit, el
+     lliurament més freqüent. El dibuixat hi va d'ideal. */
+  const parells = {};
+  obs.slice().sort((x, y) => y.vegades - x.vegades).forEach(f => {
+    const [A, B] = totsRols.indexOf(f.de) <= totsRols.indexOf(f.a) ? [f.de, f.a] : [f.a, f.de];
+    const p = parells[A + '→' + B] = parells[A + '→' + B] || [A, B, '', '', '', ''];
+    if (f.de === A && !p[3]) { p[2] = f.mena; p[3] = f.q; } else if (f.de === B && !p[5]) { p[4] = f.mena; p[5] = f.q; }
+  });
+  const pairs = Object.values(parells);
+  const seq = {}; Object.keys(mapa.seq || {}).forEach(k => { const [de, a] = k.split('→'); if (obs.some(f => f.de === de && f.a === a)) seq[k] = mapa.seq[k]; });
+  const troballes = [];
+  if (nousL.length) troballes.push({ t: T.trobNou, d: nousL.map(f => f.q + ' (' + f.de + ' → ' + f.a + ')').join('; ') });
+  if (morts.length) troballes.push({ t: T.trobMort, d: morts.map(f => f.q + ' (' + f.de + ' → ' + f.a + ')').join('; ') });
+  senseRec.forEach(r => troballes.push({ t: r + ' ' + T.trobRec, d: '' }));
+  const ideal = Object.assign({}, mapa); delete ideal.ideal;
+  const usats = totsRols.filter(r => pairs.some(p => p[0] === r || p[1] === r));
+  const mapaObservat = { abast: mapa.abast || '', roles: usats, pairs, processos: (mapa.processos || []).slice(), seq, troballes, ideal };
+  const avisos = senseRec.map(r => ({ tipus: 'rol.sin_reciprocidad', rol: r }))
+    .concat(morts.map(f => ({ tipus: 'desviacion.detectada', motiu: 'flux-sense-us', de: f.de, a: f.a, q: f.q })),
+      nousL.map(f => ({ tipus: 'desviacion.detectada', motiu: 'flux-nou', de: f.de, a: f.a, q: f.q })));
+  const dates = files.map(t => t.data).filter(Boolean).sort();
+  const md = ['# ' + T.titol, ''];
+  if (!files.length) md.push(T.cap0);
+  else {
+    md.push('> ' + files.length + ' ' + T.de + (dates.length ? ' ' + T.del + ' ' + dates[0] + ' ' + T.al + ' ' + dates[dates.length - 1] : '') + '. ' + T.font);
+    const cel = s => String(s).replace(/\|/g, '\\|');
+    if (vius.length) md.push('', '## ' + T.vius, '', T.cap, '| --- | --- | ---: | ---: | --- |',
+      ...vius.sort((x, y) => y.vegades - x.vegades).map(f => '| ' + cel(f.q) + ' | ' + cel(f.de + ' → ' + f.a) + ' | ' + f.vegades + ' | ' + (f.valor == null ? '—' : f.valor) + ' | ' + (f.darrera || '—') + ' |'));
+    if (morts.length) md.push('', '## ' + T.morts, '', ...morts.map(f => '- **' + f.q + '** · ' + f.de + ' → ' + f.a));
+    if (nousL.length) md.push('', '## ' + T.nous, '', T.nousD, '', ...nousL.map(f => '- **' + f.q + '** · ' + f.de + ' → ' + f.a + ' · ' + f.vegades));
+    if (senseRec.length || rolsNous.length) md.push('', '## ' + T.rols, '', ...senseRec.map(r => '- **' + r + '** ' + T.noRep), ...rolsNous.map(r => '- **' + r + '** ' + T.rolNou));
+  }
+  return { vius, morts, nous: nousL, rolsNous, senseReciprocitat: senseRec, mapaObservat, avisos, informe: md.join('\n') + '\n' };
+}
+/*/VS-REG*/
 
 /*VS-CTRL*/
 /* ── L'editor: l'estat, la sincronia amb els sis camps, els nivells i el desat ──
@@ -4487,7 +4644,7 @@ function creaLlenc() {
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
     cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
-    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca'
+    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', reg: null, webPrevia: null
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -6411,9 +6568,22 @@ function creaLlenc() {
       + '<label>Correu on arriben els formularis <input type="email" id="edWebCorreu" value="' + escA(S.webCorreu) + '" placeholder="hola@exemple.cat"></label>'
       + '<label>Adreça definitiva, si ja la tens <input type="url" id="edWebUrl" value="' + escA(S.webUrl) + '" placeholder="https://"></label>'
       + '<label>Llengua <select id="edWebLlengua"><option value="ca"' + (S.webLlengua === 'es' ? '' : ' selected') + '>Català</option><option value="es"' + (S.webLlengua === 'es' ? ' selected' : '') + '>Castellà</option></select></label></div>'
-      + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button></div>'
+      + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button>'
+      + '<button type="button" class="ed-b" id="edWebVeure" aria-expanded="' + !!S.webPrevia + '">' + (S.webPrevia ? 'Tanca la vista prèvia' : 'Vista prèvia') + '</button></div>'
+      + (S.webPrevia ? '<div class="ed-web-previa"><p>La web tal com sortirà, pàgina a pàgina: <code id="edWebRuta"></code>. Els enllaços funcionen; els formularis porten a la pàgina de gràcies.</p><iframe id="edWebMarc" title="Vista prèvia de la web" sandbox="allow-same-origin"></iframe></div>' : '')
       + '<p>HTML i CSS estàtics, sense JavaScript: una pàgina per porta, els formularis que arriben per correu (Netlify Forms), les dades a cada pàgina en JSON-LD i <code>permaweb.json</code> amb l\'empremta de cada fitxer. El zip ja és el repositori del client: porta el cervell del projecte (<code>cerebro/</code>: el mapa i una fitxa per rol, lliurament i procés), les regles (<code>CLAUDE.md</code>) i el <code>netlify.toml</code>. S\'arrossega a Netlify i ja és publicada.</p>';
+    h += '<h4>El registre viu</h4><p>La web porta <code>registre.html</code>, on la xarxa anota cada lliurament. Netlify en dona el CSV: carrega\'l aquí i veuràs el mapa que surt de l\'ús, comparat amb el que has dibuixat. Del CSV només es llegeixen rols, lliurament, tipus, data, evidència i valor.</p>'
+      + '<div class="ed-web-dades"><label>El CSV del registre <input type="file" id="edWebReg" accept=".csv,.json,text/csv,application/json"></label></div>';
+    if (S.reg) {
+      const r = S.reg;
+      h += '<p id="edRegResum" aria-live="polite"><b>' + pl(r.files, 'transacció', 'transaccions') + '</b>' + (r.ignorades ? ' (' + r.ignorades + ' descartades)' : '') + ': '
+        + pl(r.vius.length, 'flux viu', 'fluxos vius') + ', ' + r.morts.length + ' sense ús, ' + pl(r.nous.length, 'nou', 'nous')
+        + (r.senseReciprocitat.length ? '. Donen i no reben: ' + r.senseReciprocitat.map(esc_).join(', ') : '') + '.</p>'
+        + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edRegObre">Obre el mapa observat</button><button type="button" class="ed-b" id="edRegInforme">Descarrega informe.md</button><button type="button" class="ed-b" id="edRegMapa">Descarrega mapa-observat.json</button></div>'
+        + '<p>«Obre» el posa a l\'editor amb el teu dibuix com a ideal i ensenya la vista Desviació. Es pot desfer.</p>';
+    }
     posaHTML(p, h);
+    mostraPrevia();
   }
   function webPagina(web, pag) {
     if (pag === 'inici') {
@@ -6440,10 +6610,39 @@ function creaLlenc() {
       + '<h6>La benvinguda</h6><ol>' + x.benvinguda.map(b => '<li data-pas="' + escA(b.pas) + '"><b>' + esc_(b.t) + '</b> ' + esc_(b.d) + '</li>').join('') + '</ol>'
       + (x.connexions.length ? '<h6>Es connecta amb</h6><div class="ed-web-xips">' + x.connexions.map(c => '<a href="../conecta/#catalogo" title="Per la paraula «' + escA(c.per) + '» del mapa">' + esc_(c.nom) + '</a>').join('') + '</div>' : '');
   }
+  /* La vista prèvia: la web de debò (VS-SITE), pàgina a pàgina, en un marc
+     sense scripts. El full d'estil va dins de la pàgina i els enllaços entre
+     pàgines es resolen aquí, perquè funcioni també des del disc. */
+  function siteAra() {
+    return webASite(webAra().web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE) });
+  }
+  function mostraPrevia() {
+    const f = $('#edWebMarc');
+    if (!f || !S.webPrevia) return;
+    const per = {}; siteAra().fitxers.forEach(x => { per[x.ruta] = x.cos; });
+    if (!/\.html$/.test(S.webPrevia) || !per[S.webPrevia]) S.webPrevia = 'index.html';
+    f.onload = () => {
+      const d = f.contentDocument;
+      if (!d) return;
+      d.addEventListener('click', ev => {
+        if (ev.target.closest('button[type=submit]')) { ev.preventDefault(); S.webPrevia = 'gracies.html'; mostraPrevia(); avis('A la web publicada, el formulari arriba per correu'); return; }
+        const a = ev.target.closest('a[href]');
+        if (!a) return;
+        const h = a.getAttribute('href'), r = h.split('#')[0];
+        if (!r) return;
+        ev.preventDefault();
+        if (/\.html$/.test(r) && per[r]) { S.webPrevia = r; mostraPrevia(); f.focus(); }
+        else if (/^(https?:|mailto:)/.test(h)) window.open(h, '_blank', 'noopener');
+        else avis('«' + r + '» és a la web publicada');
+      });
+    };
+    f.srcdoc = per[S.webPrevia].replace('<link rel="stylesheet" href="estil.css">', '<style>' + per['estil.css'] + '</style>');
+    $('#edWebRuta').textContent = S.webPrevia;
+  }
   /* La web, en un zip. L'empremta SHA-256 la fa el navegador; si no pot
      (un context sense crypto.subtle), la web surt igual i ho diu. */
   async function baixaWeb() {
-    const { web } = webAra(), site = webASite(web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE) });
+    const site = siteAra();
     let fitxers = site.fitxers, nota = '';
     try {
       fitxers = await ambPermaweb(site, async b => [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map(x => x.toString(16).padStart(2, '0')).join(''));
@@ -6458,9 +6657,11 @@ function creaLlenc() {
     if (e.target.id === 'edWebNom') S.webNom = e.target.value;
     if (e.target.id === 'edWebCorreu') S.webCorreu = e.target.value;
     if (e.target.id === 'edWebUrl') S.webUrl = e.target.value;
+    if (/^edWeb(Nom|Correu|Url)$/.test(e.target.id)) mostraPrevia();
   });
   $('#edPanWeb').addEventListener('change', e => {
-    if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; return; }
+    if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; mostraPrevia(); return; }
+    if (e.target.id === 'edWebReg') { if (e.target.files && e.target.files[0]) llegeixRegWeb(e.target.files[0]); return; }
     const c = e.target.closest('[data-web-casa]');
     if (!c) return;
     const { web } = webAra(), r = c.getAttribute('data-web-casa');
@@ -6474,15 +6675,31 @@ function creaLlenc() {
     const b = e.target.closest('[data-web-pag]');
     if (b) { S.webPag = b.getAttribute('data-web-pag'); pintaWeb(); const q = $('#edPanWeb [data-web-pag="' + CSS.escape(S.webPag) + '"]'); if (q) q.focus(); return; }
     if (e.target.closest('#edWebZip')) { baixaWeb(); return; }
-    if (e.target.closest('#edWebJson')) {
-      const { web } = webAra();
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(web, null, 2)], { type: 'application/json' }));
-      a.download = 'web.json'; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      avis('S\'ha descarregat web.json');
+    if (e.target.closest('#edWebVeure')) { S.webPrevia = S.webPrevia ? null : 'index.html'; pintaWeb(); $('#edWebVeure').focus(); return; }
+    if (e.target.closest('#edWebJson')) { baixaText('web.json', JSON.stringify(webAra().web, null, 2), 'application/json'); return; }
+    if (!S.reg) return;
+    if (e.target.closest('#edRegInforme')) { baixaText('informe.md', S.reg.informe, 'text/markdown'); return; }
+    if (e.target.closest('#edRegMapa')) { baixaText('mapa-observat.json', JSON.stringify(S.reg.mapaObservat, null, 2) + '\n', 'application/json'); return; }
+    if (e.target.closest('#edRegObre')) {
+      carrega(S.reg.mapaObservat);
+      CTRL.vesA({ vista: 'desviacio', cami: [] });
+      avis('El mapa observat és a l\'editor, amb el teu dibuix com a ideal. Desfés per tornar-hi');
     }
   });
+  function baixaText(nom, text, tipus) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: tipus }));
+    a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    avis('S\'ha descarregat ' + nom);
+  }
+  /* El registre viu: el mateix codi que llegeix-registre.js (VS-REG). */
+  async function llegeixRegWeb(fitxer) {
+    const l = llegeixRegistre(await fitxer.text());
+    S.reg = Object.assign({ files: l.files.length, ignorades: l.ignorades }, observaRegistre(MODEL.exporta(ARBRE), l.files, { llengua: S.webLlengua }));
+    pintaWeb();
+    avis(S.reg.files ? 'Registre llegit: ' + pl(S.reg.files, 'transacció', 'transaccions') : 'El fitxer no té cap transacció que es pugui llegir');
+  }
 
   /* ── El diagnòstic ─────────────────────────────────────────────────────── */
   function troballesVista() {
