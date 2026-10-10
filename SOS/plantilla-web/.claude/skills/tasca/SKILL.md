@@ -14,7 +14,7 @@ La màquina proposa, una persona accepta. Aquesta skill només fa esborranys: no
 2. **Si no té `pot: true`, explica per què i para:**
    - Intangible: el fa una persona del rol, mai la IA. Cap esborrany, ni «només per ajudar».
    - Tangible sense tipus declarat, o sense mena: cal decidir-ne el tipus a la sessió i anotar-lo al mapa.
-   - El tipus no surt d'una màquina: el redacta qui hi ha estat.
+   - El tipus no surt d'una màquina (un acord, una factura): el fa i en respon una persona.
 3. Mira què demana `cal` i pregunta a la persona el que falti. Si alguna dada porta noms de persona, demana-la per rols.
 4. Escriu l'esborrany a `cerebro/esborranys/AAAA-MM-DD-<id>.md` (la data d'avui), amb la forma que diu `surt`. Comença amb aquesta capçalera, perquè digui qui l'ha fet:
 

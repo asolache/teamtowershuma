@@ -78,16 +78,29 @@ la feina de rutina la gestionin les IA tal com ho defineix el SOS.
   l'accepta (la PR és l'acceptació). Cap text promet una IA que faci la feina sola.
 - **Claude Code no és gratis.** La guia ho diu amb la data i l'enllaç als plans;
   el camí gratuït és un projecte de claude.ai que llegeix el repositori.
-- **Els tipus no s'inventen.** Al celler d'exemple la IA no pot preparar cap
-  lliurament: la taxonomia del SOS és de comunitat.
+- **Els tipus no s'inventen.** Al celler d'exemple la IA en pot preparar
+  poc: el que lliura la casa són béns i serveis, no documents.
+
+**Fet (10/10/2026, decidit per l'Àlvar):**
+- **Tipus de negoci** a `ENTREGABLES`: `pressupost`, `proposta` i `resposta`
+  (a una consulta) els pot preparar la màquina; encara sense eina a l'app (es
+  fan una per una, mesurant), i al repositori del client els prepara `/tasca`
+  amb `cal` i `surt`.
+- **Els diners tenen tipus i no surten d'una màquina** (`cobrament`, «Factura o
+  cobrament»): «pagament», «cobrament» i «factura» ja no porten a `comanda`, i
+  `comanda` agafa també «comandes». Ho vigila la guarda 18 de
+  `SOS/tools/check-entregables.js` (veda 163).
+- Al celler d'exemple segueix sortint 1 de 15: el que lliura la casa són béns i
+  serveis, i és la resposta honesta.
 
 **Pendent de l'Àlvar:**
-- **Tipus de lliurament de negoci** (pressupost, proposta, resposta a una
-  consulta…) a `ENTREGABLES` de `SOS/index.html`, la font única. Sense, en un
-  negoci la IA gairebé no pot preparar res.
-- **Treure «pagament», «cobrament» i «factura» de la pista de `comanda`:** un
-  pagament no es redacta (ho va trobar la revisió).
 - **Provar la sessió 0 amb el primer pilot** (teamtowershuma).
+- **La portada del mapa de valor** encara compta pagaments com a feina de
+  màquina (`PISTES` de `SOS/tools/build-mapavalor.js`): alinear-la amb la regla
+  baixa el número públic de 5 a 2 i cal reescriure «comandes, reserves,
+  liquidacions».
+- **Eines a l'app per als tipus de negoci**, una per una i començant pel
+  pressupost (sense sumar i sense cap preu que no surti de la tarifa).
 
 **Per fer:** llegir PDF i Word. El telèfon de l'empresa ja és un camp de la
 web (`cerebro/marca.json`, `contacte.telefon`) i pot sortir als continguts.

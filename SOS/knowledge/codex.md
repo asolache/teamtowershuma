@@ -5133,3 +5133,27 @@ ser d'algú, es bloqueja, no s'avisa.
 
 El mateix val per a la xarxa: l'importador només llegeix la web d'un domini
 que s'ha dit en veu alta (`--autoritzat`), i el permís escrit va al CRM.
+
+## Veda 163 — Una pista de més no es desfà; una de menys, sí
+
+**Après el 10/10/2026, afegint a la taxonomia els tipus de negoci** (pressupost,
+proposta, resposta a una consulta) que l'Àlvar va decidir.
+
+Les pistes (`ENTREGABLE_HINTS`) són trossos de paraula i guanya la primera.
+Una pista que falla per curta deixa un flux sense tipus, i una persona li posa
+el tipus a mà. Una pista que falla per llarga és pitjor: a l'app, triar «Cap»
+torna a deduir el tipus de l'etiqueta, i el flux torna a ser de la màquina.
+**El que es pot corregir a mà ha de ser l'error per defecte.** Per això les
+pistes de negoci són estretes: «el pressupost» sí, «aprovació del pressupost»,
+«pressupost municipal» o «encàrrec i pressupost», no.
+
+I els diners tenen tipus, però no surten d'una màquina. «Factura» i «pagament»
+eren pistes de la comanda, i una factura acabava sent feina de màquina. Treure
+la pista no n'hi havia prou: un flux sense tipus es pot classificar com a
+comanda. Un tipus propi amb `maquina:false` diu el motiu en veu alta —una
+factura és un document fiscal i un cobrament és un fet; redactar-los seria fer
+veure que s'ha facturat o cobrat—, i la guarda 18 executa les pistes de debò
+contra etiquetes escrites a mà perquè cap fila nova al lloc equivocat ho torni
+a obrir. És la mateixa forma que l'`acord`: el que és criteri o fet d'algú no
+es deixa fora de la llista, s'hi posa amb el seu motiu.
+

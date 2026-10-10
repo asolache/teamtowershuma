@@ -369,13 +369,11 @@ que surt ja parla com ell. No es promet res que no s'hagi escrit i acordat.
 
 **El que queda obert:**
 
-- **Els tipus de lliurament són de comunitat** (acta, informe, convocatòria,
-  comanda…). En un negoci, pressupostos, propostes o respostes a consultes no
-  hi encaixen, i al celler d'exemple la IA no en pot preparar cap: és la
-  resposta honesta. Afegir-hi tipus és una decisió del SOS (`SOS/index.html`),
-  no d'aquesta eina.
-- **«pagament» i «factura» porten a `comanda`**, i un pagament no es redacta.
-  Proposat al backlog.
+- **Fet (10/10/2026): els tipus de negoci.** `pressupost`, `proposta` i
+  `resposta` (a una consulta) els pot preparar la màquina, i els diners
+  (`cobrament`: factures, pagaments i cobraments) tenen tipus però no surten
+  d'una màquina. Al celler d'exemple segueix sortint 1 de 15: el que lliura la
+  casa són béns i serveis, i és la resposta honesta.
 - **PDF i Word** no es llegeixen: es llisten perquè els llegeixi la IA.
 
 ## 4 · La IA, pagada per ús

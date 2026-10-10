@@ -476,6 +476,47 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   else ok('i una dada d\'una persona treu el botó d\'acceptar, no només avisa');
 })();
 
+/* 18 · L'ORDRE DE LES PISTES · cap diner arriba a una màquina per una pista.
+        Són substrings i guanya la primera: una fila nova al lloc equivocat fa
+        preparable una factura i no peta res. Per això s'executa el bloc de
+        debò —és autocontingut: és el mateix que es copia al kit— contra
+        etiquetes escrites a mà. Decidit el 10/10/2026: un pagament no es
+        redacta, i una factura és un document fiscal. */
+(() => {
+  const i = APP.indexOf('const ENTREGABLES=['), h = APP.indexOf('const ENTREGABLE_HINTS=[');
+  if (i < 0 || h < 0) { bad('no es poden llegir la taula i les pistes'); return; }
+  const font = APP.slice(i, APP.indexOf('\n];', h) + 3);
+  /* Res de lookbehind: un Safari anterior al 16.4 no el compila i para tot
+     l'script, i aquest bloc es copia tal qual a vna-suport.html i al kit. */
+  if (/\(\?<[=!]/.test(font)) { bad('una pista fa servir lookbehind `(?<`: en un Safari anterior al 16.4 l\'app no arrenca'); return; }
+  let R;
+  try { R = new Function(font + '\nreturn{ENTREGABLES,ENTREGABLE_HINTS};')(); }
+  catch (e) { bad('la taula o les pistes no s\'executen: ' + e.message); return; }
+  const tipus = l => (R.ENTREGABLE_HINTS.find(e => e[0].test(l)) || [])[1] || null;
+  const maq = l => { const t = tipus(l); return !!t && R.ENTREGABLES.find(e => e.id === t).maquina; };
+  // Els diners tenen tipus, i el seu tipus no surt d'una màquina.
+  const DINERS = ['la factura', 'el pagament', 'el cobrament de la quota', 'el pago', 'el cobro',
+    'factura i suport', 'pagament del pressupost', 'proposta i pagament'];
+  // Diner públic, decisions, queixes i vistiplaus: cap pista els porta a una màquina.
+  const MAI = ['encàrrec i pressupost', 'pressupost i comptes', 'pressupostos participatius',
+    'presupuestos participativos', 'pressupost municipal', 'aprovació del pressupost', "proposta d'acord",
+    'proposta econòmica', 'resposta a la reclamació', 'resposta a la consulta pública', 'serveis i resposta',
+    'confirmació del servei rebut', 'el vistiplau signat', 'contractació pública responsable'];
+  const SI = { 'el pressupost': 'pressupost', 'el pressupost del grup': 'pressupost', 'el presupuesto': 'pressupost',
+    'la proposta de servei': 'proposta', 'propuesta comercial': 'proposta', 'resposta a una consulta': 'resposta',
+    'respuesta al cliente': 'resposta', 'acta de la reunió mensual': 'acta', 'liquidació de vendes': 'comanda',
+    'la comanda i el pagament': 'comanda', 'comandes estables i pagament just': 'comanda',
+    'la convocatòria de la verema': 'convocatoria', 'inventari del material': 'inventari' };
+  const CAP = ['una cosa rara', "una cosa que no s'assembla a res", 'el paperot de cada mes',
+    'el vi, la verema i el celler obert', 'la visita, el tast i el relat de la casa'];
+  const fuites = DINERS.filter(l => !tipus(l) || maq(l)).concat(MAI.filter(maq));
+  const mal = Object.keys(SI).filter(l => tipus(l) !== SI[l]).concat(CAP.filter(l => tipus(l)));
+  if (fuites.length) bad('diners o decisions que una pista porta a una màquina, o diners sense tipus: ' + fuites.map(l => `«${l}» → ${tipus(l)}`).join(' · '));
+  else ok(`${DINERS.length + MAI.length} etiquetes de diners, diner públic, decisió o queixa: cap arriba a una màquina, i els diners són de persona`);
+  if (mal.length) bad('pistes que ja no classifiquen el que han de classificar: ' + mal.map(l => `«${l}» → ${tipus(l)}`).join(' · '));
+  else ok(`i les ${Object.keys(SI).length + CAP.length} de control surten on toca: les de negoci, les de sempre i les que no diuen res`);
+})();
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a la taxonomia d'entregables.`
   : '\n✅ La taxonomia quadra i la màquina no pot tocar cap intangible.');
 process.exit(fails ? 1 : 0);
