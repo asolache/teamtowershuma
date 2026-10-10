@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 287 · 18235 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 287 · 18238 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 7 · 91 KB |
@@ -22,8 +22,8 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
-| `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 60 KB |
-| `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 178 KB |
+| `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 74 KB |
+| `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 192 KB |
 | `netlify/` | Funcions del web públic: el proxy d'IA (edge) i el formulari que entra al CRM (submission-created) | 4 · 18 KB |
 
 ## prova
@@ -34,7 +34,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 31 KB |
 | `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 109 · 1429 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1313 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1315 KB |
 
 ## saber
 
@@ -42,7 +42,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 51 · 997 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 51 · 998 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 9 · 18 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 332 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |

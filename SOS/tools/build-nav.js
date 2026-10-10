@@ -505,13 +505,28 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
      sent correcta a la vista. Era l'última costura que es veia mirant. */
   'vna.html'];
 
-const esLloc = p => PORTADES.indexOf(p) >= 0 || PAGINES_LLOC.indexOf(p) >= 0;
+/* ══ LES CARPETES DEL LLOC (10/10/2026) ═══════════════════════════════════
+   Les dues pàgines de «La teva web» viuen a la seva carpeta (`index.html` a
+   dins) i són esborranys **només en castellà**: no tenen diccionari ni
+   selector de llengua. Fins avui portaven una capçalera i un peu escrits a mà,
+   i la barra i el peu que els toquen hi han d'arribar **en castellà i sense
+   claus**: la versió catalana amb claus que les altres canvien amb el seu
+   diccionari aquí es quedaria en català sobre una pàgina en castellà. El dia
+   que tinguin la versió catalana, passen a `AMB_LLENGUA` com la resta.
+
+   La clau és l'adreça i no el fitxer: és com les nomena `LLOC`, i així la
+   pàgina actual es reconeix sense cap cas a part. */
+const CARPETES = { '/mapa-web/': 'mapa-web/index.html', '/conecta/': 'conecta/index.html' };
+const llenguaDe = p => (CARPETES[p] ? 'es' : 'ca');
+
+const esLloc = p => PORTADES.indexOf(p) >= 0 || PAGINES_LLOC.indexOf(p) >= 0 || !!CARPETES[p];
 function nav(pagina) {
-  const lloc = esLloc(pagina);
+  const lloc = esLloc(pagina), ll = llenguaDe(pagina);
   const grups = lloc ? LLOC : SOS_GRUPS, cta = lloc ? CTA : SOS_CTA, marca = lloc ? MARCA : SOS_MARCA;
   /* La barra del SOS no porta claus de traducció: les seves pàgines no tenen
-     diccionari, i una clau sense entrada només fa soroll a les guardes. */
-  const i18n = k => lloc ? ` data-i18n="${k}"` : '';
+     diccionari, i una clau sense entrada només fa soroll a les guardes. Les
+     carpetes tampoc: ja surten escrites en la seva llengua. */
+  const i18n = k => lloc && ll === 'ca' ? ` data-i18n="${k}"` : '';
   const jo = hrefDe(pagina);
   const aqui = h => hrefDe(h) === jo;
   const grup = g => {
@@ -529,7 +544,7 @@ function nav(pagina) {
        perdre la traducció pel camí. */
     return `<details class="tn-g${dins ? ' tn-here' : ''}"><summary>`
       + `<i class="tn-i" aria-hidden="true">${g.ic}</i>`
-      + `<span${i18n('nv.g.' + g.id)}>${esc(txt(g.lbl, 'ca'))}</span></summary>` +
+      + `<span${i18n('nv.g.' + g.id)}>${esc(txt(g.lbl, ll))}</span></summary>` +
       `<div class="tn-p">` + g.links.map(([h, t, d]) => {
         const id = clauDe(h);
         /* Els destins de l'altra casa porten `rel` i una fletxa: qui el prem
@@ -538,8 +553,8 @@ function nav(pagina) {
            sentits i obrir-ne una de nova faria pensar que és un lloc de fora. */
         const f = esFora(h);
         return `<a href="${hrefDe(h)}"${f ? ' rel="noopener"' : ''}${aqui(h) ? ' aria-current="page"' : ''}>`
-          + `<b${i18n('nv.t.' + id)}>${esc(txt(t, 'ca'))}</b>`
-          + `<span${i18n('nv.d.' + id)}>${esc(txt(d, 'ca'))}</span>`
+          + `<b${i18n('nv.t.' + id)}>${esc(txt(t, ll))}</b>`
+          + `<span${i18n('nv.d.' + id)}>${esc(txt(d, ll))}</span>`
           + (f ? '<i class="tn-f" aria-hidden="true">molekulon.org ↗</i>' : '') + `</a>`;
       }).join('') + `</div></details>`;
   };
@@ -551,7 +566,7 @@ function nav(pagina) {
      afegir a cada passada i el fitxer creixia amb una còpia més: el generador
      petava contra la seva pròpia sortida. */
   return OBRE + '\n' + CSS + '\n' +
-    `<nav class="tt-nav" aria-label="Navegació del lloc">\n` +
+    `<nav class="tt-nav" aria-label="${ll === 'es' ? 'Navegación del sitio' : 'Navegació del lloc'}">\n` +
     `  <a class="tn-brand" href="${marca[0]}">${esc(marca[1])}<span>${esc(marca[2])}</span>${marca[3] ? ' ' + esc(marca[3]) : ''}</a>\n` +
     (lloc ? '' : `  <a class="tn-casa" href="/">TeamTowers</a>\n`) +
     /* ── EL «MENÚ» DE MÒBIL, I PER QUÈ PORTA SCRIPT (05/10/2026) ──────────
@@ -581,7 +596,7 @@ function nav(pagina) {
     `  <div class="tn-gs" id="tt-gs">${grups.map(grup).join('')}</div>\n` +
     llengua +
     `  <a class="tn-cta" href="${cta[0]}"${jo === cta[0] ? ' aria-current="page"' : ''}>`
-    + `<span${i18n('nv.cta')}>${esc(txt(cta[1], 'ca'))}</span> →</a>\n` +
+    + `<span${i18n('nv.cta')}>${esc(txt(cta[1], ll))}</span> →</a>\n` +
     `</nav>\n` + JS + '\n' + TANCA;
 }
 
@@ -786,29 +801,30 @@ const PEU_CSS = `<style>
 </style>`;
 
 function peu(pagina) {
-  const lloc = esLloc(pagina);
+  const lloc = esLloc(pagina), ll = llenguaDe(pagina);
   /* Les claus són **les de la barra** (`nv.g.*`, `nv.t.*`): el peu no porta cap
      text que la barra no tingui ja traduït, i per tant no hi ha cap clau nova
      que pugui quedar-se sense entrada. L'única és el correu. */
-  const i18n = k => lloc ? ` data-i18n="${k}"` : '';
+  const i18n = k => lloc && ll === 'ca' ? ` data-i18n="${k}"` : '';
   const jo = hrefDe(pagina);
   const col = g => {
     const primerFora = g.links.findIndex(l => esFora(l[0]));
     const ls = g.links.filter((l, i) => !esFora(l[0]) || i === primerFora);
-    return `<div class="tp-col"><p class="tp-g"><span${i18n('nv.g.' + g.id)}>${esc(txt(g.lbl, 'ca'))}</span></p><ul>`
+    return `<div class="tp-col"><p class="tp-g"><span${i18n('nv.g.' + g.id)}>${esc(txt(g.lbl, ll))}</span></p><ul>`
       + ls.map(([h, t]) => {
         const f = esFora(h);
         return `<li><a href="${hrefDe(h)}"${f ? ' rel="noopener"' : ''}${hrefDe(h) === jo ? ' aria-current="page"' : ''}>`
-          + `<span${i18n('nv.t.' + clauDe(h))}>${esc(txt(t, 'ca'))}</span>${f ? '&nbsp;↗' : ''}</a></li>`;
+          + `<span${i18n('nv.t.' + clauDe(h))}>${esc(txt(t, ll))}</span>${f ? '&nbsp;↗' : ''}</a></li>`;
       }).join('') + `</ul></div>`;
   };
   const marca = lloc
     ? `<a class="tp-logo" href="/">Team<b>Towers</b> Humà</a>`
-      + `<p class="tp-lema">Força · Equilibri · Valor · Seny</p>`
+      /* El lema és de la marca i es diu en català a totes dues llengües. */
+      + `<p class="tp-lema"${ll === 'ca' ? '' : ' lang="ca"'}>Força · Equilibri · Valor · Seny</p>`
       /* El correu va ofuscat: les pàgines que tenen el script (`.js-mail`)
          el munten en temps d'execució, i a la resta l'enllaç porta a qui som,
          que és on es diu a qui s'escriu. */
-      + `<a class="tp-mail js-mail" href="/qui-som"><span${i18n('nv.peu.mail')}>Escriu-nos</span></a>`
+      + `<a class="tp-mail js-mail" href="/qui-som"><span${i18n('nv.peu.mail')}>${ll === 'es' ? 'Escríbenos' : 'Escriu-nos'}</span></a>`
     : `<a class="tp-logo" href="/SOS/">El <b>SOS</b></a>`
       + `<p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p>`
       + `<a class="tp-casa" href="/">← TeamTowers Humà</a>`;
@@ -825,7 +841,7 @@ function peu(pagina) {
    diria que hi és i la dels vedes que la pàgina no correspon al codex. Per això
    el menú s'exporta i el generador dels vedes l'aplica ell mateix — una sola
    declaració, dos que la fan servir. */
-module.exports = { posa, nav, peu, PEU_CSS, PAGINES, PAGINES_LLOC, EXCEPCIONS, FORA_DEL_MENU, GRUPS, LLOC, SOS_GRUPS, CTA, SOS_CTA, EINES };
+module.exports = { posa, nav, peu, PEU_CSS, PAGINES, PAGINES_LLOC, CARPETES, EXCEPCIONS, FORA_DEL_MENU, GRUPS, LLOC, SOS_GRUPS, CTA, SOS_CTA, EINES };
 if (require.main !== module) return;
 
 let fails = 0;
@@ -1016,6 +1032,18 @@ PAGINES.forEach(p => {
   if (CHECK && totesBe) ok(`i les ${PORTADES.length} pàgines d'arrel porten la mateixa barra`);
 }
 
+/* I les dues carpetes, sense diccionari: la barra i el peu ja hi van escrits
+   en castellà (`llenguaDe`). */
+Object.entries(CARPETES).forEach(([adr, rel]) => {
+  const f = join(ARREL, rel);
+  if (!existsSync(f)) { bad(`${adr} és a CARPETES i no existeix ${rel}`); return; }
+  const html = readFileSync(f, 'utf8');
+  const nou = posa(html, adr);
+  if (nou === null) { bad(`${rel} no té <body> o les marques del peu ${P_OBRE} … ${P_TANCA}`); return; }
+  if (CHECK) { if (nou !== html) bad(`${rel} no porta la barra declarada, o l'ha canviada pel seu compte`); }
+  else if (nou !== html) { writeFileSync(f, nou); tocades++; }
+});
+
 /* ── Cap pàgina publicada i no enllaçada des d'enlloc ──────────────────────
    És un dels errors que la guia de marca documenta, i el més fàcil de cometre:
    la pàgina existeix, es va fer amb ganes, i no hi arriba ningú. Aquí es compta
@@ -1054,7 +1082,8 @@ if (CHECK) {
    Cada una és un defecte que avui es podia cometre en silenci, i tres d'elles
    són el que va passar de debò mentre es feia aquesta unificació. */
 if (CHECK) {
-  const TOTES = PORTADES.map(p => [join(ARREL, p), p]).concat(PAGINES.map(p => [join(SOS, p), p]));
+  const TOTES = PORTADES.map(p => [join(ARREL, p), p]).concat(PAGINES.map(p => [join(SOS, p), p]),
+    Object.values(CARPETES).map(p => [join(ARREL, p), p]));
 
   /* 1 · Cap pàgina declara la seva barra. És la regla que fa que «un únic
      menú» segueixi sent veritat d'aquí a sis mesos: sense ella, qualsevol
