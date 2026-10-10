@@ -6097,11 +6097,17 @@ const modalOpen=()=>{const r=$('#modalRoot');return !!(r&&r.querySelector('.moda
    que algú hi posi una variable. Per això s'escapa tot i es tornen a obrir
    només dues etiquetes, que són les úniques que aquest text fa servir. */
 const richText=s=>esc(s).replace(/&lt;(\/?)(strong|em)&gt;/g,'<$1$2>');
-function openOnboardingTour(retry){
+/* El tour curt (pla-millora-sos.md, punt 3). Ja no surt sol en arribar: sis
+   pantalles abans de tocar res és el que feia que se'l saltés tothom. Ara
+   s'ofereix a la benvinguda, just després de crear el perfil, i en tres: el
+   que ja s'ha fet (entrar i fer-se el perfil) no cal explicar-ho. Sencer
+   segueix sortint quan algú el demana, des de la guia o la cerca. */
+function openOnboardingTour(o){
+  o=o||{};const retry=o.retry||0;
   if(modalOpen()){
     // Reintenta amb calma, i es rendeix si la persona segueix ocupada: ja
     // trobarà la guia al llançador quan li vagi bé.
-    if((retry||0)<10)setTimeout(()=>openOnboardingTour((retry||0)+1),1500);
+    if(retry<10)setTimeout(()=>openOnboardingTour({curt:o.curt,retry:retry+1}),1500);
     return false;
   }
   /* ═══════════ V76 · La frase que ja estava escrita ═══════════
@@ -6114,11 +6120,11 @@ function openOnboardingTour(retry){
      (veda 77): no es recluta, es reconeix. «Ja ho ets» diu el mateix que
      «apunta't» i no demana el mateix. */
   const steps=[
-    {ic:'✦',t:'Cada persona és un univers',
+    {ic:'✦',t:'Cada persona és un univers',curt:1,
      b:'Cada vegada que neix un ésser humà es crea un nou univers. De vegades molts d\'aquests éssers s\'uneixen en una <strong>aventura comuna</strong>. Això és el que aquí en diem un node — i no cal que et diguis res de res per formar-ne part: <strong>ja hi eres</strong>.'},
     {ic:'🏚',t:'El problema que ja coneixes',
      b:'«Sempre tirem els mateixos quatre.» «Tenim mil coses i no sabem qui té què.» «Vam decidir-ho fa dos anys i ningú se\'n recorda.» El SOS no és una xarxa social: és la comptabilitat del que una comunitat es dona a si mateixa.',cta:null},
-    {ic:'⇄',t:'Com funciona · el bucle',
+    {ic:'⇄',t:'Com funciona · el bucle',curt:1,
      b:'1 · Es dibuixa qui aporta què a qui (mapa de valor). 2 · Cada aportació real es registra i se signa. 3 · El sistema casa qui ofereix amb qui necessita. 4 · El valor acumulat es reparteix segons el que cadascú hi ha posat. Tot al teu navegador: sense servidor i sense compte.',cta:null},
     /* Aquest pas era un selector de sis rols, i el contestava algú que encara no
        havia fet res. Ara explica el mapa: entres per un lloc, i els altres es
@@ -6129,10 +6135,10 @@ function openOnboardingTour(retry){
     {ic:'🦸',t:'El primer pas concret',
      b:'Nom, població, el que saps fer i el que poses en comú. Cinc minuts. <strong>No estàs donant-te d\'alta de res: estàs deixant que et puguin trobar.</strong> A partir d\'aquí el sistema ja pot casar el que saps fer amb qui ho necessita.',
      cta:{label:'✦ Crea el meu perfil',fn:async()=>{await markOnboardingDone();closeModal();openSuperheroiOnboarding();}}},
-    {ic:'🧭',t:'Mai estaràs perdut/da',
+    {ic:'🧭',t:'Mai estaràs perdut/da',curt:1,
      b:'A cada pantalla hi ha una guia que diu quin valor hi circula, què et toca fer ara i què hi fa el teu rol. I la guia completa del teu camí és sempre a un clic.',
      cta:{label:'🧭 Obre la meva guia',fn:async()=>{await markOnboardingDone();closeModal();openGuide(activeRoleId());}}}
-  ];
+  ].filter(s=>!o.curt||s.curt);
   let i=0;
   const draw=()=>{
     const s=steps[i];
@@ -11124,8 +11130,7 @@ const ENTREGABLES=[
    que:'Com s\'explica a fora el que fa un node o una dinàmica.',
    cal:['què ofereix','a qui','com s\'hi arriba'],
    surt:'Fitxa breu per al directori, sense cap dada personal.'},
-  /* Els de negoci (10/10/2026): encara sense eina a l'app —una per una,
-     mesurant—; al repositori del client, /tasca els prepara amb `cal` i `surt`. */
+  /* Els de negoci (veda 163): sense eina a l'app encara; al kit, /tasca. */
   {id:'pressupost',nom:'Pressupost',ic:'🧮',maquina:true,
    que:'Què es lliurarà i en quina quantitat, perquè qui el rep ho valori abans de dir que sí.',
    cal:['què demana qui el rep','conceptes i quantitats','tarifa publicada, si n\'hi ha'],
@@ -11145,9 +11150,7 @@ const ENTREGABLES=[
    que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
    cal:['debat','vots','qui ho sosté'],
    surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'},
-  /* Els diners (10/10/2026): una factura és un document fiscal i un cobrament
-     és un fet; redactar-los seria fer veure que s'ha facturat o cobrat. Abans
-     eren pistes de la comanda, que ara només en fa la llista. */
+  /* Els diners (veda 163): redactar-los seria fer veure que s'ha cobrat. */
   {id:'cobrament',nom:'Factura o cobrament',ic:'💶',maquina:false,
    que:'Diners que es cobren o es paguen, i el document que en dona fe. No és el que es demana: és el que es cobra.',
    cal:['import','document fiscal','qui ho cobra'],
@@ -11161,10 +11164,8 @@ const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
    automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
    s'ha de produir.
 
-   L'ordre és la regla: guanya la primera. Les de negoci comencen l'etiqueta i
-   cap paraula de diners, decisió, queixa, llei, diner públic o salut no les
-   deixa passar: una pista de menys es corregeix a mà; una de més, no (veda
-   163). Els diners que encapçalen van primer. Res de lookbehind: Safari <16.4. */
+   Guanya la primera. Les de negoci, estretes i amb PISTA_MAI (veda 163). Res
+   de lookbehind: Safari <16.4 no el compila. */
 const PISTA_MAI='factur|pagament|cobrament|\\bpag(o|os)\\b|\\bcobros?\\b|rebut|recibo|acord|acuerdo|decisi|decidi|vot|aprova|aprob|accept|acept|signa|firma|resoluci|reclamaci|queix|queja|demanda|den[uú]nci|recurs|requeri|legaci|sanci|multa|inspecci|jur[ií]dic|legal|advoca|abogad|laboral|assetja|acoso|p[uú]blic|ciutad|ciudad|municip|ajuntament|ayuntamiento|govern|gobierno|diputaci|generalitat|ministeri|hisenda|hacienda|tribut|fiscal|participati|m[eèé]dic|metge|pacient|salu[td]|sanit|cl[ií]nic|diagn|terap|tractament|tratamiento|psic|veterin';
 const pistaNegoci=(cap,mes)=>new RegExp('^((el|la|els|les|un|una|uns|unes|los|las|nou|nova|nous|noves|nuevo|nueva|nuevos|nuevas) )*'+cap+'(?!.*('+PISTA_MAI+(mes?'|'+mes:'')+'))','i');
 const ENTREGABLE_HINTS=[
@@ -20600,6 +20601,14 @@ function openWelcomeModal(name){
     b.style.marginTop='.5rem';b.onclick=()=>{closeModal();w.seguent.act();};
     box.appendChild(b);
   }
+  /* El tour, ara que ja ha fet el primer pas: és quan hi ha ganes de saber què
+     més hi ha. S'ofereix i prou, i només a qui encara no l'ha vist. */
+  shouldRunOnboarding().then(cal=>{
+    if(!cal||!bg.isConnected)return;
+    const t=el('button','btn btn-ghost btn-sm','✦ Com funciona tot això · 3 pantalles');t.id='wcTour';
+    t.style.marginTop='.5rem';t.onclick=()=>{closeModal();openOnboardingTour({curt:true});};
+    box.appendChild(t);
+  });
   bg.querySelector('#wcLater').onclick=closeModal;
   bg.querySelector('#wcGo').onclick=()=>{closeModal();if(w.matches.length)routeTo('pings');else openElementModal(name);};
 }
@@ -22995,16 +23004,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
   // Càrrega inicial de l'atles (una vegada): perquè els centres oficials hi siguin sense fer res.
   // Només sobre http(s) — en obrir el fitxer amb file:// el navegador bloqueja el fetch.
   try{if(/^https?:$/.test(location.protocol)){const all=await dbGetAll();if(!all.find(n=>n.id==='__atlespull')){const t=await updateAtles(true);await dbPut({id:'__atlespull',type:'meta',at:now()});if(t)toast('Atles carregat · '+t+' entitats oficials. Obre 🌐 Directori.');}}}catch(e){}
-  /* El tour de benvinguda no pot tapar una invitació. Qui obre un enllaç de
-     sincronització en un dispositiu on el SOS és nou ve a fer una cosa
-     concreta; la presentació ja la veurà després. */
-  try{
-    const invited=parseRoute(location.hash).kind==='sync';
-    if(!invited&&await shouldRunOnboarding())setTimeout(async()=>{
-      if(parseRoute(location.hash).kind==='sync')return;
-      if(await shouldRunOnboarding())openOnboardingTour();
-    },400);
-  }catch(e){}
+  /* Aquí s'obria el tour sol, abans de res. Ja no: qui arriba veu la portada
+     i el botó d'apuntar-s'hi, i el tour se li ofereix a la benvinguda, quan
+     ja ha creat el perfil (vegeu `openOnboardingTour`). */
 })();
 </script>
 </body>

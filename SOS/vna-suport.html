@@ -5039,8 +5039,7 @@ const ENTREGABLES=[
    que:'Com s\'explica a fora el que fa un node o una dinàmica.',
    cal:['què ofereix','a qui','com s\'hi arriba'],
    surt:'Fitxa breu per al directori, sense cap dada personal.'},
-  /* Els de negoci (10/10/2026): encara sense eina a l'app —una per una,
-     mesurant—; al repositori del client, /tasca els prepara amb `cal` i `surt`. */
+  /* Els de negoci (veda 163): sense eina a l'app encara; al kit, /tasca. */
   {id:'pressupost',nom:'Pressupost',ic:'🧮',maquina:true,
    que:'Què es lliurarà i en quina quantitat, perquè qui el rep ho valori abans de dir que sí.',
    cal:['què demana qui el rep','conceptes i quantitats','tarifa publicada, si n\'hi ha'],
@@ -5060,9 +5059,7 @@ const ENTREGABLES=[
    que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
    cal:['debat','vots','qui ho sosté'],
    surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'},
-  /* Els diners (10/10/2026): una factura és un document fiscal i un cobrament
-     és un fet; redactar-los seria fer veure que s'ha facturat o cobrat. Abans
-     eren pistes de la comanda, que ara només en fa la llista. */
+  /* Els diners (veda 163): redactar-los seria fer veure que s'ha cobrat. */
   {id:'cobrament',nom:'Factura o cobrament',ic:'💶',maquina:false,
    que:'Diners que es cobren o es paguen, i el document que en dona fe. No és el que es demana: és el que es cobra.',
    cal:['import','document fiscal','qui ho cobra'],
@@ -5076,10 +5073,8 @@ const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
    automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
    s'ha de produir.
 
-   L'ordre és la regla: guanya la primera. Les de negoci comencen l'etiqueta i
-   cap paraula de diners, decisió, queixa, llei, diner públic o salut no les
-   deixa passar: una pista de menys es corregeix a mà; una de més, no (veda
-   163). Els diners que encapçalen van primer. Res de lookbehind: Safari <16.4. */
+   Guanya la primera. Les de negoci, estretes i amb PISTA_MAI (veda 163). Res
+   de lookbehind: Safari <16.4 no el compila. */
 const PISTA_MAI='factur|pagament|cobrament|\\bpag(o|os)\\b|\\bcobros?\\b|rebut|recibo|acord|acuerdo|decisi|decidi|vot|aprova|aprob|accept|acept|signa|firma|resoluci|reclamaci|queix|queja|demanda|den[uú]nci|recurs|requeri|legaci|sanci|multa|inspecci|jur[ií]dic|legal|advoca|abogad|laboral|assetja|acoso|p[uú]blic|ciutad|ciudad|municip|ajuntament|ayuntamiento|govern|gobierno|diputaci|generalitat|ministeri|hisenda|hacienda|tribut|fiscal|participati|m[eèé]dic|metge|pacient|salu[td]|sanit|cl[ií]nic|diagn|terap|tractament|tratamiento|psic|veterin';
 const pistaNegoci=(cap,mes)=>new RegExp('^((el|la|els|les|un|una|uns|unes|los|las|nou|nova|nous|noves|nuevo|nueva|nuevos|nuevas) )*'+cap+'(?!.*('+PISTA_MAI+(mes?'|'+mes:'')+'))','i');
 const ENTREGABLE_HINTS=[
