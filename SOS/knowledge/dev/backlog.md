@@ -44,6 +44,25 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
 
+> **Pla de disseny (10/10/2026):** `pla-disseny.md`. Cinc costures mesurades
+> (mides sota el terra, àlies de la pell vella, components copiats a mà, les
+> pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
+> quatre fases, cadascuna amb la seva guarda.
+
+### Dues barres: el lloc i el SOS · la portada amb tres serveis (10/10/2026)
+
+**Fet.** Demanat per l'Àlvar: que la portada parli de tres serveis —el
+diagnòstic i la millora amb el mapa de valor, el desenvolupament web i el SOS
+com a formació acció— i que tot el SOS quedi a dins del SOS i dels seus menús.
+
+- `build-nav.js` declara **dues barres**: `LLOC` (Mapa de valor · La teva web ·
+  SOS i formació · Qui som, i «Fes el diagnòstic») i `SOS_GRUPS` (Les eines ·
+  Aprèn · Molekulon, i «Obre el SOS», amb tornada a la portada). Quina barra
+  porta cada pàgina ho diu `PAGINES_LLOC`.
+- La portada: «Tres serveis» just després del hero, en lloc de «Tres camins».
+- Pendent: `/mapa-web/` i `/conecta/` encara no porten la barra ni la pell
+  (fase 1 del pla de disseny, la porta el fil del servei web).
+
 ### L'editor del mapa · pantalla completa i els patrons del flux (09/10/2026)
 
 **Fet.** Demanat per l'Àlvar: que `/sos/vna-suport` es presenti com l'eina per

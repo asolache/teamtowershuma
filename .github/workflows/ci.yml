@@ -264,6 +264,14 @@ jobs:
         run: node SOS/tools/build-nav.js --check
       - name: Guarda de l'embut (per on començar a les pàgines públiques)
         run: node SOS/tools/build-embut.js --check
+      # La paleta es declara un cop a build-pell.js. Fins al 10/10/2026 aquesta
+      # guarda no corria al CI i /vedes es publicava sense cap color de la pell.
+      - name: Guarda de la pell (una paleta a totes les pàgines)
+        run: node SOS/tools/build-pell.js --check
+      # El terra de 15 px (--t0) a les pàgines que venen les tres ofertes: el
+      # 10/10/2026 n'hi havia 325 mides per sota, escrites a mà, i cap guarda.
+      - name: Guarda del terra (cap text per sota de 15 px a les pàgines que venen)
+        run: node SOS/tools/check-terra.js
 
       # Les pàgines amb mapa de valor comparteixen el vocabulari del perfil i la
       # clau on es desa: qui l'omple en una, el porta posat a l'altra. Si una

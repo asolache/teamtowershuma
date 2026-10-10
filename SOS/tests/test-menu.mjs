@@ -21,7 +21,7 @@ import { createRequire } from 'node:module';
 const DIR = dirname(fileURLToPath(import.meta.url));
 const ARREL = join(DIR, '..', '..');
 const req = createRequire(import.meta.url);
-const { GRUPS, PAGINES, EXCEPCIONS } = req('../tools/build-nav.js');
+const { GRUPS, LLOC, SOS_GRUPS, PAGINES, EXCEPCIONS } = req('../tools/build-nav.js');
 
 const url = p => 'file://' + join(ARREL, p);
 let pass = 0, fail = 0;
@@ -73,12 +73,15 @@ console.log('\n1 · La mateixa a /, a /cataleg i a /SOS/vna.html');
 const A = await llegeix('index.html');
 const V = await llegeix('SOS/vna.html');
 const C = await llegeix('cataleg.html');
+/* I la barra del SOS, des del 10/10/2026 la segona: les eines a dins del SOS. */
+const M = await llegeix('SOS/matriu.html');
 {
   ok(A.d && V.d && C.d, 'les tres porten una barra `nav.tt-nav`');
   const forma = x => JSON.stringify(x.d.portes);
   ok(forma(A) === forma(V) && forma(A) === forma(C),
     `els mateixos ${A.d.portes.length} grups i els mateixos destins, en el mateix ordre`);
-  ok(A.d.portes.length === 5, `i són cinc portes: ${A.d.portes.map(p => p.lbl).join(' · ')}`);
+  ok(A.d.portes.length === LLOC.length && LLOC.length === 4,
+    `i són quatre portes: tres ofertes i qui som · ${A.d.portes.map(p => p.lbl).join(' · ')}`);
   ok(A.d.marca === V.d.marca && A.d.cta === V.d.cta,
     `la mateixa marca («${A.d.marca}») i la mateixa acció (${A.d.cta})`);
   ok(A.d.barres === 1 && V.d.barres === 1 && C.d.barres === 1,
@@ -95,6 +98,23 @@ console.log('\n2 · El color no depèn de la pàgina');
   ok(!bu(A.d.colorMarca) && !bu(V.d.colorMarca),
     `la marca té color a les dues (${V.d.colorMarca})`);
   ok(A.d.colorMarca === V.d.colorMarca, 'i és el mateix color: un sol joc de tokens');
+  ok(A.d.colorMarca === M.d.colorMarca, 'i també a la barra del SOS');
+}
+
+/* ── 2b · TOT EL SOS A DINS DEL SOS (10/10/2026) ──────────────────────────
+   La cara pública parla de tres ofertes, i les eines del SOS una per una
+   només surten a la seva barra. */
+console.log('\n2b · Dues barres: el lloc i el SOS');
+{
+  const lloc = A.d.portes.flatMap(g => g.destins);
+  ['/SOS/matriu.html', '/SOS/banc-temps.html', '/SOS/habitatge.html', '/SOS/molekulandia.html']
+    .forEach(h => ok(!lloc.includes(h), `la barra del lloc no porta ${h}`));
+  ['/SOS/diagnostic.html', '/mapa-web/', '/SOS/', '/SOS/formacio.html']
+    .forEach(h => ok(lloc.includes(h), `i sí ${h}`));
+  ok(M.d.portes.length === SOS_GRUPS.length, `a /SOS/matriu: ${M.d.portes.map(p => p.lbl).join(' · ')}`);
+  ok(M.d.cta === '/SOS/', `l'acció del SOS és obrir-lo (${M.d.cta})`);
+  const casa = await M.pg.evaluate(() => (document.querySelector('.tt-nav .tn-casa') || {}).getAttribute?.('href'));
+  ok(casa === '/', 'i hi ha camí de tornada a la portada');
 }
 
 /* ── 3 · Les portes s'obren, i a mòbil també ────────────────────────────── */
@@ -111,7 +131,8 @@ console.log('\n3 · Prémer, sense que la prova faci l\'scroll per tu');
    damunt. Si una porta no s'assoleix sense lliscar res, això peta. */
 for (const [nom, p, w] of [['sobretaula', 'SOS/vna.html', 1280],
   ['mòbil estret', 'index.html', 360], ['mòbil', 'index.html', 390],
-  ['mòbil ample', 'SOS/vna.html', 414], ['tauleta', 'SOS/formacio.html', 768]]) {
+  ['mòbil ample', 'SOS/vna.html', 414], ['tauleta', 'SOS/formacio.html', 768],
+  ['mòbil estret, barra del SOS', 'SOS/matriu.html', 360]]) {
   const { pg, d } = await llegeix(p, w);
   /* L'alçada **tancada**, abans d'obrir res: amb el menú obert la barra creix
      a posta, i mesurar-la al final deia 280 px d'una barra que en fa 94. */
@@ -182,16 +203,16 @@ console.log('\n4 · Des de /vna, la casa és a un clic');
    la pantalla i no sobre la declaració: quina porta ensenya cada cosa. */
 console.log('\n4b · Molekulandia no és al calaix d\'eines');
 {
-  const porta = h => (V.d.portes.find(g => g.destins.includes(h)) || {}).lbl;
-  const sos = V.d.portes.find(g => /El SOS/.test(g.lbl));
-  const mon = V.d.portes.find(g => /Molekulon/.test(g.lbl));
-  ok(!!sos && !!mon, `hi ha una porta «El SOS» i una «Molekulon» · ${V.d.portes.map(p => p.lbl).join(' | ')}`);
+  const porta = h => (M.d.portes.find(g => g.destins.includes(h)) || {}).lbl;
+  const sos = M.d.portes.find(g => /eines/.test(g.lbl));
+  const mon = M.d.portes.find(g => /Molekulon/.test(g.lbl));
+  ok(!!sos && !!mon, `hi ha una porta «Les eines» i una «Molekulon» · ${M.d.portes.map(p => p.lbl).join(' | ')}`);
   ['/SOS/molekulandia.html', '/SOS/molekulon.html', '/SOS/escola.html', '/SOS/joc.html', '/SOS/uneix-te.html']
     .forEach(h => ok(porta(h) === mon.lbl, `${h} és a «${mon.lbl}» i no a cap altra · surt a «${porta(h)}»`));
   ['/SOS/matriu.html', '/SOS/banc-temps.html', '/SOS/online.html']
     .forEach(h => ok(porta(h) === sos.lbl, `${h} és a «${sos.lbl}» · surt a «${porta(h)}»`));
   /* I el Comando no hi és: la seva adreça fa 301 cap a l'altra casa. */
-  ok(!V.d.portes.flatMap(g => g.destins).some(h => /comando/.test(h)),
+  ok(!M.d.portes.flatMap(g => g.destins).some(h => /comando/.test(h)),
     'i cap destí de la barra porta a comando.html: la seva adreça fa 301 cap a molekulon.org');
 }
 
@@ -205,10 +226,10 @@ console.log('\n4c · Els destins de l\'altra casa es veuen que ho són');
   const doc = readFileSync(join(ARREL, 'SOS', 'knowledge', 'negoci', 'frontera-molekulon.md'), 'utf8');
   const declarades = ((doc.match(/MOLEKULON-PAGINES\n([\s\S]*?)```/) || [])[1] || '')
     .split('\n').map(x => x.trim()).filter(x => x.startsWith('/'));
-  const fora = V.d.portes.flatMap(g => g.destins).filter(h => /^https?:/.test(h));
+  const fora = M.d.portes.flatMap(g => g.destins).filter(h => /^https?:/.test(h));
   ok(fora.length === declarades.length && fora.length === 6,
     `${fora.length} destins cap a molekulon.org, els ${declarades.length} que declara la frontera`);
-  const marcats = await V.pg.evaluate(() =>
+  const marcats = await M.pg.evaluate(() =>
     [...document.querySelectorAll('nav.tt-nav .tn-p a')]
       .filter(a => /^https?:/.test(a.getAttribute('href')))
       .map(a => ({ h: a.getAttribute('href'), rel: a.rel, avis: !!a.querySelector('.tn-f') })));
@@ -312,7 +333,7 @@ console.log('\n8 · El fre');
     + (ambBarra.length ? ' — en porten: ' + ambBarra.join(', ') : ''));
 }
 
-await A.pg.close(); await V.pg.close(); await C.pg.close();
+await A.pg.close(); await V.pg.close(); await C.pg.close(); await M.pg.close();
 await b.close();
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

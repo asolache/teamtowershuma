@@ -129,11 +129,11 @@ console.log('\n3 · Un sol menú, i el mateix a totes les pàgines');
     `i els mateixos grups a totes: ${a.r.grups.join(' · ')}`);
   ok(a.r.destins.join('|') === b2.r.destins.join('|'),
     `amb els mateixos ${a.r.destins.length} destins i en el mateix ordre`);
-  ok(/Fes el diagnòstic/.test(a.r.cta) && /Fes el diagnòstic/.test(c.r.cta),
-    'i la mateixa acció principal, sempre al mateix lloc');
+  ok(/Obre el SOS/.test(a.r.cta) && /Obre el SOS/.test(c.r.cta),
+    'i la mateixa acció principal del SOS, sempre al mateix lloc');
   ok(a.r.aqui.indexOf('/SOS/matriu.html') >= 0 && b2.r.aqui.indexOf('/SOS/compra.html') >= 0,
     'cada pàgina es marca a si mateixa: se sap on ets sense haver de llegir el títol');
-  ok(a.r.marca, 'i la marca porta a la portada des de qualsevol lloc');
+  ok(a.r.marca, 'i la marca porta a la portada del SOS des de qualsevol pàgina seva');
   ok(!a.errs.length && !b2.errs.length && !c.errs.length, 'sense errors de pàgina');
 }
 

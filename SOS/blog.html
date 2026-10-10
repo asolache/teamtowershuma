@@ -40,12 +40,12 @@ header{padding:2.5rem 1.2rem 1.5rem;text-align:center;border-bottom:1px solid rg
 header h1{font-size:2rem;margin:0 0 .4rem;background:linear-gradient(90deg,var(--indigo),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent}
 header p{color:var(--muted);margin:0;font-size:1.05rem}
 nav{margin-top:1rem}
-nav a{color:var(--indigo);text-decoration:none;margin:0 .6rem;font-size:.9rem}
+nav a{color:var(--indigo);text-decoration:none;margin:0 .6rem;font-size:var(--t0)}
 nav a:hover{text-decoration:underline}
 article{background:var(--card);border-radius:14px;padding:1.8rem;margin-bottom:1.5rem;border:1px solid rgba(21,19,15,.06)}
 article h2{margin:0 0 .3rem;font-size:1.4rem}
-article .meta{color:var(--muted);font-size:.82rem;margin-bottom:1.1rem;display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
-article .meta .tag{background:rgba(99,102,241,.15);color:var(--indigo);padding:.15rem .55rem;border-radius:20px;font-size:.75rem}
+article .meta{color:var(--muted);font-size:var(--t0);margin-bottom:1.1rem;display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+article .meta .tag{background:rgba(99,102,241,.15);color:var(--indigo);padding:.15rem .55rem;border-radius:20px;font-size:var(--t0)}
 article .lead{font-size:1.05rem;color:var(--light);margin:0 0 1rem;font-weight:500}
 article p{color:var(--light);margin:.7rem 0}
 article ul,article ol{color:var(--light);padding-left:1.3rem}
@@ -55,16 +55,16 @@ article blockquote{margin:1rem 0;padding:.7rem 1rem;background:rgba(0,230,118,.0
 article .cta{margin-top:1.2rem;padding:1rem 1.2rem;background:linear-gradient(90deg,rgba(99,102,241,.15),rgba(0,230,118,.10));border-radius:10px;text-align:center}
 article .cta a{display:inline-block;background:linear-gradient(90deg,var(--indigo),var(--green));color:var(--bg);padding:.6rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:600;margin-top:.4rem}
 article strong{color:var(--text)}
-article code{background:rgba(21,19,15,.06);padding:.1rem .35rem;border-radius:4px;font-size:.9em}
-footer{text-align:center;color:var(--muted);padding:2rem 1rem;font-size:.85rem;border-top:1px solid rgba(21,19,15,.05);margin-top:2rem}
+article code{background:rgba(21,19,15,.06);padding:.1rem .35rem;border-radius:4px;font-size:var(--t0)}
+footer{text-align:center;color:var(--muted);padding:2rem 1rem;font-size:var(--t0);border-top:1px solid rgba(21,19,15,.05);margin-top:2rem}
 footer a{color:var(--indigo);text-decoration:none}
-.who{background:rgba(255,145,0,.08);border-left:3px solid var(--orange);padding:.5rem .8rem;margin:.6rem 0;border-radius:6px;font-size:.9rem}
+.who{background:rgba(255,145,0,.08);border-left:3px solid var(--orange);padding:.5rem .8rem;margin:.6rem 0;border-radius:6px;font-size:var(--t0)}
 .who strong{color:var(--orange)}
 /*TT-EMBUT-CSS*/
 /* GENERAT per SOS/tools/build-embut.js · l'embut «Per on començar» */
 .emb{padding:4rem 1.25rem;border-top:1px solid var(--border);background:var(--panel)}
 .emb-in{max-width:1080px;margin:0 auto}
-.emb-k{font-family:var(--mono);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
+.emb-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .6rem}
 .emb h2{font-size:var(--t4);line-height:1.15;margin:0 0 .8rem;color:var(--text)}
 .emb h2 em{font-style:normal;color:var(--indigo)}
 .emb-d{font-size:var(--t1);line-height:1.6;color:var(--light);max-width:62ch;margin:0 0 1.8rem}
@@ -72,7 +72,7 @@ footer a{color:var(--indigo);text-decoration:none}
 .emb-p{display:flex;flex-direction:column;gap:.45rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.25rem;color:var(--text);text-decoration:none}
 a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 .emb-c{grid-column:1/-1;border-color:var(--green);border-top-width:3px}
-.emb-pk{font-family:var(--mono);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo)}
+.emb-pk{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;text-transform:uppercase;color:var(--indigo)}
 .emb-c .emb-pk{color:var(--green)}
 .emb-pt{font-size:var(--t2);font-weight:700;line-height:1.3;margin:0;color:var(--text)}
 .emb-pd{font-size:var(--t0);line-height:1.6;color:var(--light);margin:0;max-width:72ch}
@@ -108,6 +108,9 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
 .tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
 .tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
 .tt-nav .tn-g{position:relative}
@@ -146,6 +149,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
      l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
      partia i la barra passava de dues files a tres. */
   .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
   /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
      El primer intent posava els cinc grups **en columna** a mòbil, oberts
      sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
@@ -199,7 +203,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <nav class="tt-nav" aria-label="Navegació del lloc">
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
-  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El servei: el mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span data-i18n="nv.g.sos">El SOS</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b data-i18n="nv.t.intro">De què va</b><span data-i18n="nv.d.intro">El SOS en setze plans</span></a><a href="/SOS/"><b data-i18n="nv.t.app">Obre l'aplicació</b><span data-i18n="nv.d.app">Sense compte, i les dades al teu aparell</span></a><a href="/SOS/matriu.html"><b data-i18n="nv.t.matriu">La MATRIU</b><span data-i18n="nv.d.matriu">La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b data-i18n="nv.t.banc-temps">El Banc de Temps</b><span data-i18n="nv.d.banc-temps">Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b data-i18n="nv.t.biblioteca">La Biblioteca de les Coses</b><span data-i18n="nv.d.biblioteca">Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b data-i18n="nv.t.compra">La Compra</b><span data-i18n="nv.d.compra">Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b data-i18n="nv.t.energia">L'Energia</b><span data-i18n="nv.d.energia">Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b data-i18n="nv.t.habitatge">L'Habitatge</b><span data-i18n="nv.d.habitatge">Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b data-i18n="nv.t.online">El directori</b><span data-i18n="nv.d.online">Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.apren">Formació</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Els 16 mòduls</b><span data-i18n="nv.d.formacio">De N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b data-i18n="nv.t.vedes">Les vedes</b><span data-i18n="nv.d.vedes">Les regles, amb el motiu al costat</span></a><a href="/SOS/blog.html" aria-current="page"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span data-i18n="nv.g.mon">Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b data-i18n="nv.t.fora-inici">El Comando</b><span data-i18n="nv.d.fora-inici">La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b data-i18n="nv.t.fora-historia">La història</b><span data-i18n="nv.d.fora-historia">Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b data-i18n="nv.t.fora-personatges">Els 14 herois</b><span data-i18n="nv.d.fora-personatges">Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b data-i18n="nv.t.fora-peli">La pel·lícula</b><span data-i18n="nv.d.fora-peli">El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b data-i18n="nv.t.fora-musica">La banda</b><span data-i18n="nv.d.fora-musica">Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b data-i18n="nv.t.fora-comic">El còmic</b><span data-i18n="nv.d.fora-comic">Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b data-i18n="nv.t.molekulandia">Molekulandia</b><span data-i18n="nv.d.molekulandia">El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b data-i18n="nv.t.molekulon">Un estat líquid</b><span data-i18n="nv.d.molekulon">Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b data-i18n="nv.t.escola">La Fàbrica de Superherois</b><span data-i18n="nv.d.escola">De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b data-i18n="nv.t.joc">El joc</b><span data-i18n="nv.d.joc">La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b data-i18n="nv.t.uneix-te">Uneix-t'hi</b><span data-i18n="nv.d.uneix-te">El que ja fas al barri, comptat</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a></div></details></div>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html" aria-current="page"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
   <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
 </nav>
 <script>
@@ -252,7 +256,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <blockquote>Una web feta amb una IA en una tarda funciona el primer dia. Una amb cervell segueix sabent què és el dia que algú la toca sis mesos després.</blockquote>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">A partir d'ara, cada projecte que lliurem porta el seu cervell.</div>
+<div style="color:var(--muted);font-size:var(--t0)">A partir d'ara, cada projecte que lliurem porta el seu cervell.</div>
 <a href="/mapa-web/">Mapa i web en una hora →</a>
 </div>
 </article>
@@ -289,7 +293,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <blockquote>Un certificat que el dona algú val el que valgui aquell algú. Aquest no el dona ningú: surt del teu registre i el pot comprovar qualsevol.</blockquote>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Obre SOS → el teu perfil → 🎖 Certificat del rol. I per comprovar-ne un que t'arribi: menú → Els meus ancoratges → Verifica un paquet.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Obre SOS → el teu perfil → 🎖 Certificat del rol. I per comprovar-ne un que t'arribi: menú → Els meus ancoratges → Verifica un paquet.</div>
 <a href="uneix-te.html#pioneres">Com va el Programa Pioneres →</a>
 </div>
 </article>
@@ -337,7 +341,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Obre <strong>SOS → 🎬 Comando Molekulon</strong>. Veuràs els <strong>Protagonistes originals</strong> a dalt i els cromos de la tribu real que ja creix. Si encara no hi ets, clica <strong>🦸 Crea el meu perfil</strong> — el sistema et vincula a la teva població, et deixa triar fins a 5 superpoders, i entres al roster.</p>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">La banda ja toca. Vine a buscar el teu cromo.</div>
+<div style="color:var(--muted);font-size:var(--t0)">La banda ja toca. Vine a buscar el teu cromo.</div>
 <a href="index.html">Uneix-te al Comando →</a>
 </div>
 </article>
@@ -371,7 +375,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <blockquote>Per escalar, primer cal arrelar. Un castell de vuit sense pinya és un accident esperant a passar.</blockquote>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Obre SOS i mira la Configuració → 🏛 Sabiduria del node actiu. Veuràs la pinya digital de la teva comunitat.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Obre SOS i mira la Configuració → 🏛 Sabiduria del node actiu. Veuràs la pinya digital de la teva comunitat.</div>
 <a href="index.html">Fes un cop d'ull →</a>
 </div>
 </article>
@@ -405,7 +409,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <blockquote>La rauxa sense pinya és un accident. La pinya sense rauxa és arqueologia. Les dues juntes són castells de nou.</blockquote>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Obre SOS → clica 🦸 Crea el meu perfil des de la home. Un pas i el teu superheroi entra al fons cooperatiu local.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Obre SOS → clica 🦸 Crea el meu perfil des de la home. Un pas i el teu superheroi entra al fons cooperatiu local.</div>
 <a href="index.html">Encén el teu perfil →</a>
 </div>
 </article>
@@ -442,7 +446,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Tot això corre al navegador. Ni Anthropic, ni AWS, ni cap SaaS de TeamTowers. Només <strong>WebRTC (P2P) + IndexedDB + SubtleCrypto</strong> — el codex W3C portat a fons. La comunitat és sobirana de les seves dades <strong>per contracte tècnic</strong>, no per bona voluntat.</p>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Muntem el proper projecte? Obre SOS, crea un molekulon i mira com es materialitza la síntesi.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Muntem el proper projecte? Obre SOS, crea un molekulon i mira com es materialitza la síntesi.</div>
 <a href="index.html">Comença un molekulon →</a>
 </div>
 </article>
@@ -537,7 +541,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 </ul>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Els cinc rols, les dotze setmanes i els llindars de tracció, al detall.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Els cinc rols, les dotze setmanes i els llindars de tracció, al detall.</div>
 <a href="formacio.html#equipv1">Programa d'equip gestor v1 →</a>
 </div>
 </article>
@@ -575,7 +579,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 </ul>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Obre SOS i simula la vostra assemblea territorial en 60 segons.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Obre SOS i simula la vostra assemblea territorial en 60 segons.</div>
 <a href="index.html">Prova-ho ara →</a>
 </div>
 </article>
@@ -612,7 +616,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <blockquote>Reputació que no és puntuació opaca, sinó història d'aportacions verificables.</blockquote>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Obre SOS, dóna d'alta un soci, i clica "👁 Perfil". Veuràs immediatament les seves superforces.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Obre SOS, dóna d'alta un soci, i clica "👁 Perfil". Veuràs immediatament les seves superforces.</div>
 <a href="index.html">Explora el perfil transversal →</a>
 </div>
 </article>
@@ -655,7 +659,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Dins d'una MATRIU, les ventures econòmiques poden <strong>cooperar entre elles</strong>: cedir hores, objectes, talent o capital, amb signatura criptogràfica i cadena hash tamper-evident. És el model Mondragón portat al navegador, sense advocats i sense despatxos. La circulació de valor no surt del fons; el fons creix per rotació.</p>
 
 <div class="cta">
-<div style="color:var(--muted);font-size:.85rem">Simula l'impacte del vostre municipi ara — dades reals en 60 segons.</div>
+<div style="color:var(--muted);font-size:var(--t0)">Simula l'impacte del vostre municipi ara — dades reals en 60 segons.</div>
 <a href="index.html">Obre el simulador →</a>
 </div>
 </article>
