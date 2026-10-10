@@ -141,7 +141,14 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
   públiques (més «Escriu-nos» i el ©) i `SOS_GRUPS` a les del SOS (amb el camí
   de tornada a la portada). Els peus escrits a mà i les seves claus d'idioma
   orfes han sortit. La guarda de la barra també vigila el peu.
+- **`/mapa-web/` i `/conecta/`.** Porten la pell, els components, la barra i el
+  peu del lloc. Com que són esborranys només en castellà, `build-nav.js` les
+  declara a `CARPETES` i hi escriu la barra i el peu en castellà i sense claus.
+  La seva capçalera es queda com a índex de la pàgina, sense marca i sense
+  `sticky` (ja ho és la barra), i les 82 mides per sota del terra passen a
+  `--t0`: `check-terra.js` també les vigila, amb les quatre regles de text del
+  dibuix de la xarxa declarades.
 - **Queda:** els botons de dins dels blocs generats per altres eines (`.mv-cta`
   del mapa de valor a la portada i al mètode, `.ct-btn` del contacte), l'avís
-  legal (necessita les dades de l'empresa), la capçalera de pàgina comuna de la
-  fase 4, i `mapa-web/` i `conecta/`.
+  legal (necessita les dades del titular) i la capçalera de pàgina comuna de la
+  fase 4.

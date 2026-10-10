@@ -30,13 +30,13 @@ const { readFileSync, existsSync } = require('node:fs');
 const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
-const { PAGINES_LLOC } = require('./build-nav.js');
+const { PAGINES_LLOC, CARPETES } = require('./build-nav.js');
 
 /* Les pàgines que venen una de les tres ofertes: les quatre d'arrel, les de
-   `SOS/` que porten la barra del lloc, i la formació, que és la tercera oferta
-   encara que porti la barra del SOS. */
+   `SOS/` que porten la barra del lloc, la formació, que és la tercera oferta
+   encara que porti la barra del SOS, i les dues carpetes de «La teva web». */
 const PAGINES = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html']
-  .concat(PAGINES_LLOC.map(p => 'SOS/' + p), ['SOS/formacio.html']);
+  .concat(PAGINES_LLOC.map(p => 'SOS/' + p), ['SOS/formacio.html'], Object.values(CARPETES));
 
 /* Les regles que només pinten text de dibuixos SVG, amb el motiu. */
 const SVG = {
@@ -64,6 +64,12 @@ const SVG = {
     '.ed-svg .ed-mes text': 'Botó «+» del node: <text> del SVG.',
     '.ed-svg .ed-port text': 'Port d\'un node: <text> del SVG.',
     '.ed-svg .ed-fant-t': 'Rol fantasma proposat: <text> del SVG.'
+  },
+  'mapa-web/index.html': {
+    '.n .s, .n .s-embudo': 'Subtítol de cada rol al mapa de la xarxa: <text> del SVG.',
+    '.n-centro text': 'Nom del negoci al centre del mapa: <text> del SVG.',
+    '.red-svg .solo-embudo': 'Retol de la vista «embut»: <text> del SVG.',
+    '.red-svg .b-duda text': 'Signe del gomet de dubte: <text> del SVG.'
   }
 };
 

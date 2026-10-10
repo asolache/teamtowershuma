@@ -128,9 +128,14 @@ const FORA_DE_LA_PELL = {
    `cataleg.html` i `qui-som.html` van néixer el 04/10/2026 i, amb una llista a
    mà, haurien nascut sense pell i amb la guarda verda. El que sí que és
    explícit és qui en queda fora, i per què. */
+/* I les dues carpetes del lloc (`/mapa-web/`, `/conecta/`), que fins al
+   10/10/2026 en portaven una còpia feta a mà «mientras sea borrador». Una
+   còpia és com comença la deriva, i ser esborrany no les fa d'una altra marca. */
+const { CARPETES } = require('./build-nav.js');
 const PAGINES = [].concat(
   readdirSync(ARREL).filter(f => /\.html$/.test(f)),
-  readdirSync(SOS).filter(f => /\.html$/.test(f)).map(f => 'SOS/' + f)
+  readdirSync(SOS).filter(f => /\.html$/.test(f)).map(f => 'SOS/' + f),
+  Object.values(CARPETES)
 ).filter(f => !FORA_DE_LA_PELL[f]).sort();
 
 /* `bloc` també s'exporta: `build-vedes.js` regenera la seva pàgina sencera i
