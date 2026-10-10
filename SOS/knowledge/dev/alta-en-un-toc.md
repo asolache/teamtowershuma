@@ -188,6 +188,43 @@ un enllaç `http(s)`.
 **Pendent:** que el mapa observat s'actualitzi sol a cada enviament (una
 funció de Netlify que rebi l'avís del formulari) i els webhooks de la fase 3.
 
+## 3c · Fet: l'API i els avisos (fase 3 del pla)
+
+**La web és l'API.** Per llegir, `web.json` i el JSON-LD de cada pàgina. Per
+escriure, el formulari del registre: un `POST` de Netlify Forms. No hi ha cap
+servidor propi.
+
+**Els avisos.** El zip porta dues funcions de Netlify, que Netlify crida
+soles: `submission-created`, a cada anotació del registre, i
+`deploy-succeeded`, a cada publicació. Envien els avisos del pla a les
+adreces de `TT_WEBHOOKS`, signats amb HMAC-SHA256 (capçalera
+`X-TT-Signatura`) amb el secret de `TT_WEBHOOK_SECRET`. Sense secret, o a
+una adreça que no sigui https, no s'envia res.
+
+| Avís | Quan |
+|---|---|
+| `transaccion.creada` | Cada anotació al registre |
+| `desviacion.detectada` | L'anotació no és cap flux del mapa, o un flux del mapa no passa |
+| `rol.sin_reciprocidad` | Un rol dona i no rep res registrat |
+| `cerebro.actualizado` | Cada publicació a producció |
+
+Els dos del mig, quan depenen de tot el registre, surten de
+`node eines/registre.mjs --envia`, al repositori del client.
+
+**El cervell, per a Claude Code.** `.mcp.json` connecta `eines/mcp.mjs`, un
+servidor MCP sense dependències amb tres eines: l'índex del cervell, llegir
+un document i l'informe del registre. Només llegeix el que surt a l'índex.
+
+**Un sol codi.** Tot surt dels blocs `VS-REG`, `VS-API` i `VS-MCP` de
+l'editor, tal com hi són. `API.md`, al zip, explica com fer-ho servir.
+
+**El cervell ja no es publica.** `netlify.toml` torna 404 per a `cerebro/`,
+`eines/`, `netlify/`, les regles i `.mcp.json`: la capa «equip» de l'índex
+només viu al repositori.
+
+**Pendent:** donar d'alta els avisos amb el primer pilot (quina eina els
+escolta) i l'accés de les persones de fora, quan hi hagi comptes de debò.
+
 ## 4 · La IA, pagada per ús
 
 Dues opcions, i el client tria:
@@ -231,6 +268,7 @@ l'organització a un projecte, i què li cal per entrar-hi.
 1. ✓ El mapa dona la web (`web.json`).
 2. ✓ La web de debò, en un zip o des de Node (`web-del-mapa.js`).
    ✓ El registre viu (`llegeix-registre.js`, fase 2 del pla).
+   ✓ L'API, els avisos signats i el servidor MCP del cervell (fase 3).
 3. El repositori plantilla i el camí B: el botó de Netlify funciona sense que
    hàgim de guardar cap permís.
 4. Stripe Checkout en mode de prova i la funció que verifica l'avís.

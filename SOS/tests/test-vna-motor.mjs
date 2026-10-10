@@ -756,7 +756,7 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
   const op = { nom: 'Celler <prova>', correu: 'hola@exemple.cat' };
   const des = await cli.genera(EXEMPLE, op);
   const sha = async b => createHash('sha256').update(b).digest('hex');
-  const ambMapa = await S.ambPermaweb(S.webASite(web, Object.assign({ mapa: M.exporta(M.importa(EXEMPLE).arbre) }, op)), sha);
+  const ambMapa = await S.ambPermaweb(S.webASite(web, Object.assign({ mapa: M.exporta(M.importa(EXEMPLE).arbre), codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } }, op)), sha);
   ok(J(des) === J(ambMapa), 'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web, mapa.json inclòs: un sol codi');
   ok(J(await cli.genera(JSON.parse(f('web.json')), op)) === J(pw), 'i també la fa a partir d\'un web.json (sense mapa.json: no en porta)');
 }
@@ -883,6 +883,93 @@ console.log('\nM28 · El registre viu: el mapa real surt de l\'ús (fase 2)');
     'fora del menú i dels cercadors; s\'hi arriba des de la pàgina de l\'equip');
   const fr = R.llegeixRegistre('de,a,entregable,mena,valor,data,evidencia\nQui fa el vi,Qui rep i explica,el vi,tangible,4,2026-10-01,').files;
   ok(fr.length === 1 && fr[0].data === '2026-10-01', 'el CSV del formulari generat es llegeix tal com surt');
+}
+
+console.log('\nM29 · L\'API i els avisos: la web els envia signats, i el cervell parla amb Claude Code (fase 3)');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const codi = { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') };
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const st = S.webASite(S.webDelMapa(celler()), { mapa, codi, nom: 'Celler', url: 'https://celler.example' }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  const noves = ['eines/nucli.mjs', 'eines/registre.mjs', 'eines/mcp.mjs', 'netlify/functions/submission-created.mjs', 'netlify/functions/deploy-succeeded.mjs', '.mcp.json', 'API.md'];
+  ok(noves.every(r => f(r)) && !S.webASite(S.webDelMapa(celler()), { mapa }).fitxers.some(x => noves.includes(x.ruta)), 'amb el codi, el zip porta les eines, les dues funcions, .mcp.json i API.md');
+  ok(f('eines/nucli.mjs').includes(codi.reg) && f('eines/nucli.mjs').includes(codi.api) && f('eines/mcp.mjs').includes(codi.mcp), 'el codi és el dels blocs de l\'editor, tal com hi són: un sol codi');
+  ok(['/cerebro/*', '/eines/*', '/netlify/*', '/.mcp.json', '/CLAUDE.md', '/API.md'].every(r => f('netlify.toml').includes('from = "' + r + '"\n  to = "/404.html"\n  status = 404\n  force = true'))
+    && /directory = "netlify\/functions"/.test(f('netlify.toml')), 'el cervell, les eines i les regles no es serveixen: només viuen al repositori');
+  const ix = JSON.parse(f('cerebro/indice.json'));
+  ok(noves.every(r => ix.entradas.some(x => x.ruta === r && x.tema === 'eines' && x.capa === 'equip')), 'l\'índex del cervell les posa a «Eines i API», capa equip');
+  ok(['transaccion.creada', 'rol.sin_reciprocidad', 'desviacion.detectada', 'cerebro.actualizado'].every(t => f('API.md').includes('`' + t + '`')) && /GET https:\/\/celler\.example\/web\.json/.test(f('API.md')) && /TT_WEBHOOK_SECRET/.test(f('API.md')),
+    'API.md: llegir, escriure, els quatre avisos del pla i com configurar-los');
+  ok(/node eines\/registre\.mjs/.test(f('CLAUDE.md')) && /API\.md/.test(f('CLAUDE.md')) && !/SOS\/tools\/llegeix-registre/.test(f('CLAUDE.md')), 'CLAUDE.md apunta a les eines que hi ha al repositori');
+  ok(JSON.parse(f('.mcp.json')).mcpServers.cervell.args[0] === 'eines/mcp.mjs', '.mcp.json declara el servidor del cervell');
+
+  const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { spawnSync } = await import('node:child_process');
+  const { pathToFileURL } = await import('node:url');
+  const dir = mkdtempSync(join(tmpdir(), 'tt-api-'));
+  st.fitxers.forEach(x => { mkdirSync(dirname(join(dir, x.ruta)), { recursive: true }); writeFileSync(join(dir, x.ruta), x.cos); });
+  mkdirSync(join(dir, 'cerebro/registro'), { recursive: true });
+  writeFileSync(join(dir, 'cerebro/registro/registre.csv'), 'created_at,de,a,entregable,mena,valor,nom,email\n2026-10-01,Qui rep i explica,El visitant,"la visita, el tast i el relat de la casa",tangible,5,Anna,anna@exemple.cat\n2026-10-02,La cooperativa,Qui fa el vi,raïm,tangible,4,,\n');
+  const R = spawnSync(process.execPath, ['eines/registre.mjs'], { cwd: dir, encoding: 'utf8' });
+  const inf = R.status === 0 ? readFileSync(join(dir, 'cerebro/registro/informe.md'), 'utf8') : '';
+  ok(R.status === 0 && /^# El registre, llegit/.test(inf) && /La cooperativa/.test(readFileSync(join(dir, 'cerebro/registro/avisos.json'), 'utf8')) && !/Anna|@/.test(inf),
+    'node eines/registre.mjs llegeix el registre al repositori del client, sense el SOS: ' + (R.stderr || '').slice(0, 80));
+
+  const N = await import(pathToFileURL(join(dir, 'eines/nucli.mjs')).href);
+  const { webcrypto } = await import('node:crypto');
+  const fl = N.fluxosDelMapa(mapa);
+  const payload = { form_name: 'registre', created_at: '2026-10-03T10:00:00Z', ip: '1.2.3.4', email: 'pere@exemple.cat', name: 'Pere', human_fields: { Nom: 'Pere' },
+    data: { de: 'Qui rep i explica', a: 'El visitant', entregable: 'La visita, el tast i el relat de la casa', mena: 'tangible', valor: '5', nom: 'Pere', ip: '1.2.3.4', 'bot-field': '' } };
+  const a1 = N.avisosDelFormulari(payload, fl);
+  ok(a1.length === 1 && a1[0].tipus === 'transaccion.creada' && a1[0].dades.data === '2026-10-03' && !/Pere|1\.2\.3|@/.test(J(a1)), 'una anotació és un avís transaccion.creada, sense cap dada personal del formulari');
+  const a2 = N.avisosDelFormulari(Object.assign({}, payload, { data: { de: 'La cooperativa', a: 'Qui fa el vi', entregable: 'raïm' } }), fl);
+  ok(a2.length === 2 && a2[1].tipus === 'desviacion.detectada' && a2[1].dades.motiu === 'flux-nou', 'si no és cap flux del mapa, també desviacion.detectada');
+  ok(N.avisosDelFormulari({ form_name: 'el-visitant', data: payload.data }, fl).length === 0 && N.avisosDelFormulari(null, fl).length === 0, 'els altres formularis no fan cap avís');
+  const enviats = [], fetch = async (u, o) => { enviats.push({ u, o }); return { ok: true, status: 200 }; };
+  const secret = 'un-secret-prou-llarg';
+  const e1 = await N.enviaAvisos(a2, { urls: 'https://a.example/hook, http://b.example/hook ,https://c.example/x', secret, web: 'https://celler.example/', fetch, subtle: webcrypto.subtle, ara: '2026-10-10T09:00:00.000Z' });
+  ok(e1.enviats === 4 && enviats.every(x => /^https:/.test(x.u)) && enviats[0].o.headers['X-TT-Avis'] === 'transaccion.creada', 'envia cada avís a cada adreça https, i cap a una http');
+  const cos = enviats[0].o.body, sig = enviats[0].o.headers['X-TT-Signatura'], sobre = JSON.parse(cos);
+  ok(sobre.formato === 'tt-avis-1' && sobre.web === 'https://celler.example/' && sobre.creat === '2026-10-10T09:00:00.000Z' && sobre.dades.q === 'raïm', 'el sobre tt-avis-1: tipus, web, data i dades');
+  ok(/^sha256=[0-9a-f]{64}$/.test(sig) && await N.verificaAvis(cos, sig, secret, webcrypto.subtle) && !(await N.verificaAvis(cos.replace('raïm', 'raim'), sig, secret, webcrypto.subtle)) && !(await N.verificaAvis(cos, sig, 'un-altre-secret-llarg', webcrypto.subtle)),
+    'signat amb HMAC-SHA256: qui el rep el comprova, i un cos tocat o un altre secret no passen');
+  enviats.length = 0;
+  const e2 = await N.enviaAvisos(a2, { urls: 'https://a.example/hook', secret: 'curt', fetch, subtle: webcrypto.subtle });
+  const e3 = await N.enviaAvisos(a2, { urls: '', secret, fetch, subtle: webcrypto.subtle });
+  ok(e2.motiu === 'sense-secret' && e3.motiu === 'sense-adreces' && enviats.length === 0, 'sense secret o sense adreces no s\'envia res');
+  const e4 = await N.enviaAvisos([{ tipus: 'una.altra.cosa' }, { tipus: 'rol.sin_reciprocidad', rol: 'El poble' }], { urls: 'https://a.example/', secret, fetch: async () => ({ ok: false, status: 500 }), subtle: webcrypto.subtle });
+  ok(e4.enviats === 0 && e4.errors.length === 1 && /500/.test(e4.errors[0]), 'només els avisos del pla, i els errors es diuen');
+
+  const posaG = (k, v) => { const ab = Object.getOwnPropertyDescriptor(globalThis, k); Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true }); return () => { if (ab) Object.defineProperty(globalThis, k, ab); else delete globalThis[k]; }; };
+  const tornaF = posaG('fetch', fetch), tornaC = globalThis.crypto && globalThis.crypto.subtle ? () => {} : posaG('crypto', webcrypto);
+  process.env.TT_WEBHOOKS = 'https://a.example/hook'; process.env.TT_WEBHOOK_SECRET = secret;
+  enviats.length = 0;
+  const SC = await import(pathToFileURL(join(dir, 'netlify/functions/submission-created.mjs')).href);
+  const r1 = await SC.handler({ body: J({ payload }) });
+  const DS = await import(pathToFileURL(join(dir, 'netlify/functions/deploy-succeeded.mjs')).href);
+  const r2 = await DS.handler({ body: J({ payload: { context: 'production', ssl_url: 'https://celler.example', commit_ref: 'abc123', branch: 'main' } }) });
+  const r3 = await DS.handler({ body: J({ payload: { context: 'deploy-preview' } }) });
+  delete process.env.TT_WEBHOOKS; delete process.env.TT_WEBHOOK_SECRET; tornaF(); tornaC();
+  ok(r1.statusCode === 200 && J(JSON.parse(r1.body).avisos) === J(['transaccion.creada']) && JSON.parse(enviats[0].o.body).tipus === 'transaccion.creada', 'la funció submission-created avisa sola a cada anotació');
+  ok(r2.statusCode === 200 && JSON.parse(enviats[1].o.body).tipus === 'cerebro.actualizado' && JSON.parse(enviats[1].o.body).dades.commit === 'abc123' && enviats.length === 2 && r3.statusCode === 200,
+    'la funció deploy-succeeded avisa cerebro.actualizado a cada publicació a producció, i no a les vistes prèvies');
+
+  const msgs = [{ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'prova', version: '0' } } },
+    { jsonrpc: '2.0', method: 'notifications/initialized' }, { jsonrpc: '2.0', id: 2, method: 'tools/list' },
+    { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'cervell_index', arguments: { tema: 'rols' } } },
+    { jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'cervell_llegeix', arguments: { ruta: 'cerebro/decisiones.md' } } },
+    { jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'cervell_llegeix', arguments: { ruta: '../../../etc/passwd' } } },
+    { jsonrpc: '2.0', id: 6, method: 'tools/call', params: { name: 'registre_informe', arguments: { llengua: 'es' } } },
+    { jsonrpc: '2.0', id: 7, method: 'res/de/res' }];
+  const P = spawnSync(process.execPath, ['eines/mcp.mjs'], { cwd: dir, encoding: 'utf8', input: msgs.map(x => J(x)).join('\n') + '\nno és json\n' });
+  const rs = P.stdout.trim().split('\n').map(l => JSON.parse(l)), per = id => rs.find(x => x.id === id) || {};
+  ok(per(1).result && per(1).result.serverInfo.name === 'cervell' && per(1).result.capabilities.tools && rs.length === 8, 'el servidor MCP respon per stdio, i a les notificacions no hi respon: ' + (P.stderr || '').slice(0, 80));
+  ok(J(per(2).result.tools.map(t => t.name)) === J(['cervell_index', 'cervell_llegeix', 'registre_informe']), 'tres eines: l\'índex, llegir un document i l\'informe del registre');
+  ok(JSON.parse(per(3).result.content[0].text).every(x => x.tema === 'rols') && /El poble dona i no rep/.test(per(4).result.content[0].text), 'llegeix l\'índex i els documents del cervell');
+  ok(per(5).result.isError === true && !/root:/.test(per(5).result.content[0].text), 'i res que no sigui a l\'índex');
+  ok(/^# El registro, leído/.test(per(6).result.content[0].text) && /rol\.sin_reciprocidad/.test(per(6).result.content[0].text), 'l\'informe del registre, amb els avisos');
+  ok(per(7).error && per(7).error.code === -32601 && rs.some(x => x.id === null && x.error && x.error.code === -32700), 'un mètode desconegut o una línia que no és JSON tenen la resposta d\'error de JSON-RPC');
+  rmSync(dir, { recursive: true, force: true });
 }
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
