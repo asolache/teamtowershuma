@@ -63,9 +63,20 @@ El client només fa una cosa: pagar amb Apple Pay.
 endur-se-ho tot: GitHub permet transferir un repositori i Netlify permet
 transferir un lloc a un altre equip. Sense això, el camí A seria una presó.
 
-### Camí B · «Ho vull a nom meu»
+### Camí B · «Ho vull a nom meu» (fet, sense el pagament)
 
 Dos tocs més, i tot és seu des del primer minut.
+
+**Ja funciona:** a la pestanya Web, **«Publica-la a nom teu (Netlify)»**. Obre
+el botó «Deploy to Netlify» de la carpeta `SOS/plantilla-web/` d'aquest
+repositori (paràmetre `create_from_path`: no cal cap repositori a part).
+Netlify la copia al GitHub del client i la publica. A cada publicació hi
+executa `node eines/genera.mjs`, que fa la web amb el mateix codi que l'editor.
+El mapa hi va comprimit dins del botó (`TT_MAPA`, al hash de l'adreça, que no
+arriba als registres de Netlify), amb el nom, el correu i la llengua. Quan el
+client desa `cerebro/mapa-real.json` al seu repositori, aquest mana. La
+plantilla es regenera amb `node SOS/tools/build-plantilla.js`, i la CI comprova
+que porta el codi de l'editor tal com és.
 
 1. Paga amb Apple Pay, igual que al camí A.
 2. Botó **«Deploy to Netlify»**. El client entra a Netlify amb el seu GitHub.
@@ -269,8 +280,8 @@ l'organització a un projecte, i què li cal per entrar-hi.
 2. ✓ La web de debò, en un zip o des de Node (`web-del-mapa.js`).
    ✓ El registre viu (`llegeix-registre.js`, fase 2 del pla).
    ✓ L'API, els avisos signats i el servidor MCP del cervell (fase 3).
-3. El repositori plantilla i el camí B: el botó de Netlify funciona sense que
-   hàgim de guardar cap permís.
+3. ✓ El repositori plantilla i el camí B: el botó de Netlify funciona sense que
+   hàgim de guardar cap permís (`SOS/plantilla-web/`).
 4. Stripe Checkout en mode de prova i la funció que verifica l'avís.
 5. El camí A: crear el repositori i el lloc. Això demana tokens de servei
    de l'Àlvar.

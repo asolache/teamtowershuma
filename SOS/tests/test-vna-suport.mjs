@@ -999,6 +999,13 @@ console.log('\n7D · La web que surt del mapa');
   ok(zs.includes('registre.html') && zs.includes('name="registre"'), 'la web porta el formulari del registre viu');
   ok(['eines/nucli.mjs', 'eines/mcp.mjs', 'netlify/functions/submission-created.mjs', '.mcp.json', 'API.md'].every(r => zs.includes(r)) && zs.includes('function avisosDelFormulari') && zs.includes('function creaMcp'),
     'i l\'API: les eines, les funcions dels avisos i el servidor MCP, amb el codi de l\'editor');
+  await p.waitForFunction(() => /TT_MAPA=/.test(document.querySelector('#edWebNetlify').href));
+  const nh = await p.evaluate(() => document.querySelector('#edWebNetlify').href);
+  const { inflateRawSync } = await import('node:zlib');
+  const hv = new URLSearchParams(nh.split('#')[1]), mp = JSON.parse(inflateRawSync(Buffer.from(hv.get('TT_MAPA'), 'base64url')).toString('utf8'));
+  ok(/^https:\/\/app\.netlify\.com\/start\/deploy\?repository=https:\/\/github\.com\/asolache\/teamtowershuma&create_from_path=SOS\/plantilla-web#/.test(nh)
+    && hv.get('TT_NOM') === 'Celler de prova' && hv.get('TT_LLENGUA') === 'es' && hv.get('TT_CORREU') === 'hola@exemple.cat' && mp.roles.includes('El visitant') && !('pos' in mp),
+    '«Publica-la a nom teu» porta a la plantilla de Netlify amb el nom, la llengua, el correu i el mapa comprimit');
   await p.click('#edWebVeure');
   await p.waitForFunction(() => { const f = document.querySelector('#edWebMarc'); return f && f.contentDocument && f.contentDocument.querySelector('nav a'); });
   const marc = () => p.evaluate(() => { const d = document.querySelector('#edWebMarc').contentDocument;
