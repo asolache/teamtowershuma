@@ -5161,3 +5161,21 @@ contra etiquetes escrites a mà perquè cap fila nova al lloc equivocat ho torni
 a obrir. És la mateixa forma que l'`acord`: el que és criteri o fet d'algú no
 es deixa fora de la llista, s'hi posa amb el seu motiu.
 
+## Veda 164 — Una còpia es compara pel que fa, no pel que diu
+
+**Après el 10/10/2026, alineant la portada amb la taxonomia**, com va decidir
+l'Àlvar.
+
+La portada comptava quants lliuraments del celler pot preparar una màquina amb
+una llista de pistes pròpia, «les mateixes que l'app», i una guarda que mirava
+que cada tipus de la llista existís a l'app. Els noms quadraven i el resultat
+no: la portada en prometia 5 i l'app, amb les mateixes etiquetes, cap. «Paga» i
+«despesa» eren comanda a la portada i res a l'app, i «hores reservades» era
+inventari quan l'inventari de l'app és una taula d'objectes.
+
+**Una guarda que compara noms no veu una regla que divergeix.** Ara la portada
+no té regla: llegeix de l'app els trossos que ja es copien al kit, i
+`repartimentMaquina`, i els crida tal com són. El que l'etiqueta no
+diu ho declara el cas (`CELLER.tipus`), com qui tria el tipus a mà al Kanban. I
+les frases porten el nom del que diuen: si el repartiment es mou, la guarda 9
+peta abans que la portada digui una cosa i el número una altra.
