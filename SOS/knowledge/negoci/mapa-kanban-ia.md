@@ -269,7 +269,8 @@ ràpid es nota l'error*, no per ordre de quant valen.
 **Vuit tipus, set automatitzables, cinc pendents.** `acord` no surt d'una
 màquina i està escrit a la taula amb el motiu: sense aquella entrada la
 taxonomia semblaria dir que tot és automatitzable i que els que falten és que
-encara no els hem fet.
+encara no els hem fet. (10/10/2026: ara en són dotze, amb tres de negoci i els
+diners, `cobrament`, que tampoc no surten d'una màquina.)
 
 ### El que es va trobar construint-ho
 

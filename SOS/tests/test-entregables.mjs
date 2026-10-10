@@ -75,7 +75,10 @@ const ng = await page.evaluate(() => {
     exchanges: [{ id: 'x1', from: 'r1', to: 'r2', kind: 'tangible', label: 'la factura' }] } };
   return { r, eina: ['pressupost', 'proposta', 'resposta'].filter(t => S.INTENT_ENTREGABLE[t]),
     rp: S.repartimentMaquina(node),
-    qui: [...S.buildFlowLedger(fl).querySelectorAll('.fl-qui-t')].map(e => e.textContent) };
+    qui: [...S.buildFlowLedger(fl).querySelectorAll('.fl-qui-t')].map(e => e.textContent),
+    boto: [...S.buildFlowLedger(fl).querySelectorAll('.fl-qui .btn')].map(e => e.textContent),
+    mai: ['pressupost aprovat', 'resposta a la votació', 'resposta a la consulta del pacient', 'propuesta de acuerdo',
+      'factura de compra'].map(l => [l, cas(l)]) };
 });
 const N = ng.r;
 ok(N['el pressupost del grup'].pot && N['el pressupost del grup'].tipus === 'pressupost', 'un pressupost es reconeix i el pot preparar la màquina');
@@ -94,6 +97,9 @@ ok(ng.eina.length === 0, 'cap dels tres té eina a l\'app encara: es fan una per
 ok(ng.rp.maquina === 1 && ng.rp.persona === 1 && ng.rp.senseTipus === 1,
   'i el repartiment compta la factura com a feina de persona, no com a «encara no sabem»');
 ok(ng.qui.includes('👤 💶 Factura o cobrament'), 'i la llista de fluxos la pinta així: ' + ng.qui.join(' / '));
+ok(ng.boto.includes('Per què?'), 'i el botó n\'explica el motiu en lloc de demanar-ne el tipus: ' + ng.boto.join(' / '));
+ok(ng.mai.every(([, a]) => !a.pot) && ng.mai.find(([l]) => l === 'factura de compra')[1].tipus === 'cobrament',
+  'una decisió, un vot, la salut o una factura que encapçala no arriben mai a la màquina: ' + ng.mai.map(([l, a]) => l + '→' + a.tipus).join(', '));
 
 console.log('\n3 · La línia que la màquina no creua');
 const no = await page.evaluate(() => {

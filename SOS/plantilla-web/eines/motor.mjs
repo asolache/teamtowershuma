@@ -3393,22 +3393,26 @@ const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
    automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
    s'ha de produir.
 
-   L'ordre és la regla: guanya la primera. Les de negoci són estretes a posta
-   —una pista de menys es corregeix a mà; una de més, no—, i els diners van
-   just després de la comanda. Res de lookbehind: Safari <16.4 no el compila. */
+   L'ordre és la regla: guanya la primera. Les de negoci comencen l'etiqueta i
+   cap paraula de diners, decisió, queixa, llei, diner públic o salut no les
+   deixa passar: una pista de menys es corregeix a mà; una de més, no (veda
+   163). Els diners que encapçalen van primer. Res de lookbehind: Safari <16.4. */
+const PISTA_MAI='factur|pagament|cobrament|\\bpag(o|os)\\b|\\bcobros?\\b|rebut|recibo|acord|acuerdo|decisi|decidi|vot|aprova|aprob|accept|acept|signa|firma|resoluci|reclamaci|queix|queja|demanda|den[uú]nci|recurs|requeri|legaci|sanci|multa|inspecci|jur[ií]dic|legal|advoca|abogad|laboral|assetja|acoso|p[uú]blic|ciutad|ciudad|municip|ajuntament|ayuntamiento|govern|gobierno|diputaci|generalitat|ministeri|hisenda|hacienda|tribut|fiscal|participati|m[eèé]dic|metge|pacient|salu[td]|sanit|cl[ií]nic|diagn|terap|tractament|tratamiento|psic|veterin';
+const pistaNegoci=(cap,mes)=>new RegExp('^((el|la|els|les|un|una|uns|unes|los|las|nou|nova|nous|noves|nuevo|nueva|nuevos|nuevas) )*'+cap+'(?!.*('+PISTA_MAI+(mes?'|'+mes:'')+'))','i');
 const ENTREGABLE_HINTS=[
+  [/^((el|la|els|les|un|una|uns|unes|los|las) |l')*(factur|pagament|cobrament|pagos?\b|cobros?\b)/i,'cobrament'],
   [/\bacta|reuni|assemblea/i,'acta'],
   [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
   [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
-  [/^((el|els|un|uns|los|unos|nou|nous|nuevo|nuevos) )*(pressupost|presupuest)(?!o?s? [iy] |.*(compte|cuenta|propi|partida|participati|públic|public|municipal|anual|general))(os?)?/i,'pressupost'],
-  [/(respost(a|es)|respuestas?) (a|al|als)\b(?!.*(reclamaci|queix|queja|demanda|denúnci|denunci|recurs|requeri|al·legaci|alegaci|públic|ciutadan|ciudadan|mèdic|médic|jurídic|legal|fiscal))/i,'resposta'],
+  [pistaNegoci('(pressupost|presupuest)(?!o?s? [iy] )(os?)?','compte|cuenta|propi|partida|anual|general|despes|gastos|ingress|ingreso|tresorer|tesorer|\\bestat\\b|\\bestado\\b|consell|consejo'),'pressupost'],
+  [pistaNegoci('(respost(a|es)|respuestas?) (al|als|a l\'|a) ?((la|les|una|unes|un|uns|el|los|las) )?(consult|pregunt|dubt|dud|client|interessa|interesa)'),'resposta'],
   [/inventari|estoc|material|objecte|\beina|préstec|prestec/i,'inventari'],
   [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
   [/comanda|comandes|compra|cistell|repartiment|liquidació|liquidacio/i,'comanda'],
   [/factur|pagament|cobrament|\bpagos?\b|\bcobros?\b/i,'cobrament'],
   [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
-  [/acord|decisió|decisio|vot|aprovació|aprovacio/i,'acord'],
-  [/(proposta|propuesta)(?! (econ|de valor))/i,'proposta']
+  [/acord|acuerdo|decisió|decisio|vot|aprovació|aprovacio|aprobaci|resoluci/i,'acord'],
+  [pistaNegoci('(propost(a|es)|propuestas?)','econ|de valor|preu|precio|tarif|honorari|salari|\\bsou\\b|sueldo|retribuci|quota|cuota|pressupost|presupuest|licitaci'),'proposta']
 ];
 const entregableDe=x=>{
   if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;

@@ -1087,12 +1087,12 @@ console.log('\nM32 · L\'arrencada amb IA: continguts, el que ja hi havia, les t
   const mapa3 = Object.assign(clona(mapa2), { pairs: mapa2.pairs.concat([
     ['Qui rep i explica', 'L\'operador de luxe', 'tangible', 'el pressupost del grup', '', ''],
     ['Qui rep i explica', 'El visitant', 'tangible', 'la resposta a la consulta de reserva', '', ''],
-    ['Qui fa el vi', 'El distribuïdor', 'tangible', 'la proposta de tarifa de canal', '', ''],
+    ['Qui fa el vi', 'El distribuïdor', 'tangible', 'la proposta de servei per al canal', '', ''],
     ['Qui fa el vi', 'El distribuïdor', 'tangible', 'la factura', '', '']]) });
   const f3 = (r => (S.webASite(web, { mapa: mapa3, codi, nom: 'Celler' }).fitxers.find(x => x.ruta === r) || {}).cos || '');
   const tq3 = JSON.parse(f3('cerebro/tasques-ia.json')), q3 = q => tq3.tasques.find(x => x.q === q) || {};
   ok(tq3.maquina === 4 && q3('el pressupost del grup').tipus === 'pressupost' && q3('la resposta a la consulta de reserva').tipus === 'resposta'
-    && q3('la proposta de tarifa de canal').tipus === 'proposta', 'els documents d\'un negoci que lliura la casa: pressupost, resposta i proposta');
+    && q3('la proposta de servei per al canal').tipus === 'proposta', 'els documents d\'un negoci que lliura la casa: pressupost, resposta i proposta');
   ok(q3('la factura').tipus === 'cobrament' && !q3('la factura').pot && tq3.persona === tq.persona + 1,
     'i la factura té tipus, però la fa una persona: no surt d\'una màquina');
   ok(/\*\*4 de 19 lliuraments/.test(f3('cerebro/tasques-ia.md')) && /Pressupost \(«el pressupost»\)/.test(f3('cerebro/tasques-ia.md')),

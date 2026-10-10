@@ -80,8 +80,10 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   if (!noMaq.length) bad('tots els tipus surten d\'una màquina: falta dir quin no, i per què');
   else {
     const sensMotiu = noMaq.filter(t => {
-      const i = bloc.indexOf(`{id:'${t.id}'`);
-      const tros = bloc.slice(i, i + 900);
+      /* Fins a l'entrada següent, com la guarda 3: una finestra fixa veia el
+         motiu de l'entrada de després i deixava passar la que no en té. */
+      const i = bloc.indexOf(`{id:'${t.id}'`), nx = bloc.indexOf('\n  {', i + 1);
+      const tros = bloc.slice(i, nx < 0 ? bloc.length : nx);
       /* Al codi l'apòstrof va escapat (`d\'una`), així que la pista es busca
          tolerant els dos escrits. Buscar-la literal feia petar la guarda per
          una barra invertida, que és el pitjor tipus de fals positiu: el que fa
@@ -495,16 +497,28 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   const tipus = l => (R.ENTREGABLE_HINTS.find(e => e[0].test(l)) || [])[1] || null;
   const maq = l => { const t = tipus(l); return !!t && R.ENTREGABLES.find(e => e.id === t).maquina; };
   // Els diners tenen tipus, i el seu tipus no surt d'una màquina.
+  /* «publicació de la factura» és la que veu si la fila dels diners baixa per
+     sota de la fitxa; «factura de compra», si els diners que encapçalen deixen
+     de ser els primers. */
   const DINERS = ['la factura', 'el pagament', 'el cobrament de la quota', 'el pago', 'el cobro',
-    'factura i suport', 'pagament del pressupost', 'proposta i pagament'];
-  // Diner públic, decisions, queixes i vistiplaus: cap pista els porta a una màquina.
+    'factura i suport', 'pagament del pressupost', 'proposta i pagament', 'publicació de la factura',
+    'factura de compra', 'pagament de la subvenció', 'factura de la reunió', 'resposta a la factura',
+    'pressupost amb factura', 'pressupost, factura'];
+  // Diner públic, decisions, queixes, llei i salut: cap pista els porta a una màquina.
   const MAI = ['encàrrec i pressupost', 'pressupost i comptes', 'pressupostos participatius',
     'presupuestos participativos', 'pressupost municipal', 'aprovació del pressupost', "proposta d'acord",
     'proposta econòmica', 'resposta a la reclamació', 'resposta a la consulta pública', 'serveis i resposta',
-    'confirmació del servei rebut', 'el vistiplau signat', 'contractació pública responsable'];
+    'confirmació del servei rebut', 'el vistiplau signat', 'contractació pública responsable',
+    'pressupost aprovat', 'pressupost votat', 'presupuesto aceptado', "pressupost de l'ajuntament",
+    'presupuestos del Estado', 'pressupost de despeses', "resposta a la proposta d'acord", 'resposta a la votació',
+    'resposta a la consulta del pacient', 'respuesta a la consulta de salud', 'resposta al ciutadà',
+    'resposta a la sanció', 'respuesta a Hacienda', 'reclamacions i resposta al client',
+    'la queixa: resposta al client', 'resposta al·legacions', 'propuesta de acuerdo', 'proposta de resolució',
+    'proposta de preus', 'proposta salarial', 'proposta de tractament', 'proposta de pressupost participatiu'];
   const SI = { 'el pressupost': 'pressupost', 'el pressupost del grup': 'pressupost', 'el presupuesto': 'pressupost',
-    'la proposta de servei': 'proposta', 'propuesta comercial': 'proposta', 'resposta a una consulta': 'resposta',
-    'respuesta al cliente': 'resposta', 'acta de la reunió mensual': 'acta', 'liquidació de vendes': 'comanda',
+    'els pressupostos': 'pressupost', 'la proposta de servei': 'proposta', 'propuesta comercial': 'proposta',
+    'les propostes de servei': 'proposta', 'resposta a una consulta': 'resposta', 'respuesta al cliente': 'resposta',
+    'respostes a les consultes del web': 'resposta', 'acta de la reunió mensual': 'acta', 'liquidació de vendes': 'comanda',
     'la comanda i el pagament': 'comanda', 'comandes estables i pagament just': 'comanda',
     'la convocatòria de la verema': 'convocatoria', 'inventari del material': 'inventari' };
   const CAP = ['una cosa rara', "una cosa que no s'assembla a res", 'el paperot de cada mes',

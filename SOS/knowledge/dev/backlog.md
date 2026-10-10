@@ -1488,7 +1488,7 @@ intangible, va a la persona que porta el rol —i la màquina no la toca mai.**
 
 | Peça | Què fa |
 |---|---|
-| `ENTREGABLES` | Vuit tipus tancats. **Un diu que no surt d'una màquina**, amb el motiu escrit: sense aquella entrada la taula semblaria dir que tot és automatitzable |
+| `ENTREGABLES` | Dotze tipus tancats: vuit de comunitat, tres de negoci (pressupost, proposta, resposta) i els diners. **Dos diuen que no surten d'una màquina** (`acord` i `cobrament`), amb el motiu escrit: sense aquestes entrades la taula semblaria dir que tot és automatitzable |
 | `fluxAutomatitzable` | Exigeix que el flux sigui **explícitament tangible**; una mena desconeguda cau del costat segur |
 | `repartimentMaquina` | El número que ven, al costat del diagnòstic de salut |
 | `desviacioMapa` | Què preveu el model que no tens. Diu «desviació» i **mai «incompliment»** |
@@ -1500,8 +1500,9 @@ intangible, va a la persona que porta el rol —i la màquina no la toca mai.**
 | `sedasFitxa` | El sedàs de `verifyNoLeak` per al que surt a fora |
 
 **Els set intents hi són** (acta, informe, convocatòria, justificació, inventari,
-comanda, fitxa), **17 guardes** a `check-entregables.js` totes provades
-trencant-les, i 107 assercions a `test-entregables.mjs`.
+comanda, fitxa), **18 guardes** a `check-entregables.js` totes provades
+trencant-les, i 120 assercions a `test-entregables.mjs`. Els tres de negoci
+(10/10/2026) encara no en tenen.
 
 **El que queda d'aquesta línia, i no és codi:** **mirar el percentatge.** La
 mesura hi és i encara no té dades. Quan n'hi hagi, el número diu on cal actuar:
