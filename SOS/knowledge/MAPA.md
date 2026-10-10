@@ -14,9 +14,10 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 253 · 17623 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 261 · 17720 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
+| `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 7 · 91 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 4 · 230 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
@@ -33,7 +34,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 30 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 103 · 1338 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 104 · 1341 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 55 · 1202 KB |
 
 ## saber
@@ -80,4 +81,4 @@ No són referència de com es fan les coses ara.
 
 ---
 
-*36 carpetes declarades · generat des de l'arbre, no escrit.*
+*37 carpetes declarades · generat des de l'arbre, no escrit.*
