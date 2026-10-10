@@ -54,25 +54,11 @@
   --t4           : clamp(1.75rem,4vw,2.6rem);
   --t5           : clamp(2.1rem,6vw,3.5rem);
 /*/TT-PELL*/
-            /* ── ELS NOMS VELLS D'AQUESTA PÀGINA ───────────────────────────
-               La portada fa servir `--bg-dark`, `--white` i `--accent-*` en
-               **631 llocs**. Reanomenar-los aquí seria un canvi de sis-centes
-               línies que no es veu, barrejat amb el canvi de pell, i llavors
-               cap dels dos es podria llegir a la revisió.
-
-               Per això apunten als de la pell i prou. Dos ja no volen dir el
-               que diuen —`--bg-dark` és paper i `--white` és tinta— i això és
-               exactament el motiu pel qual aquest bloc ha de desaparèixer.
-               Entrada oberta al backlog. */
-            --bg-dark:       var(--bg);
-            --bg-panel:      var(--panel);
-            --bg-elevated:   var(--card);
-            --white:         var(--text);
-            --accent-indigo: var(--indigo);
-            --accent-blue:   var(--blue);
-            --accent-purple: var(--purple);
-            --accent-green:  var(--green);
-            --accent-orange: var(--orange);
+            /* ── ELS VELS DELS ACCENTS ──────────────────────────────────────
+               Els noms vells d'aquesta pàgina (`--white`, `--accent-*`,
+               `--bg-*`) eren àlies dels de la pell i se'n van el 10/10/2026:
+               les regles ja fan servir els de la pell directament. El que es
+               queda són els vels, que no són àlies sinó colors propis. */
             --indigo-dim:    rgba(79,70,229,0.10);
             --blue-dim:      rgba(0,102,179,0.10);
             --purple-dim:    rgba(163,24,127,0.10);
@@ -82,8 +68,8 @@
         }
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 16px; scroll-behavior: smooth; }
-        body { background: var(--bg-dark); color: var(--white); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--accent-indigo); }
+        body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 400; line-height: 1.7; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: var(--indigo); }
         body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity:.4; }
         .container { max-width:1160px; margin:0 auto; padding:0 2rem; position:relative; z-index:1; }
         section { position:relative; z-index:1; }
@@ -101,7 +87,7 @@
            i l'un cau i l'altre no. Veda 113. */
         /* Les crides repetides enmig de la pàgina. Una franja i no una secció:
            no té titular perquè no explica res nou, només torna a obrir la porta. */
-        .cta-band { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--bg-panel); }
+        .cta-band { border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--panel); }
         .cta-band p { margin:0; font-size:1rem; color:var(--light); line-height:1.6; max-width:620px; }
         @media (max-width:768px) {
             .cta-band .btn-primary { display:block; width:100%; box-sizing:border-box; text-align:center; }
@@ -109,9 +95,9 @@
 
         /* SECTION HEADERS */
         .section-header { text-align:center; max-width:720px; margin:0 auto 5rem; }
-        .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.2em; color:var(--accent-indigo); text-transform:uppercase; margin-bottom:1.25rem; }
+        .section-eyebrow { font-family:var(--mono); font-size:.7rem; letter-spacing:.2em; color:var(--indigo); text-transform:uppercase; margin-bottom:1.25rem; }
         .section-header h2 { font-family:var(--sans); font-size:clamp(2.1rem,4vw,3.2rem); font-weight:700; line-height:1.15; margin-bottom:1.25rem; }
-        .section-header h2 em { font-style:normal; color:var(--accent-blue); }
+        .section-header h2 em { font-style:normal; color:var(--blue); }
         .section-header p { font-size:1rem; color:var(--light); line-height:1.8; }
         @media (max-width:900px) { }
 
@@ -123,22 +109,22 @@
         .pk-fam-cap h3 { font-family:var(--sans); font-size:1.7rem; font-weight:700; margin:0 0 .35rem; }
         .pk-fam-cap p { color:var(--muted); font-size:.9rem; margin:0; }
         .pk-graella { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:2px; }
-        .paquet { background:var(--bg-panel); padding:2rem 1.8rem; display:flex; flex-direction:column;
+        .paquet { background:var(--panel); padding:2rem 1.8rem; display:flex; flex-direction:column;
             transition:background .2s; }
-        .paquet:hover { background:var(--bg-elevated); }
+        .paquet:hover { background:var(--card); }
         .paquet header { display:flex; align-items:flex-start; justify-content:space-between; gap:.8rem;
             margin-bottom:.9rem; }
         .paquet h4 { font-family:var(--sans); font-size:1.15rem; font-weight:700; margin:0; line-height:1.3; }
         .paquet h4 a { color:inherit; text-decoration:underline; text-underline-offset:3px;
             text-decoration-color:var(--border); }
-        .paquet h4 a:hover { text-decoration-color:var(--accent-green); }
+        .paquet h4 a:hover { text-decoration-color:var(--green); }
         /* El punt d'adaptació. Tres colors i tres significats: no és decoració,
            és la diferència entre un producte amb casos i un que encara no en té. */
         .pk-punt { font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
             padding:.3rem .55rem; border-radius:3px; white-space:nowrap; flex-shrink:0; font-weight:700; }
-        .pk-provat { background:var(--green-dim); color:var(--accent-green); }
-        .pk-adapt  { background:var(--blue-dim); color:var(--accent-blue); }
-        .pk-nou    { background:var(--purple-dim); color:var(--accent-purple); }
+        .pk-provat { background:var(--green-dim); color:var(--green); }
+        .pk-adapt  { background:var(--blue-dim); color:var(--blue); }
+        .pk-nou    { background:var(--purple-dim); color:var(--purple); }
         .pk-endus { font-size:.85rem; color:var(--light); line-height:1.7; margin:0 0 1.2rem; }
         .pk-dades { display:grid; grid-template-columns:auto 1fr; gap:.4rem .9rem; margin:0 0 1.3rem;
             font-size:.78rem; }
@@ -148,12 +134,12 @@
         /* L'aportació de valor. Va abans de les dades i del preu a posta: la
            pregunta que decideix una compra no és què és ni què costa, és què
            se n'endú qui la paga. */
-        .pk-valor { font-size:.84rem; line-height:1.65; color:var(--white); margin:0 0 1.2rem;
-            border-left:2px solid var(--accent-green); padding-left:.9rem; }
+        .pk-valor { font-size:.84rem; line-height:1.65; color:var(--text); margin:0 0 1.2rem;
+            border-left:2px solid var(--green); padding-left:.9rem; }
         .pk-valor-l { display:block; font-family:var(--mono); font-size:.62rem; letter-spacing:.12em;
-            text-transform:uppercase; color:var(--accent-green); margin-bottom:.3rem; }
+            text-transform:uppercase; color:var(--green); margin-bottom:.3rem; }
         .pk-preu { margin-top:auto; padding-top:1rem; border-top:1px solid var(--border); }
-        .pk-preu strong { font-family:var(--sans); font-size:1.35rem; font-weight:700; color:var(--white);
+        .pk-preu strong { font-family:var(--sans); font-size:1.35rem; font-weight:700; color:var(--text);
             display:block; }
         /* D'on surt el preu: tarifa, forquilla del model o estimació a validar.
            Una xifra sense procedència no la pot discutir qui la llegeix ni
@@ -164,11 +150,11 @@
         /* Un paquet sense xifra publicada. Es pinta amb la mateixa mida que un
            preu i no com una nota petita: el que hi diu és una resposta, no una
            excusa, i porta al mètode en un clic. */
-        .pk-mida a { color:var(--white); text-decoration:none; font-size:1.05rem;
+        .pk-mida a { color:var(--text); text-decoration:none; font-size:1.05rem;
             border-bottom:1px dashed var(--border); }
-        .pk-mida a:hover { border-bottom-color:var(--accent-green); color:var(--accent-green); }
+        .pk-mida a:hover { border-bottom-color:var(--green); color:var(--green); }
         .pk-nota { color:var(--muted); font-size:.82rem; line-height:1.75; margin-top:2rem;
-            border-left:2px solid var(--accent-green); padding-left:1rem; }
+            border-left:2px solid var(--green); padding-left:1rem; }
         .pk-nota + .pk-nota { margin-top:1rem; }
 
         /* ── EL FILTRE DE SECTOR ──────────────────────────────────────────
@@ -179,8 +165,8 @@
         .pk-f { font-family:var(--mono); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
             color:var(--muted); background:transparent; border:1px solid var(--border);
             border-radius:100px; padding:.55rem 1.1rem; cursor:pointer; transition:.15s; }
-        .pk-f:hover { color:var(--white); border-color:var(--muted); }
-        .pk-f.on { color:var(--bg-dark); background:var(--accent-green); border-color:var(--accent-green);
+        .pk-f:hover { color:var(--text); border-color:var(--muted); }
+        .pk-f.on { color:var(--bg); background:var(--green); border-color:var(--green);
             font-weight:600; }
         .pk-fam[hidden], .paquet[hidden] { display:none; }
 
@@ -191,13 +177,13 @@
         .cost { padding:8rem 0; border-top:1px solid var(--border); }
         .cm-passos { list-style:none; counter-reset:cm; padding:0; margin:0 0 3.5rem;
             display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:1.2rem; }
-        .cm-pas { counter-increment:cm; background:var(--bg-panel); border:1px solid var(--border);
+        .cm-pas { counter-increment:cm; background:var(--panel); border:1px solid var(--border);
             border-radius:14px; padding:1.6rem 1.5rem 1.4rem; position:relative; }
         .cm-pas::before { content:counter(cm); font-family:var(--mono); font-size:.7rem;
-            color:var(--accent-green); display:block; margin-bottom:.7rem; letter-spacing:.1em; }
-        .cm-pas h4 { font-size:1rem; margin:0 0 .5rem; color:var(--white); line-height:1.35; }
+            color:var(--green); display:block; margin-bottom:.7rem; letter-spacing:.1em; }
+        .cm-pas h4 { font-size:1rem; margin:0 0 .5rem; color:var(--text); line-height:1.35; }
         .cm-pas p { font-size:.85rem; line-height:1.65; color:var(--muted); margin:0; }
-        .cm-h3 { font-size:1.3rem; margin:0 0 .6rem; color:var(--white); }
+        .cm-h3 { font-size:1.3rem; margin:0 0 .6rem; color:var(--text); }
         .cm-int { font-size:.9rem; line-height:1.75; color:var(--muted); margin:0 0 1.6rem; max-width:52rem; }
         .cm-taula-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
         .cm-taula { width:100%; border-collapse:collapse; font-size:.86rem; min-width:34rem; }
@@ -205,17 +191,17 @@
             border-bottom:1px solid var(--border); line-height:1.55; }
         .cm-taula thead th { font-family:var(--mono); font-size:.62rem; letter-spacing:.12em;
             text-transform:uppercase; color:var(--muted); font-weight:400; }
-        .cm-taula tbody th { color:var(--white); font-weight:600; white-space:nowrap; }
+        .cm-taula tbody th { color:var(--text); font-weight:600; white-space:nowrap; }
         .cm-taula tbody td { color:var(--muted); }
-        .cm-niv { font-family:var(--mono); font-size:.7rem; color:var(--accent-green); }
-        .cm-taula .cm-h { color:var(--white); font-weight:700; font-size:1rem; white-space:nowrap; }
+        .cm-niv { font-family:var(--mono); font-size:.7rem; color:var(--green); }
+        .cm-taula .cm-h { color:var(--text); font-weight:700; font-size:1rem; white-space:nowrap; }
         .cm-peu { color:var(--muted); font-size:.82rem; line-height:1.75; margin-top:2rem;
-            border-left:2px solid var(--accent-green); padding-left:1rem; }
-        .cm-peu strong { color:var(--white); }
-        .mv-p.i { stroke:var(--accent-purple); stroke-width:3; stroke-dasharray:5 95; }
+            border-left:2px solid var(--green); padding-left:1rem; }
+        .cm-peu strong { color:var(--text); }
+        .mv-p.i { stroke:var(--purple); stroke-width:3; stroke-dasharray:5 95; }
         @keyframes mv-flueix { to { stroke-dashoffset:0; } }
-        .dv-t.on { border-color:var(--accent-indigo); color:var(--white); background:rgba(99,102,241,.12); }
-        .ct-t.on { border-color:var(--accent-indigo); color:var(--white); background:rgba(99,102,241,.12); }
+        .dv-t.on { border-color:var(--indigo); color:var(--text); background:rgba(99,102,241,.12); }
+        .ct-t.on { border-color:var(--indigo); color:var(--text); background:rgba(99,102,241,.12); }
 
         /* ── ELS DOS PONTS CAP AL SOS ─────────────────────────────────────────
            Substitueixen dues seccions que se n'han anat a /sos/. Són bandes i
@@ -225,16 +211,16 @@
            contingut ha tornat al lloc equivocat. */
         .pont { padding:0 0 7rem; }
         .pont-in { display:grid; grid-template-columns:1.1fr 1fr; gap:3rem; align-items:center;
-            background:var(--bg-panel); border:1px solid var(--border); border-radius:16px; padding:2.4rem 2.6rem; }
+            background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:2.4rem 2.6rem; }
         .pont-t h2 { font-family:var(--sans); font-size:clamp(1.3rem,2.4vw,1.9rem); font-weight:700;
             line-height:1.16; margin:0 0 .8rem; }
-        .pont-t h2 em { font-style:normal; color:var(--accent-green); }
+        .pont-t h2 em { font-style:normal; color:var(--green); }
         .pont-t p { color:var(--light); font-size:.95rem; line-height:1.7; margin:0; }
         .pont-l { list-style:none; padding:0; margin:0 0 1.2rem; display:flex; flex-direction:column; gap:.45rem; }
         .pont-l li { font-size:.86rem; color:var(--light); padding-left:1.1rem; position:relative; line-height:1.5; }
-        .pont-l li::before { content:'→'; position:absolute; left:0; color:var(--accent-green); font-size:.78rem; }
+        .pont-l li::before { content:'→'; position:absolute; left:0; color:var(--green); font-size:.78rem; }
         .pont-cta { display:inline-block; font-size:.88rem; font-weight:600; text-decoration:none;
-            padding:.65rem 1.1rem; border-radius:10px; background:var(--accent-green); color:var(--bg); }
+            padding:.65rem 1.1rem; border-radius:10px; background:var(--green); color:var(--bg); }
         @media (max-width:1080px) { .pont-in { grid-template-columns:1fr; gap:1.6rem; padding:1.8rem; } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
@@ -242,18 +228,18 @@
         .cta-final { padding:10rem 0; text-align:center; position:relative; overflow:hidden; }
         .cta-final::before { content:'SOS'; position:absolute; font-family:var(--sans); font-size:26vw; font-weight:700; color:rgba(99,102,241,0.03); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; white-space:nowrap; }
         .cta-final h2 { font-family:var(--sans); font-size:clamp(2.3rem,5vw,4.6rem); font-weight:700; line-height:1.12; margin-bottom:1.5rem; position:relative; }
-        .cta-final h2 em { font-style:normal; color:var(--accent-blue); }
+        .cta-final h2 em { font-style:normal; color:var(--blue); }
         .cta-final .actions { position:relative; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
 
         /* FOOTER */
         footer { padding:3rem 0; border-top:1px solid var(--border); }
         .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--white); }
-        .footer-logo span { color:var(--accent-indigo); }
+        .footer-logo { font-family:var(--sans); font-size:1.1rem; font-weight:700; color:var(--text); }
+        .footer-logo span { color:var(--indigo); }
         .footer-copy { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.08em; }
         .footer-links { display:flex; flex-wrap:wrap; justify-content:center; gap:.9rem 2rem; list-style:none; }
         .footer-links a { font-size:.78rem; color:var(--muted); text-decoration:none; transition:color .2s; }
-        .footer-links a:hover { color:var(--accent-indigo); }
+        .footer-links a:hover { color:var(--indigo); }
 
         /* ANIMATIONS */
         .fade-up { opacity:1; transform:translateY(0); transition:opacity .7s ease,transform .7s ease; }
@@ -281,15 +267,15 @@
            Cada paraula que la pàgina fa servir i que algú podria no entendre té
            aquí la seva frase. Va just abans de la metodologia, no al peu: un
            glossari que arriba després del text que l'exigia ja no serveix. */
-        .glossari { border-top:1px solid var(--border); background:var(--bg-panel); }
+        .glossari { border-top:1px solid var(--border); background:var(--panel); }
         .glos-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); margin-top:2.5rem; }
-        .glos-item { background:var(--bg-dark); padding:1.6rem; }
-        .glos-t { font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--accent-blue); text-transform:uppercase; margin-bottom:.1rem; }
+        .glos-item { background:var(--bg); padding:1.6rem; }
+        .glos-t { font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--blue); text-transform:uppercase; margin-bottom:.1rem; }
         .glos-a { font-size:1.05rem; font-weight:700; margin-bottom:.5rem; line-height:1.35; }
         .glos-d { font-size:.86rem; color:var(--light); line-height:1.65; }
         .glos-d em { color:var(--muted); font-style:normal; }
         .glos-nota { margin-top:1.5rem; font-family:var(--mono); font-size:.72rem; color:var(--muted); line-height:1.7; }
-        .glos-nota span { color:var(--accent-blue); }
+        .glos-nota span { color:var(--blue); }
         @media (max-width:600px) {
             .glos-item, .pas { padding:1.35rem; }
         }
@@ -301,9 +287,9 @@
            sense sortida és un cul-de-sac (veda 62). */
         .pg-cap { padding:2.5rem 0 2.5rem; border-bottom:1px solid var(--border); }
         .pg-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.2em;
-            text-transform:uppercase; color:var(--accent-indigo); margin:0 0 .9rem; }
+            text-transform:uppercase; color:var(--indigo); margin:0 0 .9rem; }
         .pg-cap h1 { font-size:clamp(2rem,4.5vw,3.1rem); line-height:1.1; margin:0 0 1.1rem; letter-spacing:-.02em; }
-        .pg-cap h1 em { font-style:normal; color:var(--accent-indigo); }
+        .pg-cap h1 em { font-style:normal; color:var(--indigo); }
         .pg-lead { max-width:68ch; font-size:1.05rem; line-height:1.7; color:var(--light); margin:0 0 1.4rem; }
         .pg-lead strong { color:var(--text); font-weight:600; }
         .pg-tornar { margin:0; font-family:var(--mono); font-size:.8rem; }

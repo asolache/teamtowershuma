@@ -101,7 +101,18 @@ const PELL = [
    pàgines i un token que la pell no declari no peta enlloc —deixa el text
    sense color. Comprovar-ho demana aquesta llista, i una segona còpia d'ella
    divergiria el primer dia que s'hi afegís un color. */
-module.exports = { PELL };
+/* ══ EL BLOC ═════════════════════════════════════════════════════════════════ */
+function bloc() {
+  const ample = Math.max(...PELL.map(p => p[0].length));
+  return PELL.map(([k, v, per]) =>
+    `  ${k.padEnd(ample)}: ${v};${per ? '   /* ' + per + ' */' : ''}`).join('\n');
+}
+
+/* `bloc` també s'exporta: `build-vedes.js` regenera la seva pàgina sencera i
+   ha d'escriure-hi la paleta ell mateix. Abans hi deixava les marques buides
+   esperant que aquest fitxer les omplís després, i com que aquest no corria
+   al CI, `/vedes` es publicava sense cap color de la pell. */
+module.exports = { PELL, bloc };
 if (require.main !== module) return;
 
 /* ══ QUI LA PORTA, I QUI NO ══════════════════════════════════════════════════
@@ -128,13 +139,6 @@ const PAGINES = [].concat(
   readdirSync(ARREL).filter(f => /\.html$/.test(f)),
   readdirSync(SOS).filter(f => /\.html$/.test(f)).map(f => 'SOS/' + f)
 ).filter(f => !FORA_DE_LA_PELL[f]).sort();
-
-/* ══ EL BLOC ═════════════════════════════════════════════════════════════════ */
-function bloc() {
-  const ample = Math.max(...PELL.map(p => p[0].length));
-  return PELL.map(([k, v, per]) =>
-    `  ${k.padEnd(ample)}: ${v};${per ? '   /* ' + per + ' */' : ''}`).join('\n');
-}
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════
    Les marques van **dins del `:root`** de cada pàgina, i el que hi hagi fora
@@ -174,7 +178,10 @@ if (sense.length) bad(`${pl(sense.length, 'pàgina', 'pàgines')} sense les marq
     const txt = readFileSync(f, 'utf8');
     const i = txt.indexOf(OBRE), j = txt.indexOf(TANCA);
     if (i < 0 || j <= i) return;
-    const fora = txt.slice(0, i) + txt.slice(j + TANCA.length);
+    /* Els `<script>` no compten: `vna-suport.html` porta dins del seu JS el
+       full d'estil **de la web del client** que exporta, amb el seu `--bg`, i
+       allò no és aquesta pàgina redeclarant la pell sinó un altre document. */
+    const fora = (txt.slice(0, i) + txt.slice(j + TANCA.length)).replace(/<script[\s\S]*?<\/script>/g, '');
     /* Es busca **en qualsevol posició** i no a principi de línia: la paleta de
        `build-vedes.js` anava tota en una sola línia dins d'un `:root{…}` i
        aquesta guarda no la veia, de manera que la pàgina es quedava fosca i
