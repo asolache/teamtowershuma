@@ -89,6 +89,39 @@ des de Node, amb el mateix codi (bloc `VS-SITE`). HTML W3C validat i sense
 JavaScript, JSON-LD a cada pàgina (la web és la base de dades), formularis
 de Netlify que arriben per correu, zip determinista i `permaweb.json` amb
 l'empremta SHA-256 de cada fitxer. Vint proves al motor.
+El zip ja és el repositori del client, en sincronia amb el pla d'estratègia
+(«la plantilla de repositori de client de la fase 1»): el cervell del projecte
+a `cerebro/` (mapa real i ideal, una fitxa per rol, per lliurament i per
+procés, i `decisiones.md`), `CLAUDE.md` amb les regles, `netlify.toml` amb
+CSP, la 404, `robots.txt` i, amb l'adreça definitiva, el sitemap, `canonical`
+i Open Graph. El cervell porta el seu índex (`CEREBRO.md` i `cerebro/indice.json`):
+cada document amb tema i capa (pública, per enllaç, equip), el mateix model que
+el d'Events Penedès.
+**Fet, fase 2 del pla:** el registre viu. La web porta `registre.html`
+(Netlify Forms) per anotar cada lliurament entre rols. El CSV es llegeix a la
+pestanya Web o amb `SOS/tools/llegeix-registre.js` (mateix codi, bloc
+`VS-REG`): informe, mapa observat amb el dibuixat com a ideal (vista
+Desviació) i els avisos de la fase 3. Del CSV només es queden rols,
+lliurament, tipus, data, evidència i valor. Vint-i-quatre proves al motor.
+**Fet, fase 3 del pla:** l'API i els avisos. La web és l'API (`web.json`,
+JSON-LD i el formulari del registre). Dues funcions de Netlify envien els
+avisos del pla signats amb HMAC-SHA256; `.mcp.json` connecta el cervell a
+Claude Code amb `eines/mcp.mjs`. Un sol codi: blocs `VS-API` i `VS-MCP`.
+El cervell ja no es publica (404 a `netlify.toml`). Vint-i-quatre proves.
+Següent: provar els avisos amb el primer pilot i els comptes de debò.
+**Fet, camí B de l'alta:** «Publica-la a nom teu (Netlify)» a la pestanya Web.
+El botó «Deploy to Netlify» clona `SOS/plantilla-web/` al GitHub del client,
+amb el mapa comprimit, i Netlify hi fa la web a cada publicació amb el codi de
+l'editor (`build-plantilla.js`, guarda a la CI).
+**Fet, pas 4 de l'alta:** el pagament amb Stripe Checkout (Apple Pay i Google
+Pay), en mode de prova. «Paga i publica-la a nom teu» a la pestanya Web; dues
+funcions de Netlify (`checkout`, `checkout-completat`) i l'avís de Stripe
+amb la signatura comprovada. Sense claus, publica sense pagar. Pendent de
+l'Àlvar: posar les claus de prova a Netlify i crear el preu a Stripe.
+Següent de l'ordre: el camí A (tokens de servei).
+**Fet (demanat per l'Àlvar el 09/10/2026):** la vista prèvia de la web al
+navegador. A la pestanya Web, «Vista prèvia» ensenya la web de debò (el mateix
+codi que el zip) pàgina a pàgina, sense descarregar res.
 Pendent: publicar a IPFS o Arweave, i els comptes de debò.
 
 **Dissenyat, per fer:** `alta-en-un-toc.md`. Stripe Checkout amb Apple Pay.

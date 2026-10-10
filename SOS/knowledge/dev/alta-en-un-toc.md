@@ -63,9 +63,20 @@ El client només fa una cosa: pagar amb Apple Pay.
 endur-se-ho tot: GitHub permet transferir un repositori i Netlify permet
 transferir un lloc a un altre equip. Sense això, el camí A seria una presó.
 
-### Camí B · «Ho vull a nom meu»
+### Camí B · «Ho vull a nom meu» (fet, amb el pagament en mode de prova)
 
 Dos tocs més, i tot és seu des del primer minut.
+
+**Ja funciona:** a la pestanya Web, **«Publica-la a nom teu (Netlify)»**. Obre
+el botó «Deploy to Netlify» de la carpeta `SOS/plantilla-web/` d'aquest
+repositori (paràmetre `create_from_path`: no cal cap repositori a part).
+Netlify la copia al GitHub del client i la publica. A cada publicació hi
+executa `node eines/genera.mjs`, que fa la web amb el mateix codi que l'editor.
+El mapa hi va comprimit dins del botó (`TT_MAPA`, al hash de l'adreça, que no
+arriba als registres de Netlify), amb el nom, el correu i la llengua. Quan el
+client desa `cerebro/mapa-real.json` al seu repositori, aquest mana. La
+plantilla es regenera amb `node SOS/tools/build-plantilla.js`, i la CI comprova
+que porta el codi de l'editor tal com és.
 
 1. Paga amb Apple Pay, igual que al camí A.
 2. Botó **«Deploy to Netlify»**. El client entra a Netlify amb el seu GitHub.
@@ -82,11 +93,11 @@ pràctiques W3C, integrable per API, fent servir els correus i la mateixa web
 com a base de dades, DRY radical, al mínim cost i cap a la permaweb.
 
 **On és:** a la pestanya Web, el botó **«Descarrega la web (.zip)»**. Hi ha
-tres camps opcionals: el nom, el correu on arriben els formularis i la
-llengua (català o castellà). Des de Node fa el mateix:
+quatre camps opcionals: el nom, el correu on arriben els formularis,
+l'adreça definitiva i la llengua (català o castellà). Des de Node fa el mateix:
 
 ```bash
-node SOS/tools/web-del-mapa.js mapa.json carpeta/ --nom "El celler" --correu hola@exemple.cat --llengua es
+node SOS/tools/web-del-mapa.js mapa.json carpeta/ --nom "El celler" --correu hola@exemple.cat --url https://elceller.example --llengua es
 ```
 
 `mapa.json` és el que dona «Copia el JSON» a l'editor, o el `web.json` de la
@@ -104,6 +115,13 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
 | `estil.css` | Un sol full d'estil, amb mode fosc |
 | `web.json` | Les dades de la web, enllaçades des de cada pàgina |
 | `permaweb.json` | L'empremta SHA-256 de cada fitxer |
+| `404.html` | La pàgina que no hi és, amb `noindex` |
+| `cerebro/` | **El cervell del projecte**, amb l'estructura que fixa el pla d'estratègia: `mapa-real.json` (la font, que l'editor torna a obrir igual) i `mapa-ideal.json` si n'hi ha, una fitxa per rol (`roles/`), per lliurament (`entregables/`) i per procés (`procesos/`), i `decisiones.md`, l'únic que s'escriu a mà |
+| `CEREBRO.md` i `cerebro/indice.json` | **L'índex del cervell**: cada document amb el seu tema (la web, el mapa, rols, lliuraments, processos, decisions, regles) i la seva capa: pública (la web que s'indexa), per enllaç (les pàgines `noindex`) i equip (el que només viu al repositori). El mateix model que el cervell d'Events Penedès |
+| `CLAUDE.md` | Les regles per a qui hi treballa, persona o IA: no s'edita a mà, cap clau al repositori, cada canvi en una PR |
+| `LLEGEIX.md` | Com publicar-la (`LEEME.md` si és en castellà) |
+| `netlify.toml` | Publica la carpeta, amb capçaleres de seguretat: CSP sense scripts i formularis només a la mateixa web |
+| `robots.txt` i `sitemap.xml` | El sitemap, només si es dona l'adreça definitiva. Llavors cada pàgina porta també `canonical` i Open Graph |
 
 **Com compleix el que es va demanar:**
 
@@ -130,6 +148,9 @@ pestanya. Qualsevol vista del graf que exporti aquest JSON pot fer la web.
   mapa dona sempre els mateixos bytes. `permaweb.json` permet comprovar el que
   s'ha publicat.
 
+**Per veure-la abans:** el botó «Vista prèvia» de la pestanya Web l'ensenya
+al navegador, pàgina a pàgina, amb els enllaços i els formularis.
+
 **Per publicar-la:** arrossega la carpeta a Netlify (Netlify Drop) o puja-la al
 repositori del client. Netlify en detecta els formularis sol.
 
@@ -138,8 +159,120 @@ repositori del client. Netlify en detecta els formularis sol.
 - Publicar a IPFS o Arweave des del mateix botó. Demana una cartera, i la clau
   ha de ser a la cartera de qui signa, mai al repositori.
 - Els comptes de debò, per als rols de la llista `alta`.
-- `CLAUDE.md` i una carpeta de memòria dins del zip, per al repositori del
-  client.
+- ✓ El zip ja és el repositori del client: el cervell (`cerebro/`),
+  `CLAUDE.md`, `netlify.toml`, la 404, `robots.txt` i, amb l'adreça, el sitemap.
+- ✓ El registre viu de transaccions (fase 2 del pla): vegeu el punt 3b.
+
+## 3b · Fet: el registre viu, el mapa real que surt de l'ús
+
+Fase 2 del pla. Fins ara el mapa real sortia del taller, de la memòria de qui
+hi era. Ara pot sortir de l'ús.
+
+**On s'anota.** La web del client porta `registre.html`, fora del menú i dels
+cercadors, enllaçada des de la pàgina de l'equip. És un formulari de Netlify
+Forms: de quin rol a quin, quin lliurament (amb els del mapa per triar),
+tangible o intangible, el valor percebut de 1 a 5, la data i un enllaç
+d'evidència. Cada anotació arriba per correu. Cap servidor ni base de dades.
+
+**Com es llegeix.** Netlify dona el CSV del formulari. Es carrega a la
+pestanya Web de l'editor (camp «El CSV del registre») o es passa per Node:
+
+```bash
+node SOS/tools/llegeix-registre.js cerebro/mapa-real.json cerebro/registro/registre.csv cerebro/registro/ --llengua es
+```
+
+Tots dos fan servir el mateix codi, el bloc `VS-REG` de l'editor.
+
+**Què en surt:**
+
+| Sortida | Què diu |
+|---|---|
+| `informe.md` | Els fluxos vius (vegades, valor percebut, darrera data), els del mapa que no passen, el que passa i no és al mapa, i qui dona sense rebre |
+| `mapa-observat.json` | El mapa que surt del registre, amb el dibuixat com a ideal. A l'editor, «Obre el mapa observat» ensenya la vista Desviació. Es pot desfer |
+| `avisos.json` | El que la fase 3 enviarà per webhook, amb els noms del pla: `rol.sin_reciprocidad` i `desviacion.detectada` (flux sense ús o flux nou) |
+
+**Cap dada personal.** Del CSV només es llegeixen rols, lliurament, tipus,
+data, evidència i valor. Qualsevol altra columna (noms, correus, IP) es
+descarta en llegir-lo, i una prova ho comprova. L'evidència només val si és
+un enllaç `http(s)`.
+
+**Pendent:** que el mapa observat s'actualitzi sol a cada enviament (una
+funció de Netlify que rebi l'avís del formulari) i els webhooks de la fase 3.
+
+## 3c · Fet: l'API i els avisos (fase 3 del pla)
+
+**La web és l'API.** Per llegir, `web.json` i el JSON-LD de cada pàgina. Per
+escriure, el formulari del registre: un `POST` de Netlify Forms. No hi ha cap
+servidor propi.
+
+**Els avisos.** El zip porta dues funcions de Netlify, que Netlify crida
+soles: `submission-created`, a cada anotació del registre, i
+`deploy-succeeded`, a cada publicació. Envien els avisos del pla a les
+adreces de `TT_WEBHOOKS`, signats amb HMAC-SHA256 (capçalera
+`X-TT-Signatura`) amb el secret de `TT_WEBHOOK_SECRET`. Sense secret, o a
+una adreça que no sigui https, no s'envia res.
+
+| Avís | Quan |
+|---|---|
+| `transaccion.creada` | Cada anotació al registre |
+| `desviacion.detectada` | L'anotació no és cap flux del mapa, o un flux del mapa no passa |
+| `rol.sin_reciprocidad` | Un rol dona i no rep res registrat |
+| `cerebro.actualizado` | Cada publicació a producció |
+
+Els dos del mig, quan depenen de tot el registre, surten de
+`node eines/registre.mjs --envia`, al repositori del client.
+
+**El cervell, per a Claude Code.** `.mcp.json` connecta `eines/mcp.mjs`, un
+servidor MCP sense dependències amb tres eines: l'índex del cervell, llegir
+un document i l'informe del registre. Només llegeix el que surt a l'índex.
+
+**Un sol codi.** Tot surt dels blocs `VS-REG`, `VS-API` i `VS-MCP` de
+l'editor, tal com hi són. `API.md`, al zip, explica com fer-ho servir.
+
+**El cervell ja no es publica.** `netlify.toml` torna 404 per a `cerebro/`,
+`eines/`, `netlify/`, les regles i `.mcp.json`: la capa «equip» de l'índex
+només viu al repositori.
+
+**Pendent:** donar d'alta els avisos amb el primer pilot (quina eina els
+escolta) i l'accés de les persones de fora, quan hi hagi comptes de debò.
+
+## 3d · Fet: el pagament, amb Stripe Checkout (mode de prova)
+
+**Com es veu.** Si la web té claus de Stripe, el botó de la pestanya Web diu
+**«Paga i publica-la a nom teu»**. Porta a la pàgina de pagament de Stripe
+(targeta, Apple Pay o Google Pay). En tornar, l'editor pregunta si s'ha pagat
+i el botó torna a ser «Publica-la a nom teu», amb el mapa i el nom on eren.
+Sense claus, o des del disc, el botó publica sense pagar, com abans.
+
+**El que es paga és el servei.** La plantilla és oberta (és en aquest
+repositori públic). El pagament és per l'acompanyament, no per l'accés al codi.
+
+**Dues funcions de Netlify, al web principal:**
+
+- `netlify/functions/checkout.mjs`. `POST` crea la sessió de Checkout i en
+  torna l'adreça. `GET ?session_id=cs_…` diu si s'ha pagat. `GET` sol diu si
+  la web cobra. Les tornades surten de la `URL` de Netlify, mai de qui crida.
+- `netlify/functions/checkout-completat.mjs`. L'avís de Stripe
+  (`checkout.session.completed`). Comprova la signatura `Stripe-Signature`
+  (HMAC-SHA256, cinc minuts de marge) abans de llegir res. Ara només ho anota;
+  aquí s'hi penjarà el camí A.
+
+**Variables d'entorn** (Netlify › Site configuration › Environment variables):
+
+| Variable | Què és |
+|---|---|
+| `STRIPE_SECRET_KEY` | `sk_test_…`. Una `sk_live_` no s'accepta sense `STRIPE_LIVE=1` |
+| `STRIPE_PRICE_ID` | `price_…` del producte de l'alta. L'import viu a Stripe, no aquí |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…` de l'avís, a Stripe › Developers › Webhooks |
+| `STRIPE_LIVE` | `1` només quan l'Àlvar decideixi cobrar de debò |
+
+L'avís de Stripe s'apunta a `https://<web>/.netlify/functions/checkout-completat`,
+amb l'esdeveniment `checkout.session.completed`. Per provar: la targeta
+`4242 4242 4242 4242`, qualsevol data futura i qualsevol CVC. Apple Pay surt
+a Safari amb una targeta a la cartera, i en mode de prova no cobra.
+
+Les proves (`SOS/tests/test-stripe.mjs`, sense xarxa) i la pestanya Web amb
+funcions falses (`test-vna-suport.mjs`, 7E) corren a la CI.
 
 ## 4 · La IA, pagada per ús
 
@@ -183,9 +316,11 @@ l'organització a un projecte, i què li cal per entrar-hi.
 
 1. ✓ El mapa dona la web (`web.json`).
 2. ✓ La web de debò, en un zip o des de Node (`web-del-mapa.js`).
-3. El repositori plantilla i el camí B: el botó de Netlify funciona sense que
-   hàgim de guardar cap permís.
-4. Stripe Checkout en mode de prova i la funció que verifica l'avís.
+   ✓ El registre viu (`llegeix-registre.js`, fase 2 del pla).
+   ✓ L'API, els avisos signats i el servidor MCP del cervell (fase 3).
+3. ✓ El repositori plantilla i el camí B: el botó de Netlify funciona sense que
+   hàgim de guardar cap permís (`SOS/plantilla-web/`).
+4. ✓ Stripe Checkout en mode de prova i la funció que verifica l'avís.
 5. El camí A: crear el repositori i el lloc. Això demana tokens de servei
    de l'Àlvar.
 6. Els crèdits d'IA, quan l'Àlvar hagi decidit el marge.

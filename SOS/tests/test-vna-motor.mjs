@@ -753,10 +753,259 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
     'permaweb.json: l\'empremta SHA-256 de cada fitxer, comprovable');
   const { createRequire } = await import('node:module');
   const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
-  const des = await cli.genera(EXEMPLE, { nom: 'Celler <prova>', correu: 'hola@exemple.cat' });
-  ok(J(des.filter(x => x.ruta !== 'permaweb.json')) === J(site.fitxers) && J(des.find(x => x.ruta === 'permaweb.json')) === J(pw.find(x => x.ruta === 'permaweb.json')),
-    'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web: un sol codi');
-  ok(J(await cli.genera(JSON.parse(f('web.json')), { nom: 'Celler <prova>', correu: 'hola@exemple.cat' })) === J(des), 'i també la fa a partir d\'un web.json');
+  const op = { nom: 'Celler <prova>', correu: 'hola@exemple.cat' };
+  const des = await cli.genera(EXEMPLE, op);
+  const sha = async b => createHash('sha256').update(b).digest('hex');
+  const ambMapa = await S.ambPermaweb(S.webASite(web, Object.assign({ mapa: M.exporta(M.importa(EXEMPLE).arbre), codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } }, op)), sha);
+  ok(J(des) === J(ambMapa), 'Node (web-del-mapa.js) i l\'editor fan exactament la mateixa web, mapa.json inclòs: un sol codi');
+  ok(J(await cli.genera(JSON.parse(f('web.json')), op)) === J(pw), 'i també la fa a partir d\'un web.json (sense mapa.json: no en porta)');
+}
+
+console.log('\nM25 · El zip ja és el repositori del client');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const web = S.webDelMapa(celler()), mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const s0 = S.webASite(web, {}), s1 = S.webASite(web, { url: 'https://celler.example/', mapa, llengua: 'es', nom: 'Celler' });
+  const f = (s, r) => (s.fitxers.find(x => x.ruta === r) || {}).cos;
+  ok(['404.html', 'robots.txt', 'netlify.toml', 'CLAUDE.md', 'LLEGEIX.md'].every(r => f(s0, r)) && !f(s0, 'sitemap.xml') && !s0.fitxers.some(x => /^cerebro\//.test(x.ruta)),
+    'sempre: 404, robots.txt, netlify.toml, CLAUDE.md i com publicar-la; sense adreça ni mapa, ni sitemap ni cervell');
+  ok(!/canonical|og:url|Sitemap:/.test(s0.fitxers.map(x => x.cos).join('')), 'sense adreça, res d\'absolut: segueix funcionant des del disc i la permaweb');
+  const mr = JSON.parse(f(s1, 'cerebro/mapa-real.json'));
+  ok(J(mr) === J(mapa) && J(M.exporta(M.importa(mr).arbre)) === J(mapa) && !f(s1, 'cerebro/mapa-ideal.json'), 'cerebro/mapa-real.json és la font, i l\'editor la torna a obrir igual');
+  ok(/<link rel="canonical" href="https:\/\/celler\.example\/el-visitant\.html">/.test(f(s1, 'el-visitant.html')) && /<link rel="canonical" href="https:\/\/celler\.example\/">/.test(f(s1, 'index.html'))
+    && /property="og:title" content="El visitant"/.test(f(s1, 'el-visitant.html')), 'amb adreça: canonical i Open Graph a cada pàgina');
+  const sm = f(s1, 'sitemap.xml');
+  ok(/^<\?xml/.test(sm) && (sm.match(/<loc>/g) || []).length === 1 + web.portes.length + 1 && !/equip|gracies|404/.test(sm) && /Sitemap: https:\/\/celler\.example\/sitemap\.xml/.test(f(s1, 'robots.txt')),
+    'el sitemap porta les pàgines públiques i prou, i robots.txt l\'anuncia');
+  ok(!/canonical/.test(S.webASite(web, { url: 'http://insegur.example' }).fitxers.map(x => x.cos).join('')) && !/canonical/.test(S.webASite(web, { url: 'https://x" onload="y' }).fitxers.map(x => x.cos).join('')),
+    'una adreça que no és https, o que porta cometes, no s\'hi posa');
+  const toml = f(s0, 'netlify.toml');
+  ok(/publish = "\."/.test(toml) && /default-src 'none'/.test(toml) && /form-action 'self'/.test(toml) && /frame-ancestors 'none'/.test(toml) && /nosniff/.test(toml),
+    'netlify.toml: publica la carpeta i tanca la porta (CSP sense scripts, formularis a la mateixa web)');
+  ok(/No s'edita a mà/.test(f(s0, 'CLAUDE.md')) && /mapa-real\.json/.test(f(s0, 'CLAUDE.md')) && /Cap clau al repositori/.test(f(s0, 'CLAUDE.md')), 'CLAUDE.md diu les regles: el mapa és la font i cap clau al repositori');
+  ok(/No se edita a mano/.test(f(s1, 'CLAUDE.md')) && f(s1, 'LEEME.md') && !f(s1, 'LLEGEIX.md') && /^# Celler/.test(f(s1, 'LEEME.md')), 'en castellà, CLAUDE.md i LEEME.md també');
+  ok(/<meta name="robots" content="noindex">/.test(f(s0, '404.html')) && /href="index.html"/.test(f(s0, '404.html')), 'la 404 no s\'indexa i torna a l\'inici');
+}
+
+console.log('\nM26 · El cervell del projecte, com el preveu el pla (cerebro/)');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const arbre = M.importa(Object.assign(clona(EXEMPLE), { ideal: EXEMPLE })).arbre, mapa = M.exporta(arbre), abans = J(mapa);
+  const st = S.webASite(S.webDelMapa(celler()), { mapa }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos;
+  const de = pre => st.fitxers.filter(x => x.ruta.startsWith(pre)).map(x => x.ruta);
+  const fl = EXEMPLE.parells.reduce((n, l) => n + (l.split('|')[3].trim() ? 1 : 0) + (l.split('|')[5].trim() ? 1 : 0), 0);
+  ok(J(mapa) === abans && !('ideal' in JSON.parse(f('cerebro/mapa-real.json'))) && JSON.parse(f('cerebro/mapa-ideal.json')).roles.length === EXEMPLE.rols.length,
+    'el real i l\'ideal, cadascun al seu fitxer, sense tocar el mapa');
+  ok(de('cerebro/roles/').length === EXEMPLE.rols.length && de('cerebro/entregables/').length === fl && de('cerebro/procesos/').length === EXEMPLE.processos.length && f('cerebro/decisiones.md'),
+    'una fitxa per rol, per lliurament i per procés, i decisiones.md');
+  const all = st.fitxers.map(x => x.ruta);
+  ok(new Set(all).size === all.length, 'cap fitxer es trepitja');
+  const r = f('cerebro/roles/qui-rep-i-explica.md');
+  ok(/^# Qui rep i explica/.test(r) && /## Què dona[\s\S]*\*\*la visita, el tast i el relat de la casa\*\* → El visitant · tangible · La visita · pas 2/.test(r)
+    && /## Què rep[\s\S]*\*\*la confiança de qui ha estat aquí\*\* ← El visitant · intangible · tot el temps/.test(r), 'la fitxa del rol: què dona i què rep, tangible o no, i on passa');
+  ok(/- La visita: pas 1, 2, 3, 4/.test(r) && /va al CRM, no aquí/.test(r), 'els processos on hi és, i l\'encaix de les persones fora del repositori');
+  ok(/\*\*Qui el produeix:\*\* L'operador de luxe/.test(f('cerebro/entregables/el-grup-i-el-pagament-per-persona.md')) && /pas 3/.test(f('cerebro/entregables/el-grup-i-el-pagament-per-persona.md')), 'la fitxa del lliurament: qui el fa, qui el rep i on va');
+  const v = f('cerebro/procesos/visita.md').split('\n').filter(l => /^1\. /.test(l));
+  ok(v.length === 4 && /el vi, la verema/.test(v[0]) && /què demana un client/.test(v[3]), 'el procés, amb els passos en ordre');
+  ok(/El poble dona i no rep/.test(f('cerebro/decisiones.md')) && /conserva el que ja tens/.test(f('cerebro/decisiones.md')), 'les troballes del mapa passen a decisions pendents, i el fitxer diu que es conserva');
+  ok(/cerebro\/mapa-real\.json/.test(f('CLAUDE.md')) && /Van al CRM/.test(f('CLAUDE.md')), 'CLAUDE.md apunta al cervell i diu què va al CRM');
+}
+
+console.log('\nM27 · L\'índex del cervell: cada document amb el seu tema i la seva capa');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre), web = S.webDelMapa(celler());
+  const st = S.webASite(web, { mapa, nom: 'Celler' }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos;
+  const ix = JSON.parse(f('cerebro/indice.json')), md = f('CEREBRO.md'), per = r => ix.entradas.find(x => x.ruta === r);
+  ok(!S.webASite(web, {}).fitxers.some(x => /^(CEREBRO\.md|cerebro\/indice\.json)$/.test(x.ruta)), 'sense mapa no hi ha cervell, ni índex');
+  const fora = ['404.html', 'estil.css', 'robots.txt', 'netlify.toml', 'cerebro/indice.json', 'CEREBRO.md'];
+  ok(st.fitxers.filter(x => !fora.includes(x.ruta)).every(x => per(x.ruta)) && ix.entradas.every(x => f(x.ruta)), 'cada document hi és, i cada entrada és un fitxer de debò');
+  ok(per('index.html').capa === 'publica' && per('serveis.html').capa === 'publica' && per('equip.html').capa === 'enllac' && per('gracies.html').capa === 'enllac',
+    'la web indexable és pública; equip i gràcies, que no s\'indexen, van per enllaç');
+  ok(ix.entradas.filter(x => /^cerebro\/|\.md$/.test(x.ruta)).every(x => x.capa === 'equip') && per('cerebro/decisiones.md').tema === 'decisions' && per('cerebro/mapa-real.json').tema === 'mapa',
+    'el que només viu al repositori és de l\'equip, cada cosa al seu tema');
+  ok(per('cerebro/roles/qui-rep-i-explica.md').titol === 'Qui rep i explica' && per('l-operador-de-luxe.html').titol === 'L\'operador de luxe', 'el títol surt del document, sense entitats HTML');
+  ok(/^# Cervell · Celler/.test(md) && /## Rols[\s\S]*\| \[Qui rep i explica\]\(cerebro\/roles\/qui-rep-i-explica\.md\) \| equip \|/.test(md) && /No s'edita a mà/.test(md), 'CEREBRO.md: per tema, amb l\'enllaç i la capa');
+  const es = S.webASite(web, { mapa, nom: 'Celler', llengua: 'es' }), fe = r => (es.fitxers.find(x => x.ruta === r) || {}).cos;
+  ok(/^# Cerebro · Celler/.test(fe('CEREBRO.md')) && /por enlace/.test(fe('CEREBRO.md')) && /CEREBRO\.md/.test(fe('CLAUDE.md')) && /CEREBRO\.md/.test(f('CLAUDE.md')), 'en castellà també, i CLAUDE.md hi apunta');
+}
+console.log('\nM28 · El registre viu: el mapa real surt de l\'ús (fase 2)');
+{ const R = new Function('\'use strict\';\n' + bloc('VS-REG') + '\nreturn { llegeixRegistre, observaRegistre };')();
+  const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre), abans = J(mapa);
+  const csv = ['created_at,de,a,entregable,mena,valor,evidencia,nom,correu,ip',
+    '2026-10-01T10:00:00Z,Qui fa el vi,Qui rep i explica,"el vi, la verema i el celler obert",tangible,4,https://exemple.cat/foto,Pere,pere@exemple.cat,1.2.3.4',
+    '2026-10-02T10:00:00Z,Qui rep i explica,El visitant,"La visita, el tast i el relat de la casa",tangible,5,,Anna,anna@exemple.cat,1.2.3.5',
+    '2026-10-03T10:00:00Z,qui rep i explica,El visitant,"la visita,  el tast i el relat de la casa",tangible,3,,,,',
+    '2026-10-04T10:00:00Z,El visitant,Qui rep i explica,una ressenya a internet,intangible,4,javascript:alert(1),,,',
+    '2026-10-05T10:00:00Z,El distribuïdor,Qui fa el vi,la comanda,tangible,9,,,,',
+    '2026-10-05T10:00:00Z,,Qui fa el vi,res,tangible,3,,,,',
+    '2026-10-06T10:00:00Z,Qui fa el vi,Qui fa el vi,res,tangible,3,,,,',
+    '2026-10-06T10:00:00Z,La cooperativa,Qui fa el vi,"raïm ""de veritat""",tangible,4,,,,'].join('\r\n') + '\r\n';
+  const l = R.llegeixRegistre(csv);
+  ok(l.files.length === 6 && l.ignorades === 2, 'llegeix el CSV de Netlify (CRLF, cometes, comes dins el camp) i descarta les files sense rol o d\'un rol a si mateix');
+  ok(l.files[5].q === 'raïm "de veritat"' && l.files[0].q === 'el vi, la verema i el celler obert' && l.files[0].data === '2026-10-01', 'les cometes dobles i la data, ben llegides');
+  ok(l.files.every(x => J(Object.keys(x).sort()) === J(['a', 'data', 'de', 'evidencia', 'mena', 'q', 'valor'])), 'només es queden els camps del registre');
+  ok(l.files[0].evidencia === 'https://exemple.cat/foto' && l.files[3].evidencia === '' && l.files[4].valor === null && l.files[3].mena === 'intangible',
+    'l\'evidència només si és http(s) i el valor només de 1 a 5');
+  const lj = R.llegeixRegistre(J([{ from: 'A', to: 'B', q: 'x', value: '2' }, 'brossa', null]));
+  ok(lj.files.length === 1 && lj.files[0].valor === 2 && lj.ignorades === 2, 'també llegeix un JSON, amb els noms anglesos');
+  ok(R.llegeixRegistre('').files.length === 0 && R.llegeixRegistre('[mal').files.length === 0, 'un registre buit o trencat no peta');
+  const o = R.observaRegistre(mapa, l.files);
+  ok(J(mapa) === abans, 'no toca el mapa dibuixat');
+  const viu = o.vius.find(f => f.de === 'Qui rep i explica' && f.a === 'El visitant');
+  ok(viu && viu.vegades === 2 && viu.valor === 4 && viu.darrera === '2026-10-03', 'un flux viu: vegades, valor mitjà i darrera data, sense que majúscules o espais el despistin');
+  const tots = mapa.pairs.reduce((n, p) => n + (p[3] ? 1 : 0) + (p[5] ? 1 : 0), 0);
+  ok(o.vius.length + o.morts.length === tots, 'cada flux del mapa és viu o adormit');
+  ok(o.nous.length === 3 && J(o.rolsNous) === J(['La cooperativa']), 'el que passa i no és al mapa: fluxos i rols nous');
+  ok(o.senseReciprocitat.includes('La cooperativa') && o.senseReciprocitat.includes('El distribuïdor'), 'qui dona i no rep res registrat');
+  ok(o.avisos.some(a => a.tipus === 'rol.sin_reciprocidad' && a.rol === 'La cooperativa') && o.avisos.some(a => a.tipus === 'desviacion.detectada' && a.motiu === 'flux-nou')
+    && o.avisos.some(a => a.tipus === 'desviacion.detectada' && a.motiu === 'flux-sense-us') && o.avisos.every(a => ['rol.sin_reciprocidad', 'desviacion.detectada'].includes(a.tipus)),
+    'els avisos porten els noms dels webhooks del pla');
+  const im = M.importa(o.mapaObservat);
+  ok(im.arbre && J(M.exporta(im.arbre).roles) === J(o.mapaObservat.roles), 'el mapa observat s\'obre a l\'editor');
+  ok(J(o.mapaObservat.ideal.roles) === J(mapa.roles) && !('ideal' in o.mapaObservat.ideal) && o.mapaObservat.roles.includes('La cooperativa'), 'amb el dibuixat com a ideal, per veure la desviació');
+  const sortida = (J(o) + J(l)).split('https://exemple.cat/foto').join('');
+  ok(!/Pere|Anna|@|1\.2\.3\./.test(sortida), 'cap nom, correu ni IP del CSV arriba a cap sortida');
+  ok(/^# El registre, llegit/.test(o.informe) && /6 transaccions del 2026-10-01 al 2026-10-06/.test(o.informe) && /\| la visita, el tast i el relat de la casa \| Qui rep i explica → El visitant \| 2 \| 4 \| 2026-10-03 \|/.test(o.informe),
+    'l\'informe en Markdown: la taula de fluxos vius');
+  ok(/## Fluxos del mapa que no han passat/.test(o.informe) && /## El que passa i no és al mapa/.test(o.informe) && /\*\*La cooperativa\*\* no és al mapa/.test(o.informe), 'adormits, nous i rols nous');
+  ok(/^# El registro, leído/.test(R.observaRegistre(mapa, l.files, { llengua: 'es' }).informe) && /Encara no hi ha cap/.test(R.observaRegistre(mapa, []).informe), 'en castellà, i sense transaccions ho diu');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/llegeix-registre.js');
+  const c = cli.llegeix(mapa, csv);
+  ok(c.informe === o.informe && J(c.mapaObservat) === J(o.mapaObservat) && c.files === 6 && c.ignorades === 2, 'llegeix-registre.js fa servir el mateix codi: la mateixa sortida');
+  const st = S.webASite(S.webDelMapa(celler()), { mapa }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  const rg = f('registre.html');
+  ok(/<form name="registre" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">/.test(rg) && /name="form-name" value="registre"/.test(rg),
+    'la web porta el formulari del registre, per a Netlify Forms');
+  ok(['de', 'a', 'entregable', 'mena', 'valor', 'data', 'evidencia'].every(n => rg.includes('name="' + n + '"')) && !/name="(nom|correu|email)"/.test(rg),
+    'amb els camps que el lector entén, i cap camp per a dades personals');
+  ok(/<option>Qui fa el vi<\/option>/.test(rg) && /<option value="la visita, el tast i el relat de la casa">/.test(rg), 'els rols i els lliuraments del mapa, per triar');
+  ok(/noindex/.test(rg) && /href="registre.html"/.test(f('equip.html')) && !/href="registre.html"/.test(f('index.html')) && /Disallow: \/registre.html/.test(f('robots.txt')),
+    'fora del menú i dels cercadors; s\'hi arriba des de la pàgina de l\'equip');
+  const fr = R.llegeixRegistre('de,a,entregable,mena,valor,data,evidencia\nQui fa el vi,Qui rep i explica,el vi,tangible,4,2026-10-01,').files;
+  ok(fr.length === 1 && fr[0].data === '2026-10-01', 'el CSV del formulari generat es llegeix tal com surt');
+}
+
+console.log('\nM29 · L\'API i els avisos: la web els envia signats, i el cervell parla amb Claude Code (fase 3)');
+{ const S = new Function('\'use strict\';\n' + bloc('VS-WEB') + '\n' + bloc('VS-SITE') + '\nreturn { webDelMapa, webASite };')();
+  const codi = { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') };
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const st = S.webASite(S.webDelMapa(celler()), { mapa, codi, nom: 'Celler', url: 'https://celler.example' }), f = r => (st.fitxers.find(x => x.ruta === r) || {}).cos || '';
+  const noves = ['eines/nucli.mjs', 'eines/registre.mjs', 'eines/mcp.mjs', 'netlify/functions/submission-created.mjs', 'netlify/functions/deploy-succeeded.mjs', '.mcp.json', 'API.md'];
+  ok(noves.every(r => f(r)) && !S.webASite(S.webDelMapa(celler()), { mapa }).fitxers.some(x => noves.includes(x.ruta)), 'amb el codi, el zip porta les eines, les dues funcions, .mcp.json i API.md');
+  ok(f('eines/nucli.mjs').includes(codi.reg) && f('eines/nucli.mjs').includes(codi.api) && f('eines/mcp.mjs').includes(codi.mcp), 'el codi és el dels blocs de l\'editor, tal com hi són: un sol codi');
+  ok(['/cerebro/*', '/eines/*', '/netlify/*', '/.mcp.json', '/CLAUDE.md', '/API.md'].every(r => f('netlify.toml').includes('from = "' + r + '"\n  to = "/404.html"\n  status = 404\n  force = true'))
+    && /directory = "netlify\/functions"/.test(f('netlify.toml')), 'el cervell, les eines i les regles no es serveixen: només viuen al repositori');
+  const ix = JSON.parse(f('cerebro/indice.json'));
+  ok(noves.every(r => ix.entradas.some(x => x.ruta === r && x.tema === 'eines' && x.capa === 'equip')), 'l\'índex del cervell les posa a «Eines i API», capa equip');
+  ok(['transaccion.creada', 'rol.sin_reciprocidad', 'desviacion.detectada', 'cerebro.actualizado'].every(t => f('API.md').includes('`' + t + '`')) && /GET https:\/\/celler\.example\/web\.json/.test(f('API.md')) && /TT_WEBHOOK_SECRET/.test(f('API.md')),
+    'API.md: llegir, escriure, els quatre avisos del pla i com configurar-los');
+  ok(/node eines\/registre\.mjs/.test(f('CLAUDE.md')) && /API\.md/.test(f('CLAUDE.md')) && !/SOS\/tools\/llegeix-registre/.test(f('CLAUDE.md')), 'CLAUDE.md apunta a les eines que hi ha al repositori');
+  ok(JSON.parse(f('.mcp.json')).mcpServers.cervell.args[0] === 'eines/mcp.mjs', '.mcp.json declara el servidor del cervell');
+
+  const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { spawnSync } = await import('node:child_process');
+  const { pathToFileURL } = await import('node:url');
+  const dir = mkdtempSync(join(tmpdir(), 'tt-api-'));
+  st.fitxers.forEach(x => { mkdirSync(dirname(join(dir, x.ruta)), { recursive: true }); writeFileSync(join(dir, x.ruta), x.cos); });
+  mkdirSync(join(dir, 'cerebro/registro'), { recursive: true });
+  writeFileSync(join(dir, 'cerebro/registro/registre.csv'), 'created_at,de,a,entregable,mena,valor,nom,email\n2026-10-01,Qui rep i explica,El visitant,"la visita, el tast i el relat de la casa",tangible,5,Anna,anna@exemple.cat\n2026-10-02,La cooperativa,Qui fa el vi,raïm,tangible,4,,\n');
+  const R = spawnSync(process.execPath, ['eines/registre.mjs'], { cwd: dir, encoding: 'utf8' });
+  const inf = R.status === 0 ? readFileSync(join(dir, 'cerebro/registro/informe.md'), 'utf8') : '';
+  ok(R.status === 0 && /^# El registre, llegit/.test(inf) && /La cooperativa/.test(readFileSync(join(dir, 'cerebro/registro/avisos.json'), 'utf8')) && !/Anna|@/.test(inf),
+    'node eines/registre.mjs llegeix el registre al repositori del client, sense el SOS: ' + (R.stderr || '').slice(0, 80));
+
+  const N = await import(pathToFileURL(join(dir, 'eines/nucli.mjs')).href);
+  const { webcrypto } = await import('node:crypto');
+  const fl = N.fluxosDelMapa(mapa);
+  const payload = { form_name: 'registre', created_at: '2026-10-03T10:00:00Z', ip: '1.2.3.4', email: 'pere@exemple.cat', name: 'Pere', human_fields: { Nom: 'Pere' },
+    data: { de: 'Qui rep i explica', a: 'El visitant', entregable: 'La visita, el tast i el relat de la casa', mena: 'tangible', valor: '5', nom: 'Pere', ip: '1.2.3.4', 'bot-field': '' } };
+  const a1 = N.avisosDelFormulari(payload, fl);
+  ok(a1.length === 1 && a1[0].tipus === 'transaccion.creada' && a1[0].dades.data === '2026-10-03' && !/Pere|1\.2\.3|@/.test(J(a1)), 'una anotació és un avís transaccion.creada, sense cap dada personal del formulari');
+  const a2 = N.avisosDelFormulari(Object.assign({}, payload, { data: { de: 'La cooperativa', a: 'Qui fa el vi', entregable: 'raïm' } }), fl);
+  ok(a2.length === 2 && a2[1].tipus === 'desviacion.detectada' && a2[1].dades.motiu === 'flux-nou', 'si no és cap flux del mapa, també desviacion.detectada');
+  ok(N.avisosDelFormulari({ form_name: 'el-visitant', data: payload.data }, fl).length === 0 && N.avisosDelFormulari(null, fl).length === 0, 'els altres formularis no fan cap avís');
+  const enviats = [], fetch = async (u, o) => { enviats.push({ u, o }); return { ok: true, status: 200 }; };
+  const secret = 'un-secret-prou-llarg';
+  const e1 = await N.enviaAvisos(a2, { urls: 'https://a.example/hook, http://b.example/hook ,https://c.example/x', secret, web: 'https://celler.example/', fetch, subtle: webcrypto.subtle, ara: '2026-10-10T09:00:00.000Z' });
+  ok(e1.enviats === 4 && enviats.every(x => /^https:/.test(x.u)) && enviats[0].o.headers['X-TT-Avis'] === 'transaccion.creada', 'envia cada avís a cada adreça https, i cap a una http');
+  const cos = enviats[0].o.body, sig = enviats[0].o.headers['X-TT-Signatura'], sobre = JSON.parse(cos);
+  ok(sobre.formato === 'tt-avis-1' && sobre.web === 'https://celler.example/' && sobre.creat === '2026-10-10T09:00:00.000Z' && sobre.dades.q === 'raïm', 'el sobre tt-avis-1: tipus, web, data i dades');
+  ok(/^sha256=[0-9a-f]{64}$/.test(sig) && await N.verificaAvis(cos, sig, secret, webcrypto.subtle) && !(await N.verificaAvis(cos.replace('raïm', 'raim'), sig, secret, webcrypto.subtle)) && !(await N.verificaAvis(cos, sig, 'un-altre-secret-llarg', webcrypto.subtle)),
+    'signat amb HMAC-SHA256: qui el rep el comprova, i un cos tocat o un altre secret no passen');
+  enviats.length = 0;
+  const e2 = await N.enviaAvisos(a2, { urls: 'https://a.example/hook', secret: 'curt', fetch, subtle: webcrypto.subtle });
+  const e3 = await N.enviaAvisos(a2, { urls: '', secret, fetch, subtle: webcrypto.subtle });
+  ok(e2.motiu === 'sense-secret' && e3.motiu === 'sense-adreces' && enviats.length === 0, 'sense secret o sense adreces no s\'envia res');
+  const e4 = await N.enviaAvisos([{ tipus: 'una.altra.cosa' }, { tipus: 'rol.sin_reciprocidad', rol: 'El poble' }], { urls: 'https://a.example/', secret, fetch: async () => ({ ok: false, status: 500 }), subtle: webcrypto.subtle });
+  ok(e4.enviats === 0 && e4.errors.length === 1 && /500/.test(e4.errors[0]), 'només els avisos del pla, i els errors es diuen');
+
+  const posaG = (k, v) => { const ab = Object.getOwnPropertyDescriptor(globalThis, k); Object.defineProperty(globalThis, k, { value: v, configurable: true, writable: true }); return () => { if (ab) Object.defineProperty(globalThis, k, ab); else delete globalThis[k]; }; };
+  const tornaF = posaG('fetch', fetch), tornaC = globalThis.crypto && globalThis.crypto.subtle ? () => {} : posaG('crypto', webcrypto);
+  process.env.TT_WEBHOOKS = 'https://a.example/hook'; process.env.TT_WEBHOOK_SECRET = secret;
+  enviats.length = 0;
+  const SC = await import(pathToFileURL(join(dir, 'netlify/functions/submission-created.mjs')).href);
+  const r1 = await SC.handler({ body: J({ payload }) });
+  const DS = await import(pathToFileURL(join(dir, 'netlify/functions/deploy-succeeded.mjs')).href);
+  const r2 = await DS.handler({ body: J({ payload: { context: 'production', ssl_url: 'https://celler.example', commit_ref: 'abc123', branch: 'main' } }) });
+  const r3 = await DS.handler({ body: J({ payload: { context: 'deploy-preview' } }) });
+  delete process.env.TT_WEBHOOKS; delete process.env.TT_WEBHOOK_SECRET; tornaF(); tornaC();
+  ok(r1.statusCode === 200 && J(JSON.parse(r1.body).avisos) === J(['transaccion.creada']) && JSON.parse(enviats[0].o.body).tipus === 'transaccion.creada', 'la funció submission-created avisa sola a cada anotació');
+  ok(r2.statusCode === 200 && JSON.parse(enviats[1].o.body).tipus === 'cerebro.actualizado' && JSON.parse(enviats[1].o.body).dades.commit === 'abc123' && enviats.length === 2 && r3.statusCode === 200,
+    'la funció deploy-succeeded avisa cerebro.actualizado a cada publicació a producció, i no a les vistes prèvies');
+
+  const msgs = [{ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'prova', version: '0' } } },
+    { jsonrpc: '2.0', method: 'notifications/initialized' }, { jsonrpc: '2.0', id: 2, method: 'tools/list' },
+    { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'cervell_index', arguments: { tema: 'rols' } } },
+    { jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'cervell_llegeix', arguments: { ruta: 'cerebro/decisiones.md' } } },
+    { jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'cervell_llegeix', arguments: { ruta: '../../../etc/passwd' } } },
+    { jsonrpc: '2.0', id: 6, method: 'tools/call', params: { name: 'registre_informe', arguments: { llengua: 'es' } } },
+    { jsonrpc: '2.0', id: 7, method: 'res/de/res' }];
+  const P = spawnSync(process.execPath, ['eines/mcp.mjs'], { cwd: dir, encoding: 'utf8', input: msgs.map(x => J(x)).join('\n') + '\nno és json\n' });
+  const rs = P.stdout.trim().split('\n').map(l => JSON.parse(l)), per = id => rs.find(x => x.id === id) || {};
+  ok(per(1).result && per(1).result.serverInfo.name === 'cervell' && per(1).result.capabilities.tools && rs.length === 8, 'el servidor MCP respon per stdio, i a les notificacions no hi respon: ' + (P.stderr || '').slice(0, 80));
+  ok(J(per(2).result.tools.map(t => t.name)) === J(['cervell_index', 'cervell_llegeix', 'registre_informe']), 'tres eines: l\'índex, llegir un document i l\'informe del registre');
+  ok(JSON.parse(per(3).result.content[0].text).every(x => x.tema === 'rols') && /El poble dona i no rep/.test(per(4).result.content[0].text), 'llegeix l\'índex i els documents del cervell');
+  ok(per(5).result.isError === true && !/root:/.test(per(5).result.content[0].text), 'i res que no sigui a l\'índex');
+  ok(/^# El registro, leído/.test(per(6).result.content[0].text) && /rol\.sin_reciprocidad/.test(per(6).result.content[0].text), 'l\'informe del registre, amb els avisos');
+  ok(per(7).error && per(7).error.code === -32601 && rs.some(x => x.id === null && x.error && x.error.code === -32700), 'un mètode desconegut o una línia que no és JSON tenen la resposta d\'error de JSON-RPC');
+  rmSync(dir, { recursive: true, force: true });
+}
+
+console.log('\nM30 · El camí B: la plantilla de Netlify fa la web del mapa a nom del client');
+{ const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, rmSync, cpSync, existsSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { spawnSync } = await import('node:child_process');
+  const { deflateRawSync } = await import('node:zlib');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
+  const PL = join(DIR, '..', 'plantilla-web');
+  const chk = spawnSync(process.execPath, [join(DIR, '..', 'tools', 'build-plantilla.js'), '--check'], { encoding: 'utf8' });
+  ok(chk.status === 0, 'la plantilla és la que surt ara de l\'editor (build-plantilla.js --check)');
+  const toml = readFileSync(join(PL, 'netlify.toml'), 'utf8');
+  ok(/command = "node eines\/genera\.mjs"/.test(toml) && /\[template\.environment\][\s\S]*TT_MAPA/.test(toml) && /from = "\/cerebro\/\*"/.test(toml), 'Netlify la construeix a cada publicació, demana el nom i el mapa, i no serveix el cervell');
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre);
+  const nova = () => { const d = mkdtempSync(join(tmpdir(), 'tt-plantilla-')); cpSync(PL, d, { recursive: true }); return d; };
+  const corre = (d, env) => spawnSync(process.execPath, ['eines/genera.mjs'], { cwd: d, encoding: 'utf8', env: Object.assign({}, process.env, { URL: '' }, env) });
+  const op = { nom: 'Celler', correu: 'hola@exemple.cat', llengua: 'es' };
+  const d1 = nova(), r1 = corre(d1, { TT_MAPA: deflateRawSync(J(mapa)).toString('base64url'), TT_NOM: op.nom, TT_CORREU: op.correu, TT_LLENGUA: op.llengua });
+  const esperat = await cli.genera(mapa, op);
+  const iguals = esperat.filter(f => f.ruta !== 'netlify.toml').every(f => existsSync(join(d1, f.ruta)) && readFileSync(join(d1, f.ruta), 'utf8') === f.cos);
+  ok(r1.status === 0 && /des de TT_MAPA/.test(r1.stdout) && iguals, 'amb el mapa del botó (TT_MAPA), fa exactament la web que faria l\'editor: ' + (r1.stderr || '').slice(0, 80));
+  ok(readFileSync(join(d1, 'netlify.toml'), 'utf8') === toml && /<html lang="es">/.test(readFileSync(join(d1, 'index.html'), 'utf8')), 'i no trepitja la seva configuració');
+  const d2 = nova();
+  mkdirSync(join(d2, 'cerebro'), { recursive: true });
+  const altre = Object.assign(clona(mapa), { roles: mapa.roles.concat(['La cooperativa']), pairs: mapa.pairs.concat([['La cooperativa', mapa.roles[0], 'tangible', 'raïm', '', '']]) });
+  writeFileSync(join(d2, 'cerebro/mapa-real.json'), J(altre));
+  writeFileSync(join(d2, 'cerebro/decisiones.md'), '# Les nostres decisions\n');
+  const r2 = corre(d2, { TT_MAPA: deflateRawSync(J(mapa)).toString('base64url') });
+  ok(r2.status === 0 && /des de cerebro\/mapa-real\.json/.test(r2.stdout) && existsSync(join(d2, 'la-cooperativa.html')), 'el mapa del repositori mana sobre el del botó');
+  ok(readFileSync(join(d2, 'cerebro/decisiones.md'), 'utf8') === '# Les nostres decisions\n' && readFileSync(join(d2, 'cerebro/mapa-real.json'), 'utf8') === J(altre), 'i les decisions escrites a mà i el mapa es conserven');
+  const d3 = nova(), r3 = corre(d3, {});
+  ok(r3.status === 0 && /exemple/.test(r3.stdout) && existsSync(join(d3, 'el-visitant.html')) && existsSync(join(d3, 'eines/nucli.mjs')), 'sense mapa, publica l\'exemple, ja amb les eines');
+  const d4 = nova(), r4 = corre(d4, { URL: 'https://celler.netlify.app' });
+  ok(r4.status === 0 && /<link rel="canonical" href="https:\/\/celler\.netlify\.app\/">/.test(readFileSync(join(d4, 'index.html'), 'utf8')) && existsSync(join(d4, 'sitemap.xml')), 'l\'adreça de Netlify (URL) dona canonical i sitemap sols');
+  [d1, d2, d3, d4].forEach(d => rmSync(d, { recursive: true, force: true }));
 }
 
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));

@@ -8,11 +8,12 @@
  * que canvia el mapa, i ningú no edita els HTML a mà.
  *
  *   node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom "Nom"] [--correu x@y.z]
- *        [--llengua ca|es] [--casa "Rol 1" --casa "Rol 2"]
+ *        [--llengua ca|es] [--url https://…] [--casa "Rol 1" --casa "Rol 2"]
  *
  * `mapa.json` és el que dona «Copia el JSON» a l'editor (o el web.json de la
- * pestanya Web: també s'accepta). Escriu la web a la carpeta, amb
- * `permaweb.json` (l'empremta SHA-256 de cada fitxer). */
+ * pestanya Web: també s'accepta). Escriu a la carpeta la web i el que en fa un
+ * repositori: `mapa.json`, `CLAUDE.md`, `netlify.toml`, `robots.txt` (i el
+ * sitemap, amb --url) i `permaweb.json`, l'empremta SHA-256 de cada fitxer. */
 'use strict';
 const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
 const { join, dirname } = require('node:path');
@@ -24,30 +25,23 @@ const bloc = nom => {
   if (a < 0 || b <= a) throw new Error('Falta el bloc ' + nom + ' a vna-suport.html');
   return html.slice(a, b);
 };
-const motor = new Function('\'use strict\';\n' + ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE'].map(bloc).join('\n')
-  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb };')();
+const motor = new Function('\'use strict\';\n' + ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-GENERA'].map(bloc).join('\n')
+  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb, generaWeb };')();
 
-function webDe(entrada, opts) {
-  if (entrada && entrada.formato === 'tt-web-1') return entrada;
-  const D = motor.creaDiagnosi({ revisa: motor.revisa, fluxos: motor.fluxos });
-  const M = motor.creaModel({ fluxos: motor.fluxos, revisa: motor.revisa, normNom: D.normNom });
-  const m = M.llegeixTextos(M.importa(entrada).arbre.real.t);
-  return motor.webDelMapa(m, { casa: opts.casa || [] });
+/* El mateix codi que l'editor (bloc VS-GENERA), amb l'empremta de Node. */
+function genera(entrada, opts) {
+  return motor.generaWeb(entrada, opts, { sha: async b => createHash('sha256').update(b).digest('hex'), codi: { reg: bloc('VS-REG'), api: bloc('VS-API'), mcp: bloc('VS-MCP') } });
 }
-async function genera(entrada, opts) {
-  const site = motor.webASite(webDe(entrada, opts || {}), opts || {});
-  return motor.ambPermaweb(site, async b => createHash('sha256').update(b).digest('hex'));
-}
-module.exports = { genera, webDe };
+module.exports = { genera };
 
 if (require.main === module) {
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--casa') opts.casa.push(a[++i]);
-    else if (/^--(nom|correu|llengua)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    else if (/^--(nom|correu|llengua|url)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
     else pos.push(a[i]);
   }
-  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--casa …]'); process.exit(2); }
+  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …]'); process.exit(2); }
   genera(JSON.parse(readFileSync(pos[0], 'utf8')), opts).then(fitxers => {
     fitxers.forEach(f => { const r = join(pos[1], f.ruta); mkdirSync(dirname(r), { recursive: true }); writeFileSync(r, f.cos); });
     console.log('✅ ' + fitxers.length + ' fitxers a ' + pos[1]);

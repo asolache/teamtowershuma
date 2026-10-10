@@ -992,8 +992,52 @@ console.log('\n7D · La web que surt del mapa');
   const z = readFileSync(await dz.path()), zs = z.toString('latin1');
   ok(dz.suggestedFilename() === 'celler-de-prova.zip' && zs.startsWith('PK') && zs.includes('permaweb.json') && zs.includes('<html lang="es">') && zs.includes('mailto:hola@exemple.cat'),
     'Descarrega la web (.zip): les pàgines en la llengua triada, el correu i permaweb.json');
+  ok(['cerebro/mapa-real.json', 'cerebro/roles/', 'cerebro/decisiones.md', 'CLAUDE.md', 'LEEME.md', 'netlify.toml', '404.html', 'robots.txt'].every(r => zs.includes(r)) && zs.includes('"abast"'),
+    'i és el repositori del client: el cervell del projecte, les regles i la configuració de Netlify');
   await p.click('#edPanWeb [data-web-pag="serveis"]');
   ok(await p.evaluate(() => document.querySelector('#edWebNom').value) === 'Celler de prova', 'el nom es manté en tornar a pintar');
+  ok(zs.includes('registre.html') && zs.includes('name="registre"'), 'la web porta el formulari del registre viu');
+  ok(['eines/nucli.mjs', 'eines/mcp.mjs', 'netlify/functions/submission-created.mjs', '.mcp.json', 'API.md'].every(r => zs.includes(r)) && zs.includes('function avisosDelFormulari') && zs.includes('function creaMcp'),
+    'i l\'API: les eines, les funcions dels avisos i el servidor MCP, amb el codi de l\'editor');
+  await p.waitForFunction(() => /TT_MAPA=/.test(document.querySelector('#edWebNetlify').href));
+  const nh = await p.evaluate(() => document.querySelector('#edWebNetlify').href);
+  const { inflateRawSync } = await import('node:zlib');
+  const hv = new URLSearchParams(nh.split('#')[1]), mp = JSON.parse(inflateRawSync(Buffer.from(hv.get('TT_MAPA'), 'base64url')).toString('utf8'));
+  ok(/^https:\/\/app\.netlify\.com\/start\/deploy\?repository=https:\/\/github\.com\/asolache\/teamtowershuma&create_from_path=SOS\/plantilla-web#/.test(nh)
+    && hv.get('TT_NOM') === 'Celler de prova' && hv.get('TT_LLENGUA') === 'es' && hv.get('TT_CORREU') === 'hola@exemple.cat' && mp.roles.includes('El visitant') && !('pos' in mp),
+    '«Publica-la a nom teu» porta a la plantilla de Netlify amb el nom, la llengua, el correu i el mapa comprimit');
+  await p.click('#edWebVeure');
+  await p.waitForFunction(() => { const f = document.querySelector('#edWebMarc'); return f && f.contentDocument && f.contentDocument.querySelector('nav a'); });
+  const marc = () => p.evaluate(() => { const d = document.querySelector('#edWebMarc').contentDocument;
+    return { lang: d.documentElement.lang, h1: (d.querySelector('h1') || {}).textContent || '', css: !!d.querySelector('style') && !d.querySelector('link[rel=stylesheet]'), ruta: document.querySelector('#edWebRuta').textContent,
+      fons: getComputedStyle(d.body).fontFamily, scripts: [...d.scripts].every(x => x.type === 'application/ld+json') }; });
+  const v0 = await marc();
+  ok(v0.ruta === 'index.html' && v0.lang === 'es' && /Celler de prova/.test(v0.h1) && v0.css && v0.scripts, '«Vista prèvia» ensenya la web de debò al navegador, amb el seu estil i sense scripts');
+  await p.evaluate(() => document.querySelector('#edWebMarc').contentDocument.querySelector('nav a[href="el-visitant.html"]').click());
+  await p.waitForFunction(() => { const d = document.querySelector('#edWebMarc').contentDocument, h = d && d.querySelector('h1');
+    return document.querySelector('#edWebRuta').textContent === 'el-visitant.html' && h && /visitant/i.test(h.textContent); });
+  ok(true, 'els enllaços del menú porten a la pàgina de la porta, dins la vista prèvia');
+  await p.evaluate(() => document.querySelector('#edWebMarc').contentDocument.querySelector('form button[type=submit]').click());
+  await p.waitForFunction(() => document.querySelector('#edWebRuta').textContent === 'gracies.html');
+  ok(true, 'enviar el formulari porta a la pàgina de gràcies');
+  await p.fill('#edWebNom', 'Celler nou');
+  await p.waitForFunction(() => { const d = document.querySelector('#edWebMarc').contentDocument; return !!d && /Celler nou/.test(d.title); });
+  ok(true, 'canviar el nom es veu a l\'acte a la vista prèvia');
+  await p.click('#edWebVeure');
+  ok(await p.evaluate(() => !document.querySelector('#edWebMarc') && document.activeElement.id === 'edWebVeure'), 'es tanca amb el mateix botó, i el focus no es perd');
+  await p.fill('#edWebNom', 'Celler de prova');
+  await p.selectOption('#edWebLlengua', 'ca');
+  await p.setInputFiles('#edWebReg', { name: 'registre.csv', mimeType: 'text/csv', buffer: Buffer.from('created_at,de,a,entregable,mena,valor,nom,correu\n'
+    + '2026-10-01,Qui rep i explica,El visitant,"la visita, el tast i el relat de la casa",tangible,5,Anna,anna@exemple.cat\n2026-10-02,La cooperativa,Qui fa el vi,raïm,tangible,4,,\n') });
+  await p.waitForSelector('#edRegResum');
+  const rs = await p.evaluate(() => document.querySelector('#edRegResum').textContent);
+  ok(/^2 transaccions: 1 flux viu, \d+ sense ús, 1 nou\. Donen i no reben: .*La cooperativa/.test(rs), 'carregar el CSV del registre diu què és viu, què no passa i qui no rep: ' + rs.slice(0, 70));
+  const [di] = await Promise.all([p.waitForEvent('download'), p.click('#edRegInforme')]);
+  const inf = readFileSync(await di.path(), 'utf8');
+  ok(di.suggestedFilename() === 'informe.md' && /^# El registre, llegit/.test(inf) && !/Anna|@/.test(inf), 'Descarrega informe.md, sense cap dada personal del CSV');
+  await p.click('#edRegObre');
+  const ob = await p.evaluate(() => ({ v: document.querySelector('#edVistes input:checked').value, rols: window.__VS_ED.arbre().real.t.rols }));
+  ok(ob.v === 'desviacio' && /La cooperativa/.test(ob.rols), '«Obre el mapa observat» el posa a l\'editor i ensenya la desviació');
   await p.evaluate(() => { window.__VS_ED.comencaDeNou(); });
 }
 
@@ -1040,6 +1084,59 @@ console.log('\n7C.8 · Pantalla completa, amb la definició al costat');
   await pausa(150);
   const f = await p.evaluate(() => ({ ple: document.body.classList.contains('ed-ple'), dins: document.querySelector('#escrit').parentElement.id, pare: document.querySelector('#escrit').parentElement !== document.querySelector('#editor') }));
   ok(!f.ple && f.pare, 'en sortir, els sis camps tornen al seu lloc');
+}
+
+console.log('\n7E · El pagament de l\'alta (Stripe, amb les funcions falses)');
+{
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 1000 } });
+  const arrel = join(DIR, '..', '..'), crides = [];
+  let pagat = true;
+  await ctx.route('https://tt.test/**', async route => {
+    const u = new URL(route.request().url());
+    if (u.pathname === '/.netlify/functions/checkout') {
+      const m = route.request().method(), sid = u.searchParams.get('session_id');
+      crides.push(m + (sid ? ' ' + sid : ''));
+      const cos = m === 'POST' ? { url: 'https://checkout.stripe.com/c/pay/cs_test_x' } : sid ? { pagat, prova: true } : { cobra: true, prova: true };
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cos) });
+    }
+    try { return route.fulfill({ status: 200, contentType: /\.html$/.test(u.pathname) ? 'text/html' : undefined, body: readFileSync(join(arrel, decodeURIComponent(u.pathname))) }); }
+    catch (e) { return route.fulfill({ status: 404, body: '' }); }
+  });
+  await ctx.route('https://checkout.stripe.com/**', route => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>Stripe</title><p>Checkout fals</p>' }));
+  const s = await ctx.newPage();
+  s.on('pageerror', e => errs.push(e.message));
+  const WEB = 'https://tt.test/SOS/vna-suport.html';
+  await s.goto(WEB + '#editor');
+  await s.evaluate(() => document.querySelector('#btExemple').click());
+  await s.click('#edTabWeb');
+  await s.waitForFunction(() => /^Paga i publica/.test(document.querySelector('#edWebNetlify').textContent));
+  const n0 = await s.textContent('#edWebPagament');
+  ok(/Apple Pay/.test(n0) && /Mode de prova/.test(n0), 'si la web cobra, el botó diu «Paga i publica-la a nom teu» i explica com, en mode de prova');
+  await s.fill('#edWebNom', 'Celler pagat');
+  await Promise.all([s.waitForURL(/checkout\.stripe\.com/), s.click('#edWebNetlify')]);
+  ok(crides.includes('POST'), 'el botó crea la sessió i porta a la pàgina de pagament de Stripe');
+  await s.goto(WEB + '?alta=cancel#editor');
+  await s.waitForFunction(() => /cancel·lat/.test((document.querySelector('#edWebPagament') || {}).textContent || ''));
+  ok(await s.evaluate(() => !document.querySelector('#edPanWeb').hidden && location.search === '' && document.querySelector('#edWebNom').value === 'Celler pagat'),
+    'si es cancel·la, torna a la pestanya Web, amb el nom, i diu que no s\'ha cobrat res');
+  await s.goto(WEB + '?alta=cs_test_abc123#editor');
+  await s.waitForFunction(() => /Pagament fet/.test((document.querySelector('#edWebPagament') || {}).textContent || ''));
+  const t = await s.evaluate(() => ({ boto: document.querySelector('#edWebNetlify').textContent, href: document.querySelector('#edWebNetlify').href, q: location.search, hash: location.hash }));
+  ok(crides.includes('GET cs_test_abc123') && t.q === '' && t.hash === '#editor', 'en tornar, pregunta a la funció si s\'ha pagat i neteja l\'adreça');
+  await s.waitForFunction(() => /TT_MAPA=/.test(document.querySelector('#edWebNetlify').href));
+  const h2 = await s.evaluate(() => document.querySelector('#edWebNetlify').href);
+  ok(/^Publica-la a nom teu/.test(t.boto) && new URLSearchParams(h2.split('#')[1]).get('TT_NOM') === 'Celler pagat', 'pagat, el botó torna a ser «Publica-la a nom teu», amb el mapa i el nom');
+  await s.reload();
+  await s.click('#edTabWeb');
+  ok(/Pagament fet/.test(await s.textContent('#edWebPagament')), 'i recarregar la pàgina no fa tornar a pagar');
+  pagat = false;
+  const s2 = await ctx.newPage();
+  await s2.goto(WEB + '?alta=cs_test_zzz#editor');
+  await s2.waitForFunction(() => /no confirma/.test((document.querySelector('#edWebPagament') || {}).textContent || ''));
+  ok(/^Paga i publica/.test(await s2.textContent('#edWebNetlify')), 'si Stripe no confirma el pagament, el botó continua demanant-lo');
+  await ctx.close();
+  const f0 = await p.evaluate(() => ({ t: document.querySelector('#edWebNetlify') && document.querySelector('#edWebNetlify').textContent, n: document.querySelector('#edWebPagament') && document.querySelector('#edWebPagament').textContent }));
+  ok(!f0.t || (/^Publica-la/.test(f0.t) && !f0.n), 'des del disc no hi ha pagament: el botó publica com sempre');
 }
 
 console.log('\n7B.12 · Al mòbil (390 px)');
@@ -1090,12 +1187,14 @@ console.log('\n7B.13 · Res es trenca');
 console.log('\n6 · El fre');
 {
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
-  const net = await p.evaluate(() => ({
-    fetch: /fetch\s*\(/.test(document.documentElement.innerHTML),
-    clau: /x-api-key|anthropic/i.test(document.documentElement.innerHTML)
-  }));
-  ok(!net.fetch && !net.clau,
-    'la consola no crida cap API ni demana cap clau: prepara el text i qui el fa servir decideix on el porta');
+  /* L'única crida és a la funció de pagament de la mateixa web (7E), que no
+     porta cap clau: les claus de Stripe viuen a Netlify. */
+  const net = await p.evaluate(() => {
+    const h = document.documentElement.innerHTML, crides = h.match(/fetch\s*\([^,)]*/g) || [];
+    return { fora: crides.filter(c => !/^fetch\s*\(CHECKOUT/.test(c)), propia: /const CHECKOUT = '\/\.netlify\/functions\/checkout'/.test(h), clau: /x-api-key|anthropic|sk_(test|live)_/i.test(h) };
+  });
+  ok(!net.fora.length && net.propia && !net.clau,
+    'la consola no crida cap API de fora ni demana cap clau: prepara el text i qui el fa servir decideix on el porta' + (net.fora.length ? ': ' + net.fora[0] : ''));
 }
 
 await b.close();

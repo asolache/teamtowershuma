@@ -1,0 +1,77 @@
+# La web surt del mapa de valor: no s'edita a mà (vegeu CLAUDE.md).
+[build]
+  command = "node eines/genera.mjs"
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; style-src 'self'; img-src 'self' data:; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[functions]
+  directory = "netlify/functions"
+
+# El cervell, les eines i les regles són de l'equip: viuen al repositori i la web no els serveix.
+[[redirects]]
+  from = "/cerebro/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/eines/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.mcp.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/CLAUDE.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/CEREBRO.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/API.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/LLEGEIX.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/LEEME.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# El que demana el botó «Deploy to Netlify». El mapa (TT_MAPA) el posa el botó de l'editor.
+[template.environment]
+  TT_NOM = "El nom de la web"
+  TT_CORREU = "El correu on arriben els formularis"
+  TT_LLENGUA = "ca o es"
+  TT_MAPA = "El mapa, el posa el botó de l'editor (opcional)"
