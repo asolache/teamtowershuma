@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 289 · 18295 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 289 · 18297 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
@@ -24,7 +24,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 74 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 192 KB |
-| `netlify/` | Funcions del web públic: el proxy d'IA (edge) i el formulari que entra al CRM (submission-created) | 4 · 18 KB |
+| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created) i el pagament (checkout) | 3 · 15 KB |
 
 ## prova
 
@@ -34,7 +34,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 31 KB |
 | `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 110 · 1443 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1324 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 62 · 1326 KB |
 
 ## saber
 
@@ -61,7 +61,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `data/` | Llavors de dades d'una versió anterior | 2 · 2 KB |
-| `ia/` | Prototip d'app amb IA, servit encara per `_redirects` | 60 · 1312 KB |
+| `ia/` | Prototip d'app amb IA (SOS V10) i el seu proxy d'IA; ja no se serveix | 61 · 1316 KB |
 | `js/` | Codi solt d'abans que tot fos autocontingut | 2 · 3 KB |
 | `knowledge-base/` | Mòduls de coneixement d'una versió anterior | 2 · 5 KB |
 | `v2/` | Versió anterior de l'app | 6 · 147 KB |
@@ -71,7 +71,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 | `v6/` | Versió anterior de l'app | 28 · 670 KB |
 | `v7/` | Versió anterior de l'app | 28 · 663 KB |
 | `v8/` | Versió anterior de l'app | 37 · 701 KB |
-| `v9/` | Versió anterior de l'app, servida encara per `_redirects` | 48 · 834 KB |
+| `v9/` | Versió anterior de l'app | 48 · 834 KB |
 
 ## arrel · pàgines HTML
 

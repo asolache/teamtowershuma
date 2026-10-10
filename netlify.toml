@@ -4,34 +4,6 @@
 [functions]
   node_bundler = "esbuild"
 
-# ── Forzar revalidación de JS modules ──────────────────────────
-[[headers]]
-  for = "/ia/dev/js/*"
-  [headers.values]
-    Cache-Control = "no-cache, must-revalidate"
-
-[[headers]]
-  for = "/ia/dev/styles/*"
-  [headers.values]
-    Cache-Control = "no-cache, must-revalidate"
-
-# ── SPA redirects (orden: más específico primero) ──────────────
-[[redirects]]
-  from   = "/ia/dev/*"
-  to     = "/ia/dev/index.html"
-  status = 200
-
-[[redirects]]
-  from   = "/ia/*"
-  to     = "/ia/dev/index.html"
-  status = 200
-
-[[redirects]]
-  from   = "/v9/*"
-  to     = "/v9/index.html"
-  status = 200
-
-[[redirects]]
-  from   = "/v8/*"
-  to     = "/v8/index.html"
-  status = 200
+# Les capçaleres i les regles de /ia/dev, /v8 i /v9 que hi havia aquí han marxat
+# el 10/10/2026: aquelles versions ja no se serveixen. Les redireccions viuen
+# totes a `_redirects`, que és el fitxer que llegeixen les guardes.

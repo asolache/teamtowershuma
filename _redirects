@@ -1,7 +1,29 @@
-/ia/dev/* /ia/dev/index.html    200
-/v9/* /v9/index.html    200
-/v8/* /v8/index.html    200
-/v7/* /v7/index.html    200
+# Les versions antigues del SOS ja no se serveixen (10/10/2026, decisió de
+# l'Alvaro): el prototip /ia/ (SOS V10, que feia passar la clau d'IA de qui el
+# feia servir per una funció nostra) i les carpetes /v2/ a /v9/. Els fitxers es
+# queden al repositori com a arxiu (SOS/knowledge/taxonomia.md); qui arriba per
+# una adreça vella va al SOS d'ara. Amb `!` perquè els fitxers hi són i, sense
+# forçar-ho, Netlify els serviria igualment.
+# /ia sense barra és ia.html (l'assistent de La Teva Colla), que no es retira:
+# la regla va primer perquè cap de les de sota se l'emporti.
+/ia /ia.html    200
+/ia/* /SOS/    301!
+/v2 /SOS/    301!
+/v2/* /SOS/    301!
+/v3 /SOS/    301!
+/v3/* /SOS/    301!
+/v4 /SOS/    301!
+/v4/* /SOS/    301!
+/v5 /SOS/    301!
+/v5/* /SOS/    301!
+/v6 /SOS/    301!
+/v6/* /SOS/    301!
+/v7 /SOS/    301!
+/v7/* /SOS/    301!
+/v8 /SOS/    301!
+/v8/* /SOS/    301!
+/v9 /SOS/    301!
+/v9/* /SOS/    301!
 
 # Els vedes del SOS tenen URL curta perquè s'enllacen des de fora: una regla es
 # cita com a /vedes#veda-83, i això ha de seguir funcionant encara que un dia el

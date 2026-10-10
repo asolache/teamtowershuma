@@ -138,6 +138,37 @@ const cosDe = src => {
   else bad(`${pl(sense.length, 'pàgina sense autor', 'pàgines sense autor')} declarat: ${mostra(sense)}`);
 }
 
+/* ── 5 · L'arxiu no se serveix ─────────────────────────────────────────────
+   Les versions antigues del SOS es van retirar del web el 10/10/2026 (decisió
+   de l'Alvaro): el prototip /ia/ feia passar la clau d'IA de qui el feia servir
+   per una funció nostra, i les /v2/…/v9/ carregaven biblioteques de fora que
+   l'avís legal ja no declara. Els fitxers es queden com a arxiu, i per això cal
+   una regla **forçada** (`!`): sense, Netlify serveix el fitxer que troba. Si
+   algú torna a obrir-ne una, l'avís legal ha de tornar a dir-ho. */
+{
+  const ARXIU_WEB = ['ia', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9']
+    .filter(d => existsSync(join(ARREL, d)));
+  const linies = existsSync(join(ARREL, '_redirects'))
+    ? readFileSync(join(ARREL, '_redirects'), 'utf8').split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'))
+    : [];
+  const forcada = desde => linies.some(l => {
+    const [de, , st] = l.split(/\s+/);
+    return de === desde && /^30[12]!$/.test(st || '');
+  });
+  const obertes = ARXIU_WEB.filter(d => !forcada('/' + d + '/*') || (d !== 'ia' && !forcada('/' + d)));
+  const toml = existsSync(join(ARREL, 'netlify.toml')) ? readFileSync(join(ARREL, 'netlify.toml'), 'utf8') : '';
+  const perToml = ARXIU_WEB.filter(d => new RegExp('from\\s*=\\s*"/' + d + '[/"]').test(toml));
+  const proxy = existsSync(join(ARREL, 'netlify', 'edge-functions', 'anthropic-proxy.js'));
+  if (!obertes.length && !perToml.length && !proxy)
+    ok(`les ${ARXIU_WEB.length} carpetes d'arxiu (${ARXIU_WEB.join(', ')}) no se serveixen: redirecció forçada al SOS, i cap proxy d'IA desplegat`);
+  else bad('l\'arxiu torna a ser al web: '
+    + [obertes.length ? 'sense redirecció forçada a _redirects: ' + obertes.join(', ') : '',
+       perToml.length ? 'netlify.toml en serveix: ' + perToml.join(', ') : '',
+       proxy ? 'netlify/edge-functions/anthropic-proxy.js es tornaria a desplegar' : '']
+      .filter(Boolean).join(' · ')
+    + ' — l\'avís legal diu que no hi són');
+}
+
 console.log(`  · ${PAGINES.length} pàgines de contingut a l'arrel: ${PAGINES.join(', ')}`);
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} a les pàgines de l'arrel.`
   : '\n✅ Les pàgines de l\'arrel només afirmen el que poden sostenir.');
