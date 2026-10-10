@@ -1,3 +1,9 @@
+// ── ARXIU · retirada el 10/10/2026 ────────────────────────────────────────
+//  Era a netlify/edge-functions/ i Netlify la desplegava a /api/anthropic-proxy
+//  per al prototip /ia/ (SOS V10). Amb el prototip retirat del web, ja no es
+//  desplega: es queda aquí, al costat de l'app que la feia servir, com a arxiu.
+//  L'app d'ara crida l'API d'Anthropic directament amb la clau de qui la fa
+//  servir, sense passar per cap servidor nostre.
 // ============================================================
 //  netlify/edge-functions/anthropic-proxy.js
 //  TeamTowers SOS V10 — Edge Function proxy Anthropic

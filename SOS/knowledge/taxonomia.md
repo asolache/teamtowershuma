@@ -39,7 +39,9 @@ malament.
 
 `v2`…`v9`, `ia/`, `js/`, `knowledge-base/` i la majoria de les pàgines de
 l'arrel són versions anteriors del projecte. **No s'esborren**: hi ha història
-allà dins, i `_redirects` encara en serveix algunes al web públic. Però tampoc
+allà dins. Des del 10/10/2026 `ia/` i `v2`…`v9` ja no se serveixen a
+teamtowershuma.com (`_redirects` porta les seves adreces al SOS d'ara; la
+còpia antiga de GitHub Pages és a part i només la pot despublicar l'Alvaro). Però tampoc
 són el projecte, i tenir-les barrejades amb el que sí que ho és fa que qualsevol
 cerca de text doni resultats de fa tres anys amb la mateixa cara de veritat que
 els d'avui.
@@ -126,10 +128,10 @@ aquesta llista i res més.
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
-- `netlify` · obra · Funcions del web públic: el proxy d'IA (edge) i el formulari que entra al CRM (submission-created)
+- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created) i el pagament (checkout)
 - `data` · arxiu · Llavors de dades d'una versió anterior
 - `js` · arxiu · Codi solt d'abans que tot fos autocontingut
-- `ia` · arxiu · Prototip d'app amb IA, servit encara per `_redirects`
+- `ia` · arxiu · Prototip d'app amb IA (SOS V10) i el seu proxy d'IA; ja no se serveix
 - `knowledge-base` · arxiu · Mòduls de coneixement d'una versió anterior
 - `v2` · arxiu · Versió anterior de l'app
 - `v3` · arxiu · Versió anterior de l'app
@@ -138,13 +140,14 @@ aquesta llista i res més.
 - `v6` · arxiu · Versió anterior de l'app
 - `v7` · arxiu · Versió anterior de l'app
 - `v8` · arxiu · Versió anterior de l'app
-- `v9` · arxiu · Versió anterior de l'app, servida encara per `_redirects`
+- `v9` · arxiu · Versió anterior de l'app
 
 ## El que aquesta taxonomia no fa
 
 - **No mou res.** Declara. Moure `v2`…`v9` i `ia/` sota una carpeta `arxiu/` de
-  debò seria més net i trencaria `_redirects` i el web públic: és una decisió
-  a part, amb conseqüència a fora, i es pren mirant-la de cara.
+  debò seria més net, però amb `publish = "."` les tornaria a publicar a
+  `/arxiu/…`: caldria una redirecció forçada (`/arxiu/* /SOS/ 301!`) i que la
+  guarda 5 de `check-arrel.js` les busqui al lloc nou. És una decisió a part.
 - **No decideix què s'esborra.** Res del que hi ha aquí diu que l'arxiu sobri.
   Diu que no és el present.
 - **No classifica fitxer a fitxer.** La cara és de la carpeta. Un fitxer que no
