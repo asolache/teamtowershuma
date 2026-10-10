@@ -99,9 +99,20 @@ la feina de rutina la gestionin les IA tal com ho defineix el SOS.
   (la comanda del distribuïdor), 5 sense tipus i 10 de persona (7 intangibles i
   3 pagaments). La reserva no compta: cap tipus de l'app és una reserva. Veda
   164.
+- **Refer el kit en local ja no perd res** (trobat el 10/10/2026 preparant
+  l'informe de proves per a l'Àlvar): `node eines/genera.mjs` sense variables
+  tornava la web al català, al rol que més lliura i sense marca ni correu. Ara
+  el zip desa el que es va triar a `cerebro/configuracio.json` i `genera.mjs`
+  el llegeix, amb la marca de `cerebro/marca.json`; una variable `TT_*` hi passa
+  per sobre. I l'exemple del celler ja no es desa com a `cerebro/mapa-real.json`:
+  l'avís torna cada vegada. Ho vigila M33 de `test-vna-motor.mjs` (veda 165).
 
 **Pendent de l'Àlvar:**
 - **Provar la sessió 0 amb el primer pilot** (teamtowershuma).
+- **Camí B i camí gratis:** el repositori que crea la plantilla de Netlify no
+  guarda `cerebro/` (Netlify el genera per a la web i no el desa). Qui passi al
+  camí gratis de claude.ai no té cervell per llegir fins que algú amb Node
+  executi `genera.mjs`. Cal decidir-ne el camí.
 - **Eines a l'app per als tipus de negoci**, una per una i començant pel
   pressupost (sense sumar i sense cap preu que no surti de la tarifa).
 

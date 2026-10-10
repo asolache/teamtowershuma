@@ -1137,5 +1137,41 @@ console.log('\nM32 · L\'arrencada amb IA: continguts, el que ja hi havia, les t
   rmSync(d, { recursive: true, force: true });
 }
 
+console.log('\nM33 · Refer la web en local no perd el que es va triar a l\'editor, i l\'exemple no es desa com a mapa');
+{ const { mkdtempSync, writeFileSync, mkdirSync, readFileSync, readdirSync, rmSync, cpSync, existsSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { dirname } = await import('node:path');
+  const { spawnSync } = await import('node:child_process');
+  const { createRequire } = await import('node:module');
+  const cli = createRequire(import.meta.url)('../tools/web-del-mapa.js');
+  /* Sense cap TT_*: és com ho executa Claude Code quan CLAUDE.md li diu «regenera». */
+  const net = { URL: '', NETLIFY: '', TT_NOM: '', TT_LLENGUA: '', TT_CASA: '', TT_CORREU: '', TT_URL: '', TT_MAPA: '' };
+  const corre = (d, env) => spawnSync(process.execPath, ['eines/genera.mjs'], { cwd: d, encoding: 'utf8', env: Object.assign({}, process.env, net, env) });
+  const tots = d => { const sota = r => readdirSync(join(d, r), { withFileTypes: true }).flatMap(x => x.isDirectory() ? sota(r + x.name + '/') : [r + x.name]); return sota('').sort(); };
+  const mapa = M.exporta(M.importa(EXEMPLE).arbre), casa = [mapa.roles[1]];
+  const logo = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>';
+  const op = { nom: 'Prova', llengua: 'es', casa, correu: 'hola@exemple.cat', url: 'https://prova.example', marca: { color: '#b45309', lema: 'Obres ben fetes', logoSvg: logo } };
+  const zip = await cli.genera(mapa, op);
+  const d = mkdtempSync(join(tmpdir(), 'tt-refer-'));
+  zip.forEach(f => { mkdirSync(dirname(join(d, f.ruta)), { recursive: true }); writeFileSync(join(d, f.ruta), f.cos); });
+  const conf = JSON.parse(readFileSync(join(d, 'cerebro/configuracio.json'), 'utf8'));
+  ok(J(conf) === J({ nom: 'Prova', llengua: 'es', casa, correu: 'hola@exemple.cat', url: 'https://prova.example/' }), 'el zip desa el que es va triar a l\'editor a cerebro/configuracio.json');
+  const r1 = corre(d, {}), abans = new Map(zip.map(f => [f.ruta, f.cos]));
+  const canviats = tots(d).filter(r => abans.get(r) !== readFileSync(join(d, r), 'utf8'));
+  ok(r1.status === 0 && !canviats.length, 'node eines/genera.mjs, sense variables, torna a fer la mateixa web byte a byte: nom, llengua, rols de casa, correu, adreça i marca' + (canviats.length ? ': canvien ' + canviats.slice(0, 4).join(', ') : ''));
+  const r2 = corre(d, { TT_NOM: 'Un altre nom' });
+  ok(r2.status === 0 && /<title>Un altre nom/.test(readFileSync(join(d, 'index.html'), 'utf8')) && JSON.parse(readFileSync(join(d, 'cerebro/configuracio.json'), 'utf8')).nom === 'Un altre nom'
+    && /<html lang="es">/.test(readFileSync(join(d, 'index.html'), 'utf8')), 'una variable TT_* hi passa per sobre, es queda, i la resta no es mou');
+  writeFileSync(join(d, 'cerebro/configuracio.json'), '{ no és json');
+  const r3 = corre(d, {});
+  ok(r3.status === 0 && /configuracio\.json no és JSON vàlid/.test(r3.stderr), 'una configuració trencada avisa i no tomba la web');
+  const p = mkdtempSync(join(tmpdir(), 'tt-exemple-'));
+  cpSync(join(DIR, '..', 'plantilla-web'), p, { recursive: true });
+  const e1 = corre(p, {}), e2 = corre(p, {});
+  ok(e1.status === 0 && e2.status === 0 && /Falta cerebro\/mapa-real\.json/.test(e1.stderr) && /Falta cerebro\/mapa-real\.json/.test(e2.stderr)
+    && !existsSync(join(p, 'cerebro/mapa-real.json')) && existsSync(join(p, 'index.html')), 'sense mapa, l\'exemple fa la web però no es desa com a mapa del client: l\'avís torna cada vegada');
+  [d, p].forEach(x => rmSync(x, { recursive: true, force: true }));
+}
+
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

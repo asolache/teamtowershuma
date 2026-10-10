@@ -11,17 +11,21 @@ const sota = d => (hi(d) ? readdirSync(new URL(d, arrel), { withFileTypes: true 
 const repo = ['cerebro/continguts/', 'cerebro/fonts/', 'cerebro/esborranys/'].map(sota).reduce((a, b) => a.concat(b), [])
   .concat(hi('cerebro/dossier.md') ? ['cerebro/dossier.md'] : []).map(ruta => ({ ruta, cos: readFileSync(new URL(ruta, arrel), 'utf8') }));
 const continguts = repo.filter(f => /^cerebro\/continguts\/[^/]+\.md$/.test(f.ruta)).map(f => ({ id: f.ruta.slice(19, -3), text: f.cos }));
-let mapa = llegeix('cerebro/mapa-real.json'), font = 'cerebro/mapa-real.json';
+let mapa = llegeix('cerebro/mapa-real.json'), font = 'cerebro/mapa-real.json', exemple = false;
 if (!mapa && e.TT_MAPA) { mapa = JSON.parse(inflateRawSync(Buffer.from(e.TT_MAPA, 'base64url')).toString('utf8')); font = 'TT_MAPA'; }
 if (!mapa) {
-  mapa = EXEMPLE; font = 'l\'exemple del celler';
+  mapa = EXEMPLE; font = 'l\'exemple del celler'; exemple = true;
   if (!e.NETLIFY) console.warn('⚠️  Falta cerebro/mapa-real.json: surt la web de l\'exemple. Desa-hi el JSON de l\'editor del mapa («Copia el JSON»).');
 }
 const ideal = llegeix('cerebro/mapa-ideal.json');
 if (ideal) mapa = Object.assign({}, mapa, { ideal });
+/* El que es va triar a l'editor i la marca viatgen amb el repositori: sense llegir-los, refer la web la tornava al català, al rol que més lliura i sense marca. Les variables TT_* hi passen per sobre. */
+const prova = r => { try { return llegeix(r); } catch (x) { console.warn('⚠️  ' + r + ' no és JSON vàlid: no es fa servir.'); return null; } };
+const conf = prova('cerebro/configuracio.json') || {}, marca = prova('cerebro/marca.json');
+if (marca && marca.logo === '../logo.svg' && hi('logo.svg')) marca.logoSvg = readFileSync(new URL('logo.svg', arrel), 'utf8');
 let casa;
-try { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : undefined; } catch (x) { casa = undefined; }
-const fitxers = await genera(mapa, { nom: e.TT_NOM, correu: e.TT_CORREU, llengua: e.TT_LLENGUA, url: e.TT_URL || e.URL, casa: Array.isArray(casa) ? casa : undefined, continguts, repo, avisa: m => console.warn('⚠️  ' + m) });
+try { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }
+const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, marca: marca || undefined, continguts, repo, avisa: m => console.warn('⚠️  ' + m) });
 /* El que és del repositori no es trepitja: la configuració, el mapa, les decisions i el que s'escriu (dossier, fonts, continguts, esborranys). */
 const propis = ['netlify.toml', 'cerebro/mapa-real.json', 'cerebro/mapa-ideal.json', 'cerebro/decisiones.md', 'cerebro/dossier.md'];
 const escrit = r => /^cerebro\/(fonts|continguts|esborranys)\//.test(r);
@@ -29,6 +33,7 @@ let n = 0;
 for (const f of fitxers) {
   const u = new URL(f.ruta, arrel);
   if ((propis.includes(f.ruta) || escrit(f.ruta)) && existsSync(u)) continue;
+  if (exemple && /^cerebro\/mapa-(real|ideal)\.json$/.test(f.ruta)) continue; // l'exemple no es desa com a mapa del client
   mkdirSync(new URL('.', u), { recursive: true });
   writeFileSync(u, f.cos);
   n++;
