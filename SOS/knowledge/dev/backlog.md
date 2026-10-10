@@ -92,13 +92,16 @@ la feina de rutina la gestionin les IA tal com ho defineix el SOS.
   `SOS/tools/check-entregables.js` (veda 163).
 - Al celler d'exemple segueix sortint 1 de 15: el que lliura la casa són béns i
   serveis, i és la resposta honesta.
+- **La portada del mapa de valor ja no té pistes pròpies** (l'Àlvar ho va
+  decidir el 10/10/2026): `build-mapavalor.js` executa `fluxAutomatitzable` i
+  `repartimentMaquina` de l'app, i el que l'etiqueta no diu ho declara
+  `CELLER.tipus`. El celler de la portada passa de 5 lliuraments de màquina a 1
+  (la comanda del distribuïdor), 5 sense tipus i 10 de persona (7 intangibles i
+  3 pagaments). La reserva no compta: cap tipus de l'app és una reserva. Veda
+  164.
 
 **Pendent de l'Àlvar:**
 - **Provar la sessió 0 amb el primer pilot** (teamtowershuma).
-- **La portada del mapa de valor** encara compta pagaments com a feina de
-  màquina (`PISTES` de `SOS/tools/build-mapavalor.js`): alinear-la amb la regla
-  baixa el número públic de 5 a 2 i cal reescriure «comandes, reserves,
-  liquidacions».
 - **Eines a l'app per als tipus de negoci**, una per una i començant pel
   pressupost (sense sumar i sense cap preu que no surti de la tarifa).
 

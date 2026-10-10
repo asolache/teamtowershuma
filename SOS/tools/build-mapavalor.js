@@ -282,6 +282,15 @@ const CELLER = {
       'visitantes con tiempo y ganas de quedarse', 'que el pueblo los trate como la casa ha prometido',
       ['poble', 1], ['poble', 4]]
   ],
+  /* El tipus del que l'etiqueta no diu, com qui el tria a mà al Kanban. Els
+     diners hi són perquè l'app digui que no surten d'una màquina. La reserva
+     no hi és: cap tipus de l'app és una reserva, i els tipus no s'inventen. */
+  tipus: {
+    'volum a preu de canal': 'comanda',
+    'el que paga per l\'experiència, no per l\'ampolla': 'cobrament',
+    'el que paga pel viatge sencer': 'cobrament',
+    'despesa que es queda al municipi': 'cobrament'
+  },
   /* El que el mapa ensenya, i que no és una opinió: surt de comptar les
      fletxes. Els números els posa el generador, no aquesta llista. */
   troballes: [
@@ -960,33 +969,54 @@ const cCanal = compta(CANAL), cVisita = compta(VISITA), cTot = compta(flux);
 /* ══ QUI FA CADA LLIURAMENT ══════════════════════════════════════════════════
    La regla que el SOS aplica al Kanban, dita aquí sobre un cas que es pot
    llegir: si el lliurament és **tangible i sabem quin entregable produeix**, el
-   pot preparar una màquina; si és **intangible**, és de persona i la màquina no
-   el toca mai.
+   pot preparar una màquina; si és **intangible**, o el seu tipus no surt d'una
+   màquina, és de persona.
 
-   Les pistes són les mateixes que `ENTREGABLE_HINTS` de l'aplicació. No es
-   requereix el fitxer —és HTML amb un `<script>` de 500 KB— i per això es
-   declaren aquí les que fan falta per al cas, amb una guarda que comprova que
-   totes existeixen a l'app. Dues llistes de pistes que divergissin farien que
-   la portada prometés un repartiment diferent del que després fa l'eina. */
-const PISTES = [
-  [/comanda|compra|paga|liquidaci|preu|volum/i, 'comanda'],
-  [/reserva|hores reservades|disponibilitat/i, 'inventari'],
-  [/despesa|factura/i, 'comanda']
-];
-const entregableDe = f => {
-  if (f.mena !== 'tangible') return null;
-  const h = PISTES.find(p => p[0].test(f.q));
-  return h ? h[1] : null;
-};
-const QUI = flux.map(f => {
-  if (f.mena === 'intangible') return { f, qui: 'persona', tipus: null };
-  const t = entregableDe(f);
-  return t ? { f, qui: 'maquina', tipus: t } : { f, qui: 'sense', tipus: null };
-});
-const cQui = {
-  maquina: QUI.filter(x => x.qui === 'maquina').length,
-  persona: QUI.filter(x => x.qui === 'persona').length,
-  sense: QUI.filter(x => x.qui === 'sense').length
+   La regla **s'executa, no es copia**: es llegeix de `SOS/index.html` el mateix
+   tros que `build-vna-suport.js` posa al kit i es criden `fluxAutomatitzable` i
+   `repartimentMaquina` tal com són. Fins al 10/10/2026 aquí hi havia una llista
+   de pistes pròpia, i la guarda només mirava que els seus tipus existissin a
+   l'app: la portada en comptava 5 de màquina quan l'app no en comptava cap
+   (veda 164). El que l'etiqueta no diu, ho diu `CELLER.tipus`. */
+let REGLA_ERR = '';
+const REGLA = (() => {
+  const app = readFileSync(join(SOS, 'index.html'), 'utf8');
+  const tros = (inici, fi) => {
+    const a = app.indexOf(inici), b = a < 0 ? -1 : app.indexOf(fi, a);
+    return b < 0 ? '' : app.slice(a, b + fi.length);
+  };
+  const font = [
+    tros('const normKind=', 'const isIntangible=k=>normKind(k)===\'intangible\';'),
+    tros('const ENTREGABLES=[', '\n  return{pot:true,motiu:\'\',tipus:t};\n}'),
+    tros('function repartimentMaquina(node){', '\n  return r;\n}')
+  ];
+  if (font.some(t => !t)) { REGLA_ERR = 'no es troba on comença o acaba'; return null; }
+  try { return new Function(font.join('\n') + '\nreturn{ENTREGABLES,fluxAutomatitzable,repartimentMaquina};')(); }
+  catch (e) { REGLA_ERR = e.message; return null; }
+})();
+// Com un flux del SOS: `entregable` és el tipus triat a mà, i l'app el mira abans que les pistes.
+const comFlux = f => ({ kind: f.mena, label: f.q, entregable: CELLER.tipus[f.q] });
+const QUI = REGLA ? flux.map(f => {
+  const a = REGLA.fluxAutomatitzable(comFlux(f));
+  return { f, qui: a.pot ? 'maquina' : a.motiu === 'intangible' || a.tipus ? 'persona' : 'sense', tipus: a.tipus || null };
+}) : [];
+const REP = REGLA ? REGLA.repartimentMaquina({ vna: { exchanges: flux.map(comFlux) } }) : null;
+const cQui = REP ? { maquina: REP.maquina, persona: REP.persona, sense: REP.senseTipus }
+  : { maquina: 0, persona: 0, sense: 0 };
+// Els tangibles que són de persona perquè el seu tipus no surt d'una màquina.
+const cDiners = QUI.filter(x => x.qui === 'persona' && x.f.mena !== 'intangible').length;
+/* El que diuen les frases de la portada. Si el repartiment canvia, la guarda 9
+   peta i s'han de reescriure: el número canviaria sol i la frase no. */
+const QUI_DIU = { maquina: ['volum a preu de canal'], persona: 'cobrament' };
+const QUI_TXT = {
+  maquina: {
+    ca: 'el pot preparar una màquina: la comanda del distribuïdor, que és tangible i té un entregable conegut',
+    es: 'lo puede preparar una máquina: el pedido del distribuidor, que es tangible y tiene un entregable conocido'
+  },
+  persona: {
+    ca: `són de persona, sempre: els ${cTot.i} intangibles i els ${cDiners} pagaments. <b>La màquina no toca cap intangible</b> —el sistema no en té manera— i un pagament només el dona per fet qui el rep`,
+    es: `son de persona, siempre: los ${cTot.i} intangibles y los ${cDiners} pagos. <b>La máquina no toca ningún intangible</b> —el sistema no tiene manera— y un pago solo lo da por hecho quien lo recibe`
+  }
 };
 
 /* ══ QUI PERD QUÈ SI AQUELL NODE S'ATURA ════════════════════════════════════
@@ -1336,9 +1366,9 @@ function blocPortada() {
      un servei diferent — i perquè el número el dona el graf, no nosaltres. */
   f.push('    <div class="mv-qui">');
   f.push(`      <div class="mv-qk"${i18('qui.k')}>I després, qui fa cada lliurament</div>`);
-  f.push(`      <div class="mv-qr"><b class="mq">${cQui.maquina}</b><span${i18('qui.maquina')}>els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—</span></div>`);
+  f.push(`      <div class="mv-qr"><b class="mq">${cQui.maquina}</b><span${i18('qui.maquina')}>${QUI_TXT.maquina.ca}</span></div>`);
   f.push(`      <div class="mv-qr"><b class="ms">${cQui.sense}</b><span${i18('qui.sense')}>són tangibles però encara no sabem quin entregable produeixen</span></div>`);
-  f.push(`      <div class="mv-qr"><b class="mp">${cQui.persona}</b><span${i18h('qui.persona')}>són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera</span></div>`);
+  f.push(`      <div class="mv-qr"><b class="mp">${cQui.persona}</b><span${i18h('qui.persona')}>${QUI_TXT.persona.ca}</span></div>`);
   f.push('    </div>');
   f.push(`    <p class="mv-avis"${i18h('avis')}>${CELLER.avis}</p>`);
   f.push(`    <div class="mv-ctas"><a class="mv-cta pri" href="/SOS/vna.html"${i18('cta1')}>Com es fa un mapa, pas a pas →</a>`
@@ -1384,18 +1414,12 @@ function dicMapa(l) {
       es: '<b>El margen no sale de subir el precio de la botella.</b> Sale de <b>cobrar los intangibles que la casa ya produce</b> —el relato, el lugar, la familia, la ladera— y que hoy se van con el camión. El mapa no los inventa: enseña que están y que no se cobran.'
     },
     'mv.qui.k': { ca: 'I després, qui fa cada lliurament', es: 'Y después, quién hace cada entrega' },
-    'mv.qui.maquina': {
-      ca: 'els pot preparar una màquina: tangibles amb un entregable conegut —comandes, reserves, liquidacions—',
-      es: 'los puede preparar una máquina: tangibles con un entregable conocido —pedidos, reservas, liquidaciones—'
-    },
+    'mv.qui.maquina': QUI_TXT.maquina,
     'mv.qui.sense': {
       ca: 'són tangibles però encara no sabem quin entregable produeixen',
       es: 'son tangibles pero todavía no sabemos qué entregable producen'
     },
-    'mv.qui.persona': {
-      ca: 'són de persona, sempre. <b>La màquina no toca cap intangible</b> — i no per criteri nostre: el sistema no en té manera',
-      es: 'son de persona, siempre. <b>La máquina no toca ningún intangible</b> — y no por criterio nuestro: el sistema no tiene manera'
-    },
+    'mv.qui.persona': QUI_TXT.persona,
     'mv.cta1': { ca: 'Com es fa un mapa, pas a pas →', es: 'Cómo se hace un mapa, paso a paso →' },
     'mv.cta2': { ca: 'El paquet i el preu →', es: 'El paquete y el precio →' }
   };
@@ -1989,33 +2013,44 @@ function dicVna(l) {
   else ok('la notació explica node, transacció, les dues menes i l\'entregable');
 })();
 
-/* 9 · Les pistes d'entregable han de ser les de l'aplicació. Si la portada
-       classifica amb un vocabulari i el SOS amb un altre, el repartiment que es
-       promet no és el que després surt al Kanban — i això no peta mai. */
+/* 9 · El repartiment és el de l'app perquè el calcula el codi de l'app. Queda
+       comprovar que s'ha pogut llegir, que els tipus triats a mà existeixen
+       i que les frases de la portada diuen el que n'ha sortit. Abans es
+       comparaven els noms dels tipus i no el resultat, i la portada en va
+       prometre 5 de màquina on l'app no en feia cap (veda 164). */
 (() => {
-  const app = readFileSync(join(SOS, 'index.html'), 'utf8');
-  const i = app.indexOf('const ENTREGABLE_HINTS=[');
-  if (i < 0) { bad('no es troba `ENTREGABLE_HINTS` a l\'app: el repartiment d\'aquest cas no es pot comprovar'); return; }
-  const cos = app.slice(i, app.indexOf('\n];', i));
-  const tipusApp = [...new Set([...cos.matchAll(/,'([\w-]+)'\]/g)].map(m => m[1]))];
-  const meus = [...new Set(PISTES.map(p => p[1]))];
-  const orfes = meus.filter(t => !tipusApp.includes(t));
-  if (orfes.length) bad('aquest cas classifica cap a tipus que l\'app no coneix: ' + orfes.join(', '));
-  else ok(`el repartiment fa servir ${meus.length} tipus, tots declarats a l'app`);
-  // I que el repartiment que es publica sigui el que surt del graf.
+  if (!REGLA) { bad(`no es pot executar la regla de SOS/index.html (${REGLA_ERR}): el repartiment d'aquest cas no es pot calcular`); return; }
+  const ids = REGLA.ENTREGABLES.map(e => e.id), etiquetes = flux.map(f => f.q);
+  const li = [];
+  Object.entries(CELLER.tipus).forEach(([q, t]) => {
+    if (!etiquetes.includes(q)) li.push(`«${q}» no és cap lliurament del cas`);
+    else if (!ids.includes(t)) li.push(`«${q}» diu que és «${t}», que l'app no coneix: l'app el deduiria de l'etiqueta`);
+    else if (flux.find(f => f.q === q).mena !== 'tangible') li.push(`«${q}» és intangible: un tipus no el treu de les mans d'una persona`);
+  });
+  if (li.length) bad('CELLER.tipus: ' + li.join(' · '));
+  const n = k => QUI.filter(x => x.qui === k).length;
   if (cQui.maquina + cQui.persona + cQui.sense !== flux.length) bad('el repartiment no suma els lliuraments del graf');
-  else if (cQui.persona !== cTot.i) bad('els de persona no coincideixen amb els intangibles: la regla no s\'està aplicant');
-  else /* El node que s'atura ha d'existir i ha de moure alguna cosa. Un encallament
-   sobre un node que no hi és no petaria: el botó senzillament no faria res. */
+  else if (n('maquina') !== cQui.maquina || n('persona') !== cQui.persona) bad('fluxAutomatitzable i repartimentMaquina no hi estan d\'acord');
+  else if (QUI.some(x => x.f.mena === 'intangible' && x.qui !== 'persona')) bad('un intangible no és de persona: la regla no s\'està aplicant');
+  else ok(`repartiment de l'app: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${cQui.persona} de persona (els ${cTot.i} intangibles i ${cDiners} pagaments)`);
+  // Les frases tenen nom i nombre: si el repartiment es mou, peten.
+  const maq = QUI.filter(x => x.qui === 'maquina').map(x => x.f.q);
+  if (JSON.stringify(maq) !== JSON.stringify(QUI_DIU.maquina))
+    bad(`la portada diu que la màquina prepara «${QUI_DIU.maquina.join('», «')}» i l'app hi posa ${maq.length ? '«' + maq.join('», «') + '»' : 'cap lliurament'}: cal reescriure QUI_TXT.maquina`);
+  else if (QUI.some(x => x.qui === 'persona' && x.f.mena !== 'intangible' && x.tipus !== QUI_DIU.persona))
+    bad(`hi ha tangibles de persona que no són «${QUI_DIU.persona}» i la portada només parla de pagaments: cal reescriure QUI_TXT.persona`);
+  else ok('les frases de qui fa cada lliurament diuen el que surt de la regla');
+})();
+
+/* 9b · El node que s'atura ha d'existir i ha de moure alguna cosa. Un
+        encallament sobre un node que no hi és no petaria: el botó senzillament
+        no faria res. */
 if (!nodeDe(ENC.node)) bad(`l'encallament apunta a «${ENC.node}», que no és cap node del mapa`);
 else if (!FLUX_PARAT) bad(`el node «${ENC.node}» no mou res: aturar-lo no ensenyaria res`);
 else if (!SENSE_REG.length) bad(`aturar «${ENC.node}» no deixa cap node sense la meitat del que rep: `
   + 'el dibuix no ensenyaria cap conseqüència i el botó seria decoració');
 else ok(`aturar «${nodeDe(ENC.node).nom}» para ${FLUX_PARAT} dels ${cTot.n} lliuraments `
   + `i deixa ${SENSE_REG.length} node(s) sense la meitat del que reben`);
-
-ok(`repartiment: ${cQui.maquina} de màquina · ${cQui.sense} sense tipus · ${cQui.persona} de persona (= els ${cTot.i} intangibles)`);
-})();
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════ */
 /* ══ EL BLOC DE LA XARXA ═════════════════════════════════════════════════════
