@@ -244,7 +244,7 @@ node SOS/tools/build-formularis.js    # los bloques compartidos → diagnóstico
 node SOS/tools/build-geo.js           # los municipios de la app → el directorio
 node SOS/tools/build-nav.js           # el menú → todas las páginas
 node SOS/tools/build-vedes.js         # el codex → SOS/vedes.html
-node SOS/tools/build-mapa.js          # el árbol → MAPA.md
+node SOS/tools/cervell.js             # el árbol → MAPA.md, y el contrato comprobado
 node SOS/tools/check-landing.js       # las tres páginas raíz: diccionarios, catálogo y puertas
 node SOS/tools/check-css-arrel.js     # ninguna regla de CSS que no pinte nada, ningún bloque sin estilo
 node SOS/tools/check-formularis.js    # los formularios: no envían nada solos

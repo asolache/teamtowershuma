@@ -3819,7 +3819,7 @@ const SITE_TXT = {
       trob: 'Troballes del mapa, per decidir', senseP: 'Encara sense passos.' },
     idx: { titol: 'Cervell · {nom}', generat: 'Índex generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
       intro: 'Tots els documents del projecte, per tema. **Pública**: la web que troba qualsevol. **Per enllaç**: pàgines que no s\'indexen i es donen a qui toca. **Equip**: el que només viu al repositori.',
-      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web',
+      doc: 'Document', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Les dades de la web', marca: 'La marca: el disseny i els textos propis',
       temes: { web: 'La web', mapa: 'El mapa', rols: 'Rols', lliuraments: 'Lliuraments', processos: 'Processos', decisions: 'Decisions', regles: 'Regles', eines: 'Eines i API' },
       capes: { publica: 'pública', enllac: 'per enllaç', equip: 'equip' } },
     api: { cap: 'Generat del mapa de valor amb la web. No s\'edita a mà: es regenera.', web: 'https://la-teva-web/',
@@ -3849,6 +3849,7 @@ const SITE_TXT = {
       'Aquesta web surt del mapa de valor. **No s\'edita a mà.**', '',
       '- **La font és `cerebro/mapa-real.json`** (i `cerebro/mapa-ideal.json`, si n\'hi ha). Per canviar la web, canvia el mapa a l\'editor del mapa de valor del SOS (pestanya Web) o, des del repositori de TeamTowers, amb `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Després, substitueix-ho tot.',
       '- **El cervell del projecte és `cerebro/`**, i surt del mateix mapa: una fitxa per rol (`roles/`), una per lliurament (`entregables/`), una per procés (`procesos/`) i `decisiones.md`. `decisiones.md` s\'escriu a mà i es conserva en regenerar; la resta es regenera. L\'índex de tot, per tema i per capa (pública, per enllaç, equip), és `CEREBRO.md`.',
+      '- **La marca és `cerebro/marca.json`**, si n\'hi ha: el color, la lletra, la forma, el logo (SVG) i els textos propis (el lema, la presentació, el nom curt i la introducció de cada porta, on sou). És l\'altra font: el disseny i els textos es canvien allà i es torna a generar, amb `--marca cerebro/marca.json`.',
       '- **Què no va aquí:** dades personals, preus pactats i contractes. Van al CRM.',
       '- **HTML i CSS estàtics, sense JavaScript.** Cada pàgina porta les seves dades en JSON-LD (schema.org), i `web.json` les té totes.',
       '- **Cap clau al repositori.** Les del CRM, la IA o els pagaments van a les variables d\'entorn de Netlify.',
@@ -3866,7 +3867,8 @@ const SITE_TXT = {
     pas: { coneix: ['Coneix-nos', 'Què et donem i què et demanem.'], compte: ['Crea el teu compte', 'Amb un compte veus el que és teu i en dius la teva.'],
       'sense-compte': ['Sense compte', 'Llegir i escriure\'ns n\'hi ha prou.'], connecta: ['Connecta el que ja fas servir', ''],
       primer: ['El primer que rebràs', ''], demanem: ['El primer que et demanarem', ''] },
-    cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' } },
+    cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' },
+    contacte: 'On som', adreca: 'Adreça', telefon: 'Telèfon', horari: 'Horari' },
   es: { inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo', salta: 'Saltar al contenido', menu: 'Menú',
     donem: 'Qué te damos', dones: 'Qué nos das', xarxa: 'Con el resto de la red', benvinguda: 'La bienvenida',
     connecta: 'Se conecta con', perCadascu: 'Una puerta para cada uno', sempre: 'Todo el tiempo', dins: 'Lo que pasa dentro',
@@ -3885,7 +3887,7 @@ const SITE_TXT = {
       trob: 'Hallazgos del mapa, por decidir', senseP: 'Todavía sin pasos.' },
     idx: { titol: 'Cerebro · {nom}', generat: 'Índice generado del mapa de valor. No se edita a mano: se regenera con la web.',
       intro: 'Todos los documentos del proyecto, por tema. **Pública**: la web que encuentra cualquiera. **Por enlace**: páginas que no se indexan y se dan a quien toca. **Equipo**: lo que solo vive en el repositorio.',
-      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web',
+      doc: 'Documento', capa: 'Capa', real: 'Mapa de valor real', ideal: 'Mapa de valor ideal', dades: 'Los datos de la web', marca: 'La marca: el diseño y los textos propios',
       temes: { web: 'La web', mapa: 'El mapa', rols: 'Roles', lliuraments: 'Entregables', processos: 'Procesos', decisions: 'Decisiones', regles: 'Reglas', eines: 'Herramientas y API' },
       capes: { publica: 'pública', enllac: 'por enlace', equip: 'equipo' } },
     api: { cap: 'Generado del mapa de valor con la web. No se edita a mano: se regenera.', web: 'https://tu-web/',
@@ -3915,6 +3917,7 @@ const SITE_TXT = {
       'Esta web sale del mapa de valor. **No se edita a mano.**', '',
       '- **La fuente es `cerebro/mapa-real.json`** (y `cerebro/mapa-ideal.json`, si lo hay). Para cambiar la web, cambia el mapa en el editor del mapa de valor del SOS (pestaña Web) o, desde el repositorio de TeamTowers, con `node SOS/tools/web-del-mapa.js cerebro/mapa-real.json carpeta/`. Después, sustitúyelo todo.',
       '- **El cerebro del proyecto es `cerebro/`**, y sale del mismo mapa: una ficha por rol (`roles/`), una por entregable (`entregables/`), una por proceso (`procesos/`) y `decisiones.md`. `decisiones.md` se escribe a mano y se conserva al regenerar; el resto se regenera. El índice de todo, por tema y por capa (pública, por enlace, equipo), es `CEREBRO.md`.',
+      '- **La marca es `cerebro/marca.json`**, si la hay: el color, la letra, la forma, el logo (SVG) y los textos propios (el lema, la presentación, el nombre corto y la introducción de cada puerta, dónde estáis). Es la otra fuente: el diseño y los textos se cambian allí y se vuelve a generar, con `--marca cerebro/marca.json`.',
       '- **Qué no va aquí:** datos personales, precios pactados y contratos. Van al CRM.',
       '- **HTML y CSS estáticos, sin JavaScript.** Cada página lleva sus datos en JSON-LD (schema.org), y `web.json` los tiene todos.',
       '- **Ninguna clave en el repositorio.** Las del CRM, la IA o los pagos van en las variables de entorno de Netlify.',
@@ -3932,7 +3935,8 @@ const SITE_TXT = {
     pas: { coneix: ['Conócenos', 'Qué te damos y qué te pedimos.'], compte: ['Crea tu cuenta', 'Con una cuenta ves lo tuyo y das tu opinión.'],
       'sense-compte': ['Sin cuenta', 'Basta con leer y escribirnos.'], connecta: ['Conecta lo que ya usas', ''],
       primer: ['Lo primero que recibirás', ''], demanem: ['Lo primero que te pediremos', ''] },
-    cat: { crm: 'CRM', cobros: 'Cobros', venta: 'Tienda', oficina: 'Agenda', comunica: 'Mensajes', web: 'Datos propios' } }
+    cat: { crm: 'CRM', cobros: 'Cobros', venta: 'Tienda', oficina: 'Agenda', comunica: 'Mensajes', web: 'Datos propios' },
+    contacte: 'Dónde estamos', adreca: 'Dirección', telefon: 'Teléfono', horari: 'Horario' }
 };
 const SITE_CSS = [
   ':root{color-scheme:light dark;--bg:#fbfaf7;--fg:#1d1b18;--mut:#5d584f;--lin:#d9d4ca;--acc:#4338ca}',
@@ -3961,6 +3965,94 @@ const SITE_CSS = [
   '.ocult{display:none}',
   'footer{border-top:1px solid var(--lin);color:var(--mut);font-size:.9rem}'
 ].join('\n') + '\n';
+
+/* La marca: el disseny i els textos propis del client, sense tocar l'HTML.
+ * Demanat per l'Àlvar (10/10/2026): que el disseny i els continguts de la web
+ * es puguin personalitzar i automatitzar al màxim. El mapa segueix donant
+ * l'estructura (portes, serveis, benvinguda); `marca.json` hi posa la cara:
+ *
+ *   { "color": "#7a1f3d", "lletra": "serif|sans|rodona|mono", "forma": "rodona|recta",
+ *     "logo": "logo.svg", "lema": "…", "presentacio": "…",
+ *     "portes": { "Rol del mapa": { "nom": "Nom curt al menú", "intro": "…" } },
+ *     "contacte": { "adreca": "…", "telefon": "…", "horari": "…" } }
+ *
+ *  · **El color no pot trencar el contrast.** Si no arriba a 4,5:1 (WCAG AA)
+ *    sobre el fons, s'enfosqueix (o s'aclareix, al mode fosc) fins que hi
+ *    arriba. La marca no pot fer una web que no es llegeix.
+ *  · **Lletres del sistema i prou.** Cap font externa: la CSP no ho deixaria i
+ *    la permaweb no ho vol.
+ *  · **El logo, en SVG i net.** Sense scripts ni gestors d'esdeveniments; si en
+ *    porta, no s'hi posa.
+ *  · **Sense marca, la web és byte a byte la de sempre.** */
+const MARCA_LLETRES = {
+  sans: 'system-ui,-apple-system,"Segoe UI",sans-serif',
+  serif: '"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif',
+  rodona: 'ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif',
+  mono: 'ui-monospace,"SF Mono",Menlo,Consolas,monospace'
+};
+function marcaHex(x) {
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(x || '').trim());
+  if (!m) return '';
+  const h = m[1].length === 3 ? m[1].replace(/./g, c => c + c) : m[1];
+  return '#' + h.toLowerCase();
+}
+function marcaLlum(hex) {
+  const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function marcaContrast(a, b) { const x = marcaLlum(a), y = marcaLlum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+/* Barreja el color cap al negre (o el blanc) a passos petits fins que fa 4,5:1
+   amb el fons. Determinista: el mateix color dona sempre el mateix resultat. */
+function marcaAjusta(hex, fons, cap) {
+  const rgb = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), dest = cap === 'blanc' ? 255 : 0;
+  for (let k = 0; k <= 20; k++) {
+    const c = '#' + rgb.map(v => Math.round(v + (dest - v) * k / 20).toString(16).padStart(2, '0')).join('');
+    if (marcaContrast(c, fons) >= 4.5) return c;
+  }
+  return cap === 'blanc' ? '#ffffff' : '#000000';
+}
+function marcaSvg(svg) {
+  const s = String(svg || '').trim();
+  if (!/^(<\?xml[^>]*>\s*)?<svg[\s>]/i.test(s) || !/<\/svg>\s*$/i.test(s)) return '';
+  if (/<script|<foreignObject|\son[a-z]+\s*=|javascript:|<!ENTITY|xlink:href\s*=\s*["']?(?!#)|\shref\s*=\s*["']?(?!#)/i.test(s)) return '';
+  return s.length <= 100000 ? s + '\n' : '';
+}
+function marcaNeta(m) {
+  const x = m && typeof m === 'object' ? m : {}, t = v => (typeof v === 'string' ? v.trim().slice(0, 600) : '');
+  const out = {};
+  if (marcaHex(x.color)) out.color = marcaHex(x.color);
+  if (MARCA_LLETRES[x.lletra]) out.lletra = x.lletra;
+  if (x.forma === 'recta' || x.forma === 'rodona') out.forma = x.forma;
+  if (t(x.lema)) out.lema = t(x.lema);
+  if (t(x.presentacio)) out.presentacio = t(x.presentacio);
+  const svg = marcaSvg(x.logoSvg);
+  if (svg) out.logoSvg = svg;
+  const portes = {};
+  Object.keys(x.portes && typeof x.portes === 'object' ? x.portes : {}).forEach(r => {
+    const p = x.portes[r] || {}, q = {};
+    if (t(p.nom)) q.nom = t(p.nom).slice(0, 40);
+    if (t(p.intro)) q.intro = t(p.intro);
+    if (q.nom || q.intro) portes[r] = q;
+  });
+  if (Object.keys(portes).length) out.portes = portes;
+  const c = x.contacte && typeof x.contacte === 'object' ? x.contacte : {}, cc = {};
+  ['adreca', 'telefon', 'horari'].forEach(k => { if (t(c[k])) cc[k] = t(c[k]).slice(0, 200); });
+  if (Object.keys(cc).length) out.contacte = cc;
+  return out;
+}
+function siteCss(m) {
+  if (!m.color && !m.lletra && !m.forma) return SITE_CSS;
+  let css = SITE_CSS;
+  if (m.color) {
+    const clar = marcaAjusta(m.color, '#fbfaf7', 'negre'), fosc = marcaAjusta(m.color, '#161512', 'blanc');
+    css = css.replace('--acc:#4338ca}', '--acc:' + clar + '}').replace('--acc:#a5b4fc}', '--acc:' + fosc + '}')
+      + 'header{border-bottom:3px solid var(--acc)}\n'
+      + 'nav a[aria-current=page],button{background:var(--acc);border-color:var(--acc);color:var(--bg)}\n';
+  }
+  if (m.lletra) css = css.replace('font:1rem/1.55 system-ui,-apple-system,"Segoe UI",sans-serif', 'font:1rem/1.55 ' + MARCA_LLETRES[m.lletra]);
+  if (m.forma === 'recta') css = css.replace('border-radius:999px', 'border-radius:3px').replace(/border-radius:8px/g, 'border-radius:2px');
+  return css + '.marca img{height:2.5rem;width:auto;vertical-align:middle;margin-right:.5rem}\n.lema{margin:-.25rem 0 .75rem;color:var(--mut)}\n';
+}
 
 /* El cervell del projecte, com el preveu el pla (cerebro/ al repositori del
    client): el mapa real i l'ideal, i una fitxa per rol, per lliurament i per
@@ -4062,6 +4154,10 @@ function webASite(web, opts) {
   const e = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const correu = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(o.correu || '') ? o.correu : '';
   const nom = String(o.nom || (web.casa || [])[0] || web.titol || 'La web').trim();
+  const MC = marcaNeta(o.marca), MP = MC.portes || {}, CT = MC.contacte || {};
+  const porta = id => (web.portes || []).find(p => p.id === id);
+  const etiqueta = p => (MP[p.rol] && MP[p.rol].nom) || p.rol;
+  const descripcio = MC.presentacio ? MC.presentacio.slice(0, 160) : web.titol || nom;
   const ruta = id => (id === 'inici' ? 'index.html' : id + '.html');
   /* Amb l'adreça definitiva, cada pàgina diu quina és la seva (canonical i
      Open Graph) i surt el sitemap. Sense, tot segueix sent relatiu. */
@@ -4074,13 +4170,14 @@ function webASite(web, opts) {
   const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
-    + '<meta name="description" content="' + e(web.titol || nom) + '">\n' + (extra || '')
+    + '<meta name="description" content="' + e(descripcio) + '">\n' + (extra || '')
     + (url ? '<link rel="canonical" href="' + e(abs(ruta(id))) + '">\n<meta property="og:type" content="website">\n<meta property="og:title" content="' + e(titol) + '">\n'
-      + '<meta property="og:description" content="' + e(web.titol || nom) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
+      + '<meta property="og:description" content="' + e(descripcio) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
     + '<link rel="stylesheet" href="estil.css">\n<link rel="alternate" type="application/json" href="web.json" title="' + e(L.dades) + '">\n'
     + ld(dades) + '\n</head>\n<body>\n<a class="salta" href="#contingut">' + e(L.salta) + '</a>\n'
-    + '<header>\n<p class="marca"><a href="index.html">' + e(nom) + '</a></p>\n<nav aria-label="' + e(L.menu) + '"><ul>'
-    + menu.map(x => '<li><a href="' + ruta(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : x.t) + '</a></li>').join('')
+    + '<header>\n<p class="marca"><a href="index.html">' + (MC.logoSvg ? '<img src="logo.svg" alt="">' : '') + e(nom) + '</a></p>\n'
+    + (MC.lema ? '<p class="lema">' + e(MC.lema) + '</p>\n' : '') + '<nav aria-label="' + e(L.menu) + '"><ul>'
+    + menu.map(x => '<li><a href="' + ruta(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
     + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(titol) + '</h1>\n' + cos + '\n</main>\n'
     + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (correu ? ' · <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>' : '') + '</p>\n</footer>\n</body>\n</html>\n';
   const formulari = p => {
@@ -4099,9 +4196,15 @@ function webASite(web, opts) {
   const servei = sv => ({ '@type': 'Service', name: sv.nom, description: sv.d || undefined, provider: { '@type': 'Organization', name: nom } });
 
   posa('index.html', pagina('inici', nom,
-    (web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + '<h2>' + e(L.perCadascu) + '</h2>\n'
-      + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(p.rol) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>'),
-    { '@type': 'Organization', name: nom, description: web.titol || undefined,
+    (MC.presentacio ? '<p>' + e(MC.presentacio) + '</p>\n' : web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + '<h2>' + e(L.perCadascu) + '</h2>\n'
+      + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(etiqueta(p)) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>')
+      + (CT.adreca || CT.telefon || CT.horari ? '\n<h2>' + e(L.contacte) + '</h2>\n<ul>'
+        + (CT.adreca ? '<li>' + e(L.adreca) + ': ' + e(CT.adreca) + '</li>' : '')
+        + (CT.telefon ? '<li>' + e(L.telefon) + ': <a href="tel:' + e(CT.telefon.replace(/[^\d+]/g, '')) + '">' + e(CT.telefon) + '</a></li>' : '')
+        + (CT.horari ? '<li>' + e(L.horari) + ': ' + e(CT.horari) + '</li>' : '') + '</ul>' : ''),
+    { '@type': 'Organization', name: nom, description: MC.presentacio || web.titol || undefined, slogan: MC.lema || undefined,
+      logo: MC.logoSvg && url ? url + 'logo.svg' : undefined, telephone: CT.telefon || undefined,
+      address: CT.adreca ? { '@type': 'PostalAddress', streetAddress: CT.adreca } : undefined,
       makesOffer: (web.serveis || []).map(sv => ({ '@type': 'Offer', itemOffered: servei(sv) })) }));
   (web.portes || []).forEach(p => {
     const con = p.connexions.map(c => L.cat[c.cat] || c.nom);
@@ -4109,8 +4212,9 @@ function webASite(web, opts) {
       const t = L.pas[b.pas] || [b.t, b.d], d = b.pas === 'connecta' ? con.join(', ') + '.' : t[1] || b.d;
       return '<li><strong>' + e(t[0]) + '.</strong> ' + e(d) + '</li>';
     });
-    posa(ruta(p.id), pagina(p.id, p.rol,
-      (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
+    posa(ruta(p.id), pagina(p.id, etiqueta(p),
+      (MP[p.rol] && MP[p.rol].intro ? '<p>' + e(MP[p.rol].intro) + '</p>\n' : '')
+        + (p.buida ? '<p>' + e(L.buida) + '</p>\n' : '')
         + (p.rep.length ? '<h2>' + e(L.donem) + '</h2>\n' + llista(p.rep, f => lli(f)) + '\n' : '')
         + (p.dona.length ? '<h2>' + e(L.dones) + '</h2>\n' + llista(p.dona, f => lli(f)) + '\n' : '')
         + (p.xarxa.length ? '<h2>' + e(L.xarxa) + '</h2>\n' + llista(p.xarxa, f => lli(f, f.de + ' → ' + f.a)) + '\n' : '')
@@ -4155,7 +4259,8 @@ function webASite(web, opts) {
     { '@type': 'WebPage', name: R.titol }, '<meta name="robots" content="noindex">\n'));
   posa('gracies.html', pagina('gracies', L.gracies, '<p>' + e(L.rebut) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.gracies }, '<meta name="robots" content="noindex">\n'));
-  posa('estil.css', SITE_CSS, 'text/css');
+  posa('estil.css', siteCss(MC), 'text/css');
+  if (MC.logoSvg) posa('logo.svg', MC.logoSvg, 'image/svg+xml');
   posa('web.json', JSON.stringify(web, null, 2) + '\n', 'application/json');
   /* El que fa del zip un repositori: la font, les regles, com publicar-lo i
      la configuració de Netlify. */
@@ -4177,6 +4282,11 @@ function webASite(web, opts) {
     .concat(['/cerebro/*', '/eines/*', '/netlify/*', '/.mcp.json', '/CLAUDE.md', '/CEREBRO.md', '/API.md', '/LLEGEIX.md', '/LEEME.md']
       .map(r => '[[redirects]]\n  from = "' + r + '"\n  to = "/404.html"\n  status = 404\n  force = true\n')).join('\n'), 'text/plain');
   if (o.mapa) cervell(o.mapa, L.cb).forEach(f => posa(f.ruta, f.cos, f.tipus));
+  /* La marca viatja amb el repositori, com el mapa: és l'altra font. */
+  if (Object.keys(MC).length) {
+    const desa = Object.assign({}, MC); delete desa.logoSvg; if (MC.logoSvg) desa.logo = '../logo.svg';
+    posa('cerebro/marca.json', JSON.stringify(desa, null, 2) + '\n', 'application/json');
+  }
   const md = a => a.join('\n').replace(/\{nom\}/g, nom) + '\n';
   posa('CLAUDE.md', md(L.claude), 'text/markdown');
   posa(llengua === 'es' ? 'LEEME.md' : 'LLEGEIX.md', md(L.llegeix), 'text/markdown');
@@ -4198,6 +4308,7 @@ function indexCervell(fitxers, nom, T) {
     if (/^cerebro\/mapa-real\.json$/.test(f.ruta)) return T.real;
     if (/^cerebro\/mapa-ideal\.json$/.test(f.ruta)) return T.ideal;
     if (f.ruta === 'web.json') return T.dades;
+    if (f.ruta === 'cerebro/marca.json') return T.marca;
     const m = /^# (.+)$/m.exec(f.cos) || /<h1>([^<]*)<\/h1>/.exec(f.cos);
     return m ? m[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"') : f.ruta;
   };
@@ -4208,6 +4319,7 @@ function indexCervell(fitxers, nom, T) {
     : /^cerebro\/entregables\//.test(r) ? ['lliuraments', 'equip']
     : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
     : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
+    : r === 'cerebro/marca.json' ? ['web', 'equip']
     : /^(CLAUDE|LLEGEIX|LEEME)\.md$/.test(r) ? ['regles', 'equip']
     : /^(eines|netlify)\/|^\.mcp\.json$|^API\.md$/.test(r) ? ['eines', 'equip'] : null;
   fitxers.forEach(f => {
@@ -4895,7 +5007,7 @@ function creaLlenc() {
     diagTots: false, diagTipus: 'tot', llocK: '', nomsAbans: new Set(), opUI: false, rodaVista: false, raf: 0,
     reglaOberta: null, menaAsa: 't', mouRol: null, camAbans: null, popEsborrany: null, avisDades: null, focusTarja: null,
     cadena: null, escK: '', veient: false, mouAcc: null, drecObridor: null, vol: null, fitxaArr: null, arrClic: false,
-    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', reg: null, webPrevia: null, cobra: null, alta: null
+    webCasa: null, webPag: 'inici', webNom: '', webCorreu: '', webUrl: '', webLlengua: 'ca', webMarca: {}, reg: null, webPrevia: null, cobra: null, alta: null
   };
 
   /* ── Petites eines ─────────────────────────────────────────────────────── */
@@ -6819,6 +6931,12 @@ function creaLlenc() {
       + '<label>Correu on arriben els formularis <input type="email" id="edWebCorreu" value="' + escA(S.webCorreu) + '" placeholder="hola@exemple.cat"></label>'
       + '<label>Adreça definitiva, si ja la tens <input type="url" id="edWebUrl" value="' + escA(S.webUrl) + '" placeholder="https://"></label>'
       + '<label>Llengua <select id="edWebLlengua"><option value="ca"' + (S.webLlengua === 'es' ? '' : ' selected') + '>Català</option><option value="es"' + (S.webLlengua === 'es' ? ' selected' : '') + '>Castellà</option></select></label></div>'
+      + '<h4>La marca</h4><p>El color, la lletra i la forma; i, amb <code>marca.json</code>, el logo i els textos propis (lema, presentació, nom curt i introducció de cada porta, on sou). Si el color no es llegeix bé sobre el fons, la web l\'ajusta sola.</p>'
+      + '<div class="ed-web-dades"><label>Color <input type="color" id="edWebColor" value="' + escA(S.webMarca.color || '#4338ca') + '"></label>'
+      + '<label>Lletra <select id="edWebLletra">' + [['', 'La de sempre'], ['sans', 'Sense gràcia'], ['serif', 'Amb gràcia'], ['rodona', 'Rodona'], ['mono', 'Monoespaiada']].map(o => '<option value="' + o[0] + '"' + ((S.webMarca.lletra || '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>'
+      + '<label>Forma <select id="edWebForma">' + [['', 'Rodona'], ['recta', 'Recta']].map(o => '<option value="' + o[0] + '"' + ((S.webMarca.forma === 'recta' ? 'recta' : '') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select></label>'
+      + '<label>marca.json <input type="file" id="edWebMarca" accept=".json,application/json"></label>'
+      + '<label>Logo (SVG) <input type="file" id="edWebLogo" accept=".svg,image/svg+xml"></label></div>'
       + '<div class="ed-web-fila"><button type="button" class="ed-b pri" id="edWebZip">Descarrega la web (.zip)</button><button type="button" class="ed-b" id="edWebJson">Descarrega web.json</button>'
       + '<button type="button" class="ed-b" id="edWebVeure" aria-expanded="' + !!S.webPrevia + '">' + (S.webPrevia ? 'Tanca la vista prèvia' : 'Vista prèvia') + '</button>'
       + '<a class="ed-b" id="edWebNetlify" target="_blank" rel="noopener" href="' + escA(NETLIFY_PLANTILLA) + '">' + (S.cobra && !altaPagada() ? 'Paga i publica-la a nom teu' : 'Publica-la a nom teu (Netlify)') + '</a></div>'
@@ -6953,7 +7071,7 @@ function creaLlenc() {
      sense scripts. El full d'estil va dins de la pàgina i els enllaços entre
      pàgines es resolen aquí, perquè funcioni també des del disc. */
   function siteAra() {
-    return webASite(webAra().web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE), codi: codiBlocs() });
+    return webASite(webAra().web, { nom: S.webNom, correu: S.webCorreu, llengua: S.webLlengua, url: S.webUrl, mapa: MODEL.exporta(ARBRE), codi: codiBlocs(), marca: S.webMarca });
   }
   /* El codi que el zip porta a eines/ i netlify/: els blocs d'aquesta mateixa
      pàgina, tal com hi són (el mateix que llegeix web-del-mapa.js). */
@@ -7003,11 +7121,18 @@ function creaLlenc() {
     if (e.target.id === 'edWebNom') S.webNom = e.target.value;
     if (e.target.id === 'edWebCorreu') S.webCorreu = e.target.value;
     if (e.target.id === 'edWebUrl') S.webUrl = e.target.value;
-    if (/^edWeb(Nom|Correu|Url)$/.test(e.target.id)) { mostraPrevia(); enllacNetlify(); }
+    if (e.target.id === 'edWebColor') S.webMarca = Object.assign({}, S.webMarca, { color: e.target.value });
+    if (/^edWeb(Nom|Correu|Url|Color)$/.test(e.target.id)) { mostraPrevia(); enllacNetlify(); }
   });
   $('#edPanWeb').addEventListener('change', e => {
     if (e.target.id === 'edWebLlengua') { S.webLlengua = e.target.value; mostraPrevia(); enllacNetlify(); return; }
     if (e.target.id === 'edWebReg') { if (e.target.files && e.target.files[0]) llegeixRegWeb(e.target.files[0]); return; }
+    if (e.target.id === 'edWebLletra' || e.target.id === 'edWebForma') {
+      const k = e.target.id === 'edWebLletra' ? 'lletra' : 'forma', m = Object.assign({}, S.webMarca);
+      if (e.target.value) m[k] = e.target.value; else delete m[k];
+      S.webMarca = m; mostraPrevia(); return;
+    }
+    if ((e.target.id === 'edWebMarca' || e.target.id === 'edWebLogo') && e.target.files && e.target.files[0]) { llegeixMarcaWeb(e.target.id, e.target.files[0]); return; }
     const c = e.target.closest('[data-web-casa]');
     if (!c) return;
     const { web } = webAra(), r = c.getAttribute('data-web-casa');
@@ -7039,6 +7164,19 @@ function creaLlenc() {
     a.download = nom; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     avis('S\'ha descarregat ' + nom);
+  }
+  /* La marca des d'un fitxer: el mateix format que `web-del-mapa.js --marca`. */
+  async function llegeixMarcaWeb(id, fitxer) {
+    const text = await fitxer.text();
+    if (id === 'edWebLogo') {
+      if (!marcaSvg(text)) { avis('Aquest SVG no s\'hi posa: porta scripts, enllaços o no és un SVG'); return; }
+      S.webMarca = Object.assign({}, S.webMarca, { logoSvg: text });
+    } else {
+      let m; try { m = JSON.parse(text); } catch (x) { avis('marca.json no és un JSON que es pugui llegir'); return; }
+      S.webMarca = Object.assign(marcaNeta(m), S.webMarca.logoSvg ? { logoSvg: S.webMarca.logoSvg } : {});
+    }
+    pintaWeb();
+    avis('La marca és a la web: mira-la a la vista prèvia');
   }
   /* El registre viu: el mateix codi que llegeix-registre.js (VS-REG). */
   async function llegeixRegWeb(fitxer) {

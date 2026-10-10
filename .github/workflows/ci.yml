@@ -239,8 +239,15 @@ jobs:
       # un mapa fals vas. I aquí qui llegeix sovint és una IA, que no pregunta:
       # llegeix el nom de la carpeta i escriu. Crear una carpeta sense dir què
       # és deixa la pregunta «on va això?» sense resposta, i això peta.
-      - name: Guarda del mapa (cap carpeta sense cara)
-        run: node SOS/tools/build-mapa.js --check
+      #
+      # El mateix cop es comprova que el contracte no menteix: el que els
+      # fitxers de lectura citen existeix. I el cervell que s'instal·la als
+      # clients ha de passar la mateixa guarda que el nostre, i petar quan toca.
+      - name: Guarda del cervell (cap carpeta sense cara, cap cita falsa)
+        run: |
+          node SOS/tools/cervell.js --check
+          node SOS/tests/test-cervell.mjs
+          node SOS/tests/test-proposta.mjs
 
       # La pàgina de la MATRIU explica un mètode i promet, a la primera
       # pantalla, que cada criteri és una comprovació que l'app fa de debò. Una
