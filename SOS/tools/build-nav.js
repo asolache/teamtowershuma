@@ -125,6 +125,8 @@ const L = {
     T('Els mòduls, de N0 a N3, i el certificat és teu', 'Los módulos, de N0 a N3, y el certificado es tuyo')],
   ia: ['ia.html', T('Fluxos amb IA', 'Flujos con IA'),
     T('Automatitzar el tangible, valorar l\'intangible', 'Automatizar lo tangible, valorar lo intangible')],
+  blog: ['blog.html', 'Blog',
+    T('Cada capacitat, explicada', 'Cada capacidad, explicada')],
   app: ['/SOS/', T('Entra al SOS', 'Entra al SOS'),
     T('El sistema que manté viu el mapa, sense compte', 'El sistema que mantiene vivo el mapa, sin cuenta')]
 };
@@ -150,8 +152,7 @@ const LLOC = [
       T('Vint anys, els clients i d\'on ve el mètode', 'Veinte años, los clientes y de dónde viene el método')],
     ['premsa.html', T('Premsa', 'Prensa'),
       T('El que se n\'ha dit a fora', 'Lo que se ha dicho fuera')],
-    ['blog.html', 'Blog',
-      T('Cada capacitat, explicada', 'Cada capacidad, explicada')]
+    L.blog
   ] }
 ];
 const SOS_GRUPS = [
@@ -180,7 +181,8 @@ const SOS_GRUPS = [
   { id: 'apren', lbl: T('Aprèn', 'Aprende'), ic: '📚', links: [
     L.formacio, L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
-      T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')]
+      T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
+    L.blog
   ] },
   /* ══ 3 · I L'ALTRE MÓN ════════════════════════════════════════════════
      Una sola porta per a tot el Comando, i cada destí **a la casa on és
