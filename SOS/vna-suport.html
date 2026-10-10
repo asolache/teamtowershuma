@@ -4266,6 +4266,97 @@ async function ambPermaweb(site, digest) {
   return site.fitxers.concat([{ ruta: 'permaweb.json', tipus: 'application/json', cos: JSON.stringify(manifest, null, 2) + '\n' }]);
 }
 /*/VS-SITE*/
+/*VS-TASQUES*/
+/* GENERAT per SOS/tools/build-vna-suport.js des de SOS/index.html · no s'edita a mà.
+   La regla de qui fa cada lliurament, tal com és a l'app: un intangible no
+   el fa mai la màquina, i un tangible només si el seu tipus en pot sortir. */
+const normKind=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+  return(m==='i'||m==='intangible')?'intangible':'tangible';};
+const menaExplicita=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+  return m==='t'||m==='tangible'||m==='i'||m==='intangible';};
+const isIntangible=k=>normKind(k)==='intangible';
+const ENTREGABLES=[
+  {id:'acta',nom:'Acta de reunió',ic:'📋',maquina:true,
+   que:'El que s\'ha decidit, qui hi era i què queda pendent, amb data.',
+   cal:['assistents','punts tractats','acords'],
+   surt:'Data, assistents, acords numerats i pendents amb responsable i termini.'},
+  {id:'informe',nom:'Informe periòdic',ic:'📊',maquina:true,
+   que:'El que s\'ha mogut en un període, amb les xifres que ja hi ha al registre.',
+   cal:['període','apunts del ledger','rols actius'],
+   surt:'Resum, taula d\'activitat, comparació amb el període anterior i avisos.'},
+  {id:'justificacio',nom:'Justificació de subvenció',ic:'🧾',maquina:true,
+   que:'El que demana la convocatòria, omplert amb el que consta al registre.',
+   cal:['convocatòria','despeses','activitat realitzada'],
+   surt:'Memòria d\'activitat i taula de despesa, en el format que demani la plantilla.'},
+  {id:'inventari',nom:'Inventari',ic:'📦',maquina:true,
+   que:'Què hi ha, de qui és, en quin estat i on para.',
+   cal:['objectes','estat','ubicació'],
+   surt:'Taula amb valor estimat, desgast acumulat i qui n\'és responsable.'},
+  {id:'convocatoria',nom:'Convocatòria',ic:'📣',maquina:true,
+   que:'Cridar la gent a una cosa concreta, amb tot el que cal saber per venir.',
+   cal:['què','quan','on','qui hi ha d\'anar'],
+   surt:'Text curt per als canals, amb data, lloc, ordre del dia i com confirmar.'},
+  {id:'comanda',nom:'Comanda o repartiment',ic:'🛒',maquina:true,
+   que:'Qui ha demanat què, quant costa i com es reparteix.',
+   cal:['peticions','preus','punt de repartiment'],
+   surt:'Full de comanda per llar, total per proveïdor i full de repartiment.'},
+  {id:'fitxa',nom:'Fitxa pública',ic:'🪪',maquina:true,
+   que:'Com s\'explica a fora el que fa un node o una dinàmica.',
+   cal:['què ofereix','a qui','com s\'hi arriba'],
+   surt:'Fitxa breu per al directori, sense cap dada personal.'},
+  /* L'únic de la llista que no pot sortir d'una màquina, i el motiu escrit.
+     Sense aquesta entrada, la taxonomia semblaria dir que tot és automatitzable
+     i que els que falten és que encara no els hem fet. */
+  {id:'acord',nom:'Acord o decisió',ic:'⚖️',maquina:false,
+   que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
+   cal:['debat','vots','qui ho sosté'],
+   surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'}
+];
+const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
+
+/* Quin entregable demana un flux, deduït de com està escrit. Mateix patró que
+   `RETURN_HINTS`: no s'inventa res, es proposa i es pot corregir a mà posant
+   `entregable` a l'intercanvi. Un flux sense tipus reconegut **no és
+   automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
+   s'ha de produir. */
+const ENTREGABLE_HINTS=[
+  [/acta|reuni|assemblea/i,'acta'],
+  [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
+  [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
+  [/inventari|estoc|material|objecte|eina|préstec|prestec/i,'inventari'],
+  [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
+  [/comanda|compra|cistell|repartiment|liquidació|liquidacio|factur|pagament|cobrament/i,'comanda'],
+  [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
+  [/acord|decisió|decisio|vot|aprovació|aprovacio/i,'acord']
+];
+const entregableDe=x=>{
+  if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;
+  const h=ENTREGABLE_HINTS.find(e=>e[0].test((x&&x.label)||''));
+  return h?h[1]:null;
+};
+
+/* Qui ha de fer una carta: la màquina o una persona.
+   L'ordre de les comprovacions **és la regla**, i per això l'intangible va
+   primer: cap etiqueta, cap tipus i cap configuració el pot convertir en
+   candidat. Si algun dia aquesta condició es mou de lloc, el que es trencarà
+   no és una funció — és la promesa de la casa. */
+function fluxAutomatitzable(x){
+  if(!x)return{pot:false,motiu:'sense flux'};
+  /* Doble pany, i els dos abans de mirar cap tipus. El primer és la regla: un
+     intangible no s'automatitza mai. El segon és el que la fa sòlida: no n'hi
+     ha prou de descartar el que sabem que és intangible, cal **exigir que sigui
+     explícitament tangible**. Una mena desconeguda o mal escrita cau del costat
+     segur, que és el de la persona, i ho diu amb el seu nom en comptes de
+     fer-la passar per intangible. */
+  if(isIntangible(x.kind))return{pot:false,motiu:'intangible',tipus:null};
+  if(!menaExplicita(x.kind))return{pot:false,motiu:'mena desconeguda',tipus:null};
+  const t=entregableDe(x);
+  if(!t)return{pot:false,motiu:'sense entregable declarat',tipus:null};
+  const m=entregableMeta(t);
+  if(!m.maquina)return{pot:false,motiu:'el tipus no surt d\'una màquina',tipus:t};
+  return{pot:true,motiu:'',tipus:t};
+}
+/*/VS-TASQUES*/
 /*VS-REG*/
 /* ── El registre viu: el mapa real surt de l'ús ─────────────────────────────
  * Fase 2 del pla (el detall és al repositori privat d'estratègia): cada
@@ -6870,6 +6961,10 @@ function creaLlenc() {
     const a = $('#edWebNetlify');
     if (!a) return;
     const v = { TT_NOM: S.webNom || '', TT_CORREU: S.webCorreu || '', TT_LLENGUA: S.webLlengua || 'ca' }, m = MODEL.exporta(ARBRE);
+    /* El que es veu a la vista prèvia ha de ser el que es publica: l'adreça
+       definitiva i els rols de casa també viatgen, si s'han triat. */
+    if (/^https:\/\/[^\s"<>]+$/.test(S.webUrl || '')) v.TT_URL = S.webUrl;
+    if (Array.isArray(S.webCasa)) v.TT_CASA = JSON.stringify(S.webCasa);
     delete m.pos;
     let nota = '';
     try {
