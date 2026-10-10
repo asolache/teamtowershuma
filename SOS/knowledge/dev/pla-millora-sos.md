@@ -11,6 +11,23 @@
 > mira el que cap d'elles mirava, que és **què li passa a algú que hi arriba per
 > primera vegada, des d'un telèfon, en un poble**.
 
+## Estat al 10/10/2026
+
+Mesurat sobre `main`, no recordat. El text de sota és el del 10/09 i no es toca.
+
+| Punt | Estat | Evidència |
+|---|---|---|
+| 1 · La font | **Fet (#219)** | `SOS/fonts/`, `test-arrencada.mjs`: arrenca en ~340 ms amb tota la xarxa de fora penjada |
+| 2 · Sense xarxa | **Fet** | `manifest.webmanifest`, `sw.js` amb empremta generada, `test-sw.mjs` |
+| 3 · El primer botó | **Xoca amb una decisió anterior** | Ara hi ha un botó a sobre del plec («Apunta-t'hi», y = 468 en escriptori i 593 en mòbil), però el tour de 5 pantalles s'obre abans de res. El tour es va posar davant de tot a posta (V76). Ho decideix l'Àlvar |
+| 4 · Entre dues persones | **Pas 1 fet (#223)** | L'interès. Queden l'acord amb fil (pas 2) i «fet i no apuntat» (pas 3) |
+| 5 · Tasques per defecte | **A mitges** | `homeView:'missions'` ja és el per defecte; l'eix del temps (`sprintsOf`) encara no hi és |
+| 6 · Playtest | Pendent | Cap resultat a `knowledge/` |
+| 7 · Accessibilitat | Pendent | 7 `outline:none`, 22 `aria-label` per a 107 modals, 0 `aria-modal` |
+| 8 · Segona llengua | **Pendent de decidir** | Cap canvi |
+| 9 · Sostres | Igual | 546 de 548 KB, 36 de 36 accions al llançador, 20 de 20 rutes de modal |
+| 10 · Missions de xarxa | **Fet** | `networkMissions()` a «Les meves tasques» |
+
 ---
 
 ## 0 · El diagnòstic en tres frases
