@@ -227,9 +227,9 @@ Hipòtesis a validar, no tarifa.
 
 | Concepte | Dedicació | Hipòtesi |
 |---|---|---|
-| Diagnòstic previ (S1) | 2 sessions + informe | 1.500–2.500 € |
-| Programa d'equip v1 · 12 setmanes | 12 sessions grupals + 4 rondes individuals ≈ 34 h | 4.500–7.000 € |
-| Revisió als 3 i 6 mesos | 2 sessions + informe | 600–1.000 € |
+| Diagnòstic previ (S1) | 2 sessions + informe | a confirmar |
+| Programa d'equip v1 · 12 setmanes | 12 sessions grupals + 4 rondes individuals ≈ 34 h | a confirmar |
+| Revisió als 3 i 6 mesos | 2 sessions + informe | a confirmar |
 
 **Qui ho paga**: l'ajuntament, via partida de participació ciutadana o
 desenvolupament local, o subvenció de Diputació. L'entitat hi posa **les hores**,

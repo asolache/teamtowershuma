@@ -32,12 +32,12 @@ de responsabilitat civil i material didàctic.
 
 | Participants | PVP (sense IVA) |
 |---|---|
-| 10–29 | 1.700 € |
-| 30–48 | 2.100 € |
-| 50–99 | 3.150 € |
-| 100–199 | 4.725 € |
-| 200–399 | 6.300 € |
-| +400 | 8.925 € |
+| 10–29 | a confirmar |
+| 30–48 | a confirmar |
+| 50–99 | a confirmar |
+| 100–199 | a confirmar |
+| 200–399 | a confirmar |
+| +400 | a confirmar |
 
 *Tarifes per a esdeveniments a menys de dues hores de Barcelona.*
 
@@ -51,13 +51,13 @@ Màxim quatre castells per actuació.
 
 | Alçada | PVP (sense IVA) | Castells | Castellers |
 |---|---|---|---|
-| 4 pisos | 3.300 € | 2 pilars de 3, 2 de 4, 3 de 4 | 13 |
-| 5 pisos | 4.800 € | Pilar de 4, 2 de 5, 4 de 5 amb pilar, 3 de 5 amb pilar | 20 |
-| 6 pisos | 6.500 € | Pilar de 4, torre de 5, 4 de 5 amb pilar, 3 de 6 | 30 |
+| 4 pisos | a confirmar | 2 pilars de 3, 2 de 4, 3 de 4 | 13 |
+| 5 pisos | a confirmar | Pilar de 4, 2 de 5, 4 de 5 amb pilar, 3 de 5 amb pilar | 20 |
+| 6 pisos | a confirmar | Pilar de 4, torre de 5, 4 de 5 amb pilar, 3 de 6 | 30 |
 
 ### Marxandatge
 
-Mocadors castellers 5 € (logo del client imprès: +3,5 € per mocador) · faixes castelleres 15,75 € (sense IVA).
+Mocadors castellers (amb el logo del client imprès, si es vol) · faixes castelleres. Preus a confirmar.
 
 ### Les dades
 
@@ -171,5 +171,5 @@ que la mou, i cadascun diu d'on surt el preu:
 | **A validar** | Encara no s'ha facturat prou vegades; la primera conversa la tanca |
 
 El marxandatge **no ha entrat al catàleg del web**: és un extra d'esdeveniment,
-no un paquet contractable per si sol, i posar-lo entre paquets de 1.500 a 9.000 €
+no un paquet contractable per si sol, i posar-lo entre els paquets del catàleg
 faria soroll. Va on toca, que és dins de la proposta del taller.
