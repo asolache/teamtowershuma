@@ -88,7 +88,8 @@ valor dissenyat, integrant-te a teamtowershuma, donant accés a l'usuari al
 projecte i per tant integrant sense API».
 
 La skill `propuesta-inicial` (`.claude/skills/propuesta-inicial/SKILL.md`) fa
-l'«esborrany del mapa» que `/mapa-web/` ofereix: llegeix la web del negoci, en
+l'«esborrany del mapa» que `/mapa-web/` ofereix: llegeix la web del negoci (només
+amb el sí per escrit del titular, que va al CRM, i respectant robots.txt), en
 treu un mapa d'un flux amb la skill `mapa-de-valor`, el passa per
 `SOS/tools/revisa-mapa.js` fins que no queda cap regla dura oberta, escriu les
 preguntes que la web no contesta i en genera la web amb
@@ -208,7 +209,7 @@ node SOS/tools/cervell.js --recull ../el-projecte
 
 **Demanat per l'Àlvar el 17/10/2026:** que la web d'un proveïdor faci servir el
 CRM, el cervell, la web i les eines que fem, sense duplicar res, i que per a qui
-no és tècnic TeamTowers en porti el backend (veda 169).
+no és tècnic TeamTowers en porti el backend (veda 171).
 
 El catàleg és `serveis` a `heretat.json`. Cada cervell rep
 `saber/servicios.md` amb un enllaç a cada servei de la matriu i el que vol dir

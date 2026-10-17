@@ -99,6 +99,7 @@ const APREN = [
   { p: 'escola.html', ic: '🏫', guanya: 'El mateix a l\'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.' },
   { p: 'ia.html', ic: '🤖', guanya: 'Automatitzar el tangible i valorar l\'intangible, amb IA que proposa i mai decideix.' },
   { p: 'vedes.html', ic: '⛔', guanya: 'Cada regla amb el motiu escrit al costat. És el que evita repetir un error que ja va sortir car.' },
+  { p: 'cervell.html', ic: '🧠', guanya: 'El teu codex en tres dimensions, per koshas, i te l\'emportes per a les teves IA i el teu LMS.' },
   { p: 'blog.html', ic: '📝', guanya: 'Cada capacitat explicada a part, per si vols entendre-la abans de fer-la servir.' }
 ];
 
@@ -197,6 +198,16 @@ function blocMon() {
    L'oferta principal porta a la portada (`/#operatiu`), que és on es ven; aquí
    es diu què és en una línia i es posen al costat els tres serveis que es
    contracten al voltant de l'eina. */
+/* Les tres opcions d'entrada (hipòtesi de l'Alvaro, 17/10/2026): com Claude o
+   Amazon Prime, s'entra gratis i es passa a una quota que dona més coses cada
+   mes. Crear, sostenir, transformar (Brahma, Vishnu, Shiva). Aquí només es diu què inclou cadascuna; el preu és «a confirmar» amb els
+   pilots, com tot el catàleg (guarda de més avall). */
+const OPCIONS = [
+  ['Gratis', 'Crear · el SOS, la matriu', ['Cervell + SOS + codex: el sistema operatiu sencer, lliure', 'Cada cervell és un node; els nodes s\'ajunten en xarxa, i les xarxes en xarxes', 'L\'esborrany del mapa de valor a partir de la teva web', 'Una web de xarxa d\'una pàgina, teva des del primer dia']],
+  ['Viu', 'Sostenir · el sistema al dia, cada mes', ['Tot el de Gratis', 'Guardes: la web vigilada, avisos signats i còpia', 'El cervell al dia: registre per rol i mapa real recalculat', 'Un informe mensual del mapa i suport amb un topall d\'hores', 'La IA en comptes a nom teu, amb límit de despesa']],
+  ['Xarxa', 'Transformar · créixer amb la MATRIU', ['Tot el de Viu', 'Una sessió de mentoria al mes sobre el mapa real i l\'ideal', 'Una tasca rutinària feta pel SOS i revisada per una persona', 'Les idees noves, incubades per etapes a la MATRIU', 'Clients que arriben per la xarxa, i en tots dos sentits']]
+];
+
 function blocPaquets() {
   const f = ['<section class="ob-sec" id="obOferta">'];
   f.push('<h2>I si el voleu muntat i funcionant</h2>');
@@ -208,6 +219,9 @@ function blocPaquets() {
     'el cervell del projecte ordenat per rol, la web de xarxa, les eines de cada rol i 30 dies d\'acompanyament. ' +
     'Surts amb el negoci funcionant, no amb un informe.</span>' +
     '<span class="ob-op-cta">Què inclou →</span></a>');
+  f.push('<div class="ob-pq">' + OPCIONS.map(([n, d, l]) =>
+    `<div class="pq"><div class="pq-o"><b>${esc(n)}</b> · ${esc(d)}</div><ul class="pq-e">` +
+    l.map(x => `<li>${esc(x)}</li>`).join('') + '</ul><div class="pq-p">Preu<span>a confirmar amb els pilots</span></div></div>').join('') + '</div>');
   f.push('<div class="ob-pq">');
   SOS_PAQUETS.forEach(p => {
     f.push(`<div class="pq"><div class="pq-h"><b>${esc(p.nom)}</b><span class="pq-d">${esc(p.dura)}</span></div>` +

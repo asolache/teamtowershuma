@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>El teu cervell · el codex en tres dimensions</title>
+<meta name="description" content="El codex de qualsevol persona o projecte dibuixat per koshas, amb les seves forces, i exportable per a les teves IA i per al teu LMS local.">
+<meta property="og:title" content="El teu cervell">
+<meta property="og:description" content="El teu codex en tres dimensions, per a les teves IA i per al teu LMS.">
+<meta name="robots" content="index,follow">
+<style>
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,system-ui,sans-serif);line-height:1.6}
+.cw{max-width:1040px;margin:0 auto;padding:32px 16px 48px}
+.cw h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;margin:.2em 0 .4em}
+.cw h2{font-size:clamp(1.25rem,3vw,1.6rem);margin:2rem 0 .5rem}
+.cw .lead{color:var(--light);max-width:66ch}
+.cw .kick{font:600 .78rem ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+.font{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin:18px 0}
+.font input[type=text]{flex:1 1 240px;min-width:0;font:inherit;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text)}
+.font input:focus-visible,.font button:focus-visible,.font label:focus-within,.surt button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.font button,.surt button{font:600 .95rem inherit;font-family:inherit;min-height:44px;padding:8px 18px;border-radius:999px;border:1px solid var(--text);background:var(--text);color:var(--bg);cursor:pointer}
+.font label{font:600 .95rem inherit;min-height:44px;display:inline-flex;align-items:center;padding:8px 18px;border-radius:999px;border:1px solid var(--border-strong);cursor:pointer}
+.font label input{position:absolute;left:-9999px}
+.font small{flex-basis:100%;color:var(--muted)}
+.estat{min-height:1.5em;color:var(--light)}
+.surt{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
+.surt article{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.surt h3{font-size:1rem;margin:0 0 4px}.surt p{font-size:.9rem;color:var(--muted);margin:0 0 10px}
+.surt button{background:var(--card);color:var(--text);border-color:var(--border-strong)}
+</style>
+</head>
+<body>
+<!--TT-NAV-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
+   una còpia: hi ha guarda. Només tokens de la pell (build-pell.js), perquè els
+   àlies de les pàgines d'arrel —--white, --accent-indigo, --bg-panel— no
+   existeixen a les 24 del SOS i allà no peten: deixen el text sense color. */
+.tt-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+  padding:.7rem 1.1rem;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
+  text-decoration:none;margin-right:.5rem;white-space:nowrap}
+.tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
+.tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.tt-nav .tn-g{position:relative}
+.tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
+.tt-nav .tn-g>summary::-webkit-details-marker{display:none}
+.tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
+.tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.tt-nav .tn-here>summary{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+.tt-nav .tn-p{position:absolute;top:calc(100% + .35rem);left:0;min-width:272px;z-index:110;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.tt-nav .tn-p a{display:block;padding:.44rem .58rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.tt-nav .tn-p a:hover{background:var(--panel);color:var(--text)}
+.tt-nav .tn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.tt-nav .tn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.tt-nav .tn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.tt-nav .tn-lang{display:flex;align-items:center;gap:2px;margin-left:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px}
+.tt-nav .tn-lang .lang-b{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font:inherit;font-size:var(--t0);padding:.16rem .5rem;border-radius:5px}
+.tt-nav .tn-lang .lang-b.on{background:var(--indigo);color:var(--on-accent);font-weight:700}
+.tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
+/* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
+.tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
+  text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-cta:hover{filter:brightness(1.12)}
+@media(max-width:860px){
+  .tt-nav{padding:.42rem .6rem;gap:.25rem}
+  /* La marca baixa al terra —no per sota— perquè la marca, el commutador i
+     l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
+     partia i la barra passava de dues files a tres. */
+  .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
+  /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
+     El primer intent posava els cinc grups **en columna** a mòbil, oberts
+     sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
+     el dibuix i el botó del hero de la primera pantalla: test-portada.mjs va
+     dir «acaba a 1033 de 844». Una barra no pot costar un quart de pantalla.
+
+     En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
+     d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
+     a sota, que és el que una columna sí que feia. */
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-g>summary{padding:.3rem .5rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
+  .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
+    top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
+}
+</style>
+<nav class="tt-nav" aria-label="Navegació del lloc">
+  <a class="tn-brand" href="/SOS/">El <span>SOS</span></a>
+  <a class="tn-casa" href="/">TeamTowers</a>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html" aria-current="page"><b>El teu cervell</b><span>El teu codex en 3D, per a les IA i el LMS</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span>Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>El Comando</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 herois</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>La Fàbrica de Superherois</b><span>De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
+  <a class="tn-cta" href="/SOS/"><span>Obre el SOS</span> →</a>
+</nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
+<!--/TT-NAV-->
+<main class="cw">
+  <p class="kick">El cervell de cadascú</p>
+  <h1>El teu cervell</h1>
+  <p class="lead">Cada persona i cada projecte té el seu codex: els errors que ja ha pagat, escrits perquè no es tornin a pagar. Aquí es dibuixa en tres dimensions, per koshas, amb les forces que l'uneixen. I te l'emportes: com a context per a les teves IA i com a paquet per al teu LMS.</p>
+
+  <form class="font" id="font">
+    <label for="repo" style="position:absolute;left:-9999px">Repositori públic</label>
+    <input id="repo" type="text" placeholder="propietari/repositori" autocomplete="off" spellcheck="false">
+    <button type="submit">Llegeix</button>
+    <label>o puja el teu codex.md<input id="fitxer" type="file" accept=".md,text/markdown,text/plain"></label>
+    <small>Només repositoris públics: busca el codex a SOS/knowledge/codex.md o on digui el seu cervell.json. El fitxer que puges no surt del teu navegador. Un codex privat es mira amb la teva sessió de GitHub, mai aquí (veda 168).</small>
+  </form>
+  <p class="estat" id="estat" aria-live="polite"></p>
+  <div id="cv"></div>
+
+  <h2 id="emporta">Te l'emportes</h2>
+  <div class="surt">
+    <article><h3>Per a les teves IA</h3><p>Un cervell.md amb les vedes per kosha, les que sostenen i les que s'activen juntes. Desa'l com a CLAUDE.md o enganxa'l a les instruccions del projecte.</p><button type="button" data-surt="md">cervell.md</button></article>
+    <article><h3>Per a una eina</h3><p>Les mateixes dades en JSON, amb la massa, el potencial i els enllaços quàntics de cada veda.</p><button type="button" data-surt="json">cervell-dades.json</button></article>
+    <article><h3>Sense connexió</h3><p>Tot el cervell en un sol fitxer HTML que s'obre sense internet, en qualsevol ordinador.</p><button type="button" data-surt="html">cervell.html</button></article>
+    <article><h3>Per al teu LMS</h3><p>Un paquet SCORM 1.2 que s'importa a Moodle i a gairebé qualsevol LMS local, i hi queda marcat com a vist.</p><button type="button" data-surt="scorm">cervell-scorm.zip</button></article>
+  </div>
+</main>
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span>Avís legal i privacitat</span></a></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html"><span>Formació acció</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/cervell.html" aria-current="page"><span>El teu cervell</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Molekulon</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>El Comando</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>La Fàbrica de Superherois</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+  </div>
+</footer>
+<!--/TT-PEU-->
+<script src="cervell/codex-parse.js"></script>
+<script src="cervell/forces.js"></script>
+<script src="cervell/3d.js"></script>
+<script src="cervell/vista.js"></script>
+<script src="cervell/exporta.js"></script>
+<script>
+(function () {
+  var CP = window.CodexParse, estat = document.getElementById('estat'), caixa = document.getElementById('cv');
+  var MATRIU = CP.MATRIU, D = null, AN = null, meta = null, vista = null;
+  var CODI = ['forces.js', '3d.js', 'vista.js'];
+
+  function llegeix(repo) {
+    repo = repo.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/+$/, '');
+    if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { estat.textContent = 'Escriu-lo com a propietari/repositori.'; return; }
+    estat.textContent = 'Llegint el codex de ' + repo + '…';
+    CP.deRepo(repo).then(function (f) {
+      if (!f) { estat.textContent = 'No he trobat cap codex públic a ' + repo + '. Puja el teu codex.md o crea\'l amb cervell.js --nou.'; return; }
+      dibuixa(f.codex, { nom: repo.split('/')[1], font: repo, herencia: f.herencia, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: f.plantilla });
+      try { history.replaceState(null, '', '?repo=' + encodeURIComponent(repo)); } catch (e) {}
+    }).catch(function (e) {
+      estat.textContent = e && e.privat ? 'Aquest cervell és privat: es mira a la seva web amb la teva sessió de GitHub, no aquí.' : 'No he pogut llegir GitHub ara mateix. Torna-ho a provar d\'aquí a una estona.';
+    });
+  }
+  function dibuixa(codex, op) {
+    var L = CP.lee(codex, op);
+    if (vista) vista.atura();
+    D = { nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS };
+    meta = { nom: op.nom, font: op.font, id: op.nom.replace(/[^\w-]/g, '-'), lang: 'ca', data: new Date().toISOString().slice(0, 10), url: 'teamtowershuma.com/SOS/cervell.html' };
+    vista = CervellVista.munta(caixa, D, { lang: 'ca' });
+    AN = vista && vista.analisi;
+    estat.textContent = D.nodos.length ? 'El cervell de ' + op.font + ': ' + D.nodos.length + ' vedes i ' + D.aristas.length + ' cites.' : '';
+  }
+
+  document.getElementById('font').addEventListener('submit', function (e) { e.preventDefault(); llegeix(document.getElementById('repo').value); });
+  document.getElementById('fitxer').addEventListener('change', function (e) {
+    var f = e.target.files[0]; if (!f) return;
+    f.text().then(function (t) { dibuixa(t, { nom: f.name.replace(/\.md$/i, ''), font: f.name }); try { history.replaceState(null, '', location.pathname); } catch (x) {} });
+  });
+
+  function desa(nom, cos, tipus) {
+    var b = cos instanceof Blob ? cos : new Blob([cos], { type: tipus });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nom;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  /* El fitxer sense connexió porta el codi de la vista, llegit d'aquí mateix. */
+  function codi() { return Promise.all(CODI.map(function (f) { return fetch('cervell/' + f).then(function (r) { return r.text(); }); })); }
+  document.querySelector('.surt').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-surt]'); if (!b) return;
+    if (!AN) { estat.textContent = 'Primer llegeix un cervell.'; return; }
+    var k = b.getAttribute('data-surt'), X = CervellExporta, base = 'cervell-' + meta.id;
+    if (k === 'md') return desa(base + '.md', X.md(D, AN, meta), 'text/markdown');
+    if (k === 'json') return desa(base + '-dades.json', X.json(D, AN, meta), 'application/json');
+    codi().then(function (c) {
+      if (k === 'html') desa(base + '.html', X.html(D, meta, c), 'text/html');
+      else desa(base + '-scorm.zip', X.scorm(D, meta, c));
+    }).catch(function () { estat.textContent = 'No he pogut preparar el fitxer. Torna-ho a provar.'; });
+  });
+
+  var q = new URLSearchParams(location.search).get('repo') || MATRIU;
+  document.getElementById('repo').value = q;
+  llegeix(q);
+})();
+</script>
+</body>
+</html>

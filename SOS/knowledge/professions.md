@@ -3,25 +3,25 @@
 > Generat per `SOS/tools/build-molekulandia.js` des de les taules de
 > `SOS/index.html`. **No l'editis a mà**: torna a córrer l'eina.
 
-Sumant les tres fonts del SOS hi ha **165 caselles de rol** amb
-**116 noms diferents**. La majoria no són professions: són qui hi ha a
+Sumant les tres fonts del SOS hi ha **170 caselles de rol** amb
+**120 noms diferents**. La majoria no són professions: són qui hi ha a
 l'altra banda, maneres de prendre-hi part o peces del projecte mateix.
 
 | Natura | Noms | Què vol dir |
 |---|---|---|
 | **ofici** | 33 | Una cosa que es pot aprendre a fer. Només aquests tenen professió. |
-| **part** | 31 | Una manera de prendre-hi part. No s'aprèn: s'hi és. |
-| **fora** | 44 | Qui hi ha a l'altra banda i no forma part del projecte. |
-| **peça** | 8 | Una peça del projecte: un lloc, una entitat, un registre. |
+| **part** | 32 | Una manera de prendre-hi part. No s'aprèn: s'hi és. |
+| **fora** | 46 | Qui hi ha a l'altra banda i no forma part del projecte. |
+| **peça** | 9 | Una peça del projecte: un lloc, una entitat, un registre. |
 
 Els 33 oficis es tanquen en **9 professions**.
 
 | Font | Plantilles | Caselles de rol |
 |---|---|---|
-| Tipus de projecte | 12 | 65 |
+| Tipus de projecte | 13 | 70 |
 | Activitats crítiques del territori | 14 | 70 |
 | Formes de projecte | 6 | 30 |
-| **Total** | **32** | **165** |
+| **Total** | **33** | **170** |
 
 ## 🌱 Impuls i governança
 
@@ -139,8 +139,8 @@ Qui explica el poble al poble. Sense això, tot el que hi passa és cert i no ho
 
 ## El que no és professió
 
-**part** (31): Aprenents · Comunitat · Comunitat contributora · Comunitat de l'atles · Comunitat de pràctica · Comunitat del barri · Comunitat destinatària · Comunitat i formació · Comunitat local · Comunitat veïnal · Consumidors · Famílies · Gent gran · Grup de consum · Jovent · Nouvinguts · Participants · Persones cuidades · Persones en cerca de feina · Persones oferents · Persones sòcies · Persones usuàries · Sòcies consumidores · Sòcies demandants · Sòcies oferents · Sòcies treballadores · Unitats de convivència · Unitats familiars · Usuaris/es · Veïnat · Voluntariat
+**part** (32): Aprenents · Comunitat · Comunitat contributora · Comunitat de l'atles · Comunitat de pràctica · Comunitat del barri · Comunitat destinatària · Comunitat i formació · Comunitat local · Comunitat veïnal · Consumidors · Equip · Famílies · Gent gran · Grup de consum · Jovent · Nouvinguts · Participants · Persones cuidades · Persones en cerca de feina · Persones oferents · Persones sòcies · Persones usuàries · Sòcies consumidores · Sòcies demandants · Sòcies oferents · Sòcies treballadores · Unitats de convivència · Unitats familiars · Usuaris/es · Veïnat · Voluntariat
 
-**fora** (44): Actors del territori · Administració · Administració (cessió de sòl) · Ajuntament · Ajuntament / finançament · Allotjaments · Associació de comerciants · Ateneu Cooperatiu · CAP / serveis socials · Clientes · Clients · Clients institucionals · Clients privats · Comerç col·laborador · Comerços · Comerços de proximitat · Cooperativa energètica · Cooperatives madrines · Custòdia / entitat · Donants · Ecosistema aliat · Empreses locals · Entitat amfitriona · Entitats · Entitats culturals · Entitats d'acollida · Entitats del territori · Entitats formatives · Escoles · Esplai / entitats · Finançament · Finançament ètic · Grups ciclistes · Instal·ladora · Patrocini i inversió · Propietaris · Proveïdor/a · Proveïdors locals · Restauració · Servei d'ocupació · Serveis socials/CAP · Transport públic · Xarxa d'entitats · Xarxa de partners
+**fora** (46): Actors del territori · Administració · Administració (cessió de sòl) · Ajuntament · Ajuntament / finançament · Aliats · Allotjaments · Associació de comerciants · Ateneu Cooperatiu · CAP / serveis socials · Clientes · Clients · Clients institucionals · Clients privats · Comerç col·laborador · Comerços · Comerços de proximitat · Cooperativa energètica · Cooperatives madrines · Custòdia / entitat · Donants · Ecosistema aliat · Empreses locals · Entitat amfitriona · Entitats · Entitats culturals · Entitats d'acollida · Entitats del territori · Entitats formatives · Escoles · Esplai / entitats · Finançament · Finançament ètic · Grups ciclistes · Instal·ladora · Patrocini i inversió · Propietaris · Proveïdor/a · Proveïdors · Proveïdors locals · Restauració · Servei d'ocupació · Serveis socials/CAP · Transport públic · Xarxa d'entitats · Xarxa de partners
 
-**peça** (8): Cooperativa · Espai formatiu · Font oberta / IA · Infraestructura · Obrador · Punt de repartiment · Punt de venda · Registre d'hores
+**peça** (9): Cooperativa · El negoci · Espai formatiu · Font oberta / IA · Infraestructura · Obrador · Punt de repartiment · Punt de venda · Registre d'hores

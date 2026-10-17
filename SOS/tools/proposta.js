@@ -9,7 +9,8 @@
  * Fa en un ordre els passos de la skill `propuesta-inicial` que no demanen
  * criteri, i deixa escrit el que sí que en demana:
  *
- *   1. (opcional) baixa la web del negoci a `fuentes/`;
+ *   1. (opcional) baixa la web del negoci a `fuentes/`, només amb el seu sí
+ *      (`--autoritzat`), amb robots.txt i un segon entre peticions;
  *   2. l'analitza (`analitza-contingut.js`): `analisis.md`, `marca.json` i
  *      `mapa-esbozo.json`;
  *   3. revisa el mapa amb les regles de la casa (`revisa-mapa.js`): `mapa.json`
@@ -27,11 +28,28 @@
  *      proposta i les preguntes tal com són (surten dels .md, no es copien) i
  *      diu què fer la primera mitja hora, cada mes i amb Claude.
  *
- *   node SOS/tools/proposta.js propuesta/ [--nom "Nom"] [--llengua es|ca] [--url https://…]
- *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example]
+ *   7. amb `--lead`, escriu `lead.html`: la pàgina que rep el lead abans de la
+ *      visita, amb el x % del seu mapa (`pagina-lead.js`). Sense `--revisat`
+ *      diu «ESBORRANY INTERN» i no porta botó.
  *
- * Surt amb 0 si hi ha web per lliurar (`web/`), i amb 3 si de moment només hi ha
- * l'esbós: el que falta és feina de criteri, i `estado.md` diu quina. */
+ *   node SOS/tools/proposta.js propuesta/ [--nom "Nom"] [--llengua es|ca] [--url https://…]
+ *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example --autoritzat la-web.example]
+ *        [--lead [--revisat]]
+ *
+ * Surt amb:
+ *   0 · hi ha web per lliurar (`web/`);
+ *   3 · de moment només hi ha l'esbós: el que falta és feina de criteri, i
+ *       `estado.md` diu quina;
+ *   4 · amb `--lead`, la pàgina per al lead no s'ha escrit, i la consola diu per
+ *       què: amb `--revisat`, no hi ha `mapa.json` o és provisional, o
+ *       `preguntas-visita.md` és buit (o falta, en castellà); un correu, un
+ *       telèfon, un import o una frase de la web al mapa, a les preguntes o a
+ *       `--nom`; o la carpeta és dins d'aquest repositori o és d'un altre negoci
+ *       que ja té la pàgina revisada (també amb `--baixa`), o `lead.json` no es
+ *       pot llegir, i aleshores no s'escriu res de res;
+ *   1 · un error, o `--lead` des del repositori d'un client;
+ *   2 · l'ordre està mal escrit: una opció que no existeix o sense valor, una
+ *       carpeta de més, o `--revisat` sense `--lead` o sense `--nom`. */
 'use strict';
 const { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } = require('node:fs');
 const { join, dirname, relative, basename } = require('node:path');
@@ -209,12 +227,43 @@ function paginaInici(dir, desti, nom, llengua) {
   return join(arrel, 'EMPIEZA-AQUI.html');
 }
 
+/* La pàgina per al lead es fa des del repositori de TeamTowers: dibuixa amb
+   `build-mapavalor.js`, que no s'hereta. Al d'un client, `proposta.js` funciona
+   igual sense ella, i `--lead` diu on s'ha de fer. */
+function paginaLead() {
+  try { return require('./pagina-lead.js'); }
+  catch (e) { if (e.code === 'MODULE_NOT_FOUND') throw new Error('--lead es fa des del repositori de TeamTowers, no des del d\'un client'); throw e; }
+}
+
 async function proposta(dir, opts) {
   const o = opts || {}, fonts = join(dir, 'fuentes');
+  /* Abans de baixar o escriure res: la carpeta d'un lead va fora d'aquest
+     repositori, que es publica, i és d'un sol negoci. La pàgina revisada porta
+     el nom que es dona, no el que endevina l'anàlisi. */
+  const atura = (msg, surt) => { const err = new Error(msg + ' No s\'ha escrit res.'); err.surt = surt; throw err; };
+  if (o.lead) {
+    const L = paginaLead();
+    if (L.dinsDelRepo(dir)) atura('La carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/).', 4);
+    if (o.revisat && !o.nom) atura('--revisat demana --nom: el nom del negoci tal com el veurà.', 2);
+  }
+  /* Un cop la carpeta d'un lead té la pàgina revisada (`revisat` a
+     `lead.json`), és d'aquell negoci: amb un altre nom no s'hi baixa cap web ni
+     se'n fa cap pàgina. Un `lead.json` que no es pot llegir no es tracta com
+     una carpeta nova: la referència és la que ja té el lead. */
+  const fLead = join(dir, 'lead.json');
+  if ((o.baixa || o.lead) && existsSync(fLead)) {
+    let amo = null;
+    try { amo = JSON.parse(readFileSync(fLead, 'utf8')); } catch (e) { /* es diu a sota */ }
+    if (!amo || !/^[A-Za-z0-9_-]{16,}$/.test(amo.ref || '') || !amo.nom) atura('lead.json no es pot llegir o no porta «ref» i «nom»: arregla\'l (la referència és la de l\'enllaç que té el lead) o, si encara no s\'ha enviat res, esborra\'l.', 4);
+    if (amo.revisat && !(o.nom && paginaLead().mateixNom(amo.nom, o.nom))) { const m = paginaLead().missatgeAltre(amo.nom); atura(m[0].toUpperCase() + m.slice(1) + '.', 4); }
+  }
   mkdirSync(dir, { recursive: true });
-  if (o.baixa) A.baixa(o.baixa, fonts);
+  if (o.baixa) {
+    const d = await A.baixa(o.baixa, fonts, { autoritzat: o.autoritzat, fetch: o.fetch, dormir: o.dormir, data: o.data });
+    d.fora.forEach(f => console.error('· ' + f.font + ': ' + f.motiu));
+  }
   const fit = existsSync(fonts) ? A.llegeixCarpeta(fonts) : [];
-  if (!fit.length) throw new Error('No hi ha fonts a ' + fonts + ': desa-hi les pàgines de la web (.html), el catàleg (.md, .txt), el CSS i el logo (.svg), o passa --baixa https://…');
+  if (!fit.length) throw new Error('No hi ha fonts a ' + fonts + ': desa-hi les pàgines de la web (.html), el catàleg (.md, .txt), el CSS i el logo (.svg), o passa --baixa https://… --autoritzat <domini>');
   const an = A.analitza(fit, o), T = TXT[an.llengua];
   const nom = o.nom || an.nom, llengua = o.llengua || an.llengua;
   writeFileSync(join(dir, 'analisis.json'), JSON.stringify(an, null, 2) + '\n');
@@ -269,22 +318,37 @@ async function proposta(dir, opts) {
     .concat(dures.map(r => '- ✗ ' + r.t + ': ' + r.diu), ['', '## ' + T.autom, '', T.automD.replace('{m}', aut.maquina).replace('{n}', aut.total).replace('{p}', aut.pct).replace('{h}', aut.persona).replace('{v}', aut.visita).replace('{e}', aut.estimacio ? T.est : ''), '', '## ' + T.web, '', final ? T.webOk : T.webEsb, '', '## ' + T.falta, ''],
       falta.map((x, i) => (i + 1) + '. ' + x)).join('\n') + '\n');
   const inici = paginaInici(dir, desti, nom, llengua);
-  return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici };
+  /* La pàgina per al lead, amb la mateixa xifra i el mateix diagnòstic. */
+  let lectura = null;
+  try { lectura = JSON.parse(readFileSync(join(fonts, '.lectura.json'), 'utf8')); } catch (e) { /* sense lectura, la pàgina diu de quantes fonts surt */ }
+  const lead = o.lead ? paginaLead().paginaLead({ dir, mapa, aut, diag, nom, llengua, marca: W.llegeixMarca(fMarca), fonts: fit, lectura, propi, revisat: !!o.revisat, data: o.data }) : null;
+  return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici, lead };
 }
 module.exports = { proposta, mdHtml };
 
 if (require.main === module) {
+  const US = 'Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://… --autoritzat <domini>] [--lead [--revisat]]';
+  const malament = m => { console.error('❌ ' + m + '\n' + US); process.exit(2); };
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
   for (let i = 0; i < a.length; i++) {
-    if (a[i] === '--casa') opts.casa.push(a[++i]);
-    else if (/^--(nom|correu|llengua|url|baixa)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    if (/^--(casa|nom|correu|llengua|url|baixa|autoritzat)$/.test(a[i])) {
+      const v = a[++i];
+      if (v == null || v.startsWith('--')) malament(a[i - 1] + ' demana un valor');
+      if (a[i - 1] === '--casa') opts.casa.push(v); else opts[a[i - 1].slice(2)] = v;
+    } else if (/^--(lead|revisat)$/.test(a[i])) opts[a[i].slice(2)] = true;
+    else if (a[i].startsWith('-')) malament('no existeix l\'opció ' + a[i]);
     else pos.push(a[i]);
   }
-  if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://…]'); process.exit(2); }
+  if (pos.length !== 1) malament(pos.length ? 'una sola carpeta' : 'falta la carpeta');
+  if (opts.llengua && !/^(es|ca)$/.test(opts.llengua)) malament('--llengua és es o ca');
+  if (opts.revisat && !opts.lead) malament('--revisat va amb --lead');
+  if (opts.revisat && !opts.nom) malament('--revisat demana --nom');
   proposta(pos[0], opts).then(r => {
     console.log((r.final ? '✅ Web per lliurar' : '◐ De moment, l\'esbós') + ': ' + r.fitxers + ' fitxers a ' + r.web
       + ' · ' + r.analisi.rols.length + ' candidats a rol · ' + r.analisi.preguntes.length + ' preguntes · el que falta, a ' + join(pos[0], 'estado.md')
       + ' · el backoffice del client, a ' + r.inici);
+    if (r.lead && r.lead.escrita) console.log((opts.revisat ? '✅ La pàgina per al lead' : '◐ La pàgina per al lead, com a esborrany intern') + ': ' + r.lead.fitxer);
+    if (r.lead && !r.lead.escrita) { console.error('❌ La pàgina per al lead no s\'ha escrit:\n' + r.lead.falla.map(x => '  · ' + x).join('\n')); process.exit(4); }
     process.exit(r.final ? 0 : 3);
-  }).catch(e => { console.error('❌ ' + e.message); process.exit(1); });
+  }).catch(e => { console.error('❌ ' + e.message); process.exit(e.surt || 1); });
 }

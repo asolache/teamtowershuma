@@ -182,6 +182,8 @@ const SOS_GRUPS = [
     L.formacio, L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
       T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
+    ['cervell.html', T('El teu cervell', 'Tu cerebro'),
+      T('El teu codex en 3D, per a les IA i el LMS', 'Tu codex en 3D, para las IA y el LMS')],
     L.blog
   ] },
   /* ══ 3 · I L'ALTRE MÓN ════════════════════════════════════════════════
@@ -253,7 +255,7 @@ const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
-  'uneix-te.html', 'vedes.html', 'vna.html', 'vna-suport.html'];
+  'uneix-te.html', 'vedes.html', 'cervell.html', 'vna.html', 'vna-suport.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */

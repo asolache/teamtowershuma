@@ -930,7 +930,10 @@ const XARXA = {
   avisEs: 'Este mapa <b>no es una lista de clientes</b>: los nodos son roles y lo que se dibuja es cómo funciona la casa. Los clientes tienen su pared más arriba, con la fuente escrita de cada uno.'
 };
 
-module.exports = { CELLER, XARXA };
+/* `svgMapa` va a l'exportació perquè el mapa d'un lead es dibuixi amb el mateix
+   dibuixant que la landing (`automatitza.js`, pas 3 de «La pàgina per al
+   lead»). És una declaració de funció: existeix abans d'aquesta línia. */
+module.exports = { CELLER, XARXA, svgMapa };
 if (require.main !== module) return;
 
 /* ══ ELS ENTREGABLES ═════════════════════════════════════════════════════════
@@ -1072,10 +1075,14 @@ function svgMapa(mapa, id, clau, dins) {
         y: Math.round(215 + Math.sin(ang) * 138) });
     })
   });
+  /* `qui` (posicions 10 i 11) és qui fa el lliurament segons la regla de
+     l'app: només el porta el mapa d'un lead. I un parell d'un lead pot no
+     tenir tornada, que surt sense fletxa i no com una fletxa «undefined».
+     Els mapes de la landing els porten tots dos: el filtre no hi treu res. */
   const fl = M.parells.flatMap(x => [
-    { de: x[0], a: x[1], mena: x[2], q: x[3], qEs: x[6] || x[3], seq: x[8] || null },
-    { de: x[1], a: x[0], mena: x[4], q: x[5], qEs: x[7] || x[5], seq: x[9] || null }
-  ]);
+    { de: x[0], a: x[1], mena: x[2], q: x[3], qEs: x[6] || x[3], seq: x[8] || null, qui: x[10] || null },
+    { de: x[1], a: x[0], mena: x[4], q: x[5], qEs: x[7] || x[5], seq: x[9] || null, qui: x[11] || null }
+  ]).filter(f => f.q);
   const node = i => M.nodes.find(n => n.id === i);
   const enc = M.encallament ? M.encallament.node : null;
   const toca = f => enc && (f.de === enc || f.a === enc);
@@ -1187,8 +1194,12 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau, dins) {
        procés pas per pas. Sense atributs, cada lectura hauria de tornar a
        deduir de l'estil quina fletxa és quina — i el dia que el color canviés,
        les lectures deixarien de funcionar sense petar. */
+    /* `data-qui` marca el que prepara la màquina al mapa d'un lead, i la frase
+       de `mapa.quiTxt` va al títol: la marca no es llegeix només pel color. */
     const atr = ` data-mena="${tang ? 't' : 'i'}"`
-      + (f.seq ? ` data-seq="${f.seq === 'sempre' ? 'sempre' : f.seq[0] + ':' + f.seq[1]}"` : '');
+      + (f.seq ? ` data-seq="${f.seq === 'sempre' ? 'sempre' : f.seq[0] + ':' + f.seq[1]}"` : '')
+      + (f.qui ? ` data-qui="${f.qui}"` : '');
+    const qt = f.qui && mapa.quiTxt && mapa.quiTxt[f.qui] ? ' · ' + esc(mapa.quiTxt[f.qui]) : '';
     p.push(`<path class="mv-f" d="${cam}" fill="none" ` +
       /* L'opacitat era .5 i .42, que sobre la pell fosca d'abans encara es veia.
          Sobre paper feia 2,4:1 i 2,2:1, i una fletxa és un objecte gràfic: en
@@ -1196,7 +1207,7 @@ function svgDe(mapa, id, flux, nodeDe, encN, tocaEnc, PERDUA, COL, clau, dins) {
          per sota d'això la fletxa hi és i no es veu. */
       `stroke="${tang ? 'var(--blue)' : 'var(--purple)'}" stroke-width="${tang ? 2 : 1.6}" opacity="${tang ? .72 : .7}"` +
       `${tang ? '' : ' stroke-dasharray="6 7"'}${para}${atr} marker-end="url(#${tang ? mT : mI})">` +
-      `<title${i18('f' + i)}>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})</title></path>`);
+      `<title${i18('f' + i)}>${esc(nodeDe(f.de).nom)} → ${esc(nodeDe(f.a).nom)}: ${esc(f.q)} (${f.mena})${qt}</title></path>`);
     // El retard reparteix els polsos, i l'ordre és el de la seqüència (`ordreSeq`).
     camins.push(`<path class="mv-p${tang ? '' : ' i'}" d="${cam}" pathLength="100"${para}${atr}` +
       ` style="animation-delay:${(ORDRE[i] * .17).toFixed(2)}s"/>`);

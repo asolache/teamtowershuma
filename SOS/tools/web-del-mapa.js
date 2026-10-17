@@ -32,7 +32,7 @@ const bloc = nom => {
   return html.slice(a, b);
 };
 const motor = new Function('\'use strict\';\n' + ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-IMPORTA', 'VS-GENERA'].map(bloc).join('\n')
-  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb, generaWeb, codiRepositori, KIT_TXT };')();
+  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb, generaWeb, codiRepositori, KIT_TXT, rastreja };')();
 const sencer = nom => bloc(nom) + '/*/' + nom + '*/';
 const k = html.indexOf('const EXEMPLE = {'), exemple = html.slice(k, html.indexOf('};', k) + 2);
 
@@ -51,7 +51,9 @@ function llegeixMarca(fitxer) {
   }
   return m;
 }
-module.exports = { genera, llegeixMarca, codiRepositori, exemple, KIT_TXT: motor.KIT_TXT };
+/* El rastrejador de l'importador (VS-IMPORTA), el mateix que porta el client:
+   `analitza-contingut.js` el fa servir per llegir la web d'un lead. */
+module.exports = { genera, llegeixMarca, codiRepositori, exemple, KIT_TXT: motor.KIT_TXT, rastreja: motor.rastreja };
 
 if (require.main === module) {
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];

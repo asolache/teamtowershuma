@@ -10,3 +10,10 @@ __pycache__/
 # Node
 node_modules/
 node_modules
+
+# Les dades d'un lead no entren mai en aquest repositori, que es publica
+# (backlog, «La pàgina per al lead»): la carpeta de cada lead va fora.
+/propuesta/
+/EMPIEZA-AQUI.html
+lead.html
+lead.json

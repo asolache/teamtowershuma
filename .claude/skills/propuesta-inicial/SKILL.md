@@ -25,6 +25,9 @@ eso: el mismo cerebro, las mismas vedas, las mismas herramientas.
    seis pasas y las diez reglas. Esta skill no las repite; las usa.
 3. **El formato del mapa:** `node SOS/tools/revisa-mapa.js --exemple` imprime el
    caso del celler completo. *Un ejemplo completo vale más que una instrucción.*
+4. **El sí para leer su web.** La web del negocio solo se lee con el sí por
+   escrito de quien es su titular, para ese mismo dominio, y ese sí va al CRM.
+   Sin él se trabaja solo con lo que la persona ha enviado.
 
 **Nada de preguntar quién eres antes de dar valor.** Con la web del negocio y
 una frase de lo que hace basta para empezar. El contacto se pide, si hace
@@ -33,19 +36,25 @@ falta, al entregar la propuesta, nunca al principio.
 ## El atajo: lo mecánico, de un solo orden
 
 ```bash
-node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" [--baixa https://su-web.example]
+node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" [--baixa https://su-web.example --autoritzat su-web.example]
 ```
 
 Lee `propuesta/fuentes/` (las páginas guardadas, el catálogo, el CSS, el logo en
-SVG; con `--baixa` las descarga con curl), escribe `analisis.md` (quién sale y
+SVG). Con `--baixa` las descarga, solo con `--autoritzat` y el mismo dominio: el
+sí por escrito de quien es su titular, que va al CRM y no a ningún repositorio.
+Respeta robots.txt y espera un segundo entre peticiones. Escribe `analisis.md` (quién sale y
 qué se da, con la frase donde sale, y lo que la web no dice), propone
 `marca.json` y un esbozo de mapa, revisa el mapa y saca la web: a `web-esbozo/`
 mientras no haya un `mapa.json` que pase las reglas duras, y a `web/` cuando lo
 hay. `estado.md` dice lo que falta. Sale con 3 mientras solo haya esbozo.
 
-Si el entorno no deja descargar la web, se lee con la herramienta de lectura
-web y se guarda en `fuentes/` como `.md`, diciendo que es un resumen y no el
-texto literal. Lo que queda es criterio, y son los pasos de abajo: **el mapa
+Si el entorno no deja descargar la web (un fallo de red o del entorno, no de
+robots.txt) y hay ese sí, se puede leer con la herramienta de lectura web, con
+las mismas reglas: primero robots.txt, solo el dominio del sí, solo lo que
+robots.txt deja y una página cada vez. Si `proposta.js` dejó una página fuera
+por robots.txt o porque «porta fora del lloc», no se lee por otro camino: se le
+pide a la persona. Lo leído se guarda en `fuentes/` como `.md`, diciendo que es
+un resumen y no el texto literal. Lo que queda es criterio, y son los pasos de abajo: **el mapa
 (pasos 2 y 3) y la marca (paso 5)**. `proposta.js` no inventa intangibles: por
 eso el esbozo sale siempre provisional.
 
@@ -53,7 +62,8 @@ eso el esbozo sale siempre provisional.
 
 ### 1 · Leer lo que hay
 
-Leer la web del negocio (y, si los hay, el catálogo o la ficha que haya enviado).
+Leer la web del negocio, solo con su sí (ver «Antes de nada»), y el catálogo o
+la ficha que haya enviado, si los hay.
 Escribir en `propuesta/fuentes.md` **qué se leyó, de dónde y en qué fecha**, y
 lo que dice de cada actor: quién compra, quién revende, quién recomienda, quién
 suministra, quién trabaja, qué lugar o comunidad lo sostiene.
@@ -156,6 +166,56 @@ cada mes y con Claude, y lleva la propuesta y las preguntas tal como son.
 
 Antes de enviarla: `node guardas/cervell.js --check` en verde, y ningún dato
 personal ni importe en la carpeta.
+
+## Enviar antes de la visita · la página del lead
+
+Cuando un lead va a recibir visita, antes se le manda una página con el x % de
+su mapa que el sistema ya puede preparar. Así la visita se dedica a lo
+estratégico y lo táctico. Lo decidió Álvaro el 17/10/2026; el detalle está en
+el backlog («La pàgina per al lead»). Se hace desde el repositorio de
+TeamTowers, no desde el del cliente.
+
+1. **El sí, por escrito.** Sin el sí del lead no se lee su web. El correo de
+   «Pedir mi borrador» de /mapa-web/ ya lo pide. El sí va al CRM.
+2. **El borrador interno.** La carpeta del lead va **fuera** del repositorio
+   de TeamTowers, que se publica, y es de un solo negocio: si está dentro, no
+   se escribe nada. `--lead` escribe `lead.html`, con «BORRADOR INTERNO»
+   arriba y sin botón, y `lead.json`, con la referencia y el nombre:
+
+   ```bash
+   node SOS/tools/proposta.js ../leads/<negocio>/ --llengua es --nom "Nombre del negocio" --lead
+   ```
+
+   Se abre y se lee entera, en el móvil.
+3. **Revisarla.** Hace falta un `mapa.json` que pase las reglas duras: el
+   esbozo no se envía. En castellano, las tres preguntas para la visita van en
+   `preguntas-visita.md`, una por línea, numerada («1.», «1)», «1.-») o con
+   guion, porque las del diagnóstico salen en catalán; un guion sangrado con
+   dos espacios o más es una nota y no sale. Después, `--lead --revisat`,
+   siempre con `--nom` (sin él sale con 2). Mientras solo haya borrador, el
+   nombre se puede corregir con `--nom` y la referencia no cambia; desde la
+   página revisada, la carpeta queda ligada a ese negocio. Si sale con 4, la
+   página no se ha escrito y la consola dice por qué:
+   - no hay `mapa.json`, o es provisional;
+   - falta `preguntas-visita.md`, o está vacío;
+   - hay un correo, un teléfono, un importe o una frase copiada de su web en el
+     mapa, en las preguntas o en `--nom`;
+   - la carpeta está dentro del repositorio, o ya tiene la página revisada de
+     otro negocio, también con `--baixa` (si es el mismo y ha cambiado de
+     nombre, se corrige «nom» en `lead.json`);
+   - `lead.json` no se puede leer: se arregla, sin cambiar la referencia.
+
+   Se corrige lo que señala la consola (`mapa.json`, `preguntas-visita.md` o
+   `--nom`), nunca la página.
+4. **Publicarla** en el repositorio privado de las páginas de leads, con su
+   sitio de Netlify, en una carpeta con la referencia de `lead.json` como
+   nombre. Nunca en el repositorio público. Ese repositorio lo crea Álvaro
+   (paso 7 del backlog).
+5. **Anotarlo en Zoho:** «enviado» y la fecha, a mano hasta que haya permiso
+   para actualizar leads (paso 9). Si el lead responde en /visita/, llega como
+   lead nuevo con la referencia de su página. Es la única forma de saber que la
+   ha abierto: la página no lleva ningún píxel.
+6. **Borrarla después de la visita.**
 
 ## Lo que nunca entra
 

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- La pàgina on porten els dos botons de la pàgina del lead (SOS/tools/pagina-lead.js).
+     No s'indexa: només hi arriba qui ha rebut la seva pàgina. El formulari «visita»
+     passa a Zoho (netlify/functions/submission-created.mjs, FORMULARIS) i és l'única
+     manera de saber que el lead ha obert la pàgina: aquí no hi ha cap píxel ni
+     comptador (backlog, «La pàgina per al lead»). -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Reservemos la visita | TeamTowers</title>
+<style>
+:root{--acc:#1f4e79;--text:#1b1b1f;--mut:#55555f;--lin:#cfcfd6;--bg:#fbfbf8;--panel:#fff;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--acc:#8fb8e8;--text:#ececf1;--mut:#a9a9b3;--lin:#3a3a44;--bg:#15151a;--panel:#1f1f26}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:36rem;margin:0 auto;padding:1.5rem 16px 3rem}
+.marca{font-weight:700;color:var(--acc);margin:0}
+h1{font-size:1.45rem;line-height:1.3;margin:.8rem 0 .4rem}
+fieldset{border:0;padding:0;margin:1.2rem 0}
+legend{font-weight:600;margin-bottom:.4rem}
+.op{display:flex;gap:.5rem;align-items:flex-start;margin:.35rem 0}
+.op input{margin-top:.35rem}
+label.c{display:block;font-weight:600;margin:1rem 0 .3rem}
+input[type=text],input[type=email],textarea{width:100%;font:inherit;padding:.6rem .7rem;border:1px solid var(--lin);border-radius:.45rem;background:var(--panel);color:var(--text)}
+button{margin-top:1.3rem;font:inherit;font-weight:600;padding:.75rem 1.2rem;border:0;border-radius:.5rem;background:var(--acc);color:#fff;cursor:pointer}
+@media (prefers-color-scheme:dark){button{color:#15151a}}
+.hint{color:var(--mut);font-size:.9rem}
+.ok{border-left:4px solid var(--acc);padding:.4rem .9rem;background:var(--panel)}
+.oculta{position:absolute;left:-9999px}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<p class="marca">TeamTowers</p>
+
+<div id="gracies" class="ok" hidden>
+  <p><b data-t="ok1">Recibido.</b> <span data-t="ok2">Te escribimos en un día laborable para cerrar la visita. Si nos dijiste que el mapa no es así, lo corregimos antes de ir.</span></p>
+</div>
+
+<div id="forma">
+<h1 data-t="h1">Reservemos la visita</h1>
+<p data-t="intro">Así llegamos con tu mapa ya trabajado y la visita se dedica a lo estratégico y lo táctico.</p>
+
+<form name="visita" method="POST" action="/visita/?enviat=1" data-netlify="true" netlify-honeypot="bot-field">
+  <input type="hidden" name="form-name" value="visita">
+  <input type="hidden" name="ref" id="ref" value="">
+  <p class="oculta"><label>No lo rellenes <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+  <fieldset>
+    <legend data-t="qq">¿Qué nos dices?</legend>
+    <label class="op"><input type="radio" name="resposta" value="si" id="mSi" checked> <span data-t="si">Quiero la visita</span></label>
+    <label class="op"><input type="radio" name="resposta" value="no" id="mNo"> <span data-t="no">El mapa no es así: os explico qué falta</span></label>
+  </fieldset>
+
+  <label class="c" for="nom" data-t="nom">Tu nombre</label>
+  <input type="text" id="nom" name="nom" required autocomplete="name">
+  <label class="c" for="mail" data-t="mail">Tu correo</label>
+  <input type="email" id="mail" name="mail" required autocomplete="email">
+  <label class="c" for="quan" data-t="quan">Cuándo te iría bien</label>
+  <input type="text" id="quan" name="quan" data-tp="quanP" placeholder="Por ejemplo: martes o jueves por la mañana">
+  <label class="c" for="notes" data-t="notes">Lo que el mapa no dice, o lo que quieres que miremos</label>
+  <textarea id="notes" name="notes" rows="4"></textarea>
+
+  <button type="submit" data-t="envia">Enviar</button>
+  <p class="hint"><span data-t="priv">Solo se envía cuando pulsas el botón: lo que has escrito aquí, al formulario de nuestro alojamiento (Netlify), desde donde pasa a nuestro CRM. Nada más. Responsable: Alvaro Solache, para cerrar la visita contigo; puedes ver, corregir o borrar tus datos escribiéndonos.</span> <a href="/avis-legal.html#dades" data-t="legal">Aviso legal y privacidad</a></p>
+</form>
+</div>
+</main>
+<script>
+/* Sense això el formulari també funciona: en castellà, sense referència i amb
+   «Quiero la visita» marcat. Amb això pren el que porta l'enllaç de la pàgina
+   del lead (r, l, m), que no és cap dada personal. */
+(function () {
+  var q = new URLSearchParams(location.search);
+  var CA = {
+    ok1: 'Rebut.', ok2: 'T\'escrivim en un dia laborable per tancar la visita. Si ens has dit que el mapa no és així, el corregim abans d\'anar-hi.',
+    h1: 'Reservem la visita', intro: 'Així arribem amb el teu mapa ja treballat i la visita es dedica a l\'estratègic i el tàctic.',
+    qq: 'Què ens dius?', si: 'Vull la visita', no: 'El mapa no és així: us explico què hi falta',
+    nom: 'El teu nom', mail: 'El teu correu', quan: 'Quan t\'aniria bé', quanP: 'Per exemple: dimarts o dijous al matí',
+    notes: 'El que el mapa no diu, o el que vols que mirem', envia: 'Envia',
+    priv: 'Només s\'envia quan prems el botó: el que has escrit aquí, al formulari del nostre allotjament (Netlify), des d\'on passa al nostre CRM. Res més. Responsable: Alvaro Solache, per tancar la visita amb tu; pots veure, corregir o esborrar les teves dades escrivint-nos.',
+    legal: 'Avís legal i privacitat'
+  };
+  if (q.get('l') === 'ca') {
+    document.documentElement.lang = 'ca';
+    document.title = CA.h1 + ' | TeamTowers';
+    document.querySelectorAll('[data-t]').forEach(function (n) { n.textContent = CA[n.getAttribute('data-t')]; });
+    document.querySelectorAll('[data-tp]').forEach(function (n) { n.placeholder = CA[n.getAttribute('data-tp')]; });
+    document.querySelector('form').action = '/visita/?enviat=1&l=ca';
+  }
+  var r = q.get('r') || '';
+  if (/^[A-Za-z0-9_-]{16,32}$/.test(r)) document.getElementById('ref').value = r;
+  if (q.get('m') === 'no') document.getElementById('mNo').checked = true;
+  if (q.has('enviat')) { document.getElementById('gracies').hidden = false; document.getElementById('forma').hidden = true; }
+})();
+</script>
+</body>
+</html>

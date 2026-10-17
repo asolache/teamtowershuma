@@ -214,7 +214,7 @@ cas('un idioma sense textos peta', a => {
   rmSync(casa, { recursive: true, force: true });
 }
 
-/* Els serveis s'enllacen (veda 169): un fill tria els que fa servir i rep
+/* Els serveis s'enllacen (veda 171): un fill tria els que fa servir i rep
    només els seus enllaços; un que la matriu no té, o un que enllaça un fitxer
    que no hi és, atura l'herència. */
 {

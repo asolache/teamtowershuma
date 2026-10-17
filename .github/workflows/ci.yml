@@ -22,7 +22,7 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html
 
       # La portada de l'arrel és per on entra tothom i no la comprovava res.
       # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
@@ -71,6 +71,12 @@ jobs:
       # tal com és: si l'editor canvia i la plantilla no, el client rep l'antic.
       - name: Guarda de la plantilla de Netlify
         run: node SOS/tools/build-plantilla.js --check
+
+      # La portada dibuixa el cervell de la casa amb SOS/cervell/teamtowers.json,
+      # que surt del codex. Si el codex creix i el JSON no, la portada ensenya un
+      # cervell vell i no ho veu ningú.
+      - name: El cervell de la portada és el del codex
+        run: node SOS/tools/build-cervell-dades.js --check
 
       # El motor de l'editor del mapa (model, text, arbre, desviació i
       # diagnòstic) es prova en Node pur: és l'única guarda de l'editor que corre
@@ -249,6 +255,7 @@ jobs:
           node SOS/tests/test-cervell.mjs
           node SOS/tests/test-proposta.mjs
           node SOS/tests/test-automatitza.mjs
+          node SOS/tests/test-pagina-lead.mjs
 
       # La pàgina de la MATRIU explica un mètode i promet, a la primera
       # pantalla, que cada criteri és una comprovació que l'app fa de debò. Una

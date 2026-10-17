@@ -140,10 +140,19 @@ for (const [w, h] of [[1280, 900], [1440, 900], [390, 844]]) {
     const btn = document.getElementById('ctBtn').getBoundingClientRect();
     const cta = document.querySelector('.hero .btn-primary').getBoundingClientRect();
     return { dalt: Math.round(c.top), baix: Math.round(c.bottom), btn: Math.round(btn.bottom),
-      cta: Math.round(cta.bottom), fold: innerHeight, ample: document.documentElement.scrollWidth };
+      cta: Math.round(cta.bottom), fold: innerHeight, ample: document.documentElement.scrollWidth,
+      cervell: Math.round(document.querySelector('.cervell-top').getBoundingClientRect().bottom) };
   });
-  ok(r.baix <= r.fold, `${w}px · el dibuix sencer cap a la primera pantalla (acaba a ${r.baix} de ${r.fold})`);
-  ok(r.btn <= r.fold, `${w}px · i el botó per provar-ho també`);
+  /* Des del 17/10/2026 la pàgina obre amb el cervell de la casa (l'Àlvar el
+     va demanar a dalt de tot). A l'escriptori els castells hi continuen cabent
+     sencers; a mòbil no hi ha alçada per a tots dos, i el que es demana és que
+     el cervell es vegi sencer i els castells comencin a la primera pantalla. */
+  if (w >= 1280) {
+    ok(r.baix <= r.fold, `${w}px · el dibuix sencer cap a la primera pantalla (acaba a ${r.baix} de ${r.fold})`);
+    ok(r.btn <= r.fold, `${w}px · i el botó per provar-ho també`);
+  } else {
+    ok(r.cervell <= r.fold && r.dalt < r.fold, `${w}px · el cervell sencer a la primera pantalla (acaba a ${r.cervell}) i els castells hi comencen (${r.dalt})`);
+  }
   ok(r.ample <= w, `${w}px · la pàgina no se'n va de costat`);
   if (w >= 1280) ok(r.cta <= r.fold, `${w}px · i el botó de diagnòstic no cau per sota del plec (${r.cta})`);
   await ctx.close();

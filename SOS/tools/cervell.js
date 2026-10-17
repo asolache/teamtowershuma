@@ -98,7 +98,7 @@ function herencia(conf) {
      TeamTowers fa de backend, i propi), i tria amb `serveis.usa` al seu
      `cervell.json`. Cada enllaç apunta al fitxer de debò, i la peça que
      connecta ha d'existir a `conecta/`: un servei que ningú pot obrir és un
-     mapa fals (veda 169). */
+     mapa fals (veda 171). */
   if (H.serveis) {
     const S = H.serveis, lg = es ? 'es' : 'ca';
     const cx = (() => { try { return JSON.parse(readFileSync(join(TT, 'conecta', 'index.html'), 'utf8').match(/id="cx-datos">([\s\S]*?)<\/script>/)[1]); } catch (e) { return null; } })();
@@ -108,8 +108,8 @@ function herencia(conf) {
     (usa || []).filter(id => !S.llista.some(s => s.id === id)).forEach(id => errors.push(`cervell.json demana el servei «${id}» i la matriu no el té`));
     const nom = m => S.modes[m][lg];
     let sm = es
-      ? `# Servicios del cerebro colectivo\n\n> **No lo edites:** sale de ${H.font}SOS/knowledge/cervell/heretat.json\n> y se actualiza con \`cervell.js --actualitza\`. Los servicios se enlazan, no se copian (veda 169).\n\n`
-      : `# Serveis del cervell col·lectiu\n\n> **No l'editis:** surt de ${H.font}SOS/knowledge/cervell/heretat.json\n> i s'actualitza amb \`cervell.js --actualitza\`. Els serveis s'enllacen, no es copien (veda 169).\n\n`;
+      ? `# Servicios del cerebro colectivo\n\n> **No lo edites:** sale de ${H.font}SOS/knowledge/cervell/heretat.json\n> y se actualiza con \`cervell.js --actualitza\`. Los servicios se enlazan, no se copian (veda 171).\n\n`
+      : `# Serveis del cervell col·lectiu\n\n> **No l'editis:** surt de ${H.font}SOS/knowledge/cervell/heretat.json\n> i s'actualitza amb \`cervell.js --actualitza\`. Els serveis s'enllacen, no es copien (veda 171).\n\n`;
     sm += Object.keys(S.modes).map(m => `- **${nom(m)}.** ${S.modes[m]['diu_' + lg]}`).join('\n') + '\n';
     for (const s of S.llista.filter(s => !usa || usa.includes(s.id))) {
       if (!existsSync(join(TT, s.path))) errors.push(`el servei «${s.id}» enllaça ${s.path} i no existeix`);
