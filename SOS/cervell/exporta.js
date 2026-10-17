@@ -18,24 +18,34 @@
   function llista(ns, f) { return ns.map(f).join('\n'); }
   function curt(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n).replace(/\s\S*$/, '') + '…' : s; }
 
+  var MD = {
+    ca: { t: 'El cervell de ', ctx: function (f, d, u) { return 'Context per a una IA. Surt del codex de ' + f + ' (' + d + '), dibuixat a ' + u + '.'; },
+      veda: 'Cada veda és un error que ja es va pagar. Abans d\'actuar, comprova que no en trenques cap.', com: 'Com fer-lo servir',
+      us: ['Desa\'l com a `CLAUDE.md` a l\'arrel del projecte, o enganxa\'l a les instruccions o al coneixement del projecte de la teva IA.',
+        'Llegeix primer les vedes que sostenen: són les que més se citen.',
+        'Si en toques una que té enllaços quàntics, revisa també l\'altra: s\'activen juntes.',
+        'Si una feina t\'ensenya una regla nova, proposa-la com a veda amb qui la va dir, quan i l\'error que evita.'],
+      sost: 'Les que sostenen', cites: ' cites', juntes: 'S\'activen juntes' },
+    es: { t: 'El cerebro de ', ctx: function (f, d, u) { return 'Contexto para una IA. Sale del codex de ' + f + ' (' + d + '), dibujado en ' + u + '.'; },
+      veda: 'Cada veda es un error que ya se pagó. Antes de actuar, comprueba que no rompes ninguna.', com: 'Cómo usarlo',
+      us: ['Guárdalo como `CLAUDE.md` en la raíz del proyecto, o pégalo en las instrucciones o el conocimiento del proyecto de tu IA.',
+        'Lee primero las vedas que sostienen: son las más citadas.',
+        'Si tocas una que tiene enlaces cuánticos, revisa también la otra: se activan juntas.',
+        'Si un trabajo te enseña una regla nueva, propónla como veda con quién la dijo, cuándo y el error que evita.'],
+      sost: 'Las que sostienen', cites: ' citas', juntes: 'Se activan juntas' }
+  };
   function md(D, AN, meta) {
-    var byId = {}; D.nodos.forEach(function (n) { byId[n.id] = n; });
+    var byId = {}, t = MD[(meta.lang || 'ca').slice(0, 2)] || MD.ca; D.nodos.forEach(function (n) { byId[n.id] = n; });
     var v = function (id) { var n = byId[id]; return 'V' + n.n + ' · ' + n.t; };
     var ordre = D.capas.slice().reverse();
-    return '# El cervell de ' + meta.nom + '\n\n' +
-      '> Context per a una IA. Surt del codex de ' + meta.font + ' (' + meta.data + '), dibuixat a ' + meta.url + '.\n' +
-      '> Cada veda és un error que ja es va pagar. Abans d\'actuar, comprova que no en trenques cap.\n\n' +
-      '## Com fer-lo servir\n\n' +
-      '- Desa\'l com a `CLAUDE.md` a l\'arrel del projecte, o enganxa\'l a les instruccions o al coneixement del projecte de la teva IA.\n' +
-      '- Llegeix primer les vedes que sostenen: són les que més se citen.\n' +
-      '- Si en toques una que té enllaços quàntics, revisa també l\'altra: s\'activen juntes.\n' +
-      '- Si una feina t\'ensenya una regla nova, proposa-la com a veda amb qui la va dir, quan i l\'error que evita.\n\n' +
-      '## Les que sostenen\n\n' + llista(AN.gravedad, function (n) { return '- **' + v(n.id) + '** · ' + AN.masa[n.id] + ' cites'; }) + '\n\n' +
+    return '# ' + t.t + meta.nom + '\n\n> ' + t.ctx(meta.font, meta.data, meta.url) + '\n> ' + t.veda + '\n\n' +
+      '## ' + t.com + '\n\n' + t.us.map(function (u) { return '- ' + u; }).join('\n') + '\n\n' +
+      '## ' + t.sost + '\n\n' + llista(AN.gravedad, function (n) { return '- **' + v(n.id) + '** · ' + AN.masa[n.id] + t.cites; }) + '\n\n' +
       ordre.map(function (c) {
         var ns = D.nodos.filter(function (n) { return n.capa === c.id; });
         return ns.length ? '## ' + c.s + '\n\n' + llista(ns, function (n) { return '- **V' + n.n + ' · ' + n.t + '.** ' + curt(n.aprende || n.txt, 260); }) + '\n\n' : '';
       }).join('') +
-      '## S\'activen juntes\n\n' + llista(AN.cuanticos.slice(0, 20), function (e) { return '- ' + v(e.a) + ' ↔ ' + v(e.b); }) + '\n';
+      '## ' + t.juntes + '\n\n' + llista(AN.cuanticos.slice(0, 20), function (e) { return '- ' + v(e.a) + ' ↔ ' + v(e.b); }) + '\n';
   }
 
   function json(D, AN, meta) {
@@ -50,10 +60,12 @@
   function html(D, meta, codi, scorm) {
     var dades = JSON.stringify({ nodos: D.nodos, aristas: D.aristas, capas: D.capas }).replace(/</g, '\\u003c');
     var tanca = function (s) { return s.replace(/<\/script/gi, '<\\/script'); };
+    var es = meta.lang === 'es', tit = (es ? 'El cerebro de ' : 'El cervell de ') + meta.nom.replace(/</g, '&lt;');
+    var peu = (es ? 'Del codex de ' : 'Del codex de ') + meta.font.replace(/</g, '&lt;') + ' · ' + meta.data + (es ? ' · funciona sin conexión.' : ' · funciona sense connexió.');
     return '<!DOCTYPE html>\n<html lang="' + meta.lang + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
-      '<title>El cervell de ' + meta.nom.replace(/</g, '') + '</title>\n<style>body{margin:0;background:#fbfaf7;color:#15130f;font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}' +
+      '<title>' + tit + '</title>\n<style>body{margin:0;background:#fbfaf7;color:#15130f;font:17px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}' +
       'main{max-width:1040px;margin:0 auto;padding:24px 16px}h1{font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.15;margin:.2em 0}.m{color:#5e594d;font-size:.9rem}</style>\n</head>\n<body>\n<main>\n' +
-      '<h1>El cervell de ' + meta.nom.replace(/</g, '&lt;') + '</h1>\n<p class="m">Del codex de ' + meta.font.replace(/</g, '&lt;') + ' · ' + meta.data + ' · funciona sense connexió.</p>\n<div id="cv"></div>\n</main>\n' +
+      '<h1>' + tit + '</h1>\n<p class="m">' + peu + '</p>\n<div id="cv"></div>\n</main>\n' +
       '<script>window.CERVELL=' + dades + ';</script>\n' +
       codi.map(function (c) { return '<script>\n' + tanca(c) + '\n</script>'; }).join('\n') + '\n' +
       '<script>CervellVista.munta(document.getElementById("cv"),window.CERVELL,{lang:"' + meta.lang + '"});' +
