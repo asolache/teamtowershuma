@@ -52,6 +52,59 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### La matriu aprèn dels fills · la pujada del cervell (demanat 17/10/2026)
+
+**Demanat per l'Àlvar:** un backlog coordinat entre Events Penedès i la web
+pròpia, pensant en els proveïdors, clients i altres parts d'Events Penedès;
+integrar tot el seu ecosistema; que la matriu (el cervell de TeamTowers)
+evolucioni quan evoluciona un dels seus projectes i n'hereti les bones
+pràctiques; i que les funcions que Events Penedès automatitza siguin productes i
+serveis nous.
+
+**Fet:** `cervell.js --recull <projecte>` (veda 166). Les vedes pròpies i els
+productes declarats d'un fill arriben a `SOS/knowledge/cervell/pujades.md` com
+a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
+`test-cervell.mjs`. El backlog coordinat, amb els noms de proveïdors i clients,
+és al repositori privat d'estratègia, no aquí.
+
+**Queda:**
+
+1. **Events Penedès hi entra** (punt 1 del «Cervell reutilitzable»): el seu
+   `cervell.json` apuntant al que ja té i una secció de vedes al seu codex. Sense
+   això `--recull` no té res a llegir.
+2. **Els seus productes declarats:** les funcions que ja corren allà (el tauler
+   de comandament, la petició que es converteix en esborrany de proposta i lead,
+   el partner que manté la seva fitxa, el catàleg de proveïdors generat,
+   l'enriquiment d'agències) en un `productos.md`, i les que s'adoptin, al
+   catàleg públic sense preu i amb el cost d'IA per tasca.
+3. **El `--recull` al CI d'aquí**, quan hi hagi un fill de debò, perquè la
+   candidata vella es vegi sense que algú se'n recordi.
+
+4. **L'objectiu de tot plegat (demanat el mateix dia): l'enviament abans de la
+   visita.** «Una UX amb IA integrada que envio als meus leads per seduir-los
+   amb l'automatització d'un x % del seu mapa de valor. Si abans de visitar-los
+   ja els gestiono això, ells es poden centrar en l'estratègic i el tàctic.»
+   Ja hi ha les peces: `proposta.js` llegeix la web del lead, en treu l'esbós de
+   mapa, les preguntes i la web, i `EMPIEZA-AQUI.html` n'és la porta. Falta:
+   - **el x %, mesurat i no promès:** cada lliurament de l'esbós marcat com a
+     automàtic (el fa el SOS o la IA), assistit o humà, amb el motiu al costat;
+     el x % és la part automàtica sobre el total, per flux. Quan el mapa és un
+     esbós, la xifra surt com a estimació (veda 156);
+   - **el que s'automatitza, nomenat amb productes de debò:** cada lliurament
+     automàtic apunta al producte del catàleg que el fa, i molts naixeran a
+     Events Penedès (punt 2);
+   - **la pàgina per al lead**, una sola, amb el seu mapa, el x % i les tres
+     preguntes per a la visita, que s'envia per enllaç (capa «per enllaç» del
+     cervell) i sense dades personals a la web pública;
+   - **el seguiment:** el lead obert a Zoho amb l'enllaç enviat, i l'avís quan
+     l'obre, perquè la visita comenci on ell s'ha quedat.
+   La pàgina és del fil «Web del servei Mapa de Valor»; aquí queden el càlcul
+   i la pujada de productes, perquè no es trepitgin.
+
+**Com es tanca:** la primera veda d'Events Penedès adoptada aquí i heretada pels
+altres fills, el primer producte nascut allà al catàleg, i el primer lead que
+rep la seva pàgina abans de la visita.
+
 ### L'arrencada amb IA: importar el que ja hi ha, i el kit de Claude (demanat 10/10/2026)
 
 **Demanat per l'Àlvar:** revisar el servei de creació de webs perquè el client

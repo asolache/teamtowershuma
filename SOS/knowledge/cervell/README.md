@@ -166,7 +166,8 @@ tots els projectes alhora:
 
 1. **Un error real** en un projecte (de TeamTowers o d'un client) entra al seu
    contracte, a «Els antipatrons que hem comès de debò», amb data i guarda.
-2. **Si val per a tots**, puja aquí: una veda al codex de SOS i, si es pot
+2. **Si val per a tots**, puja aquí: `--recull` la deixa com a candidata (vegeu
+   «La pujada», a sota) i, adoptada, és una veda al codex de SOS i, si es pot
    comprovar, una comprovació nova a `cervell.js`, provada trencant-la a posta
    a `SOS/tests/test-cervell.mjs`.
 3. **El blog ho explica** per a qui no llegeix codex (`SOS/blog.html`).
@@ -176,3 +177,29 @@ tots els projectes alhora:
 El que queda per fer —disseny i UX del servei, el seguiment com a servei
 recurrent, l'estratègia— és al backlog (`SOS/knowledge/dev/backlog.md`, «El
 cervell reutilitzable»).
+
+## La pujada: la matriu evoluciona quan evoluciona un fill
+
+**Demanat per l'Àlvar el 17/10/2026:** que la matriu evolucioni quan evoluciona
+un dels seus projectes, que n'hereti les bones pràctiques, i que les funcions
+que un projecte automatitza es converteixin en productes i serveis nous.
+
+L'herència baixa (`--nou`, `--actualitza`); la pujada és el camí de tornada:
+
+```bash
+node SOS/tools/cervell.js --recull ../el-projecte
+```
+
+- Llegeix les **vedes pròpies** del fill (les de la plantilla no, ja són
+  d'aquí) i, si el seu `cervell.json` declara `productes` (un `.md` amb
+  seccions `## Producto — <nom>`), les **funcions automatitzades** que podrien
+  ser un servei del catàleg.
+- Les deixa com a candidates a `SOS/knowledge/cervell/pujades.md`, generat del
+  registre `pujades.json`. Cap entra sola al codex ni al catàleg.
+- Algú decideix: `adoptada <veda>` (passa a ser una veda d'aquí i, si val per a
+  tots, a `heretat.json`, i així torna a tots els fills) o `descartada <motiu>`.
+  Una decisió presa no es torna a proposar.
+- Tot passa pel **sedàs** de l'herència: una candidata amb un import o un nom
+  que no pot sortir es llista sense el text, i es desa el patró, no el que ha
+  casat.
+
