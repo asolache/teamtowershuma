@@ -5033,6 +5033,15 @@ per decidir. Està escrit a la pantalla i hi ha una asserció que ho vigila.
 
 ---
 
+**Obra · la ment xarxa com a fons cooperatiu** — esborrany fet (17/10/2026)
+
+Mapa de valor a `SOS/knowledge/vision/fons-ment-xarxa.md`. Pendent: obrir al SOS
+un node MATRIU per a l'obra i que el marge dels tallers hi entri signat (sense
+codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
+«fons d'inversió» de cara enfora.
+
+---
+
 ### Idees a explorar (paraking lot)
 - **Federated onboarding**: quan aparelles amb un altre dispositiu, importa el seu roster de superherois com a suggerència.
 - **Comando digest setmanal** — email o notificació al Guardian amb la setmana del node.
