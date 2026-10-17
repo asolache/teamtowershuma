@@ -154,12 +154,19 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    (`--blue`, `--purple`, `--indigo`, `--panel`), el farciment dels cercles,
    el text `.mv-ca` visible i el pols (`.mv-p`) amagat o només a les fletxes
    de la màquina. Amb més de deu rols, els cercles es toquen.
-4. **`proposta.js --lead`.** Escriu «lead.html»: un sol fitxer sense JavaScript
-   ni peticions externes, `noindex`, sense cites de la web (els filtres no
-   atrapen noms de persones), sense preus, correus ni telèfons, i amb la xifra
-   del pas 1. Si alguna condició falla, no l'escriu. Provat amb l'exemple.
-5. **Revisió abans d'enviar.** Sense `--revisat`, la pàgina diu «ESBORRANY
-   INTERN» i no té botó.
+4. ~~**`proposta.js --lead`**~~ · **fet el 17/10/2026**. `pagina-lead.js`
+   escriu «lead.html» amb les set seccions: un sol fitxer sense JavaScript ni
+   res de fora, `noindex` i sense referer, amb la xifra i el dibuix del pas 1
+   i el 3. Abans d'escriure'l comprova que no porti correus, telèfons, imports
+   ni vuit paraules seguides de la web; si alguna cosa falla, no l'escriu i
+   esborra el d'abans. L'enllaç dels botons porta una referència aleatòria
+   que es guarda a «lead.json» i no canvia en regenerar. Ho prova
+   `test-pagina-lead.mjs`.
+5. ~~**Revisió abans d'enviar**~~ · **fet el 17/10/2026**. Sense `--revisat`,
+   la pàgina diu «ESBORRANY INTERN» i no té botó. Amb `--revisat`, només surt
+   d'un «mapa.json» que passa les regles dures (l'esbós no s'envia), i en
+   castellà només amb «preguntas-visita.md», perquè les preguntes del
+   diagnòstic surten en català.
 6. **La pàgina «/visita/»** i el seu formulari a la llista de
    `submission-created.mjs`, amb prova en sec; el correu de /mapa-web/ hi
    apunta.

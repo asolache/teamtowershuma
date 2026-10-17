@@ -138,7 +138,7 @@ function dibuix(entrada, opts) {
   return require('./build-mapavalor.js').svgMapa(xarxa(entrada, o), o.id || 'mvLead');
 }
 
-module.exports = { mesura, aMarkdown, productes, xarxa, dibuix };
+module.exports = { mesura, aMarkdown, productes, xarxa, dibuix, TXT, ENTREGABLES: REGLA.ENTREGABLES };
 
 if (require.main === module) {
   const a = process.argv.slice(2);

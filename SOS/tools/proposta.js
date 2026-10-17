@@ -28,8 +28,13 @@
  *      proposta i les preguntes tal com són (surten dels .md, no es copien) i
  *      diu què fer la primera mitja hora, cada mes i amb Claude.
  *
+ *   7. amb `--lead`, escriu `lead.html`: la pàgina que rep el lead abans de la
+ *      visita, amb el x % del seu mapa (`pagina-lead.js`). Sense `--revisat`
+ *      diu «ESBORRANY INTERN» i no porta botó.
+ *
  *   node SOS/tools/proposta.js propuesta/ [--nom "Nom"] [--llengua es|ca] [--url https://…]
  *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example --autoritzat la-web.example]
+ *        [--lead [--revisat]]
  *
  * Surt amb 0 si hi ha web per lliurar (`web/`), i amb 3 si de moment només hi ha
  * l'esbós: el que falta és feina de criteri, i `estado.md` diu quina. */
@@ -40,6 +45,7 @@ const A = require('./analitza-contingut.js');
 const { diagnostica } = require('./revisa-mapa.js');
 const W = require('./web-del-mapa.js');
 const X = require('./automatitza.js');
+const L = require('./pagina-lead.js');
 
 /* Mentre un fitxer porti aquesta línia, és de l'eina i es torna a escriure. */
 const MARCA_GEN = '<!-- proposta.js: es regenera mentre aquesta línia hi sigui. Esborra-la per fer-lo teu. -->';
@@ -273,7 +279,9 @@ async function proposta(dir, opts) {
     .concat(dures.map(r => '- ✗ ' + r.t + ': ' + r.diu), ['', '## ' + T.autom, '', T.automD.replace('{m}', aut.maquina).replace('{n}', aut.total).replace('{p}', aut.pct).replace('{h}', aut.persona).replace('{v}', aut.visita).replace('{e}', aut.estimacio ? T.est : ''), '', '## ' + T.web, '', final ? T.webOk : T.webEsb, '', '## ' + T.falta, ''],
       falta.map((x, i) => (i + 1) + '. ' + x)).join('\n') + '\n');
   const inici = paginaInici(dir, desti, nom, llengua);
-  return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici };
+  /* La pàgina per al lead, amb la mateixa xifra i el mateix diagnòstic. */
+  const lead = o.lead ? L.paginaLead({ dir, mapa, aut, diag, nom, llengua, marca: W.llegeixMarca(fMarca), fonts: fit, propi, revisat: !!o.revisat, data: o.data }) : null;
+  return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici, lead };
 }
 module.exports = { proposta, mdHtml };
 
@@ -282,13 +290,17 @@ if (require.main === module) {
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--casa') opts.casa.push(a[++i]);
     else if (/^--(nom|correu|llengua|url|baixa|autoritzat)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    else if (/^--(lead|revisat)$/.test(a[i])) opts[a[i].slice(2)] = true;
     else pos.push(a[i]);
   }
-  if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://… --autoritzat <domini>]'); process.exit(2); }
+  if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://… --autoritzat <domini>] [--lead [--revisat]]'); process.exit(2); }
+  if (opts.revisat && !opts.lead) { console.error('--revisat va amb --lead'); process.exit(2); }
   proposta(pos[0], opts).then(r => {
     console.log((r.final ? '✅ Web per lliurar' : '◐ De moment, l\'esbós') + ': ' + r.fitxers + ' fitxers a ' + r.web
       + ' · ' + r.analisi.rols.length + ' candidats a rol · ' + r.analisi.preguntes.length + ' preguntes · el que falta, a ' + join(pos[0], 'estado.md')
       + ' · el backoffice del client, a ' + r.inici);
+    if (r.lead && r.lead.escrita) console.log((opts.revisat ? '✅ La pàgina per al lead' : '◐ La pàgina per al lead, com a esborrany intern') + ': ' + r.lead.fitxer);
+    if (r.lead && !r.lead.escrita) { console.error('❌ La pàgina per al lead no s\'ha escrit:\n' + r.lead.falla.map(x => '  · ' + x).join('\n')); process.exit(4); }
     process.exit(r.final ? 0 : 3);
   }).catch(e => { console.error('❌ ' + e.message); process.exit(1); });
 }

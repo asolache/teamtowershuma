@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 295 · 18388 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 297 · 18417 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
@@ -33,8 +33,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 32 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 111 · 1460 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 63 · 1347 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 112 · 1468 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 64 · 1368 KB |
 
 ## saber
 
@@ -44,7 +44,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 |---|---|---|
 | `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 55 · 1047 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 12 · 34 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 352 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 353 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
