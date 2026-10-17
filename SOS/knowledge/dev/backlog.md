@@ -93,8 +93,9 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
      `SOS/tools/automatitza.js` marca cada lliurament com a automàtic, assistit
      o humà amb el motiu, i dona el x % total i per rol. Un intangible sempre és
      humà; el que cap producte fa, també. Els productes i els seus patrons són a
-     `SOS/knowledge/cervell/automatitzable.json` (els sis d'Events Penedès i dos
-     del SOS). `proposta.js` escriu `automatizable.md` per al lead, i a l'esbós
+     `SOS/knowledge/cervell/automatitzable.json` (els sis d'Events Penedès i el
+     diagnòstic del SOS); els diners són sempre de persona, com a l'app (PR
+     #226). `proposta.js` escriu `automatizable.md` per al lead, i a l'esbós
      la xifra surt com a estimació (veda 156). S'hereta als fills;
    - **el que s'automatitza, nomenat amb productes de debò:** cada lliurament
      automàtic apunta al producte del catàleg que el fa, i molts naixeran a
