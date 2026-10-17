@@ -5311,7 +5311,7 @@ fonts les hagués desat algú a mà.
   només quan la pàgina passa. Mentre només hi ha l'esborrany intern, el nom
   es pot corregir; des de la pàgina revisada, amb un altre nom no es fa res,
   perquè el mapa, les fonts i la lectura serien de l'altre, i no s'hi baixa la
-  web de ningú més. La pàgina revisada demana `--nom`: el que endevina
+  web de ningú més. Un `lead.json` trencat atura; no es fa una referència nova. La pàgina revisada demana `--nom`: el que endevina
   l'anàlisi pot ser «Inicio» per a dos negocis.
 - **La pàgina només diu el que consta:** la lectura amb permís, si la baixada
   la va deixar escrita («fuentes/.lectura.json») i els fitxers que va desar

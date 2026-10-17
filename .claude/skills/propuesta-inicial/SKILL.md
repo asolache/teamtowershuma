@@ -201,8 +201,9 @@ TeamTowers, no desde el del cliente.
    - hay un correo, un teléfono, un importe o una frase copiada de su web en el
      mapa, en las preguntas o en `--nom`;
    - la carpeta está dentro del repositorio, o ya tiene la página revisada de
-     otro negocio (si es el mismo y ha cambiado de nombre, se corrige «nom» en
-     `lead.json`).
+     otro negocio, también con `--baixa` (si es el mismo y ha cambiado de
+     nombre, se corrige «nom» en `lead.json`);
+   - `lead.json` no se puede leer: se arregla, sin cambiar la referencia.
 
    Se corrige lo que señala la consola (`mapa.json`, `preguntas-visita.md` o
    `--nom`), nunca la página.

@@ -161,7 +161,10 @@ console.log('\nLa carpeta i la referència');
   const r1 = proposta(dir, '--llengua', 'ca', '--lead');
   ok(r1.status === 4 && /és de «Una altra casa»/.test(r1.stderr) && f('lead.html') === html && f('analisis.json') === ana, 'sense --nom, en una carpeta lligada a un altre negoci, tampoc no es toca res');
   const rb = proposta(dir, '--llengua', 'ca', '--nom', 'Bodega Otra', '--baixa', 'https://bodega-otra.example/', '--autoritzat', 'bodega-otra.example');
-  ok(rb.status === 4 && /per baixar-hi la seva web/.test(rb.stderr) && f('analisis.json') === ana, 'a la carpeta d\'un lead no s\'hi baixa la web d\'un altre: surt amb 4 abans de demanar res');
+  ok(rb.status === 4 && /és de «Una altra casa»/.test(rb.stderr) && f('analisis.json') === ana, 'a la carpeta d\'un lead amb la pàgina revisada no s\'hi baixa la web d\'un altre: surt amb 4 abans de demanar res');
+  writeFileSync(join(dir, 'lead.json'), abans.replace(/\}\s*$/, ',}'));
+  const rj = corre('--lead', '--revisat');
+  ok(rj.status === 4 && /lead\.json no es pot llegir/.test(rj.stderr) && f('lead.html') === html, 'un lead.json trencat no fa una referència nova: surt amb 4 i diu què arreglar');
   writeFileSync(join(dir, 'lead.json'), abans);
   ok(corre('--lead', '--revisat', '--nom', 'celler  de PROVA').status === 0 && JSON.parse(f('lead.json')).ref === JSON.parse(abans).ref, 'el mateix nom amb altres majúscules o espais és el mateix negoci');
   const d2 = mkdtempSync(join(tmpdir(), 'tt-lead2-'));
@@ -199,6 +202,11 @@ console.log('\nEl que diu la xifra');
   const aut = X.mesura(JSON.parse(ex)), visita = aut.lliuraments.filter(l => l.qui === 'visita').map(l => l.que);
   const amb = n => { const m = JSON.parse(ex); m.tipus = {}; visita.slice(0, n).forEach(q => { m.tipus[q] = 'comanda'; }); writeFileSync(join(dir, 'mapa.json'), JSON.stringify(m)); corre('--lead', '--revisat'); return f('lead.html'); };
   const h1 = amb(visita.length - 1), h0 = amb(visita.length);
+  const mP = JSON.parse(ex); mP.tipus = {}; aut.lliuraments.filter(l => l.qui !== 'persona').forEach(l => { mP.tipus[l.que] = 'cobrament'; });
+  writeFileSync(join(dir, 'mapa.json'), JSON.stringify(mP)); corre('--lead', '--revisat');
+  const hP = f('lead.html');
+  ok(/preparar 0\.<\/h1>/.test(hP) && /Cap en aquest mapa: el que hi ha són intangibles, cobraments i acords/.test(hP) && !/a la visita mirem quins ho poden ser/.test(hP),
+    'amb res per al sistema i res per decidir, la secció del sistema no promet res per a la visita');
   ok(/el sistema en pot preparar \d+; 1 el decidim a la visita\./.test(h1), 'amb un sol lliurament per decidir: «1 el decidim»');
   ok(/el sistema en pot preparar \d+\.<\/h1>/.test(h0) && /Tots els lliuraments tenen un tipus conegut/.test(h0) && !/Encara no sabem quin entregable/.test(h0),
     'amb cap per decidir, la xifra no parla de la visita i la secció no diu que en falta cap');

@@ -67,6 +67,7 @@ const TXT = {
     llT: 'tangible (se puede reclamar)', llI: 'intangible (se espera, no se exige)', llM: 'la prepara el sistema',
     sistema: 'Lo que prepara el sistema', sistemaD: 'El sistema deja el borrador y una persona del rol lo acepta antes de que salga.',
     tipus: 'Tipo', accepta: 'Lo acepta', amb: 'Con', cap: 'Todavía ninguna: en la visita vemos cuáles pueden serlo.', capT: 'Ninguna en este mapa.',
+    capS0: 'Ninguna en este mapa: lo que hay son intangibles, cobros y acuerdos.',
     teu: 'Lo que sigue siendo tuyo', teuD: 'Los intangibles, los cobros y los acuerdos. Es lo estratégico y lo táctico, y es donde vale la pena que pongas tu tiempo.',
     visita: 'Lo decidimos en la visita', visitaD: 'Todavía no sabemos qué entregable piden. Un mapa mejor automatiza más.',
     visitaD0: 'Todas las entregas tienen un tipo conocido: la visita es para lo estratégico y lo táctico.',
@@ -98,6 +99,7 @@ const TXT = {
     llT: 'tangible (es pot reclamar)', llI: 'intangible (s\'espera, no s\'exigeix)', llM: 'el prepara el sistema',
     sistema: 'El que prepara el sistema', sistemaD: 'El sistema deixa l\'esborrany i una persona del rol l\'accepta abans que surti.',
     tipus: 'Tipus', accepta: 'L\'accepta', amb: 'Amb', cap: 'Encara cap: a la visita mirem quins ho poden ser.', capT: 'Cap en aquest mapa.',
+    capS0: 'Cap en aquest mapa: el que hi ha són intangibles, cobraments i acords.',
     teu: 'El que continua sent teu', teuD: 'Els intangibles, els cobraments i els acords. És l\'estratègic i el tàctic, i és on val la pena que hi posis el temps.',
     visita: 'Ho decidim a la visita', visitaD: 'Encara no sabem quin entregable demanen. Un mapa millor automatitza més.',
     visitaD0: 'Tots els lliuraments tenen un tipus conegut: la visita és per a l\'estratègic i el tàctic.',
@@ -275,6 +277,7 @@ function paginaLead(o) {
   const T = TXT[o.llengua] || TXT.es, llengua = T.lang, aut = o.aut, fitxer = join(o.dir, 'lead.html');
   const nega = falla => { rmSync(fitxer, { force: true }); return { escrita: false, fitxer, falla }; };
   if (dinsDelRepo(o.dir)) return { escrita: false, fitxer, falla: ['la carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/)'] };
+  if (existsSync(join(o.dir, 'lead.json')) && !amoDeLaCarpeta(o.dir)) return { escrita: false, fitxer, falla: ['lead.json no es pot llegir o no porta «ref»: arregla\'l o, si encara no s\'ha enviat res, esborra\'l'] };
   const altre = lligada(o.dir, o.nom);
   if (altre) return { escrita: false, fitxer, falla: [missatgeAltre(altre)] };
   const pq = preguntes(o.dir, o.diag);
@@ -322,7 +325,7 @@ function paginaLead(o) {
     + '<section aria-labelledby="t-xarxa">\n<h2 id="t-xarxa">' + e(T.xarxa) + '</h2>\n<p>' + e(T.xarxaD) + '</p>\n<div class="mapa">' + svg + '</div>\n'
     + '<ul class="llegenda"><li><b></b>' + e(T.llT) + '</li><li class="i"><b></b>' + e(T.llI) + '</li><li class="m"><b></b>' + e(T.llM) + '</li></ul>\n</section>\n'
     + '<section aria-labelledby="t-sistema">\n<h2 id="t-sistema">' + e(T.sistema) + ' (' + aut.maquina + ')</h2>\n<p>' + e(T.sistemaD) + '</p>\n'
-    + llista(de('maquina'), l => fila(l, e(T.tipus) + ': ' + e(nomTipus(l.tipus, llengua)) + ' · ' + e(T.accepta) + ': ' + e(l.de) + (l.producte ? ' · ' + e(T.amb) + ': ' + e(l.producte) : '')), T.cap) + '\n</section>\n'
+    + llista(de('maquina'), l => fila(l, e(T.tipus) + ': ' + e(nomTipus(l.tipus, llengua)) + ' · ' + e(T.accepta) + ': ' + e(l.de) + (l.producte ? ' · ' + e(T.amb) + ': ' + e(l.producte) : '')), aut.visita ? T.cap : T.capS0) + '\n</section>\n'
     + '<section aria-labelledby="t-teu">\n<h2 id="t-teu">' + e(T.teu) + ' (' + aut.persona + ')</h2>\n<p>' + e(T.teuD) + '</p>\n'
     + llista(de('persona'), l => fila(l, e(motiu(l))), T.capT) + '\n</section>\n'
     + '<section aria-labelledby="t-visita">\n<h2 id="t-visita">' + e(T.visita) + ' (' + aut.visita + ')</h2>\n<p>' + e(aut.visita ? T.visitaD : T.visitaD0) + '</p>\n'

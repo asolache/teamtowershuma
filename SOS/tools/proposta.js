@@ -45,8 +45,8 @@
  *       `preguntas-visita.md` és buit (o falta, en castellà); un correu, un
  *       telèfon, un import o una frase de la web al mapa, a les preguntes o a
  *       `--nom`; o la carpeta és dins d'aquest repositori o és d'un altre negoci
- *       que ja té la pàgina revisada (`lead.json`), i aleshores no s'escriu res
- *       de res. Amb `--baixa`, una carpeta d'un lead demana el seu `--nom`;
+ *       que ja té la pàgina revisada (també amb `--baixa`), o `lead.json` no es
+ *       pot llegir, i aleshores no s'escriu res de res;
  *   1 · un error, o `--lead` des del repositori d'un client;
  *   2 · l'ordre està mal escrit: una opció que no existeix o sense valor, una
  *       carpeta de més, o `--revisat` sense `--lead` o sense `--nom`. */
@@ -246,14 +246,16 @@ async function proposta(dir, opts) {
     if (L.dinsDelRepo(dir)) atura('La carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/).', 4);
     if (o.revisat && !o.nom) atura('--revisat demana --nom: el nom del negoci tal com el veurà.', 2);
   }
-  /* La carpeta d'un lead (amb `lead.json`) és d'un sol negoci: no s'hi baixa
-     la web d'un altre, i un cop té la pàgina revisada, no se'n fa cap altra. */
-  let amo = null;
-  try { amo = JSON.parse(readFileSync(join(dir, 'lead.json'), 'utf8')); } catch (e) { /* no és la carpeta d'un lead */ }
-  if (amo && amo.nom && (o.baixa || o.lead)) {
-    const L = paginaLead(), mateix = o.nom && L.mateixNom(amo.nom, o.nom);
-    if (o.baixa && !mateix) atura('Aquesta carpeta és de «' + amo.nom + '» (lead.json): per baixar-hi la seva web, --nom «' + amo.nom + '»; per a un altre negoci, una carpeta nova.', 4);
-    if (o.lead && amo.revisat && !mateix) { const m = L.missatgeAltre(amo.nom); atura(m[0].toUpperCase() + m.slice(1) + '.', 4); }
+  /* Un cop la carpeta d'un lead té la pàgina revisada (`revisat` a
+     `lead.json`), és d'aquell negoci: amb un altre nom no s'hi baixa cap web ni
+     se'n fa cap pàgina. Un `lead.json` que no es pot llegir no es tracta com
+     una carpeta nova: la referència és la que ja té el lead. */
+  const fLead = join(dir, 'lead.json');
+  if ((o.baixa || o.lead) && existsSync(fLead)) {
+    let amo = null;
+    try { amo = JSON.parse(readFileSync(fLead, 'utf8')); } catch (e) { /* es diu a sota */ }
+    if (!amo || !/^[A-Za-z0-9_-]{16,}$/.test(amo.ref || '') || !amo.nom) atura('lead.json no es pot llegir o no porta «ref» i «nom»: arregla\'l (la referència és la de l\'enllaç que té el lead) o, si encara no s\'ha enviat res, esborra\'l.', 4);
+    if (amo.revisat && !(o.nom && paginaLead().mateixNom(amo.nom, o.nom))) { const m = paginaLead().missatgeAltre(amo.nom); atura(m[0].toUpperCase() + m.slice(1) + '.', 4); }
   }
   mkdirSync(dir, { recursive: true });
   if (o.baixa) {
