@@ -2548,7 +2548,9 @@ function renderCatMap(body){
 /* ═══════════════════ INDEXEDDB (local-first) ═══════════════════ */
 const DB_NAME='SOS_MVP', DB_VER=1, STORE='nodes';
 let _db=null;
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE)){const s=db.createObjectStore(STORE,{keyPath:'id'});s.createIndex('parentId','parentId',{unique:false});}};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=e=>rej(e.target.error);});}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(STORE)){const s=db.createObjectStore(STORE,{keyPath:'id'});s.createIndex('parentId','parentId',{unique:false});}};r.onsuccess=e=>{_db=e.target.result;demanaPersistent();res(_db);};r.onerror=e=>rej(e.target.error);});}
+// Que el navegador no buidi la base si va just d'espai (test-persistent).
+function demanaPersistent(){const s=navigator.storage;s&&s.persist&&s.persisted().then(p=>p||s.persist()).catch(()=>{});}
 function tx(mode){return _db.transaction(STORE,mode).objectStore(STORE);}
 function dbGetAll(){return new Promise((res,rej)=>{const r=tx('readonly').getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});}
 function dbPut(node){return new Promise((res,rej)=>{const r=tx('readwrite').put(node);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
