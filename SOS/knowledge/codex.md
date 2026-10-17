@@ -1,5 +1,7 @@
 # SOS · Codex vedes (extès)
 
+El que ensenyen juntes, per capes i per sabers, és a `SOS/knowledge/codex-sintesi.md`.
+
 Els vedes originals del kernel Antigravity segueixen intactes (Zero Redundancy · Frontend-only · Context-First AI · Knowledge Loop · W3C · JSON-LD · Glass-Box · Immutable State · Zero localStorage · Local-First). Aquest fitxer els amplia amb els compromisos que hem afegit en aquesta línia de treball.
 
 ## Nous vedes
