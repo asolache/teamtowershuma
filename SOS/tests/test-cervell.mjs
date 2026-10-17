@@ -199,6 +199,18 @@ cas('un idioma sense textos peta', a => {
   if (!bo) fails++;
   console.log(`  ${bo ? '✓' : '✗'} la pujada proposa les vedes i els productes nous d'un fill, passa el sedàs i no repeteix les adoptades`);
   if (!bo) console.log(r1.stdout + r2.stdout + m2);
+
+  /* El mateix fill, ara privat: del que ja s'havia pujat només queda el
+     número i l'estat, i un producte nou no hi deixa el nom. */
+  writeFileSync(join(fill, 'cervell.json'), JSON.stringify({ ...conf, productes: 'saber/productos.md', privat: true }));
+  appendFileSync(join(fill, 'saber', 'productos.md'), '\n## Producto — Liquidaciones por partner\n\nCada uno cobra lo suyo.\n');
+  const r3 = recull(), m3 = md(), j3 = readFileSync(REG, 'utf8');
+  const priv = r3.status === 0 && m3.includes('### veda 5 · proposada') && m3.includes('Ve d\'un projecte privat')
+    && !m3.includes('El proveedor mantiene su ficha') && !m3.includes('La tarifa') && !m3.includes('Liquidaciones')
+    && !j3.includes('El proveedor mantiene su ficha') && !j3.includes('Liquidaciones') && /producte privat [0-9a-f]{8}/.test(j3);
+  if (!priv) fails++;
+  console.log(`  ${priv ? '✓' : '✗'} d'un fill privat només puja el número: ni títol, ni text, ni el nom d'un producte nou`);
+  if (!priv) console.log(r3.stdout + m3);
   rmSync(casa, { recursive: true, force: true });
 }
 
