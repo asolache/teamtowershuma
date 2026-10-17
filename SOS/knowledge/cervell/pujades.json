@@ -2,68 +2,55 @@
   "Events Penedès": {
     "veda 4": {
       "estat": "proposada",
-      "titol": "Un precio no lleva el IVA mezclado",
-      "text": "Los precios van sin IVA salvo que `iva_incluido` diga lo contrario. Un precio\nque a veces lo lleva y a veces no acaba sumado con otro que no lo lleva, y el\nerror llega a una propuesta. Viene de `CLAUDE.md` («Lo que nunca entra»)."
+      "privat": true
     },
     "veda 5": {
       "estat": "proposada",
-      "titol": "Quien paga y quien recibe el valor no son el mismo rol",
-      "text": "El dinero viene del cliente; el intangible lo recibe el participante. Toda la\nventa consiste en hacer creíble algo que va a sentir un tercero, y por eso una\npropuesta a medida sin precio funciona mejor que una tarifa. Lo enseñó el mapa\nde valor (`estudios/mapa-valor-eventspenedes.md`, 03/10/2026)."
+      "privat": true
     },
     "veda 6": {
       "estat": "proposada",
-      "titol": "No se cobra comisión por el trabajo de otro",
-      "text": "Con comisión, el proveedor pagaba por ser recomendado y competía con el cliente\npor el criterio del productor. Cobrando por horas ese flujo desaparece y la\nrelación queda recíproca. El modelo de cobro dibuja la red: se elige mirando el\nmapa, no la hoja de cálculo (`desarrollo/modelo-honorarios.md`)."
+      "privat": true
     },
     "veda 7": {
       "estat": "proposada",
-      "titol": "Un modelo de honorarios se mide, no se supone",
-      "text": "Las horas reales de cada evento se apuntan al lado de las facturadas. Es lo\núnico que dice si el modelo se sostiene; una estimación de horas escrita en un\nplan se lee igual que una medida. La guarda es `tools/check-dedicacion.mjs`."
+      "privat": true
     },
     "veda 8": {
       "estat": "proposada",
-      "titol": "Una red estrella necesita su segundo nodo",
-      "text": "Casi todo pasa por el productor. El rol que más falta no es un proveedor más,\nsino un segundo productor para los eventos grandes. Un mapa de valor que solo\nse lee como lista de proveedores no enseña este riesgo; leído como red, sí."
+      "privat": true
     },
     "veda 9": {
       "estat": "proposada",
-      "titol": "Una foto cedida para un dossier no está cedida para una web",
-      "text": "Cada uso de una imagen de un tercero necesita su permiso por escrito para ese\nuso. Lo que se cedió para mandar a una agencia no se puede publicar."
+      "privat": true
     },
     "veda 10": {
       "estat": "proposada",
-      "titol": "Lo interno no sale fuera sin el guardián",
-      "text": "Un proyecto interno en un texto externo, sin validar, es una promesa que nadie\nha hecho. Los correos pasan por `tools/check-comunicacion.mjs`, con el guardián\nen `data/comunicacion.json`; ninguna IA marca la validación por su cuenta."
+      "privat": true
     },
     "producte Del formulario a la propuesta": {
       "estat": "adoptada al catàleg (17/10/2026)",
-      "titol": "Del formulario a la propuesta",
-      "text": "La petición de la web crea el lead en el CRM y monta sola un borrador de\npropuesta con enlace cifrado que caduca. Lo hacen `netlify/` y\n`tools/build-propuesta.mjs`."
+      "privat": true
     },
     "producte Tu día en una pantalla": {
       "estat": "adoptada al catàleg (17/10/2026)",
-      "titol": "Tu día en una pantalla",
-      "text": "El tablero de mando junta CRM, correo, calendario y facturas, y dice qué toca\nhoy en cada oportunidad (`tablero/`)."
+      "privat": true
     },
     "producte La red que se mantiene sola": {
       "estat": "adoptada al catàleg (17/10/2026)",
-      "titol": "La red que se mantiene sola",
-      "text": "Cada partner corrige su ficha y autoriza su página en un clic, sin que haya que\npedírselo (`tools/ficha-proveedor.mjs`, `alta-proveedor`)."
+      "privat": true
     },
     "producte Tu catálogo de partners": {
       "estat": "adoptada al catàleg (17/10/2026)",
-      "titol": "Tu catálogo de partners",
-      "text": "El catálogo y las tarifas largas se generan de un solo JSON y el CI falla si no\ncorresponden (`tools/build-catalogo.mjs`)."
+      "privat": true
     },
     "producte Leads ordenados por potencial": {
       "estat": "adoptada al catàleg (17/10/2026)",
-      "titol": "Leads ordenados por potencial",
-      "text": "La base de agencias se enriquece y se ordena por prioridad para saber a quién\nllamar primero (`tools/enriquecer-agencias.mjs`, `tools/segmentar-cuentas.mjs`)."
+      "privat": true
     },
     "producte Tu red en el mapa": {
       "estat": "adoptada al catàleg (17/10/2026)",
-      "titol": "Tu red en el mapa",
-      "text": "Cada partner cae en su comarca y su papel en el mapa de valor, con las\nconexiones físicas entre comarcas (`tools/build-territorio.mjs`, `tools/check-valor.mjs`)."
+      "privat": true
     }
   },
   "Álvaro Solache": {
