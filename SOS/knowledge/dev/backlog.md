@@ -78,7 +78,8 @@ pàgina és d'aquest fil, el càlcul és del fil de la matriu.
   productes del catàleg. Sobre el celler de la portada donava 0 de 16, i la
   portada en dona 1 amb els seus tipus triats a mà (`CELLER.tipus` de
   `SOS/tools/build-mapavalor.js`). Dues xifres per al mateix mapa (veda 164).
-  Ho arregla el PR #236 del fil de la matriu (pas 1).
+  Des del PR #236 executa la regla de l'app i el celler hi dona 1 / 5 / 10
+  (pas 1).
 - La capa «per enllaç» del cervell només existeix als repositoris dels clients.
   Aquest repositori és públic: no hi pot anar ni el mapa ni el nom d'un lead.
 - `netlify/functions/submission-created.mjs` passa a Zoho només dos formularis
@@ -128,14 +129,14 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
 
 **Passos**, cadascun amb com es comprova:
 
-1. **Una sola regla per a la xifra** (fil de la matriu, en curs al PR #236).
-   `automatitza.js` pren el veredicte de la regla de l'app tal com és, com fa
-   la portada, i llegeix els tipus triats a mà si el mapa en porta. Els
-   productes només hi posen nom. Tres caixes: ho prepara la màquina, ho decidim
-   a la visita, és de persona. Es tanca quan el celler de la portada dona 1 de
-   màquina, 5 a la visita i 10 de persona a tots dos llocs, i cap text diu que
-   el sistema ho fa sol, ni `automatitza.js` ni els motius de
-   `SOS/knowledge/cervell/automatitzable.json`.
+1. ~~**Una sola regla per a la xifra**~~ · **fet el 17/10/2026** pel fil de la
+   matriu (PR #236). `automatitza.js` pren el veredicte de la regla de l'app tal
+   com és, com la portada, i llegeix els tipus triats a mà si el mapa en porta.
+   Els productes només hi posen nom. Tres caixes: ho prepara la màquina, ho
+   decidim a la visita, és de persona. El celler dona 1 / 5 / 10 a tots dos
+   llocs (`SOS/tests/test-automatitza.mjs`). **Queda** el kit, que compta
+   només el que lliura un rol de casa: és la decisió «una sola xifra a tot
+   arreu».
 2. **Permís abans de llegir la web d'un lead.** La baixada de
    `analitza-contingut.js` demana `--autoritzat`, respecta robots.txt i espera
    un segon per pàgina, com `importa.js`. Amb prova a `test-proposta.mjs`. Si
