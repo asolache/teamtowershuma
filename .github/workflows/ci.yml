@@ -72,6 +72,12 @@ jobs:
       - name: Guarda de la plantilla de Netlify
         run: node SOS/tools/build-plantilla.js --check
 
+      # La portada dibuixa el cervell de la casa amb SOS/cervell/teamtowers.json,
+      # que surt del codex. Si el codex creix i el JSON no, la portada ensenya un
+      # cervell vell i no ho veu ningú.
+      - name: El cervell de la portada és el del codex
+        run: node SOS/tools/build-cervell-dades.js --check
+
       # El motor de l'editor del mapa (model, text, arbre, desviació i
       # diagnòstic) es prova en Node pur: és l'única guarda de l'editor que corre
       # aquí, perquè Playwright no hi corre.
