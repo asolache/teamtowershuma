@@ -74,7 +74,7 @@ const MUNTAR = [
   { p: 'habitatge.html', ic: '🏘',
     guanya: 'Quota d\'ús per sota del mercat i sense especulació: accés estable i llarg, amb l\'entrada i la sortida escrites abans de necessitar-les.' },
   { p: 'matriu.html', ic: '🌱',
-    guanya: 'Una idea sap en quina etapa és i què li falta per passar a la següent, en comptes d\'anar fent fins que s\'encalla.' },
+    guanya: 'Una idea sap en quina etapa és i què li falta per passar a la següent. I no va sola: el valor circula entre els projectes germans de la xarxa.' },
   { p: 'vna.html', ic: '🕸',
     guanya: 'El mapa de qui sosté què, amb els favors i la confiança que no compta ningú. És el pas que va abans de tots els altres.' },
   /* La pàgina explica el mètode; aquesta el fa. Van juntes aquí pel mateix
@@ -99,6 +99,7 @@ const APREN = [
   { p: 'escola.html', ic: '🏫', guanya: 'El mateix a l\'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.' },
   { p: 'ia.html', ic: '🤖', guanya: 'Automatitzar el tangible i valorar l\'intangible, amb IA que proposa i mai decideix.' },
   { p: 'vedes.html', ic: '⛔', guanya: 'Cada regla amb el motiu escrit al costat. És el que evita repetir un error que ja va sortir car.' },
+  { p: 'cervell.html', ic: '🧠', guanya: 'El teu codex en tres dimensions, per koshas, i te l\'emportes per a les teves IA i el teu LMS.' },
   { p: 'blog.html', ic: '📝', guanya: 'Cada capacitat explicada a part, per si vols entendre-la abans de fer-la servir.' }
 ];
 
@@ -107,7 +108,7 @@ const APREN = [
    l'eina i el seu lloc és aquí. */
 const PARAULES = [
   ['SOS', 'Social Operating System', 'Qui hi és, qui fa què, qui ha aportat quantes hores i què s\'ha decidit. S\'obre com una pàgina web, sense compte, i les dades es queden al teu aparell.'],
-  ['MATRIU', 'El camí d\'una idea fins que se sosté sola', 'Vuit etapes, de «se\'ns ha acudit això» fins a un projecte amb comptes, rols i relleu. Serveix per saber en quina ets.'],
+  ['MATRIU', 'El camí d\'una idea fins que se sosté sola', 'Quatre etapes i tres portes que no s\'obren amb un clic, de la idea fins a un projecte amb comptes, rols i relleu. Serveix per saber en quina ets.'],
   ['Slicing Pie', 'Repartir segons el que hi ha posat cadascú', 'En comptes de pactar percentatges el primer dia —quan ningú sap qui aguantarà—, s\'anota el que aporta cadascú i el repartiment surt d\'allà.']
 ];
 

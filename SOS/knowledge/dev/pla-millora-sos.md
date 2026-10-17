@@ -25,7 +25,7 @@ Mesurat sobre `main`, no recordat. El text de sota és el del 10/09 i no es toca
 | 6 · Playtest | Pendent | Cap resultat a `knowledge/` |
 | 7 · Accessibilitat | Pendent | 7 `outline:none`, 22 `aria-label` per a 107 modals, 0 `aria-modal` |
 | 8 · Segona llengua | **Pendent de decidir** | Cap canvi |
-| 9 · Sostres | Igual | 546 de 548 KB, 36 de 36 accions al llançador, 20 de 20 rutes de modal |
+| 9 · Sostres | Igual | 548,5 de 549 KB, 36 de 36 accions al llançador, 20 de 20 rutes de modal |
 | 10 · Missions de xarxa | **Fet** | `networkMissions()` a «Les meves tasques» |
 
 ---

@@ -124,6 +124,7 @@ aquesta llista i res més.
 - `SOS/atles` · obra · Dades geogràfiques i institucionals del territori
 - `SOS/media` · obra · Imatges i material que serveixen les pàgines
 - `SOS/fonts` · obra · Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora
+- `SOS/cervell` · obra · El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles
 - `SOS/plantilla-web` · obra · La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany
