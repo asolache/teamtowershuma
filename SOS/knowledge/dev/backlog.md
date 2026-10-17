@@ -52,6 +52,23 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### La IA a la vista a tots els projectes (demanat 17/10/2026)
+
+**Demanat per l'Àlvar:** «vull que als meus projectes la IA s'integri i es
+mostri que ho fem amb transparència». És la veda 167, pujada de la web
+d'Álvaro Solache.
+
+**Fet:** el giny `js/ia-a-la-vista.js` (un per a tots, els fills l'enllacen),
+la veda 167 heretable i la nota del compromís a `conecta/#ia`.
+
+**El que queda:**
+
+1. Cada fill amb la seva pàgina d'IA: alvarosolache.netlify.app/ia.html (fet),
+   molekulon.org/ia, Events Penedès, TeamTowers i aquesta mateixa web.
+2. Una guarda que comprovi que cada pàgina de cada fill enllaça la seva.
+3. Mesurar l'energia o trobar-ne una font: avui els tokens en són
+   l'aproximació, i es diu.
+
 ### La matriu aprèn dels fills · la pujada del cervell (demanat 17/10/2026)
 
 **Demanat per l'Àlvar:** un backlog coordinat entre Events Penedès i la web

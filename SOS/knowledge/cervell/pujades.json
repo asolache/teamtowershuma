@@ -65,5 +65,21 @@
       "titol": "Tu red en el mapa",
       "text": "Cada partner cae en su comarca y su papel en el mapa de valor, con las\nconexiones físicas entre comarcas (`tools/build-territorio.mjs`, `tools/check-valor.mjs`)."
     }
+  },
+  "Álvaro Solache": {
+    "veda 4": {
+      "estat": "proposada",
+      "titol": "El cerebro de la web lee el codex, no lo copia",
+      "text": "**Dicho por Álvaro el 17/10/2026** al pedir el cerebro como grafo (PR #5).\n`cerebro-datos.js` lo escribe `herramientas/cerebro-codex.mjs` leyendo el codex\nde cada fuente; no se edita a mano. Lo único que se escribe a mano son las capas\nfijadas (`capas.json`) y lo que enseña cada veda (`sintesis.json`). Si el codex\ncambia, se vuelve a generar. Es la veda 71 de TeamTowers aplicada a esta web:\nuna copia a mano diverge en silencio.\n\n**Guarda:** el generador para si una veda trae un saber que no está en la lista.\nQue el CI compruebe que `cerebro-datos.js` está al día queda en el backlog."
+    },
+    "veda 5": {
+      "estat": "proposada",
+      "titol": "Esta web es hija de la matriz: lo heredado no se repite",
+      "text": "**Dicho por Álvaro el 17/10/2026:** «Estoy haciendo tu cerebro #codex.\nIntégralo y evoluciónate» y «Sé DRY». El cerebro de este proyecto es el de\nTeamTowers, instalado con `cervell.js --nou` y puesto al día con\n`--actualitza`. Una regla que ya está en `vedas-heredadas.md` se cita, no se\nreescribe: por ejemplo, «una cifra sin fuente no se publica» es la veda 67\nheredada. Aquí solo entran las vedas que nacen de esta web, y las que valgan\npara todos suben a la matriz con `cervell.js --recull`.\n\n**Guarda:** `guardas/cervell.js --check` en CI. Y el cerebro de la web no\nmuestra las vedas de la plantilla (1 a 3) como propias: ya están en la matriz."
+    },
+    "veda 6": {
+      "estat": "adoptada 167",
+      "titol": "La IA se declara, y lo que gasta se elige"
+    }
   }
 }

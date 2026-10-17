@@ -5217,3 +5217,29 @@ fill a `SOS/knowledge/cervell/pujades.md` com a candidates, pel mateix sedàs qu
 l'herència. No entren soles: s'adopten o es descarten a `SOS/knowledge/cervell/pujades.json`, i la
 decisió no es torna a demanar. La guarda és a `SOS/tests/test-cervell.mjs`.
 
+
+## Veda 167 — La IA es declara, i el que gasta s'escull
+
+**Demanat per l'Àlvar el 17/10/2026:** «vull que als meus projectes la IA
+s'integri i es mostri que ho fem amb transparència», i «cobri el que cobri per
+token, el codex sempre serà el més intel·ligent possible al menor cost
+energètic». Va néixer com la veda 6 de la web d'Álvaro Solache i ha pujat amb
+`--recull`.
+
+L'error que evita: una web feta amb IA que no ho diu, o que ho diu amb un
+número escrit a mà que ningú comprova. Dues coses en surten:
+
+- **El que fa la IA es mostra llegint-lo de l'historial**, no declarant-ho
+  (veda 102). El giny `js/ia-a-la-vista.js` compta els commits que porten la
+  firma de Claude cada cop que s'obre la pàgina, i si GitHub no respon deixa
+  dir on és l'historial (veda 105). És un sol giny per a tots els projectes:
+  els fills l'enllacen, no el copien (veda 71).
+- **El preu per token el posa qui ven el model; el que es gasta ho decidim
+  nosaltres.** Cada tasca va amb el model més petit que la fa bé, i si perd
+  qualitat torna al d'abans (`conecta/` mostra el cost real amb la font i la
+  data). Aquest cost l'han de pagar els ingressos recurrents dels serveis. La
+  energia no es mesura directament: els tokens en són l'aproximació, i es diu
+  així.
+
+**Guarda:** el número surt de la API de GitHub, no d'una casella. Que cada
+projecte fill enllaci la seva pàgina d'IA queda al backlog.
