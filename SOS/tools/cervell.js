@@ -160,6 +160,65 @@ if (opcio('--actualitza')) {
   console.log(`✅ Cervell actualitzat a ${desti}. Ara:  node ${conf.eina}  per refer el mapa i la pàgina`);
   process.exit(0);
 }
+/* ── La pujada: el que un projecte fill ensenya torna a la matriu ─────────────
+   L'herència baixa; sense el camí de tornada, la matriu només aprèn del que
+   passa aquí. `--recull` llegeix les vedes pròpies d'un projecte amb cervell
+   (i, si el declara a `productes`, les funcions automatitzades que podrien ser
+   un servei del catàleg) i les deixa com a candidates a
+   `knowledge/cervell/pujades.md`. No entren soles al codex: algú les adopta
+   (passen a ser una veda d'aquí i, si valen per a tothom, heretables) o les
+   descarta, i la decisió queda a `pujades.json` perquè no es tornin a proposar.
+   Les vedes 1-3 de la plantilla ja són d'aquí i no es proposen. Tot passa pel
+   mateix sedàs que l'herència: el que no hi passa es llista sense el text. */
+if (opcio('--recull')) {
+  const font = resolve(opcio('--recull'));
+  if (!existsSync(join(font, 'cervell.json'))) { console.log(`✗ ${font} no té cervell.json: sense cervell no hi ha vedes a recollir.`); process.exit(1); }
+  const conf = JSON.parse(readFileSync(join(font, 'cervell.json'), 'utf8'));
+  const DIRC = join(__dirname, '..', 'knowledge', 'cervell');
+  const H = JSON.parse(readFileSync(HERETAT, 'utf8'));
+  const REG = join(DIRC, 'pujades.json');
+  const reg = existsSync(REG) ? JSON.parse(readFileSync(REG, 'utf8')) : {};
+  const seccions = (fitxer, re) => {
+    const t = existsSync(fitxer) ? readFileSync(fitxer, 'utf8') : '';
+    return [...t.matchAll(re)].map((m, i, tot) => ({ clau: m[1].trim(), titol: m[2].trim(), text: t.slice(m.index, i + 1 < tot.length ? tot[i + 1].index : t.length).trim() }));
+  };
+  const deCasa = new Set(seccions(join(DIRC, 'plantilla', 'saber', 'codex.md'), /^## Veda (\d+) — (.+)$/gm).map(v => v.titol));
+  const trobat = [
+    ...seccions(join(font, conf.codex || 'saber/codex.md'), /^##\s+Veda\s+(\d+)\s*[—–-]\s*(.+)$/gm)
+      .filter(v => !deCasa.has(v.titol)).map(v => ({ ...v, clau: 'veda ' + v.clau })),
+    ...(conf.productes ? seccions(join(font, conf.productes), /^##\s+(Producte|Producto|Servei|Servicio)\s*[—–-]\s*(.+)$/gm)
+      .map(v => ({ ...v, clau: 'producte ' + v.titol })) : [])];
+  /* Es desa el patró, no el que ha casat: el que casa és justament el que no
+     pot sortir a un repositori públic. */
+  const sedas = text => H.sedas.find(re => new RegExp(re).test(text));
+  const nom = conf.nom;
+  const r = reg[nom] = reg[nom] || {};
+  let noves = 0;
+  /* Mentre és proposada, el text es refresca amb el del fill d'avui; adoptada
+     o descartada, ja no es toca. El que el sedàs atura no es desa. */
+  trobat.forEach(v => {
+    if (!r[v.clau]) { r[v.clau] = { estat: 'proposada' }; noves++; }
+    if (r[v.clau].estat !== 'proposada') return;
+    const tall = sedas(v.text);
+    r[v.clau].titol = v.titol;
+    r[v.clau].text = tall ? null : v.text.split('\n').slice(1).join('\n').trim();
+    r[v.clau].sedas = tall || undefined;
+  });
+  writeFileSync(REG, JSON.stringify(reg, null, 2) + '\n');
+  let md = `# De pujada · el que els projectes fills ensenyen a la matriu\n\n> Generat per \`cervell.js --recull <projecte>\`. No l'editis: per adoptar o\n> descartar, canvia \`estat\` a \`pujades.json\` (\`adoptada <veda>\` o\n> \`descartada <motiu>\`) i torna a recollir.\n`;
+  for (const [proj, claus] of Object.entries(reg)) {
+    md += `\n## ${proj}\n`;
+    for (const [clau, e] of Object.entries(claus)) {
+      md += `\n### ${clau}${e.titol && clau.startsWith('veda') ? ' — ' + e.titol : ''} · ${e.estat}\n`;
+      if (e.estat !== 'proposada') continue;
+      md += e.sedas ? `\n> Aturada pel sedàs (patró \`${e.sedas}\`): reescriu-la al projecte sense imports ni noms i torna a recollir.\n`
+        : '\n' + e.text + '\n';
+    }
+  }
+  writeFileSync(join(DIRC, 'pujades.md'), md);
+  console.log(`✅ ${trobat.length} vedes i productes llegits de ${nom}, ${noves} de nous. Candidates a ${relative(process.cwd(), join(DIRC, 'pujades.md'))}`);
+  process.exit(0);
+}
 
 /* Sense `--arrel`, l'arrel és la primera carpeta amb `cervell.json` pujant des
    d'on viu l'eina: aquí és `SOS/tools/` i a un client `guardas/`, i la mateixa

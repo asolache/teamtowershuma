@@ -1,5 +1,7 @@
 # SOS · Codex vedes (extès)
 
+El que ensenyen juntes, per capes i per sabers, és a `SOS/knowledge/codex-sintesi.md`.
+
 Els vedes originals del kernel Antigravity segueixen intactes (Zero Redundancy · Frontend-only · Context-First AI · Knowledge Loop · W3C · JSON-LD · Glass-Box · Immutable State · Zero localStorage · Local-First). Aquest fitxer els amplia amb els compromisos que hem afegit en aquesta línia de treball.
 
 ## Nous vedes
@@ -5198,4 +5200,20 @@ font per veure la web, ja no es desa com si fos el mapa del client.
 
 I qui llegeix una font no la reescriu: «genera.mjs» tornava a desar la marca
 neta, i un logo que faltava se'n perdia per sempre. Ara la deixa com és i avisa.
+
+## Veda 166 — El que s'hereta també ha de poder tornar
+
+**Demanat per l'Àlvar el 17/10/2026:** «que la matriu evolucioni quan un dels
+seus projectes evoluciona», amb les bones pràctiques de cadascun.
+
+El cervell només tenia un sentit: l'herència baixava de TeamTowers als fills
+amb `--actualitza`, i el que un fill aprenia es quedava al seu codex. La veda
+161 deia «si una veda pròpia val per a tots, es proposa», però proposar-la era
+a mà, i el que és a mà no passa.
+
+**Una xarxa on el valor només baixa és una estrella, no una xarxa.** Ara
+`cervell.js --recull` porta les vedes pròpies i els productes declarats d'un
+fill a `SOS/knowledge/cervell/pujades.md` com a candidates, pel mateix sedàs que
+l'herència. No entren soles: s'adopten o es descarten a `SOS/knowledge/cervell/pujades.json`, i la
+decisió no es torna a demanar. La guarda és a `SOS/tests/test-cervell.mjs`.
 

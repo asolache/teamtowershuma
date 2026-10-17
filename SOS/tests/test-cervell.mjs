@@ -165,6 +165,43 @@ cas('un idioma sense textos peta', a => {
   rmSync(casa, { recursive: true, force: true });
 }
 
+/* La pujada: un fill amb una veda pròpia, una amb un import i un producte
+   declarat. La neta es proposa amb el text, la de l'import surt sense text,
+   les de la plantilla no es proposen, i una adoptada no torna a proposar-se. */
+{
+  const casa = mkdtempSync(join(tmpdir(), 'casa-'));
+  const SOS = join(casa, 'SOS');
+  mkdirSync(join(SOS, 'tools'), { recursive: true });
+  cpSync(join(DIR, '..', 'knowledge', 'cervell'), join(SOS, 'knowledge', 'cervell'), { recursive: true });
+  rmSync(join(SOS, 'knowledge', 'cervell', 'pujades.json'), { force: true });
+  cpSync(EINA, join(SOS, 'tools', 'cervell.js'));
+  const fill = join(casa, 'fill');
+  spawnSync(process.execPath, [EINA, '--nou', fill, '--nom', 'Fill'], { encoding: 'utf8' });
+  const conf = JSON.parse(readFileSync(join(fill, 'cervell.json'), 'utf8'));
+  writeFileSync(join(fill, 'cervell.json'), JSON.stringify({ ...conf, productes: 'saber/productos.md' }));
+  appendFileSync(join(fill, 'saber', 'codex.md'), '\n## Veda 4 — El proveedor mantiene su ficha\n\nCada partner corrige sus datos.\n\n## Veda 5 — La tarifa\n\nCuesta 120 € la hora.\n');
+  writeFileSync(join(fill, 'saber', 'productos.md'), '# Productos\n\n## Producto — Tablero de mando\n\nZoho y el correo en una pantalla.\n');
+  const recull = () => spawnSync(process.execPath, [join(SOS, 'tools', 'cervell.js'), '--recull', fill], { encoding: 'utf8' });
+  const r1 = recull();
+  const md = () => readFileSync(join(SOS, 'knowledge', 'cervell', 'pujades.md'), 'utf8');
+  const m1 = md();
+  const REG = join(SOS, 'knowledge', 'cervell', 'pujades.json');
+  const reg = JSON.parse(readFileSync(REG, 'utf8'));
+  reg.Fill['veda 4'].estat = 'adoptada 999';
+  writeFileSync(REG, JSON.stringify(reg));
+  const r2 = recull();
+  const m2 = md();
+  const bo = r1.status === 0 && r2.status === 0
+    && m1.includes('Cada partner corrige sus datos.') && m1.includes('Aturada pel sedàs') && !m1.includes('120 €')
+    && m1.includes('producte Tablero de mando') && !m1.includes('Siempre hay un backlog')
+    && m2.includes('veda 4 — El proveedor mantiene su ficha · adoptada 999') && !m2.includes('Cada partner corrige sus datos.')
+    && spawnSync(process.execPath, [join(SOS, 'tools', 'cervell.js'), '--recull', casa], { encoding: 'utf8' }).status === 1;
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} la pujada proposa les vedes i els productes nous d'un fill, passa el sedàs i no repeteix les adoptades`);
+  if (!bo) console.log(r1.stdout + r2.stdout + m2);
+  rmSync(casa, { recursive: true, force: true });
+}
+
 console.log(fails ? `\n❌ ${fails} cas${fails === 1 ? '' : 'os'} on la guarda no ha fet el que promet.`
   : '\n✅ La guarda peta quan toca, i només llavors.');
 process.exit(fails ? 1 : 0);
