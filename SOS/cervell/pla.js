@@ -10,6 +10,7 @@
  *
  *   CervellPla.munta(caixa, { nodos, aristas, capas }, { vista: 'castellera' | 'capes', mou: true, ara: <element> })
  *   CervellPla.dades(json)   el JSON compacte de build-cervell-dades.js → { nodos, aristas, capas }
+ *   CervellPla.franges / geometria / corba   les peces, per a qui hi posa la seva interacció
  */
 (function (raiz) {
   var NS = 'http://www.w3.org/2000/svg';
@@ -34,7 +35,25 @@
         return { n: p.n, s: p.capas.map(function (k) { return capaDe[k].s; }).join(' · '), capas: p.capas, pis: true };
       });
     }
-    return D.capas.slice().reverse().map(function (c) { return { n: c.s, s: '', capas: [c.id] }; });
+    return D.capas.slice().reverse().map(function (c) { return { n: c.n, s: c.s, capas: [c.id] }; });
+  }
+
+  /* On va cada veda: x per l'ordre en què es va escriure, y per la franja (i,
+     dins d'un pis, per la kosha), amb un petit vaivé perquè no es tapin. La
+     fan servir aquesta vista i el grafe interactiu de la pàgina del cervell. */
+  function geometria(D, bs, g) {
+    var pos = {};
+    D.nodos.forEach(function (n, i) {
+      var li = bs.findIndex(function (b) { return b.capas.indexOf(n.capa) >= 0; }), b = bs[li];
+      var sub = g.alt / b.capas.length, si = b.capas.indexOf(n.capa), jit = ((n.n * 37) % 5 - 2) * (sub / 7);
+      pos[n.id] = { x: g.x0 + (g.x1 - g.x0) * i / Math.max(1, D.nodos.length - 1), y: g.dalt + g.alt * li + sub * si + sub / 2 + jit, pis: li };
+    });
+    return pos;
+  }
+  /* Una cita: un arc que s'enfila més com més lluny són les dues vedes. */
+  function corba(p, q) {
+    var mx = (p.x + q.x) / 2, my = Math.min(p.y, q.y) - Math.abs(p.x - q.x) / 6;
+    return 'M' + p.x + ',' + p.y + ' Q' + mx + ',' + my + ' ' + q.x + ',' + q.y;
   }
 
   function munta(caixa, D, op) {
@@ -60,15 +79,8 @@
       etiq.push(t);
       if (b.s && !estret) { var s = el('text', { x: 12, y: dalt + alt * i + alt / 2 + 14, 'class': 'cp-s' }, gB); s.textContent = b.s.toUpperCase(); }
     });
-    D.nodos.forEach(function (n, i) {
-      var li = bs.findIndex(function (b) { return b.capas.indexOf(n.capa) >= 0; }), b = bs[li];
-      var sub = alt / b.capas.length, si = b.capas.indexOf(n.capa), jit = ((n.n * 37) % 5 - 2) * (sub / 7);
-      pos[n.id] = { x: x0 + (x1 - x0) * i / Math.max(1, D.nodos.length - 1), y: dalt + alt * li + sub * si + sub / 2 + jit, pis: li };
-    });
-    var eEls = D.aristas.map(function (a) {
-      var p = pos[a[0]], q = pos[a[1]], mx = (p.x + q.x) / 2, my = Math.min(p.y, q.y) - Math.abs(p.x - q.x) / 6;
-      return { a: a, el: el('path', { d: 'M' + p.x + ',' + p.y + ' Q' + mx + ',' + my + ' ' + q.x + ',' + q.y, 'class': 'cp-e' }, gE) };
-    });
+    pos = geometria(D, bs, { dalt: dalt, alt: alt, x0: x0, x1: x1 });
+    var eEls = D.aristas.map(function (a) { return { a: a, el: el('path', { d: corba(pos[a[0]], pos[a[1]]), 'class': 'cp-e' }, gE) }; });
     var nEls = D.nodos.map(function (n) {
       var c = el('circle', { cx: pos[n.id].x, cy: pos[n.id].y, r: 3.5 + Math.min(grau[n.id], 6), fill: col(n.capa), 'class': 'cp-n' }, gN);
       el('title', {}, c).textContent = 'Veda ' + n.n + ' · ' + n.t;
@@ -108,5 +120,5 @@
     return { nodos: nodos, aristas: J.cites.map(function (c) { return ['v' + c[0], 'v' + c[1]]; }), capas: J.capes };
   }
 
-  raiz.CervellPla = { munta: munta, dades: dades };
+  raiz.CervellPla = { munta: munta, dades: dades, franges: franges, geometria: geometria, corba: corba };
 })(window);

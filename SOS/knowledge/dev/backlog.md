@@ -226,7 +226,7 @@ xarxa» a l'oferta, sense duplicar res.
 **Fet:** el dibuix pla de `cerebro.html` (repositori `alvarosolache`) passa a
 `SOS/cervell/pla.js`; la portada el fa servir amb `SOS/cervell/teamtowers.json`,
 que `build-cervell-dades.js` treu del codex (amb `--check` al CI). El producte
-és una targeta a sota dels tres serveis, sense preu.
+és una targeta a sota dels tres serveis, sense preu: «el teu cervell», amb la xarxa com a pas següent (el motor de xarxa encara no en sap muntar una de nova). Events Penedès no s'hi anomena fins que l'Àlvar ho validi.
 
 **Queda:** que `cerebro.html` d'Álvaro carregui `pla.js` de la matriu en lloc
 de la seva còpia del dibuix, com ja fa amb `forces.js` i `3d.js`.
