@@ -36,7 +36,8 @@
       90,
       98,
       100,
-      135
+      135,
+      171
     ],
     "Persones i dades": [
       39,
@@ -96,5 +97,164 @@
     "herramientas/tools/proposta.js": "SOS/tools/proposta.js",
     "herramientas/tools/automatitza.js": "SOS/tools/automatitza.js",
     "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json"
+  },
+  "serveis": {
+    "web": "https://teamtowershuma.com/",
+    "modes": {
+      "gestionat": {
+        "ca": "Gestionat",
+        "es": "Gestionado",
+        "diu_ca": "Per a qui no és tècnic: TeamTowers opera el backend (Zoho, GitHub, Netlify) i les claus viuen a les funcions del nostre servidor. La seva web enllaça i fa servir el servei.",
+        "diu_es": "Para quien no es técnico: TeamTowers opera el backend (Zoho, GitHub, Netlify) y las claves viven en las funciones de nuestro servidor. Su web enlaza y usa el servicio."
+      },
+      "propi": {
+        "ca": "Propi",
+        "es": "Propio",
+        "diu_ca": "Per a qui vol el seu repositori i el seu Netlify: el mateix servei, amb les claus als seus comptes.",
+        "diu_es": "Para quien quiere su repositorio y su Netlify: el mismo servicio, con las claves en sus cuentas."
+      }
+    },
+    "llista": [
+      {
+        "id": "mapa",
+        "path": "SOS/vna-suport.html",
+        "pagina": true,
+        "via": [],
+        "ca": {
+          "nom": "El mapa de valor",
+          "fa": "L'editor del mapa: d'ell surten la web, el cervell i el que es pot automatitzar.",
+          "gestionat": "El fem amb tu i el desem nosaltres.",
+          "propi": "L'edites tu i el desa el teu repositori."
+        },
+        "es": {
+          "nom": "El mapa de valor",
+          "fa": "El editor del mapa: de él salen la web, el cerebro y lo que se puede automatizar.",
+          "gestionat": "Lo hacemos contigo y lo guardamos nosotros.",
+          "propi": "Lo editas tú y lo guarda tu repositorio."
+        }
+      },
+      {
+        "id": "web",
+        "path": "SOS/plantilla-web/README.md",
+        "pagina": false,
+        "via": [
+          "github",
+          "netlify"
+        ],
+        "ca": {
+          "nom": "La web des del mapa",
+          "fa": "La web que surt del mapa, amb l'API, els avisos signats i el servidor MCP del cervell.",
+          "gestionat": "La publiquem al nostre Netlify, des d'un repositori que portem nosaltres.",
+          "propi": "El botó «Deploy to Netlify» la crea al teu compte."
+        },
+        "es": {
+          "nom": "La web desde el mapa",
+          "fa": "La web que sale del mapa, con la API, los avisos firmados y el servidor MCP del cerebro.",
+          "gestionat": "La publicamos en nuestro Netlify, desde un repositorio que llevamos nosotros.",
+          "propi": "El botón «Deploy to Netlify» la crea en tu cuenta."
+        }
+      },
+      {
+        "id": "cervell",
+        "path": "SOS/knowledge/cervell/README.md",
+        "pagina": false,
+        "via": [
+          "github"
+        ],
+        "ca": {
+          "nom": "El cervell",
+          "fa": "El que una IA llegeix abans d'escriure: taxonomia, mapa, codex i backlog, amb les vedes heretades.",
+          "gestionat": "Viu al repositori que portem nosaltres.",
+          "propi": "S'instal·la al teu amb cervell.js --nou."
+        },
+        "es": {
+          "nom": "El cerebro",
+          "fa": "Lo que una IA lee antes de escribir: taxonomía, mapa, codex y backlog, con las vedas heredadas.",
+          "gestionat": "Vive en el repositorio que llevamos nosotros.",
+          "propi": "Se instala en el tuyo con cervell.js --nou."
+        }
+      },
+      {
+        "id": "crm",
+        "path": "SOS/crm.html",
+        "pagina": true,
+        "via": [
+          "zoho",
+          "hubspot",
+          "odoo",
+          "holded"
+        ],
+        "ca": {
+          "nom": "El CRM",
+          "fa": "Cada formulari de la web entra al CRM amb el seu origen, i el seguiment de cada contacte.",
+          "gestionat": "Al Zoho que operem nosaltres, amb les claus al nostre servidor.",
+          "propi": "Al teu CRM, amb les claus a les funcions del teu Netlify."
+        },
+        "es": {
+          "nom": "El CRM",
+          "fa": "Cada formulario de la web entra en el CRM con su origen, y el seguimiento de cada contacto.",
+          "gestionat": "En el Zoho que operamos nosotros, con las claves en nuestro servidor.",
+          "propi": "En tu CRM, con las claves en las funciones de tu Netlify."
+        }
+      },
+      {
+        "id": "proposta",
+        "path": "SOS/tools/proposta.js",
+        "pagina": false,
+        "via": [
+          "claude"
+        ],
+        "ca": {
+          "nom": "La proposta inicial",
+          "fa": "Llegeix una web i en fa l'esbós del mapa, les preguntes i la web proposada.",
+          "gestionat": "La fem córrer nosaltres i te la portem.",
+          "propi": "Ve amb l'herència a herramientas/tools/."
+        },
+        "es": {
+          "nom": "La propuesta inicial",
+          "fa": "Lee una web y hace el borrador del mapa, las preguntas y la web propuesta.",
+          "gestionat": "La ejecutamos nosotros y te la traemos.",
+          "propi": "Viene con la herencia en herramientas/tools/."
+        }
+      },
+      {
+        "id": "automatitza",
+        "path": "SOS/tools/automatitza.js",
+        "pagina": false,
+        "via": [
+          "claude"
+        ],
+        "ca": {
+          "nom": "El que es pot automatitzar",
+          "fa": "Quin tant per cent del mapa fa la màquina, amb la mateixa regla que l'app.",
+          "gestionat": "Te'l calculem nosaltres sobre el teu mapa.",
+          "propi": "Ve amb l'herència a herramientas/tools/."
+        },
+        "es": {
+          "nom": "Lo que se puede automatizar",
+          "fa": "Qué tanto por ciento del mapa hace la máquina, con la misma regla que la app.",
+          "gestionat": "Te lo calculamos nosotros sobre tu mapa.",
+          "propi": "Viene con la herencia en herramientas/tools/."
+        }
+      },
+      {
+        "id": "conecta",
+        "path": "conecta/index.html",
+        "pagina": true,
+        "via": [],
+        "ca": {
+          "nom": "Els serveis connectables",
+          "fa": "Què es pot connectar a cada flux i quant costa l'IA de cada tasca, amb la font.",
+          "gestionat": "Triem nosaltres i t'ho expliquem.",
+          "propi": "Tries tu, sempre amb una opció lliure."
+        },
+        "es": {
+          "nom": "Los servicios conectables",
+          "fa": "Qué se puede conectar en cada flujo y cuánto cuesta la IA de cada tarea, con la fuente.",
+          "gestionat": "Elegimos nosotros y te lo explicamos.",
+          "propi": "Eliges tú, siempre con una opción libre."
+        }
+      }
+    ]
   }
 }

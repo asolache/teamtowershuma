@@ -5320,3 +5320,30 @@ fonts les hagués desat algú a mà.
 **Guarda:** `test-pagina-lead.mjs` (carpeta dins del repositori, per un
 enllaç o en una altra còpia; carpeta d'un altre negoci; lectura bona, vella o
 trencada).
+
+## Veda 171 — Al cervell col·lectiu, els serveis s'enllacen
+
+**Demanat per l'Àlvar el 17/10/2026:** que la web d'un proveïdor tingui accés a
+les eines i els serveis que fem (CRM amb IA, cervell, web, eines), «quizás
+enlazar, pero seamos DRY siempre, en todo nuestro cerebro colectivo». I el
+model: «nosotros gestionamos esto como backend, para los clientes no techies».
+
+L'error que evita: cada fill amb la seva còpia del CRM, de l'editor o de la
+llista de serveis. El primer dia diuen el mateix; el segon, la còpia ja no és el
+servei (veda 71). I qui no és tècnic no ha de tenir claus ni comptes per fer-los
+servir.
+
+- **Un sol catàleg.** Els serveis són a `serveis` de
+  `SOS/knowledge/cervell/heretat.json`, i cada fill rep la seva llista de serveis (servicios.md, al seu saber)
+  amb enllaços a la matriu, mai el servei copiat. Tria quins amb
+  `serveis.usa` al seu `cervell.json`.
+- **Dos modes, el mateix servei.** Gestionat: TeamTowers fa de backend (Zoho,
+  GitHub, Netlify) i les claus viuen al nostre servidor; la web del proveïdor
+  enllaça. Propi: el seu repositori i el seu Netlify. El que canvia és qui
+  porta les claus, no el servei.
+- **El perfil és la porta.** El proveïdor ja es crea el seu perfil; d'allà
+  s'enllacen els serveis, no s'hi tornen a escriure.
+
+**Guarda:** `cervell.js --check` peta si un servei enllaça un fitxer que no hi
+és, si connecta una peça que `conecta/` no té, o si un fill en demana un que la
+matriu no ofereix. `SOS/tests/test-cervell.mjs` ho trenca a posta.

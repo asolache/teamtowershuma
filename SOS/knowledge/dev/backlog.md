@@ -52,6 +52,32 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### Els serveis del cervell col·lectiu per a la web d'un proveïdor (demanat 17/10/2026)
+
+**Demanat per l'Àlvar** (17/10/2026): que la web d'un proveïdor (per exemple, un
+partner d'Events Penedès) tingui accés al CRM amb IA, al cervell, a la web i a
+les eines. «Ya te creas perfil», «enlazar, pero seamos DRY siempre, en todo
+nuestro cerebro colectivo», «nosotros gestionamos esto como backend, para los
+clientes no techies».
+
+**Fet** (veda 171): el catàleg únic és `serveis` a
+`SOS/knowledge/cervell/heretat.json`; cada fill rep `saber/servicios.md` amb
+enllaços i els dos modes (gestionat i propi), i tria amb `serveis.usa`.
+
+**Queda:**
+
+1. Al perfil del proveïdor (el que ja es crea ell mateix a Events Penedès),
+   un bloc «Serveis» que llegeixi aquest catàleg i enllaci, sense copiar-lo.
+   És del repositori d'Events Penedès.
+2. Mode gestionat de debò: una funció de Netlify nostra que rep els
+   formularis de la web del proveïdor (avisos signats HMAC, `API.md`) i els
+   porta al Zoho que operem, amb el proveïdor com a origen. Depèn de les
+   claus de Zoho a Netlify.
+3. L'oferta comercial del mode gestionat va al repositori privat, mai aquí.
+
+**Es tanca** quan un proveïdor real obre un servei des del seu perfil i el
+formulari de la seva web entra al nostre CRM.
+
 ### La pàgina per al lead · el x % abans de la visita (demanat 17/10/2026)
 
 **Demanat per l'Àlvar** (17/10/2026): «Revisa i actualitza el backlog perquè
