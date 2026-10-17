@@ -49,33 +49,14 @@ Un proyecto interno en un texto externo, sin validar, es una promesa que nadie
 ha hecho. Los correos pasan por `tools/check-comunicacion.mjs`, con el guardián
 en `data/comunicacion.json`; ninguna IA marca la validación por su cuenta.
 
-### producte Del formulario a la propuesta · proposada
+### producte Del formulario a la propuesta · adoptada al catàleg (17/10/2026)
 
-La petición de la web crea el lead en el CRM y monta sola un borrador de
-propuesta con enlace cifrado que caduca. Lo hacen `netlify/` y
-`tools/build-propuesta.mjs`.
+### producte Tu día en una pantalla · adoptada al catàleg (17/10/2026)
 
-### producte Tu día en una pantalla · proposada
+### producte La red que se mantiene sola · adoptada al catàleg (17/10/2026)
 
-El tablero de mando junta CRM, correo, calendario y facturas, y dice qué toca
-hoy en cada oportunidad (`tablero/`).
+### producte Tu catálogo de partners · adoptada al catàleg (17/10/2026)
 
-### producte La red que se mantiene sola · proposada
+### producte Leads ordenados por potencial · adoptada al catàleg (17/10/2026)
 
-Cada partner corrige su ficha y autoriza su página en un clic, sin que haya que
-pedírselo (`tools/ficha-proveedor.mjs`, `alta-proveedor`).
-
-### producte Tu catálogo de partners · proposada
-
-El catálogo y las tarifas largas se generan de un solo JSON y el CI falla si no
-corresponden (`tools/build-catalogo.mjs`).
-
-### producte Leads ordenados por potencial · proposada
-
-La base de agencias se enriquece y se ordena por prioridad para saber a quién
-llamar primero (`tools/enriquecer-agencias.mjs`, `tools/segmentar-cuentas.mjs`).
-
-### producte Tu red en el mapa · proposada
-
-Cada partner cae en su comarca y su papel en el mapa de valor, con las
-conexiones físicas entre comarcas (`tools/build-territorio.mjs`, `tools/check-valor.mjs`).
+### producte Tu red en el mapa · adoptada al catàleg (17/10/2026)
