@@ -144,8 +144,16 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    Crawl-delay. Ho prova `test-proposta.mjs`. Si el sí del lead val també per
    a l'enriquiment del CRM (punt 1 d'«Un CRM que s'actualitza sol»), ho decideix
    l'Àlvar.
-3. **El mapa dibuixat des de qualsevol mapa.** El dibuix de la portada,
-   exportat i provat amb l'exemple; la portada no canvia.
+3. ~~**El mapa dibuixat des de qualsevol mapa**~~ · **fet el 17/10/2026**.
+   `dibuix` d'`automatitza.js` passa el mapa pel dibuixant de la portada
+   (`svgMapa`, ara exportat) amb els rols en cercle. Cada fletxa porta
+   `data-qui` i el títol diu qui la fa, tret de la mateixa `mesura` que dona
+   la xifra. Un parell sense tornada fa una sola fletxa. La portada surt
+   igual, byte a byte. Ho prova `test-automatitza.mjs`. **Per al pas 4:** el
+   dibuix no porta colors ni lletra; la pàgina li ha de donar les variables
+   (`--blue`, `--purple`, `--indigo`, `--panel`), el farciment dels cercles,
+   el text `.mv-ca` visible i el pols (`.mv-p`) amagat o només a les fletxes
+   de la màquina. Amb més de deu rols, els cercles es toquen.
 4. **`proposta.js --lead`.** Escriu «lead.html»: un sol fitxer sense JavaScript
    ni peticions externes, `noindex`, sense cites de la web (els filtres no
    atrapen noms de persones), sense preus, correus ni telèfons, i amb la xifra

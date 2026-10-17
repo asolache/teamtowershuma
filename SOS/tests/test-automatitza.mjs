@@ -44,5 +44,22 @@ console.log('\nEls productes només posen nom');
   ok(!/sistema solo/.test(md) && !/\d\s?€/.test(md), 'sense «lo puede hacer el sistema solo» i sense preus');
 }
 
+console.log('\nEl mapa de qualsevol lead, amb el dibuixant de la landing');
+{
+  const ex = JSON.parse(execFileSync('node', [new URL('../tools/revisa-mapa.js', import.meta.url).pathname, '--exemple'], { encoding: 'utf8' }));
+  const e = X.mesura(ex), svg = X.dibuix(ex);
+  const fletxes = svg.match(/<path class="mv-f"[^>]*>.*?<\/path>/g) || [];
+  ok((svg.match(/<g class="mv-n"/g) || []).length === 7 && fletxes.length === e.total, `l'exemple del kit: 7 rols i ${fletxes.length} fletxes, una per lliurament`);
+  const maq = fletxes.filter(f => /data-qui="maquina"/.test(f));
+  ok(maq.length === e.maquina && maq.every(f => /el prepara la màquina<\/title>/.test(f)), `la fletxa de la màquina va marcada (${maq.length}) i el títol ho diu, no només el color`);
+  ok(['persona', 'visita'].every(q => fletxes.filter(f => f.includes(`data-qui="${q}"`)).length === e[q]), 'les de persona i les de la visita, també, amb els números del x %');
+  ok(!/undefined|null|NaN/.test(svg), 'cap «undefined» ni «null» al dibuix');
+  ok(/la prepara la máquina<\/title>/.test(X.dibuix(ex, { llengua: 'es' })), 'en castellà, el títol també');
+  const u = X.dibuix({ abast: 'x', rols: ['Casa <b>', 'Client'], processos: [], seq: [], parells: ['Casa <b> | Client | tangible | comanda de material per ruta'] });
+  ok((u.match(/class="mv-f"/g) || []).length === 1 && !/<b>/.test(u) && /Casa &lt;b&gt;/.test(u), 'un parell sense tornada fa una fletxa, i el nom del rol s\'escapa');
+  const { svgMapa } = req('../tools/build-mapavalor.js');
+  ok(!/data-qui/.test(svgMapa(CELLER, 'c')), 'el celler de la landing no en porta cap: la landing no canvia');
+}
+
 console.log(`\n${fail ? '❌' : '✅'} ${pass + fail} assercions, ${fail} vermelles`);
 process.exit(fail ? 1 : 0);

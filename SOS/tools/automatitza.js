@@ -19,7 +19,10 @@
  * ({ "etiqueta": "comanda" }), com al Kanban. Amb l'esbós, la xifra és una
  * estimació (veda 156).
  *
- *   node SOS/tools/automatitza.js mapa.json [--esbos] [--json]
+ * El mapa es dibuixa amb el dibuixant de la landing (`dibuix`): cada fletxa
+ * porta qui fa aquell lliurament, i la pàgina del lead marca les de la màquina.
+ *
+ *   node SOS/tools/automatitza.js mapa.json [--esbos] [--json] [--svg]
  */
 'use strict';
 const { readFileSync, existsSync } = require('node:fs');
@@ -91,12 +94,14 @@ const TXT = {
     res: 'De las {t} entregas de tu red, la máquina puede preparar **{m}** ({p} %). **{h}** las hace una persona, y **{v}** las decidimos en la visita, porque todavía no sabemos qué entregable piden.',
     rol: 'Por rol', prod: 'Con qué', lli: 'Entrega a entrega', cap: 'Todavía ninguno.',
     q: { maquina: 'la prepara la máquina', persona: 'la hace una persona', visita: 'se decide en la visita' },
-    m: { intangible: 'es un intangible', tipus: 'su tipo no sale de una máquina', visita: 'no sabemos qué entregable pide' } },
+    m: { intangible: 'es un intangible', tipus: 'su tipo no sale de una máquina', visita: 'no sabemos qué entregable pide' },
+    dib: 'El mapa de valor de tu red', dibD: '{r} roles y {t} entregas. Las que puede preparar la máquina ({m}) van marcadas.' },
   ca: { tit: 'El que pot preparar la màquina', est: "Estimació: surt de l'esbós del mapa, no d'un mapa revisat.",
     res: 'Dels {t} lliuraments de la teva xarxa, la màquina en pot preparar **{m}** ({p} %). **{h}** els fa una persona, i **{v}** els decidim a la visita, perquè encara no sabem quin entregable demanen.',
     rol: 'Per rol', prod: 'Amb què', lli: 'Lliurament a lliurament', cap: 'Encara cap.',
     q: { maquina: 'el prepara la màquina', persona: 'el fa una persona', visita: 'es decideix a la visita' },
-    m: { intangible: 'és un intangible', tipus: 'el seu tipus no surt d\'una màquina', visita: 'no sabem quin entregable demana' } }
+    m: { intangible: 'és un intangible', tipus: 'el seu tipus no surt d\'una màquina', visita: 'no sabem quin entregable demana' },
+    dib: 'El mapa de valor de la teva xarxa', dibD: '{r} rols i {t} lliuraments. Els que pot preparar la màquina ({m}) van marcats.' }
 };
 
 function aMarkdown(r, llengua) {
@@ -110,11 +115,36 @@ function aMarkdown(r, llengua) {
     ['', '## ' + T.lli, ''], r.lliuraments.map(l => `- ${l.de} → ${l.a}: «${l.que}» · **${T.q[l.qui]}** · ${per(l)}`)).join('\n') + '\n';
 }
 
-module.exports = { mesura, aMarkdown, productes };
+/* El mapa en el format del dibuixant de la landing (`svgMapa`): un node per
+   rol, repartits en cercle, i a cada parell qui fa cada lliurament (posicions
+   10 i 11), tret de la mateixa `mesura` que dona el x %. Dibuixar-lo a part
+   faria dues veritats sobre el mateix mapa. */
+function xarxa(entrada, opts) {
+  const o = opts || {}, T = TXT[o.llengua] || TXT.ca, m = model(entrada);
+  const r = o.mesura || mesura(entrada, o);
+  const rols = [...new Set((m.roles || []).concat(...(m.pairs || []).map(p => [p[0], p[1]])))];
+  const id = nom => 'r' + rols.indexOf(nom);
+  const qui = (de, a, que) => que ? ((r.lliuraments.find(l => l.de === de && l.a === a && l.que === que) || {}).qui || null) : null;
+  return {
+    nodes: rols.map(nom => ({ id: id(nom), nom })),
+    parells: (m.pairs || []).map(p => [id(p[0]), id(p[1]), p[2], p[3], p[4], p[5], null, null, null, null, qui(p[0], p[1], p[3]), qui(p[1], p[0], p[5])]),
+    titolSvg: m.abast ? T.dib + ': ' + m.abast : T.dib,
+    descSvg: T.dibD.replace('{r}', rols.length).replace('{t}', r.total).replace('{m}', r.maquina),
+    quiTxt: T.q
+  };
+}
+function dibuix(entrada, opts) {
+  const o = opts || {};
+  return require('./build-mapavalor.js').svgMapa(xarxa(entrada, o), o.id || 'mvLead');
+}
+
+module.exports = { mesura, aMarkdown, productes, xarxa, dibuix };
 
 if (require.main === module) {
   const a = process.argv.slice(2);
-  if (!a[0]) { console.error('Ús: node SOS/tools/automatitza.js mapa.json [--esbos] [--json]'); process.exit(2); }
-  const r = mesura(JSON.parse(readFileSync(a[0], 'utf8')), { esbos: a.includes('--esbos') });
+  if (!a[0]) { console.error('Ús: node SOS/tools/automatitza.js mapa.json [--esbos] [--json] [--svg]'); process.exit(2); }
+  const e = JSON.parse(readFileSync(a[0], 'utf8'));
+  if (a.includes('--svg')) { console.log(dibuix(e)); process.exit(0); }
+  const r = mesura(e, { esbos: a.includes('--esbos') });
   console.log(a.includes('--json') ? JSON.stringify(r, null, 2) : aMarkdown(r, 'ca'));
 }
