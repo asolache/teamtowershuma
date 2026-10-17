@@ -125,14 +125,14 @@ Dinamitzadors, consultors ESS, tècnics en atur o transició.
 
 | # | Servei | Format | Per a qui | Hipòtesi de preu |
 |---|---|---|---|---|
-| S1 | **Diagnòstic territorial** | 2 sessions + informe VNA + mapa | P1 · P2 · P7 | 1.500–3.000 € |
-| S2 | **Formació oberta per mòduls** | 4–8 h per mòdul, grup | tots | 40–90 €/persona/mòdul |
-| S3 | **Programa Gestor/a SOS** | ~45 h · 3–4 mesos · territori real | P1 · P2 · P8 | 1.200–2.000 €/persona |
-| S3b | **Programa d'equip gestor v1** | 12 setmanes · 5 rols · ~34 h de mentoria | P3 finançat per P1 | 4.500–7.000 €/equip |
-| S4 | **Acompanyament de projecte** | 6–12 mesos, sessions quinzenals | P4 · P6 | 400–900 €/mes |
-| S5 | **Formació de formadors (N3)** | 20 h + tutela de 2 casos | P5 · P8 | 2.000–3.500 €/persona |
-| S6 | **Implantació i suport tècnic** | Instal·lació, sync, ancoratge, dades | P1 · P2 · P5 | 800–2.500 € |
-| S7 | **Mesura d'impacte i justificació** | Informe periòdic + Anchor Pack | P7 · P1 | 600–1.500 €/informe |
+| S1 | **Diagnòstic territorial** | 2 sessions + informe VNA + mapa | P1 · P2 · P7 | a confirmar |
+| S2 | **Formació oberta per mòduls** | 4–8 h per mòdul, grup | tots | a confirmar |
+| S3 | **Programa Gestor/a SOS** | ~45 h · 3–4 mesos · territori real | P1 · P2 · P8 | a confirmar |
+| S3b | **Programa d'equip gestor v1** | 12 setmanes · 5 rols · ~34 h de mentoria | P3 finançat per P1 | a confirmar |
+| S4 | **Acompanyament de projecte** | 6–12 mesos, sessions quinzenals | P4 · P6 | a confirmar |
+| S5 | **Formació de formadors (N3)** | 20 h + tutela de 2 casos | P5 · P8 | a confirmar |
+| S6 | **Implantació i suport tècnic** | Instal·lació, sync, ancoratge, dades | P1 · P2 · P5 | a confirmar |
+| S7 | **Mesura d'impacte i justificació** | Informe periòdic + Anchor Pack | P7 · P1 | a confirmar |
 
 **Combinació típica per a un ajuntament**: S1 → S3 (1–2 tècnics) → S4 (pilot) → S7 (justificació anual). Entrada baixa, relació llarga.
 
@@ -276,8 +276,7 @@ resta del programa es pugui discutir amb dades.
 
 La mentoria que ja teníem es fa **dins de la comunitat, entre iguals i sense
 factura**. Aquesta és la mateixa pràctica venuda a una empresa o a una
-institució, i és el paquet `mentoria-directiva` del catàleg (3.500–9.000 €, a
-validar).
+institució, i és el paquet `mentoria-directiva` del catàleg (preu a validar).
 
 **Sis mesos · 3 a 6 persones amb equip a càrrec · 1 h quinzenal per persona ·
 un encàrrec real de la casa.** Cadascú fa el seu itinerari directiu; les
