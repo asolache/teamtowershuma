@@ -63,7 +63,7 @@ writeFileSync(join(dir, 'mapa.json'), ex);
     && h.includes('https://teamtowershuma.com/SOS/ia.html') && h.includes('avis-legal.html#navegador'), '«com s\'ha fet»: el que ha fet la IA, que la pàgina no crida cap model ni compta res, i els enllaços');
   ok(/<details>\n<summary>Continua amb el teu Claude<\/summary>/.test(h) && h.includes('&quot;abast&quot;'), 'el bloc per continuar amb el seu Claude, amb el mapa');
   ok(L.comprova(h, { revisat: true, fonts: [{ nom: 'index.html', cos: WEB }] }).length === 0, 'la pàgina que surt passa les seves pròpies comprovacions');
-  ok(/Vam partir de 1 font:/.test(h) && !/robots\.txt/.test(h), 'sense constància de la lectura, diu de quantes fonts surt i no promet robots.txt');
+  ok(/Vam partir d'1 font:/.test(h) && !/robots\.txt/.test(h), 'sense constància de la lectura, diu de quantes fonts surt (apostrofat) i no promet robots.txt');
   writeFileSync(join(dir, 'fuentes', '.lectura.json'), JSON.stringify({ data: '2026-10-01', domini: 'celler.example', pagines: 3, fora: 0 }));
   corre('--lead', '--revisat');
   const h2 = f('lead.html');

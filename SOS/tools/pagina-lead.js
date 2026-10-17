@@ -248,6 +248,8 @@ function paginaLead(o) {
   const nFonts = (o.fonts || []).filter(f => /\.(html?|md|markdown|txt)$/i.test(f.nom)).length;
   const pl = (n, f) => n + ' ' + f[n === 1 ? 0 : 1];
   const pags = lec ? pl(Number(lec.pagines), T.pag) : pl(nFonts, T.font);
+  /* En català, «de 1» i «de 11» s'apostrofen: «d'1 font», «d'11 pàgines». */
+  const apo = s => llengua === 'ca' ? s.replace(/\bde (1|11) /g, 'd\'$1 ') : s;
   const dm = d => d.split('-').map(Number).reverse().join('/');
   const data = dm(/^\d{4}-\d{2}-\d{2}$/.test(o.data || '') ? o.data : new Date().toISOString().slice(0, 10));
   const ref = referencia(o.dir, o.nom);
@@ -259,14 +261,14 @@ function paginaLead(o) {
   const botons = o.revisat ? '<p class="botons"><a class="boto" href="' + e(VISITA + '?r=' + ref + '&l=' + llengua + '&m=si') + '">' + e(T.boto) + '</a>'
     + '<a class="boto no" href="' + e(VISITA + '?r=' + ref + '&l=' + llengua + '&m=no') + '">' + e(T.no) + '</a></p>' : '';
   const svg = X.dibuix(o.mapa, { llengua, mesura: aut, id: 'mvLead' });
-  const com = [lec ? T.c1.replace('{n}', pags).replace('{data}', dm(lec.data)) : T.c1F.replace('{n}', pags), (o.propi ? T.c2propi : T.c2esb) + (o.revisat ? ' ' + T.c2rev : ''),
+  const com = [apo(lec ? T.c1.replace('{n}', pags).replace('{data}', dm(lec.data)) : T.c1F.replace('{n}', pags)), (o.propi ? T.c2propi : T.c2esb) + (o.revisat ? ' ' + T.c2rev : ''),
     T.c3.replace('{r}', o.diag.provisional ? T.c3no : T.c3ok), T.c4, T.c5];
   const marca = o.marca || {};
   const html = '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<meta name="robots" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n'
     + '<title>' + e(T.titol.replace('{nom}', o.nom)) + '</title>\n<style>' + css(marca) + '</style>\n</head>\n<body>\n'
     + (o.revisat ? '' : '<p class="intern" role="note">' + e(T.intern) + '<span>' + e(T.internD) + '</span></p>\n')
-    + '<header>\n<p class="marca">' + e(o.nom) + '</p>\n<p class="sub">' + e(T.titol.replace('{nom}', o.nom)) + ' · ' + e((lec ? T.sub : T.subF).replace('{n}', pags)) + (o.revisat ? ' · ' + e(T.subRev) : '') + '</p>\n'
+    + '<header>\n<p class="marca">' + e(o.nom) + '</p>\n<p class="sub">' + e(T.titol.replace('{nom}', o.nom)) + ' · ' + e(apo((lec ? T.sub : T.subF).replace('{n}', pags))) + (o.revisat ? ' · ' + e(T.subRev) : '') + '</p>\n'
     + '<p class="segell">' + e(T.segell) + '</p>\n'
     + '<h1>' + e(T.xifra.replace('{t}', aut.total).replace('{m}', aut.maquina).replace('{v}', aut.visita)) + '</h1>\n'
     + '<p>' + e(T.xifraP.replace('{h}', aut.persona)) + '</p>\n' + botons + '\n</header>\n<main>\n'
