@@ -200,12 +200,12 @@ function blocMon() {
    contracten al voltant de l'eina. */
 /* Les tres opcions d'entrada (hipòtesi de l'Alvaro, 17/10/2026): com Claude o
    Amazon Prime, s'entra gratis i es passa a una quota que dona més coses cada
-   mes. Aquí només es diu què inclou cadascuna; el preu és «a confirmar» amb els
+   mes. Crear, sostenir, transformar (Brahma, Vishnu, Shiva). Aquí només es diu què inclou cadascuna; el preu és «a confirmar» amb els
    pilots, com tot el catàleg (guarda de més avall). */
 const OPCIONS = [
-  ['Gratis', 'La teva web de xarxa', ['L\'esborrany del mapa de valor a partir de la teva web', 'Les preguntes que la teva web no contesta', 'Una web d\'una pàgina que surt del mapa, teva des del primer dia']],
-  ['Viu', 'El sistema al dia, cada mes', ['Tot el de Gratis', 'Guardes: la web vigilada, avisos signats i còpia', 'El cervell al dia: registre per rol i mapa real recalculat', 'Un informe mensual del mapa i suport amb un topall d\'hores', 'La IA en comptes a nom teu, amb límit de despesa']],
-  ['Xarxa', 'Créixer amb la MATRIU', ['Tot el de Viu', 'Una sessió de mentoria al mes sobre el mapa real i l\'ideal', 'Una tasca rutinària feta pel SOS i revisada per una persona', 'Les idees noves, incubades per etapes a la MATRIU', 'Clients que arriben per la xarxa, i en tots dos sentits']]
+  ['Gratis', 'Crear · el SOS, la matriu', ['Cervell + SOS + codex: el sistema operatiu sencer, lliure', 'Cada cervell és un node; els nodes s\'ajunten en xarxa, i les xarxes en xarxes', 'L\'esborrany del mapa de valor a partir de la teva web', 'Una web de xarxa d\'una pàgina, teva des del primer dia']],
+  ['Viu', 'Sostenir · el sistema al dia, cada mes', ['Tot el de Gratis', 'Guardes: la web vigilada, avisos signats i còpia', 'El cervell al dia: registre per rol i mapa real recalculat', 'Un informe mensual del mapa i suport amb un topall d\'hores', 'La IA en comptes a nom teu, amb límit de despesa']],
+  ['Xarxa', 'Transformar · créixer amb la MATRIU', ['Tot el de Viu', 'Una sessió de mentoria al mes sobre el mapa real i l\'ideal', 'Una tasca rutinària feta pel SOS i revisada per una persona', 'Les idees noves, incubades per etapes a la MATRIU', 'Clients que arriben per la xarxa, i en tots dos sentits']]
 ];
 
 function blocPaquets() {
