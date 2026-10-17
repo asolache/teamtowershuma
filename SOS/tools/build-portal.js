@@ -198,6 +198,16 @@ function blocMon() {
    L'oferta principal porta a la portada (`/#operatiu`), que és on es ven; aquí
    es diu què és en una línia i es posen al costat els tres serveis que es
    contracten al voltant de l'eina. */
+/* Les tres opcions d'entrada (hipòtesi de l'Alvaro, 17/10/2026): com Claude o
+   Amazon Prime, s'entra gratis i es passa a una quota que dona més coses cada
+   mes. Aquí només es diu què inclou cadascuna; el preu és «a confirmar» amb els
+   pilots, com tot el catàleg (guarda de més avall). */
+const OPCIONS = [
+  ['Gratis', 'La teva web de xarxa', ['L\'esborrany del mapa de valor a partir de la teva web', 'Les preguntes que la teva web no contesta', 'Una web d\'una pàgina que surt del mapa, teva des del primer dia']],
+  ['Viu', 'El sistema al dia, cada mes', ['Tot el de Gratis', 'Guardes: la web vigilada, avisos signats i còpia', 'El cervell al dia: registre per rol i mapa real recalculat', 'Un informe mensual del mapa i suport amb un topall d\'hores', 'La IA en comptes a nom teu, amb límit de despesa']],
+  ['Xarxa', 'Créixer amb la MATRIU', ['Tot el de Viu', 'Una sessió de mentoria al mes sobre el mapa real i l\'ideal', 'Una tasca rutinària feta pel SOS i revisada per una persona', 'Les idees noves, incubades per etapes a la MATRIU', 'Clients que arriben per la xarxa, i en tots dos sentits']]
+];
+
 function blocPaquets() {
   const f = ['<section class="ob-sec" id="obOferta">'];
   f.push('<h2>I si el voleu muntat i funcionant</h2>');
@@ -209,6 +219,9 @@ function blocPaquets() {
     'el cervell del projecte ordenat per rol, la web de xarxa, les eines de cada rol i 30 dies d\'acompanyament. ' +
     'Surts amb el negoci funcionant, no amb un informe.</span>' +
     '<span class="ob-op-cta">Què inclou →</span></a>');
+  f.push('<div class="ob-pq">' + OPCIONS.map(([n, d, l]) =>
+    `<div class="pq"><div class="pq-o"><b>${esc(n)}</b> · ${esc(d)}</div><ul class="pq-e">` +
+    l.map(x => `<li>${esc(x)}</li>`).join('') + '</ul><div class="pq-p">Preu<span>a confirmar amb els pilots</span></div></div>').join('') + '</div>');
   f.push('<div class="ob-pq">');
   SOS_PAQUETS.forEach(p => {
     f.push(`<div class="pq"><div class="pq-h"><b>${esc(p.nom)}</b><span class="pq-d">${esc(p.dura)}</span></div>` +
