@@ -33,8 +33,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 32 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 111 · 1456 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 63 · 1341 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 111 · 1455 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 63 · 1343 KB |
 
 ## saber
 
