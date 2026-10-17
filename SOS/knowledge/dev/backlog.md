@@ -68,12 +68,17 @@ pàgina és d'aquest fil, el càlcul és del fil de la matriu.
   porta, «EMPIEZA-AQUI.html», és per després de la venda: enllaça carpetes i no
   es pot enviar per enllaç.
 - L'app, la portada (guarda 9 de `SOS/tools/build-mapavalor.js`) i el kit del
-  client (VS-TASQUES) diuen qui fa cada lliurament amb una sola regla: la
-  màquina prepara l'esborrany d'un tipus conegut i una persona l'accepta; els
-  intangibles i els diners són sempre de persona.
-- `SOS/tools/automatitza.js` (#233) compta amb una altra regla: només és
-  automàtic el que fa un producte del catàleg. Sobre el celler de la portada
-  dona 0 de 16; la portada, 1 de 16. Dues xifres per al mateix mapa (veda 164).
+  client (VS-TASQUES) diuen qui fa cada lliurament amb el mateix codi: la
+  màquina prepara l'esborrany d'un tipus conegut i una persona l'accepta. Els
+  intangibles, els cobraments i els acords són sempre de persona; una comanda
+  amb el pagament dins compta com a comanda. El codi és el mateix, però el
+  recompte no: el kit només compta el que lliura un rol de casa i no llegeix
+  tipus triats a mà.
+- `SOS/tools/automatitza.js` (#233) comptava amb una altra regla, la dels
+  productes del catàleg. Sobre el celler de la portada donava 0 de 16, i la
+  portada en dona 1 amb els seus tipus triats a mà (`CELLER.tipus` de
+  `SOS/tools/build-mapavalor.js`). Dues xifres per al mateix mapa (veda 164).
+  Ho arregla el PR #236 del fil de la matriu (pas 1).
 - La capa «per enllaç» del cervell només existeix als repositoris dels clients.
   Aquest repositori és públic: no hi pot anar ni el mapa ni el nom d'un lead.
 - `netlify/functions/submission-created.mjs` passa a Zoho només dos formularis
@@ -82,7 +87,7 @@ pàgina és d'aquest fil, el càlcul és del fil de la matriu.
   respecta robots.txt. La baixada de `SOS/tools/analitza-contingut.js`, que és
   la que fa servir `proposta.js`, no.
 
-**La proposta** (les decisions de sota són de l'Àlvar). Una sola pàgina
+**La proposta**, per validar per l'Àlvar. Una sola pàgina
 estàtica, en la llengua del lead, pensada per al mòbil, sense JavaScript ni
 peticions a fora:
 
@@ -95,14 +100,16 @@ peticions a fora:
    màquina marcats.
 3. **El que prepara el sistema**: cada lliurament amb el tipus, el motiu i qui
    l'accepta; el producte del catàleg que ho fa, si n'hi ha.
-4. **El que continua sent teu**: els intangibles i els diners. És l'estratègic i
-   el tàctic, i és l'argument.
+4. **El que continua sent teu**: els intangibles, els cobraments i els acords.
+   És l'estratègic i el tàctic, i és l'argument.
 5. **Ho decidim a la visita**: els lliuraments sense tipus i les tres preguntes
    més greus. Un mapa millor automatitza més.
 6. **El botó**: «Reservem la visita» o «Això no és així».
-7. **Com s'ha fet** (veda 167): les fonts, la data, què ha fet la IA, que la
-   pàgina no crida cap model, i un bloc per continuar amb el seu propi Claude
-   (el mapa i un prompt, com al kit).
+7. **Com s'ha fet** (veda 167, sense el giny, perquè la pàgina no té
+   JavaScript): les fonts, la data i el que ha fet la IA, tal com ho escriu
+   `proposta.js` a partir del que ha executat, mai a mà. Que la pàgina no crida
+   cap model, l'enllaç a `ia.html` i un bloc per continuar amb el seu propi
+   Claude (el mapa i un prompt, com al kit).
 
 **La IA integrada**, sense cap clau al navegador: la IA treballa abans d'enviar
 (Claude amb la skill «propuesta-inicial» i `proposta.js`) i es veu a la pàgina
@@ -114,19 +121,26 @@ per lead, `noindex` i sense referer; s'esborra després de la visita. Aquí, al
 públic, només el generador, la regla i les proves amb mapes d'exemple.
 
 **El seguiment**: «enviat», a Zoho a mà fins a la tasca #1. «Obert», només quan
-el lead toca el botó: cap píxel, perquè l'avís legal diu que no fem seguiment.
-El botó porta a una pàgina «/visita/» amb un formulari que entra a Zoho.
+el lead envia el formulari de la pàgina «/visita/», on porta el botó: cap píxel
+ni comptador de clics. L'avís legal de teamtowershuma.com diu que no fem
+seguiment, i la pàgina del lead l'enllaça i diu el mateix. Fins al pas 9, aquest
+formulari crea un lead nou a Zoho; no marca el que ja hi és.
 
 **Passos**, cadascun amb com es comprova:
 
-1. **Una sola regla per a la xifra** (fil de la matriu). `automatitza.js` pren
-   el veredicte de la regla de l'app, com fa la portada, i els productes només
-   hi posen nom. Tres caixes: ho prepara la màquina, és de persona, ho decidim a
-   la visita. Es tanca quan el celler dona 1 / 5 / 10 a `automatitza.js` i a la
-   portada, i cap text diu que el sistema ho fa «sol».
+1. **Una sola regla per a la xifra** (fil de la matriu, en curs al PR #236).
+   `automatitza.js` pren el veredicte de la regla de l'app tal com és, com fa
+   la portada, i llegeix els tipus triats a mà si el mapa en porta. Els
+   productes només hi posen nom. Tres caixes: ho prepara la màquina, ho decidim
+   a la visita, és de persona. Es tanca quan el celler de la portada dona 1 de
+   màquina, 5 a la visita i 10 de persona a tots dos llocs, i cap text diu que
+   el sistema ho fa sol, ni `automatitza.js` ni els motius de
+   `SOS/knowledge/cervell/automatitzable.json`.
 2. **Permís abans de llegir la web d'un lead.** La baixada de
    `analitza-contingut.js` demana `--autoritzat`, respecta robots.txt i espera
-   un segon per pàgina, com `importa.js`. Amb prova a `test-proposta.mjs`.
+   un segon per pàgina, com `importa.js`. Amb prova a `test-proposta.mjs`. Si
+   el sí del lead val també per a l'enriquiment del CRM (punt 1 d'«Un CRM que
+   s'actualitza sol»), ho decideix l'Àlvar.
 3. **El mapa dibuixat des de qualsevol mapa.** El dibuix de la portada,
    exportat i provat amb l'exemple; la portada no canvia.
 4. **`proposta.js --lead`.** Escriu «lead.html»: un sol fitxer sense JavaScript
@@ -145,11 +159,12 @@ El botó porta a una pàgina «/visita/» amb un formulari que entra a Zoho.
 9. **El seguiment a Zoho**, després de la tasca #1 i amb permís per actualitzar
    leads.
 
-**Decisions de l'Àlvar**: on viu la pàgina (repositori privat amb enllaç
-aleatori); què vol dir ara «IA integrada» (preparada abans i el seu propi
-Claude; el xat, després); què compta el x % (la regla de l'app, una sola xifra
-a tot arreu); i el permís i el seguiment (un sí per escrit abans de llegir-li
-la web, i cap píxel).
+**Per decidir l'Àlvar** (proposta d'aquest fil, encara sense el seu sí): on viu
+la pàgina (repositori privat amb enllaç aleatori); què vol dir ara «IA
+integrada» (preparada abans i el seu propi Claude; el xat, després); què compta
+el x % (la regla de l'app, una sola xifra a tot arreu, també al kit); i el
+permís i el seguiment (un sí per escrit abans de llegir-li la web, i cap píxel).
+Sense el seu sí es poden fer els passos 2 i 3, que no en depenen.
 
 **Com es tanca:** el primer lead de debò rep la seva pàgina abans de la visita,
 amb el seu sí i l'enviament anotats a Zoho.
@@ -223,8 +238,9 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
      preguntes per a la visita, que s'envia per enllaç i sense dades personals
      a la web pública. Disseny i passos a «La pàgina per al lead · el x % abans
      de la visita», al capdamunt d'aquest bloc;
-   - **el seguiment:** el lead obert a Zoho amb l'enllaç enviat, i l'avís quan
-     l'obre, perquè la visita comenci on ell s'ha quedat. **Bloquejat** per la
+   - **el seguiment:** l'enllaç enviat, anotat a Zoho, i el formulari de la
+     pàgina del lead quan el toca; cap avís quan l'obre, perquè l'avís legal diu
+     que no fem seguiment. **Bloquejat** per la
      tasca #1 de l'Àlvar: posar les claus de Zoho a Netlify (guia
      `SOS/knowledge/dev/guia-zoho-nivell2.md`). El 17/10/2026 la tria «avui»,
      però no pot entrar a Netlify en aquell moment; queda en curs.
