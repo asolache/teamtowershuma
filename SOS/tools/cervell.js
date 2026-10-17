@@ -325,6 +325,17 @@ function dirs(base, prefix = '') {
   return out;
 }
 
+/* Només compta el que git veuria: el que ignora el `.gitignore` (sortides amb
+   dades d'un client, per exemple) és diferent a cada màquina, i el mapa fet a
+   casa no coincidia amb el de la CI. Sense git, compta tot. */
+const VISIBLES = (() => {
+  try {
+    const out = require('node:child_process').execFileSync('git',
+      ['ls-files', '-z', '-co', '--exclude-standard'], { cwd: ARREL, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    return new Set(out.split('\0').filter(Boolean).map(f => join(ARREL, f)));
+  } catch (e) { return null; }
+})();
+
 function compta(dir) {
   let n = 0, bytes = 0;
   const anar = d => {
@@ -336,7 +347,7 @@ function compta(dir) {
       if (join(d, nom) === MAPA || join(d, nom) === PAGINA) continue;
       const abs = join(d, nom);
       let st; try { st = statSync(abs); } catch (e) { continue; }
-      if (st.isDirectory()) anar(abs); else { n++; bytes += st.size; }
+      if (st.isDirectory()) anar(abs); else if (!VISIBLES || VISIBLES.has(abs)) { n++; bytes += st.size; }
     }
   };
   try { anar(dir); } catch (e) {}
@@ -496,7 +507,14 @@ else bad(`${fantasma.length} cares declarades sense carpeta: ${fantasma.join(', 
 
 const vell = existsSync(MAPA) ? readFileSync(MAPA, 'utf8') : '';
 if (vell === md) ok('el mapa és el que sortiria ara');
-else bad(`el mapa no correspon a l'arbre. Arregla-ho amb:  node ${C.eina}`);
+else {
+  bad(`el mapa no correspon a l'arbre. Arregla-ho amb:  node ${C.eina}`);
+  /* Les línies que canvien: sense elles, un mapa que només falla a la CI no
+     es pot entendre des de casa. */
+  const ara = new Set(md.split('\n')), abans = new Set(vell.split('\n'));
+  vell.split('\n').filter(l => !ara.has(l)).forEach(l => console.log(`      - ${l}`));
+  md.split('\n').filter(l => !abans.has(l)).forEach(l => console.log(`      + ${l}`));
+}
 if (PAGINA) {
   const velleta = existsSync(PAGINA) ? readFileSync(PAGINA, 'utf8') : '';
   if (velleta === pagina()) ok('la pàgina del cervell és la que sortiria ara');
