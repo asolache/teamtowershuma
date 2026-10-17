@@ -2356,19 +2356,17 @@ const KIT_TXT = {
         '8. **Fins que l\'accepta, l\'esborrany no existeix:** no es fa servir, no s\'envia i no es publica.'] },
     tasques: { titol: 'Tasques per a la IA · {nom}',
       generat: 'Generat del mapa de valor. No s\'edita a mà: es regenera amb la web.',
-      regla: 'La regla és una: **la màquina proposa, una persona accepta.** Un lliurament intangible (confiança, un consell, un avís, un favor) no el fa mai la IA: el fa una persona del rol. Un lliurament tangible, amb un tipus declarat que pot sortir d\'una màquina, pot tenir un esborrany fet amb IA, i només si el lliura un rol de casa. Tres frens: la IA només fa esborranys i no envia, no publica ni signa res; cap intangible es fa amb IA, mai; i cada esborrany diu que l\'ha fet una IA, quin dia i quin rol l\'ha d\'acceptar. Fins que l\'accepta una persona del rol que el produeix, l\'esborrany no existeix.',
+      regla: 'La regla és una: **la màquina proposa, una persona accepta.** Un lliurament intangible (confiança, un consell, un avís, un favor) no el fa mai la IA: el fa una persona del rol. Un lliurament tangible, amb un tipus declarat que pot sortir d\'una màquina, pot tenir un esborrany fet amb IA, el lliuri un rol de casa o un de fora: és la mateixa regla i la mateixa xifra que l\'app. Tres frens: la IA només fa esborranys i no envia, no publica ni signa res; cap intangible es fa amb IA, mai; i cada esborrany diu que l\'ha fet una IA, quin dia i quin rol l\'ha d\'acceptar. Fins que l\'accepta una persona del rol que el produeix, l\'esborrany no existeix.',
       recompte: '{m} de {t} lliuraments: la IA en pot preparar l\'esborrany',
       maquina: 'La IA en pot preparar l\'esborrany',
       persona: ['Els fa una persona', 'Són intangibles, o el seu tipus no surt d\'una màquina: la IA no hi entra.'],
       senseTipus: ['Per decidir', 'Són tangibles però encara no tenen tipus declarat: decidiu-ne el tipus a la sala.'],
-      deFora: ['Arriben de fora', 'Els prepara qui els envia. El que en feu vosaltres (respondre, servir-ho) és un altre lliurament del mapa.'],
       perConfirmar: 'Els tipus surten del nom de cada lliurament (la paraula entre cometes): confirmeu-los a la sala abans de fer-los servir.',
       cols: { q: 'Lliurament', deA: 'De → a', tipus: 'Tipus', cal: 'Què cal', surt: 'Què en surt', accepta: 'Qui l\'accepta' },
       motius: { intangible: 'És intangible: el fa una persona del rol, mai la IA.',
         'mena desconeguda': 'El mapa no diu si és tangible o intangible: decidiu-ho a la sala.',
         'sense entregable declarat': 'Encara no té tipus declarat: decidiu-ne el tipus a la sala.',
-        'el tipus no surt d\'una màquina': 'El seu tipus no surt d\'una màquina (un acord, una factura): el fa i en respon una persona.',
-        'de fora': 'Arriba d\'un rol de fora: el prepara qui l\'envia.' } }
+        'el tipus no surt d\'una màquina': 'El seu tipus no surt d\'una màquina (un acord, una factura): el fa i en respon una persona.' } }
   },
   es: {
     claude: ['# {nom} · reglas para quien trabaja en ella, persona o IA', '',
@@ -2535,19 +2533,17 @@ const KIT_TXT = {
         '8. **Hasta que lo acepta, el borrador no existe:** no se usa, no se envía y no se publica.'] },
     tasques: { titol: 'Tareas para la IA · {nom}',
       generat: 'Generado del mapa de valor. No se edita a mano: se regenera con la web.',
-      regla: 'La regla es una: **la máquina propone, una persona acepta.** Un entregable intangible (confianza, un consejo, un aviso, un favor) no lo hace nunca la IA: lo hace una persona del rol. Un entregable tangible, con un tipo declarado que puede salir de una máquina, puede tener un borrador hecho con IA, y solo si lo entrega un rol de casa. Tres frenos: la IA solo hace borradores y no envía, no publica ni firma nada; ningún intangible se hace con IA, nunca; y cada borrador dice que lo ha hecho una IA, qué día y qué rol tiene que aceptarlo. Hasta que lo acepta una persona del rol que lo produce, el borrador no existe.',
+      regla: 'La regla es una: **la máquina propone, una persona acepta.** Un entregable intangible (confianza, un consejo, un aviso, un favor) no lo hace nunca la IA: lo hace una persona del rol. Un entregable tangible, con un tipo declarado que puede salir de una máquina, puede tener un borrador hecho con IA, lo entregue un rol de casa o uno de fuera: es la misma regla y la misma cifra que la app. Tres frenos: la IA solo hace borradores y no envía, no publica ni firma nada; ningún intangible se hace con IA, nunca; y cada borrador dice que lo ha hecho una IA, qué día y qué rol tiene que aceptarlo. Hasta que lo acepta una persona del rol que lo produce, el borrador no existe.',
       recompte: '{m} de {t} entregables: la IA puede preparar el borrador',
       maquina: 'La IA puede preparar el borrador',
       persona: ['Los hace una persona', 'Son intangibles, o su tipo no sale de una máquina: la IA no entra.'],
       senseTipus: ['Por decidir', 'Son tangibles pero todavía no tienen tipo declarado: decidid su tipo en la sala.'],
-      deFora: ['Llegan de fuera', 'Los prepara quien los envía. Lo que hacéis vosotros con ellos (responder, servirlo) es otro entregable del mapa.'],
       perConfirmar: 'Los tipos salen del nombre de cada entregable (la palabra entre comillas): confirmadlos en la sala antes de usarlos.',
       cols: { q: 'Entregable', deA: 'De → a', tipus: 'Tipo', cal: 'Qué hace falta', surt: 'Qué sale', accepta: 'Quién lo acepta' },
       motius: { intangible: 'Es intangible: lo hace una persona del rol, nunca la IA.',
         'mena desconeguda': 'El mapa no dice si es tangible o intangible: decididlo en la sala.',
         'sense entregable declarat': 'Todavía no tiene tipo declarado: decidid su tipo en la sala.',
-        'el tipus no surt d\'una màquina': 'Su tipo no sale de una máquina (un acuerdo, una factura): lo hace y responde de él una persona.',
-        'de fora': 'Llega de un rol de fuera: lo prepara quien lo envía.' } }
+        'el tipus no surt d\'una màquina': 'Su tipo no sale de una máquina (un acuerdo, una factura): lo hace y responde de él una persona.' } }
   }
 };
 const SITE_TXT = {
@@ -2819,11 +2815,14 @@ function cervell(mapa, T, TQ, nom, casa) {
   });
   /* Qui fa cada lliurament, amb la regla de l'app (VS-TASQUES): la IA en
      prepara l'esborrany o el fa una persona. */
-  /* Només compta el que lliura un rol de casa, i l'accepta una persona d'aquest
-     rol. El que arriba de fora (una comanda, un pagament) el prepara qui l'envia. */
-  const deCasa = casa || [];
+  /* Compten tots els lliuraments, també els que lliura un rol de fora: és la
+     mateixa xifra que l'app, la landing i la pàgina del lead (decidit per
+     l'Àlvar el 17/10/2026; abans, aquí només comptaven els de casa). El tipus
+     posat a mà al mapa (`tipus`, { «etiqueta»: «comanda» }) mana, com al
+     Kanban. L'accepta una persona del rol que el lliura. */
+  const tipusMa = (mapa && mapa.tipus) || {};
   fl.forEach(f => {
-    f.ia = deCasa.includes(f.de) ? fluxAutomatitzable({ kind: f.mena, label: f.q }) : { pot: false, motiu: 'de fora', tipus: null };
+    f.ia = fluxAutomatitzable({ kind: f.mena, label: f.q, entregable: tipusMa[f.q] });
     f.accepta = f.de;
   });
   const iaDe = f => (f.ia.pot ? T.iaSi.replace('{tipus}', entregableMeta(f.ia.tipus).nom).replace('{rol}', f.accepta) : T.iaNo.replace('{motiu}', TQ.motius[f.ia.motiu] || f.ia.motiu));
@@ -2854,8 +2853,8 @@ function tasquesIa(fl, T, nom) {
       cal: f.ia.pot ? m.cal.slice() : [], surt: f.ia.pot ? m.surt : '' };
   });
   const persona = ['intangible', 'el tipus no surt d\'una màquina'];
-  const maq = tasques.filter(x => x.pot), per = tasques.filter(x => persona.includes(x.motiu)), fora = tasques.filter(x => x.motiu === 'de fora'),
-    sense = tasques.filter(x => !x.pot && !persona.includes(x.motiu) && x.motiu !== 'de fora');
+  const maq = tasques.filter(x => x.pot), per = tasques.filter(x => persona.includes(x.motiu)),
+    sense = tasques.filter(x => !x.pot && !persona.includes(x.motiu));
   const fila = x => '| ' + cel(x.q) + ' | ' + cel(x.de + ' → ' + x.a) + ' |';
   const md = ['# ' + T.titol.split('{nom}').join(nom), '', '> ' + T.generat, '', T.regla, '',
     '**' + T.recompte.replace('{m}', maq.length).replace('{t}', tasques.length) + '**', ''];
@@ -2864,8 +2863,7 @@ function tasquesIa(fl, T, nom) {
     '', T.perConfirmar, '');
   if (per.length) md.push('## ' + T.persona[0], '', T.persona[1], '', '| ' + T.cols.q + ' | ' + T.cols.deA + ' |', '| --- | --- |', ...per.map(fila), '');
   if (sense.length) md.push('## ' + T.senseTipus[0], '', T.senseTipus[1], '', '| ' + T.cols.q + ' | ' + T.cols.deA + ' |', '| --- | --- |', ...sense.map(fila), '');
-  if (fora.length) md.push('## ' + T.deFora[0], '', T.deFora[1], '', '| ' + T.cols.q + ' | ' + T.cols.deA + ' |', '| --- | --- |', ...fora.map(fila), '');
-  const json = { formato: 'tt-tasques-1', total: tasques.length, maquina: maq.length, persona: per.length, senseTipus: sense.length, deFora: fora.length, tasques };
+  const json = { formato: 'tt-tasques-1', total: tasques.length, maquina: maq.length, persona: per.length, senseTipus: sense.length, tasques };
   return [{ ruta: 'cerebro/tasques-ia.md', tipus: 'text/markdown', cos: md.join('\n') }, { ruta: 'cerebro/tasques-ia.json', tipus: 'application/json', cos: JSON.stringify(json, null, 2) + '\n' }];
 }
 /* L'eina que importa el que el client ja té (eines/importa.mjs). El que fa és
@@ -3992,18 +3990,40 @@ async function rastreja(inici, opts) {
     if (n++) await dormir(espera);
     try {
       const temps = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? { signal: AbortSignal.timeout(o.temps || 20000) } : {};   // un servidor encallat no ens encalla
-      const r = await o.fetch(url, Object.assign({ headers: { 'User-Agent': agent, Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5' } }, temps));
+      /* `redirect: 'manual'`: una redirecció no se segueix a cegues, la segueix
+         `segueix`, que mira abans on porta. */
+      const r = await o.fetch(url, Object.assign({ redirect: 'manual', headers: { 'User-Agent': agent, Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.5' } }, temps));
       const ct = String((r.headers && r.headers.get && r.headers.get('content-type')) || ''), ok = r.status >= 200 && r.status < 300, llegeix = ok && (!ct || /html|xml|text\//i.test(ct));
+      const loc = r.status >= 300 && r.status < 400 && r.headers && r.headers.get ? String(r.headers.get('location') || '') : '';
       if (!llegeix && r.body && r.body.cancel) r.body.cancel().catch(() => {});   // els binaris no es baixen
-      return { ok, status: r.status, ct, url: r.url || url, text: llegeix ? await r.text() : '' };
+      return { ok, status: r.status, ct, loc, url: r.url || url, text: llegeix ? await r.text() : '' };
     } catch (e) { fora(url, T.xarxa + ': ' + String((e && e.message) || e).slice(0, 120)); return null; }
   };
-  const rb = await demana(u0.origin + '/robots.txt'), robots = rb && rb.ok && !/html/i.test(rb.ct) ? rb.text : '';
+  /* Una redirecció només se segueix si es queda al lloc (amb www o sense, http
+     o https) i, quan ja hi ha robots.txt, si robots.txt deixa demanar on porta.
+     Si no, no es demana: ni l'altre lloc ni la carpeta tancada. Cinc salts com
+     a molt; cada salt és una petició, amb la seva pausa. */
+  let robots = '';
+  const segueix = async (url, mira) => {
+    let r = await demana(url);
+    for (let salts = 0; r && r.loc && salts < 5; salts++) {
+      const u = impUrl(r.loc, url);
+      if (!impWeb(u) || impHost(u) !== impHost(u0)) return { r: null, motiu: T.foraLloc };
+      u.hash = '';
+      if (mira && !robotsPermet(robots, u.pathname + u.search)) return { r: null, motiu: T.robots };
+      url = u.href;
+      r = await demana(url);
+      if (r) r.url = url;
+    }
+    return { r };
+  };
+  const rb = (await segueix(u0.origin + '/robots.txt')).r;
+  robots = rb && rb.ok && !/html/i.test(rb.ct) ? rb.text : '';
   espera = Math.max(espera, robotsEspera(robots) * 1000);
   const sm = robotsSitemaps(robots), llavor = [], vist = {}, fetes = {}, cua = [];
-  if (!sm.length) sm.push(u0.origin + '/sitemap.xml');
+  if (!sm.length && robotsPermet(robots, '/sitemap.xml')) sm.push(u0.origin + '/sitemap.xml');
   for (let i = 0, fets = 0; i < sm.length && fets < 5; i++) {   // un índex en pot portar molts: amb 5 n'hi ha prou
-    const u = impUrl(sm[i], u0.href), r = impWeb(u) && impHost(u) === impHost(u0) && !/\.gz$/i.test(u.pathname) && ++fets && await demana(u.href);
+    const u = impUrl(sm[i], u0.href), r = impWeb(u) && impHost(u) === impHost(u0) && !/\.gz$/i.test(u.pathname) && ++fets && (await segueix(u.href, true)).r;
     const x = r && r.ok ? sitemapUrls(r.text) : { urls: [], sitemaps: [] };
     x.urls.forEach(s => { if (llavor.length < max * 5) llavor.push(s); });
     x.sitemaps.forEach(s => { if (sm.indexOf(s) < 0) sm.push(s); });
@@ -4021,10 +4041,14 @@ async function rastreja(inici, opts) {
   posa([u0.href]);
   for (let intents = 0; res.pagines.length < max && intents < max * 3 + 10; intents++) {
     if (!cua.length) { if (sembrat) break; sembra(); continue; }
-    const url = cua.shift(), r = await demana(url), fi = r && (impUrl(r.url, null) || impUrl(url, null));
+    const url = cua.shift(), s = await segueix(url, true), r = s.r, fi = r && (impUrl(r.url, null) || impUrl(url, null));
+    if (s.motiu) { fora(url, s.motiu); continue; }
     if (!r) continue;
     if (!r.ok) { fora(url, 'HTTP ' + r.status); continue; }
+    /* Per si el `fetch` que es passa segueix les redireccions igualment: on ha
+       acabat també ha de ser del lloc i obert per robots.txt. */
     if (!impWeb(fi) || impHost(fi) !== impHost(u0)) { fora(url, T.foraLloc); continue; }
+    if (!robotsPermet(robots, fi.pathname + fi.search)) { fora(url, T.robots); continue; }
     if (/pdf|msword|officedocument|opendocument/i.test(r.ct)) { res.docs.push(url); continue; }
     if (!/text\/html|xhtml/i.test(r.ct) && (r.ct || !/^\s*</.test(r.text))) { fora(url, T.noHtml + ' (' + (r.ct.split(';')[0] || '?') + ')'); continue; }
     fi.hash = '';

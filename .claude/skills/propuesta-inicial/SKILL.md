@@ -25,6 +25,9 @@ eso: el mismo cerebro, las mismas vedas, las mismas herramientas.
    seis pasas y las diez reglas. Esta skill no las repite; las usa.
 3. **El formato del mapa:** `node SOS/tools/revisa-mapa.js --exemple` imprime el
    caso del celler completo. *Un ejemplo completo vale más que una instrucción.*
+4. **El sí para leer su web.** La web del negocio solo se lee con el sí por
+   escrito de quien es su titular, para ese mismo dominio, y ese sí va al CRM.
+   Sin él se trabaja solo con lo que la persona ha enviado.
 
 **Nada de preguntar quién eres antes de dar valor.** Con la web del negocio y
 una frase de lo que hace basta para empezar. El contacto se pide, si hace
@@ -45,9 +48,13 @@ qué se da, con la frase donde sale, y lo que la web no dice), propone
 mientras no haya un `mapa.json` que pase las reglas duras, y a `web/` cuando lo
 hay. `estado.md` dice lo que falta. Sale con 3 mientras solo haya esbozo.
 
-Si el entorno no deja descargar la web y hay ese sí, se lee con la herramienta
-de lectura web y se guarda en `fuentes/` como `.md`, diciendo que es un resumen y no el
-texto literal. Lo que queda es criterio, y son los pasos de abajo: **el mapa
+Si el entorno no deja descargar la web (un fallo de red o del entorno, no de
+robots.txt) y hay ese sí, se puede leer con la herramienta de lectura web, con
+las mismas reglas: primero robots.txt, solo el dominio del sí, solo lo que
+robots.txt deja y una página cada vez. Si `proposta.js` dejó una página fuera
+por robots.txt o porque «porta fora del lloc», no se lee por otro camino: se le
+pide a la persona. Lo leído se guarda en `fuentes/` como `.md`, diciendo que es
+un resumen y no el texto literal. Lo que queda es criterio, y son los pasos de abajo: **el mapa
 (pasos 2 y 3) y la marca (paso 5)**. `proposta.js` no inventa intangibles: por
 eso el esbozo sale siempre provisional.
 
@@ -55,7 +62,8 @@ eso el esbozo sale siempre provisional.
 
 ### 1 · Leer lo que hay
 
-Leer la web del negocio (y, si los hay, el catálogo o la ficha que haya enviado).
+Leer la web del negocio, solo con su sí (ver «Antes de nada»), y el catálogo o
+la ficha que haya enviado, si los hay.
 Escribir en `propuesta/fuentes.md` **qué se leyó, de dónde y en qué fecha**, y
 lo que dice de cada actor: quién compra, quién revende, quién recomienda, quién
 suministra, quién trabaja, qué lugar o comunidad lo sostiene.

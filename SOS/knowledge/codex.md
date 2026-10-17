@@ -5266,3 +5266,27 @@ desfer, i el que hi entra queda a l'historial.
 **Guarda:** `test-cervell.mjs` comprova que d'un fill privat no puja ni títol,
 ni text, ni el nom d'un producte nou. El generador del perfil para si li passen
 una font privada.
+
+## Veda 169 — El sí d'un domini no viatja amb una redirecció
+
+**Après el 17/10/2026**, revisant la baixada de la web d'un lead per a la
+pàgina que rep abans de la visita.
+
+L'error que evita: el rastrejador demanava `--autoritzat` i mirava robots.txt
+abans de cada pàgina, però curl (`-L`) i el `fetch` de Node seguien sols les
+redireccions. Un enllaç del mateix lloc que redirigia a una carpeta tancada
+(`/obre` → `/privat/x`) es baixava i es desava, i un que redirigia a un altre
+lloc (`/reserves` → la plataforma de reserves) feia una petició a qui no havia
+dit que sí. La prova no ho veia perquè el seu `fetch` de mentida no redirigia
+mai.
+
+- **Les redireccions les segueix `rastreja`, no el `fetch`** (`redirect:
+  'manual'`, curl sense `-L`): només dins del mateix lloc, amb www o sense, i
+  on robots.txt deixa. Cada salt és una petició, amb la seva pausa.
+- **On acaba la pàgina es torna a mirar** abans de desar-la, per si el `fetch`
+  que es passa les segueix igualment.
+- **Una prova de rastreig porta redireccions**: a la carpeta tancada, a un
+  altre lloc i dins del lloc.
+
+**Guarda:** `test-importa.mjs` (les tres redireccions i «Disallow: /», on
+només es demana robots.txt).

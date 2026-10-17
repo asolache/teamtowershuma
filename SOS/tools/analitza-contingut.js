@@ -251,16 +251,19 @@ function llegeixCarpeta(dir) {
    per escrit, va al CRM i no a cap repositori). El rastrejador és el de
    l'importador (bloc VS-IMPORTA, `rastreja`): robots.txt, una petició cada cop
    i un segon entre totes, o el Crawl-delay si és més. Les peticions les fa curl,
-   que fa servir el proxy de l'entorn; les proves hi passen el seu `fetch`. */
+   que fa servir el proxy de l'entorn; les proves hi passen el seu `fetch`.
+   curl no segueix les redireccions (sense `-L`): torna el 3xx amb on porta i
+   `rastreja` decideix si s'hi va. I `-g`, perquè uns claudàtors a l'adreça
+   (`?f[0]=x`) no es llegeixin com un patró de diverses adreces. */
 const MARCA_CURL = '\n__tt-curl__';
 async function curlFetch(url, o) {
   const { spawnSync } = require('node:child_process'), h = (o && o.headers) || {};
-  const r = spawnSync('curl', ['-sL', '-m', '20', '--max-filesize', '8000000', '-A', h['User-Agent'] || 'TeamTowers-propuesta/1',
-    '-H', 'Accept: ' + (h.Accept || '*/*'), '-w', MARCA_CURL + '%{http_code}\t%{content_type}\t%{url_effective}', url], { encoding: 'utf8', maxBuffer: 9e6 });
+  const r = spawnSync('curl', ['-s', '-g', '--max-redirs', '0', '-m', '20', '--max-filesize', '8000000', '-A', h['User-Agent'] || 'TeamTowers-propuesta/1',
+    '-H', 'Accept: ' + (h.Accept || '*/*'), '-w', MARCA_CURL + '%{http_code}\t%{content_type}\t%{url_effective}\t%{redirect_url}', url], { encoding: 'utf8', maxBuffer: 9e6 });
   const i = r.stdout ? r.stdout.lastIndexOf(MARCA_CURL) : -1;
   if (r.error || r.status !== 0 || i < 0) throw new Error(r.error ? r.error.message : 'curl ha acabat amb ' + r.status);
-  const cos = r.stdout.slice(0, i), [codi, ct, final] = r.stdout.slice(i + MARCA_CURL.length).split('\t');
-  return { status: Number(codi), url: final || url, headers: { get: k => (/^content-type$/i.test(k) ? ct : null) }, text: async () => cos };
+  const cos = r.stdout.slice(0, i), [codi, ct, final, cap] = r.stdout.slice(i + MARCA_CURL.length).split('\t');
+  return { status: Number(codi), url: final || url, headers: { get: k => (/^content-type$/i.test(k) ? ct : /^location$/i.test(k) ? cap || null : null) }, text: async () => cos };
 }
 const domini = x => String(x || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/[/:?#].*$/, '').replace(/^www\./, '');
 async function baixa(url, dir, opts) {
@@ -271,8 +274,16 @@ async function baixa(url, dir, opts) {
   const r = await rastreja(url, { fetch: o.fetch || curlFetch, dormir: o.dormir, autoritzat: o.autoritzat, max: o.max || 13,
     agent: 'TeamTowers-propuesta/1 (+https://teamtowershuma.com)' });
   mkdirSync(dir, { recursive: true });
+  /* El nom porta també la consulta (`?page_id=7`), perquè dues pàgines no es
+     trepitgin; si tot i així en coincideixen dues, la segona porta un número. */
+  const usats = {};
   const desats = r.pagines.map(p => {
-    const nom = (new URL(p.url).pathname.replace(/\/$/, '/index').replace(/^\//, '').replace(/[^a-z0-9/-]+/gi, '-').replace(/\//g, '_') || 'index') + '.html';
+    const u = new URL(p.url);
+    const base = ((u.pathname.replace(/\/$/, '/index').replace(/^\//, '') + (u.search ? '-' + u.search.slice(1) : ''))
+      .replace(/[^a-z0-9/-]+/gi, '-').replace(/\//g, '_').replace(/^-+|-+$/g, '') || 'index').slice(0, 100);
+    let nom = base + '.html';
+    for (let k = 2; usats[nom]; k++) nom = base + '-' + k + '.html';
+    usats[nom] = 1;
     writeFileSync(join(dir, nom), p.html);
     return nom;
   });

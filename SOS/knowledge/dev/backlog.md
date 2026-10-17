@@ -84,9 +84,11 @@ pàgina és d'aquest fil, el càlcul és del fil de la matriu.
   Aquest repositori és públic: no hi pot anar ni el mapa ni el nom d'un lead.
 - `netlify/functions/submission-created.mjs` passa a Zoho només dos formularis
   i només crea leads; encara espera les claus (tasca #1).
-- Per llegir la web d'algú, `SOS/tools/importa.js` demana `--autoritzat` i
-  respecta robots.txt. La baixada de `SOS/tools/analitza-contingut.js`, que és
-  la que fa servir `proposta.js`, no.
+- Per llegir la web d'algú, `SOS/tools/importa.js` i, des del pas 2, la
+  baixada de `SOS/tools/analitza-contingut.js` (la de `proposta.js`) passen pel
+  mateix rastrejador: `--autoritzat` del mateix domini, robots.txt, un segon
+  entre peticions o el Crawl-delay, i cap redirecció fora del lloc ni a una
+  carpeta tancada.
 
 **La proposta**, validada per l'Àlvar el 17/10/2026. Una sola pàgina
 estàtica, en la llengua del lead, pensada per al mòbil, sense JavaScript ni
@@ -134,14 +136,17 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    com és, com la portada, i llegeix els tipus triats a mà si el mapa en porta.
    Els productes només hi posen nom. Tres caixes: ho prepara la màquina, ho
    decidim a la visita, és de persona. El celler dona 1 / 5 / 10 a tots dos
-   llocs (`SOS/tests/test-automatitza.mjs`). **Queda** el kit, que compta
-   només el que lliura un rol de casa: és la decisió «una sola xifra a tot
-   arreu».
+   llocs (`SOS/tests/test-automatitza.mjs`). El kit també, des del 17/10/2026
+   (decisió de l'Àlvar, «una sola xifra a tot arreu»): ara compta tots els
+   lliuraments, també els d'un rol de fora, i `test-vna-motor.mjs` comprova
+   que dona el mateix que `automatitza.js`.
 2. ~~**Permís abans de llegir la web d'un lead**~~ · **fet el 17/10/2026**. La
    baixada de `analitza-contingut.js` fa servir el rastrejador de l'importador
    (`rastreja`, bloc VS-IMPORTA): sense `--autoritzat` del mateix domini no
    demana res, respecta robots.txt i espera un segon entre peticions, o el
-   Crawl-delay. Ho prova `test-proposta.mjs`. Si el sí del lead val també per
+   Crawl-delay. Les redireccions només se segueixen dins del lloc i on
+   robots.txt deixa, i el sitemap que robots.txt no diu només es demana si
+   està obert. Ho proven `test-proposta.mjs` i `test-importa.mjs`. Si el sí del lead val també per
    a l'enriquiment del CRM (punt 1 d'«Un CRM que s'actualitza sol»), ho decideix
    l'Àlvar.
 3. ~~**El mapa dibuixat des de qualsevol mapa**~~ · **fet el 17/10/2026**.
