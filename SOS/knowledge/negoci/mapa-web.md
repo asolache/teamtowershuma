@@ -26,7 +26,7 @@ van por separado:
    del cliente, y con una carpeta `cerebro/` en Markdown y un `CLAUDE.md`.
 
 Es la puerta de entrada barata al paquete «Web o herramienta hecha con IA»
-(4-10 semanas, 2.500-8.000 €) del catálogo.
+(4-10 semanas) del catálogo.
 
 ## Posicionamiento
 
@@ -208,31 +208,31 @@ Entre corchetes, el tiempo de Álvaro (estimación a medir).
 - **Principio.** Precio cerrado por lo que se entrega, no por horas. La IA reduce
   las horas, y ese ahorro llega al cliente como rapidez y como propiedad, no como
   rebaja.
-- **Referencias de la casa**: tarifa N3, 80 €/h (`cost-mapa-valor.md`); S1,
-  diagnóstico con mapa VNA, 1.500–3.000 €; S4, acompañamiento, 400–900 €/mes;
-  «Web o herramienta hecha con IA», 2.500–8.000 €.
+- **Referencias de la casa**: la escala por horas de `cost-mapa-valor.md`; S1,
+  diagnóstico con mapa VNA; S4, acompañamiento mensual; «Web o herramienta hecha
+  con IA». Importes a confirmar.
 - **Precio de validación.** Las diez primeras sesiones y los tres primeros
   talleres van a un precio cercano a la tarifa N3. La contrapartida es concreta:
   20 minutos de conversación y, solo si el cliente quiere, la publicación del
   caso, revisada por él. Es un límite real que se cumple. Nada de cuentas atrás.
 
-| Formato | Validación | Después | Horas de Álvaro (estimación) | €/h efectivo |
-|---|---|---|---|---|
-| Borrador del mapa | 0 € | 0 € | 30–35 min | — (coste de captación) |
-| Sesión individual | 390 € | 690 € | ~4 h 35 | ~85 → ~150 |
-| Taller de equipo (4–12 personas) | 1.200 € | 1.800 € | ~7 h 25 | ~160 → ~240 |
-| Acompañamiento de 3 meses | 1.400 € | 1.400 € | ~10 h | ~140 |
-| Guardas (mes) | — | 35 € | ~5 min | ~420 (la puesta en marcha va en el esqueleto) |
-| Cerebro al día (mes) | — | 120 € | ~35 min | ~205 |
+| Formato | Validación | Después | Horas de Álvaro (estimación) |
+|---|---|---|---|
+| Borrador del mapa | gratis | gratis | 30–35 min |
+| Sesión individual | a confirmar | a confirmar | ~4 h 35 |
+| Taller de equipo (4–12 personas) | a confirmar | a confirmar | ~7 h 25 |
+| Acompañamiento de 3 meses | a confirmar | a confirmar | ~10 h |
+| Guardas (mes) | — | a confirmar | ~5 min |
+| Cerebro al día (mes) | — | a confirmar | ~35 min |
 
 - **Lo que no incluye**: dominio y suscripción a la IA, a cargo y a nombre del
   cliente. GitHub y Netlify, en plan gratuito para empezar.
-- **Extras**: puerta adicional, 190 €; segundo idioma, 350 €. El desplazamiento
+- **Extras**: puerta adicional y segundo idioma, a confirmar. El desplazamiento
   fuera del Penedès se cobra a precio de factura, sin margen
   (`cost-mapa-valor.md` §4).
 - **Puente**: si el cliente contrata la «Web o herramienta hecha con IA» en los
   60 días siguientes, se descuenta lo pagado por la sesión o el taller.
-- **Taller**: 1.800 € quedan muy por debajo del tope de 5.000 € que
+- **Taller**: queda por debajo del tope de 5.000 € que
   `cost-mapa-valor.md` usa para que un ayuntamiento contrate sin expediente largo
   (fuente interna; el umbral legal del contrato menor de servicios es de
   15.000 €, LCSP art. 118). Con más de 12 personas hace falta
@@ -245,21 +245,19 @@ Entre corchetes, el tiempo de Álvaro (estimación a medir).
     que escala sin horas de Álvaro en la sala. La página ya promete «precio de
     partner y tu margen, por escrito antes de empezar», con sello «A validar».
   - *Grupos de negocios*: un taller común al precio del taller, más una sesión de
-    web por negocio a ~290 € (a validar). Lo puede pagar la entidad.
+    web por negocio (a validar). Lo puede pagar la entidad.
   - *Prescriptores*: la página no publica comisión. Para que la puerta tenga un
     tangible (Equilibri), propone con sello «A validar» media hora de revisión de
     la web propia por cada presentación que acabe en sesión. Si se decide otra
     contraprestación, se cambia ahí. Hay
     que revisar la fiscalidad y la neutralidad de gestorías y entidades públicas.
 - **El borrador gratis solo se paga si convierte.** Cada borrador que no
-  convierte cuesta ~30 min. Con una conversión de 1 de cada 4, la sesión de 690 €
-  queda en ~115 €/h. Con 1 de cada 6, en ~95 €/h. Si baja de 1 de cada 6, hay dos
-  palancas: una «lectura comentada» de 45 min a 150 € que se descuenta si se
+  convierte cuesta ~30 min. Si la conversión baja de 1 de cada 6, hay dos
+  palancas: una «lectura comentada» de 45 min que se descuenta si se
   reserva, o un tope más bajo.
-- **Escenario ilustrativo** (no es una previsión): 4 sesiones y 1 taller al mes,
-  a precio después de la validación, suman 4.560 € en ~26 h de sala y
-  preparación. A eso se añaden 10 «Cerebro al día» y 15 «Guardas», unos 1.725 €
-  al mes en ~7 h.
+- **Escenario ilustrativo** (no es una previsión): 4 sesiones y 1 taller al mes
+  ocupan ~26 h de sala y preparación; 10 «Cerebro al día» y 15 «Guardas», ~7 h
+  al mes. Los importes están fuera del repositorio público.
 - **Capacidad**: como máximo dos sesiones individuales al día, un taller por
   semana y cuatro borradores por semana. Si se llena, se dice la fecha de
   entrega, no una escasez.
@@ -303,12 +301,12 @@ Entre corchetes, el tiempo de Álvaro (estimación a medir).
 
 1. Nombre: «Web de red» (alternativa: «Mapa y web»). «En una hora» o «en una
    tarde».
-2. Precios: 390 → 690 €, 1.200 → 1.800 € y 1.400 €. Cuántas sesiones dura la
+2. Precios de cada formato. Cuántas sesiones dura la
    validación (propuesta: 10 sesiones y 3 talleres).
 3. Plazo del borrador (tres días laborables) y tope semanal (cuatro).
 4. Garantías: devolución si la web no se termina por causa nuestra, y mes extra
    del acompañamiento.
-5. Publicar o no la franja de mantenimiento (Guardas 35 €, Cerebro al día 120 €).
+5. Publicar o no la franja de mantenimiento (Guardas, Cerebro al día).
 6. Una línea validada para eventspenedes.com y labodegadesara.com.
 7. ~~IKEA: los años y el permiso para usarlo en una página de venta.~~ Decidido
    el 09/10/2026: solo el nombre en las listas de clientes, el caso no.

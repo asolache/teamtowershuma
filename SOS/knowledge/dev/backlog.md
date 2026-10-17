@@ -1725,7 +1725,7 @@ bandes** i ha de dir que **no és una llista de clients**.
 —que el SOS és gratuït— i no deia què se n'endú qui no ens contracta mai. Ara
 són dos: el SOS (eina + setze mòduls) i el Comando (el relat obert).
 
-**L'alt tiquet, al catàleg.** `fent-pinya-vna`, 4.500–12.000 €, `punt: 'nou'` i
+**L'alt tiquet, al catàleg.** `fent-pinya-vna`, preu a confirmar, `punt: 'nou'` i
 `font: 'estimacio'`. Els vint anys de taller **no en són la prova**, i el camp
 `punt` existeix per impedir exactament això. Hi porten dos objectius del
 diagnòstic d'organització.
@@ -2570,7 +2570,7 @@ diferent: és el mateix amb una altra entrega** —i això és el que fa que el
 regal i el preu alt no es contradiguin.
 
 *El que falta per poder-ho vendre així: el tram alt del catàleg només té
-`fent-pinya-vna` (nou, 4.500–12.000 €). Un producte d'estil family office vol
+`fent-pinya-vna` (nou). Un producte d'estil family office vol
 dir dir què s'entrega, quantes vegades s'ha fet i amb quins diners es paga —els
 set camps de sempre— i mentre no s'hagi entregat cap vegada, `punt: 'nou'`.*
 
@@ -4331,8 +4331,7 @@ de portar xifres tancades per mi.
   preu tancat que ningú ha facturat mai no és més honest que un rang: és un rang
   amb una precisió que no té. Veda 139.
 - **El taller Fent Pinya i les demostracions es pinten per trams**, tal com es
-  facturen: de 1.700 € (10-29 persones) a 8.925 € (+400), i de 3.300 a 6.500 €
-  segons l'alçada. No es negocien.
+  facturen: per nombre de persones i, les demostracions, segons l'alçada. No es negocien.
 - **Cada paquet diu què aporta**, que és la pregunta que decideix una compra i
   no hi era. Va abans de les dades i del preu.
 - **El sostre dels 5.000 € s'aplica a l'entrada de la forquilla**, no al màxim:
