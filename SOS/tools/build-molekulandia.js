@@ -88,7 +88,7 @@ const PROFESSIONS = [
 const PART = [
   'Aprenents', 'Comunitat', 'Comunitat contributora', 'Comunitat de l\'atles',
   'Comunitat de pràctica', 'Comunitat del barri', 'Comunitat destinatària',
-  'Comunitat i formació', 'Comunitat local', 'Comunitat veïnal', 'Consumidors',
+  'Comunitat i formació', 'Comunitat local', 'Equip', 'Comunitat veïnal', 'Consumidors',
   'Famílies', 'Gent gran', 'Grup de consum', 'Jovent', 'Nouvinguts', 'Participants',
   'Persones cuidades', 'Persones en cerca de feina', 'Persones oferents',
   'Persones sòcies', 'Persones usuàries', 'Sòcies consumidores', 'Sòcies demandants',
@@ -96,7 +96,7 @@ const PART = [
   'Unitats familiars', 'Usuaris/es', 'Veïnat', 'Voluntariat'
 ];
 const FORA = [
-  'Actors del territori', 'Administració', 'Administració (cessió de sòl)', 'Ajuntament',
+  'Actors del territori', 'Administració', 'Aliats', 'Administració (cessió de sòl)', 'Ajuntament',
   'Ajuntament / finançament', 'Allotjaments', 'Associació de comerciants', 'Ateneu Cooperatiu',
   'CAP / serveis socials', 'Clientes', 'Clients', 'Clients institucionals', 'Clients privats',
   'Comerç col·laborador', 'Comerços', 'Comerços de proximitat', 'Cooperativa energètica',
@@ -104,11 +104,11 @@ const FORA = [
   'Entitat amfitriona', 'Entitats', 'Entitats culturals', 'Entitats d\'acollida',
   'Entitats del territori', 'Entitats formatives', 'Escoles', 'Esplai / entitats',
   'Finançament', 'Finançament ètic', 'Grups ciclistes', 'Instal·ladora', 'Patrocini i inversió',
-  'Propietaris', 'Proveïdor/a', 'Proveïdors locals', 'Restauració', 'Servei d\'ocupació',
+  'Propietaris', 'Proveïdor/a', 'Proveïdors', 'Proveïdors locals', 'Restauració', 'Servei d\'ocupació',
   'Serveis socials/CAP', 'Transport públic', 'Xarxa d\'entitats', 'Xarxa de partners'
 ];
 const PECA = [
-  'Cooperativa', 'Espai formatiu', 'Font oberta / IA', 'Infraestructura', 'Obrador',
+  'Cooperativa', 'El negoci', 'Espai formatiu', 'Font oberta / IA', 'Infraestructura', 'Obrador',
   'Punt de repartiment', 'Punt de venda', 'Registre d\'hores'
 ];
 
@@ -146,7 +146,8 @@ const EDIFICIS = [
 /* La dinàmica genèrica no és cap edifici: és la plantilla en blanc per a un
    projecte que encara no té forma. Declarada, perquè una absència sense motiu
    escrit és un descuit. */
-const SENSE_EDIFICI = { generic: 'És la plantilla en blanc, no un tipus de projecte: no hi ha cap edifici que sigui «una xarxa qualsevol».' };
+const SENSE_EDIFICI = { generic: 'És la plantilla en blanc, no un tipus de projecte: no hi ha cap edifici que sigui «una xarxa qualsevol».',
+  negoci: 'És el negoci de qui entra, no una dinàmica del poble: cada botiga de la plaça ja ho és.' };
 
 /* Les eines que hi ha de debò darrere de cada edifici, avui. Prometre una porta
    que no s'obre és el pitjor que podria fer aquesta pàgina.
