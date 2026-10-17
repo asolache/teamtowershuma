@@ -88,7 +88,8 @@ valor dissenyat, integrant-te a teamtowershuma, donant accés a l'usuari al
 projecte i per tant integrant sense API».
 
 La skill `propuesta-inicial` (`.claude/skills/propuesta-inicial/SKILL.md`) fa
-l'«esborrany del mapa» que `/mapa-web/` ofereix: llegeix la web del negoci, en
+l'«esborrany del mapa» que `/mapa-web/` ofereix: llegeix la web del negoci (només
+amb el sí per escrit del titular, que va al CRM, i respectant robots.txt), en
 treu un mapa d'un flux amb la skill `mapa-de-valor`, el passa per
 `SOS/tools/revisa-mapa.js` fins que no queda cap regla dura oberta, escriu les
 preguntes que la web no contesta i en genera la web amb

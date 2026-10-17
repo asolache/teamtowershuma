@@ -227,7 +227,7 @@ function webFalsa(rutes) {
     const r = rutes[url.replace(/^https:\/\/ex\.cat/, '')];
     if (r === 'xarxa') throw new Error('ECONNRESET');
     const x = r || { s: 404, ct: 'text/html', b: 'no' };
-    return { status: x.s || 200, url: x.url || url, headers: { get: k => (k === 'content-type' ? x.ct || 'text/html; charset=utf-8' : null) }, text: async () => x.b || '' };
+    return { status: x.s || 200, url: x.url || url, headers: { get: k => (k === 'content-type' ? x.ct || 'text/html; charset=utf-8' : k === 'location' ? x.loc || null : null) }, text: async () => x.b || '' };
   };
   return { fetch, crides };
 }
@@ -295,6 +295,29 @@ G('rastreja');
   const d12 = [], w12 = webFalsa({ '/': { b: pag('Inici', ['/a']) }, '/a': { b: pag('A', []) } });
   await rastreja('https://ex.cat/', { autoritzat: 'ex.cat', fetch: w12.fetch, dormir: async ms => { d12.push(ms); } });
   ok(d12.length && d12.every(x => x === 1000), 'i si no n\'hi ha, un segon entre petició i petició: ' + J(d12));
+  /* Les redireccions: el fetch no les segueix (redirect: 'manual'), i rastreja
+     només segueix les que es queden al lloc i que robots.txt deixa. */
+  const w13 = webFalsa({
+    '/robots.txt': { s: 301, loc: 'https://www.ex.cat/robots.txt' },
+    'https://www.ex.cat/robots.txt': { ct: 'text/plain', b: 'User-agent: *\nDisallow: /privat\nSitemap: https://ex.cat/s.xml' },
+    '/s.xml': { ct: 'text/xml', b: '<urlset></urlset>' },
+    '/': { b: pag('Inici', ['/obre', '/surt', '/nova']) },
+    '/obre': { s: 302, loc: '/privat/x' }, '/privat/x': { b: 'PRIVAT' },
+    '/surt': { s: 302, loc: 'https://altre.cat/secret' },
+    '/nova': { s: 301, loc: 'https://www.ex.cat/nova-pagina' }, 'https://www.ex.cat/nova-pagina': { b: pag('Nova', []) }
+  });
+  const r13 = await rastreja('https://ex.cat/', { autoritzat: 'ex.cat', fetch: w13.fetch, dormir: async () => {} });
+  const u13 = w13.crides.map(c => c.url);
+  ok(u13.includes('https://www.ex.cat/robots.txt') && !u13.includes('https://ex.cat/privat/x') && !u13.some(u => /altre\.cat/.test(u)),
+    'una redirecció a la carpeta tancada o a un altre lloc no es demana; la del robots.txt al www, sí: ' + J(u13));
+  ok(r13.fora.some(f => f.font === 'https://ex.cat/obre' && f.motiu === IMP_TXT.ca.robots) && r13.fora.some(f => f.font === 'https://ex.cat/surt' && f.motiu === IMP_TXT.ca.foraLloc)
+    && J(r13.pagines.map(p => p.url)) === J(['https://ex.cat/', 'https://www.ex.cat/nova-pagina']), 'i queda anotat per què; la que es queda al lloc es llegeix');
+  const w14 = webFalsa({ '/robots.txt': { ct: 'text/plain', b: 'User-agent: *\nDisallow: /' }, '/': { b: pag('Inici', []) } });
+  await rastreja('https://ex.cat/', { autoritzat: 'ex.cat', fetch: w14.fetch, dormir: async () => {} });
+  ok(J(w14.crides.map(c => c.url)) === J(['https://ex.cat/robots.txt']), 'amb «Disallow: /», només robots.txt: ni el sitemap que no diu');
+  const w15 = webFalsa({ '/': { b: pag('Inici', ['/a']) }, '/a': { url: 'https://ex.cat/privat/a', b: pag('A', []) }, '/robots.txt': { ct: 'text/plain', b: 'User-agent: *\nDisallow: /privat' } });
+  const r15 = await rastreja('https://ex.cat/', { autoritzat: 'ex.cat', fetch: w15.fetch, dormir: async () => {} });
+  ok(r15.pagines.length === 1 && r15.fora.some(f => f.font === 'https://ex.cat/a' && f.motiu === IMP_TXT.ca.robots), 'un fetch que segueix sol i acaba a la carpeta tancada: no es desa');
   ok(robotsEspera('User-agent: *\nCrawl-delay: 120') === 30 && robotsEspera('') === 0 && robotsEspera('User-agent: x\nCrawl-delay: 5') === 0, 'Crawl-delay: com a molt 30 s, i només el de «*»');
 }
 

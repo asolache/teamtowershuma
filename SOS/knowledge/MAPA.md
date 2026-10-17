@@ -13,19 +13,20 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 303 · 18466 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 305 · 18547 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 5 · 46 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
-| `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 351 KB |
+| `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 352 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 74 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 192 KB |
 | `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created) i el pagament (checkout) | 3 · 15 KB |
+| `visita/` | On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així | 1 · 6 KB |
 
 ## prova
 
@@ -34,8 +35,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 32 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 112 · 1459 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 63 · 1345 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 113 · 1488 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 64 · 1383 KB |
 
 ## saber
 
@@ -43,9 +44,9 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 56 · 1050 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 56 · 1055 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 12 · 30 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 352 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 354 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
@@ -82,4 +83,4 @@ No són referència de com es fan les coses ara.
 
 ---
 
-*39 carpetes declarades · generat des de l'arbre, no escrit.*
+*40 carpetes declarades · generat des de l'arbre, no escrit.*

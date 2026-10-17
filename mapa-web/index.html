@@ -1709,11 +1709,13 @@
 
 <script>
 // Correo montado en tiempo de ejecución, igual que en el resto del sitio.
+// El «sí» del borrador es el permiso por escrito para leer su web (va al CRM):
+// sin él, proposta.js no la descarga (backlog, «La pàgina per al lead»).
 // Sin JavaScript los botones llevan a /qui-som, donde está el contacto.
 (function () {
     var u = 'asolache', d = 'mac' + '.' + 'com', dir = u + '@' + d;
     var cuerpos = {
-        borrador: 'Mi web:\nA qué me dedico, en una frase:\n¿Solo yo o un equipo? ¿Cuántas personas?:\nMaterial que puedo mandar (catálogo, documentos, audio):\n\n(No incluyas datos personales de clientes ni contratos.)'
+        borrador: 'Mi web:\nA qué me dedico, en una frase:\n¿Solo yo o un equipo? ¿Cuántas personas?:\nMaterial que puedo mandar (catálogo, documentos, audio):\n\nOs autorizo a leer mi web pública para preparar el borrador (escribe «sí»):\n\n(No incluyas datos personales de clientes ni contratos.)'
     };
     document.querySelectorAll('.js-mail').forEach(function (a) {
         var asunto = a.getAttribute('data-asunto') || 'Mapa y web';

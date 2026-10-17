@@ -84,11 +84,13 @@ pàgina és d'aquest fil, el càlcul és del fil de la matriu.
   Aquest repositori és públic: no hi pot anar ni el mapa ni el nom d'un lead.
 - `netlify/functions/submission-created.mjs` passa a Zoho només dos formularis
   i només crea leads; encara espera les claus (tasca #1).
-- Per llegir la web d'algú, `SOS/tools/importa.js` demana `--autoritzat` i
-  respecta robots.txt. La baixada de `SOS/tools/analitza-contingut.js`, que és
-  la que fa servir `proposta.js`, no.
+- Per llegir la web d'algú, `SOS/tools/importa.js` i, des del pas 2, la
+  baixada de `SOS/tools/analitza-contingut.js` (la de `proposta.js`) passen pel
+  mateix rastrejador: `--autoritzat` del mateix domini, robots.txt, un segon
+  entre peticions o el Crawl-delay, i cap redirecció fora del lloc ni a una
+  carpeta tancada.
 
-**La proposta**, per validar per l'Àlvar. Una sola pàgina
+**La proposta**, validada per l'Àlvar el 17/10/2026. Una sola pàgina
 estàtica, en la llengua del lead, pensada per al mòbil, sense JavaScript ni
 peticions a fora:
 
@@ -134,38 +136,66 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    com és, com la portada, i llegeix els tipus triats a mà si el mapa en porta.
    Els productes només hi posen nom. Tres caixes: ho prepara la màquina, ho
    decidim a la visita, és de persona. El celler dona 1 / 5 / 10 a tots dos
-   llocs (`SOS/tests/test-automatitza.mjs`). **Queda** el kit, que compta
-   només el que lliura un rol de casa: és la decisió «una sola xifra a tot
-   arreu».
-2. **Permís abans de llegir la web d'un lead.** La baixada de
-   `analitza-contingut.js` demana `--autoritzat`, respecta robots.txt i espera
-   un segon per pàgina, com `importa.js`. Amb prova a `test-proposta.mjs`. Si
-   el sí del lead val també per a l'enriquiment del CRM (punt 1 d'«Un CRM que
-   s'actualitza sol»), ho decideix l'Àlvar.
-3. **El mapa dibuixat des de qualsevol mapa.** El dibuix de la portada,
-   exportat i provat amb l'exemple; la portada no canvia.
-4. **`proposta.js --lead`.** Escriu «lead.html»: un sol fitxer sense JavaScript
-   ni peticions externes, `noindex`, sense cites de la web (els filtres no
-   atrapen noms de persones), sense preus, correus ni telèfons, i amb la xifra
-   del pas 1. Si alguna condició falla, no l'escriu. Provat amb l'exemple.
-5. **Revisió abans d'enviar.** Sense `--revisat`, la pàgina diu «ESBORRANY
-   INTERN» i no té botó.
-6. **La pàgina «/visita/»** i el seu formulari a la llista de
-   `submission-created.mjs`, amb prova en sec; el correu de /mapa-web/ hi
-   apunta.
+   llocs (`SOS/tests/test-automatitza.mjs`). El kit també, des del 17/10/2026
+   (decisió de l'Àlvar, «una sola xifra a tot arreu»): ara compta tots els
+   lliuraments, també els d'un rol de fora, i `test-vna-motor.mjs` comprova
+   que dona el mateix que `automatitza.js`.
+2. ~~**Permís abans de llegir la web d'un lead**~~ · **fet el 17/10/2026**. La
+   baixada de `analitza-contingut.js` fa servir el rastrejador de l'importador
+   (`rastreja`, bloc VS-IMPORTA): sense `--autoritzat` del mateix domini no
+   demana res, respecta robots.txt i espera un segon entre peticions, o el
+   Crawl-delay. Les redireccions només se segueixen dins del lloc i on
+   robots.txt deixa, i el sitemap que robots.txt no diu només es demana si
+   està obert. Ho proven `test-proposta.mjs` i `test-importa.mjs`. Si el sí del lead val també per
+   a l'enriquiment del CRM (punt 1 d'«Un CRM que s'actualitza sol»), ho decideix
+   l'Àlvar.
+3. ~~**El mapa dibuixat des de qualsevol mapa**~~ · **fet el 17/10/2026**.
+   `dibuix` d'`automatitza.js` passa el mapa pel dibuixant de la portada
+   (`svgMapa`, ara exportat) amb els rols en cercle. Cada fletxa porta
+   `data-qui` i el títol diu qui la fa, tret de la mateixa `mesura` que dona
+   la xifra. Un parell sense tornada fa una sola fletxa. La portada surt
+   igual, byte a byte. Ho prova `test-automatitza.mjs`. **Per al pas 4:** el
+   dibuix no porta colors ni lletra; la pàgina li ha de donar les variables
+   (`--blue`, `--purple`, `--indigo`, `--panel`), el farciment dels cercles,
+   el text `.mv-ca` visible i el pols (`.mv-p`) amagat o només a les fletxes
+   de la màquina. Amb més de deu rols, els cercles es toquen.
+4. ~~**`proposta.js --lead`**~~ · **fet el 17/10/2026**. `pagina-lead.js`
+   escriu «lead.html» amb les set seccions: un sol fitxer sense JavaScript ni
+   res de fora, `noindex` i sense referer, amb la xifra i el dibuix del pas 1
+   i el 3. Abans d'escriure'l comprova que no porti correus, telèfons, imports
+   ni vuit paraules seguides de la web; si alguna cosa falla, no l'escriu i
+   esborra el d'abans. L'enllaç dels botons porta una referència aleatòria
+   que es guarda a «lead.json» amb el nom del negoci i no canvia en regenerar;
+   una carpeta és d'un sol negoci, i la pàgina revisada demana `--nom`. La
+   carpeta del lead va fora d'aquest repositori: si és a dins, encara que sigui
+   per un enllaç o en una altra còpia, no s'escriu res (veda 170).
+   «Com s'ha fet» diu que es va llegir la web amb permís només si la baixada ho
+   va deixar escrit a «fuentes/.lectura.json». Ho prova
+   `test-pagina-lead.mjs`.
+5. ~~**Revisió abans d'enviar**~~ · **fet el 17/10/2026**. Sense `--revisat`,
+   la pàgina diu «ESBORRANY INTERN» i no té botó. Amb `--revisat`, només surt
+   d'un «mapa.json» que passa les regles dures (l'esbós no s'envia), i en
+   castellà només amb «preguntas-visita.md», perquè les preguntes del
+   diagnòstic surten en català.
+6. ~~**La pàgina «/visita/»**~~ · **fet el 17/10/2026**. `visita/index.html`
+   porta el formulari «visita» (la resposta, la referència de la pàgina, el nom,
+   el correu, quan i el que hi falta), i és a la llista de
+   `netlify/functions/submission-created.mjs`. Ho prova
+   `test-zoho-nivell2.mjs`, també en sec. El correu de «Pedir mi borrador» de
+   /mapa-web/ ara demana el sí per escrit per llegir la web.
 7. **El repositori privat i el seu lloc de Netlify.** L'Àlvar el crea; aquest
    fil l'omple.
-8. **La skill «propuesta-inicial»** amb el pas «Enviar abans de la visita»:
-   el sí del lead, `--lead`, `--revisat`, publicar, anotar a Zoho i esborrar.
+8. ~~**La skill «propuesta-inicial»** amb el pas «Enviar abans de la visita»~~
+   · **fet el 17/10/2026**: el sí del lead, `--lead`, `--revisat`, publicar,
+   anotar a Zoho i esborrar.
 9. **El seguiment a Zoho**, després de la tasca #1 i amb permís per actualitzar
    leads.
 
-**Per decidir l'Àlvar** (proposta d'aquest fil, encara sense el seu sí): on viu
-la pàgina (repositori privat amb enllaç aleatori); què vol dir ara «IA
+**Decidit per l'Àlvar el 17/10/2026** (les quatre propostes d'aquest fil, «Todas»):
+on viu la pàgina (repositori privat amb enllaç aleatori); què vol dir ara «IA
 integrada» (preparada abans i el seu propi Claude; el xat, després); què compta
 el x % (la regla de l'app, una sola xifra a tot arreu, també al kit); i el
 permís i el seguiment (un sí per escrit abans de llegir-li la web, i cap píxel).
-Sense el seu sí es poden fer els passos 2 i 3, que no en depenen.
 
 **Com es tanca:** el primer lead de debò rep la seva pàgina abans de la visita,
 amb el seu sí i l'enviament anotats a Zoho.
@@ -702,7 +732,8 @@ de la web».
 - ✓ **L'anàlisi de les fonts** (`SOS/tools/analitza-contingut.js`): candidats a
   rol i a lliurament amb la frase on surten, les preguntes del que la web no
   diu, la marca que se'n desprèn i un esbós de mapa. Sense model ni xarxa;
-  `--baixa` desa la web amb curl.
+  `--baixa` desa la web només amb `--autoritzat`, amb robots.txt i un segon
+  entre peticions (pas 2 de «La pàgina per al lead»).
 - ✓ **Un sol ordre** (`SOS/tools/proposta.js`): de les fonts a l'esbós de web
   (`web-esbozo/`) i, amb un `mapa.json` que passa, a la web per lliurar
   (`web/`), amb `estado.md` dient el que falta. S'hereta als cervells nous.

@@ -38,7 +38,7 @@ const forma = (a, b, cami) => {
 ok(Object.keys(KIT_TXT).sort().join() === 'ca,es', 'llengües: ca i es');
 forma(KIT_TXT.ca, KIT_TXT.es, 'KIT_TXT');
 const CLAUS = ['claude', 'stub', 'guia', 'skills', 'tasques'];
-const MOTIUS = ['intangible', 'mena desconeguda', 'sense entregable declarat', 'el tipus no surt d\'una màquina', 'de fora'];
+const MOTIUS = ['intangible', 'mena desconeguda', 'sense entregable declarat', 'el tipus no surt d\'una màquina'];
 
 ['ca', 'es'].forEach(l => {
   const T = KIT_TXT[l];
@@ -99,11 +99,11 @@ const MOTIUS = ['intangible', 'mena desconeguda', 'sense entregable declarat', '
 
   /* 6 · Les etiquetes de tasques-ia.md. */
   const tq = T.tasques;
-  ok(['titol', 'generat', 'regla', 'recompte', 'maquina', 'persona', 'senseTipus', 'deFora', 'perConfirmar', 'cols', 'motius'].every(k => tq[k]), l + '.tasques: claus');
+  ok(['titol', 'generat', 'regla', 'recompte', 'maquina', 'persona', 'senseTipus', 'perConfirmar', 'cols', 'motius'].every(k => tq[k]) && !tq.deFora, l + '.tasques: claus');
   ok(tq.recompte.includes('{m}') && tq.recompte.includes('{t}'), l + '.tasques.recompte: {m} i {t}');
   ok(Object.keys(tq.cols).sort().join() === 'accepta,cal,deA,q,surt,tipus', l + '.tasques.cols');
-  ok(Object.keys(tq.motius).sort().join('|') === MOTIUS.slice().sort().join('|'), l + '.tasques.motius: les quatre claus de fluxAutomatitzable i «de fora»');
-  ok(['persona', 'senseTipus', 'deFora'].every(k => Array.isArray(tq[k]) && tq[k].length === 2), l + '.tasques: persona, senseTipus i deFora són [títol, línia]');
+  ok(Object.keys(tq.motius).sort().join('|') === MOTIUS.slice().sort().join('|'), l + '.tasques.motius: les quatre claus de fluxAutomatitzable (el que arriba de fora també compta)');
+  ok(['persona', 'senseTipus'].every(k => Array.isArray(tq[k]) && tq[k].length === 2), l + '.tasques: persona i senseTipus són [títol, línia]');
   /* 6b · Qui accepta i on: la PR és l'acceptació, i el repositori, privat. */
   ok(/fet: esborrany fet amb IA/.test(con) && /\*\*(Acceptar|Aceptar) la PR/.test(con), l + '.continguts: diu qui ho ha fet i que acceptar la PR és acceptar el text');
   ok(/Private/.test(g), l + '.guia: el repositori, privat');

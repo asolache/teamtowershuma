@@ -11,6 +11,7 @@
  *   node SOS/tests/test-vna-motor.mjs
  */
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -1074,12 +1075,17 @@ console.log('\nM32 · L\'arrencada amb IA: continguts, el que ja hi havia, les t
   ok((() => { try { new Function('\'use strict\';\n' + ['VS-WEB', 'VS-SITE', 'VS-TASQUES'].map(bloc).join('\n') + '\nreturn webASite;')()(web, { continguts: cont }); return false; } catch (e) { return /VS-IMPORTA/.test(e.message); } })(),
     'sense el sedàs de dades personals, cap contingut surt: falla, no passa');
   const tq = JSON.parse(f('cerebro/tasques-ia.json')), tmd = f('cerebro/tasques-ia.md');
-  ok(tq.formato === 'tt-tasques-1' && tq.total === mapa2.pairs.reduce((n, p) => n + (p[3] ? 1 : 0) + (p[5] ? 1 : 0), 0) && tq.total === tq.maquina + tq.persona + tq.senseTipus + tq.deFora, 'tasques-ia.json: tots els lliuraments, cadascun a la seva llista');
-  ok(tq.tasques.every(x => (x.motiu === 'de fora') === !CASA.includes(x.de)), 'només compten els que lliura un rol de casa: el que arriba de fora, el prepara qui l\'envia');
+  ok(tq.formato === 'tt-tasques-1' && tq.total === mapa2.pairs.reduce((n, p) => n + (p[3] ? 1 : 0) + (p[5] ? 1 : 0), 0) && tq.total === tq.maquina + tq.persona + tq.senseTipus && !('deFora' in tq), 'tasques-ia.json: tots els lliuraments, cadascun a la seva llista');
+  /* Una sola xifra a tot arreu (decidit per l'Àlvar el 17/10/2026): el kit
+     compta el mateix que `automatitza.js`, que és el de l'app i la landing,
+     també el que lliura un rol de fora. */
+  const aut = createRequire(import.meta.url)('../tools/automatitza.js').mesura(mapa2);
+  ok(tq.maquina === aut.maquina && tq.persona === aut.persona && tq.senseTipus === aut.visita && tq.tasques.some(x => !CASA.includes(x.de) && x.pot),
+    `el kit dona la mateixa xifra que automatitza.js: ${tq.maquina} / ${tq.persona} / ${tq.senseTipus}, també amb els rols de fora`);
   ok(tq.tasques.every(x => x.mena !== 'intangible' || !x.pot), 'cap intangible el fa la IA');
   const cv = tq.tasques.find(x => x.q === 'la convocatòria de la verema');
-  ok(tq.maquina === 1 && cv.pot && cv.tipus === 'convocatoria' && cv.accepta === 'Qui rep i explica' && cv.perParaula === 'convoc', 'un tangible de casa amb tipus: la IA en prepara l\'esborrany i l\'accepta el rol que el lliura');
-  ok(/«convoc»/.test(tmd) && /confirmeu-los a la sala/.test(tmd) && /\*\*1 de 15 lliuraments/.test(tmd), 'el tipus surt del nom, i es diu per confirmar');
+  ok(cv.pot && cv.tipus === 'convocatoria' && cv.accepta === 'Qui rep i explica' && cv.perParaula === 'convoc', 'un tangible amb tipus: la IA en prepara l\'esborrany i l\'accepta el rol que el lliura');
+  ok(/«convoc»/.test(tmd) && /confirmeu-los a la sala/.test(tmd) && tmd.includes(`**${tq.maquina} de 15 lliuraments`), 'el tipus surt del nom, i es diu per confirmar');
   ok(/La IA en prepara l'esborrany \(Convocatòria\) i l'accepta una persona del rol Qui rep i explica\./.test(f('cerebro/entregables/' + cv.id + '.md')), 'la fitxa del lliurament diu qui el prepara');
   /* Els de negoci. L'EXEMPLE no es toca —el que lliura la casa són béns i
      serveis, i és bo que no compti—: es proven tres documents de casa i una
@@ -1091,11 +1097,11 @@ console.log('\nM32 · L\'arrencada amb IA: continguts, el que ja hi havia, les t
     ['Qui fa el vi', 'El distribuïdor', 'tangible', 'la factura', '', '']]) });
   const f3 = (r => (S.webASite(web, { mapa: mapa3, codi, nom: 'Celler' }).fitxers.find(x => x.ruta === r) || {}).cos || '');
   const tq3 = JSON.parse(f3('cerebro/tasques-ia.json')), q3 = q => tq3.tasques.find(x => x.q === q) || {};
-  ok(tq3.maquina === 4 && q3('el pressupost del grup').tipus === 'pressupost' && q3('la resposta a la consulta de reserva').tipus === 'resposta'
+  ok(tq3.maquina === tq.maquina + 3 && q3('el pressupost del grup').tipus === 'pressupost' && q3('la resposta a la consulta de reserva').tipus === 'resposta'
     && q3('la proposta de servei per al canal').tipus === 'proposta', 'els documents d\'un negoci que lliura la casa: pressupost, resposta i proposta');
   ok(q3('la factura').tipus === 'cobrament' && !q3('la factura').pot && tq3.persona === tq.persona + 1,
     'i la factura té tipus, però la fa una persona: no surt d\'una màquina');
-  ok(/\*\*4 de 19 lliuraments/.test(f3('cerebro/tasques-ia.md')) && /Pressupost \(«el pressupost»\)/.test(f3('cerebro/tasques-ia.md')),
+  ok(f3('cerebro/tasques-ia.md').includes(`**${tq3.maquina} de 19 lliuraments`) && /Pressupost \(«el pressupost»\)/.test(f3('cerebro/tasques-ia.md')),
     'el recompte ho diu, i diu quina paraula ha donat cada tipus');
   ok(/^# Celler · regles/.test(f('CLAUDE.md')) && /TREBALLAR-AMB-CLAUDE\.md/.test(f('CLAUDE.md')) && /^# Treballar amb Claude a la web de Celler/.test(f('TREBALLAR-AMB-CLAUDE.md')), 'les regles i la guia, amb el nom de la web');
   ok(['importa', 'continguts', 'tasca'].every(n => f('.claude/skills/' + n + '/SKILL.md').startsWith('---\nname: ' + n + '\n')), 'les tres skills a .claude/skills/');

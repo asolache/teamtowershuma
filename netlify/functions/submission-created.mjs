@@ -29,8 +29,14 @@ export const FORMULARIS = {
   /* La comanda de la pàgina de preus (SOS/pressupost.html). Encara no hi ha
      passarela de pagament: la comanda entra com a lead i es confirma per
      correu amb la factura. */
-  'comanda': 'Comanda des de la pàgina de preus (web)'
+  'comanda': 'Comanda des de la pàgina de preus (web)',
+  /* Els dos botons de la pàgina que rep el lead abans de la visita
+     (SOS/tools/pagina-lead.js) porten a /visita/. `ref` és la referència
+     aleatòria de la seva pàgina, i és l'únic «obert» que sabem: no hi ha píxel.
+     Fins al pas 9 del backlog crea un lead nou; no marca el que ja hi és. */
+  'visita': 'Visita des de la pàgina del lead (web)'
 };
+const RESPOSTA = { si: 'Vol la visita', no: 'Diu que el mapa no és així' };
 
 const net = v => (v == null ? '' : String(v)).trim();
 const tall = (v, n) => { const s = net(v); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
@@ -56,6 +62,8 @@ export function aLead(formName, d, opts = {}) {
     City: tall(d.municipi, 100),
     Description: tall([
       'Origen: ' + origen,
+      d.resposta && 'Resposta: ' + (RESPOSTA[net(d.resposta)] || tall(d.resposta, 40)),
+      d.ref && 'Pàgina del lead: ' + tall(d.ref, 40),
       d.dediqueu && 'A què es dediquen: ' + net(d.dediqueu),
       d.paquet && 'Comanda: ' + net(d.paquet) + (d.preu ? ' · ' + net(d.preu) : ''),
       d.quan && 'Quan: ' + net(d.quan),

@@ -5266,3 +5266,57 @@ desfer, i el que hi entra queda a l'historial.
 **Guarda:** `test-cervell.mjs` comprova que d'un fill privat no puja ni títol,
 ni text, ni el nom d'un producte nou. El generador del perfil para si li passen
 una font privada.
+
+## Veda 169 — El sí d'un domini no viatja amb una redirecció
+
+**Après el 17/10/2026**, revisant la baixada de la web d'un lead per a la
+pàgina que rep abans de la visita.
+
+L'error que evita: el rastrejador demanava `--autoritzat` i mirava robots.txt
+abans de cada pàgina, però curl (`-L`) i el `fetch` de Node seguien sols les
+redireccions. Un enllaç del mateix lloc que redirigia a una carpeta tancada
+(`/obre` → `/privat/x`) es baixava i es desava, i un que redirigia a un altre
+lloc (`/reserves` → la plataforma de reserves) feia una petició a qui no havia
+dit que sí. La prova no ho veia perquè el seu `fetch` de mentida no redirigia
+mai.
+
+- **Les redireccions les segueix `rastreja`, no el `fetch`** (`redirect:
+  'manual'`, curl sense `-L`): només dins del mateix lloc, amb www o sense, i
+  on robots.txt deixa. Cada salt és una petició, amb la seva pausa.
+- **On acaba la pàgina es torna a mirar** abans de desar-la, per si el `fetch`
+  que es passa les segueix igualment.
+- **Una prova de rastreig porta redireccions**: a la carpeta tancada, a un
+  altre lloc i dins del lloc.
+
+**Guarda:** `test-importa.mjs` (les tres redireccions i «Disallow: /», on
+només es demana robots.txt).
+
+## Veda 170 — La carpeta d'un lead no viu al repositori que es publica
+
+**Après el 17/10/2026**, revisant la pàgina que rep el lead abans de la visita.
+
+L'error que evita: la skill deia `proposta.js propuesta/ --lead`, des del
+repositori de TeamTowers, que és públic. El mapa, les fonts i el nom del lead
+quedaven en una carpeta que un `git add .` pujava, i un `lead.json` d'un lead
+anterior donava la mateixa referència al següent. A més, «Com s'ha fet» deia
+«vam llegir la teva web amb permís i respectant robots.txt» encara que les
+fonts les hagués desat algú a mà.
+
+- **La carpeta d'un lead va fora del repositori** (`../leads/<negoci>/`):
+  amb `--lead`, `proposta.js` s'hi nega abans de baixar o escriure res, i surt
+  amb 4. Es mira pel camí de debò, perquè un enllaç simbòlic no ho amagui, i
+  també dins de qualsevol altra còpia del repositori, d'on pot penjar un
+  worktree. El `.gitignore` ho atura també, per si de cas.
+- **Una carpeta és d'un sol negoci:** `lead.json` porta el nom i s'escriu
+  només quan la pàgina passa. Mentre només hi ha l'esborrany intern, el nom
+  es pot corregir; des de la pàgina revisada, amb un altre nom no es fa res,
+  perquè el mapa, les fonts i la lectura serien de l'altre, i no s'hi baixa la
+  web de ningú més. Un `lead.json` trencat atura; no es fa una referència nova. La pàgina revisada demana `--nom`: el que endevina
+  l'anàlisi pot ser «Inicio» per a dos negocis.
+- **La pàgina només diu el que consta:** la lectura amb permís, si la baixada
+  la va deixar escrita («fuentes/.lectura.json») i els fitxers que va desar
+  encara hi són; si no, de quantes fonts surt.
+
+**Guarda:** `test-pagina-lead.mjs` (carpeta dins del repositori, per un
+enllaç o en una altra còpia; carpeta d'un altre negoci; lectura bona, vella o
+trencada).
