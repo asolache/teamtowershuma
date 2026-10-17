@@ -143,7 +143,13 @@ const src = readFileSync(APP, 'utf8');
    pantalla nova al llançador ni cap ruta: una mena de tasca i un modal petit.
    Es puja 2 KB i no més: el pròxim tram (l'acord amb fil) és més gros i
    haurà de tornar a mesurar. */
-const MAX_GZIP_KB = 548;   // baixat un cop i cachejat (sw.js), no a cada visita
+/* ── 548 → 549 KB (17/10/2026) · que la base no s'esborri ──────────────────
+   Mesurat: 548,42 → 548,51 KB, 0,1 KB. Main ja arrodonia a 548 amb 0,08 KB de
+   marge. El que es compra és que el navegador no buidi la IndexedDB quan va
+   just d'espai (`navigator.storage.persist()`, test-persistent): sense això un
+   client pilot pot perdre el node sencer sense cap avís. Es puja 1 KB i no més:
+   l'acord amb fil haurà de mesurar i aprimar. */
+const MAX_GZIP_KB = 549;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;
