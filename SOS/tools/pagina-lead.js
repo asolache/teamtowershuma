@@ -60,14 +60,17 @@ const TXT = {
     titol: 'Borrador para {nom}', sub: 'Leído de {n} de su web pública', subF: 'Hecho con {n}', pag: ['página', 'páginas'], font: ['fuente', 'fuentes'], subRev: 'revisado por TeamTowers',
     segell: 'Estimación · borrador',
     xifra: 'De las {t} entregas de tu red, el sistema puede preparar {m}; {v} las decidimos en la visita.',
-    xifraP: 'Las otras {h} son de una persona, y así deben seguir.',
+    xifra1: 'De las {t} entregas de tu red, el sistema puede preparar {m}; 1 la decidimos en la visita.',
+    xifra0: 'De las {t} entregas de tu red, el sistema puede preparar {m}.',
+    xifraP: 'Las otras {h} son de una persona, y así deben seguir.', xifraP1: 'La otra es de una persona, y así debe seguir.',
     xarxa: 'Tu red', xarxaD: 'Cada flecha es una entrega entre dos roles. Las gruesas son las que puede preparar el sistema.',
     llT: 'tangible (se puede reclamar)', llI: 'intangible (se espera, no se exige)', llM: 'la prepara el sistema',
     sistema: 'Lo que prepara el sistema', sistemaD: 'El sistema deja el borrador y una persona del rol lo acepta antes de que salga.',
-    tipus: 'Tipo', accepta: 'Lo acepta', amb: 'Con', cap: 'Todavía ninguna: en la visita vemos cuáles pueden serlo.',
+    tipus: 'Tipo', accepta: 'Lo acepta', amb: 'Con', cap: 'Todavía ninguna: en la visita vemos cuáles pueden serlo.', capT: 'Ninguna en este mapa.',
     teu: 'Lo que sigue siendo tuyo', teuD: 'Los intangibles, los cobros y los acuerdos. Es lo estratégico y lo táctico, y es donde vale la pena que pongas tu tiempo.',
     visita: 'Lo decidimos en la visita', visitaD: 'Todavía no sabemos qué entregable piden. Un mapa mejor automatiza más.',
-    preg: 'Tres preguntas para la visita',
+    visitaD0: 'Todas las entregas tienen un tipo conocido: la visita es para lo estratégico y lo táctico.',
+    preg: ['Una pregunta para la visita', 'Dos preguntas para la visita', 'Tres preguntas para la visita'],
     boto: 'Reservemos la visita', no: 'Esto no es así',
     com: 'Cómo se ha hecho',
     c1: 'Leímos {n} de tu web pública el {data}, con tu permiso, respetando robots.txt y sin prisa entre página y página.',
@@ -88,14 +91,17 @@ const TXT = {
     titol: 'Esborrany per a {nom}', sub: 'Llegit de {n} de la seva web pública', subF: 'Fet amb {n}', pag: ['pàgina', 'pàgines'], font: ['font', 'fonts'], subRev: 'revisat per TeamTowers',
     segell: 'Estimació · esborrany',
     xifra: 'Dels {t} lliuraments de la teva xarxa, el sistema en pot preparar {m}; {v} els decidim a la visita.',
-    xifraP: 'Els altres {h} són d\'una persona, i així han de seguir.',
+    xifra1: 'Dels {t} lliuraments de la teva xarxa, el sistema en pot preparar {m}; 1 el decidim a la visita.',
+    xifra0: 'Dels {t} lliuraments de la teva xarxa, el sistema en pot preparar {m}.',
+    xifraP: 'Els altres {h} són d\'una persona, i així han de seguir.', xifraP1: 'L\'altre és d\'una persona, i així ha de seguir.',
     xarxa: 'La teva xarxa', xarxaD: 'Cada fletxa és un lliurament entre dos rols. Les gruixudes són les que pot preparar el sistema.',
     llT: 'tangible (es pot reclamar)', llI: 'intangible (s\'espera, no s\'exigeix)', llM: 'el prepara el sistema',
     sistema: 'El que prepara el sistema', sistemaD: 'El sistema deixa l\'esborrany i una persona del rol l\'accepta abans que surti.',
-    tipus: 'Tipus', accepta: 'L\'accepta', amb: 'Amb', cap: 'Encara cap: a la visita mirem quins ho poden ser.',
+    tipus: 'Tipus', accepta: 'L\'accepta', amb: 'Amb', cap: 'Encara cap: a la visita mirem quins ho poden ser.', capT: 'Cap en aquest mapa.',
     teu: 'El que continua sent teu', teuD: 'Els intangibles, els cobraments i els acords. És l\'estratègic i el tàctic, i és on val la pena que hi posis el temps.',
     visita: 'Ho decidim a la visita', visitaD: 'Encara no sabem quin entregable demanen. Un mapa millor automatitza més.',
-    preg: 'Tres preguntes per a la visita',
+    visitaD0: 'Tots els lliuraments tenen un tipus conegut: la visita és per a l\'estratègic i el tàctic.',
+    preg: ['Una pregunta per a la visita', 'Dues preguntes per a la visita', 'Tres preguntes per a la visita'],
     boto: 'Reservem la visita', no: 'Això no és així',
     com: 'Com s\'ha fet',
     c1: 'Vam llegir {n} de la teva web pública el {data}, amb el teu permís, respectant el robots.txt i sense presses entre pàgina i pàgina.',
@@ -113,6 +119,8 @@ const TXT = {
   }
 };
 
+/* La data d'avui, la del rellotge de qui ho fa i no la d'UTC. */
+const avui = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const e = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const nomTipus = (id, llengua) => {
   if (!id) return '';
@@ -162,6 +170,10 @@ function comprova(html, o) {
   /* Al bloc del mapa (JSON dins de <pre>), un salt de línia és «\n»: es torna
      espai perquè la «n» no s'enganxi a la paraula següent. */
   const f = [], t = text(html).replace(/\\[ntr]/g, ' ');
+  /* Per als correus, telèfons i imports, cada etiqueta fa de frontera: unes
+     xifres de dos elements (l'any del títol del dibuix i el nombre de rols de
+     la descripció) no fan un telèfon. */
+  const td = desEnt(String(html).replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' | ')).replace(/\\[ntr]/g, ' ');
   if (/<script\b/i.test(html)) f.push('porta <script>');
   if (/\son[a-z]+\s*=/i.test(html)) f.push('porta un atribut on…=');
   if (/\ssrc\s*=/i.test(html) || /<link\b/i.test(html) || /<(img|iframe|object|embed|video|audio)\b/i.test(html)) f.push('carrega alguna cosa (src, link, img…)');
@@ -169,9 +181,9 @@ function comprova(html, o) {
   if (/javascript:/i.test(html)) f.push('porta un enllaç javascript:');
   if (!/<meta name="robots" content="noindex/.test(html)) f.push('no porta noindex');
   if (!/<meta name="referrer" content="no-referrer">/.test(html)) f.push('no porta no-referrer');
-  if (/[^\s@<>()"]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)*\.\p{L}{2,}/u.test(t)) f.push('el text porta un correu');
-  if (/\+?\(?\d(?:[\s().\/-]{0,2}\d){8,}/.test(t)) f.push('el text porta un telèfon');
-  if (/\d\s*(?:€|eur(?:os?)?\b)|€\s*\d|\beuros?\b|\bEUR\b/i.test(t)) f.push('el text porta un import');
+  if (/[^\s@<>()"]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)*\.\p{L}{2,}/u.test(td)) f.push('el text porta un correu');
+  if (/\+?\(?\d(?:[\s().\/-]{0,2}\d){8,}/.test(td)) f.push('el text porta un telèfon');
+  if (/\d\s*(?:€|eur(?:os?)?\b)|€\s*\d|\beuros?\b|\bEUR\b/i.test(td)) f.push('el text porta un import');
   if (o.fonts && o.fonts.length) {
     const meus = trossos(t);
     const font = o.fonts.find(x => [...trossos(textFont(x.cos)), ...trossos(textFontJunt(x.cos))].some(k => meus.has(k)));
@@ -184,19 +196,19 @@ function comprova(html, o) {
 
 /* L'identificador de la pàgina: aleatori, es crea un cop i es guarda a
    `lead.json` amb el nom del negoci, perquè regenerar-la no canviï l'enllaç que
-   ja té el lead. Una carpeta és d'un sol negoci: si `lead.json` en diu un
-   altre, no es fa res (el mapa, les fonts i la lectura serien de l'altre). */
+   ja té el lead. S'hi escriu només quan la pàgina passa les comprovacions.
+   Mentre només hi ha hagut l'esborrany intern, que no s'envia, el nom es pot
+   corregir i la referència es manté. Un cop s'ha escrit la pàgina revisada, la
+   carpeta queda lligada al negoci (`revisat`): amb un altre nom no s'hi fa res,
+   perquè el mapa, les fonts i la lectura serien de l'altre. Dos noms són el
+   mateix si només canvien majúscules, espais o accents. */
+const nomNet = s => String(s || '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
+const mateixNom = (a, b) => nomNet(a) === nomNet(b);
 function amoDeLaCarpeta(dir) {
   try { const x = JSON.parse(readFileSync(join(dir, 'lead.json'), 'utf8')); return /^[A-Za-z0-9_-]{16,}$/.test(x.ref) ? x : null; } catch (e) { return null; }
 }
-function referencia(dir, nom) {
-  const x = amoDeLaCarpeta(dir);
-  if (x && x.nom === nom) return x.ref;
-  const ref = randomBytes(12).toString('base64url');
-  writeFileSync(join(dir, 'lead.json'), JSON.stringify({ ref, nom }, null, 2) + '\n');
-  return ref;
-}
-const unAltre = (dir, nom) => { const x = amoDeLaCarpeta(dir); return x && x.nom !== nom ? x.nom : null; };
+const lligada = (dir, nom) => { const x = amoDeLaCarpeta(dir); return x && x.revisat && !mateixNom(x.nom, nom) ? x.nom : null; };
+const missatgeAltre = nom => 'aquesta carpeta és de «' + nom + '», que ja té la pàgina revisada (lead.json): per a un altre negoci, una carpeta nova; si és el mateix i el nom ha canviat, corregeix «nom» a lead.json';
 
 /* La carpeta d'un lead no pot ser dins d'aquest repositori: es publica. Es
    mira pel camí de debò (un enllaç simbòlic no l'amaga), i també dins de
@@ -218,13 +230,13 @@ function dinsDelRepo(dir) {
 }
 
 /* Les tres preguntes: les de qui revisa (`preguntas-visita.md`, una per línia,
-   numerada o amb guió a l'inici de la línia; un guió sagnat és una nota i no
-   surt) o, si no n'hi ha, les tres més greus del diagnòstic, que surten en
+   numerada («1.», «1)», «1.-») o amb guió; un guió sagnat amb dos espais o
+   més és una nota i no surt) o, si no n'hi ha, les tres més greus del diagnòstic, que surten en
    català. */
 function preguntes(dir, diag) {
   const f = join(dir, 'preguntas-visita.md');
   if (existsSync(f)) {
-    const llista = readFileSync(f, 'utf8').split(/\r?\n/).map(l => /^(?:\s*\d+[.)]|[-*])\s+(.*\S)\s*$/.exec(l)).filter(m => m && /\p{L}/u.test(m[1])).map(m => m[1]).slice(0, 3);
+    const llista = readFileSync(f, 'utf8').split(/\r?\n/).map(l => /^(?:\s*\d+[.)º](?:\s*[-–—])?| ?[-*])\s+(.*\S)\s*$/.exec(l)).filter(m => m && /\p{L}/u.test(m[1])).map(m => m[1]).slice(0, 3);
     return { fitxer: true, propies: llista.length > 0, llista };
   }
   const ordre = { alta: 0, mitjana: 1, baixa: 2, nota: 3 };
@@ -263,8 +275,8 @@ function paginaLead(o) {
   const T = TXT[o.llengua] || TXT.es, llengua = T.lang, aut = o.aut, fitxer = join(o.dir, 'lead.html');
   const nega = falla => { rmSync(fitxer, { force: true }); return { escrita: false, fitxer, falla }; };
   if (dinsDelRepo(o.dir)) return { escrita: false, fitxer, falla: ['la carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/)'] };
-  const altre = unAltre(o.dir, o.nom);
-  if (altre) return { escrita: false, fitxer, falla: ['aquesta carpeta és de «' + altre + '» (lead.json): per a un altre negoci, una carpeta nova; si és el mateix, passa --nom «' + altre + '»'] };
+  const altre = lligada(o.dir, o.nom);
+  if (altre) return { escrita: false, fitxer, falla: [missatgeAltre(altre)] };
   const pq = preguntes(o.dir, o.diag);
   const previ = [];
   if (o.revisat && pq.fitxer && !pq.propies) previ.push('preguntas-visita.md no té cap pregunta: una per línia, numerada o amb guió');
@@ -284,13 +296,15 @@ function paginaLead(o) {
   /* En català, «de 1» i «el 1/…» s'apostrofen: «d'1 font», «l'1/10/2026». */
   const apo = s => llengua === 'ca' ? s.replace(/\bde (1|11) /g, 'd\'$1 ').replace(/\bel (1|11)\//g, 'l\'$1/') : s;
   const dm = d => d.split('-').map(Number).reverse().join('/');
-  const data = dm(/^\d{4}-\d{2}-\d{2}$/.test(o.data || '') ? o.data : new Date().toISOString().slice(0, 10));
-  const ref = referencia(o.dir, o.nom);
+  const data = dm(/^\d{4}-\d{2}-\d{2}$/.test(o.data || '') ? o.data : avui());
+  const amo = amoDeLaCarpeta(o.dir), ref = amo ? amo.ref : randomBytes(12).toString('base64url');
   const de = q => aut.lliuraments.filter(l => l.qui === q);
   const fila = (l, extra) => '<li><b>' + e(l.que) + '</b> · ' + e(l.de) + ' → ' + e(l.a) + (extra ? '<small>' + extra + '</small>' : '') + '</li>';
   const TA = X.TXT[llengua] || X.TXT.ca;
   const motiu = l => l.motiu === 'intangible' ? TA.m.intangible : TA.m.tipus + ' (' + nomTipus(l.tipus, llengua) + ')';
-  const llista = (ls, f) => ls.length ? '<ul class="ll">' + ls.map(f).join('') + '</ul>' : '<p>' + e(T.cap) + '</p>';
+  const llista = (ls, f, buit) => ls.length ? '<ul class="ll">' + ls.map(f).join('') + '</ul>' : buit ? '<p>' + e(buit) + '</p>' : '';
+  const xifra = (aut.visita === 0 ? T.xifra0 : aut.visita === 1 ? T.xifra1 : T.xifra).replace('{t}', aut.total).replace('{m}', aut.maquina).replace('{v}', aut.visita);
+  const xifraP = aut.persona === 0 ? '' : aut.persona === 1 ? T.xifraP1 : T.xifraP.replace('{h}', aut.persona);
   const botons = o.revisat ? '<p class="botons"><a class="boto" href="' + e(VISITA + '?r=' + ref + '&l=' + llengua + '&m=si') + '">' + e(T.boto) + '</a>'
     + '<a class="boto no" href="' + e(VISITA + '?r=' + ref + '&l=' + llengua + '&m=no') + '">' + e(T.no) + '</a></p>' : '';
   const svg = X.dibuix(o.mapa, { llengua, mesura: aut, id: 'mvLead' });
@@ -303,25 +317,26 @@ function paginaLead(o) {
     + (o.revisat ? '' : '<p class="intern" role="note">' + e(T.intern) + '<span>' + e(T.internD) + '</span></p>\n')
     + '<header>\n<p class="marca">' + e(o.nom) + '</p>\n<p class="sub">' + e(T.titol.replace('{nom}', o.nom)) + ' · ' + e(apo((lec ? T.sub : T.subF).replace('{n}', pags))) + (o.revisat ? ' · ' + e(T.subRev) : '') + '</p>\n'
     + '<p class="segell">' + e(T.segell) + '</p>\n'
-    + '<h1>' + e(T.xifra.replace('{t}', aut.total).replace('{m}', aut.maquina).replace('{v}', aut.visita)) + '</h1>\n'
-    + '<p>' + e(T.xifraP.replace('{h}', aut.persona)) + '</p>\n' + botons + '\n</header>\n<main>\n'
+    + '<h1>' + e(xifra) + '</h1>\n'
+    + (xifraP ? '<p>' + e(xifraP) + '</p>\n' : '') + botons + '\n</header>\n<main>\n'
     + '<section aria-labelledby="t-xarxa">\n<h2 id="t-xarxa">' + e(T.xarxa) + '</h2>\n<p>' + e(T.xarxaD) + '</p>\n<div class="mapa">' + svg + '</div>\n'
     + '<ul class="llegenda"><li><b></b>' + e(T.llT) + '</li><li class="i"><b></b>' + e(T.llI) + '</li><li class="m"><b></b>' + e(T.llM) + '</li></ul>\n</section>\n'
     + '<section aria-labelledby="t-sistema">\n<h2 id="t-sistema">' + e(T.sistema) + ' (' + aut.maquina + ')</h2>\n<p>' + e(T.sistemaD) + '</p>\n'
-    + llista(de('maquina'), l => fila(l, e(T.tipus) + ': ' + e(nomTipus(l.tipus, llengua)) + ' · ' + e(T.accepta) + ': ' + e(l.de) + (l.producte ? ' · ' + e(T.amb) + ': ' + e(l.producte) : ''))) + '\n</section>\n'
+    + llista(de('maquina'), l => fila(l, e(T.tipus) + ': ' + e(nomTipus(l.tipus, llengua)) + ' · ' + e(T.accepta) + ': ' + e(l.de) + (l.producte ? ' · ' + e(T.amb) + ': ' + e(l.producte) : '')), T.cap) + '\n</section>\n'
     + '<section aria-labelledby="t-teu">\n<h2 id="t-teu">' + e(T.teu) + ' (' + aut.persona + ')</h2>\n<p>' + e(T.teuD) + '</p>\n'
-    + llista(de('persona'), l => fila(l, e(motiu(l)))) + '\n</section>\n'
-    + '<section aria-labelledby="t-visita">\n<h2 id="t-visita">' + e(T.visita) + ' (' + aut.visita + ')</h2>\n<p>' + e(T.visitaD) + '</p>\n'
+    + llista(de('persona'), l => fila(l, e(motiu(l))), T.capT) + '\n</section>\n'
+    + '<section aria-labelledby="t-visita">\n<h2 id="t-visita">' + e(T.visita) + ' (' + aut.visita + ')</h2>\n<p>' + e(aut.visita ? T.visitaD : T.visitaD0) + '</p>\n'
     + llista(de('visita'), l => fila(l)) + '\n'
-    + (pq.llista.length ? '<h3>' + e(T.preg) + '</h3>\n<ol>' + pq.llista.map(q => '<li>' + e(q) + '</li>').join('') + '</ol>\n' : '') + botons + '</section>\n'
+    + (pq.llista.length ? '<h3>' + e(T.preg[pq.llista.length - 1]) + '</h3>\n<ol>' + pq.llista.map(q => '<li>' + e(q) + '</li>').join('') + '</ol>\n' : '') + botons + '</section>\n'
     + '<section aria-labelledby="t-com">\n<h2 id="t-com">' + e(T.com) + '</h2>\n<ol>' + com.map(x => '<li>' + e(x) + '</li>').join('') + '</ol>\n'
     + '<p><a href="' + IA + '">' + e(T.iaL) + '</a> · <a href="' + LEGAL + '">' + e(T.legalL) + '</a></p>\n'
     + '<details>\n<summary>' + e(T.claude) + '</summary>\n<p>' + e(T.claudeD) + '</p>\n<pre>' + e(T.prompt + '\n\n' + JSON.stringify(o.mapa, null, 2)) + '</pre>\n</details>\n</section>\n'
     + '</main>\n<footer>\n<p>' + e(T.peu.replace('{data}', data)) + '</p>\n</footer>\n</body>\n</html>\n';
   const falla = comprova(html, { fonts: o.fonts, revisat: o.revisat });
   if (falla.length) return nega(falla);
+  writeFileSync(join(o.dir, 'lead.json'), JSON.stringify({ ref, nom: o.nom, revisat: !!(o.revisat || (amo && amo.revisat)) }, null, 2) + '\n');
   writeFileSync(fitxer, html);
   return { escrita: true, fitxer, falla: [], ref };
 }
 
-module.exports = { paginaLead, comprova, dinsDelRepo, unAltre, TIPUS_ES, VISITA };
+module.exports = { paginaLead, comprova, dinsDelRepo, mateixNom, missatgeAltre, avui, TIPUS_ES, VISITA };

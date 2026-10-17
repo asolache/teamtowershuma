@@ -45,7 +45,8 @@
  *       `preguntas-visita.md` és buit (o falta, en castellà); un correu, un
  *       telèfon, un import o una frase de la web al mapa, a les preguntes o a
  *       `--nom`; o la carpeta és dins d'aquest repositori o és d'un altre negoci
- *       (`lead.json`), i aleshores no s'escriu res de res;
+ *       que ja té la pàgina revisada (`lead.json`), i aleshores no s'escriu res
+ *       de res. Amb `--baixa`, una carpeta d'un lead demana el seu `--nom`;
  *   1 · un error, o `--lead` des del repositori d'un client;
  *   2 · l'ordre està mal escrit: una opció que no existeix o sense valor, una
  *       carpeta de més, o `--revisat` sense `--lead` o sense `--nom`. */
@@ -244,8 +245,15 @@ async function proposta(dir, opts) {
     const L = paginaLead();
     if (L.dinsDelRepo(dir)) atura('La carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/).', 4);
     if (o.revisat && !o.nom) atura('--revisat demana --nom: el nom del negoci tal com el veurà.', 2);
-    const altre = o.nom && L.unAltre(dir, o.nom);
-    if (altre) atura('Aquesta carpeta és de «' + altre + '» (lead.json): per a un altre negoci, una carpeta nova; si és el mateix, passa --nom «' + altre + '».', 4);
+  }
+  /* La carpeta d'un lead (amb `lead.json`) és d'un sol negoci: no s'hi baixa
+     la web d'un altre, i un cop té la pàgina revisada, no se'n fa cap altra. */
+  let amo = null;
+  try { amo = JSON.parse(readFileSync(join(dir, 'lead.json'), 'utf8')); } catch (e) { /* no és la carpeta d'un lead */ }
+  if (amo && amo.nom && (o.baixa || o.lead)) {
+    const L = paginaLead(), mateix = o.nom && L.mateixNom(amo.nom, o.nom);
+    if (o.baixa && !mateix) atura('Aquesta carpeta és de «' + amo.nom + '» (lead.json): per baixar-hi la seva web, --nom «' + amo.nom + '»; per a un altre negoci, una carpeta nova.', 4);
+    if (o.lead && amo.revisat && !mateix) { const m = L.missatgeAltre(amo.nom); atura(m[0].toUpperCase() + m.slice(1) + '.', 4); }
   }
   mkdirSync(dir, { recursive: true });
   if (o.baixa) {

@@ -265,6 +265,8 @@ async function curlFetch(url, o) {
   const cos = r.stdout.slice(0, i), [codi, ct, final, cap] = r.stdout.slice(i + MARCA_CURL.length).split('\t');
   return { status: Number(codi), url: final || url, headers: { get: k => (/^content-type$/i.test(k) ? ct : /^location$/i.test(k) ? cap || null : null) }, text: async () => cos };
 }
+/* La data d'avui, la del rellotge de qui ho fa i no la d'UTC. */
+const avui = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const domini = x => String(x || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/[/:?#].*$/, '').replace(/^www\./, '');
 async function baixa(url, dir, opts) {
   const o = opts || {};
@@ -290,7 +292,7 @@ async function baixa(url, dir, opts) {
   /* Què es va llegir i quan: la pàgina per al lead només diu «vam llegir N
      pàgines de la teva web, amb permís i respectant robots.txt» si consta aquí
      i els fitxers desats encara hi són. */
-  writeFileSync(join(dir, '.lectura.json'), JSON.stringify({ data: o.data || new Date().toISOString().slice(0, 10), domini: domini(o.autoritzat),
+  writeFileSync(join(dir, '.lectura.json'), JSON.stringify({ data: o.data || avui(), domini: domini(o.autoritzat),
     pagines: desats.length, fitxers: desats, fora: r.fora.length }, null, 2) + '\n');
   return { desats, fora: r.fora };
 }

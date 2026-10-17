@@ -178,9 +178,9 @@ TeamTowers, no desde el del cliente.
 1. **El sí, por escrito.** Sin el sí del lead no se lee su web. El correo de
    «Pedir mi borrador» de /mapa-web/ ya lo pide. El sí va al CRM.
 2. **El borrador interno.** La carpeta del lead va **fuera** del repositorio
-   de TeamTowers, que se publica, y es de un solo negocio: si está dentro, o
-   es de otro negocio (`lead.json`), no se escribe nada. `--lead` escribe
-   `lead.html`, con «BORRADOR INTERNO» arriba y sin botón:
+   de TeamTowers, que se publica, y es de un solo negocio: si está dentro, no
+   se escribe nada. `--lead` escribe `lead.html`, con «BORRADOR INTERNO»
+   arriba y sin botón, y `lead.json`, con la referencia y el nombre:
 
    ```bash
    node SOS/tools/proposta.js ../leads/<negocio>/ --llengua es --nom "Nombre del negocio" --lead
@@ -189,15 +189,20 @@ TeamTowers, no desde el del cliente.
    Se abre y se lee entera, en el móvil.
 3. **Revisarla.** Hace falta un `mapa.json` que pase las reglas duras: el
    esbozo no se envía. En castellano, las tres preguntas para la visita van en
-   `preguntas-visita.md`, una por línea, numerada o con guion, porque las del
-   diagnóstico salen en catalán; un guion sangrado es una nota y no sale.
-   Después, `--lead --revisat`, siempre con `--nom` (sin él sale con 2). Si
-   sale con 4, la página no se ha escrito y la consola dice por qué:
+   `preguntas-visita.md`, una por línea, numerada («1.», «1)», «1.-») o con
+   guion, porque las del diagnóstico salen en catalán; un guion sangrado con
+   dos espacios o más es una nota y no sale. Después, `--lead --revisat`,
+   siempre con `--nom` (sin él sale con 2). Mientras solo haya borrador, el
+   nombre se puede corregir con `--nom` y la referencia no cambia; desde la
+   página revisada, la carpeta queda ligada a ese negocio. Si sale con 4, la
+   página no se ha escrito y la consola dice por qué:
    - no hay `mapa.json`, o es provisional;
    - falta `preguntas-visita.md`, o está vacío;
    - hay un correo, un teléfono, un importe o una frase copiada de su web en el
      mapa, en las preguntas o en `--nom`;
-   - la carpeta está dentro del repositorio, o es de otro negocio.
+   - la carpeta está dentro del repositorio, o ya tiene la página revisada de
+     otro negocio (si es el mismo y ha cambiado de nombre, se corrige «nom» en
+     `lead.json`).
 
    Se corrige lo que señala la consola (`mapa.json`, `preguntas-visita.md` o
    `--nom`), nunca la página.

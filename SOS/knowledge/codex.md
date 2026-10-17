@@ -5307,10 +5307,12 @@ fonts les hagués desat algú a mà.
   amb 4. Es mira pel camí de debò, perquè un enllaç simbòlic no ho amagui, i
   també dins de qualsevol altra còpia del repositori, d'on pot penjar un
   worktree. El `.gitignore` ho atura també, per si de cas.
-- **Una carpeta és d'un sol negoci:** `lead.json` porta el nom, i amb un altre
-  nom no es fa res, perquè el mapa, les fonts i la lectura serien de l'altre.
-  La pàgina revisada demana `--nom`: el que endevina l'anàlisi pot ser
-  «Inicio» per a dos negocis.
+- **Una carpeta és d'un sol negoci:** `lead.json` porta el nom i s'escriu
+  només quan la pàgina passa. Mentre només hi ha l'esborrany intern, el nom
+  es pot corregir; des de la pàgina revisada, amb un altre nom no es fa res,
+  perquè el mapa, les fonts i la lectura serien de l'altre, i no s'hi baixa la
+  web de ningú més. La pàgina revisada demana `--nom`: el que endevina
+  l'anàlisi pot ser «Inicio» per a dos negocis.
 - **La pàgina només diu el que consta:** la lectura amb permís, si la baixada
   la va deixar escrita («fuentes/.lectura.json») i els fitxers que va desar
   encara hi són; si no, de quantes fonts surt.
