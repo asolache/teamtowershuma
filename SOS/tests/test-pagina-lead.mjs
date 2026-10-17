@@ -8,7 +8,7 @@
  *
  *   node SOS/tests/test-pagina-lead.mjs
  */
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, symlinkSync, unlinkSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -31,7 +31,8 @@ const ex = spawnSync(process.execPath, [join(TOOLS, 'revisa-mapa.js'), '--exempl
 const dir = mkdtempSync(join(tmpdir(), 'tt-lead-'));
 mkdirSync(join(dir, 'fuentes'));
 writeFileSync(join(dir, 'fuentes', 'index.html'), WEB);
-const corre = (...x) => spawnSync(process.execPath, [join(TOOLS, 'proposta.js'), dir, '--llengua', 'ca', ...x], { encoding: 'utf8' });
+const proposta = (...x) => spawnSync(process.execPath, [join(TOOLS, 'proposta.js'), ...x], { encoding: 'utf8' });
+const corre = (...x) => proposta(dir, '--llengua', 'ca', '--nom', 'Celler de Prova', ...x);
 const f = r => (existsSync(join(dir, r)) ? readFileSync(join(dir, r), 'utf8') : '');
 
 console.log('\nL\'esborrany intern');
@@ -64,11 +65,15 @@ writeFileSync(join(dir, 'mapa.json'), ex);
   ok(/<details>\n<summary>Continua amb el teu Claude<\/summary>/.test(h) && h.includes('&quot;abast&quot;'), 'el bloc per continuar amb el seu Claude, amb el mapa');
   ok(L.comprova(h, { revisat: true, fonts: [{ nom: 'index.html', cos: WEB }] }).length === 0, 'la pàgina que surt passa les seves pròpies comprovacions');
   ok(/Vam partir d'1 font:/.test(h) && !/robots\.txt/.test(h), 'sense constància de la lectura, diu de quantes fonts surt (apostrofat) i no promet robots.txt');
-  writeFileSync(join(dir, 'fuentes', '.lectura.json'), JSON.stringify({ data: '2026-10-01', domini: 'celler.example', pagines: 3, fora: 0 }));
-  corre('--lead', '--revisat');
-  const h2 = f('lead.html');
-  ok(/Vam llegir 3 pàgines de la teva web pública el 1\/10\/2026, amb el teu permís, respectant el robots\.txt/.test(h2) && /Llegit de 3 pàgines/.test(h2),
+  const lec = x => { writeFileSync(join(dir, 'fuentes', '.lectura.json'), typeof x === 'string' ? x : JSON.stringify(x)); corre('--lead', '--revisat'); return f('lead.html'); };
+  const bona = { data: '2026-10-01', domini: 'celler.example', pagines: 1, fitxers: ['index.html'], fora: 0 };
+  const h2 = lec(bona);
+  ok(/Vam llegir 1 pàgina de la teva web pública l'1\/10\/2026, amb el teu permís, respectant el robots\.txt/.test(h2) && /Llegit d'1 pàgina/.test(h2),
     'amb fuentes/.lectura.json (la deixa la baixada), diu quantes pàgines es van llegir i quan');
+  const dolentes = { 'zero pàgines': { ...bona, pagines: 0, fitxers: [] }, 'sense data': { ...bona, data: undefined }, 'JSON trencat': '{ "pagines": 1,',
+    'un fitxer que ja no hi és': { ...bona, fitxers: ['antiga.html'] }, 'més pàgines que fitxers': { ...bona, pagines: 7 }, 'sense la llista de fitxers': { ...bona, fitxers: undefined } };
+  ok(Object.entries(dolentes).every(([, x]) => { const hx = lec(x); return /Vam partir d'1 font:/.test(hx) && !/robots\.txt/.test(hx); }),
+    'una lectura que no lliga amb les fonts (' + Object.keys(dolentes).join(', ') + ') no es creu');
   rmSync(join(dir, 'fuentes', '.lectura.json'));
 }
 
@@ -88,6 +93,22 @@ console.log('\nEl que fa que no s\'escrigui');
   ok(L.comprova(amb('La verema la fem a mà amb tota la colla'), { revisat: true, fonts: alt }).some(x => /cita la web/.test(x)), 'vuit paraules de l\'alt d\'una imatge');
   const ent = [{ nom: 'b.html', cos: '<p>Obrim el celler cada s&aacute;bado i l&#8217;ermita del costat tamb&eacute; es visita</p>' }];
   ok(L.comprova(amb('Obrim el celler cada sábado i l’ermita del costat també'), { revisat: true, fonts: ent }).some(x => /cita la web/.test(x)), 'una font amb entitats (s&aacute;bado, &#8217;) no amaga la cita');
+  const cita = (frase, cos) => L.comprova(amb(frase), { revisat: true, fonts: [{ nom: 'c.html', cos }] }).some(x => /cita la web/.test(x));
+  ok(cita('Somos una bodega familiar. ¿Quieres probar nuestros vinos este sábado?', '<p>Somos una bodega familiar. &iquest;Quieres probar nuestros vinos este s&aacute;bado?</p>')
+    && cita('Al carrer Major nº 5 rebem visitants cada dissabte al matí', '<p>Al carrer Major n&ordm; 5 rebem visitants cada dissabte al mat&iacute;</p>')
+    && cita('Obrim el celler cada dissabte i ho expliquem tot amb calma', '<p>Obrim el celler cada dissabte i ho &xyzzy;expliquem tot amb calma</p>'),
+    'les entitats que no hi eren (&iquest;, &ordm;) i les desconegudes no amaguen la cita');
+  ok(cita('Cada dissabte obrim el celler i expliquem com treballem la vinya', '<h2><span>C</span><span>a</span><span>d</span><span>a</span> <span>d</span><span>i</span><span>s</span><span>s</span><span>a</span><span>b</span><span>t</span><span>e</span> obrim el celler i expliquem com treballem la vinya</h2>')
+    && cita('Cada dissabte obrim el celler i expliquem com treballem la vinya', '<p>Cada dissabte obrim el celler i explique\u00admos com treballem la vinya</p>'.replace('explique\u00admos', 'expli\u00adquem')),
+    'un títol amb cada lletra en un <span>, o un guionet opcional, no amaguen la cita');
+  ok(L.comprova(h.replace('</pre>', '\\nrebem visitants cada dissabte\\ni els expliquem com treballem\\nla vinya</pre>'), { revisat: true, fonts }).some(x => /cita la web/.test(x)),
+    'al bloc del mapa, una cita partida en línies curtes (\\n) es veu');
+  ok(['truca al (93) 892 12 34', 'truca al 938\u00a0921\u00a0234', 'truca al 93/892 12 34'].every(x => L.comprova(amb(x), { revisat: true }).some(y => /telèfon/.test(y))),
+    'un telèfon amb parèntesis, amb espais durs o amb barra');
+  ok(['la visita val 35euros', 'la caixa surt a 120EUR', 'la caixa surt a 120  €'].every(x => L.comprova(amb(x), { revisat: true }).some(y => /import/.test(y))),
+    'un import enganxat a «euros» o «EUR», o amb dos espais');
+  ok(L.comprova(amb('reserves a hola@cellerdelpenedès.cat'), { revisat: true }).some(x => /correu/.test(x)), 'un correu amb accents al domini');
+  ok(L.comprova(h, { revisat: true }).length === 0, 'i la pàgina de debò, amb dates, xifres i el mapa, no en salta cap');
   ok(L.comprova(h.replace('<meta name="robots" content="noindex, nofollow">', ''), { revisat: true }).some(x => /noindex/.test(x)), 'sense noindex');
   writeFileSync(join(dir, 'marca.json'), JSON.stringify({ lema: 'x' }));
   const m = JSON.parse(ex); m.parells[0] = m.parells[0].replace('el vi, la verema i el celler obert', 'escriu a vi@celler.example');
@@ -99,7 +120,7 @@ console.log('\nEl que fa que no s\'escrigui');
 
 console.log('\nEn castellà');
 {
-  const corre2 = (...x) => spawnSync(process.execPath, [join(TOOLS, 'proposta.js'), dir, '--llengua', 'es', ...x], { encoding: 'utf8' });
+  const corre2 = (...x) => proposta(dir, '--llengua', 'es', '--nom', 'Celler de Prova', ...x);
   const r = corre2('--lead', '--revisat');
   ok(r.status === 4 && /preguntas-visita\.md/.test(r.stderr), 'revisada en castellà, demana preguntas-visita.md: les del diagnòstic surten en català');
   writeFileSync(join(dir, 'preguntas-visita.md'), '# Preguntas\n\n1. ¿Quién confirma las visitas?\n2. ¿Qué pide el distribuidor cada mes?\n3. ¿Qué cuenta el pueblo de vosotros?\n4. Sobra\n');
@@ -111,22 +132,49 @@ console.log('\nEn castellà');
   const r3 = corre2('--lead', '--revisat'), h3 = f('lead.html');
   ok(r3.status === 0 && /<ol><li>¿Quién abre el celler los domingos\?<\/li><li>¿Quién lleva la tienda\?<\/li><li>¿Quién habla con el ayuntamiento\?<\/li><\/ol>/.test(h3),
     'preguntas-visita.md amb guions, asteriscs i finals de línia de Windows');
-  writeFileSync(join(dir, 'preguntas-visita.md'), '# Preguntas\n\nYa las pondré.\n');
-  const r4 = corre2('--lead', '--revisat');
-  ok(r4.status === 4 && /no té cap pregunta/.test(r4.stderr) && !existsSync(join(dir, 'lead.html')), 'un preguntas-visita.md sense preguntes atura --revisat');
+  writeFileSync(join(dir, 'preguntas-visita.md'), '1. ¿Quién abre el celler?\n   - nota interna: preguntar al enólogo\n* * *\n2. ¿Quién lleva la tienda?\n3. ¿Quién habla con el ayuntamiento?\n');
+  const r5 = corre2('--lead', '--revisat'), h5 = f('lead.html');
+  ok(r5.status === 0 && /<ol><li>¿Quién abre el celler\?<\/li><li>¿Quién lleva la tienda\?<\/li><li>¿Quién habla con el ayuntamiento\?<\/li><\/ol>/.test(h5) && !/nota interna/.test(h5),
+    'un guió sagnat és una nota de qui revisa i no surt, ni una ratlla «* * *»');
+  for (const [buit, com] of [['# Preguntas\n\nYa las pondré.\n', 'sense preguntes'], ['# Preguntas\n\n1.  \n2. \u00a0\n-  \n', 'amb números sols']]) {
+    writeFileSync(join(dir, 'preguntas-visita.md'), buit);
+    const r4 = corre2('--lead', '--revisat');
+    ok(r4.status === 4 && /no té cap pregunta/.test(r4.stderr) && !existsSync(join(dir, 'lead.html')), 'un preguntas-visita.md ' + com + ' atura --revisat');
+  }
   rmSync(join(dir, 'preguntas-visita.md'));
 }
 
 console.log('\nLa carpeta i la referència');
 {
-  const ref = JSON.parse(f('lead.json')).ref;
-  corre('--lead', '--nom', 'Un altre celler');
-  const j = JSON.parse(f('lead.json'));
-  ok(j.ref !== ref && j.nom === 'Un altre celler', 'una altra empresa a la mateixa carpeta: referència nova, mai la d\'un altre lead');
-  const dins = join(resolve(DIR, '..', '..'), 'tt-lead-prova-' + process.pid);
-  const r = spawnSync(process.execPath, [join(TOOLS, 'proposta.js'), dins, '--llengua', 'ca', '--lead'], { encoding: 'utf8' });
+  corre('--lead');
+  const abans = f('lead.json'), html = f('lead.html'), ana = f('analisis.json');
+  const r0 = corre('--lead', '--nom', 'Un altre celler');
+  ok(r0.status === 4 && /és de «Celler de Prova»/.test(r0.stderr) && f('lead.json') === abans && f('lead.html') === html && f('analisis.json') === ana,
+    'la carpeta d\'un altre negoci: surt amb 4 i no toca res, ni la referència ni la pàgina de l\'altre');
+  writeFileSync(join(dir, 'lead.json'), JSON.stringify({ ref: JSON.parse(abans).ref, nom: 'Una altra casa' }));
+  const r1 = proposta(dir, '--llengua', 'ca', '--lead');
+  ok(r1.status === 4 && /és de «Una altra casa»/.test(r1.stderr) && f('lead.html') === html, 'sense --nom, el nom que endevina l\'anàlisi també s\'ha de correspondre amb el de la carpeta');
+  writeFileSync(join(dir, 'lead.json'), abans);
+  const ARREL = resolve(DIR, '..', '..');
+  const dins = join(ARREL, 'tt-lead-prova-' + process.pid);
+  const r = proposta(dins, '--llengua', 'ca', '--lead');
   ok(r.status === 4 && /dins del repositori/.test(r.stderr) && !existsSync(dins), 'una carpeta dins del repositori, que es publica: surt amb 4 i no escriu res');
-  ok(L.dinsDelRepo(resolve(DIR, '..', '..')) && L.dinsDelRepo(join(DIR, '..', '..', '..x')) && !L.dinsDelRepo(dir), 'dinsDelRepo: el repositori i el que hi ha a dins, i no una carpeta de fora');
+  const enllac = join(tmpdir(), 'tt-enllac-' + process.pid), copia = mkdtempSync(join(tmpdir(), 'tt-copia-'));
+  symlinkSync(ARREL, enllac);
+  mkdirSync(join(copia, 'SOS', 'tools'), { recursive: true });
+  writeFileSync(join(copia, 'SOS', 'tools', 'pagina-lead.js'), '');
+  ok(L.dinsDelRepo(ARREL) && L.dinsDelRepo(join(ARREL, '..x')) && L.dinsDelRepo(join(enllac, 'leads', 'x')) && L.dinsDelRepo(join(copia, 'leads', 'x')) && !L.dinsDelRepo(dir),
+    'dinsDelRepo: el repositori, el que hi ha a dins, un enllaç simbòlic que hi porta i una altra còpia del repositori; una carpeta de fora, no');
+  unlinkSync(enllac);
+  rmSync(copia, { recursive: true, force: true });
+}
+
+console.log('\nL\'ordre ben escrit');
+{
+  ok(proposta(dir, '--lengua', 'es', '--lead').status === 2, 'una opció que no existeix (--lengua) surt amb 2');
+  ok(proposta(dir, '--llengua').status === 2 && proposta(dir, '--nom', '--lead').status === 2, 'una opció sense valor surt amb 2');
+  ok(proposta(dir, dir, '--lead').status === 2 && proposta(dir, '--llengua', 'en').status === 2, 'una carpeta de més o una llengua que no hi és surten amb 2');
+  ok(proposta(dir, '--llengua', 'ca', '--lead', '--revisat').status === 2, '--revisat sense --nom surt amb 2: la pàgina porta el nom que es dona');
 }
 
 rmSync(dir, { recursive: true, force: true });

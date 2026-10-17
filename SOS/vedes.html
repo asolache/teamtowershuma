@@ -2231,11 +2231,11 @@ details.ctx-i summary{cursor:pointer;font-weight:600}
 <p><strong>Après el 17/10/2026</strong>, revisant la pàgina que rep el lead abans de la visita.</p>
 <p>L'error que evita: la skill deia <code>proposta.js propuesta/ --lead</code>, des del repositori de TeamTowers, que és públic. El mapa, les fonts i el nom del lead quedaven en una carpeta que un <code>git add .</code> pujava, i un <code>lead.json</code> d'un lead anterior donava la mateixa referència al següent. A més, «Com s'ha fet» deia «vam llegir la teva web amb permís i respectant robots.txt» encara que les fonts les hagués desat algú a mà.</p>
 <ul>
-<li><strong>La carpeta d'un lead va fora del repositori</strong> (<code>../leads/&lt;negoci&gt;/</code>): amb <code>--lead</code>, <code>proposta.js</code> s'hi nega abans de baixar o escriure res, i surt amb 4. El <code>.gitignore</code> ho atura també, per si de cas.</li>
-<li><strong>Una referència és d'un sol negoci:</strong> <code>lead.json</code> porta el nom, i amb un altre nom se'n fa una de nova.</li>
-<li><strong>La pàgina només diu el que consta:</strong> la lectura amb permís, si la baixada la va deixar escrita («fuentes/.lectura.json»); si no, de quantes fonts surt.</li>
+<li><strong>La carpeta d'un lead va fora del repositori</strong> (<code>../leads/&lt;negoci&gt;/</code>): amb <code>--lead</code>, <code>proposta.js</code> s'hi nega abans de baixar o escriure res, i surt amb 4. Es mira pel camí de debò, perquè un enllaç simbòlic no ho amagui, i també dins de qualsevol altra còpia del repositori, d'on pot penjar un worktree. El <code>.gitignore</code> ho atura també, per si de cas.</li>
+<li><strong>Una carpeta és d'un sol negoci:</strong> <code>lead.json</code> porta el nom, i amb un altre nom no es fa res, perquè el mapa, les fonts i la lectura serien de l'altre. La pàgina revisada demana <code>--nom</code>: el que endevina l'anàlisi pot ser «Inicio» per a dos negocis.</li>
+<li><strong>La pàgina només diu el que consta:</strong> la lectura amb permís, si la baixada la va deixar escrita («fuentes/.lectura.json») i els fitxers que va desar encara hi són; si no, de quantes fonts surt.</li>
 </ul>
-<p><strong>Guarda:</strong> <code>test-pagina-lead.mjs</code> (carpeta dins del repositori, referència d'un altre negoci, amb i sense «.lectura.json»).</p>
+<p><strong>Guarda:</strong> <code>test-pagina-lead.mjs</code> (carpeta dins del repositori, per un enllaç o en una altra còpia; carpeta d'un altre negoci; lectura bona, vella o trencada).</p>
 </article>
   <p class="empty hidden" id="empty">Cap veda amb aquest text. Prova amb una paraula més curta.</p>
 

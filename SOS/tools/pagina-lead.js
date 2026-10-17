@@ -29,14 +29,15 @@
  *
  * Sense `revisat` la pàgina diu «ESBORRANY INTERN» i no porta botó.
  *
- * **La carpeta del lead va fora d'aquest repositori**, que es publica: si és a
- * dins, no es fa res. «Com s'ha fet» diu que es va llegir la web amb permís i
- * respectant robots.txt només si la baixada ho va deixar escrit
- * (`fuentes/.lectura.json`, d'`analitza-contingut.js`); si no, diu de quantes
- * fonts surt, sense prometre res. */
+ * **La carpeta del lead va fora d'aquest repositori**, que es publica, i és
+ * d'un sol negoci (`lead.json`): si és a dins o és d'un altre, no es fa res.
+ * «Com s'ha fet» diu que es va llegir la web amb permís i respectant robots.txt
+ * només si la baixada ho va deixar escrit (`fuentes/.lectura.json`,
+ * d'`analitza-contingut.js`) i els fitxers que va desar encara hi són; si no,
+ * diu de quantes fonts surt, sense prometre res. */
 'use strict';
-const { readFileSync, writeFileSync, existsSync, rmSync } = require('node:fs');
-const { join, resolve, relative, isAbsolute } = require('node:path');
+const { readFileSync, writeFileSync, existsSync, rmSync, realpathSync } = require('node:fs');
+const { join, resolve, relative, isAbsolute, dirname, basename } = require('node:path');
 const { randomBytes } = require('node:crypto');
 const X = require('./automatitza.js');
 
@@ -125,12 +126,15 @@ const nomTipus = (id, llengua) => {
    això, «s&aacute;bado» es partia en tres paraules i una cita passava. */
 const ACCENT = { acute: '\u0301', grave: '\u0300', uml: '\u0308', circ: '\u0302', tilde: '\u0303', cedil: '\u0327', ring: '\u030A' };
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', laquo: '«', raquo: '»',
-  hellip: '…', ndash: '–', mdash: '—', middot: '·', szlig: 'ß', aelig: 'æ', oslash: 'ø', euro: '€' };
+  hellip: '…', ndash: '–', mdash: '—', middot: '·', szlig: 'ß', aelig: 'æ', oslash: 'ø', euro: '€', iexcl: '¡', iquest: '¿', ordf: 'ª', ordm: 'º',
+  deg: '°', copy: '©', reg: '®', trade: '™', bull: '•', sup1: '¹', sup2: '²', sup3: '³', ensp: ' ', emsp: ' ', thinsp: ' ', shy: '', zwnj: '', zwj: '' };
 const desEnt = s => String(s).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, k) => {
   if (k[0] === '#') { const n = k[1] === 'x' || k[1] === 'X' ? parseInt(k.slice(2), 16) : parseInt(k.slice(1), 10); try { return String.fromCodePoint(n); } catch (e) { return ' '; } }
   if (ENT[k] != null) return ENT[k];
   const a = /^([a-z])(acute|grave|uml|circ|tilde|cedil|ring)$/i.exec(k);
-  return a ? (a[1] + ACCENT[a[2].toLowerCase()]).normalize('NFC') : m;
+  /* Una entitat que no coneixem no deixa les seves lletres al text: partiria
+     la frase i la cita passaria. */
+  return a ? (a[1] + ACCENT[a[2].toLowerCase()]).normalize('NFC') : '';
 });
 /* El text que es llegeix, sense etiquetes: és el que es comprova a la pàgina.
    Els atributs de la pàgina (els camins del dibuix) no són text i no compten. */
@@ -139,7 +143,13 @@ const text = html => desEnt(String(html).replace(/<style[\s\S]*?<\/style>/gi, ' 
    descripció, el `alt` d'una imatge, el `title`. És on sol viure la frase que
    un mapa acaba copiant. */
 const textFont = html => text(html) + ' ' + [...String(html).matchAll(/\s(?:content|alt|title|aria-label)\s*=\s*("([^"]*)"|'([^']*)')/gi)].map(m => desEnt(m[2] != null ? m[2] : m[3])).join(' . ');
-const paraules = s => String(s).normalize('NFC').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+/* I el mateix sense les etiquetes de dins de la línia: un títol amb cada
+   lletra en un <span> (els titulars animats) es llegeix sencer a la pantalla. */
+const INLINE = /<\/?(?:span|b|strong|em|i|u|a|small|sup|sub|mark|abbr|font)\b[^>]*>/gi;
+const textFontJunt = html => text(String(html).replace(INLINE, ''));
+/* Els caràcters de format (el guionet opcional, l'espai de zero) no es veuen
+   i no parteixen cap paraula. */
+const paraules = s => String(s).normalize('NFC').replace(/\p{Cf}/gu, '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 const TROS = 8;
 function trossos(s) {
   const p = paraules(s), out = new Set();
@@ -149,7 +159,9 @@ function trossos(s) {
 
 /* Les comprovacions. Tornen la llista del que falla, buida si tot passa. */
 function comprova(html, o) {
-  const f = [], t = text(html);
+  /* Al bloc del mapa (JSON dins de <pre>), un salt de línia és «\n»: es torna
+     espai perquè la «n» no s'enganxi a la paraula següent. */
+  const f = [], t = text(html).replace(/\\[ntr]/g, ' ');
   if (/<script\b/i.test(html)) f.push('porta <script>');
   if (/\son[a-z]+\s*=/i.test(html)) f.push('porta un atribut on…=');
   if (/\ssrc\s*=/i.test(html) || /<link\b/i.test(html) || /<(img|iframe|object|embed|video|audio)\b/i.test(html)) f.push('carrega alguna cosa (src, link, img…)');
@@ -157,12 +169,12 @@ function comprova(html, o) {
   if (/javascript:/i.test(html)) f.push('porta un enllaç javascript:');
   if (!/<meta name="robots" content="noindex/.test(html)) f.push('no porta noindex');
   if (!/<meta name="referrer" content="no-referrer">/.test(html)) f.push('no porta no-referrer');
-  if (/[\w.+-]+@[\w-]+\.[\w.-]+/.test(t)) f.push('el text porta un correu');
-  if (/\+?\d(?:[ .-]?\d){8,}/.test(t)) f.push('el text porta un telèfon');
-  if (/\d\s?€|€\s?\d|\beuros?\b|\bEUR\b/i.test(t)) f.push('el text porta un import');
+  if (/[^\s@<>()"]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)*\.\p{L}{2,}/u.test(t)) f.push('el text porta un correu');
+  if (/\+?\(?\d(?:[\s().\/-]{0,2}\d){8,}/.test(t)) f.push('el text porta un telèfon');
+  if (/\d\s*(?:€|eur(?:os?)?\b)|€\s*\d|\beuros?\b|\bEUR\b/i.test(t)) f.push('el text porta un import');
   if (o.fonts && o.fonts.length) {
     const meus = trossos(t);
-    const font = o.fonts.find(x => [...trossos(textFont(x.cos))].some(k => meus.has(k)));
+    const font = o.fonts.find(x => [...trossos(textFont(x.cos)), ...trossos(textFontJunt(x.cos))].some(k => meus.has(k)));
     if (font) f.push('cita la web: hi ha vuit paraules seguides de ' + font.nom);
   }
   if (o.revisat && /class="intern"/.test(html)) f.push('revisada però diu esborrany intern');
@@ -172,30 +184,47 @@ function comprova(html, o) {
 
 /* L'identificador de la pàgina: aleatori, es crea un cop i es guarda a
    `lead.json` amb el nom del negoci, perquè regenerar-la no canviï l'enllaç que
-   ja té el lead. Si a la carpeta hi ha el `lead.json` d'un altre negoci, se'n fa
-   un de nou: dos leads no comparteixen mai referència. */
+   ja té el lead. Una carpeta és d'un sol negoci: si `lead.json` en diu un
+   altre, no es fa res (el mapa, les fonts i la lectura serien de l'altre). */
+function amoDeLaCarpeta(dir) {
+  try { const x = JSON.parse(readFileSync(join(dir, 'lead.json'), 'utf8')); return /^[A-Za-z0-9_-]{16,}$/.test(x.ref) ? x : null; } catch (e) { return null; }
+}
 function referencia(dir, nom) {
-  const f = join(dir, 'lead.json');
-  try { const x = JSON.parse(readFileSync(f, 'utf8')); if (/^[A-Za-z0-9_-]{16,}$/.test(x.ref) && x.nom === nom) return x.ref; } catch (e) { /* es crea */ }
+  const x = amoDeLaCarpeta(dir);
+  if (x && x.nom === nom) return x.ref;
   const ref = randomBytes(12).toString('base64url');
-  writeFileSync(f, JSON.stringify({ ref, nom }, null, 2) + '\n');
+  writeFileSync(join(dir, 'lead.json'), JSON.stringify({ ref, nom }, null, 2) + '\n');
   return ref;
 }
+const unAltre = (dir, nom) => { const x = amoDeLaCarpeta(dir); return x && x.nom !== nom ? x.nom : null; };
 
-/* La carpeta d'un lead no pot ser dins d'aquest repositori: es publica. */
-const REPO = resolve(__dirname, '..', '..');
+/* La carpeta d'un lead no pot ser dins d'aquest repositori: es publica. Es
+   mira pel camí de debò (un enllaç simbòlic no l'amaga), i també dins de
+   qualsevol altra còpia del repositori: un worktree pot penjar d'una d'elles. */
+const REPO = realpathSync(resolve(__dirname, '..', '..'));
+function camiReal(dir) {
+  let d = resolve(dir), resta = [];
+  while (!existsSync(d)) { const p = dirname(d); if (p === d) break; resta.unshift(basename(d)); d = p; }
+  try { d = realpathSync(d); } catch (e) { /* es queda com és */ }
+  return join(d, ...resta);
+}
 function dinsDelRepo(dir) {
-  const r = relative(REPO, resolve(dir));
-  return !isAbsolute(r) && r.split(/[\\/]/)[0] !== '..';
+  const real = camiReal(dir), r = relative(REPO, real);
+  if (!isAbsolute(r) && r.split(/[\\/]/)[0] !== '..') return true;
+  for (let d = real; ; d = dirname(d)) {
+    if (existsSync(join(d, 'SOS', 'tools', 'pagina-lead.js'))) return true;
+    if (dirname(d) === d) return false;
+  }
 }
 
 /* Les tres preguntes: les de qui revisa (`preguntas-visita.md`, una per línia,
-   numerada o amb guió) o, si no n'hi ha, les tres més greus del diagnòstic, que surten en
+   numerada o amb guió a l'inici de la línia; un guió sagnat és una nota i no
+   surt) o, si no n'hi ha, les tres més greus del diagnòstic, que surten en
    català. */
 function preguntes(dir, diag) {
   const f = join(dir, 'preguntas-visita.md');
   if (existsSync(f)) {
-    const llista = readFileSync(f, 'utf8').split(/\r?\n/).map(l => /^\s*(?:\d+[.)]|[-*])\s+(.+?)\s*$/.exec(l)).filter(Boolean).map(m => m[1]).slice(0, 3);
+    const llista = readFileSync(f, 'utf8').split(/\r?\n/).map(l => /^(?:\s*\d+[.)]|[-*])\s+(.*\S)\s*$/.exec(l)).filter(m => m && /\p{L}/u.test(m[1])).map(m => m[1]).slice(0, 3);
     return { fitxer: true, propies: llista.length > 0, llista };
   }
   const ordre = { alta: 0, mitjana: 1, baixa: 2, nota: 3 };
@@ -234,6 +263,8 @@ function paginaLead(o) {
   const T = TXT[o.llengua] || TXT.es, llengua = T.lang, aut = o.aut, fitxer = join(o.dir, 'lead.html');
   const nega = falla => { rmSync(fitxer, { force: true }); return { escrita: false, fitxer, falla }; };
   if (dinsDelRepo(o.dir)) return { escrita: false, fitxer, falla: ['la carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/)'] };
+  const altre = unAltre(o.dir, o.nom);
+  if (altre) return { escrita: false, fitxer, falla: ['aquesta carpeta és de «' + altre + '» (lead.json): per a un altre negoci, una carpeta nova; si és el mateix, passa --nom «' + altre + '»'] };
   const pq = preguntes(o.dir, o.diag);
   const previ = [];
   if (o.revisat && pq.fitxer && !pq.propies) previ.push('preguntas-visita.md no té cap pregunta: una per línia, numerada o amb guió');
@@ -244,12 +275,14 @@ function paginaLead(o) {
 
   /* El que diu d'on surt, només si consta: la lectura de la web la deixa
      escrita la baixada; si no hi és, es diu de quantes fonts surt. */
-  const lec = o.lectura && Number(o.lectura.pagines) > 0 && /^\d{4}-\d{2}-\d{2}$/.test(o.lectura.data || '') ? o.lectura : null;
+  const noms = new Set((o.fonts || []).map(f => f.nom));
+  const lec = o.lectura && Number(o.lectura.pagines) > 0 && /^\d{4}-\d{2}-\d{2}$/.test(o.lectura.data || '')
+    && Array.isArray(o.lectura.fitxers) && o.lectura.fitxers.length === Number(o.lectura.pagines) && o.lectura.fitxers.every(n => noms.has(n)) ? o.lectura : null;
   const nFonts = (o.fonts || []).filter(f => /\.(html?|md|markdown|txt)$/i.test(f.nom)).length;
   const pl = (n, f) => n + ' ' + f[n === 1 ? 0 : 1];
   const pags = lec ? pl(Number(lec.pagines), T.pag) : pl(nFonts, T.font);
-  /* En català, «de 1» i «de 11» s'apostrofen: «d'1 font», «d'11 pàgines». */
-  const apo = s => llengua === 'ca' ? s.replace(/\bde (1|11) /g, 'd\'$1 ') : s;
+  /* En català, «de 1» i «el 1/…» s'apostrofen: «d'1 font», «l'1/10/2026». */
+  const apo = s => llengua === 'ca' ? s.replace(/\bde (1|11) /g, 'd\'$1 ').replace(/\bel (1|11)\//g, 'l\'$1/') : s;
   const dm = d => d.split('-').map(Number).reverse().join('/');
   const data = dm(/^\d{4}-\d{2}-\d{2}$/.test(o.data || '') ? o.data : new Date().toISOString().slice(0, 10));
   const ref = referencia(o.dir, o.nom);
@@ -291,4 +324,4 @@ function paginaLead(o) {
   return { escrita: true, fitxer, falla: [], ref };
 }
 
-module.exports = { paginaLead, comprova, dinsDelRepo, TIPUS_ES, VISITA };
+module.exports = { paginaLead, comprova, dinsDelRepo, unAltre, TIPUS_ES, VISITA };

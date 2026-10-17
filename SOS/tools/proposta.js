@@ -41,12 +41,14 @@
  *   3 · de moment només hi ha l'esbós: el que falta és feina de criteri, i
  *       `estado.md` diu quina;
  *   4 · amb `--lead`, la pàgina per al lead no s'ha escrit, i la consola diu per
- *       què: no hi ha `mapa.json` o és provisional (amb `--revisat`),
- *       `preguntas-visita.md` falta o és buit, un correu, un telèfon, un import o
- *       una frase de la web al mapa, a les preguntes o a `--nom`, o la carpeta és
- *       dins d'aquest repositori (aleshores no s'escriu res de res);
+ *       què: amb `--revisat`, no hi ha `mapa.json` o és provisional, o
+ *       `preguntas-visita.md` és buit (o falta, en castellà); un correu, un
+ *       telèfon, un import o una frase de la web al mapa, a les preguntes o a
+ *       `--nom`; o la carpeta és dins d'aquest repositori o és d'un altre negoci
+ *       (`lead.json`), i aleshores no s'escriu res de res;
  *   1 · un error, o `--lead` des del repositori d'un client;
- *   2 · l'ordre està mal escrit. */
+ *   2 · l'ordre està mal escrit: una opció que no existeix o sense valor, una
+ *       carpeta de més, o `--revisat` sense `--lead` o sense `--nom`. */
 'use strict';
 const { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } = require('node:fs');
 const { join, dirname, relative, basename } = require('node:path');
@@ -234,12 +236,16 @@ function paginaLead() {
 
 async function proposta(dir, opts) {
   const o = opts || {}, fonts = join(dir, 'fuentes');
-  /* La carpeta d'un lead va fora d'aquest repositori, que es publica: es diu
-     abans de baixar o escriure res. */
-  if (o.lead && paginaLead().dinsDelRepo(dir)) {
-    const err = new Error('La carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/). No s\'ha escrit res.');
-    err.surt = 4;
-    throw err;
+  /* Abans de baixar o escriure res: la carpeta d'un lead va fora d'aquest
+     repositori, que es publica, i és d'un sol negoci. La pàgina revisada porta
+     el nom que es dona, no el que endevina l'anàlisi. */
+  const atura = (msg, surt) => { const err = new Error(msg + ' No s\'ha escrit res.'); err.surt = surt; throw err; };
+  if (o.lead) {
+    const L = paginaLead();
+    if (L.dinsDelRepo(dir)) atura('La carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/).', 4);
+    if (o.revisat && !o.nom) atura('--revisat demana --nom: el nom del negoci tal com el veurà.', 2);
+    const altre = o.nom && L.unAltre(dir, o.nom);
+    if (altre) atura('Aquesta carpeta és de «' + altre + '» (lead.json): per a un altre negoci, una carpeta nova; si és el mateix, passa --nom «' + altre + '».', 4);
   }
   mkdirSync(dir, { recursive: true });
   if (o.baixa) {
@@ -311,15 +317,22 @@ async function proposta(dir, opts) {
 module.exports = { proposta, mdHtml };
 
 if (require.main === module) {
+  const US = 'Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://… --autoritzat <domini>] [--lead [--revisat]]';
+  const malament = m => { console.error('❌ ' + m + '\n' + US); process.exit(2); };
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
   for (let i = 0; i < a.length; i++) {
-    if (a[i] === '--casa') opts.casa.push(a[++i]);
-    else if (/^--(nom|correu|llengua|url|baixa|autoritzat)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
-    else if (/^--(lead|revisat)$/.test(a[i])) opts[a[i].slice(2)] = true;
+    if (/^--(casa|nom|correu|llengua|url|baixa|autoritzat)$/.test(a[i])) {
+      const v = a[++i];
+      if (v == null || v.startsWith('--')) malament(a[i - 1] + ' demana un valor');
+      if (a[i - 1] === '--casa') opts.casa.push(v); else opts[a[i - 1].slice(2)] = v;
+    } else if (/^--(lead|revisat)$/.test(a[i])) opts[a[i].slice(2)] = true;
+    else if (a[i].startsWith('-')) malament('no existeix l\'opció ' + a[i]);
     else pos.push(a[i]);
   }
-  if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://… --autoritzat <domini>] [--lead [--revisat]]'); process.exit(2); }
-  if (opts.revisat && !opts.lead) { console.error('--revisat va amb --lead'); process.exit(2); }
+  if (pos.length !== 1) malament(pos.length ? 'una sola carpeta' : 'falta la carpeta');
+  if (opts.llengua && !/^(es|ca)$/.test(opts.llengua)) malament('--llengua és es o ca');
+  if (opts.revisat && !opts.lead) malament('--revisat va amb --lead');
+  if (opts.revisat && !opts.nom) malament('--revisat demana --nom');
   proposta(pos[0], opts).then(r => {
     console.log((r.final ? '✅ Web per lliurar' : '◐ De moment, l\'esbós') + ': ' + r.fitxers + ' fitxers a ' + r.web
       + ' · ' + r.analisi.rols.length + ' candidats a rol · ' + r.analisi.preguntes.length + ' preguntes · el que falta, a ' + join(pos[0], 'estado.md')
