@@ -69,10 +69,12 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
 
 **Queda:**
 
-1. **Events Penedès hi entra** (punt 1 del «Cervell reutilitzable»): el seu
-   `cervell.json` apuntant al que ja té i una secció de vedes al seu codex. Sense
-   això `--recull` no té res a llegir.
-2. **Els seus productes declarats:** les funcions que ja corren allà (el tauler
+1. ~~**Events Penedès hi entra**~~ · **fet el 17/10/2026** al seu repositori
+   privat: `cervell.json`, la guarda al CI, set vedes pròpies i l'herència. La
+   primera recollida és a `SOS/knowledge/cervell/pujades.md`: set vedes i sis
+   productes, totes proposades. **Queda:** que l'Àlvar les adopti o descarti.
+2. **Els seus productes declarats** (declarats el 17/10/2026; falta passar els
+   adoptats al catàleg): les funcions que ja corren allà (el tauler
    de comandament, la petició que es converteix en esborrany de proposta i lead,
    el partner que manté la seva fitxa, el catàleg de proveïdors generat,
    l'enriquiment d'agències) en un `productos.md`, i les que s'adoptin, al
