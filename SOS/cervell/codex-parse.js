@@ -88,5 +88,32 @@
     });
   }
 
-  return { CAPAS: CAPAS, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, plantilla: plantilla, lee: lee, limpia: limpia };
+  /* El codex públic d'un repositori, al navegador: el de la matriu, o el que
+     digui el `cervell.json` d'un fill. Un fill amb `"privat": true` no es llegeix
+     (llança { privat: true }); sense codex públic, torna null. El fan servir
+     `SOS/cervell.html` i la portada. raw.githubusercontent.com no gasta la quota
+     de l'API i respon a qualsevol origen. */
+  var MATRIU = 'asolache/teamtowershuma';
+  function cru(repo, ruta) {
+    return fetch('https://raw.githubusercontent.com/' + repo + '/HEAD/' + ruta.replace(/^\.?\//, ''), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.text() : null; }).catch(function () { return null; });
+  }
+  function deRepo(repo) {
+    return cru(repo, RUTA_CODEX).then(function (codex) {
+      if (codex) return { codex: codex, fill: false };
+      return cru(repo, RUTA_HIJO).then(function (c) {
+        var conf = null; try { conf = c ? JSON.parse(c) : null; } catch (e) {}
+        if (conf && conf.privat === true) throw { privat: true };
+        return conf && conf.codex ? cru(repo, conf.codex).then(function (x) { return x ? { codex: x, fill: true, nom: conf.nom } : null; }) : null;
+      });
+    }).then(function (f) {
+      if (!f) return null;
+      return Promise.all([cru(repo, RUTA_HERENCIA), f.fill ? cru(MATRIU, RUTA_PLANTILLA) : null]).then(function (v) {
+        var her = null; try { her = v[0] ? JSON.parse(v[0]) : null; } catch (e) {}
+        f.herencia = her; f.plantilla = plantilla(v[1]); return f;
+      });
+    });
+  }
+
+  return { CAPAS: CAPAS, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, plantilla: plantilla, lee: lee, limpia: limpia, deRepo: deRepo };
 });

@@ -217,6 +217,26 @@ la veda 167 heretable i la nota del compromís a `conecta/#ia`.
 3. Mesurar l'energia o trobar-ne una font: avui els tokens en són
    l'aproximació, i es diu.
 
+### El cervell a la portada i «Crea el teu cervell de xarxa» (demanat 17/10/2026)
+
+**Demanat per l'Àlvar:** la vista del cervell de la seva web, la castellera en
+moviment, a dalt de tot de la portada, i el producte «Crea el teu cervell de
+xarxa» a l'oferta, sense duplicar res.
+
+**Fet:** el dibuix pla de `cerebro.html` (repositori `alvarosolache`) passa a
+`SOS/cervell/pla.js`; la portada el fa servir amb `SOS/cervell/teamtowers.json`,
+que `build-cervell-dades.js` treu del codex (amb `--check` al CI). El producte
+és una targeta a sota dels tres serveis, sense preu: «el teu cervell», amb la xarxa com a pas següent (el motor de xarxa encara no en sap muntar una de nova). Events Penedès no s'hi anomena fins que l'Àlvar ho validi.
+
+La franja (`SOS/cervell/franja.js`) té un botó per projecte públic de la xarxa
+(avui el SOS i Álvaro Solache): el codex del fill es llegeix de GitHub amb
+`CodexParse.deRepo` (el mateix que fa servir `SOS/cervell.html`) i les seves
+vedes pugen damunt de les del SOS. Un fill privat no es llegeix mai; Events
+Penedès no hi és fins que l'Àlvar ho validi.
+
+**Queda:** que `cerebro.html` d'Álvaro carregui `pla.js` de la matriu en lloc
+de la seva còpia del dibuix, com ja fa amb `forces.js` i `3d.js`.
+
 ### La matriu aprèn dels fills · la pujada del cervell (demanat 17/10/2026)
 
 **Demanat per l'Àlvar:** un backlog coordinat entre Events Penedès i la web

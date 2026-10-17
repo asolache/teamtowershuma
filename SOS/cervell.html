@@ -282,32 +282,17 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 <script>
 (function () {
   var CP = window.CodexParse, estat = document.getElementById('estat'), caixa = document.getElementById('cv');
-  var MATRIU = 'asolache/teamtowershuma', D = null, AN = null, meta = null, vista = null;
+  var MATRIU = CP.MATRIU, D = null, AN = null, meta = null, vista = null;
   var CODI = ['forces.js', '3d.js', 'vista.js'];
 
-  /* raw.githubusercontent.com no gasta la quota de l'API i respon a qualsevol origen. */
-  function cru(repo, ruta) {
-    return fetch('https://raw.githubusercontent.com/' + repo + '/HEAD/' + ruta.replace(/^\.?\//, ''), { cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.text() : null; }).catch(function () { return null; });
-  }
   function llegeix(repo) {
     repo = repo.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/+$/, '');
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { estat.textContent = 'Escriu-lo com a propietari/repositori.'; return; }
     estat.textContent = 'Llegint el codex de ' + repo + '…';
-    cru(repo, CP.RUTA_CODEX).then(function (codex) {
-      if (codex) return { codex: codex, fill: false };
-      return cru(repo, CP.RUTA_HIJO).then(function (c) {
-        var conf = null; try { conf = c ? JSON.parse(c) : null; } catch (e) {}
-        if (conf && conf.privat === true) throw { privat: true };
-        return conf && conf.codex ? cru(repo, conf.codex).then(function (x) { return x ? { codex: x, fill: true } : null; }) : null;
-      });
-    }).then(function (f) {
+    CP.deRepo(repo).then(function (f) {
       if (!f) { estat.textContent = 'No he trobat cap codex públic a ' + repo + '. Puja el teu codex.md o crea\'l amb cervell.js --nou.'; return; }
-      return Promise.all([cru(repo, CP.RUTA_HERENCIA), f.fill ? cru(MATRIU, CP.RUTA_PLANTILLA) : null]).then(function (v) {
-        var her = null; try { her = v[0] ? JSON.parse(v[0]) : null; } catch (e) {}
-        dibuixa(f.codex, { nom: repo.split('/')[1], font: repo, herencia: her, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: CP.plantilla(v[1]) });
-        try { history.replaceState(null, '', '?repo=' + encodeURIComponent(repo)); } catch (e) {}
-      });
+      dibuixa(f.codex, { nom: repo.split('/')[1], font: repo, herencia: f.herencia, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: f.plantilla });
+      try { history.replaceState(null, '', '?repo=' + encodeURIComponent(repo)); } catch (e) {}
     }).catch(function (e) {
       estat.textContent = e && e.privat ? 'Aquest cervell és privat: es mira a la seva web amb la teva sessió de GitHub, no aquí.' : 'No he pogut llegir GitHub ara mateix. Torna-ho a provar d\'aquí a una estona.';
     });
