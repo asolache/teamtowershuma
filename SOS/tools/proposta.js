@@ -38,6 +38,7 @@ const { join, dirname, relative, basename } = require('node:path');
 const A = require('./analitza-contingut.js');
 const { diagnostica } = require('./revisa-mapa.js');
 const W = require('./web-del-mapa.js');
+const X = require('./automatitza.js');
 
 /* Mentre un fitxer porti aquesta línia, és de l'eina i es torna a escriure. */
 const MARCA_GEN = '<!-- proposta.js: es regenera mentre aquesta línia hi sigui. Esborra-la per fer-lo teu. -->';
@@ -45,6 +46,7 @@ const meu = f => !existsSync(f) || readFileSync(f, 'utf8').includes(MARCA_GEN);
 
 const TXT = {
   es: {
+    autom: 'Lo automatizable', automD: '{a} % automático y {s} % asistido, en {n} entregas{e}. El detalle, en `automatizable.md`.', est: ' (estimación: sale del esbozo)',
     estat: 'Estado de la propuesta', gen: 'Generado por `proposta.js`. Se vuelve a escribir cada vez.',
     fonts: 'Fuentes leídas', mapa: 'El mapa', web: 'La web', falta: 'Lo que falta (trabajo de criterio)',
     esbos: 'Esbozo automático (`mapa-esbozo.json`): todavía no hay `mapa.json`.', propi: '`mapa.json`',
@@ -64,6 +66,7 @@ const TXT = {
     da: 'da', torna: 'devuelve', met: '{r} roles · {d} % de densidad · {i} % intangibles'
   },
   ca: {
+    autom: "L'automatitzable", automD: '{a} % automàtic i {s} % assistit, en {n} lliuraments{e}. El detall, a `automatizable.md`.', est: " (estimació: surt de l'esbós)",
     estat: 'Estat de la proposta', gen: 'Generat per `proposta.js`. Es torna a escriure cada vegada.',
     fonts: 'Fonts llegides', mapa: 'El mapa', web: 'La web', falta: 'El que falta (feina de criteri)',
     esbos: 'Esbós automàtic (`mapa-esbozo.json`): encara no hi ha `mapa.json`.', propi: '`mapa.json`',
@@ -232,6 +235,12 @@ async function proposta(dir, opts) {
   const fitxers = await W.genera(mapa, { nom, llengua, url: o.url, correu: o.correu, casa: o.casa || [], marca: W.llegeixMarca(fMarca) });
   fitxers.forEach(f => { const r = join(desti, f.ruta); mkdirSync(dirname(r), { recursive: true }); writeFileSync(r, f.cos); });
 
+  /* El x % del mapa que el sistema fa sol: es mesura, i amb l'esbós és una
+     estimació (veda 156). */
+  const aut = X.mesura(mapa, { esbos: !propi });
+  writeFileSync(join(dir, 'automatizable.md'), X.aMarkdown(aut, llengua));
+  writeFileSync(join(dir, 'automatizable.json'), JSON.stringify(aut, null, 2) + '\n');
+
   const ordre = { alta: 0, mitjana: 1, baixa: 2, nota: 3 };
   const trob = diag.troballes.slice().sort((x, y) => (ordre[x.gravetat] ?? 9) - (ordre[y.gravetat] ?? 9));
   if (meu(join(dir, 'preguntas.md'))) {
@@ -257,10 +266,10 @@ async function proposta(dir, opts) {
   writeFileSync(join(dir, 'estado.md'), ['# ' + T.estat + ' · ' + nom, '', '> ' + T.gen, '',
     '## ' + T.fonts, '', fit.map(f => '`' + f.nom + '`').join(', '), '',
     '## ' + T.mapa, '', (propi ? T.propi : T.esbos) + ' · ' + (diag.provisional ? T.prov : T.passa)]
-    .concat(dures.map(r => '- ✗ ' + r.t + ': ' + r.diu), ['', '## ' + T.web, '', final ? T.webOk : T.webEsb, '', '## ' + T.falta, ''],
+    .concat(dures.map(r => '- ✗ ' + r.t + ': ' + r.diu), ['', '## ' + T.autom, '', T.automD.replace('{a}', aut.automatic).replace('{s}', aut.assistit).replace('{n}', aut.total).replace('{e}', aut.estimacio ? T.est : ''), '', '## ' + T.web, '', final ? T.webOk : T.webEsb, '', '## ' + T.falta, ''],
       falta.map((x, i) => (i + 1) + '. ' + x)).join('\n') + '\n');
   const inici = paginaInici(dir, desti, nom, llengua);
-  return { final, provisional: diag.provisional, propi, web: desti, fitxers: fitxers.length, analisi: an, inici };
+  return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici };
 }
 module.exports = { proposta, mdHtml };
 

@@ -73,8 +73,9 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
    privat: `cervell.json`, la guarda al CI, set vedes pròpies i l'herència. La
    primera recollida és a `SOS/knowledge/cervell/pujades.md`: set vedes i sis
    productes, totes proposades. **Queda:** que l'Àlvar les adopti o descarti.
-2. **Els seus productes declarats** (declarats el 17/10/2026; falta passar els
-   adoptats al catàleg): les funcions que ja corren allà (el tauler
+2. **Els seus productes declarats** (declarats el 17/10/2026; **l'Àlvar els
+   adopta tots sis el mateix dia**, PR #233; falta la pàgina del catàleg, que
+   és del fil de la web): les funcions que ja corren allà (el tauler
    de comandament, la petició que es converteix en esborrany de proposta i lead,
    el partner que manté la seva fitxa, el catàleg de proveïdors generat,
    l'enriquiment d'agències) en un `productos.md`, i les que s'adoptin, al
@@ -88,10 +89,13 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
    ja els gestiono això, ells es poden centrar en l'estratègic i el tàctic.»
    Ja hi ha les peces: `proposta.js` llegeix la web del lead, en treu l'esbós de
    mapa, les preguntes i la web, i `EMPIEZA-AQUI.html` n'és la porta. Falta:
-   - **el x %, mesurat i no promès:** cada lliurament de l'esbós marcat com a
-     automàtic (el fa el SOS o la IA), assistit o humà, amb el motiu al costat;
-     el x % és la part automàtica sobre el total, per flux. Quan el mapa és un
-     esbós, la xifra surt com a estimació (veda 156);
+   - ~~**el x %, mesurat i no promès**~~ · **fet el 17/10/2026**:
+     `SOS/tools/automatitza.js` marca cada lliurament com a automàtic, assistit
+     o humà amb el motiu, i dona el x % total i per rol. Un intangible sempre és
+     humà; el que cap producte fa, també. Els productes i els seus patrons són a
+     `SOS/knowledge/cervell/automatitzable.json` (els sis d'Events Penedès i dos
+     del SOS). `proposta.js` escriu `automatizable.md` per al lead, i a l'esbós
+     la xifra surt com a estimació (veda 156). S'hereta als fills;
    - **el que s'automatitza, nomenat amb productes de debò:** cada lliurament
      automàtic apunta al producte del catàleg que el fa, i molts naixeran a
      Events Penedès (punt 2);
@@ -99,7 +103,10 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
      preguntes per a la visita, que s'envia per enllaç (capa «per enllaç» del
      cervell) i sense dades personals a la web pública;
    - **el seguiment:** el lead obert a Zoho amb l'enllaç enviat, i l'avís quan
-     l'obre, perquè la visita comenci on ell s'ha quedat.
+     l'obre, perquè la visita comenci on ell s'ha quedat. **Bloquejat** per la
+     tasca #1 de l'Àlvar: posar les claus de Zoho a Netlify (guia
+     `SOS/knowledge/dev/guia-zoho-nivell2.md`). El 17/10/2026 la tria «avui»,
+     però no pot entrar a Netlify en aquell moment; queda en curs.
    La pàgina és del fil «Web del servei Mapa de Valor»; aquí queden el càlcul
    i la pujada de productes, perquè no es trepitgin.
 
