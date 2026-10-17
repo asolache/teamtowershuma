@@ -11,6 +11,7 @@
    · Els dos errors (token i lead) tornen «error» sense rebentar.
    · El registre no porta cap dada personal. */
 import { processa, aLead, config, handler } from '../../netlify/functions/submission-created.mjs';
+import { readFileSync } from 'node:fs';
 
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
@@ -70,6 +71,21 @@ console.log('\n2b · La comanda de la pàgina de preus');
   ok(/Origen: Comanda des de la pàgina de preus/.test(c.Description) && /Comanda: Taller d'equip · a confirmar/.test(c.Description),
     'i la descripció diu què s\'ha contractat i a quin preu');
   ok(/Quan: dimarts/.test(c.Description) && /Notes: som 8/.test(c.Description), 'amb quan i les notes');
+}
+
+console.log('\n2c · La visita des de la pàgina del lead');
+{
+  const v = aLead('visita', { nom: 'Júlia Ferrer', mail: 'julia@example.org', resposta: 'no', ref: 'AbCdEfGhIjKlMnOp', quan: 'dijous', notes: 'falta el distribuïdor' });
+  ok(v && v.Email === 'julia@example.org' && /Origen: Visita des de la pàgina del lead/.test(v.Description), 'el formulari de /visita/ entra com a lead');
+  ok(/Resposta: Diu que el mapa no és així/.test(v.Description) && /Pàgina del lead: AbCdEfGhIjKlMnOp/.test(v.Description) && /Notes: falta el distribuïdor/.test(v.Description),
+    'amb la resposta, la referència de la pàgina i el que hi falta');
+  const html = readFileSync(new URL('../../visita/index.html', import.meta.url), 'utf8');
+  const camps = [...html.matchAll(/<(?:input|textarea)[^>]*name="([^"]+)"/g)].map(m => m[1]);
+  ok(/<form name="visita"[^>]*data-netlify="true"[^>]*netlify-honeypot="bot-field"/.test(html) && /name="form-name" value="visita"/.test(html)
+    && ['nom', 'mail', 'resposta', 'ref', 'quan', 'notes', 'bot-field'].every(c => camps.includes(c)), 'la pàgina /visita/ porta el formulari que Netlify veu, amb els camps que llegeix aLead');
+  const f = fals([]), r = await processa(cos('visita', { 'form-name': 'visita', nom: 'Júlia', mail: 'julia@example.org', resposta: 'si', ref: 'AbCdEfGhIjKlMnOp' }), { ...ENV, ZOHO_DRY_RUN: '1' }, f);
+  ok(r.estat === 'prova' && /Resposta: Vol la visita/.test(r.lead.Description) && !f.crides.length, 'en sec (ZOHO_DRY_RUN): munta el lead de la visita i no l\'envia');
+  ok(/<meta name="robots" content="noindex/.test(html) && !/<script[^>]+src=/.test(html) && !/fetch\(|XMLHttpRequest|sendBeacon/.test(html), 'no s\'indexa i no envia res sol ni carrega res de fora');
 }
 
 console.log('\n3 · El camí bo');

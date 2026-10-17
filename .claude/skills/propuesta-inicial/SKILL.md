@@ -159,6 +159,40 @@ cada mes y con Claude, y lleva la propuesta y las preguntas tal como son.
 Antes de enviarla: `node guardas/cervell.js --check` en verde, y ningún dato
 personal ni importe en la carpeta.
 
+## Enviar antes de la visita · la página del lead
+
+Cuando un lead va a recibir visita, antes se le manda una página con el x % de
+su mapa que el sistema ya puede preparar. Así la visita se dedica a lo
+estratégico y lo táctico. Lo decidió Álvaro el 17/10/2026; el detalle está en
+el backlog («La pàgina per al lead»). Se hace desde el repositorio de
+TeamTowers, no desde el del cliente.
+
+1. **El sí, por escrito.** Sin el sí del lead no se lee su web. El correo de
+   «Pedir mi borrador» de /mapa-web/ ya lo pide. El sí va al CRM.
+2. **El borrador interno.** `--lead` escribe `propuesta/lead.html`, con
+   «BORRADOR INTERNO» arriba y sin botón:
+
+   ```bash
+   node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" --lead
+   ```
+
+   Se abre y se lee entera, en el móvil.
+3. **Revisarla.** Hace falta un `mapa.json` que pase las reglas duras: el
+   esbozo no se envía. En castellano, las tres preguntas para la visita van en
+   `propuesta/preguntas-visita.md`, una por línea numerada, porque las del
+   diagnóstico salen en catalán. Después, `--lead --revisat`. Si sale con 4, la
+   página no se ha escrito y la consola dice por qué: un correo, un teléfono,
+   un importe o una frase copiada de su web. Se corrige el mapa, no la página.
+4. **Publicarla** en el repositorio privado de las páginas de leads, con su
+   sitio de Netlify, en una carpeta con la referencia de `lead.json` como
+   nombre. Nunca en el repositorio público. Ese repositorio lo crea Álvaro
+   (paso 7 del backlog).
+5. **Anotarlo en Zoho:** «enviado» y la fecha, a mano hasta que haya permiso
+   para actualizar leads (paso 9). Si el lead responde en /visita/, llega como
+   lead nuevo con la referencia de su página. Es la única forma de saber que la
+   ha abierto: la página no lleva ningún píxel.
+6. **Borrarla después de la visita.**
+
 ## Lo que nunca entra
 
 - **Datos personales** de quien pide la propuesta, ni en el mapa ni en el repositorio.

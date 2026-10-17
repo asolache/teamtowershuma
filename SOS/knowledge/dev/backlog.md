@@ -167,13 +167,17 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    d'un «mapa.json» que passa les regles dures (l'esbós no s'envia), i en
    castellà només amb «preguntas-visita.md», perquè les preguntes del
    diagnòstic surten en català.
-6. **La pàgina «/visita/»** i el seu formulari a la llista de
-   `submission-created.mjs`, amb prova en sec; el correu de /mapa-web/ hi
-   apunta.
+6. ~~**La pàgina «/visita/»**~~ · **fet el 17/10/2026**. `visita/index.html`
+   porta el formulari «visita» (la resposta, la referència de la pàgina, el nom,
+   el correu, quan i el que hi falta), i és a la llista de
+   `netlify/functions/submission-created.mjs`. Ho prova
+   `test-zoho-nivell2.mjs`, també en sec. El correu de «Pedir mi borrador» de
+   /mapa-web/ ara demana el sí per escrit per llegir la web.
 7. **El repositori privat i el seu lloc de Netlify.** L'Àlvar el crea; aquest
    fil l'omple.
-8. **La skill «propuesta-inicial»** amb el pas «Enviar abans de la visita»:
-   el sí del lead, `--lead`, `--revisat`, publicar, anotar a Zoho i esborrar.
+8. ~~**La skill «propuesta-inicial»** amb el pas «Enviar abans de la visita»~~
+   · **fet el 17/10/2026**: el sí del lead, `--lead`, `--revisat`, publicar,
+   anotar a Zoho i esborrar.
 9. **El seguiment a Zoho**, després de la tasca #1 i amb permís per actualitzar
    leads.
 

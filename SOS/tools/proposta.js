@@ -45,7 +45,6 @@ const A = require('./analitza-contingut.js');
 const { diagnostica } = require('./revisa-mapa.js');
 const W = require('./web-del-mapa.js');
 const X = require('./automatitza.js');
-const L = require('./pagina-lead.js');
 
 /* Mentre un fitxer porti aquesta línia, és de l'eina i es torna a escriure. */
 const MARCA_GEN = '<!-- proposta.js: es regenera mentre aquesta línia hi sigui. Esborra-la per fer-lo teu. -->';
@@ -216,6 +215,14 @@ function paginaInici(dir, desti, nom, llengua) {
   return join(arrel, 'EMPIEZA-AQUI.html');
 }
 
+/* La pàgina per al lead es fa des del repositori de TeamTowers: dibuixa amb
+   `build-mapavalor.js`, que no s'hereta. Al d'un client, `proposta.js` funciona
+   igual sense ella, i `--lead` diu on s'ha de fer. */
+function paginaLead() {
+  try { return require('./pagina-lead.js').paginaLead; }
+  catch (e) { if (e.code === 'MODULE_NOT_FOUND') throw new Error('--lead es fa des del repositori de TeamTowers, no des del d\'un client'); throw e; }
+}
+
 async function proposta(dir, opts) {
   const o = opts || {}, fonts = join(dir, 'fuentes');
   mkdirSync(dir, { recursive: true });
@@ -280,7 +287,7 @@ async function proposta(dir, opts) {
       falta.map((x, i) => (i + 1) + '. ' + x)).join('\n') + '\n');
   const inici = paginaInici(dir, desti, nom, llengua);
   /* La pàgina per al lead, amb la mateixa xifra i el mateix diagnòstic. */
-  const lead = o.lead ? L.paginaLead({ dir, mapa, aut, diag, nom, llengua, marca: W.llegeixMarca(fMarca), fonts: fit, propi, revisat: !!o.revisat, data: o.data }) : null;
+  const lead = o.lead ? paginaLead()({ dir, mapa, aut, diag, nom, llengua, marca: W.llegeixMarca(fMarca), fonts: fit, propi, revisat: !!o.revisat, data: o.data }) : null;
   return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici, lead };
 }
 module.exports = { proposta, mdHtml };
