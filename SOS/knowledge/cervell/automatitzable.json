@@ -1,0 +1,137 @@
+{
+  "nota": "Què pot fer el SOS o un producte del catàleg sense una persona al davant. Ho llegeix SOS/tools/automatitza.js per calcular el x % automatitzable d'un mapa. Un lliurament que no encaixa amb cap patró és humà: el x % es mesura, no es promet (veda 156). Sense preus: el cost és d'IA per tasca.",
+  "de_persona": {
+    "diu": "un pagament només el dona per fet qui el rep, i la factura la numera qui porta els comptes (decidit el 10/10/2026, PR #226)",
+    "diu_es": "un pago solo lo da por hecho quien lo recibe, y la factura la numera quien lleva las cuentas",
+    "patrons": [
+      "pago",
+      "pagament",
+      "cobro",
+      "cobrament",
+      "factura",
+      "recibo",
+      "rebut",
+      "señal",
+      "senyal",
+      "diners",
+      "dinero"
+    ]
+  },
+  "productes": [
+    {
+      "nom": "Del formulario a la propuesta",
+      "origen": "Events Penedès",
+      "mode": "assistit",
+      "diu": "l'esborrany surt sol de la petició; una persona el revisa abans d'enviar-lo",
+      "diu_es": "el borrador sale solo de la petición; una persona lo revisa antes de enviarlo",
+      "patrons": [
+        "propuesta",
+        "proposta",
+        "presupuesto",
+        "pressupost",
+        "cotizaci",
+        "cotitzaci",
+        "oferta"
+      ]
+    },
+    {
+      "nom": "Tu día en una pantalla",
+      "origen": "Events Penedès",
+      "mode": "automatic",
+      "diu": "el correu, el calendari i el CRM en una pantalla, sense picar res",
+      "diu_es": "el correo, el calendario y el CRM en una pantalla, sin teclear nada",
+      "patrons": [
+        "agenda",
+        "calendari",
+        "seguimiento",
+        "seguiment",
+        "recordatori",
+        "aviso",
+        "avís",
+        "avis",
+        "informe de estado",
+        "informe d'estat"
+      ]
+    },
+    {
+      "nom": "La red que se mantiene sola",
+      "origen": "Events Penedès",
+      "mode": "automatic",
+      "diu": "cada partner manté la seva fitxa i autoritza la seva pàgina amb un clic",
+      "diu_es": "cada partner mantiene su ficha y autoriza su página con un clic",
+      "patrons": [
+        "ficha",
+        "fitxa",
+        "disponibilidad",
+        "disponibilitat",
+        "datos de proveedor",
+        "dades de proveïdor",
+        "alta de proveedor",
+        "alta de proveïdor"
+      ]
+    },
+    {
+      "nom": "Tu catálogo de partners",
+      "origen": "Events Penedès",
+      "mode": "automatic",
+      "diu": "el catàleg i els dossiers es generen de les dades, no es maquetan",
+      "diu_es": "el catálogo y los dossieres se generan de los datos, no se maquetan",
+      "patrons": [
+        "catálogo",
+        "catalogo",
+        "catàleg",
+        "cataleg",
+        "dossier",
+        "tarifa"
+      ]
+    },
+    {
+      "nom": "Leads ordenados por potencial",
+      "origen": "Events Penedès",
+      "mode": "assistit",
+      "diu": "la llista s'enriqueix i s'ordena sola; a qui es truca ho decideix una persona",
+      "diu_es": "la lista se enriquece y se ordena sola; a quién se llama lo decide una persona",
+      "patrons": [
+        "lead",
+        "contactos",
+        "contactes",
+        "prospecci",
+        "base de datos de clientes",
+        "base de dades de clients"
+      ]
+    },
+    {
+      "nom": "Tu red en el mapa",
+      "origen": "Events Penedès",
+      "mode": "automatic",
+      "diu": "on és cada partner i què hi ha a prop, al mapa del territori",
+      "diu_es": "dónde está cada partner y qué hay cerca, en el mapa del territorio",
+      "patrons": [
+        "ubicaci",
+        "localizaci",
+        "localitzaci",
+        "territori",
+        "comarca",
+        "ruta"
+      ]
+    },
+    {
+      "nom": "El diagnòstic",
+      "origen": "SOS",
+      "mode": "automatic",
+      "diu": "el formulari del web arriba al CRM com a lead, amb les respostes",
+      "diu_es": "el formulario de la web llega al CRM como lead, con las respuestas",
+      "patrons": [
+        "diagnóstico",
+        "diagnostico",
+        "diagnòstic",
+        "diagnostic",
+        "formulario",
+        "formulari",
+        "encuesta",
+        "enquesta",
+        "inscripci"
+      ]
+    }
+  ]
+}

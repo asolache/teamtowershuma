@@ -37,7 +37,7 @@ function model(entrada) {
   catch (e) { return M.llegeixTextos(M.aTextos(entrada)); }
 }
 function diagnostica(entrada) { return D.diagnostica(model(entrada)); }
-module.exports = { diagnostica };
+module.exports = { diagnostica, model };
 
 if (require.main === module) {
   const a = process.argv.slice(2);

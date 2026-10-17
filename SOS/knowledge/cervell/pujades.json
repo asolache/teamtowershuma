@@ -36,32 +36,32 @@
       "text": "Un proyecto interno en un texto externo, sin validar, es una promesa que nadie\nha hecho. Los correos pasan por `tools/check-comunicacion.mjs`, con el guardián\nen `data/comunicacion.json`; ninguna IA marca la validación por su cuenta."
     },
     "producte Del formulario a la propuesta": {
-      "estat": "proposada",
+      "estat": "adoptada al catàleg (17/10/2026)",
       "titol": "Del formulario a la propuesta",
       "text": "La petición de la web crea el lead en el CRM y monta sola un borrador de\npropuesta con enlace cifrado que caduca. Lo hacen `netlify/` y\n`tools/build-propuesta.mjs`."
     },
     "producte Tu día en una pantalla": {
-      "estat": "proposada",
+      "estat": "adoptada al catàleg (17/10/2026)",
       "titol": "Tu día en una pantalla",
       "text": "El tablero de mando junta CRM, correo, calendario y facturas, y dice qué toca\nhoy en cada oportunidad (`tablero/`)."
     },
     "producte La red que se mantiene sola": {
-      "estat": "proposada",
+      "estat": "adoptada al catàleg (17/10/2026)",
       "titol": "La red que se mantiene sola",
       "text": "Cada partner corrige su ficha y autoriza su página en un clic, sin que haya que\npedírselo (`tools/ficha-proveedor.mjs`, `alta-proveedor`)."
     },
     "producte Tu catálogo de partners": {
-      "estat": "proposada",
+      "estat": "adoptada al catàleg (17/10/2026)",
       "titol": "Tu catálogo de partners",
       "text": "El catálogo y las tarifas largas se generan de un solo JSON y el CI falla si no\ncorresponden (`tools/build-catalogo.mjs`)."
     },
     "producte Leads ordenados por potencial": {
-      "estat": "proposada",
+      "estat": "adoptada al catàleg (17/10/2026)",
       "titol": "Leads ordenados por potencial",
       "text": "La base de agencias se enriquece y se ordena por prioridad para saber a quién\nllamar primero (`tools/enriquecer-agencias.mjs`, `tools/segmentar-cuentas.mjs`)."
     },
     "producte Tu red en el mapa": {
-      "estat": "proposada",
+      "estat": "adoptada al catàleg (17/10/2026)",
       "titol": "Tu red en el mapa",
       "text": "Cada partner cae en su comarca y su papel en el mapa de valor, con las\nconexiones físicas entre comarcas (`tools/build-territorio.mjs`, `tools/check-valor.mjs`)."
     }
