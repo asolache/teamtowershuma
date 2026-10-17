@@ -507,7 +507,14 @@ else bad(`${fantasma.length} cares declarades sense carpeta: ${fantasma.join(', 
 
 const vell = existsSync(MAPA) ? readFileSync(MAPA, 'utf8') : '';
 if (vell === md) ok('el mapa és el que sortiria ara');
-else bad(`el mapa no correspon a l'arbre. Arregla-ho amb:  node ${C.eina}`);
+else {
+  bad(`el mapa no correspon a l'arbre. Arregla-ho amb:  node ${C.eina}`);
+  /* Les línies que canvien: sense elles, un mapa que només falla a la CI no
+     es pot entendre des de casa. */
+  const ara = new Set(md.split('\n')), abans = new Set(vell.split('\n'));
+  vell.split('\n').filter(l => !ara.has(l)).forEach(l => console.log(`      - ${l}`));
+  md.split('\n').filter(l => !abans.has(l)).forEach(l => console.log(`      + ${l}`));
+}
 if (PAGINA) {
   const velleta = existsSync(PAGINA) ? readFileSync(PAGINA, 'utf8') : '';
   if (velleta === pagina()) ok('la pàgina del cervell és la que sortiria ara');
