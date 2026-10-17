@@ -274,10 +274,6 @@ a{color:var(--blue);text-decoration:none}
 .vill-w{font-size:.75rem;color:var(--light);line-height:1.4}
 @media(max-width:600px){.cm-panth,.cm-vill{grid-template-columns:1fr}}
 /* Benvinguda com a esdeveniment */
-.wc-arq{display:flex;align-items:center;gap:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.14),rgba(99,102,241,.08));border:1px solid var(--purple);border-radius:11px;padding:.75rem .9rem;margin:.5rem 0 .3rem}
-.wc-arq-ic{font-size:1.8rem}
-.wc-arq-n{display:block;font-weight:700;font-size:1rem}
-.wc-arq-r{display:block;font-size:.8rem;color:var(--muted)}
 .wc-list{display:flex;flex-direction:column;gap:.3rem}
 .wc-item{background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem}
 .wc-i-t{display:block;font-weight:600;font-size:.86rem}
@@ -780,6 +776,7 @@ a{color:var(--blue);text-decoration:none}
 .fila-obj{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
 .obj-pct{width:80px;text-align:right;font-family:var(--mono);background:var(--bg-panel);color:var(--white);border:1px solid var(--border);border-radius:8px;padding:.3rem .5rem}
 .dd-eina-d{font-size:.74rem;color:var(--muted);margin-top:.3rem;line-height:1.45}
+.fl-qp{display:flex;gap:.5rem;margin:.2rem 0 .6rem}.fl-qp input{flex:1;min-width:0;background:var(--bg-panel);border:1px solid var(--border-strong);color:inherit;border-radius:9px;padding:.5rem .7rem;font:inherit}.fl-pas{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin:.5rem 0;font-family:var(--mono);font-size:.62rem;color:var(--muted)}.fl-pas span{border-top:3px solid var(--border-strong);padding-top:.2rem}.fl-pas .fet{border-color:var(--green);color:var(--light)}.flowl-row.i .fl-pas .fet{border-color:var(--indigo)}
 .nh-dyn{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;padding:.6rem .9rem;margin-top:.7rem}.nh-dyn .dd-lbl{display:none}.nh-dyn>*{margin:0!important}.nh-dyn .dd-gov{flex:1 1 100%}.nh-dyn .dd-eina-d{flex:1 1 14rem}
 .eines-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.45rem;margin:.2rem 0 .5rem}
 .eina-c{display:block;text-decoration:none;background:var(--bg-panel);border:1px solid var(--border);
@@ -2230,6 +2227,19 @@ const mapFlowsOf=def=>expandPairs(def&&def.pairs).concat(((def&&def.flows)||[]).
    missió + rols/fluxos VNA + tasques del tauler + unitat de comptes, amb
    nota de governança i recursos formatius reals. */
 const DYNAMICS=[
+ {id:'negoci',name:'El meu negoci',icon:'🏪',one:'El mapa de valor del teu negoci: qui hi dona què, i què torna.',unit:'moneda',
+  mission:'Que cada rol vegi què dona, què rep i què té pendent.',
+  vision:'El mapa que vam pactar, funcionant cada dia.',
+  objectives:'Cada flux amb el seu retorn · cap rol que només doni · el real al costat de l\'ideal.',
+  roles:['El negoci','Clients','Equip','Proveïdors','Aliats'],
+  pairs:[
+   ['El negoci','Clients','tangible','producte o servei','tangible','pagament'],
+   ['Clients','El negoci','intangible','opinió i recomanació','intangible','confiança'],
+   ['Equip','El negoci','tangible','hores de feina','tangible','sou'],
+   ['Proveïdors','El negoci','tangible','matèria primera','tangible','pagament'],
+   ['Aliats','Clients','intangible','recomanació','intangible','reconeixement']],
+  kanban:['Dibuixar el mapa ideal','Apuntar el que passa','Comparar real i ideal','Decidir el següent pas'],
+  gov:'Mètode Verna Allee · cada flux amb el seu retorn.',res:[]},
  {id:'banc_temps',name:'Banc de Temps',icon:'⏳',one:'Intercanvi de serveis en hores, no en diners.',unit:'hores',
   mission:'Teixir suport mutu al veïnat intercanviant temps i habilitats en igualtat: una hora val una hora.',
   vision:'Un barri on ningú està sol: el temps de cadascú és un bé comú i demanar ajuda és tan normal com oferir-la.',
@@ -5745,7 +5755,7 @@ function openSuperheroiOnboarding(prefill){
       // Editar no és néixer: no es dóna la benvinguda a qui ja hi era.
       toast('⬢ Perfil actualitzat'+(afegits?' · +'+afegits:'')+(retirats?' · −'+retirats:''));
     }else{
-      toast('✦ Benvingut/da al Comando, '+name.split(/\s+/)[0]+(pub.offers||pub.objects?' · +'+(pub.offers+pub.objects)+' del teu dossier':''));
+      toast('✦ Benvingut/da, '+name.split(/\s+/)[0]+(pub.offers||pub.objects?' · +'+(pub.offers+pub.objects)+' del teu dossier':''));
       setTimeout(()=>openWelcomeModal(name),350);
     }
   };
@@ -10774,13 +10784,35 @@ function flowLedger(node){
     ((isIntangible(a.flow.kind)?1:0)-(isIntangible(b.flow.kind)?1:0)));
   return{rows,loose,covered:rows.filter(r=>r.items.length).length,total:rows.length};
 }
+/* Cada flux com una comanda, amb el que ja hi ha: declarar l'entregable el
+   posa en camí, un apunt pendent de vistiplau és lliurat, i al registre és rebut. */
+const FLUX_PASSOS=['Promès','En camí','Lliurat','Rebut'];
+function estatFlux(node,r){
+  if(r.items.length)return 3;
+  if(pendingOf(node).some(p=>p.status==='pendent'&&p.entry&&p.entry.flowId===r.flow.id))return 2;
+  return(fluxAutomatitzable(r.flow).tipus||entregablesDeFlux(r.flow).length)?1:0;
+}
+function fluxDeFrase(node,tx){
+  const t=tx.toLowerCase(),rs=node.vna.roles||[];
+  const hi=id=>{const n=((rs.find(r=>r.id===id)||{}).name||'').toLowerCase();return n&&(t.includes(n)||t.includes(n.split(' ')[0]))?1:0;};
+  let best='',max=0;
+  (node.vna.exchanges||[]).forEach(x=>{const sc=hi(x.from)+hi(x.to)+(x.label&&t.includes(x.label.toLowerCase().split(' ')[0])?1:0);if(sc>max){max=sc;best=x.id;}});
+  return best;
+}
 function buildFlowLedger(node){
   const box=el('div','flowl');
   const fl=flowLedger(node);
   if(!fl.total){box.appendChild(el('div','ent-desc','Encara no hi ha fluxos definits: afegeix-ne al mapa i aquí es podran llegir amb els seus entregables.'));return box;}
   const hd=el('div','ent-grp-lbl','🔀 Fluxos de valor · '+fl.total+' · amb entregables: '+fl.covered);
   box.appendChild(hd);
-  const help=el('p','ent-desc','Cada flux es llegeix com una frase: qui dona què a qui. A sota hi pengen els entregables comptabilitzats en aquell flux.');
+  /* «Què ha passat?» (codex UX 17/10): s'escriu com es diria, el SOS hi busca
+     el flux pels noms dels rols i obre l'apunt de sempre, que demana vistiplau. */
+  const qp=el('form','fl-qp');
+  qp.innerHTML='<input id="flQp" placeholder="Què ha passat? p.ex. Clients han pagat la comanda al negoci" autocomplete="off"><button class="btn btn-primary btn-sm">Apunta</button>';
+  qp.onsubmit=ev=>{ev.preventDefault();const tx=qp.firstChild.value.trim();if(!tx)return;
+    openLedgerEntryModal(node,{who:state.activePersona||'',what:tx.slice(0,80),flowId:fluxDeFrase(node,tx),backTab:'map'});};
+  box.appendChild(qp);
+  const help=el('p','ent-desc','Cada flux es llegeix com una frase, i se segueix com una comanda: promès, en camí, lliurat i rebut.');
   help.style.marginBottom='.5rem';box.appendChild(help);
   /* La mesura, allà on es decideix si val la pena afegir el següent intent. Si
      el percentatge és baix, el problema no és el prompt: és que el mapa no diu
@@ -10803,6 +10835,9 @@ function buildFlowLedger(node){
       '<span class="fl-arrow" aria-hidden="true">──▶</span>'+
       '<span class="fl-to">'+esc(r.to)+'</span>'+
       '<span class="ent-b '+(tang?'b-ver':'')+'">'+(tang?'tangible':'intangible')+'</span></div>';
+    const pas=estatFlux(node,r);
+    c.insertAdjacentHTML('beforeend','<div class="fl-pas" title="'+FLUX_PASSOS[pas]+'">'+FLUX_PASSOS.map((n,k)=>'<span'+(k<=pas?' class="fet"':'')+'>'+n+'</span>').join('')+'</div>');
+    if(pas===2){const cf=el('button','btn btn-primary btn-sm','✓ Confirma que s\'ha rebut');cf.onclick=openPendingInbox;c.appendChild(cf);}
     if(r.items.length){
       const list=el('div','fl-items');
       r.items.slice(0,12).forEach(x=>{
@@ -20533,12 +20568,12 @@ function welcomeEvent(name){
   state.nodes.forEach(nd=>{if(!myNodes.has(nd.id))return;
     membersOf(nd).forEach(m=>{if(personKey(m.name)===personKey(name))return;
       if(!near.some(x=>personKey(x.name)===personKey(m.name)))near.push({name:m.name,node:nd.name,role:m.role||'membre'});});});
-  const headline=arq
-    ? first+' arriba al Comando com a '+arq.name+' · '+arq.role.toLowerCase()
-    : first+' acaba d\'arribar al Comando';
+  /* Benvinguda amb paraules de client (codex UX 17/10): el Comando i els
+     arquetips són una capa que s'encén, no la primera frase. */
+  const headline='Benvingut/da, '+first;
   const body=powers.length
-    ? first+' porta '+powers.slice(0,3).join(', ')+(sheet.projects.length?' i s\'incorpora a '+sheet.projects[0].nodeName:'')+'.'
-    : first+' encara no ha declarat superpoders — la primera aportació dirà de què va.';
+    ? 'Hi portes '+powers.slice(0,3).join(', ')+(sheet.projects.length?' i entres a '+sheet.projects[0].nodeName:'')+'.'
+    : 'El primer que apuntis dirà què hi aportes.';
   /* Quan no hi ha ni coincidències ni veïnat, la benvinguda no pot quedar-se en
      blanc ni fer veure que això és un problema teu. Ser el primer és una
      situació normal en un poble on això tot just comença, i el que necessita
@@ -20557,7 +20592,6 @@ function welcomeEvent(name){
 function openWelcomeModal(name){
   const w=welcomeEvent(name);
   const bg=modal(`
-    <div style="text-align:center;padding:.4rem 0 .2rem"><div style="font-size:2.6rem">🎬</div></div>
     <h2 style="text-align:center;margin:.2rem 0">${esc(w.headline)}</h2>
     <p class="m-sub" style="text-align:center">${esc(w.body)}</p>
     <div id="wcBody"></div>
@@ -20566,7 +20600,6 @@ function openWelcomeModal(name){
   bg.querySelector('.modal').classList.add('wz-modal');
   const box=bg.querySelector('#wcBody');
   let html='';
-  if(w.archetype)html+='<div class="wc-arq"><span class="wc-arq-ic">'+w.archetype.ic+'</span><span><span class="wc-arq-n">'+esc(w.archetype.name)+'</span><span class="wc-arq-r">'+esc(w.archetype.role)+'</span></span></div>';
   if(w.matches.length){
     html+='<div class="ent-grp-lbl">🔔 Ja hi ha gent que et pot necessitar</div><div class="wc-list">'+
       w.matches.map(m=>'<div class="wc-item"><span class="wc-i-t">'+esc(m.demand?m.demand.title||m.demand.category:'')+'</span><span class="wc-i-d">'+esc((m.demand&&m.demand.memberName)||'algú')+' · '+esc(m.nodeName||'')+'</span></div>').join('')+'</div>';
@@ -20860,8 +20893,8 @@ function openProjectWizard(territoryId){
         ${d.id==='generic'?'':'<span class="dyn-unit">comptes: '+esc(d.unit)+'</span>'}
       </div>`).join('');
     const bg=modal(`
-      <h2>Sessions de desenvolupament comunitari</h2>
-      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Tria una sessió d'acció-formació: precarregarem el seu mapa de valor, tasques i comptes.</p>
+      <h2>Què vols posar en marxa?</h2>
+      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}El teu negoci o una dinàmica de la comunitat: en precarregarem el mapa de valor, les tasques i els comptes.</p>
       <div class="dyn-grid">${cards}</div>
       <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel">← Enrere</button></div>
     `);

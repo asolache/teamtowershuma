@@ -33,6 +33,7 @@ const w = await page.evaluate(() => ({
   element: (document.querySelector('#wcNext') || {}).textContent || ''
 }));
 ok(w.prim === 1, 'un sol botó primari (' + w.prim + ')');
+ok(!/Comando/.test(await page.textContent('.modal')), 'i parla de tu, no del Comando');
 ok(/node/i.test(w.go), 'i és el pas següent: «' + w.go + '»');
 ok(/element/i.test(w.element), 'l\'element continua a un clic, com a opció secundària');
 await page.click('#wcLater');
@@ -62,6 +63,37 @@ ok(r.etiquetes >= 8, r.etiquetes + ' etiquetes de flux al mapa');
 ok(r.xocs === 0, 'cap etiqueta tapada per una altra (' + r.xocs + ' xocs)');
 ok(r.top < 900, 'el mapa comença dins la primera pantalla (y = ' + r.top + ')');
 ok(r.franja, 'l\'eina del projecte segueix a un clic, en una sola franja');
+
+console.log('\n3 · «El meu negoci» primer, «Què ha passat?» i cada flux com una comanda');
+const n3 = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const n = S.newNode('El meu celler', 'projecte', null);
+  S.seedFromDynamic(n, S.DYNAMICS[0]);
+  S.state.nodes.push(n); await S.persist(n);
+  S.state.tab = 'map'; S.selectNode(n.id);
+  await new Promise(r2 => setTimeout(r2, 300));
+  const pas = [...document.querySelectorAll('.fl-pas')];
+  const ex = n.vna.exchanges, rs = n.vna.roles, nm = id => rs.find(r => r.id === id).name;
+  const pagament = ex.find(x => nm(x.from) === 'Clients' && x.label === 'pagament');
+  return { primer: S.DYNAMICS[0].id, barres: pas.length, quatre: pas.every(p => p.children.length === 4),
+    promes: pas.every(p => p.querySelectorAll('.fet').length >= 1),
+    caixa: !!document.querySelector('#flQp'), id: n.id, pagament: pagament.id };
+});
+ok(n3.primer === 'negoci', 'la primera opció en crear un projecte és «El meu negoci»');
+ok(n3.barres >= 5 && n3.quatre && n3.promes, n3.barres + ' fluxos amb els quatre passos, i tots almenys promesos');
+ok(n3.caixa, 'hi ha la caixa «Què ha passat?»');
+await page.fill('#flQp', 'Els clients han fet el pagament de la comanda');
+await page.press('#flQp', 'Enter');
+await page.waitForSelector('#leFlow');
+const sel = await page.$eval('#leFlow', s => s.value);
+ok(sel === n3.pagament, 'i troba el flux pels noms: Clients → pagament → El negoci');
+ok(/pagament/.test(await page.$eval('#leWhat', i => i.value)), 'amb la frase com a concepte, a l\'espera de registrar');
+await page.fill('#leVal', '120');
+await page.click('#leSave');
+await page.waitForTimeout(400);
+const rebut = await page.evaluate(() => [...document.querySelectorAll('.flowl-row')]
+  .some(r => r.querySelectorAll('.fl-pas .fet').length === 4));
+ok(rebut, 'un cop apuntat, el flux surt com a rebut');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' passen'));
