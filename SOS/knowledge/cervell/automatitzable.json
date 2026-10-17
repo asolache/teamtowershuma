@@ -1,22 +1,5 @@
 {
-  "nota": "Què pot fer el SOS o un producte del catàleg sense una persona al davant. Ho llegeix SOS/tools/automatitza.js per calcular el x % automatitzable d'un mapa. Un lliurament que no encaixa amb cap patró és humà: el x % es mesura, no es promet (veda 156). Sense preus: el cost és d'IA per tasca.",
-  "de_persona": {
-    "diu": "un pagament només el dona per fet qui el rep, i la factura la numera qui porta els comptes (decidit el 10/10/2026, PR #226)",
-    "diu_es": "un pago solo lo da por hecho quien lo recibe, y la factura la numera quien lleva las cuentas",
-    "patrons": [
-      "pago",
-      "pagament",
-      "cobro",
-      "cobrament",
-      "factura",
-      "recibo",
-      "rebut",
-      "señal",
-      "senyal",
-      "diners",
-      "dinero"
-    ]
-  },
+  "nota": "Els productes del catàleg que posen nom al que la màquina prepara. No decideixen res: qui ho fa (la màquina, una persona o es decideix a la visita) ho diu la regla de l'app, fluxAutomatitzable, executada tal com és (veda 164). Un producte només nombra un lliurament que l'app ja dona a la màquina. Sense preus: el cost és d'IA per tasca.",
   "productes": [
     {
       "nom": "Del formulario a la propuesta",

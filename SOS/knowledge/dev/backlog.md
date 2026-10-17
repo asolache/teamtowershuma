@@ -107,13 +107,14 @@ a candidates, pel sedàs; s'adopten o es descarten a `pujades.json`. Provat a
    Ja hi ha les peces: `proposta.js` llegeix la web del lead, en treu l'esbós de
    mapa, les preguntes i la web, i `EMPIEZA-AQUI.html` n'és la porta. Falta:
    - ~~**el x %, mesurat i no promès**~~ · **fet el 17/10/2026**:
-     `SOS/tools/automatitza.js` marca cada lliurament com a automàtic, assistit
-     o humà amb el motiu, i dona el x % total i per rol. Un intangible sempre és
-     humà; el que cap producte fa, també. Els productes i els seus patrons són a
-     `SOS/knowledge/cervell/automatitzable.json` (els sis d'Events Penedès i el
-     diagnòstic del SOS); els diners són sempre de persona, com a l'app (PR
-     #226). `proposta.js` escriu `automatizable.md` per al lead, i a l'esbós
-     la xifra surt com a estimació (veda 156). S'hereta als fills;
+     `SOS/tools/automatitza.js` reparteix cada lliurament en tres: el prepara la
+     màquina, el fa una persona o es decideix a la visita. El veredicte és el de
+     `fluxAutomatitzable`, la regla de l'app executada tal com és, com a la
+     landing: el celler hi dona 1 / 5 / 10, igual que allà (veda 164). Els
+     productes de `SOS/knowledge/cervell/automatitzable.json` només posen nom al
+     que la màquina ja prepara. `proposta.js` escriu `automatizable.md` per al
+     lead, i a l'esbós la xifra surt com a estimació (veda 156). S'hereta als
+     fills;
    - **el que s'automatitza, nomenat amb productes de debò:** cada lliurament
      automàtic apunta al producte del catàleg que el fa, i molts naixeran a
      Events Penedès (punt 2);
