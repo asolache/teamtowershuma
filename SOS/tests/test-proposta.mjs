@@ -115,8 +115,10 @@ console.log('\nLlegir la web d\'un lead: només amb el seu sí, amb robots.txt i
   err = '';
   try { await A.baixa('https://www.lead.example/', join(d, 'f2'), { fetch, dormir, autoritzat: 'altre.example' }); } catch (e) { err = e.message; }
   ok(/no és el domini/.test(err) && !demanat.length, 'amb el sí d\'un altre domini, tampoc');
-  const r = await A.baixa('https://www.lead.example/', join(d, 'f3'), { fetch, dormir, autoritzat: 'lead.example' });
+  const r = await A.baixa('https://www.lead.example/', join(d, 'f3'), { fetch, dormir, autoritzat: 'lead.example', data: '2026-10-01' });
   ok(r.desats.includes('index.html') && r.desats.includes('qui-som.html') && r.desats.length === 2, 'amb el sí del mateix domini (amb www o sense): la portada i la pàgina de dins');
+  const lec = JSON.parse(readFileSync(join(d, 'f3', '.lectura.json'), 'utf8'));
+  ok(lec.data === '2026-10-01' && lec.domini === 'lead.example' && lec.pagines === 2 && lec.fora === r.fora.length, 'deixa escrit què es va llegir i quan (fuentes/.lectura.json), sense cap dada personal');
   ok(!demanat.some(u => /\/privat\//.test(u)) && demanat.every(u => u.startsWith('https://www.lead.example/')), 'el que robots.txt tanca no es demana, i res de fora del lloc');
   ok(demanat[0] === 'https://www.lead.example/robots.txt' && esperes.length === demanat.length - 1 && esperes.every(ms => ms >= 2000), 'robots.txt primer, i entre petició i petició el Crawl-delay (com a mínim un segon)');
   err = '';

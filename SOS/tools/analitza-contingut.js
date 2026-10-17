@@ -287,6 +287,10 @@ async function baixa(url, dir, opts) {
     writeFileSync(join(dir, nom), p.html);
     return nom;
   });
+  /* Què es va llegir i quan: la pàgina per al lead només diu «vam llegir N
+     pàgines de la teva web, amb permís i respectant robots.txt» si consta aquí. */
+  writeFileSync(join(dir, '.lectura.json'), JSON.stringify({ data: o.data || new Date().toISOString().slice(0, 10), domini: domini(o.autoritzat),
+    pagines: desats.length, fora: r.fora.length }, null, 2) + '\n');
   return { desats, fora: r.fora };
 }
 

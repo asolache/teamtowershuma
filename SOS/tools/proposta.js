@@ -36,8 +36,17 @@
  *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example --autoritzat la-web.example]
  *        [--lead [--revisat]]
  *
- * Surt amb 0 si hi ha web per lliurar (`web/`), i amb 3 si de moment només hi ha
- * l'esbós: el que falta és feina de criteri, i `estado.md` diu quina. */
+ * Surt amb:
+ *   0 · hi ha web per lliurar (`web/`);
+ *   3 · de moment només hi ha l'esbós: el que falta és feina de criteri, i
+ *       `estado.md` diu quina;
+ *   4 · amb `--lead`, la pàgina per al lead no s'ha escrit, i la consola diu per
+ *       què: no hi ha `mapa.json` o és provisional (amb `--revisat`),
+ *       `preguntas-visita.md` falta o és buit, un correu, un telèfon, un import o
+ *       una frase de la web al mapa, a les preguntes o a `--nom`, o la carpeta és
+ *       dins d'aquest repositori (aleshores no s'escriu res de res);
+ *   1 · un error, o `--lead` des del repositori d'un client;
+ *   2 · l'ordre està mal escrit. */
 'use strict';
 const { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } = require('node:fs');
 const { join, dirname, relative, basename } = require('node:path');
@@ -219,15 +228,22 @@ function paginaInici(dir, desti, nom, llengua) {
    `build-mapavalor.js`, que no s'hereta. Al d'un client, `proposta.js` funciona
    igual sense ella, i `--lead` diu on s'ha de fer. */
 function paginaLead() {
-  try { return require('./pagina-lead.js').paginaLead; }
+  try { return require('./pagina-lead.js'); }
   catch (e) { if (e.code === 'MODULE_NOT_FOUND') throw new Error('--lead es fa des del repositori de TeamTowers, no des del d\'un client'); throw e; }
 }
 
 async function proposta(dir, opts) {
   const o = opts || {}, fonts = join(dir, 'fuentes');
+  /* La carpeta d'un lead va fora d'aquest repositori, que es publica: es diu
+     abans de baixar o escriure res. */
+  if (o.lead && paginaLead().dinsDelRepo(dir)) {
+    const err = new Error('La carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/). No s\'ha escrit res.');
+    err.surt = 4;
+    throw err;
+  }
   mkdirSync(dir, { recursive: true });
   if (o.baixa) {
-    const d = await A.baixa(o.baixa, fonts, { autoritzat: o.autoritzat, fetch: o.fetch, dormir: o.dormir });
+    const d = await A.baixa(o.baixa, fonts, { autoritzat: o.autoritzat, fetch: o.fetch, dormir: o.dormir, data: o.data });
     d.fora.forEach(f => console.error('· ' + f.font + ': ' + f.motiu));
   }
   const fit = existsSync(fonts) ? A.llegeixCarpeta(fonts) : [];
@@ -287,7 +303,9 @@ async function proposta(dir, opts) {
       falta.map((x, i) => (i + 1) + '. ' + x)).join('\n') + '\n');
   const inici = paginaInici(dir, desti, nom, llengua);
   /* La pàgina per al lead, amb la mateixa xifra i el mateix diagnòstic. */
-  const lead = o.lead ? paginaLead()({ dir, mapa, aut, diag, nom, llengua, marca: W.llegeixMarca(fMarca), fonts: fit, propi, revisat: !!o.revisat, data: o.data }) : null;
+  let lectura = null;
+  try { lectura = JSON.parse(readFileSync(join(fonts, '.lectura.json'), 'utf8')); } catch (e) { /* sense lectura, la pàgina diu de quantes fonts surt */ }
+  const lead = o.lead ? paginaLead().paginaLead({ dir, mapa, aut, diag, nom, llengua, marca: W.llegeixMarca(fMarca), fonts: fit, lectura, propi, revisat: !!o.revisat, data: o.data }) : null;
   return { final, provisional: diag.provisional, propi, automatitzable: aut, web: desti, fitxers: fitxers.length, analisi: an, inici, lead };
 }
 module.exports = { proposta, mdHtml };
@@ -309,5 +327,5 @@ if (require.main === module) {
     if (r.lead && r.lead.escrita) console.log((opts.revisat ? '✅ La pàgina per al lead' : '◐ La pàgina per al lead, com a esborrany intern') + ': ' + r.lead.fitxer);
     if (r.lead && !r.lead.escrita) { console.error('❌ La pàgina per al lead no s\'ha escrit:\n' + r.lead.falla.map(x => '  · ' + x).join('\n')); process.exit(4); }
     process.exit(r.final ? 0 : 3);
-  }).catch(e => { console.error('❌ ' + e.message); process.exit(1); });
+  }).catch(e => { console.error('❌ ' + e.message); process.exit(e.surt || 1); });
 }

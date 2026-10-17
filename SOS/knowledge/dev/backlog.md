@@ -165,7 +165,11 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    i el 3. Abans d'escriure'l comprova que no porti correus, telèfons, imports
    ni vuit paraules seguides de la web; si alguna cosa falla, no l'escriu i
    esborra el d'abans. L'enllaç dels botons porta una referència aleatòria
-   que es guarda a «lead.json» i no canvia en regenerar. Ho prova
+   que es guarda a «lead.json» amb el nom del negoci i no canvia en regenerar;
+   si la carpeta és d'un altre negoci, se'n fa una de nova. La carpeta del lead
+   va fora d'aquest repositori: si és a dins, no s'escriu res (veda 170).
+   «Com s'ha fet» diu que es va llegir la web amb permís només si la baixada ho
+   va deixar escrit a «fuentes/.lectura.json». Ho prova
    `test-pagina-lead.mjs`.
 5. ~~**Revisió abans d'enviar**~~ · **fet el 17/10/2026**. Sense `--revisat`,
    la pàgina diu «ESBORRANY INTERN» i no té botó. Amb `--revisat`, només surt

@@ -19,16 +19,24 @@
  *     sigui del mateix dibuix;
  *   · `noindex` i `no-referrer`;
  *   · sense correus, telèfons ni imports al text;
- *   · sense cites de la web: cap tros de vuit paraules seguides de les fonts.
- *     Els filtres no atrapen els noms de persones, i per això no s'hi copia res;
+ *   · sense cites de la web: cap tros de vuit paraules seguides de les fonts,
+ *     amb les entitats desfetes (`&aacute;`, `&#8217;`) i comptant també el
+ *     que porten els atributs (la descripció, el `alt`, el `title`). Els
+ *     filtres no atrapen els noms de persones, i per això no s'hi copia res;
  *   · amb `revisat`, només d'un `mapa.json` que passa les regles dures, i en
  *     castellà només amb `preguntas-visita.md` (les del diagnòstic surten en
  *     català).
  *
- * Sense `revisat` la pàgina diu «ESBORRANY INTERN» i no porta botó. */
+ * Sense `revisat` la pàgina diu «ESBORRANY INTERN» i no porta botó.
+ *
+ * **La carpeta del lead va fora d'aquest repositori**, que es publica: si és a
+ * dins, no es fa res. «Com s'ha fet» diu que es va llegir la web amb permís i
+ * respectant robots.txt només si la baixada ho va deixar escrit
+ * (`fuentes/.lectura.json`, d'`analitza-contingut.js`); si no, diu de quantes
+ * fonts surt, sense prometre res. */
 'use strict';
 const { readFileSync, writeFileSync, existsSync, rmSync } = require('node:fs');
-const { join } = require('node:path');
+const { join, resolve, relative, isAbsolute } = require('node:path');
 const { randomBytes } = require('node:crypto');
 const X = require('./automatitza.js');
 
@@ -48,7 +56,7 @@ const TIPUS_ES = {
 const TXT = {
   es: {
     lang: 'es', intern: 'BORRADOR INTERNO', internD: 'No se envía: falta revisarla y pasar proposta.js con --revisat.',
-    titol: 'Borrador para {nom}', sub: 'Leído de {n} de su web pública', pag: ['página', 'páginas'], subRev: 'revisado por TeamTowers',
+    titol: 'Borrador para {nom}', sub: 'Leído de {n} de su web pública', subF: 'Hecho con {n}', pag: ['página', 'páginas'], font: ['fuente', 'fuentes'], subRev: 'revisado por TeamTowers',
     segell: 'Estimación · borrador',
     xifra: 'De las {t} entregas de tu red, el sistema puede preparar {m}; {v} las decidimos en la visita.',
     xifraP: 'Las otras {h} son de una persona, y así deben seguir.',
@@ -62,8 +70,9 @@ const TXT = {
     boto: 'Reservemos la visita', no: 'Esto no es así',
     com: 'Cómo se ha hecho',
     c1: 'Leímos {n} de tu web pública el {data}, con tu permiso, respetando robots.txt y sin prisa entre página y página.',
-    c2propi: 'Con lo leído, Claude escribió el mapa de tu red con el método de TeamTowers.',
-    c2esb: 'Con lo leído, un análisis automático dibujó un esbozo del mapa, sin ningún modelo de IA.',
+    c1F: 'Partimos de {n}: lo que nos enviaste o guardamos de tu web pública.',
+    c2propi: 'Con eso se escribió el mapa de tu red con el método de TeamTowers.',
+    c2esb: 'Con eso, un análisis automático dibujó un esbozo del mapa, sin ningún modelo de IA.',
     c2rev: 'Una persona de TeamTowers lo revisó antes de enviártelo.',
     c3: 'Lo pasamos por las reglas de la casa: {r}.', c3ok: 'pasa las reglas duras', c3no: 'todavía tiene reglas duras abiertas',
     c4: 'Cada entrega se clasificó con la misma regla que usa nuestra app: la prepara el sistema, la hace una persona o se decide en la visita.',
@@ -75,7 +84,7 @@ const TXT = {
   },
   ca: {
     lang: 'ca', intern: 'ESBORRANY INTERN', internD: 'No s\'envia: falta revisar-la i passar proposta.js amb --revisat.',
-    titol: 'Esborrany per a {nom}', sub: 'Llegit de {n} de la seva web pública', pag: ['pàgina', 'pàgines'], subRev: 'revisat per TeamTowers',
+    titol: 'Esborrany per a {nom}', sub: 'Llegit de {n} de la seva web pública', subF: 'Fet amb {n}', pag: ['pàgina', 'pàgines'], font: ['font', 'fonts'], subRev: 'revisat per TeamTowers',
     segell: 'Estimació · esborrany',
     xifra: 'Dels {t} lliuraments de la teva xarxa, el sistema en pot preparar {m}; {v} els decidim a la visita.',
     xifraP: 'Els altres {h} són d\'una persona, i així han de seguir.',
@@ -89,8 +98,9 @@ const TXT = {
     boto: 'Reservem la visita', no: 'Això no és així',
     com: 'Com s\'ha fet',
     c1: 'Vam llegir {n} de la teva web pública el {data}, amb el teu permís, respectant el robots.txt i sense presses entre pàgina i pàgina.',
-    c2propi: 'Amb el que vam llegir, Claude va escriure el mapa de la teva xarxa amb el mètode de TeamTowers.',
-    c2esb: 'Amb el que vam llegir, una anàlisi automàtica va dibuixar un esbós del mapa, sense cap model d\'IA.',
+    c1F: 'Vam partir de {n}: el que ens vas enviar o el que vam desar de la teva web pública.',
+    c2propi: 'Amb això es va escriure el mapa de la teva xarxa amb el mètode de TeamTowers.',
+    c2esb: 'Amb això, una anàlisi automàtica va dibuixar un esbós del mapa, sense cap model d\'IA.',
     c2rev: 'Una persona de TeamTowers el va revisar abans d\'enviar-te\'l.',
     c3: 'El vam passar per les regles de la casa: {r}.', c3ok: 'passa les regles dures', c3no: 'encara té regles dures obertes',
     c4: 'Cada lliurament es va classificar amb la mateixa regla que fa servir la nostra app: el prepara el sistema, el fa una persona o es decideix a la visita.',
@@ -110,10 +120,25 @@ const nomTipus = (id, llengua) => {
   return t ? t.nom : id;
 };
 
-/* El text que es llegeix, sense etiquetes: és el que es comprova. Els atributs
-   (els camins del dibuix, per exemple) no són text i no compten. */
-const text = html => String(html).replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')
-  .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+/* Les entitats, desfetes totes: les numèriques (`&#8217;`, `&#xE9;`), les
+   lletres amb accent (`&aacute;`, `&Ntilde;`) i les de puntuació corrents. Sense
+   això, «s&aacute;bado» es partia en tres paraules i una cita passava. */
+const ACCENT = { acute: '\u0301', grave: '\u0300', uml: '\u0308', circ: '\u0302', tilde: '\u0303', cedil: '\u0327', ring: '\u030A' };
+const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', laquo: '«', raquo: '»',
+  hellip: '…', ndash: '–', mdash: '—', middot: '·', szlig: 'ß', aelig: 'æ', oslash: 'ø', euro: '€' };
+const desEnt = s => String(s).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, k) => {
+  if (k[0] === '#') { const n = k[1] === 'x' || k[1] === 'X' ? parseInt(k.slice(2), 16) : parseInt(k.slice(1), 10); try { return String.fromCodePoint(n); } catch (e) { return ' '; } }
+  if (ENT[k] != null) return ENT[k];
+  const a = /^([a-z])(acute|grave|uml|circ|tilde|cedil|ring)$/i.exec(k);
+  return a ? (a[1] + ACCENT[a[2].toLowerCase()]).normalize('NFC') : m;
+});
+/* El text que es llegeix, sense etiquetes: és el que es comprova a la pàgina.
+   Els atributs de la pàgina (els camins del dibuix) no són text i no compten. */
+const text = html => desEnt(String(html).replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' '));
+/* D'una font, a més, el que porten els atributs que es llegeixen: la
+   descripció, el `alt` d'una imatge, el `title`. És on sol viure la frase que
+   un mapa acaba copiant. */
+const textFont = html => text(html) + ' ' + [...String(html).matchAll(/\s(?:content|alt|title|aria-label)\s*=\s*("([^"]*)"|'([^']*)')/gi)].map(m => desEnt(m[2] != null ? m[2] : m[3])).join(' . ');
 const paraules = s => String(s).normalize('NFC').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 const TROS = 8;
 function trossos(s) {
@@ -137,7 +162,7 @@ function comprova(html, o) {
   if (/\d\s?€|€\s?\d|\beuros?\b|\bEUR\b/i.test(t)) f.push('el text porta un import');
   if (o.fonts && o.fonts.length) {
     const meus = trossos(t);
-    const font = o.fonts.find(x => [...trossos(text(x.cos))].some(k => meus.has(k)));
+    const font = o.fonts.find(x => [...trossos(textFont(x.cos))].some(k => meus.has(k)));
     if (font) f.push('cita la web: hi ha vuit paraules seguides de ' + font.nom);
   }
   if (o.revisat && /class="intern"/.test(html)) f.push('revisada però diu esborrany intern');
@@ -146,24 +171,36 @@ function comprova(html, o) {
 }
 
 /* L'identificador de la pàgina: aleatori, es crea un cop i es guarda a
-   `lead.json`, perquè regenerar-la no canviï l'enllaç que ja té el lead. */
-function referencia(dir) {
+   `lead.json` amb el nom del negoci, perquè regenerar-la no canviï l'enllaç que
+   ja té el lead. Si a la carpeta hi ha el `lead.json` d'un altre negoci, se'n fa
+   un de nou: dos leads no comparteixen mai referència. */
+function referencia(dir, nom) {
   const f = join(dir, 'lead.json');
-  try { const r = JSON.parse(readFileSync(f, 'utf8')).ref; if (/^[A-Za-z0-9_-]{16,}$/.test(r)) return r; } catch (x) { /* es crea */ }
+  try { const x = JSON.parse(readFileSync(f, 'utf8')); if (/^[A-Za-z0-9_-]{16,}$/.test(x.ref) && x.nom === nom) return x.ref; } catch (e) { /* es crea */ }
   const ref = randomBytes(12).toString('base64url');
-  writeFileSync(f, JSON.stringify({ ref }, null, 2) + '\n');
+  writeFileSync(f, JSON.stringify({ ref, nom }, null, 2) + '\n');
   return ref;
 }
 
-/* Les tres preguntes: les de qui revisa (`preguntas-visita.md`, una per línia
-   numerada) o, si no n'hi ha, les tres més greus del diagnòstic, que surten en
+/* La carpeta d'un lead no pot ser dins d'aquest repositori: es publica. */
+const REPO = resolve(__dirname, '..', '..');
+function dinsDelRepo(dir) {
+  const r = relative(REPO, resolve(dir));
+  return !isAbsolute(r) && r.split(/[\\/]/)[0] !== '..';
+}
+
+/* Les tres preguntes: les de qui revisa (`preguntas-visita.md`, una per línia,
+   numerada o amb guió) o, si no n'hi ha, les tres més greus del diagnòstic, que surten en
    català. */
 function preguntes(dir, diag) {
   const f = join(dir, 'preguntas-visita.md');
-  if (existsSync(f)) return { propies: true, llista: readFileSync(f, 'utf8').split('\n').map(l => /^\s*\d+[.)]\s+(.+)$/.exec(l)).filter(Boolean).map(m => m[1].trim()).slice(0, 3) };
+  if (existsSync(f)) {
+    const llista = readFileSync(f, 'utf8').split(/\r?\n/).map(l => /^\s*(?:\d+[.)]|[-*])\s+(.+?)\s*$/.exec(l)).filter(Boolean).map(m => m[1]).slice(0, 3);
+    return { fitxer: true, propies: llista.length > 0, llista };
+  }
   const ordre = { alta: 0, mitjana: 1, baixa: 2, nota: 3 };
   const llista = [...new Set(diag.troballes.filter(t => t.pregunta).sort((x, y) => (ordre[x.gravetat] ?? 9) - (ordre[y.gravetat] ?? 9)).map(t => t.pregunta))].slice(0, 3);
-  return { propies: false, llista };
+  return { fitxer: false, propies: false, llista };
 }
 
 function css(marca) {
@@ -191,21 +228,29 @@ function css(marca) {
     + 'a{color:var(--acc)}footer{color:var(--mut);font-size:.85rem;padding-bottom:2rem;margin-top:2.5rem}';
 }
 
-/* La pàgina. `o`: { dir, mapa, aut, diag, nom, llengua, marca, fonts, propi,
-   revisat, data }. Torna { escrita, fitxer, falla[] }. */
+/* La pàgina. `o`: { dir, mapa, aut, diag, nom, llengua, marca, fonts, lectura,
+   propi, revisat, data }. Torna { escrita, fitxer, falla[] }. */
 function paginaLead(o) {
   const T = TXT[o.llengua] || TXT.es, llengua = T.lang, aut = o.aut, fitxer = join(o.dir, 'lead.html');
   const nega = falla => { rmSync(fitxer, { force: true }); return { escrita: false, fitxer, falla }; };
+  if (dinsDelRepo(o.dir)) return { escrita: false, fitxer, falla: ['la carpeta del lead és dins del repositori de TeamTowers, que es publica: posa-la fora (per exemple, ../leads/<negoci>/)'] };
   const pq = preguntes(o.dir, o.diag);
   const previ = [];
+  if (o.revisat && pq.fitxer && !pq.propies) previ.push('preguntas-visita.md no té cap pregunta: una per línia, numerada o amb guió');
   if (o.revisat && !o.propi) previ.push('--revisat demana mapa.json: l\'esbós no s\'envia');
   if (o.revisat && o.diag.provisional) previ.push('--revisat demana un mapa que passi les regles dures');
-  if (o.revisat && llengua !== 'ca' && !pq.propies) previ.push('--revisat en castellà demana preguntas-visita.md: les preguntes del diagnòstic surten en català');
+  if (o.revisat && llengua !== 'ca' && !pq.propies && !pq.fitxer) previ.push('--revisat en castellà demana preguntas-visita.md: les preguntes del diagnòstic surten en català');
   if (previ.length) return nega(previ);
 
-  const nPag = (o.fonts || []).filter(f => /\.html?$/i.test(f.nom)).length, pags = nPag + ' ' + T.pag[nPag === 1 ? 0 : 1];
-  const data = o.data || new Date().toISOString().slice(0, 10);
-  const ref = referencia(o.dir);
+  /* El que diu d'on surt, només si consta: la lectura de la web la deixa
+     escrita la baixada; si no hi és, es diu de quantes fonts surt. */
+  const lec = o.lectura && Number(o.lectura.pagines) > 0 && /^\d{4}-\d{2}-\d{2}$/.test(o.lectura.data || '') ? o.lectura : null;
+  const nFonts = (o.fonts || []).filter(f => /\.(html?|md|markdown|txt)$/i.test(f.nom)).length;
+  const pl = (n, f) => n + ' ' + f[n === 1 ? 0 : 1];
+  const pags = lec ? pl(Number(lec.pagines), T.pag) : pl(nFonts, T.font);
+  const dm = d => d.split('-').map(Number).reverse().join('/');
+  const data = dm(/^\d{4}-\d{2}-\d{2}$/.test(o.data || '') ? o.data : new Date().toISOString().slice(0, 10));
+  const ref = referencia(o.dir, o.nom);
   const de = q => aut.lliuraments.filter(l => l.qui === q);
   const fila = (l, extra) => '<li><b>' + e(l.que) + '</b> · ' + e(l.de) + ' → ' + e(l.a) + (extra ? '<small>' + extra + '</small>' : '') + '</li>';
   const TA = X.TXT[llengua] || X.TXT.ca;
@@ -214,14 +259,14 @@ function paginaLead(o) {
   const botons = o.revisat ? '<p class="botons"><a class="boto" href="' + e(VISITA + '?r=' + ref + '&l=' + llengua + '&m=si') + '">' + e(T.boto) + '</a>'
     + '<a class="boto no" href="' + e(VISITA + '?r=' + ref + '&l=' + llengua + '&m=no') + '">' + e(T.no) + '</a></p>' : '';
   const svg = X.dibuix(o.mapa, { llengua, mesura: aut, id: 'mvLead' });
-  const com = [T.c1.replace('{n}', pags).replace('{data}', data), (o.propi ? T.c2propi : T.c2esb) + (o.revisat ? ' ' + T.c2rev : ''),
+  const com = [lec ? T.c1.replace('{n}', pags).replace('{data}', dm(lec.data)) : T.c1F.replace('{n}', pags), (o.propi ? T.c2propi : T.c2esb) + (o.revisat ? ' ' + T.c2rev : ''),
     T.c3.replace('{r}', o.diag.provisional ? T.c3no : T.c3ok), T.c4, T.c5];
   const marca = o.marca || {};
   const html = '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<meta name="robots" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n'
     + '<title>' + e(T.titol.replace('{nom}', o.nom)) + '</title>\n<style>' + css(marca) + '</style>\n</head>\n<body>\n'
     + (o.revisat ? '' : '<p class="intern" role="note">' + e(T.intern) + '<span>' + e(T.internD) + '</span></p>\n')
-    + '<header>\n<p class="marca">' + e(o.nom) + '</p>\n<p class="sub">' + e(T.titol.replace('{nom}', o.nom)) + ' · ' + e(T.sub.replace('{n}', pags)) + (o.revisat ? ' · ' + e(T.subRev) : '') + '</p>\n'
+    + '<header>\n<p class="marca">' + e(o.nom) + '</p>\n<p class="sub">' + e(T.titol.replace('{nom}', o.nom)) + ' · ' + e((lec ? T.sub : T.subF).replace('{n}', pags)) + (o.revisat ? ' · ' + e(T.subRev) : '') + '</p>\n'
     + '<p class="segell">' + e(T.segell) + '</p>\n'
     + '<h1>' + e(T.xifra.replace('{t}', aut.total).replace('{m}', aut.maquina).replace('{v}', aut.visita)) + '</h1>\n'
     + '<p>' + e(T.xifraP.replace('{h}', aut.persona)) + '</p>\n' + botons + '\n</header>\n<main>\n'
@@ -244,4 +289,4 @@ function paginaLead(o) {
   return { escrita: true, fitxer, falla: [], ref };
 }
 
-module.exports = { paginaLead, comprova, TIPUS_ES, VISITA };
+module.exports = { paginaLead, comprova, dinsDelRepo, TIPUS_ES, VISITA };

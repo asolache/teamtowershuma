@@ -5290,3 +5290,25 @@ mai.
 
 **Guarda:** `test-importa.mjs` (les tres redireccions i «Disallow: /», on
 només es demana robots.txt).
+
+## Veda 170 — La carpeta d'un lead no viu al repositori que es publica
+
+**Après el 17/10/2026**, revisant la pàgina que rep el lead abans de la visita.
+
+L'error que evita: la skill deia `proposta.js propuesta/ --lead`, des del
+repositori de TeamTowers, que és públic. El mapa, les fonts i el nom del lead
+quedaven en una carpeta que un `git add .` pujava, i un `lead.json` d'un lead
+anterior donava la mateixa referència al següent. A més, «Com s'ha fet» deia
+«vam llegir la teva web amb permís i respectant robots.txt» encara que les
+fonts les hagués desat algú a mà.
+
+- **La carpeta d'un lead va fora del repositori** (`../leads/<negoci>/`):
+  amb `--lead`, `proposta.js` s'hi nega abans de baixar o escriure res, i surt
+  amb 4. El `.gitignore` ho atura també, per si de cas.
+- **Una referència és d'un sol negoci:** `lead.json` porta el nom, i amb un
+  altre nom se'n fa una de nova.
+- **La pàgina només diu el que consta:** la lectura amb permís, si la baixada
+  la va deixar escrita («fuentes/.lectura.json»); si no, de quantes fonts surt.
+
+**Guarda:** `test-pagina-lead.mjs` (carpeta dins del repositori, referència
+d'un altre negoci, amb i sense «.lectura.json»).

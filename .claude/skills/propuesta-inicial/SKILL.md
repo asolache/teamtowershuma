@@ -177,20 +177,28 @@ TeamTowers, no desde el del cliente.
 
 1. **El sí, por escrito.** Sin el sí del lead no se lee su web. El correo de
    «Pedir mi borrador» de /mapa-web/ ya lo pide. El sí va al CRM.
-2. **El borrador interno.** `--lead` escribe `propuesta/lead.html`, con
-   «BORRADOR INTERNO» arriba y sin botón:
+2. **El borrador interno.** La carpeta del lead va **fuera** del repositorio
+   de TeamTowers, que se publica: si está dentro, no se escribe nada. `--lead`
+   escribe `lead.html`, con «BORRADOR INTERNO» arriba y sin botón:
 
    ```bash
-   node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" --lead
+   node SOS/tools/proposta.js ../leads/<negocio>/ --llengua es --nom "Nombre del negocio" --lead
    ```
 
    Se abre y se lee entera, en el móvil.
 3. **Revisarla.** Hace falta un `mapa.json` que pase las reglas duras: el
    esbozo no se envía. En castellano, las tres preguntas para la visita van en
-   `propuesta/preguntas-visita.md`, una por línea numerada, porque las del
+   `preguntas-visita.md`, una por línea, numerada o con guion, porque las del
    diagnóstico salen en catalán. Después, `--lead --revisat`. Si sale con 4, la
-   página no se ha escrito y la consola dice por qué: un correo, un teléfono,
-   un importe o una frase copiada de su web. Se corrige el mapa, no la página.
+   página no se ha escrito y la consola dice por qué:
+   - no hay `mapa.json`, o es provisional;
+   - falta `preguntas-visita.md`, o está vacío;
+   - hay un correo, un teléfono, un importe o una frase copiada de su web en el
+     mapa, en las preguntas o en `--nom`;
+   - la carpeta está dentro del repositorio.
+
+   Se corrige lo que señala la consola (`mapa.json`, `preguntas-visita.md` o
+   `--nom`), nunca la página.
 4. **Publicarla** en el repositorio privado de las páginas de leads, con su
    sitio de Netlify, en una carpeta con la referencia de `lead.json` como
    nombre. Nunca en el repositorio público. Ese repositorio lo crea Álvaro
