@@ -88,7 +88,7 @@ pàgina és d'aquest fil, el càlcul és del fil de la matriu.
   respecta robots.txt. La baixada de `SOS/tools/analitza-contingut.js`, que és
   la que fa servir `proposta.js`, no.
 
-**La proposta**, per validar per l'Àlvar. Una sola pàgina
+**La proposta**, validada per l'Àlvar el 17/10/2026. Una sola pàgina
 estàtica, en la llengua del lead, pensada per al mòbil, sense JavaScript ni
 peticions a fora:
 
@@ -170,12 +170,11 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
 9. **El seguiment a Zoho**, després de la tasca #1 i amb permís per actualitzar
    leads.
 
-**Per decidir l'Àlvar** (proposta d'aquest fil, encara sense el seu sí): on viu
-la pàgina (repositori privat amb enllaç aleatori); què vol dir ara «IA
+**Decidit per l'Àlvar el 17/10/2026** (les quatre propostes d'aquest fil, «Todas»):
+on viu la pàgina (repositori privat amb enllaç aleatori); què vol dir ara «IA
 integrada» (preparada abans i el seu propi Claude; el xat, després); què compta
 el x % (la regla de l'app, una sola xifra a tot arreu, també al kit); i el
 permís i el seguiment (un sí per escrit abans de llegir-li la web, i cap píxel).
-Sense el seu sí es poden fer els passos 2 i 3, que no en depenen.
 
 **Com es tanca:** el primer lead de debò rep la seva pàgina abans de la visita,
 amb el seu sí i l'enviament anotats a Zoho.
