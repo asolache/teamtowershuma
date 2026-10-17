@@ -5243,3 +5243,26 @@ número escrit a mà que ningú comprova. Dues coses en surten:
 
 **Guarda:** el número surt de la API de GitHub, no d'una casella. Que cada
 projecte fill enllaci la seva pàgina d'IA queda al backlog.
+
+## Veda 168 — Al cervell públic, només el que és públic
+
+**Dit per l'Àlvar el 17/10/2026:** «En cerebro se comparte lo que es público».
+
+L'error que evita: la primera pujada d'Events Penedès (veda 166) va escriure
+en aquest repositori, que és públic, el títol i el text de les seves vedes. Hi
+havia el model de cobrament, el risc de la seva xarxa i camins de fitxers
+privats. El sedàs només atura imports i noms; un repositori públic no es pot
+desfer, i el que hi entra queda a l'historial.
+
+- **Un fill es declara privat** amb `"privat": true` al seu `cervell.json`.
+  D'un fill privat, `cervell.js --recull` només deixa a
+  `SOS/knowledge/cervell/pujades.md` el número i l'estat. El text es llegeix al
+  seu repositori, i la lliçó que s'adopti s'escriu aquí de nou, sense res del
+  client. Un producte nou hi entra sense nom fins que algú l'adopta al catàleg,
+  que és públic.
+- **La pàgina del cervell d'Álvaro** (el seu generador del cervell, al
+  repositori `alvarosolache`) es nega a fer servir de font un projecte privat.
+
+**Guarda:** `test-cervell.mjs` comprova que d'un fill privat no puja ni títol,
+ni text, ni el nom d'un producte nou. El generador del perfil para si li passen
+una font privada.

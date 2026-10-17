@@ -169,7 +169,14 @@ if (opcio('--actualitza')) {
    (passen a ser una veda d'aquí i, si valen per a tothom, heretables) o les
    descarta, i la decisió queda a `pujades.json` perquè no es tornin a proposar.
    Les vedes 1-3 de la plantilla ja són d'aquí i no es proposen. Tot passa pel
-   mateix sedàs que l'herència: el que no hi passa es llista sense el text. */
+   mateix sedàs que l'herència: el que no hi passa es llista sense el text.
+
+   **Un fill privat no puja res més que el número** (`"privat": true` al seu
+   `cervell.json`). Aquest repositori és públic i el que s'hi escriu no torna
+   enrere: d'un fill privat només hi queda «veda 4 · proposada», i el text es
+   llegeix al seu repositori. Un producte d'un fill privat tampoc hi deixa el
+   nom fins que algú decideix que és públic, adoptant-lo al catàleg. Al
+   cervell públic es comparteix el que és públic (l'Àlvar, 17/10/2026). */
 if (opcio('--recull')) {
   const font = resolve(opcio('--recull'));
   if (!existsSync(join(font, 'cervell.json'))) { console.log(`✗ ${font} no té cervell.json: sense cervell no hi ha vedes a recollir.`); process.exit(1); }
@@ -191,19 +198,26 @@ if (opcio('--recull')) {
   /* Es desa el patró, no el que ha casat: el que casa és justament el que no
      pot sortir a un repositori públic. */
   const sedas = text => H.sedas.find(re => new RegExp(re).test(text));
-  const nom = conf.nom;
+  const nom = conf.nom, privat = conf.privat === true;
   const r = reg[nom] = reg[nom] || {};
   let noves = 0;
+  /* D'un fill privat, la clau d'un producte nou no pot ser el seu nom. */
+  const clauDe = v => privat && v.clau.startsWith('producte ') && !r[v.clau]
+    ? 'producte privat ' + require('node:crypto').createHash('sha256').update(v.titol).digest('hex').slice(0, 8) : v.clau;
   /* Mentre és proposada, el text es refresca amb el del fill d'avui; adoptada
      o descartada, ja no es toca. El que el sedàs atura no es desa. */
   trobat.forEach(v => {
-    if (!r[v.clau]) { r[v.clau] = { estat: 'proposada' }; noves++; }
-    if (r[v.clau].estat !== 'proposada') return;
+    const k = clauDe(v);
+    if (!r[k]) { r[k] = { estat: 'proposada' }; noves++; }
+    if (privat) { r[k] = { estat: r[k].estat, privat: true }; return; }
+    if (r[k].estat !== 'proposada') return;
     const tall = sedas(v.text);
-    r[v.clau].titol = v.titol;
-    r[v.clau].text = tall ? null : v.text.split('\n').slice(1).join('\n').trim();
-    r[v.clau].sedas = tall || undefined;
+    r[k].titol = v.titol;
+    r[k].text = tall ? null : v.text.split('\n').slice(1).join('\n').trim();
+    r[k].sedas = tall || undefined;
   });
+  /* El que s'havia recollit abans de marcar-lo privat també es neteja. */
+  if (privat) Object.keys(r).forEach(k => { r[k] = { estat: r[k].estat, privat: true }; });
   writeFileSync(REG, JSON.stringify(reg, null, 2) + '\n');
   let md = `# De pujada · el que els projectes fills ensenyen a la matriu\n\n> Generat per \`cervell.js --recull <projecte>\`. No l'editis: per adoptar o\n> descartar, canvia \`estat\` a \`pujades.json\` (\`adoptada <veda>\` o\n> \`descartada <motiu>\`) i torna a recollir.\n`;
   for (const [proj, claus] of Object.entries(reg)) {
@@ -211,6 +225,7 @@ if (opcio('--recull')) {
     for (const [clau, e] of Object.entries(claus)) {
       md += `\n### ${clau}${e.titol && clau.startsWith('veda') ? ' — ' + e.titol : ''} · ${e.estat}\n`;
       if (e.estat !== 'proposada') continue;
+      if (e.privat) { md += `\n> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.\n`; continue; }
       md += e.sedas ? `\n> Aturada pel sedàs (patró \`${e.sedas}\`): reescriu-la al projecte sense imports ni noms i torna a recollir.\n`
         : '\n' + e.text + '\n';
     }
