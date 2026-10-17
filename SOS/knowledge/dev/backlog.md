@@ -228,6 +228,12 @@ xarxa» a l'oferta, sense duplicar res.
 que `build-cervell-dades.js` treu del codex (amb `--check` al CI). El producte
 és una targeta a sota dels tres serveis, sense preu: «el teu cervell», amb la xarxa com a pas següent (el motor de xarxa encara no en sap muntar una de nova). Events Penedès no s'hi anomena fins que l'Àlvar ho validi.
 
+La franja (`SOS/cervell/franja.js`) té un botó per projecte públic de la xarxa
+(avui el SOS i Álvaro Solache): el codex del fill es llegeix de GitHub amb
+`CodexParse.deRepo` (el mateix que fa servir `SOS/cervell.html`) i les seves
+vedes pugen damunt de les del SOS. Un fill privat no es llegeix mai; Events
+Penedès no hi és fins que l'Àlvar ho validi.
+
 **Queda:** que `cerebro.html` d'Álvaro carregui `pla.js` de la matriu en lloc
 de la seva còpia del dibuix, com ja fa amb `forces.js` i `3d.js`.
 

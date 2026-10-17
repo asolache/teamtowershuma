@@ -83,7 +83,7 @@
     var eEls = D.aristas.map(function (a) { return { a: a, el: el('path', { d: corba(pos[a[0]], pos[a[1]]), 'class': 'cp-e' }, gE) }; });
     var nEls = D.nodos.map(function (n) {
       var c = el('circle', { cx: pos[n.id].x, cy: pos[n.id].y, r: 3.5 + Math.min(grau[n.id], 6), fill: col(n.capa), 'class': 'cp-n' }, gN);
-      el('title', {}, c).textContent = 'Veda ' + n.n + ' · ' + n.t;
+      el('title', {}, c).textContent = 'Veda ' + n.n + (n.fuente ? ' · ' + n.fuente : '') + ' · ' + n.t;
       return c;
     });
 
@@ -101,23 +101,23 @@
 
     /* En moviment, en bucle, i només quan es veu: fora de pantalla o amb la
        pestanya amagada no gasta res. Qui demana menys moviment el veu sencer. */
-    var quiet = raiz.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, k = 0, timer = null, veig = true;
+    var quiet = raiz.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, k = op.des || 0, timer = null, veig = true, mort = false;
     function pas() { k = k >= D.nodos.length + 40 ? 1 : k + 1; fins(Math.min(k, D.nodos.length)); }
-    function engega() { if (!timer && veig && !document.hidden) timer = setInterval(pas, op.pas || 90); }
+    function engega() { if (!mort && !timer && veig && !document.hidden) timer = setInterval(pas, op.pas || 90); }
     function atura() { clearInterval(timer); timer = null; }
     if (quiet || op.mou === false) fins(D.nodos.length);
     else {
-      fins(0); engega();
+      fins(k); engega();
       if (raiz.IntersectionObserver) new IntersectionObserver(function (es) { veig = es[0].isIntersecting; veig ? engega() : atura(); }).observe(caixa);
       document.addEventListener('visibilitychange', function () { document.hidden ? atura() : engega(); });
     }
-    return { fins: fins, atura: atura, engega: engega, pisos: function () { return bs.map(function (b, i) { return { n: b.n, vedes: compte[i] }; }); } };
+    return { fins: fins, atura: atura, engega: engega, treu: function () { mort = true; atura(); }, pisos: function () { return bs.map(function (b, i) { return { n: b.n, vedes: compte[i] }; }); } };
   }
 
   /* El JSON compacte que escriu `SOS/tools/build-cervell-dades.js`. */
   function dades(J) {
-    var nodos = J.vedes.map(function (v) { return { id: 'v' + v[0], n: v[0], capa: v[1], t: v[2] }; });
-    return { nodos: nodos, aristas: J.cites.map(function (c) { return ['v' + c[0], 'v' + c[1]]; }), capas: J.capes };
+    var nodos = J.vedes.map(function (v) { return { id: 'tt:' + v[0], n: v[0], capa: v[1], t: v[2] }; });
+    return { nodos: nodos, aristas: J.cites.map(function (c) { return ['tt:' + c[0], 'tt:' + c[1]]; }), capas: J.capes };
   }
 
   raiz.CervellPla = { munta: munta, dades: dades, franges: franges, geometria: geometria, corba: corba };
