@@ -26,7 +26,9 @@
  * Correus, telèfons i imports de les frases d'evidència es tapen.
  *
  *   node SOS/tools/analitza-contingut.js fonts/ sortida/ [--nom "Nom"] [--llengua es|ca]
- *        [--baixa https://la-web.example]   (desa la portada i fins a 12 pàgines amb curl)
+ *        [--baixa https://la-web.example --autoritzat la-web.example]
+ *        (desa la portada i fins a 12 pàgines, amb robots.txt i un segon entre
+ *        peticions; només la web de qui ha dit que sí)
  *
  * Escriu `analisis.json` i `analisis.md`, i `marca.json` i `mapa-esbozo.json`
  * només si encara no hi són: el que una persona ja ha corregit no es trepitja. */
@@ -244,26 +246,37 @@ function llegeixCarpeta(dir) {
   return out;
 }
 
-/* Baixa la portada i fins a 12 pàgines del mateix lloc amb curl (que fa servir
-   el proxy de l'entorn, si n'hi ha). Sense curl o sense xarxa, ho diu i prou. */
-function baixa(url, dir) {
-  const { spawnSync } = require('node:child_process');
-  const base = new URL(url), vist = new Set(), cua = [base.href], desats = [];
+/* Baixa la portada i fins a 12 pàgines més del mateix lloc, només amb el sí de
+   qui en és el titular: `autoritzat` ha de ser el domini que es llegeix (el sí,
+   per escrit, va al CRM i no a cap repositori). El rastrejador és el de
+   l'importador (bloc VS-IMPORTA, `rastreja`): robots.txt, una petició cada cop
+   i un segon entre totes, o el Crawl-delay si és més. Les peticions les fa curl,
+   que fa servir el proxy de l'entorn; les proves hi passen el seu `fetch`. */
+const MARCA_CURL = '\n__tt-curl__';
+async function curlFetch(url, o) {
+  const { spawnSync } = require('node:child_process'), h = (o && o.headers) || {};
+  const r = spawnSync('curl', ['-sL', '-m', '20', '--max-filesize', '8000000', '-A', h['User-Agent'] || 'TeamTowers-propuesta/1',
+    '-H', 'Accept: ' + (h.Accept || '*/*'), '-w', MARCA_CURL + '%{http_code}\t%{content_type}\t%{url_effective}', url], { encoding: 'utf8', maxBuffer: 9e6 });
+  const i = r.stdout ? r.stdout.lastIndexOf(MARCA_CURL) : -1;
+  if (r.error || r.status !== 0 || i < 0) throw new Error(r.error ? r.error.message : 'curl ha acabat amb ' + r.status);
+  const cos = r.stdout.slice(0, i), [codi, ct, final] = r.stdout.slice(i + MARCA_CURL.length).split('\t');
+  return { status: Number(codi), url: final || url, headers: { get: k => (/^content-type$/i.test(k) ? ct : null) }, text: async () => cos };
+}
+const domini = x => String(x || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/[/:?#].*$/, '').replace(/^www\./, '');
+async function baixa(url, dir, opts) {
+  const o = opts || {};
+  if (!o.autoritzat) throw new Error('Per llegir una web cal --autoritzat <domini>: només la de qui ens ho demana, amb el seu sí per escrit (va al CRM).');
+  if (domini(o.autoritzat) !== domini(url)) throw new Error('--autoritzat ' + o.autoritzat + ' no és el domini de ' + url + ': només es llegeix la web de qui ha dit que sí.');
+  const { rastreja } = require('./web-del-mapa.js');
+  const r = await rastreja(url, { fetch: o.fetch || curlFetch, dormir: o.dormir, autoritzat: o.autoritzat, max: o.max || 13,
+    agent: 'TeamTowers-propuesta/1 (+https://teamtowershuma.com)' });
   mkdirSync(dir, { recursive: true });
-  while (cua.length && desats.length < 13) {
-    const u = cua.shift();
-    if (vist.has(u)) continue;
-    vist.add(u);
-    const r = spawnSync('curl', ['-sL', '-m', '20', '-A', 'TeamTowers-propuesta/1', u], { encoding: 'utf8', maxBuffer: 8e6 });
-    if (r.status !== 0 || !r.stdout || !/<html|<body/i.test(r.stdout)) continue;
-    const nom = (new URL(u).pathname.replace(/\/$/, '/index').replace(/^\//, '').replace(/[^a-z0-9/-]+/gi, '-').replace(/\//g, '_') || 'index') + '.html';
-    writeFileSync(join(dir, nom), r.stdout);
-    desats.push(nom);
-    (r.stdout.match(/href=["'][^"'#]+["']/gi) || []).forEach(h => {
-      try { const x = new URL(h.slice(6, -1), u); x.hash = ''; if (x.host === base.host && !/\.(jpe?g|png|gif|webp|pdf|zip|css|js|xml|ico)$/i.test(x.pathname)) cua.push(x.href); } catch (e) { /* enllaç trencat */ }
-    });
-  }
-  return desats;
+  const desats = r.pagines.map(p => {
+    const nom = (new URL(p.url).pathname.replace(/\/$/, '/index').replace(/^\//, '').replace(/[^a-z0-9/-]+/gi, '-').replace(/\//g, '_') || 'index') + '.html';
+    writeFileSync(join(dir, nom), p.html);
+    return nom;
+  });
+  return { desats, fora: r.fora };
 }
 
 module.exports = { analitza, aMarkdown, llegeixCarpeta, baixa, llegeixFont };
@@ -271,25 +284,31 @@ module.exports = { analitza, aMarkdown, llegeixCarpeta, baixa, llegeixFont };
 if (require.main === module) {
   const a = process.argv.slice(2), opts = {}, pos = [];
   for (let i = 0; i < a.length; i++) {
-    if (/^--(nom|llengua|baixa)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    if (/^--(nom|llengua|baixa|autoritzat)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
     else pos.push(a[i]);
   }
-  if (pos.length < 2) { console.error('Ús: node SOS/tools/analitza-contingut.js fonts/ sortida/ [--nom …] [--llengua es|ca] [--baixa https://…]'); process.exit(2); }
-  if (opts.baixa) { const d = baixa(opts.baixa, pos[0]); console.log(d.length ? '✅ ' + d.length + ' pàgines desades a ' + pos[0] : '⚠ No s\'ha pogut baixar res de ' + opts.baixa + ': desa les pàgines a mà a ' + pos[0]); }
-  if (!existsSync(pos[0])) { console.error('❌ No hi ha la carpeta de fonts ' + pos[0]); process.exit(1); }
-  const fit = llegeixCarpeta(pos[0]);
-  if (!fit.length) { console.error('❌ La carpeta ' + pos[0] + ' no té cap font (.html, .md, .txt, .css, .svg)'); process.exit(1); }
-  const r = analitza(fit, opts);
-  mkdirSync(pos[1], { recursive: true });
-  writeFileSync(join(pos[1], 'analisis.json'), JSON.stringify(r, null, 2) + '\n');
-  writeFileSync(join(pos[1], 'analisis.md'), aMarkdown(r));
-  const nou = [];
-  if (!existsSync(join(pos[1], 'marca.json'))) {
-    const m = Object.assign({}, r.marca);
-    if (m.logo) m.logo = relative(pos[1], join(pos[0], m.logo));
-    writeFileSync(join(pos[1], 'marca.json'), JSON.stringify(m, null, 2) + '\n'); nou.push('marca.json');
-  }
-  if (!existsSync(join(pos[1], 'mapa-esbozo.json'))) { writeFileSync(join(pos[1], 'mapa-esbozo.json'), JSON.stringify(r.esborrany, null, 2) + '\n'); nou.push('mapa-esbozo.json'); }
-  console.log('✅ ' + fit.length + ' fonts · ' + r.rols.length + ' candidats a rol · ' + r.coses.length + ' a lliurament · ' + r.preguntes.length + ' preguntes'
-    + ' → ' + join(pos[1], 'analisis.md') + (nou.length ? ' (i ' + nou.join(', ') + ')' : ''));
+  if (pos.length < 2) { console.error('Ús: node SOS/tools/analitza-contingut.js fonts/ sortida/ [--nom …] [--llengua es|ca] [--baixa https://… --autoritzat <domini>]'); process.exit(2); }
+  (async () => {
+    if (opts.baixa) {
+      const d = await baixa(opts.baixa, pos[0], { autoritzat: opts.autoritzat });
+      d.fora.forEach(f => console.error('· ' + f.font + ': ' + f.motiu));
+      console.log(d.desats.length ? '✅ ' + d.desats.length + ' pàgines desades a ' + pos[0] : '⚠ No s\'ha pogut baixar res de ' + opts.baixa + ': desa les pàgines a mà a ' + pos[0]);
+    }
+    if (!existsSync(pos[0])) { console.error('❌ No hi ha la carpeta de fonts ' + pos[0]); process.exit(1); }
+    const fit = llegeixCarpeta(pos[0]);
+    if (!fit.length) { console.error('❌ La carpeta ' + pos[0] + ' no té cap font (.html, .md, .txt, .css, .svg)'); process.exit(1); }
+    const r = analitza(fit, opts);
+    mkdirSync(pos[1], { recursive: true });
+    writeFileSync(join(pos[1], 'analisis.json'), JSON.stringify(r, null, 2) + '\n');
+    writeFileSync(join(pos[1], 'analisis.md'), aMarkdown(r));
+    const nou = [];
+    if (!existsSync(join(pos[1], 'marca.json'))) {
+      const m = Object.assign({}, r.marca);
+      if (m.logo) m.logo = relative(pos[1], join(pos[0], m.logo));
+      writeFileSync(join(pos[1], 'marca.json'), JSON.stringify(m, null, 2) + '\n'); nou.push('marca.json');
+    }
+    if (!existsSync(join(pos[1], 'mapa-esbozo.json'))) { writeFileSync(join(pos[1], 'mapa-esbozo.json'), JSON.stringify(r.esborrany, null, 2) + '\n'); nou.push('mapa-esbozo.json'); }
+    console.log('✅ ' + fit.length + ' fonts · ' + r.rols.length + ' candidats a rol · ' + r.coses.length + ' a lliurament · ' + r.preguntes.length + ' preguntes'
+      + ' → ' + join(pos[1], 'analisis.md') + (nou.length ? ' (i ' + nou.join(', ') + ')' : ''));
+  })().catch(e => { console.error('❌ ' + e.message); process.exit(1); });
 }

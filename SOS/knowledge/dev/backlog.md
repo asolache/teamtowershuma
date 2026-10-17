@@ -137,11 +137,13 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    llocs (`SOS/tests/test-automatitza.mjs`). **Queda** el kit, que compta
    només el que lliura un rol de casa: és la decisió «una sola xifra a tot
    arreu».
-2. **Permís abans de llegir la web d'un lead.** La baixada de
-   `analitza-contingut.js` demana `--autoritzat`, respecta robots.txt i espera
-   un segon per pàgina, com `importa.js`. Amb prova a `test-proposta.mjs`. Si
-   el sí del lead val també per a l'enriquiment del CRM (punt 1 d'«Un CRM que
-   s'actualitza sol»), ho decideix l'Àlvar.
+2. ~~**Permís abans de llegir la web d'un lead**~~ · **fet el 17/10/2026**. La
+   baixada de `analitza-contingut.js` fa servir el rastrejador de l'importador
+   (`rastreja`, bloc VS-IMPORTA): sense `--autoritzat` del mateix domini no
+   demana res, respecta robots.txt i espera un segon entre peticions, o el
+   Crawl-delay. Ho prova `test-proposta.mjs`. Si el sí del lead val també per
+   a l'enriquiment del CRM (punt 1 d'«Un CRM que s'actualitza sol»), ho decideix
+   l'Àlvar.
 3. **El mapa dibuixat des de qualsevol mapa.** El dibuix de la portada,
    exportat i provat amb l'exemple; la portada no canvia.
 4. **`proposta.js --lead`.** Escriu «lead.html»: un sol fitxer sense JavaScript
@@ -702,7 +704,8 @@ de la web».
 - ✓ **L'anàlisi de les fonts** (`SOS/tools/analitza-contingut.js`): candidats a
   rol i a lliurament amb la frase on surten, les preguntes del que la web no
   diu, la marca que se'n desprèn i un esbós de mapa. Sense model ni xarxa;
-  `--baixa` desa la web amb curl.
+  `--baixa` desa la web només amb `--autoritzat`, amb robots.txt i un segon
+  entre peticions (pas 2 de «La pàgina per al lead»).
 - ✓ **Un sol ordre** (`SOS/tools/proposta.js`): de les fonts a l'esbós de web
   (`web-esbozo/`) i, amb un `mapa.json` que passa, a la web per lliurar
   (`web/`), amb `estado.md` dient el que falta. S'hereta als cervells nous.

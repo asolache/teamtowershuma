@@ -94,5 +94,36 @@ console.log('\nEl Markdown del backoffice');
   ok(!/<a /.test(mdHtml('[x](javascript:alert(1))')) && /<a href="https:\/\/x.example">/.test(mdHtml('[x](https://x.example)')), 'un enllaç javascript: no es converteix en enllaç; un https sí');
 }
 
+console.log('\nLlegir la web d\'un lead: només amb el seu sí, amb robots.txt i sense pressa');
+{
+  /* Una web de mentida: robots.txt amb una carpeta tancada i un Crawl-delay, la
+     portada amb enllaços a dins, a la carpeta tancada i a fora. */
+  const SITE = {
+    'https://www.lead.example/robots.txt': ['text/plain', 'User-agent: *\nDisallow: /privat/\nCrawl-delay: 2\n'],
+    'https://www.lead.example/': ['text/html', '<html><body><a href="/qui-som">Qui som</a> <a href="/privat/x">x</a> <a href="https://altre.example/">fora</a></body></html>'],
+    'https://www.lead.example/qui-som': ['text/html', '<html><body><p>Un forn de barri.</p></body></html>'],
+    'https://www.lead.example/privat/x': ['text/html', '<html><body>no s\'ha de llegir</body></html>']
+  };
+  const demanat = [], esperes = [];
+  const fetch = async url => { demanat.push(url); const x = SITE[url];
+    return { status: x ? 200 : 404, url, headers: { get: () => (x ? x[0] : 'text/html') }, text: async () => (x ? x[1] : '') }; };
+  const dormir = async ms => { esperes.push(ms); };
+  const d = mkdtempSync(join(tmpdir(), 'tt-baixa-'));
+  let err = '';
+  try { await A.baixa('https://www.lead.example/', join(d, 'f1'), { fetch, dormir }); } catch (e) { err = e.message; }
+  ok(/--autoritzat/.test(err) && !demanat.length && !existsSync(join(d, 'f1')), 'sense --autoritzat no es demana res: ni robots.txt');
+  err = '';
+  try { await A.baixa('https://www.lead.example/', join(d, 'f2'), { fetch, dormir, autoritzat: 'altre.example' }); } catch (e) { err = e.message; }
+  ok(/no és el domini/.test(err) && !demanat.length, 'amb el sí d\'un altre domini, tampoc');
+  const r = await A.baixa('https://www.lead.example/', join(d, 'f3'), { fetch, dormir, autoritzat: 'lead.example' });
+  ok(r.desats.includes('index.html') && r.desats.includes('qui-som.html') && r.desats.length === 2, 'amb el sí del mateix domini (amb www o sense): la portada i la pàgina de dins');
+  ok(!demanat.some(u => /\/privat\//.test(u)) && demanat.every(u => u.startsWith('https://www.lead.example/')), 'el que robots.txt tanca no es demana, i res de fora del lloc');
+  ok(demanat[0] === 'https://www.lead.example/robots.txt' && esperes.length === demanat.length - 1 && esperes.every(ms => ms >= 2000), 'robots.txt primer, i entre petició i petició el Crawl-delay (com a mínim un segon)');
+  err = '';
+  try { await req('../tools/proposta.js').proposta(join(d, 'p'), { baixa: 'https://www.lead.example/', fetch, dormir }); } catch (e) { err = e.message; }
+  ok(/--autoritzat/.test(err) && !existsSync(join(d, 'p', 'fuentes')), 'proposta.js --baixa sense --autoritzat s\'atura abans de llegir res');
+  rmSync(d, { recursive: true, force: true });
+}
+
 console.log('\n' + (fail ? `❌ ${fail} fallen de ${pass + fail}` : `✅ ${pass} assercions, totes verdes`));
 process.exit(fail ? 1 : 0);

@@ -9,7 +9,8 @@
  * Fa en un ordre els passos de la skill `propuesta-inicial` que no demanen
  * criteri, i deixa escrit el que sí que en demana:
  *
- *   1. (opcional) baixa la web del negoci a `fuentes/`;
+ *   1. (opcional) baixa la web del negoci a `fuentes/`, només amb el seu sí
+ *      (`--autoritzat`), amb robots.txt i un segon entre peticions;
  *   2. l'analitza (`analitza-contingut.js`): `analisis.md`, `marca.json` i
  *      `mapa-esbozo.json`;
  *   3. revisa el mapa amb les regles de la casa (`revisa-mapa.js`): `mapa.json`
@@ -28,7 +29,7 @@
  *      diu què fer la primera mitja hora, cada mes i amb Claude.
  *
  *   node SOS/tools/proposta.js propuesta/ [--nom "Nom"] [--llengua es|ca] [--url https://…]
- *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example]
+ *        [--correu x@y.z] [--casa "Rol"] [--baixa https://la-web.example --autoritzat la-web.example]
  *
  * Surt amb 0 si hi ha web per lliurar (`web/`), i amb 3 si de moment només hi ha
  * l'esbós: el que falta és feina de criteri, i `estado.md` diu quina. */
@@ -212,9 +213,12 @@ function paginaInici(dir, desti, nom, llengua) {
 async function proposta(dir, opts) {
   const o = opts || {}, fonts = join(dir, 'fuentes');
   mkdirSync(dir, { recursive: true });
-  if (o.baixa) A.baixa(o.baixa, fonts);
+  if (o.baixa) {
+    const d = await A.baixa(o.baixa, fonts, { autoritzat: o.autoritzat, fetch: o.fetch, dormir: o.dormir });
+    d.fora.forEach(f => console.error('· ' + f.font + ': ' + f.motiu));
+  }
   const fit = existsSync(fonts) ? A.llegeixCarpeta(fonts) : [];
-  if (!fit.length) throw new Error('No hi ha fonts a ' + fonts + ': desa-hi les pàgines de la web (.html), el catàleg (.md, .txt), el CSS i el logo (.svg), o passa --baixa https://…');
+  if (!fit.length) throw new Error('No hi ha fonts a ' + fonts + ': desa-hi les pàgines de la web (.html), el catàleg (.md, .txt), el CSS i el logo (.svg), o passa --baixa https://… --autoritzat <domini>');
   const an = A.analitza(fit, o), T = TXT[an.llengua];
   const nom = o.nom || an.nom, llengua = o.llengua || an.llengua;
   writeFileSync(join(dir, 'analisis.json'), JSON.stringify(an, null, 2) + '\n');
@@ -277,10 +281,10 @@ if (require.main === module) {
   const a = process.argv.slice(2), opts = { casa: [] }, pos = [];
   for (let i = 0; i < a.length; i++) {
     if (a[i] === '--casa') opts.casa.push(a[++i]);
-    else if (/^--(nom|correu|llengua|url|baixa)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    else if (/^--(nom|correu|llengua|url|baixa|autoritzat)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
     else pos.push(a[i]);
   }
-  if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://…]'); process.exit(2); }
+  if (!pos[0]) { console.error('Ús: node SOS/tools/proposta.js propuesta/ [--nom …] [--llengua es|ca] [--url …] [--correu …] [--casa …] [--baixa https://… --autoritzat <domini>]'); process.exit(2); }
   proposta(pos[0], opts).then(r => {
     console.log((r.final ? '✅ Web per lliurar' : '◐ De moment, l\'esbós') + ': ' + r.fitxers + ' fitxers a ' + r.web
       + ' · ' + r.analisi.rols.length + ' candidats a rol · ' + r.analisi.preguntes.length + ' preguntes · el que falta, a ' + join(pos[0], 'estado.md')

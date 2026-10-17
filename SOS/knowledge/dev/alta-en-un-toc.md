@@ -190,7 +190,7 @@ repositori del client.
 **L'anàlisi i l'esborrany, d'un sol ordre:**
 
 ```bash
-node SOS/tools/proposta.js propuesta/ --llengua es [--baixa https://el-negoci.example]
+node SOS/tools/proposta.js propuesta/ --llengua es [--baixa https://el-negoci.example --autoritzat el-negoci.example]
 ```
 
 Llegeix `propuesta/fuentes/` (les pàgines desades, el catàleg, el CSS, el logo),

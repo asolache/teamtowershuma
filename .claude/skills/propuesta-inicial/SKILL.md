@@ -33,18 +33,20 @@ falta, al entregar la propuesta, nunca al principio.
 ## El atajo: lo mecánico, de un solo orden
 
 ```bash
-node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" [--baixa https://su-web.example]
+node SOS/tools/proposta.js propuesta/ --llengua es --nom "Nombre del negocio" [--baixa https://su-web.example --autoritzat su-web.example]
 ```
 
 Lee `propuesta/fuentes/` (las páginas guardadas, el catálogo, el CSS, el logo en
-SVG; con `--baixa` las descarga con curl), escribe `analisis.md` (quién sale y
+SVG). Con `--baixa` las descarga, solo con `--autoritzat` y el mismo dominio: el
+sí por escrito de quien es su titular, que va al CRM y no a ningún repositorio.
+Respeta robots.txt y espera un segundo entre peticiones. Escribe `analisis.md` (quién sale y
 qué se da, con la frase donde sale, y lo que la web no dice), propone
 `marca.json` y un esbozo de mapa, revisa el mapa y saca la web: a `web-esbozo/`
 mientras no haya un `mapa.json` que pase las reglas duras, y a `web/` cuando lo
 hay. `estado.md` dice lo que falta. Sale con 3 mientras solo haya esbozo.
 
-Si el entorno no deja descargar la web, se lee con la herramienta de lectura
-web y se guarda en `fuentes/` como `.md`, diciendo que es un resumen y no el
+Si el entorno no deja descargar la web y hay ese sí, se lee con la herramienta
+de lectura web y se guarda en `fuentes/` como `.md`, diciendo que es un resumen y no el
 texto literal. Lo que queda es criterio, y son los pasos de abajo: **el mapa
 (pasos 2 y 3) y la marca (paso 5)**. `proposta.js` no inventa intangibles: por
 eso el esbozo sale siempre provisional.
