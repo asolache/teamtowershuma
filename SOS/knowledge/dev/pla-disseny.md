@@ -158,7 +158,7 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
   des de Google Fonts (guarda a `check-terra.js`), «Retira'm» del directori ja
   no torna a publicar el nom, i les dades de contacte dels formularis passen
   d'un a l'altre només dins de la pestanya (`sessionStorage`).
-- **Queda:** el NIF i el domicili de l'avís legal (LSSI art. 10, quan l'Alvaro
-  els doni), els botons de dins dels blocs generats per altres eines (`.mv-cta`
+- **Fet (18/10/2026):** el NIF i el domicili a l'avís legal (LSSI art. 10).
+- **Queda:** els botons de dins dels blocs generats per altres eines (`.mv-cta`
   del mapa de valor a la portada i al mètode, `.ct-btn` del contacte) i la
   capçalera de pàgina comuna de la fase 4.

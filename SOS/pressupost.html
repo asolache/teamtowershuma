@@ -598,6 +598,12 @@ textarea{min-height:88px;resize:vertical}
   <input name="bot-field"><input name="nom"><input name="mail"><input name="tel"><input name="orgNom">
   <input name="paquet"><input name="preu"><input name="quan"><textarea name="notes"></textarea><textarea name="resum"></textarea>
 </form>
+<!-- El de les incidències de l'app (sendIncident a SOS/index.html). Viu aquí
+     perquè l'app no tingui cap camp obert ni sense etiqueta. -->
+<form name="incidencia" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="incidencia">
+  <input name="bot-field"><input name="versio"><textarea name="queFeia"></textarea><textarea name="informe"></textarea>
+</form>
 
 <!--TT-PEU-->
 <style>
