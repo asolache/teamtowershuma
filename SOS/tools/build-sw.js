@@ -60,14 +60,17 @@ const PORTA = [
   './habitatge.html', './formacio.html', './intro.html', './molekulandia.html',
   // Les fonts de l'app: sense elles, el primer cop sense cobertura es veuria
   // amb la del sistema. Només les llatines; les extenses s'agafen si cal.
-  './fonts/space-grotesk-latin.woff2', './fonts/jetbrains-mono-latin.woff2'
+  './fonts/space-grotesk-latin.woff2', './fonts/jetbrains-mono-latin.woff2',
+  // El mapa de comarques i el QR, que l'app carrega quan els fa servir.
+  './lib/cat-map.js', './lib/qrcode.js'
 ];
 
 /* ── L'empremta ───────────────────────────────────────────────────────────── */
 const HTML = readdirSync(SOS).filter(f => f.endsWith('.html')).sort();
+const LIB = readdirSync(join(SOS, 'lib')).sort().map(f => 'lib/' + f);
 function empremta() {
   const h = createHash('sha256');
-  for (const f of HTML) { h.update(f); h.update(readFileSync(join(SOS, f))); }
+  for (const f of HTML.concat(LIB)) { h.update(f); h.update(readFileSync(join(SOS, f))); }
   return h.digest('hex').slice(0, 10);
 }
 
