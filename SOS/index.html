@@ -508,6 +508,19 @@ a{color:var(--blue);text-decoration:none}
 .tb-primary:hover{background:rgba(99,102,241,.14)}
 .tb-persona{background:linear-gradient(135deg,var(--indigo),var(--green));color:#fff;font-weight:700;border-color:transparent;padding:0 .75rem}
 .tb-pend{background:var(--amber-dim,rgba(245,158,11,.16));color:var(--amber);border-color:var(--amber);font-weight:700;padding:0 .7rem;gap:.3rem}
+/* «Què necessites?» · la barra única (fase 2): una caixa, no un botó més. */
+.tb-qn{min-width:15rem;justify-content:flex-start;color:var(--muted);background:var(--card)}
+.tb-qn .tb-kbd{margin-left:auto}
+@media(max-width:820px){.tb-qn{min-width:0}}
+.qn-q{width:100%;font:inherit;font-size:var(--t1);padding:.8rem .9rem;background:var(--card);border:2px solid var(--indigo);border-radius:10px;color:var(--text);margin-bottom:.6rem}
+.qn-res{max-height:52vh;overflow-y:auto}
+.qn-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.2rem 0 .4rem}
+.sp-hit{display:flex;align-items:center;gap:.7rem;min-height:52px;padding:.5rem .7rem;border-radius:10px;cursor:pointer}
+.sp-hit.sel,.sp-hit:hover{background:var(--indigo-dim)}
+.qn-ic{font-size:1.15rem;width:1.5rem;text-align:center}
+.qn-b{display:flex;flex-direction:column;min-width:0}
+.qn-t{font-weight:600}
+.qn-s{font-size:var(--t0);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tb-icon-only{padding:0;width:44px;justify-content:center;font-size:1.15rem}
 /* Menú «Més» */
 .tb-more{position:relative}
@@ -1696,8 +1709,7 @@ a{color:var(--blue);text-decoration:none}
          no es descobreix; dins d'un menú amb text, sí. -->
     <div class="tb-right">
       <div class="sync-pill" id="syncPill" role="status" aria-live="polite"><span class="sync-dot"></span><span id="syncTxt">Local</span></div>
-      <button class="tb-btn" id="btnSearch" aria-label="Cerca global (Command o Control + K)"><span class="tb-ic" aria-hidden="true">🔍</span><span class="tb-lb">Cerca</span><kbd class="tb-kbd" aria-hidden="true">⌘K</kbd></button>
-      <button class="tb-btn tb-primary" id="btnLauncher" aria-label="Menú d'accions"><span class="tb-ic" aria-hidden="true">☰</span><span class="tb-lb">Accions</span></button>
+      <button class="tb-btn tb-qn" id="btnSearch" aria-label="Què necessites? (Command o Control + K)"><span class="tb-ic" aria-hidden="true">🔍</span><span class="tb-lb">Què necessites?</span><kbd class="tb-kbd" aria-hidden="true">⌘K</kbd></button>
       <button class="tb-btn tb-persona" id="personaBadge" hidden aria-label="Sessió activa"><span class="tb-ic" aria-hidden="true">·</span></button>
       <div class="tb-more">
         <button class="tb-btn tb-icon-only" id="btnMore" aria-label="Més opcions" aria-haspopup="menu" aria-expanded="false" aria-controls="tbMenu"><span aria-hidden="true">⋯</span></button>
@@ -6151,36 +6163,88 @@ function _searchIndex(){
   ];
   return[...nodes,...persons,...ents,...actions];
 }
+/* «Què necessites?» · la barra única (pla de redisseny, fase 2, 18/10/2026).
+   La cerca i el menú d'accions eren dues portes per al mateix: trobar on fer
+   una cosa. Ara n'hi ha una, amb ⌘K. Busca llocs, persones, entitats i **totes
+   les accions del llançador** (`ACCIONS`, la mateixa llista, sense còpia), i
+   entén les paraules de qui la fa servir: «factura», «hores», «reunió» o
+   «fosc» porten on toca encara que l'acció es digui d'una altra manera. Sense
+   res escrit, proposa el que ara et serveix (`accionsAra`) i els llocs on has
+   estat fa poc. El llançador sencer queda a un clic, a sota. */
+const QN_SINONIMS={
+  factura:'registra ledger registre',facturar:'registra ledger registre',cobrar:'registra ledger registre',cobro:'registra ledger registre',
+  pago:'registra ledger registre',pagament:'registra ledger registre',pagar:'registra ledger registre',diner:'ledger fons',dinero:'ledger fons',
+  hores:'registra ledger',horas:'registra ledger',apuntar:'registra',apunta:'registra',
+  tasca:'tasques',tasques:'tasques',tarea:'tasques',tareas:'tasques',pendent:'tasques vistiplau',pendiente:'tasques vistiplau',
+  gente:'gent persona',persona:'gent superheroi',personas:'gent superheroi',equip:'gent',equipo:'gent',socio:'soci gent',
+  red:'xarxa mapa',flujo:'mapa',flux:'mapa',valor:'mapa ledger',
+  copia:'configuracio',backup:'configuracio',exportar:'configuracio',exporta:'configuracio',
+  fosc:'configuracio',oscuro:'configuracio',tema:'configuracio',aparenca:'configuracio',apariencia:'configuracio',
+  reunio:'assemblea',reunion:'assemblea',asamblea:'assemblea',votar:'assemblea',vot:'assemblea',
+  ayuda:'guia',ajuda:'guia',perdut:'guia',perdido:'guia',
+  necesito:'demanda publica',busco:'demanda publica aprop',ofrezco:'oferta publica',ofrecer:'oferta publica',
+  perfil:'superheroi',mi:'meu',mis:'meves'
+};
+function _qnIndex(){
+  const base=[
+    {k:'action',id:'qn_log',label:'Registra el que has fet',sub:'⏱ hores, diners o objectes que has aportat · i el que t\'han pagat',action:()=>openLogValue()},
+    {k:'action',id:'qn_viu',label:'Mira un exemple del mapa viu',sub:'🫀 els fluxos que circulen i els que s\'han aturat',action:()=>obreExempleViu()}
+  ].concat(_searchIndex()),vist=new Set(base.map(x=>norm(x.label)));
+  ACCIONS.forEach(a=>{if(vist.has(norm(a.t)))return;vist.add(norm(a.t));
+    base.push({k:'action',id:'acc_'+norm(a.t),label:a.t,sub:a.ic+' '+a.d,action:a.fn});});
+  return base;
+}
+function _qnCerca(idx,q){
+  const t=norm(q);if(!t)return[];
+  const mots=t.split('-').filter(Boolean).map(w=>[w].concat((QN_SINONIMS[w]||'').split(' ').filter(Boolean)));
+  const ordre={node:0,action:1,person:2,entity:3};
+  return idx.map(x=>{
+    const l=norm(x.label),h=l+'-'+norm(x.sub||'');
+    /* Totes les paraules hi són: 1. Només algunes, d'una frase llarga: menys,
+       però surt (qui escriu «necessito ajuda amb les hores» no ha d'encertar). */
+    const m=mots.filter(alt=>alt.some(w=>w.length>2&&h.indexOf(w)>=0)).length;
+    const s=l.indexOf(t)===0?3:l.indexOf(t)>=0?2:h.indexOf(t)>=0?1.5:m===mots.length?1:mots.length>1?m/mots.length/2:0;
+    return{x,s};
+  }).filter(o=>o.s).sort((a,b)=>b.s-a.s||ordre[a.x.k]-ordre[b.x.k]).slice(0,25).map(o=>o.x);
+}
 function openSearchPalette(){
-  const idx=_searchIndex();
+  const idx=_qnIndex();
   const bg=modal(`
-    <h2>🔍 Cerca global</h2>
-    <p class="m-sub">Busca qualsevol node, persona, entitat o acció. També: ⌘K / Ctrl+K des de qualsevol lloc.</p>
-    <input id="spQ" placeholder="Escriu per cercar… (mín. 1 caràcter)" autocomplete="off" style="width:100%;font-size:1rem;padding:.7rem .8rem;background:var(--bg-panel);border:2px solid var(--indigo);border-radius:8px;color:var(--white);margin-bottom:.5rem">
-    <div id="spResults" style="max-height:50vh;overflow-y:auto"></div>
-    <div class="modal-actions"><button class="btn btn-primary" id="spClose">Tanca</button></div>
+    <h2>🔍 Què necessites?</h2>
+    <p class="m-sub">Escriu-ho amb les teves paraules: un lloc, una persona o el que vols fer. També amb ⌘K / Ctrl+K des de qualsevol pantalla.</p>
+    <input id="spQ" class="qn-q" placeholder="p. ex. registra hores, factura, Bodega, reunió…" autocomplete="off" aria-label="Què necessites?">
+    <div id="spResults" class="qn-res" role="listbox"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="spTotes">☰ Totes les accions</button><button class="btn btn-primary" id="spClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#spClose').onclick=closeModal;
+  bg.querySelector('#spTotes').onclick=()=>{closeModal();setTimeout(()=>openLauncher(),50);};
   const inp=bg.querySelector('#spQ');inp.focus();
   const box=bg.querySelector('#spResults');
   const icon={node:'📍',person:'🦸',entity:'🏛',action:'⚡'};
-  let cursor=0;
+  let cursor=0,hits=[];
+  /* Sense res escrit: el que ara et serveix i on has estat. */
+  const suggeriments=()=>{
+    let ara=[];try{ara=accionsAra(4).map(a=>({k:'action',label:a.t,sub:a.ic+' '+a.d,action:a.fn}));}catch(e){}
+    const llocs=state.nodes.slice().sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))).slice(0,3)
+      .map(n=>({k:'node',label:n.name,sub:'Torna-hi · '+metaOf(n).label,action:()=>selectNode(n.id)}));
+    return ara.concat(llocs);
+  };
+  const fila=(h,i)=>'<div class="sp-hit'+(i===cursor?' sel':'')+'" role="option" data-i="'+i+'"><span class="qn-ic" aria-hidden="true">'+icon[h.k]+'</span>'
+    +'<span class="qn-b"><span class="qn-t">'+esc(h.label)+'</span><span class="qn-s">'+esc(h.sub||'')+'</span></span></div>';
   const draw=()=>{
-    const q=norm(inp.value.trim());
-    if(!q){box.innerHTML='<div class="ent-desc">Comença a escriure per buscar…</div>';return;}
-    const hits=idx.filter(x=>norm(x.label).includes(q)||norm(x.sub||'').includes(q)).slice(0,25);
-    if(!hits.length){box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>Cap resultat per "<strong>'+esc(inp.value)+'</strong>".</span></div>';return;}
-    cursor=Math.min(cursor,hits.length-1);
-    box.innerHTML=hits.map((h,i)=>'<div class="sp-hit'+(i===cursor?' sel':'')+'" data-i="'+i+'" style="display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:8px;cursor:pointer;'+(i===cursor?'background:var(--indigo-dim)':'')+'"><span style="font-size:1.1rem">'+(icon[h.k]||'·')+'</span><div style="min-width:0;flex:1"><div style="font-weight:500">'+esc(h.label)+'</div><div style="font-size:var(--t0);color:var(--muted)">'+esc(h.sub||'')+'</div></div></div>').join('');
-    box.querySelectorAll('.sp-hit').forEach(el=>el.onclick=()=>{const i=Number(el.dataset.i);closeModal();setTimeout(()=>hits[i].action(),50);});
+    const q=inp.value.trim();
+    hits=q?_qnCerca(idx,q):suggeriments();
+    if(q&&!hits.length){box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>Res per «<strong>'+esc(q)+'</strong>». Prova amb una altra paraula o obre totes les accions.</span></div>';return;}
+    cursor=Math.min(cursor,Math.max(0,hits.length-1));
+    box.innerHTML=(q?'':'<div class="qn-k">Ara et pot servir</div>')+hits.map(fila).join('');
+    box.querySelectorAll('.sp-hit').forEach(e=>e.onclick=()=>{const h=hits[Number(e.dataset.i)];closeModal();setTimeout(()=>h.action(),50);});
   };
   inp.oninput=()=>{cursor=0;draw();};
   inp.onkeydown=e=>{
-    const hits=idx.filter(x=>norm(x.label).includes(norm(inp.value.trim()))||norm(x.sub||'').includes(norm(inp.value.trim()))).slice(0,25);
     if(e.key==='ArrowDown'){e.preventDefault();cursor=Math.min(cursor+1,hits.length-1);draw();}
     else if(e.key==='ArrowUp'){e.preventDefault();cursor=Math.max(0,cursor-1);draw();}
-    else if(e.key==='Enter'&&hits[cursor]){e.preventDefault();closeModal();setTimeout(()=>hits[cursor].action(),50);}
+    else if(e.key==='Enter'&&hits[cursor]){e.preventDefault();const h=hits[cursor];closeModal();setTimeout(()=>h.action(),50);}
     else if(e.key==='Escape'){closeModal();}
   };
   draw();
@@ -23201,7 +23265,6 @@ $('#btnSettings').onclick=openSettingsModal;
    —així funciona igual amb `file://` en un clon que servit des del web, sense
    dependre de cap domini. */
 $('#btnVedes').onclick=()=>window.open('vedes.html','_blank','noopener');
-$('#btnLauncher').onclick=openLauncher;
 window.openFounderMap=openFounderMap;
 /* El distintiu porta al cromo, que és el que la imatge ensenya. El perfil no
    queda amagat: hi ha el botó des del cromo mateix. */
