@@ -152,6 +152,13 @@ ok(viu.viu === 1 && viu.pols === 1, 'el flux que circula es mou en la seva direc
 ok(viu.aturat === 1 && viu.mai === 1, 'el que fa tard surt aturat, i el que no ha circulat mai, com una promesa');
 ok(viu.urls.length === 1 && viu.urls[0].startsWith('https://crm.zoho.eu/'), 'només els orígens https s\'obren en una pestanya nova');
 ok(viu.boto, 'el mapa ofereix carregar la xarxa real');
+await page.evaluate(() => { history.replaceState(null, '', '?viu'); location.reload(); });
+await page.waitForFunction(() => window.__SOS);
+await page.waitForFunction(() => document.querySelectorAll('#workspace .fv-pols').length > 0, null, { timeout: 5000 }).catch(() => {});
+const ex = await page.evaluate(() => ({ pols: document.querySelectorAll('#workspace .fv-pols').length,
+  aturat: document.querySelectorAll('#workspace .fv-aturat').length, mai: document.querySelectorAll('#workspace .fv-mai').length,
+  apagant: document.querySelectorAll('#workspace .fv-apagant').length }));
+ok(ex.pols >= 2 && ex.aturat >= 1 && ex.mai >= 1 && ex.apagant >= 1, '?viu obre un exemple amb els quatre estats (' + JSON.stringify(ex) + ')');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' passen'));
