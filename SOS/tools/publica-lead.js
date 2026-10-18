@@ -45,8 +45,8 @@ const BASE = {
     '  X-Content-Type-Options: nosniff',
     "  Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data:; form-action 'none'; frame-ancestors 'none'; base-uri 'none'",
     '  Cache-Control: no-store', ''].join('\n'),
-  'public/index.html': '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n<title>TeamTowers</title>\n</head>\n<body>\n<p>TeamTowers</p>\n</body>\n</html>\n',
-  'public/404.html': '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n<title>TeamTowers</title>\n</head>\n<body>\n<p>Esta página ya no está. Si esperabas verla, escríbenos desde <a href="https://teamtowershuma.com/visita/">teamtowershuma.com/visita/</a>.</p>\n</body>\n</html>\n',
+  'public/index.html': '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta name="robots" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n<title>TeamTowers</title>\n</head>\n<body>\n<p>TeamTowers</p>\n</body>\n</html>\n',
+  'public/404.html': '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<meta name="robots" content="noindex, nofollow">\n<meta name="referrer" content="no-referrer">\n<title>TeamTowers</title>\n</head>\n<body>\n<p>Esta página ya no está. Si esperabas verla, escríbenos desde <a href="https://teamtowershuma.com/visita/">teamtowershuma.com/visita/</a>.</p>\n</body>\n</html>\n',
   'netlify.toml': '[build]\n  publish = "public"\n  command = ""\n',
   [MARCA]: 'Repositori privat de les pàgines dels leads. El gestiona SOS/tools/publica-lead.js (asolache/teamtowershuma).\n'
 };
@@ -101,11 +101,21 @@ function publica(dir, desti) {
   const fonts = existsSync(join(dir, 'fuentes')) ? A.llegeixCarpeta(join(dir, 'fuentes')) : [];
   falla.push(...L.comprova(html, { revisat: true, fonts }));
   if (falla.length) return { ok: false, falla };
+  /* Una referència és d'un sol negoci: si ja hi ha la pàgina d'un altre (dues
+     carpetes copiades d'un mateix esborrany), no es trepitja l'enllaç que ja té. */
   const f = join(desti, 'public', lj.ref, 'index.html');
+  const ja = existsSync(f) ? nomDeLaPagina(readFileSync(f, 'utf8')) : null;
+  if (ja != null && !L.mateixNom(ja, lj.nom)) return { ok: false, falla: ['public/' + lj.ref + '/ ja és la pàgina de «' + ja + '»: dues carpetes comparteixen referència. Per a «' + lj.nom + '», torna a fer la pàgina en una carpeta nova (sense lead.json); si és el mateix negoci amb un altre nom, primer --esborra ' + lj.ref] };
   mkdirSync(join(f, '..'), { recursive: true });
   writeFileSync(f, html);
   return { ok: true, ref: lj.ref, fitxer: f };
 }
+
+/* El nom del negoci tal com el porta la pàgina (`<p class="marca">`). */
+const nomDeLaPagina = html => {
+  const m = /<p class="marca">([^<]*)<\/p>/.exec(html);
+  return m ? m[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : '';
+};
 
 function esborra(ref, desti) {
   if (!REF.test(ref || '')) return { ok: false, falla: ['«' + ref + '» no és una referència'] };

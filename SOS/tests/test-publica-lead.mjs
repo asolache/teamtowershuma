@@ -41,6 +41,7 @@ console.log('\nLa base del repositori privat');
   ok(/publish = "public"/.test(readFileSync(join(repo, 'netlify.toml'), 'utf8')) && existsSync(join(repo, 'public', 'index.html')) && existsSync(join(repo, 'public', '404.html'))
     && !existsSync(join(repo, 'public', 'robots.txt')), 'Netlify publica només public/, amb una portada buida i el 404; sense robots.txt, perquè es vegi el noindex');
   ok(/privado y debe seguir siéndolo/.test(readFileSync(join(repo, 'README.md'), 'utf8')), 'el README diu que és privat i com es fa servir');
+  ok(['index.html', '404.html'].every(x => /<meta name="viewport" content="width=device-width/.test(readFileSync(join(repo, 'public', x), 'utf8'))), 'la portada i el 404 es llegeixen al mòbil (viewport)');
   ok(publica('--inicia', resolve(DIR, '..', '..', 'tt-pub-dins')).status === 4 && !existsSync(resolve(DIR, '..', '..', 'tt-pub-dins')), 'el repositori privat no pot ser dins del públic');
 }
 
@@ -64,6 +65,17 @@ console.log('\nPublicar');
   writeFileSync(join(lead, 'lead.html'), html.split(ref).join('AAAAAAAAAAAAAAAA'));
   ok(/no porta la referència/.test(publica(lead, repo).stderr), 'una pàgina amb una altra referència que la de lead.json no es publica');
   writeFileSync(join(lead, 'lead.html'), html);
+  const altre = join(tmpdir(), 'tt-pub-altre-' + process.pid);
+  spawnSync('cp', ['-r', lead, altre]);
+  node(join(TOOLS, 'proposta.js'), altre, '--llengua', 'ca', '--nom', 'Cooperativa Beta', '--lead');
+  const ja = JSON.parse(readFileSync(join(lead, 'lead.json'), 'utf8'));
+  writeFileSync(join(altre, 'lead.json'), JSON.stringify({ ref: ja.ref, nom: 'Cooperativa Beta' }));
+  node(join(TOOLS, 'proposta.js'), altre, '--llengua', 'ca', '--nom', 'Cooperativa Beta', '--lead', '--revisat');
+  const rc = publica(altre, repo);
+  ok(JSON.parse(readFileSync(join(altre, 'lead.json'), 'utf8')).ref === ref && rc.status === 4 && /ja és la pàgina de «Celler de Prova»/.test(rc.stderr)
+    && /Celler de Prova/.test(readFileSync(f, 'utf8')), 'dues carpetes amb la mateixa referència: la segona no trepitja la pàgina que el primer lead ja té');
+  ok(publica(lead, repo).status === 0, 'tornar a publicar la del mateix negoci, sí');
+  rmSync(altre, { recursive: true, force: true });
 
   console.log('\nEsborrar després de la visita');
   ok(publica('--esborra', '../../etc', repo).status === 4 && publica('--esborra', 'x', repo).status === 4, 'una referència que no ho és no esborra res');
