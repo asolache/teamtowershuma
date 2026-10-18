@@ -42,7 +42,7 @@ meitat). Els rols es diuen pel que fan.
 
 | Rol | Qui ho fa avui |
 |---|---|
-| **Els tallers que donen de menjar** | Fent Pinya a teamtowers.eu (creació de Fèlix Miret, cofundador); després eventspenedes.com |
+| **Els tallers que donen de menjar** | Fent Pinya a teamtowers.eu (marca 100 % de l'Àlvaro); després eventspenedes.com |
 | **Les empreses que contracten** | clients dels tallers |
 | **La matriu** | TeamTowers Humà: SOS, codex, MATRIU |
 | **La ment xarxa** | les persones sòcies, cadascuna amb el seu cervell |
@@ -109,6 +109,5 @@ mateixes eines que farà servir tothom. Sense codi nou: `#/fons` ja ho ensenya.
   també capital de fora?
 - «Els primers» vol dir el primer fons de cervells connectats, o el primer
   fons cooperatiu de Catalunya?
-- Fèlix hi està d'acord, que el marge del Fent Pinya alimenti el fons?
 - Quina part dels ingressos dels tallers hi voldria destinar (la decisió, no
   la xifra, que va al repositori privat)?
