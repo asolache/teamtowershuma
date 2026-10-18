@@ -1320,7 +1320,7 @@ a{color:var(--blue);text-decoration:none}
          amb paraules de qui el pateix: el taller va bé i al cap d'un mes
          cadascú torna a la seva. El barri no marxa: és la tercera paraula del
          subtítol, perquè l'esquelet és el mateix. -->
-    <div class="ob-eyebrow">SOS · el sistema del teu negoci operatiu</div>
+    <div class="ob-eyebrow">SOS · el sistema del teu negoci operatiu <button class="tb-beta" id="obBeta" title="Beta pública · digues què falla" aria-label="Beta pública: digues què falla">beta</button></div>
     <h1>El mapa que vau pactar,<br><em>funcionant dilluns.</em></h1>
     <p class="ob-sub">Un equip dibuixa junt per on ha de fluir el valor i, al cap d'un mes, cadascú ha tornat a la seva. El SOS és el que fa que no passi: <strong>cada rol veu què dona, què rep i què té pendent</strong>, el mapa real es posa al costat de l'ideal que vau acordar i es veu on s'encalla el valor. Serveix igual per a <strong>una pime, una cooperativa o una xarxa veïnal</strong>. I és vostre: s'obre al navegador, <strong>sense servidor nostre, sense quota i sense atadura</strong>.</p>
     <!-- APUNTAR-S'HI, A DALT ────────────────────────────────────────────
@@ -22990,7 +22990,7 @@ $('#btnActivity').onclick=()=>routeTo('activitat');
 $('#btnEines').onclick=()=>routeTo('eines');
 $('#btnSync').onclick=openSyncModal;
 $('#homeLogo').onclick=()=>{state.activeId=null;state.homeView='tauler';render();};
-$('#betaBadge').onclick=()=>openIncidentReport();
+$('#betaBadge').onclick=$('#obBeta').onclick=()=>openIncidentReport();
 // Escape tanca primer el menú de la barra i, si no n'hi ha cap obert, el modal.
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!tbMenu.hidden)closeMoreMenu(true);else closeModal();});
 

@@ -135,6 +135,15 @@ const r6b = await page.evaluate(async () => {
     ko };
 });
 ok(r6b.badge && /beta/i.test(r6b.text), 'la barra diu «beta»');
+const r6c = await page.evaluate(async () => {
+  const b = document.querySelector('#onboarding #obBeta');
+  if (b) b.click();
+  await new Promise(r => setTimeout(r, 60));
+  const obre = !!document.querySelector('#incSend');
+  window.__SOS.closeModal();
+  return { b: !!b, obre };
+});
+ok(r6c.b && r6c.obre, 'i la portada també diu «beta», i obre el mateix informe');
 ok(r6b.obre, 'i tocar-la obre l\'informe amb «Envia-ho»');
 ok(r6b.u === '/' && r6b.form === 'incidencia', 'envia al formulari «incidencia» de Netlify');
 ok(r6b.que === 'he clicat i no passa res' && /Errors recollits/.test(r6b.informe), 'amb el que feia i el mateix informe que es veu');
