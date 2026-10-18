@@ -1702,6 +1702,11 @@ pilot 1, i falten les claus. L'enriquiment amb IA (punt 1) està per fer. La
 decisió del punt 3 continua oberta i ara la porta el bloc «Ingressos
 recurrents», amb el pla únic de les tres marques.
 
+**Estat (18/10/2026):** fins avui els formularis de Netlify estaven apagats al
+lloc `teamtowershuma`, i no se'n guardava cap enviament: comanda, diagnòstic,
+visita ni, des del #254, les incidències de l'app. L'Àlvar ha dit que sí i ja
+estan encesos. Tot el que s'hagi enviat abans d'avui s'ha perdut.
+
 **Demanat per l'Àlvar (28/09/2026):** «integra'm amb Zoho o tenir muntat un
 excel·lent CRM autoactualitzable en la seva màxima expressió», i **analitzar
 amb IA qui és el lead a partir del seu web** per segmentar-ne el potencial de
