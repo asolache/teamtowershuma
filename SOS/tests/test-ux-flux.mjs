@@ -108,6 +108,51 @@ const qr = await page.evaluate(() => new Promise(ok => {
 }));
 ok(qr, 'i lib/qrcode.js dibuixa el QR d\'aparellament');
 
+console.log('\n5 · El mapa viu: el que circula es mou, el que no es veu aturat, i la xarxa real entra privada');
+const viu = await page.evaluate(async () => {
+  const S = window.__SOS;
+  await new Promise((ok, ko) => { const sc = document.createElement('script'); sc.src = 'lib/flux-viu.js'; sc.onload = ok; sc.onerror = ko; document.head.appendChild(sc); });
+  const ara = Date.parse('2026-10-18T12:00:00Z'), d = n => new Date(ara - n * 864e5).toISOString();
+  const est = (f, ts) => FluxViu.estat(f, ts, ara).estat;
+  const unit = {
+    mai: est({}, []),
+    viu: est({ ritme: 'setmana' }, [d(3)]),
+    apagant: est({ ritme: 'setmana' }, [d(10)]),
+    aturat: est({ ritme: 'setmana' }, [d(20)]),
+    deduit: FluxViu.ritmeDies({}, [d(28), d(21), d(14), d(7)]),
+    senseRitme: est({}, [d(45)])
+  };
+  const n = S.newNode('Xarxa real', 'projecte', null);
+  S.state.nodes.push(n); await S.persist(n);
+  const pak = { type: 'sos-xarxa-real', v: 1, nodes: [
+    { id: 'jo', name: 'TeamTowers', kind: 'nosaltres' },
+    { id: 'zoho:1', name: 'Celler Prova', kind: 'lead', url: 'https://crm.zoho.eu/crm/tab/Leads/1' },
+    { id: 'zoho:2', name: 'Espai Prova', kind: 'lead', url: 'javascript:alert(1)' }],
+    fluxos: [
+      { id: 'gmail:a', from: 'jo', to: 'zoho:1', label: 'Proposta', ritme: 'setmana', fets: [{ id: 'm1', ts: new Date(Date.now() - 2 * 864e5).toISOString(), what: 'Correu' }] },
+      { id: 'gmail:b', from: 'zoho:2', to: 'jo', label: 'Consulta', ritme: 'setmana', fets: [{ id: 'm2', ts: new Date(Date.now() - 40 * 864e5).toISOString() }] },
+      { id: 'gmail:c', from: 'jo', to: 'zoho:2', label: 'Seguiment' }] };
+  const c1 = FluxViu.importa(n, pak, S.uid), c2 = FluxViu.importa(n, pak, S.uid);
+  await S.persist(n);
+  S.state.tab = 'map'; S.selectNode(n.id);
+  await new Promise(r2 => setTimeout(r2, 500));
+  const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[data-ex]'));
+  return { unit, c1, c2, rols: n.vna.roles.length,
+    viu: svg.querySelectorAll('.fv-viu').length, pols: svg.querySelectorAll('.fv-pols').length,
+    aturat: svg.querySelectorAll('.fv-aturat').length, mai: svg.querySelectorAll('.fv-mai').length,
+    urls: [...svg.querySelectorAll('[data-url]')].map(e => e.getAttribute('data-url')),
+    boto: !!document.querySelector('.vna-xr input[type=file]') };
+});
+ok(viu.unit.mai === 'mai' && viu.unit.viu === 'viu' && viu.unit.apagant === 'apagant' && viu.unit.aturat === 'aturat',
+  'els quatre estats surten del ritme i de l\'últim cop (' + JSON.stringify(viu.unit) + ')');
+ok(viu.unit.deduit === 7 && viu.unit.senseRitme === 'apagant', 'sense ritme declarat es dedueix dels apunts, i si no, es compta mensual');
+ok(viu.c1.rols === 3 && viu.c1.fluxos === 3 && viu.c1.fets === 2, 'el paquet entra: 3 nodes, 3 fluxos, 2 fets');
+ok(viu.c2.rols === 0 && viu.c2.fluxos === 0 && viu.c2.fets === 0 && viu.rols === 3, 'tornar-lo a carregar no duplica res');
+ok(viu.viu === 1 && viu.pols === 1, 'el flux que circula es mou en la seva direcció');
+ok(viu.aturat === 1 && viu.mai === 1, 'el que fa tard surt aturat, i el que no ha circulat mai, com una promesa');
+ok(viu.urls.length === 1 && viu.urls[0].startsWith('https://crm.zoho.eu/'), 'només els orígens https s\'obren en una pestanya nova');
+ok(viu.boto, 'el mapa ofereix carregar la xarxa real');
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' passen'));
 process.exit(fail ? 1 : 0);
