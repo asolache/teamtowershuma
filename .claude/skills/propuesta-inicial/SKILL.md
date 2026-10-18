@@ -207,15 +207,25 @@ TeamTowers, no desde el del cliente.
 
    Se corrige lo que señala la consola (`mapa.json`, `preguntas-visita.md` o
    `--nom`), nunca la página.
-4. **Publicarla** en el repositorio privado de las páginas de leads, con su
-   sitio de Netlify, en una carpeta con la referencia de `lead.json` como
-   nombre. Nunca en el repositorio público. Ese repositorio lo crea Álvaro
-   (paso 7 del backlog).
+4. **Publicarla** en el repositorio privado de las páginas de leads
+   (`asolache/teamtowers-leads`, con su sitio de Netlify), nunca en el
+   público. La herramienta solo copia la página revisada del mismo
+   `lead.json`, después de volver a comprobarla, a `public/<ref>/`:
+
+   ```bash
+   node SOS/tools/publica-lead.js ../leads/<negocio>/ ../teamtowers-leads/
+   ```
+
+   Después, commit y push en el repositorio privado. La primera vez,
+   `--inicia ../teamtowers-leads/` escribe su base (las cabeceras `noindex`,
+   sin referer y sin scripts). Ese repositorio lo crea Álvaro (paso 7 del
+   backlog).
 5. **Anotarlo en Zoho:** «enviado» y la fecha, a mano hasta que haya permiso
    para actualizar leads (paso 9). Si el lead responde en /visita/, llega como
    lead nuevo con la referencia de su página. Es la única forma de saber que la
    ha abierto: la página no lleva ningún píxel.
-6. **Borrarla después de la visita.**
+6. **Borrarla después de la visita:** `node SOS/tools/publica-lead.js
+   --esborra <ref> ../teamtowers-leads/`, y commit y push.
 
 ## Lo que nunca entra
 

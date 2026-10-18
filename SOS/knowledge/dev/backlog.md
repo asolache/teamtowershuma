@@ -184,7 +184,13 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    `test-zoho-nivell2.mjs`, també en sec. El correu de «Pedir mi borrador» de
    /mapa-web/ ara demana el sí per escrit per llegir la web.
 7. **El repositori privat i el seu lloc de Netlify.** L'Àlvar el crea; aquest
-   fil l'omple.
+   fil l'omple. Preparat el 18/10/2026: `SOS/tools/publica-lead.js` escriu la
+   base del repositori (`--inicia`: `public/` amb capçaleres `noindex`, sense
+   referer i amb una CSP que no deixa executar res), hi copia la pàgina
+   revisada a `public/<ref>/` després de tornar-la a comprovar, i l'esborra
+   després de la visita (`--esborra`). Ho prova `test-publica-lead.mjs`. Falta
+   que l'Àlvar creï `asolache/teamtowers-leads`, privat i buit: l'app de Claude
+   no pot crear repositoris (403). Després, el seu lloc de Netlify.
 8. ~~**La skill «propuesta-inicial»** amb el pas «Enviar abans de la visita»~~
    · **fet el 17/10/2026**: el sí del lead, `--lead`, `--revisat`, publicar,
    anotar a Zoho i esborrar.
