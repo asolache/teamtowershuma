@@ -5,6 +5,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'index.html');
 let pass = 0, fail = 0;
@@ -114,6 +115,32 @@ const r6 = await page.evaluate(async () => {
 });
 ok(r6.has, 'hi ha copiar i obrir incidència');
 ok(r6.teMd && r6.llarg > 80, 'i el text complet és a la vista abans d\'enviar-lo');
+
+console.log('\n6b · Beta pública: la marca obre l\'informe, i s\'envia sense compte de GitHub');
+const r6b = await page.evaluate(async () => {
+  const S = window.__SOS;
+  const badge = document.querySelector('#betaBadge');
+  if (badge) badge.click();
+  await new Promise(r => setTimeout(r, 60));
+  const obre = !!document.querySelector('#incSend');
+  S.closeModal();
+  let crida = null;
+  const fals = async (u, o) => { crida = { u, o }; return { ok: true }; };
+  await S.sendIncident(S.buildIncident('he clicat i no passa res'), fals);
+  const cos = crida ? new URLSearchParams(crida.o.body) : new URLSearchParams();
+  let ko = false;
+  try { await S.sendIncident(S.buildIncident('x'), async () => ({ ok: false, status: 404 })); } catch (e) { ko = true; }
+  return { badge: !!badge, text: badge ? badge.textContent : '', obre, u: crida && crida.u,
+    form: cos.get('form-name'), que: cos.get('queFeia'), informe: cos.get('informe') || '',
+    ko };
+});
+ok(r6b.badge && /beta/i.test(r6b.text), 'la barra diu «beta»');
+ok(r6b.obre, 'i tocar-la obre l\'informe amb «Envia-ho»');
+ok(r6b.u === '/' && r6b.form === 'incidencia', 'envia al formulari «incidencia» de Netlify');
+ok(r6b.que === 'he clicat i no passa res' && /Errors recollits/.test(r6b.informe), 'amb el que feia i el mateix informe que es veu');
+ok(/<form name="incidencia" data-netlify="true"/.test(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'pressupost.html'), 'utf8')),
+  'i el formulari està declarat (a pressupost.html) perquè Netlify el doni d\'alta');
+ok(r6b.ko, 'si el servidor no el pren, falla en veu alta i no diu «enviat»');
 
 console.log('\n══ E8 · La còpia no depèn d\'una persona ══');
 
