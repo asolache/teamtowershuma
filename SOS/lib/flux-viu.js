@@ -134,5 +134,24 @@ var FluxViu = (function () {
     return compte;
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, pinta: pinta, importa: importa };
+  /* Un exemple inventat, per veure els quatre estats sense dades pròpies.
+     Les dates es compten des d'avui perquè sempre surti igual. */
+  function exemple(ara) {
+    ara = ara || Date.now();
+    var d = function (n) { return new Date(ara - n * DIA).toISOString(); };
+    var fets = function (pre, dies) { return dies.map(function (n, i) { return { id: pre + i, ts: d(n), what: 'Exemple' }; }); };
+    return { type: TIPUS, v: 1, nodes: [
+      { id: 'ex:negoci', name: 'El negoci', url: 'https://teamtowershuma.com/SOS/blog.html#post-mapa-viu' },
+      { id: 'ex:clients', name: 'Clients' }, { id: 'ex:prov', name: 'Proveïdors' },
+      { id: 'ex:equip', name: 'Equip' }, { id: 'ex:aliats', name: 'Aliats' }],
+      fluxos: [
+        { id: 'ex:f1', from: 'ex:negoci', to: 'ex:clients', label: 'Comandes', kind: 'tangible', ritme: 'setmana', fets: fets('a', [1, 6, 12, 19, 26]) },
+        { id: 'ex:f2', from: 'ex:clients', to: 'ex:negoci', label: 'Pagaments', kind: 'tangible', ritme: 'setmana', fets: fets('b', [2, 9, 16]) },
+        { id: 'ex:f3', from: 'ex:prov', to: 'ex:negoci', label: 'Matèria primera', kind: 'tangible', ritme: 'setmana', fets: fets('c', [11, 18]) },
+        { id: 'ex:f4', from: 'ex:equip', to: 'ex:negoci', label: 'Idees de millora', ritme: 'mes', fets: fets('d', [75, 110]) },
+        { id: 'ex:f5', from: 'ex:negoci', to: 'ex:aliats', label: 'Recomanacions', ritme: 'mes' },
+        { id: 'ex:f6', from: 'ex:clients', to: 'ex:negoci', label: 'Opinions', ritme: 'mes', fets: fets('e', [4, 33, 61]) }] };
+  }
+
+  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, pinta: pinta, importa: importa, exemple: exemple };
 })();
