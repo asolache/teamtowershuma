@@ -44,9 +44,9 @@ var FluxViu = (function () {
       '.fv-pols{fill:none;stroke-linecap:round;stroke-width:3;stroke-opacity:.95;stroke-dasharray:1.5 11;animation:fvp var(--fv,3s) linear infinite;pointer-events:none}' +
       '@keyframes fvp{to{stroke-dashoffset:-50}}' +
       '.fv-apagant{stroke-opacity:.28}' +
-      '.fv-aturat{stroke:#ff9100;stroke-opacity:.85}' +
-      '.fv-mai{stroke:#82828d;stroke-opacity:.35;stroke-width:1}' +
-      '.fv-marca{font:700 10px "JetBrains Mono",monospace;fill:#ff9100;pointer-events:none}' +
+      '.fv-aturat{stroke:var(--orange,#ff9100);stroke-opacity:.85}' +
+      '.fv-mai{stroke:var(--muted,#82828d);stroke-opacity:.35;stroke-width:1}' +
+      '.fv-marca{font:700 10px "JetBrains Mono",monospace;fill:var(--orange,#ff9100);pointer-events:none}' +
       '[data-url]{cursor:pointer}' +
       '@media (prefers-reduced-motion:reduce){.fv-pols{animation:none;stroke-dasharray:none;stroke-width:2.4;stroke-opacity:.6}}';
     document.head.appendChild(s);
@@ -71,7 +71,8 @@ var FluxViu = (function () {
         var q = document.createElementNS(ns, 'path');
         q.setAttribute('d', p.getAttribute('d'));
         q.setAttribute('class', 'fv-pols');
-        q.setAttribute('stroke', p.getAttribute('stroke'));
+        /* El color del traç el pot dir l'atribut o una classe de la pàgina. */
+        q.setAttribute('stroke', getComputedStyle(p).stroke || p.getAttribute('stroke'));
         q.style.setProperty('--fv', Math.max(.8, 4 - Math.min(e.n90, 30) / 10) + 's');
         p.parentNode.insertBefore(q, p.nextSibling);
       } else if (e.estat === 'aturat' && p.getAttribute('data-m')) {

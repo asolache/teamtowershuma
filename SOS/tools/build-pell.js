@@ -16,10 +16,11 @@
  * producte, i el referent no és una pantalla d'aplicació sinó **el full de
  * paper d'estrassa de la sala**. La resta del lloc públic hi va al darrere.
  *
- * **L'aplicació (`SOS/index.html`) no.** És una altra superfície: una eina que
- * s'obre cada dia i no una pàgina que es llegeix un cop, té la seva barra i és
- * al 99 % del seu sostre de pes. Un lloc clar i una eina fosca és una decisió,
- * no un oblit, i per això consta escrita aquí i a `FORA_DE_LA_PELL`.
+ * **L'aplicació (`SOS/index.html`) també, des del 18/10/2026.** Va ser fosca a
+ * posta mentre era una altra superfície; el pla de redisseny del SOS la fa
+ * una sola cosa amb el lloc: la mateixa paleta, els mateixos botons i el
+ * terra de 15 px. El fosc es queda com a opció de Configuració, amb la paleta
+ * de nit `PELL_FOSC`, que s'escriu entre les marques `TT-PELL-FOSC`.
  *
  * ── Els contrastos, comprovats i no triats a ull ────────────────────────────
  * Tots els colors de text sobre `--bg` passen AA (≥ 4,5:1), i es van mesurar
@@ -96,15 +97,42 @@ const PELL = [
   ['--t5', 'clamp(2.1rem,6vw,3.5rem)', '']
 ];
 
+/* ══ LA PALETA FOSCA ════════════════════════════════════════════════════════
+   La mateixa paleta de nit, per a qui la tria. Des del 18/10/2026 l'aplicació
+   porta la pell i el fosc és una opció de Configuració, no la seva identitat:
+   són els colors que l'app tenia fins aleshores, triats per brillar damunt de
+   negre. Va entre les seves pròpies marques, dins d'un `:root[data-tema=fosc]`,
+   i una pàgina sense aquestes marques no té mode fosc. Només colors: l'escala i
+   la lletra no canvien de nit. */
+const PELL_FOSC = [
+  ['--bg', '#050507', ''],
+  ['--panel', '#0a0a0f', ''],
+  ['--card', '#111118', ''],
+  ['--text', '#f5f5f7', ''],
+  ['--light', '#c7c7d1', ''],
+  ['--muted', '#82828d', ''],
+  ['--border', 'rgba(255,255,255,.08)', ''],
+  ['--border-strong', 'rgba(255,255,255,.14)', ''],
+  ['--indigo', '#6366f1', ''],
+  ['--blue', '#00b0ff', ''],
+  ['--purple', '#e040fb', ''],
+  ['--green', '#00e676', ''],
+  ['--orange', '#ff9100', ''],
+  ['--red', '#ff5252', ''],
+  ['--gold', '#facc15', ''],
+  ['--on-accent', '#ffffff', '']
+];
+
 /* La paleta s'exporta perquè és **la llista dels tokens que existeixen**, i
    des del 04/10/2026 la barra única la necessita: el seu CSS va a vint-i-set
    pàgines i un token que la pell no declari no peta enlloc —deixa el text
    sense color. Comprovar-ho demana aquesta llista, i una segona còpia d'ella
    divergiria el primer dia que s'hi afegís un color. */
 /* ══ EL BLOC ═════════════════════════════════════════════════════════════════ */
-function bloc() {
-  const ample = Math.max(...PELL.map(p => p[0].length));
-  return PELL.map(([k, v, per]) =>
+function bloc(llista) {
+  llista = llista || PELL;
+  const ample = Math.max(...llista.map(p => p[0].length));
+  return llista.map(([k, v, per]) =>
     `  ${k.padEnd(ample)}: ${v};${per ? '   /* ' + per + ' */' : ''}`).join('\n');
 }
 
@@ -117,7 +145,6 @@ const FORA_DE_LA_PELL = {
      `build-comando.js` llegeix. Pintar-la seria mantenir una paleta per a una
      pantalla que ningú pot obrir. */
   'SOS/comando.html': 'Ja no se serveix: 301 cap a molekulon.org. Es queda com a font de l\'ancoratge al canon de `build-comando.js`.',
-  'SOS/index.html': 'És l\'aplicació i no una pàgina: s\'obre cada dia, té barra pròpia i va al 99 % del seu sostre de pes. Fosca a posta.',
   'SOS/joc.html': 'És una pantalla de joc a pantalla completa, amb la seva pròpia atmosfera.',
   'home-nova.html': 'Esborrany de redisseny amb `noindex`. El genera `build-vitrina.js`.',
   'finances.html': 'Eina interna de comptes.',
@@ -144,7 +171,7 @@ const PAGINES = [].concat(
    al CI, `/vedes` es publicava sense cap color de la pell. */
 /* I la llista de pàgines, perquè `build-components.js` escriu els components
    exactament a les mateixes: qui té la pell té els botons. */
-module.exports = { PELL, bloc, PAGINES, FORA_DE_LA_PELL };
+module.exports = { PELL, PELL_FOSC, bloc, PAGINES, FORA_DE_LA_PELL };
 if (require.main !== module) return;
 
 /* ══ ESCRIURE ════════════════════════════════════════════════════════════════
@@ -152,7 +179,17 @@ if (require.main !== module) return;
    d'elles és de la pàgina i no es toca: hi ha fitxers amb tokens propis que
    no són de la pell (`--retol` al Comando, `--normal` al directori). */
 const OBRE = '/*TT-PELL*/', TANCA = '/*/TT-PELL*/';
+const OBRE_F = '/*TT-PELL-FOSC*/', TANCA_F = '/*/TT-PELL-FOSC*/';
 let escrits = 0, vells = [], sense = [];
+
+/* Treu les dues zones de la pell: el que queda és de la pàgina. */
+function foraDeLaPell(txt) {
+  [[OBRE, TANCA], [OBRE_F, TANCA_F]].forEach(([a, b]) => {
+    const i = txt.indexOf(a), j = txt.indexOf(b);
+    if (i >= 0 && j > i) txt = txt.slice(0, i) + txt.slice(j + b.length);
+  });
+  return txt;
+}
 
 PAGINES.forEach(rel => {
   const f = join(ARREL, rel);
@@ -160,10 +197,12 @@ PAGINES.forEach(rel => {
   const txt = readFileSync(f, 'utf8');
   const i = txt.indexOf(OBRE), j = txt.indexOf(TANCA);
   if (i < 0 || j <= i) { sense.push(rel); return; }
-  const nou = OBRE + '\n' + bloc() + '\n' + TANCA;
-  if (txt.slice(i, j + TANCA.length) === nou) return;
+  let nou = txt.slice(0, i) + OBRE + '\n' + bloc() + '\n' + TANCA + txt.slice(j + TANCA.length);
+  const fi = nou.indexOf(OBRE_F), fj = nou.indexOf(TANCA_F);
+  if (fi >= 0 && fj > fi) nou = nou.slice(0, fi) + OBRE_F + '\n' + bloc(PELL_FOSC) + '\n' + TANCA_F + nou.slice(fj + TANCA_F.length);
+  if (nou === txt) return;
   vells.push(rel);
-  if (!CHECK) { writeFileSync(f, txt.slice(0, i) + nou + txt.slice(j + TANCA.length)); escrits++; }
+  if (!CHECK) { writeFileSync(f, nou); escrits++; }
 });
 
 console.log('\nLa pell · una paleta, ' + PAGINES.length + ' pàgines');
@@ -183,12 +222,11 @@ if (sense.length) bad(`${pl(sense.length, 'pàgina', 'pàgines')} sense les marq
     const f = join(ARREL, rel);
     if (!existsSync(f)) return;
     const txt = readFileSync(f, 'utf8');
-    const i = txt.indexOf(OBRE), j = txt.indexOf(TANCA);
-    if (i < 0 || j <= i) return;
+    if (txt.indexOf(OBRE) < 0) return;
     /* Els `<script>` no compten: `vna-suport.html` porta dins del seu JS el
        full d'estil **de la web del client** que exporta, amb el seu `--bg`, i
        allò no és aquesta pàgina redeclarant la pell sinó un altre document. */
-    const fora = (txt.slice(0, i) + txt.slice(j + TANCA.length)).replace(/<script[\s\S]*?<\/script>/g, '');
+    const fora = foraDeLaPell(txt).replace(/<script[\s\S]*?<\/script>/g, '');
     /* Es busca **en qualsevol posició** i no a principi de línia: la paleta de
        `build-vedes.js` anava tota en una sola línia dins d'un `:root{…}` i
        aquesta guarda no la veia, de manera que la pàgina es quedava fosca i

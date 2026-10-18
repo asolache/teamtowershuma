@@ -97,9 +97,10 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
 
 ## 3 · El que no es toca, i per què
 
-- **L'aplicació (`SOS/index.html`) es queda fosca.** És una eina que s'obre cada
-  dia, té la seva barra i va al 97–99 % del seu sostre de pes. Ja consta a
-  `FORA_DE_LA_PELL`.
+- ~~**L'aplicació (`SOS/index.html`) es queda fosca.**~~ Canviat el 18/10/2026
+  (pla de redisseny del SOS, fase 0): l'app porta la pell i els components del
+  lloc, el terra de 15 px, i el fosc és una opció de Configuració
+  (`PELL_FOSC` a `build-pell.js`).
 - **`joc.html`** és una pantalla de joc a pantalla completa.
 - **Els dibuixos generats** (el castell, el mapa del celler, la planta) tenen les
   seves mides en unitats SVG, no en `rem`: la guarda del terra els ha d'excloure.
