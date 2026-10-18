@@ -62,7 +62,7 @@ const PORTA = [
   // amb la del sistema. Només les llatines; les extenses s'agafen si cal.
   './fonts/space-grotesk-latin.woff2', './fonts/jetbrains-mono-latin.woff2',
   // El mapa de comarques i el QR, que l'app carrega quan els fa servir.
-  './lib/cat-map.js', './lib/qrcode.js'
+  './lib/cat-map.js', './lib/flux-viu.js', './lib/qrcode.js'
 ];
 
 /* ── L'empremta ───────────────────────────────────────────────────────────── */
