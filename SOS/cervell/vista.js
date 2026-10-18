@@ -120,7 +120,7 @@
       var b = e.target.closest('[data-id]'); if (!b) return;
       tria(b.getAttribute('data-id')); caixa.querySelector('.cv-3d').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-    return { analisi: AN, tria: tria, dispara: dispara, atura: function () { C3.activa(false); } };
+    return { analisi: AN, tria: tria, dispara: dispara, atura: function () { C3.activa(false); }, activa: function (b) { C3.activa(b); } };
   }
   raiz.CervellVista = { munta: munta };
 })(window);

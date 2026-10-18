@@ -89,6 +89,17 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 .surt article{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .surt h3{font-size:1rem;margin:0 0 4px}.surt p{font-size:.9rem;color:var(--muted);margin:0 0 10px}
 .surt button{background:var(--card);color:var(--text);border-color:var(--border-strong)}
+.vistes{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.vistes button{font:600 .95rem inherit;font-family:inherit;min-height:44px;padding:8px 18px;border-radius:999px;border:1px solid var(--border-strong);background:var(--card);color:var(--text);cursor:pointer}
+.vistes button[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.vistes button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.vistes-d{color:var(--muted);font-size:.92rem;margin:0 0 8px;min-height:1.4em}
+.pinya-l{font-size:.92rem;margin:10px 0 0}.pinya-l ul{margin:0;padding-left:1.2em}.pinya-l p{margin:6px 0 0}
+#cvPla{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px}
+#cv.pla .cv-3d,#cv.pla .cv-ley{display:none}
+.crea{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--indigo);border-radius:14px;padding:16px 18px;margin:28px 0 0}
+.crea h2{margin-top:0}.crea p{color:var(--light);max-width:66ch}
+.crea a{font-weight:600;color:var(--indigo)}
 </style>
 </head>
 <body>
@@ -227,7 +238,27 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     <small>Només repositoris públics: busca el codex a SOS/knowledge/codex.md o on digui el seu cervell.json. El fitxer que puges no surt del teu navegador. Un codex privat es mira amb la teva sessió de GitHub, mai aquí (veda 168).</small>
   </form>
   <p class="estat" id="estat" aria-live="polite"></p>
+  <!-- Les mateixes vedes de diverses maneres, per pensar-hi amb els ulls: el
+       dibuix és de cervell/vista.js (3D) i cervell/pla.js (la resta), els
+       mateixos que fan servir la portada i les webs filles. -->
+  <div class="vistes" role="tablist" aria-label="Com el vols veure">
+    <button type="button" role="tab" data-v="3d" aria-selected="true">Tres dimensions</button>
+    <button type="button" role="tab" data-v="castellera" aria-selected="false">Castellera</button>
+    <button type="button" role="tab" data-v="capes" aria-selected="false">Cinc capes</button>
+    <button type="button" role="tab" data-v="mapa" aria-selected="false">Mapa</button>
+    <button type="button" role="tab" data-v="pinya" aria-selected="false">Pinya</button>
+  </div>
+  <p class="vistes-d" id="vistesD"></p>
+  <div id="cvTemps" hidden></div>
+  <div id="cvPla" hidden></div>
+  <div class="pinya-l" id="cvPinya" hidden aria-live="polite"></div>
   <div id="cv"></div>
+
+  <section class="crea" id="crea" aria-labelledby="creaT">
+    <h2 id="creaT">Crea el teu cervell de xarxa</h2>
+    <p>El que el teu projecte aprèn, escrit perquè ni l'equip ni cap IA l'hagi de tornar a aprendre: el codex, el mapa i les guardes que avisen quan una cosa deixa de ser certa. Neix amb les vedes de TeamTowers heretades i es mira de totes aquestes maneres. El pas següent és la xarxa: que el que aprens tu, passat pel sedàs, pugui servir als projectes germans.</p>
+    <p><a href="/SOS/pressupost.html">Demana el teu →</a></p>
+  </section>
 
   <h2 id="emporta">Te l'emportes</h2>
   <div class="surt">
@@ -278,6 +309,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 <script src="cervell/forces.js"></script>
 <script src="cervell/3d.js"></script>
 <script src="cervell/vista.js"></script>
+<script src="cervell/pla.js"></script>
 <script src="cervell/exporta.js"></script>
 <script>
 (function () {
@@ -304,8 +336,35 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     meta = { nom: op.nom, font: op.font, id: op.nom.replace(/[^\w-]/g, '-'), lang: 'ca', data: new Date().toISOString().slice(0, 10), url: 'teamtowershuma.com/SOS/cervell.html' };
     vista = CervellVista.munta(caixa, D, { lang: 'ca' });
     AN = vista && vista.analisi;
+    mostra(ara);
     estat.textContent = D.nodos.length ? 'El cervell de ' + op.font + ': ' + D.nodos.length + ' vedes i ' + D.aristas.length + ' cites.' : '';
   }
+
+  /* Les vistes: el 3D de vista.js, o la castellera, les capes, el mapa i la
+     pinya de pla.js, totes amb el mode temporal. Triar una veda en una vista plana
+     l'obre al panell de sota, el mateix del 3D. */
+  var ara = '3d', pla = null, cvPla = document.getElementById('cvPla'), temps = document.getElementById('cvTemps');
+  var DIU = {
+    '3d': 'Cada esfera és una kosha, el cos a fora i el propòsit al centre.',
+    castellera: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i discerniment), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda.',
+    capes: 'Les cinc koshas, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
+    mapa: 'Com un mapa de valor: cada veda és un node i cada cita, un lliurament. El propòsit al centre i l\'obra a fora.',
+    pinya: 'La pinya vista des de dalt: cada kosha és un pilar amb les seves rengles. Els vents (taronja) són les vedes que lliguen dues àrees; les primeres mans, les que sostenen la seva; els laterals (puntejats), les que van soles. Un pilar sense vents és un silo.'
+  };
+  function mostra(v) {
+    ara = v;
+    document.querySelectorAll('.vistes [data-v]').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-v') === v ? 'true' : 'false'); });
+    document.getElementById('vistesD').textContent = DIU[v];
+    if (pla) { pla.treu(); pla = null; }
+    var es3d = v === '3d';
+    caixa.classList.toggle('pla', !es3d); cvPla.hidden = temps.hidden = es3d || !D;
+    var lect = document.getElementById('cvPinya'); lect.hidden = v !== 'pinya' || !D;
+    if (vista && vista.activa) vista.activa(es3d);
+    if (es3d || !D || !D.nodos.length) return;
+    pla = CervellPla.munta(cvPla, D, { vista: v, mou: false, control: temps, lectura: v === 'pinya' ? lect : null, ara: document.getElementById('estat'),
+      etiqueta: D.nodos.length + ' vedes en vista ' + v, alTriar: function (id) { if (id && vista) vista.tria(id); } });
+  }
+  document.querySelector('.vistes').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) mostra(b.getAttribute('data-v')); });
 
   document.getElementById('font').addEventListener('submit', function (e) { e.preventDefault(); llegeix(document.getElementById('repo').value); });
   document.getElementById('fitxer').addEventListener('change', function (e) {
