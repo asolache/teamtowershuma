@@ -274,10 +274,6 @@ a{color:var(--blue);text-decoration:none}
 .vill-w{font-size:.75rem;color:var(--light);line-height:1.4}
 @media(max-width:600px){.cm-panth,.cm-vill{grid-template-columns:1fr}}
 /* Benvinguda com a esdeveniment */
-.wc-arq{display:flex;align-items:center;gap:.7rem;background:linear-gradient(135deg,rgba(224,64,251,.14),rgba(99,102,241,.08));border:1px solid var(--purple);border-radius:11px;padding:.75rem .9rem;margin:.5rem 0 .3rem}
-.wc-arq-ic{font-size:1.8rem}
-.wc-arq-n{display:block;font-weight:700;font-size:1rem}
-.wc-arq-r{display:block;font-size:.8rem;color:var(--muted)}
 .wc-list{display:flex;flex-direction:column;gap:.3rem}
 .wc-item{background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem}
 .wc-i-t{display:block;font-weight:600;font-size:.86rem}
@@ -780,6 +776,8 @@ a{color:var(--blue);text-decoration:none}
 .fila-obj{display:flex;gap:.5rem;flex-wrap:wrap;margin:.5rem 0}
 .obj-pct{width:80px;text-align:right;font-family:var(--mono);background:var(--bg-panel);color:var(--white);border:1px solid var(--border);border-radius:8px;padding:.3rem .5rem}
 .dd-eina-d{font-size:.74rem;color:var(--muted);margin-top:.3rem;line-height:1.45}
+.fl-qp{display:flex;gap:.5rem;margin:.2rem 0 .6rem}.fl-qp input{flex:1;min-width:0;background:var(--bg-panel);border:1px solid var(--border-strong);color:inherit;border-radius:9px;padding:.5rem .7rem;font:inherit}.fl-pas{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin:.5rem 0;font-family:var(--mono);font-size:.62rem;color:var(--muted)}.fl-pas span{border-top:3px solid var(--border-strong);padding-top:.2rem}.fl-pas .fet{border-color:var(--green);color:var(--light)}.flowl-row.i .fl-pas .fet{border-color:var(--indigo)}
+.nh-dyn{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;padding:.6rem .9rem;margin-top:.7rem}.nh-dyn .dd-lbl{display:none}.nh-dyn>*{margin:0!important}.nh-dyn .dd-gov{flex:1 1 100%}.nh-dyn .dd-eina-d{flex:1 1 14rem}
 .eines-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.45rem;margin:.2rem 0 .5rem}
 .eina-c{display:block;text-decoration:none;background:var(--bg-panel);border:1px solid var(--border);
   border-radius:10px;padding:.55rem .65rem}
@@ -1281,6 +1279,7 @@ a{color:var(--blue);text-decoration:none}
 /* toast */
 #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(200%);background:var(--bg-elevated);border:1px solid var(--border-strong);border-left:3px solid var(--green);border-radius:9px;padding:.75rem 1.1rem;font-size:.85rem;z-index:300;transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:90vw}
 #toast.show{transform:translateX(-50%) translateY(0)}
+@media(min-width:900px){#toast{left:auto;right:1.5rem;transform:translateY(200%)}#toast.show{transform:none}}
 
 /* responsive */
 @media(max-width:820px){
@@ -1443,30 +1442,10 @@ a{color:var(--blue);text-decoration:none}
       </div>
     </section>
 
-    <!-- QUÈ HI GUANYA QUI S'HI POSA ────────────────────────────────────────
-         Aquí hi havia la tríada —cohesió, diagnòstic, sostenibilitat— amb els
-         tres noms del mètode. Era correcta i deia **què és això**; qui hi
-         arriba, però, ha de decidir si s'hi posa, i per decidir-ho necessita
-         saber **què s'hi guanya**.
-
-         La resposta honesta d'una eina que compta valor és una xifra, i totes
-         les d'aquest bloc surten de les taules de l'app —l'oracle de l'hora i
-         de l'objecte, el desgast per préstec, la forquilla del fons, els
-         mòduls de formació—: les escriu `build-beneficis.js` llegint-les. Una
-         xifra de màrqueting no la comprova mai ningú; aquestes les comprova el
-         CI cada vegada.
-
-         La tríada no s'ha perdut: viu a la portada de teamtowershuma.com, que
-         és on es ven el mètode. Aquí es ven el que en surt. -->
-<!-- EL REPTE ──────────────────────────────────────────────────────────────
-     Ve de la portada de teamtowershuma.com, i ve aquí perquè és aquí on és
-     l'eina que el resol. A la portada el repte competia amb el que allà s'ha
-     de dir —què venem i d'on surt—; qui obre el SOS ja sap que té un
-     problema, i el que necessita és reconèixer-lo escrit.
-
-     Va DESPRÉS de les tres portes i no abans: qui obre això no ve a
-     llegir-se un argumentari, ve a veure si hi té lloc. L'ordre de la pàgina
-     és entra → mira per on entraries → i si encara dubtes, llegeix. -->
+    <!-- QUÈ HI GUANYA QUI S'HI POSA · xifres de les taules de l'app, escrites per
+         build-beneficis.js i comprovades pel CI. La tríada viu a la portada arrel. -->
+<!-- EL REPTE · ve de la portada arrel; va després de les tres portes: entra → mira
+     per on entraries → i si encara dubtes, llegeix. -->
 <section class="ob-repte">
   <div class="obr-k">El repte</div>
   <h2 class="obr-h">Moltes ganes. <em>Poca estructura.</em></h2>
@@ -1564,6 +1543,7 @@ a{color:var(--blue);text-decoration:none}
 <h2>I si el voleu muntat i funcionant</h2>
 <p class="ob-sub2">L'eina és lliure i funciona sense nosaltres: això no és una versió de prova. El que es contracta és <b>no haver de descobrir sols com es munta</b>, i un criteri humà a la sala que cap sistema substitueix.</p>
 <a class="ob-op" href="/#operatiu"><span class="ob-op-k">La proposta</span><b>El teu negoci operatiu</b><span class="ob-op-d">Dos mapes dibuixats amb l'equip —el de la direcció i el de l'àrea on el valor s'encalla—, el cervell del projecte ordenat per rol, la web de xarxa, les eines de cada rol i 30 dies d'acompanyament. Surts amb el negoci funcionant, no amb un informe.</span><span class="ob-op-cta">Què inclou →</span></a>
+<div class="ob-pq"><div class="pq"><div class="pq-o"><b>Gratis</b> · Crear · el SOS, la matriu</div><ul class="pq-e"><li>Cervell + SOS + codex: el sistema operatiu sencer, lliure</li><li>Cada cervell és un node; els nodes s'ajunten en xarxa, i les xarxes en xarxes</li><li>L'esborrany del mapa de valor a partir de la teva web</li><li>Una web de xarxa d'una pàgina, teva des del primer dia</li></ul><div class="pq-p">Preu<span>a confirmar amb els pilots</span></div></div><div class="pq"><div class="pq-o"><b>Viu</b> · Sostenir · el sistema al dia, cada mes</div><ul class="pq-e"><li>Tot el de Gratis</li><li>Guardes: la web vigilada, avisos signats i còpia</li><li>El cervell al dia: registre per rol i mapa real recalculat</li><li>Un informe mensual del mapa i suport amb un topall d'hores</li><li>La IA en comptes a nom teu, amb límit de despesa</li></ul><div class="pq-p">Preu<span>a confirmar amb els pilots</span></div></div><div class="pq"><div class="pq-o"><b>Xarxa</b> · Transformar · créixer amb la MATRIU</div><ul class="pq-e"><li>Tot el de Viu</li><li>Una sessió de mentoria al mes sobre el mapa real i l'ideal</li><li>Una tasca rutinària feta pel SOS i revisada per una persona</li><li>Les idees noves, incubades per etapes a la MATRIU</li><li>Clients que arriben per la xarxa, i en tots dos sentits</li></ul><div class="pq-p">Preu<span>a confirmar amb els pilots</span></div></div></div>
 <div class="ob-pq">
 <div class="pq"><div class="pq-h"><b>Implantació i suport</b><span class="pq-d">3 setmanes</span></div><p class="pq-e">L'eina amb el vostre cas a dins, la sincronització entre aparells resolta i la gent sabent-la fer servir. Les dades es queden al vostre navegador.</p><div class="pq-p qui">Per a qui<span>Ajuntaments, consells comarcals i Ateneus</span></div></div>
 <div class="pq"><div class="pq-h"><b>IA amb frens · sessió de viabilitat</b><span class="pq-d">1 sessió + informe · 2 setmanes</span></div><p class="pq-e">Què es pot automatitzar amb garanties i què no, amb el criteri escrit: la màquina proposa, res entra sense que una persona ho hagi comprovat, i sempre es diu d'on ho ha tret.</p><div class="pq-p qui">Per a qui<span>Qui es plantegi fer servir IA amb dades de persones</span></div></div>
@@ -2247,6 +2227,19 @@ const mapFlowsOf=def=>expandPairs(def&&def.pairs).concat(((def&&def.flows)||[]).
    missió + rols/fluxos VNA + tasques del tauler + unitat de comptes, amb
    nota de governança i recursos formatius reals. */
 const DYNAMICS=[
+ {id:'negoci',name:'El meu negoci',icon:'🏪',one:'El mapa de valor del teu negoci: qui hi dona què, i què torna.',unit:'moneda',
+  mission:'Que cada rol vegi què dona, què rep i què té pendent.',
+  vision:'El mapa que vam pactar, funcionant cada dia.',
+  objectives:'Cada flux amb el seu retorn · cap rol que només doni · el real al costat de l\'ideal.',
+  roles:['El negoci','Clients','Equip','Proveïdors','Aliats'],
+  pairs:[
+   ['El negoci','Clients','tangible','producte o servei','tangible','pagament'],
+   ['Clients','El negoci','intangible','opinió i recomanació','intangible','confiança'],
+   ['Equip','El negoci','tangible','hores de feina','tangible','sou'],
+   ['Proveïdors','El negoci','tangible','matèria primera','tangible','pagament'],
+   ['Aliats','Clients','intangible','recomanació','intangible','reconeixement']],
+  kanban:['Dibuixar el mapa ideal','Apuntar el que passa','Comparar real i ideal','Decidir el següent pas'],
+  gov:'Mètode Verna Allee · cada flux amb el seu retorn.',res:[]},
  {id:'banc_temps',name:'Banc de Temps',icon:'⏳',one:'Intercanvi de serveis en hores, no en diners.',unit:'hores',
   mission:'Teixir suport mutu al veïnat intercanviant temps i habilitats en igualtat: una hora val una hora.',
   vision:'Un barri on ningú està sol: el temps de cadascú és un bé comú i demanar ajuda és tan normal com oferir-la.',
@@ -5762,7 +5755,7 @@ function openSuperheroiOnboarding(prefill){
       // Editar no és néixer: no es dóna la benvinguda a qui ja hi era.
       toast('⬢ Perfil actualitzat'+(afegits?' · +'+afegits:'')+(retirats?' · −'+retirats:''));
     }else{
-      toast('✦ Benvingut/da al Comando, '+name.split(/\s+/)[0]+(pub.offers||pub.objects?' · +'+(pub.offers+pub.objects)+' del teu dossier':''));
+      toast('✦ Benvingut/da, '+name.split(/\s+/)[0]+(pub.offers||pub.objects?' · +'+(pub.offers+pub.objects)+' del teu dossier':''));
       setTimeout(()=>openWelcomeModal(name),350);
     }
   };
@@ -10160,7 +10153,8 @@ function _renderWorkspace(){
   // projecte: nota de governança + recursos
   const _eina=dyn?einaDe(dyn.id):null;
   if(dyn&&(dyn.gov||(dyn.res&&dyn.res.length)||(_eina&&!_eina.dins))){
-    const box=el('div','dyn-detail');box.style.marginTop='1rem';
+    /* Una franja, no una fitxa: el mapa ha de cabre a la primera pantalla. */
+    const box=el('div','dyn-detail nh-dyn');
     if(dyn.gov)box.appendChild(el('div','dd-gov','🏛 '+esc(dyn.gov)));
     /* L'eina d'aquest tipus de projecte, si en té una de fora. És la integració
        que faltava: qui obre un projecte de comunitat energètica té el càlcul
@@ -10790,13 +10784,35 @@ function flowLedger(node){
     ((isIntangible(a.flow.kind)?1:0)-(isIntangible(b.flow.kind)?1:0)));
   return{rows,loose,covered:rows.filter(r=>r.items.length).length,total:rows.length};
 }
+/* Cada flux com una comanda, amb el que ja hi ha: declarar l'entregable el
+   posa en camí, un apunt pendent de vistiplau és lliurat, i al registre és rebut. */
+const FLUX_PASSOS=['Promès','En camí','Lliurat','Rebut'];
+function estatFlux(node,r){
+  if(r.items.length)return 3;
+  if(pendingOf(node).some(p=>p.status==='pendent'&&p.entry&&p.entry.flowId===r.flow.id))return 2;
+  return(fluxAutomatitzable(r.flow).tipus||entregablesDeFlux(r.flow).length)?1:0;
+}
+function fluxDeFrase(node,tx){
+  const t=tx.toLowerCase(),rs=node.vna.roles||[];
+  const hi=id=>{const n=((rs.find(r=>r.id===id)||{}).name||'').toLowerCase();return n&&(t.includes(n)||t.includes(n.split(' ')[0]))?1:0;};
+  let best='',max=0;
+  (node.vna.exchanges||[]).forEach(x=>{const sc=hi(x.from)+hi(x.to)+(x.label&&t.includes(x.label.toLowerCase().split(' ')[0])?1:0);if(sc>max){max=sc;best=x.id;}});
+  return best;
+}
 function buildFlowLedger(node){
   const box=el('div','flowl');
   const fl=flowLedger(node);
   if(!fl.total){box.appendChild(el('div','ent-desc','Encara no hi ha fluxos definits: afegeix-ne al mapa i aquí es podran llegir amb els seus entregables.'));return box;}
   const hd=el('div','ent-grp-lbl','🔀 Fluxos de valor · '+fl.total+' · amb entregables: '+fl.covered);
   box.appendChild(hd);
-  const help=el('p','ent-desc','Cada flux es llegeix com una frase: qui dona què a qui. A sota hi pengen els entregables comptabilitzats en aquell flux.');
+  /* «Què ha passat?» (codex UX 17/10): s'escriu com es diria, el SOS hi busca
+     el flux pels noms dels rols i obre l'apunt de sempre, que demana vistiplau. */
+  const qp=el('form','fl-qp');
+  qp.innerHTML='<input id="flQp" placeholder="Què ha passat? p.ex. Clients han pagat la comanda al negoci" autocomplete="off"><button class="btn btn-primary btn-sm">Apunta</button>';
+  qp.onsubmit=ev=>{ev.preventDefault();const tx=qp.firstChild.value.trim();if(!tx)return;
+    openLedgerEntryModal(node,{who:state.activePersona||'',what:tx.slice(0,80),flowId:fluxDeFrase(node,tx),backTab:'map'});};
+  box.appendChild(qp);
+  const help=el('p','ent-desc','Cada flux es llegeix com una frase, i se segueix com una comanda: promès, en camí, lliurat i rebut.');
   help.style.marginBottom='.5rem';box.appendChild(help);
   /* La mesura, allà on es decideix si val la pena afegir el següent intent. Si
      el percentatge és baix, el problema no és el prompt: és que el mapa no diu
@@ -10819,6 +10835,9 @@ function buildFlowLedger(node){
       '<span class="fl-arrow" aria-hidden="true">──▶</span>'+
       '<span class="fl-to">'+esc(r.to)+'</span>'+
       '<span class="ent-b '+(tang?'b-ver':'')+'">'+(tang?'tangible':'intangible')+'</span></div>';
+    const pas=estatFlux(node,r);
+    c.insertAdjacentHTML('beforeend','<div class="fl-pas" title="'+FLUX_PASSOS[pas]+'">'+FLUX_PASSOS.map((n,k)=>'<span'+(k<=pas?' class="fet"':'')+'>'+n+'</span>').join('')+'</div>');
+    if(pas===2){const cf=el('button','btn btn-primary btn-sm','✓ Confirma que s\'ha rebut');cf.onclick=openPendingInbox;c.appendChild(cf);}
     if(r.items.length){
       const list=el('div','fl-items');
       r.items.slice(0,12).forEach(x=>{
@@ -11039,15 +11058,15 @@ function buildVNASvg(node){
     defs.appendChild(m);
   });
   svg.appendChild(defs);
-  const pairSeen={};
+  const pairSeen={},placed=[];
   ex.forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
-    const key=[e.from,e.to].sort().join('|');
-    const back=pairSeen[key];pairSeen[key]=(pairSeen[key]||0)+1;
+    /* Cada flux paral·lel es corba una mica més (el contrari ja cau a l'altre costat). */
+    const key=e.from+'|'+e.to,k=pairSeen[key]||0;pairSeen[key]=k+1;
     const tang=!isIntangible(e.kind),col=tang?'#00e676':'#6366f1';
     // Escurça als extrems perquè la punta de fletxa no quedi sota el cercle del rol
     const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,pad=24;
     const x1=a.x+ux*pad,y1=a.y+uy*pad,x2=b.x-ux*pad,y2=b.y-uy*pad;
-    const bend=(back?1:-1)*Math.min(38,len*0.16);
+    const bend=-Math.min(38,len*0.16)*(1+k*.8);
     const mx=(x1+x2)/2-uy*bend,my=(y1+y2)/2+ux*bend;
     const path=mk('path',{d:'M '+x1+' '+y1+' Q '+mx+' '+my+' '+x2+' '+y2,fill:'none',stroke:col,
       'stroke-width':tang?2:1.4,'stroke-opacity':.65,'marker-end':'url(#'+(tang?'arrT':'arrI')+')'});
@@ -11055,7 +11074,9 @@ function buildVNASvg(node){
     const tt=mk('title',{});tt.textContent=(roles.find(r=>r.id===e.from)||{}).name+' → '+(roles.find(r=>r.id===e.to)||{}).name+(e.label?' · '+e.label:'');
     path.appendChild(tt);
     svg.appendChild(path);
-    if(e.label){const t=mk('text',{x:mx,y:my-3,'text-anchor':'middle',fill:tang?'#00e676':'#8b8df5','font-family':'JetBrains Mono','font-size':8.5,'opacity':.85});t.textContent=e.label;svg.appendChild(t);}
+    if(e.label){const lb=e.label.length>22?e.label.slice(0,21)+'…':e.label,hw=lb.length*2.7,lx=(x1+x2)/4+mx/2;let ly=(y1+y2)/4+my/2-3;
+      for(let i=0;i<6&&placed.some(q=>Math.abs(q[0]-lx)<q[1]+hw&&Math.abs(q[2]-ly)<10);i++)ly+=10;placed.push([lx,hw,ly]);
+      const t=mk('text',{x:lx,y:ly,'text-anchor':'middle',fill:tang?'#00e676':'#8b8df5','font-family':'JetBrains Mono','font-size':8.5,'opacity':.85});t.textContent=lb;svg.appendChild(t);}
   });
   if(fills.length)svg.appendChild(zoom());
   // nodes
@@ -20547,12 +20568,12 @@ function welcomeEvent(name){
   state.nodes.forEach(nd=>{if(!myNodes.has(nd.id))return;
     membersOf(nd).forEach(m=>{if(personKey(m.name)===personKey(name))return;
       if(!near.some(x=>personKey(x.name)===personKey(m.name)))near.push({name:m.name,node:nd.name,role:m.role||'membre'});});});
-  const headline=arq
-    ? first+' arriba al Comando com a '+arq.name+' · '+arq.role.toLowerCase()
-    : first+' acaba d\'arribar al Comando';
+  /* Benvinguda amb paraules de client (codex UX 17/10): el Comando i els
+     arquetips són una capa que s'encén, no la primera frase. */
+  const headline='Benvingut/da, '+first;
   const body=powers.length
-    ? first+' porta '+powers.slice(0,3).join(', ')+(sheet.projects.length?' i s\'incorpora a '+sheet.projects[0].nodeName:'')+'.'
-    : first+' encara no ha declarat superpoders — la primera aportació dirà de què va.';
+    ? 'Hi portes '+powers.slice(0,3).join(', ')+(sheet.projects.length?' i entres a '+sheet.projects[0].nodeName:'')+'.'
+    : 'El primer que apuntis dirà què hi aportes.';
   /* Quan no hi ha ni coincidències ni veïnat, la benvinguda no pot quedar-se en
      blanc ni fer veure que això és un problema teu. Ser el primer és una
      situació normal en un poble on això tot just comença, i el que necessita
@@ -20571,16 +20592,14 @@ function welcomeEvent(name){
 function openWelcomeModal(name){
   const w=welcomeEvent(name);
   const bg=modal(`
-    <div style="text-align:center;padding:.4rem 0 .2rem"><div style="font-size:2.6rem">🎬</div></div>
     <h2 style="text-align:center;margin:.2rem 0">${esc(w.headline)}</h2>
     <p class="m-sub" style="text-align:center">${esc(w.body)}</p>
     <div id="wcBody"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" id="wcLater">Ja ho miraré</button><button class="btn btn-primary" id="wcGo">${w.matches.length?'🔔 Veure qui em necessita':'🧭 Trobar el meu element'}</button></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="wcLater">Ja ho miraré</button><button class="btn btn-primary" id="wcGo">${w.matches.length?'🔔 Veure qui em necessita':(!w.hasWelcome&&w.seguent)?'👉 '+esc(w.seguent.acte):'🧭 Trobar el meu element'}</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   const box=bg.querySelector('#wcBody');
   let html='';
-  if(w.archetype)html+='<div class="wc-arq"><span class="wc-arq-ic">'+w.archetype.ic+'</span><span><span class="wc-arq-n">'+esc(w.archetype.name)+'</span><span class="wc-arq-r">'+esc(w.archetype.role)+'</span></span></div>';
   if(w.matches.length){
     html+='<div class="ent-grp-lbl">🔔 Ja hi ha gent que et pot necessitar</div><div class="wc-list">'+
       w.matches.map(m=>'<div class="wc-item"><span class="wc-i-t">'+esc(m.demand?m.demand.title||m.demand.category:'')+'</span><span class="wc-i-d">'+esc((m.demand&&m.demand.memberName)||'algú')+' · '+esc(m.nodeName||'')+'</span></div>').join('')+'</div>';
@@ -20594,9 +20613,11 @@ function openWelcomeModal(name){
      següent pas — que sovint és un botó, no una conversa. */
   if(!w.hasWelcome)html+='<div class="ai-note"><span class="ic">🌱</span><span>'+esc(w.buitMsg||'Ets de les primeres persones del teu territori.')+'</span></div>';
   box.innerHTML=html;
-  if(!w.hasWelcome&&w.seguent){
-    const b=el('button','btn btn-primary btn-sm','👉 '+w.seguent.acte);b.id='wcNext';
-    b.style.marginTop='.5rem';b.onclick=()=>{closeModal();w.seguent.act();};
+  /* Un sol botó principal: el pas següent, si n'hi ha (test-ux-flux). */
+  const pas=!w.matches.length&&!w.hasWelcome&&w.seguent;
+  if(pas){
+    const b=el('button','btn btn-ghost btn-sm','🧭 Trobar el meu element');b.id='wcNext';
+    b.style.marginTop='.5rem';b.onclick=()=>{closeModal();openElementModal(name);};
     box.appendChild(b);
   }
   /* El tour, ara que ja ha fet el primer pas: és quan hi ha ganes de saber què
@@ -20608,7 +20629,7 @@ function openWelcomeModal(name){
     box.appendChild(t);
   });
   bg.querySelector('#wcLater').onclick=closeModal;
-  bg.querySelector('#wcGo').onclick=()=>{closeModal();if(w.matches.length)routeTo('pings');else openElementModal(name);};
+  bg.querySelector('#wcGo').onclick=()=>{closeModal();if(w.matches.length)routeTo('pings');else if(pas)w.seguent.act();else openElementModal(name);};
 }
 /* ═══════════ «El teu element» · el Comando com a eina de desenvolupament personal ═══════════ */
 function openElementModal(name){
@@ -20872,8 +20893,8 @@ function openProjectWizard(territoryId){
         ${d.id==='generic'?'':'<span class="dyn-unit">comptes: '+esc(d.unit)+'</span>'}
       </div>`).join('');
     const bg=modal(`
-      <h2>Sessions de desenvolupament comunitari</h2>
-      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}Tria una sessió d'acció-formació: precarregarem el seu mapa de valor, tasques i comptes.</p>
+      <h2>Què vols posar en marxa?</h2>
+      <p class="m-sub">${territory?'A <strong>'+esc(territory.name)+'</strong>. ':''}El teu negoci o una dinàmica de la comunitat: en precarregarem el mapa de valor, les tasques i els comptes.</p>
       <div class="dyn-grid">${cards}</div>
       <div class="modal-actions"><button class="btn btn-ghost" id="pwCancel">← Enrere</button></div>
     `);

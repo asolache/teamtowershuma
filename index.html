@@ -809,6 +809,19 @@
         .srv-go { display:flex; flex-wrap:wrap; gap:.5rem 1.1rem; align-items:center; margin-top:.4rem; font-size:var(--t0); }
         .srv-go a:not(.btn-primary) { color:var(--light); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
         @media (max-width:900px) { .serveis-grid { grid-template-columns:1fr; } .serveis { padding:4rem 0; } }
+        /* El cervell de xarxa: el que queda de qualsevol dels tres serveis, a
+           tot l'ample i sota les tres targetes. */
+        .srv-cervell { margin-top:1.25rem; }
+        /* El cervell de la casa a dalt de tot: el dibuix és de `SOS/cervell/pla.js`. */
+        .cervell-top { padding:.5rem 0; border-bottom:1px solid var(--border); font-size:var(--t0); }
+        .cervell-top .container { display:grid; grid-template-columns:19rem minmax(0,1fr); gap:.4rem 1.5rem; align-items:center; }
+        .cervell-top p { display:flex; flex-wrap:wrap; gap:.3rem .9rem; align-items:center; color:var(--light); line-height:1.35; }
+        .cervell-top a { color:var(--light); font-weight:600; text-underline-offset:3px; }
+        .cervell-top-g { min-height:3rem; }
+        .cervell-top-tria { display:flex; flex-wrap:wrap; gap:.3rem; }
+        .cervell-top-tria button { font:inherit; font-weight:600; padding:.15rem .7rem; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--light); cursor:pointer; }
+        .cervell-top-tria [aria-pressed="true"] { background:var(--text); color:var(--card); border-color:var(--text); }
+        @media (max-width:700px) { .cervell-top .container { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
@@ -935,6 +948,20 @@
 })();
 </script>
 <!--/TT-NAV-->
+
+<!-- EL CERVELL, A DALT DE TOT. Les vedes del codex de la casa en l'ordre en
+     què es van aprendre, pujant com un castell: pinya, tronc i pom de dalt.
+     Cada projecte públic de la xarxa hi té un botó i hi puja damunt del SOS.
+     Tot és de `SOS/cervell/` (franja.js, pla.js i teamtowers.json): cap còpia aquí. -->
+<section class="cervell-top" aria-labelledby="cvTopT">
+    <div class="container">
+        <p><b id="cvTopT" data-i18n="cvt.t">El cervell de cada projecte, construint-se com un castell</b><span class="cervell-top-tria" role="group" aria-labelledby="cvTopT"><button type="button" data-repo="" aria-pressed="true">SOS</button><button type="button" data-repo="asolache/alvarosolache" aria-pressed="false">Álvaro Solache</button></span><a id="cvTop3d" href="/SOS/cervell.html" data-i18n="cvt.a">Obre'l en 3D</a><a href="#cervell-xarxa" data-i18n="cvt.b">Crea el teu cervell de xarxa</a></p>
+        <div class="cervell-top-g" id="cvTop"></div>
+    </div>
+</section>
+<script src="/SOS/cervell/forces.js" defer></script>
+<script src="/SOS/cervell/pla.js" defer></script>
+<script src="/SOS/cervell/franja.js" defer></script>
 
 <!-- HERO -->
 <section class="hero">
@@ -1197,6 +1224,15 @@
                 </div>
             </article>
         </div>
+        <article class="srv-cervell targeta fade-up" id="cervell-xarxa">
+            <span class="targeta-k" data-i18n="srv.4k">I el que et quedes, sigui quin sigui el servei</span>
+            <h3 class="targeta-t" data-i18n="srv.4t">Crea el teu cervell de xarxa</h3>
+            <p class="targeta-d" data-i18n="srv.4d">El que el teu projecte aprèn, escrit perquè ni l'equip ni cap IA l'hagi de tornar a aprendre: el mapa, el codex i les guardes que avisen quan una cosa deixa de ser certa. Neix amb les vedes de TeamTowers heretades. El pas següent és la xarxa: que el que aprens tu, passat pel sedàs, pugui servir als projectes germans.</p>
+            <div class="srv-go">
+                <a href="/SOS/pressupost.html" class="btn-primary btn-sm" data-i18n="srv.4a">Demana el teu →</a>
+                <a href="/SOS/cervell.html" data-i18n="srv.4b">Mira'n un per dins</a>
+            </div>
+        </article>
     </div>
 </section>
 
@@ -1860,6 +1896,14 @@ ca: {
   'srv.3d':'Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l\'eina lliure on viu el que surt de cada sessió.',
   'srv.3a':'Entra al SOS →',
   'srv.3b':'Els mòduls',
+  'srv.4k':'I el que et quedes, sigui quin sigui el servei',
+  'srv.4t':'Crea el teu cervell de xarxa',
+  'srv.4d':'El que el teu projecte aprèn, escrit perquè ni l\'equip ni cap IA l\'hagi de tornar a aprendre: el mapa, el codex i les guardes que avisen quan una cosa deixa de ser certa. Neix amb les vedes de TeamTowers heretades. El pas següent és la xarxa: que el que aprens tu, passat pel sedàs, pugui servir als projectes germans.',
+  'srv.4a':'Demana el teu →',
+  'srv.4b':'Mira\'n un per dins',
+  'cvt.t':'El cervell de cada projecte, construint-se com un castell',
+  'cvt.a':'Obre\'l en 3D',
+  'cvt.b':'Crea el teu cervell de xarxa',
 
 /*TT-NAV-I18N-CA*/
   'nv.g.valor':'Mapa de valor',
@@ -2233,6 +2277,14 @@ es: {
   'srv.3d':'Formación sobre tu proyecto y no sobre un caso inventado: módulos de N0 a N3 con certificado, y la herramienta libre donde vive lo que sale de cada sesión.',
   'srv.3a':'Entra al SOS →',
   'srv.3b':'Los módulos',
+  'srv.4k':'Y lo que te quedas, sea cual sea el servicio',
+  'srv.4t':'Crea tu cerebro de red',
+  'srv.4d':'Lo que tu proyecto aprende, escrito para que ni el equipo ni ninguna IA tenga que volver a aprenderlo: el mapa, el codex y las guardas que avisan cuando algo deja de ser cierto. Nace con las vedas de TeamTowers heredadas. El paso siguiente es la red: que lo que aprendes tú, pasado por el tamiz, pueda servir a los proyectos hermanos.',
+  'srv.4a':'Pide el tuyo →',
+  'srv.4b':'Mira uno por dentro',
+  'cvt.t':'El cerebro de cada proyecto, construyéndose como un castell',
+  'cvt.a':'Ábrelo en 3D',
+  'cvt.b':'Crea tu cerebro de red',
 
 /*TT-NAV-I18N-ES*/
   'nv.g.valor':'Mapa de valor',

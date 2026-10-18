@@ -5320,3 +5320,122 @@ fonts les hagués desat algú a mà.
 **Guarda:** `test-pagina-lead.mjs` (carpeta dins del repositori, per un
 enllaç o en una altra còpia; carpeta d'un altre negoci; lectura bona, vella o
 trencada).
+
+## Veda 171 — Al cervell col·lectiu, els serveis s'enllacen
+
+**Demanat per l'Àlvar el 17/10/2026:** que la web d'un proveïdor tingui accés a
+les eines i els serveis que fem (CRM amb IA, cervell, web, eines), «quizás
+enlazar, pero seamos DRY siempre, en todo nuestro cerebro colectivo». I el
+model: «nosotros gestionamos esto como backend, para los clientes no techies».
+
+L'error que evita: cada fill amb la seva còpia del CRM, de l'editor o de la
+llista de serveis. El primer dia diuen el mateix; el segon, la còpia ja no és el
+servei (veda 71). I qui no és tècnic no ha de tenir claus ni comptes per fer-los
+servir.
+
+- **Un sol catàleg.** Els serveis són a `serveis` de
+  `SOS/knowledge/cervell/heretat.json`, i cada fill rep la seva llista de serveis (servicios.md, al seu saber)
+  amb enllaços a la matriu, mai el servei copiat. Tria quins amb
+  `serveis.usa` al seu `cervell.json`.
+- **Dos modes, el mateix servei.** Gestionat: TeamTowers fa de backend (Zoho,
+  GitHub, Netlify) i les claus viuen al nostre servidor; la web del proveïdor
+  enllaça. Propi: el seu repositori i el seu Netlify. El que canvia és qui
+  porta les claus, no el servei.
+- **El perfil és la porta.** El proveïdor ja es crea el seu perfil; d'allà
+  s'enllacen els serveis, no s'hi tornen a escriure.
+
+**Guarda:** `cervell.js --check` peta si un servei enllaça un fitxer que no hi
+és, si connecta una peça que `conecta/` no té, o si un fill en demana un que la
+matriu no ofereix. `SOS/tests/test-cervell.mjs` ho trenca a posta.
+
+## Veda 172 — Un preu no porta l'IVA barrejat
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 4), per
+decisió de l'Àlvar. La lliçó s'ha escrit aquí de nou, sense res del client
+(veda 168).
+
+L'error que evita: un preu que de vegades porta l'IVA i de vegades no acaba
+sumat amb un altre que no el porta, i l'error arriba a una proposta.
+
+- **Els preus van sense IVA** si el mateix registre no diu el contrari amb un
+  camp explícit. Mai s'endevina pel número.
+
+**Guarda:** cap a la matriu encara; el fill que en té la comprova al seu CI.
+
+## Veda 173 — Qui paga i qui rep el valor no són el mateix rol
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 5).
+
+L'error que evita: dibuixar el client com qui paga i qui gaudeix alhora. Sovint
+els diners venen d'un rol i l'intangible el rep un altre, i tota la venda
+consisteix a fer creïble una cosa que sentirà un tercer. Per això una proposta a
+mida sol funcionar millor que una tarifa.
+
+- **Al mapa de valor, qui paga i qui rep són dos rols** quan no són la mateixa
+  persona, i cadascun amb els seus intercanvis.
+
+**Guarda:** la revisa qui revisa el mapa (veda 116).
+
+## Veda 174 — No es cobra comissió per la feina d'un altre
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 6).
+
+L'error que evita: amb comissió, el proveïdor paga per ser recomanat i competeix
+amb el client pel criteri de qui recomana. La relació deixa de ser recíproca.
+
+- **El model de cobrament dibuixa la xarxa:** s'escull mirant el mapa de valor,
+  no el full de càlcul. Si un flux de diners compra criteri, el mapa ho ensenya.
+
+**Guarda:** cap automàtica; es mira al mapa abans de proposar un model de cobrament.
+
+## Veda 175 — Un model d'honoraris es mesura, no se suposa
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 7).
+
+L'error que evita: una estimació d'hores escrita en un pla es llegeix igual que
+una mesura, i el model sembla que se sosté quan ningú ho ha comprovat.
+
+- **Les hores reals s'apunten al costat de les facturades**, feina per feina. És
+  l'única cosa que diu si el model aguanta (veda 67: una xifra sense font no es
+  dona per bona).
+
+**Guarda:** el fill que cobra per hores la porta al seu CI.
+
+## Veda 176 — Una xarxa estrella necessita el seu segon node
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 8).
+
+L'error que evita: quan gairebé tot passa per un sol rol, el que més falta no és
+un proveïdor més sinó un segon rol que pugui fer el mateix. Un mapa llegit com a
+llista de proveïdors no ho ensenya; llegit com a xarxa, sí.
+
+- **A l'anàlisi del mapa es mira la forma**: si tots els fluxos passen per un
+  node, es diu, i es proposa qui en pot ser el segon.
+
+**Guarda:** cap automàtica; es mira a l'anàlisi del mapa (veda 116).
+
+## Veda 177 — Una foto cedida per a un dossier no està cedida per a una web
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 9).
+
+L'error que evita: publicar una imatge d'un tercer perquè ja la teníem. Cada ús
+necessita el seu permís per escrit per a aquell ús.
+
+- **El permís va amb l'ús**: el que es va cedir per enviar a una agència no es
+  pot publicar, ni al web ni a les xarxes.
+
+**Guarda:** cap automàtica; abans de publicar una imatge d'un tercer, es busca
+el permís per a aquell ús.
+
+## Veda 178 — El que és intern no surt sense el guardià
+
+**Adoptada el 18/10/2026** d'un projecte fill privat (la seva veda 10).
+
+L'error que evita: un projecte intern esmentat en un text extern sense validar
+és una promesa que ningú ha fet.
+
+- **Cada projecte té un guardià de la comunicació estratègica.** Fins que no
+  valida, un projecte intern no surt en cap text extern, i cap IA marca la
+  validació pel seu compte.
+
+**Guarda:** el fill que en té la comprova als seus correus.

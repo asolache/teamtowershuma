@@ -214,6 +214,41 @@ cas('un idioma sense textos peta', a => {
   rmSync(casa, { recursive: true, force: true });
 }
 
+/* Els serveis s'enllacen (veda 171): un fill tria els que fa servir i rep
+   només els seus enllaços; un que la matriu no té, o un que enllaça un fitxer
+   que no hi és, atura l'herència. */
+{
+  const casa = mkdtempSync(join(tmpdir(), 'casa-'));
+  const fill = join(casa, 'fill');
+  spawnSync(process.execPath, [EINA, '--nou', fill, '--nom', 'Fill'], { encoding: 'utf8' });
+  const conf = JSON.parse(readFileSync(join(fill, 'cervell.json'), 'utf8'));
+  const tots = readFileSync(join(fill, 'saber', 'servicios.md'), 'utf8');
+  const usa = ids => {
+    writeFileSync(join(fill, 'cervell.json'), JSON.stringify({ ...conf, serveis: { usa: ids } }));
+    return spawnSync(process.execPath, [EINA, '--actualitza', fill], { encoding: 'utf8' }).status;
+  };
+  const r1 = usa(['crm']), un = readFileSync(join(fill, 'saber', 'servicios.md'), 'utf8');
+  const r2 = usa(['inventat']);
+  const SOS = join(casa, 'SOS');
+  mkdirSync(join(SOS, 'tools'), { recursive: true });
+  cpSync(join(DIR, '..', 'knowledge', 'cervell'), join(SOS, 'knowledge', 'cervell'), { recursive: true });
+  cpSync(join(DIR, '..', 'knowledge', 'codex.md'), join(SOS, 'knowledge', 'codex.md'));
+  cpSync(join(DIR, '..', '..', 'conecta'), join(casa, 'conecta'), { recursive: true });
+  cpSync(EINA, join(SOS, 'tools', 'cervell.js'));
+  const H = JSON.parse(readFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), 'utf8'));
+  H.fitxers = {};
+  H.serveis.llista = [{ ...H.serveis.llista[0], path: 'SOS/no-hi-es.html' }];
+  writeFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), JSON.stringify(H));
+  const r3 = spawnSync(process.execPath, [join(SOS, 'tools', 'cervell.js'), '--nou', join(casa, 'altre')], { encoding: 'utf8' });
+  const bo = tots.includes('## El CRM') && tots.includes('## El cerebro') && tots.includes('https://teamtowershuma.com/SOS/crm.html')
+    && r1 === 0 && un.includes('## El CRM') && !un.includes('## El cerebro') && r2 === 1
+    && r3.status === 1 && r3.stdout.includes('SOS/no-hi-es.html');
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} els serveis arriben com a enllaços, el fill tria els seus, i un servei que no hi és atura l'herència`);
+  if (!bo) console.log(r3.stdout);
+  rmSync(casa, { recursive: true, force: true });
+}
+
 console.log(fails ? `\n❌ ${fails} cas${fails === 1 ? '' : 'os'} on la guarda no ha fet el que promet.`
   : '\n✅ La guarda peta quan toca, i només llavors.');
 process.exit(fails ? 1 : 0);

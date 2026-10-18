@@ -6,33 +6,19 @@
 
 ## Events Penedès
 
-### veda 4 · proposada
+### veda 4 · adoptada 172
 
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
+### veda 5 · adoptada 173
 
-### veda 5 · proposada
+### veda 6 · adoptada 174
 
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
+### veda 7 · adoptada 175
 
-### veda 6 · proposada
+### veda 8 · adoptada 176
 
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
+### veda 9 · adoptada 177
 
-### veda 7 · proposada
-
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
-
-### veda 8 · proposada
-
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
-
-### veda 9 · proposada
-
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
-
-### veda 10 · proposada
-
-> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
+### veda 10 · adoptada 178
 
 ### producte Del formulario a la propuesta · adoptada al catàleg (17/10/2026)
 

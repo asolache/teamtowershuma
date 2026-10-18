@@ -204,3 +204,24 @@ node SOS/tools/cervell.js --recull ../el-projecte
   que no pot sortir es llista sense el text, i es desa el patró, no el que ha
   casat.
 
+
+## Els serveis: s'enllacen, no es copien
+
+**Demanat per l'Àlvar el 17/10/2026:** que la web d'un proveïdor faci servir el
+CRM, el cervell, la web i les eines que fem, sense duplicar res, i que per a qui
+no és tècnic TeamTowers en porti el backend (veda 171).
+
+El catàleg és `serveis` a `heretat.json`. Cada cervell rep
+`saber/servicios.md` amb un enllaç a cada servei de la matriu i el que vol dir
+en els dos modes: **gestionat** (Zoho, GitHub i Netlify els operem nosaltres i
+les claus són al nostre servidor) i **propi** (el seu repositori i el seu
+Netlify). Un fill que només en fa servir uns quants ho diu al seu
+`cervell.json`:
+
+```json
+"serveis": { "usa": ["crm", "web", "cervell"] }
+```
+
+`cervell.js --check` peta si un servei enllaça un fitxer que no hi és o una peça
+que `conecta/` no té; `--actualitza` s'atura si un fill en demana un que no
+existeix.

@@ -49,6 +49,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-home.mjs` | V70 | La home pel rol: què NO desapareix, i que sempre es pugui veure tot |
 | `test-arrencada.mjs` | pla-millora-sos 1 | Que l'app arrenqui amb tota la xarxa de fora penjada, i amb les fonts pròpies de `fonts/` |
 | `test-interes.mjs` | pla-millora-sos 4 | Que «m'interessa» no toqui el registre ni el node, que surti a «Les meves tasques» i que es tanqui dient-ho |
+| `test-ux-flux.mjs` | revisió UX 17/10/2026 | Un sol botó principal i cap Comando a la benvinguda, cap etiqueta de flux tapada, el mapa dins la primera pantalla, «El meu negoci» primer, «Què ha passat?» troba el flux i cada flux se segueix com una comanda fins a rebut |
 | `test-sortir.mjs` | V73 | Que se't pugui trobar: cada estat diu el motiu i el següent pas |
 | `test-enllac.mjs` | V74 | Connectar el que penja de tu **sense doble comptatge** |
 | `test-comando.mjs` | V77 | Que el relat sigui una capa: que es guanyi, i que apagar-lo no tregui res |

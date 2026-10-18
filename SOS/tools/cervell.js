@@ -93,6 +93,35 @@ function herencia(conf) {
     t = t.startsWith('---\n') ? t.replace(/^(---\n[\s\S]*?\n---\n)/, '$1' + cap) : cap + t;
     out.set(dest, reescriu(t));
   }
+  /* Els serveis del cervell col·lectiu no es copien: s'enllacen. Un fill rep
+     la llista del que hi ha a la matriu, amb els dos modes (gestionat, on
+     TeamTowers fa de backend, i propi), i tria amb `serveis.usa` al seu
+     `cervell.json`. Cada enllaç apunta al fitxer de debò, i la peça que
+     connecta ha d'existir a `conecta/`: un servei que ningú pot obrir és un
+     mapa fals (veda 171). */
+  if (H.serveis) {
+    const S = H.serveis, lg = es ? 'es' : 'ca';
+    const cx = (() => { try { return JSON.parse(readFileSync(join(TT, 'conecta', 'index.html'), 'utf8').match(/id="cx-datos">([\s\S]*?)<\/script>/)[1]); } catch (e) { return null; } })();
+    const peces = cx ? new Map(cx.conectores.map(c => [c.id, c.nombre])) : null;
+    if (!peces) errors.push('no puc llegir les peces de conecta/index.html');
+    const usa = conf.serveis && Array.isArray(conf.serveis.usa) ? conf.serveis.usa : null;
+    (usa || []).filter(id => !S.llista.some(s => s.id === id)).forEach(id => errors.push(`cervell.json demana el servei «${id}» i la matriu no el té`));
+    const nom = m => S.modes[m][lg];
+    let sm = es
+      ? `# Servicios del cerebro colectivo\n\n> **No lo edites:** sale de ${H.font}SOS/knowledge/cervell/heretat.json\n> y se actualiza con \`cervell.js --actualitza\`. Los servicios se enlazan, no se copian (veda 171).\n\n`
+      : `# Serveis del cervell col·lectiu\n\n> **No l'editis:** surt de ${H.font}SOS/knowledge/cervell/heretat.json\n> i s'actualitza amb \`cervell.js --actualitza\`. Els serveis s'enllacen, no es copien (veda 171).\n\n`;
+    sm += Object.keys(S.modes).map(m => `- **${nom(m)}.** ${S.modes[m]['diu_' + lg]}`).join('\n') + '\n';
+    for (const s of S.llista.filter(s => !usa || usa.includes(s.id))) {
+      if (!existsSync(join(TT, s.path))) errors.push(`el servei «${s.id}» enllaça ${s.path} i no existeix`);
+      (s.via || []).filter(p => peces && !peces.has(p)).forEach(p => errors.push(`el servei «${s.id}» connecta «${p}» i conecta/ no la té`));
+      const url = s.pagina ? S.web + s.path.replace(/index\.html$/, '') : H.font + s.path;
+      const t = s[lg];
+      sm += `\n## ${t.nom}\n\n${t.fa} [${es ? 'Ábrelo' : 'Obre\'l'}](${url})\n\n`
+        + `- **${nom('gestionat')}:** ${t.gestionat}\n- **${nom('propi')}:** ${t.propi}\n`
+        + ((s.via || []).length && peces ? `- **${es ? 'Conecta con' : 'Connecta amb'}:** ${s.via.map(p => peces.get(p) || p).join(', ')}\n` : '');
+    }
+    out.set(conf.serveisMd || (es ? 'saber/servicios.md' : 'saber/serveis.md'), sm);
+  }
   for (const [dest, t] of out) H.sedas.forEach(re => {
     const m = t.match(new RegExp(re));
     if (m) errors.push(`el sedàs atura ${dest}: «${m[0]}» (patró ${re})`);
