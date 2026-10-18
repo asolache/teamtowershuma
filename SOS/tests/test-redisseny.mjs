@@ -94,6 +94,30 @@ await page.evaluate(() => { document.querySelector('#btnMore').click(); document
 await page.click('#stTema [data-t=""]');
 ok(await page.evaluate(() => !document.documentElement.dataset.tema), 'i es torna al clar');
 
+console.log('\n5 · «Què necessites?»: una sola barra, amb les teves paraules');
+const qn = await page.evaluate(async () => {
+  const S = window.__SOS;
+  S.closeModal();
+  const barra = document.querySelector('#btnSearch');
+  const r = { llançador: !!document.querySelector('#btnLauncher'), text: barra.textContent };
+  S.openSearchPalette();
+  await new Promise(x => setTimeout(x, 120));
+  r.suggereix = document.querySelectorAll('#spResults .sp-hit').length;
+  const prova = async q => { const i = document.querySelector('#spQ'); i.value = q; i.dispatchEvent(new Event('input'));
+    await new Promise(x => setTimeout(x, 60)); return document.querySelector('#spResults').textContent; };
+  r.fosc = /Configuraci/.test(await prova('fosc'));
+  r.reunio = /Assemblea/.test(await prova('reunió'));
+  r.accio = /Pings ecosistema|Diagnòstic comunitari/.test(await prova('diagnòstic'));
+  r.totes = !!document.querySelector('#spTotes');
+  S.closeModal();
+  return r;
+});
+ok(!qn.llançador && /Què necessites/.test(qn.text), 'la barra «Què necessites?» substitueix el botó «Accions»');
+ok(qn.suggereix > 0, 'sense escriure res, proposa el que ara serveix (' + qn.suggereix + ')');
+ok(qn.fosc && qn.reunio, 'entén «fosc» i «reunió» encara que les accions es diguin d\'una altra manera');
+ok(qn.accio, 'troba les accions del llançador, no només les de la cerca');
+ok(qn.totes, 'i el llançador sencer queda a un clic');
+
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);
 process.exit(fail ? 1 : 0);
