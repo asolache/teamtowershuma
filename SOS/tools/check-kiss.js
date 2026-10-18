@@ -154,6 +154,10 @@ const src = readFileSync(APP, 'utf8');
    (test-ux-flux): «El meu negoci» com a primera opció, la caixa «Què ha
    passat?», l'estat de cada flux (promès, en camí, lliurat, rebut) i una
    benvinguda sense el Comando. Es treu el CSS de l'arquetip que ja no surt. */
+/* ── 549,98 → 529,6 KB (18/10/2026) · mudança a lib/ ────────────────────────
+   Les comarques (CAT_MAP, 11,7 KB gzip) i el codificador de QR (6,9 KB) passen
+   a `lib/` i es carreguen quan s'obre el mapa o cal un QR; el service worker
+   els guarda igual. El sostre es queda a 550: 20 KB de marge per a la beta. */
 const MAX_GZIP_KB = 550;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;

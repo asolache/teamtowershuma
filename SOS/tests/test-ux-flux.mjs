@@ -95,6 +95,19 @@ const rebut = await page.evaluate(() => [...document.querySelectorAll('.flowl-ro
   .some(r => r.querySelectorAll('.fl-pas .fet').length === 4));
 ok(rebut, 'un cop apuntat, el flux surt com a rebut');
 
+console.log('\n4 · El mapa de comarques i el QR es carreguen quan cal (lib/)');
+await page.evaluate(() => { const S = window.__SOS; S.state.activeId = null; S.state.homeView = 'mapa'; S.render(); });
+await page.waitForFunction(() => document.querySelectorAll('.cm-path').length > 40, null, { timeout: 5000 }).catch(() => {});
+ok(await page.evaluate(() => document.querySelectorAll('.cm-path').length) > 40, 'el mapa de Catalunya surt sencer després de carregar-lo');
+/* El QR només surt amb una oferta WebRTC oberta: aquí es prova que lib/qrcode.js
+   és on _qrBlock el busca i que dibuixa. */
+const qr = await page.evaluate(() => new Promise(ok => {
+  const sc = document.createElement('script'); sc.src = 'lib/qrcode.js';
+  sc.onload = () => { const d = document.createElement('div'); new QRCode(d, { text: 'hola', width: 100, height: 100 }); ok(!!d.querySelector('canvas,img')); };
+  sc.onerror = () => ok(false); document.head.appendChild(sc);
+}));
+ok(qr, 'i lib/qrcode.js dibuixa el QR d\'aparellament');
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' passen'));
 process.exit(fail ? 1 : 0);
