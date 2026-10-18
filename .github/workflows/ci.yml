@@ -256,6 +256,7 @@ jobs:
           node SOS/tests/test-proposta.mjs
           node SOS/tests/test-automatitza.mjs
           node SOS/tests/test-pagina-lead.mjs
+          node SOS/tests/test-publica-lead.mjs
 
       # La pàgina de la MATRIU explica un mètode i promet, a la primera
       # pantalla, que cada criteri és una comprovació que l'app fa de debò. Una

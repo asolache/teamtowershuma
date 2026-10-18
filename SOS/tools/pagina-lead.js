@@ -342,4 +342,4 @@ function paginaLead(o) {
   return { escrita: true, fitxer, falla: [], ref };
 }
 
-module.exports = { paginaLead, comprova, dinsDelRepo, mateixNom, missatgeAltre, avui, TIPUS_ES, VISITA };
+module.exports = { paginaLead, comprova, dinsDelRepo, mateixNom, nomNet, missatgeAltre, avui, TIPUS_ES, VISITA };
