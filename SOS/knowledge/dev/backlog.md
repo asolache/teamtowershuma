@@ -268,8 +268,48 @@ La franja (`SOS/cervell/franja.js`) té un botó per projecte públic de la xarx
 vedes pugen damunt de les del SOS. Un fill privat no es llegeix mai; Events
 Penedès no hi és fins que l'Àlvar ho validi.
 
-**Queda:** que `cerebro.html` d'Álvaro carregui `pla.js` de la matriu en lloc
-de la seva còpia del dibuix, com ja fa amb `forces.js` i `3d.js`.
+**Fet (alvarosolache #21):** `cerebro.html` d'Álvaro carrega `pla.js` de la
+matriu en lloc de la seva còpia del dibuix, com ja feia amb `forces.js` i `3d.js`.
+
+**Fet el 18/10/2026 (#252):** `SOS/cervell.html` és la pàgina del producte, amb
+cinc vistes (tres dimensions, castellera, cinc capes, mapa i pinya des de dalt)
+i el mode temporal. La pinya fa servir la regla de `build-castells.js`: cada
+kosha és un pilar, i els vents, les primeres mans i els laterals surten de les
+cites. L'auditoria de posicionament i els sprints són privats (fil del cervell
+a la portada).
+
+**Queda (sprint 0):** col·locar-lo al recorregut (portada «Totes les vistes»,
+catàleg, itinerari de formació, /sos/ a través del fil de l'auditoria del MVP)
+i una introducció a les koshas en llenguatge planer, a la pàgina del cervell i
+al mètode de TeamTowers Humà.
+
+### El mapa de valor viu · el que circula i el que no (demanat 18/10/2026)
+
+**Demanat per l'Àlvar:** que al mapa de valor es vegin els fluxos en la seva
+direcció, que cada flux tingui el seu patró de ritme, i que quan no circula
+també es vegi. Per al pensament visual, i integrat a l'eina del mapa
+(`SOS/vna-suport.html` i el mapa de cada projecte a l'app), no en una còpia.
+
+**La proposta:**
+
+- **Cada flux declara el seu ritme** (setmanal, mensual…): és el patró que
+  s'espera.
+- **El registre diu quan va circular per últim cop.** Amb tots dos, el mapa
+  dibuixa cada flux en un de quatre estats: **viu** (es mou en la seva
+  direcció, més de pressa com més circula), **apagant-se** (ha passat el seu
+  ritme sense activitat), **aturat** (fa tard: quiet, marcat i amb avís) i
+  **mai no ha circulat** (puntejat: és una promesa del mapa).
+- **El mode temporal** reprodueix el mes i ensenya on s'encalla el valor.
+- Es munta damunt del seguiment de cada flux com una comanda (Promès, En
+  camí, Lliurat, Rebut, #247) i del registre de triple entrada; el mapa real
+  surt del registre, no d'una segona font.
+
+**La regla que l'acompanya:** el que es fa a un projecte de la xarxa
+(TeamTowers Humà, el SOS, la pàgina d'Álvaro) es fa una sola vegada al codi
+compartit i els altres el carreguen; i cada canvi que es veu des de fora va
+amb la seva comunicació (blog o notícia) al mateix pas.
+
+**Va a l'sprint 2** del pla del cervell, després de la beta pública.
 
 ### La matriu aprèn dels fills · la pujada del cervell (demanat 17/10/2026)
 
@@ -1661,6 +1701,11 @@ s'ofereix en 3 pantalles després de crear el perfil (#225).
 pilot 1, i falten les claus. L'enriquiment amb IA (punt 1) està per fer. La
 decisió del punt 3 continua oberta i ara la porta el bloc «Ingressos
 recurrents», amb el pla únic de les tres marques.
+
+**Estat (18/10/2026):** fins avui els formularis de Netlify estaven apagats al
+lloc `teamtowershuma`, i no se'n guardava cap enviament: comanda, diagnòstic,
+visita ni, des del #254, les incidències de l'app. L'Àlvar ha dit que sí i ja
+estan encesos. Tot el que s'hagi enviat abans d'avui s'ha perdut.
 
 **Demanat per l'Àlvar (28/09/2026):** «integra'm amb Zoho o tenir muntat un
 excel·lent CRM autoactualitzable en la seva màxima expressió», i **analitzar
