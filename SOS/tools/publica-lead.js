@@ -18,7 +18,9 @@
  *        amb les fonts de la carpeta.
  *
  *   node SOS/tools/publica-lead.js --esborra <ref> ../teamtowers-leads/
- *        després de la visita: treu `public/<ref>/`.
+ *        després de la visita: treu `public/<ref>/`. La referència queda a
+ *        `refs.json`, amb l'empremta del nom i no el nom: cap altre negoci no
+ *        pot fer servir l'enllaç que ja es va enviar.
  *
  * El commit i el push del repositori privat els fa qui publica: aquesta eina
  * no toca cap git.
@@ -28,11 +30,13 @@
 'use strict';
 const { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } = require('node:fs');
 const { join } = require('node:path');
+const { createHash } = require('node:crypto');
 const L = require('./pagina-lead.js');
 const A = require('./analitza-contingut.js');
 
 const MARCA = '.teamtowers-leads';
 const REF = /^[A-Za-z0-9_-]{16,32}$/;
+const REGISTRE = 'refs.json';
 
 /* La base del lloc privat. Les capçaleres fan a nivell del servidor el que la
    pàgina ja compleix: no s'indexa, no envia referer, no executa cap script ni
@@ -68,7 +72,9 @@ node SOS/tools/publica-lead.js --esborra <ref> ../teamtowers-leads/       # desp
 
 Después, commit y push aquí. Aquí no van datos personales, ni importes, ni
 nada que no sea la página revisada: la carpeta del lead (mapa, fuentes,
-\`lead.json\`) se queda fuera.
+\`lead.json\`) se queda fuera. \`refs.json\` guarda qué referencias ya se han
+usado, con la huella del nombre y no el nombre, para que ningún otro negocio
+reciba un enlace ya enviado. No se borra.
 `;
 
 function inicia(desti) {
@@ -101,14 +107,33 @@ function publica(dir, desti) {
   const fonts = existsSync(join(dir, 'fuentes')) ? A.llegeixCarpeta(join(dir, 'fuentes')) : [];
   falla.push(...L.comprova(html, { revisat: true, fonts }));
   if (falla.length) return { ok: false, falla };
-  /* Una referència és d'un sol negoci: si ja hi ha la pàgina d'un altre (dues
-     carpetes copiades d'un mateix esborrany), no es trepitja l'enllaç que ja té. */
+  /* Una referència és d'un sol negoci, també després d'esborrar-ne la pàgina:
+     l'enllaç ja s'ha enviat. Si dues carpetes la comparteixen (copiades d'un
+     mateix esborrany), la segona no la pot fer servir. */
+  const reg = registre(desti);
+  if (typeof reg === 'string') return { ok: false, falla: [REGISTRE + ' del repositori privat ' + reg + ': arregla\'l abans de publicar'] };
   const f = join(desti, 'public', lj.ref, 'index.html');
   const ja = existsSync(f) ? nomDeLaPagina(readFileSync(f, 'utf8')) : null;
-  if (ja != null && !L.mateixNom(ja, lj.nom)) return { ok: false, falla: ['public/' + lj.ref + '/ ja és la pàgina de «' + ja + '»: dues carpetes comparteixen referència. Per a «' + lj.nom + '», torna a fer la pàgina en una carpeta nova (sense lead.json); si és el mateix negoci amb un altre nom, primer --esborra ' + lj.ref] };
+  const amo = Object.prototype.hasOwnProperty.call(reg, lj.ref) ? reg[lj.ref] : null;
+  if ((amo != null && amo !== empremta(lj.nom)) || (ja != null && !L.mateixNom(ja, lj.nom)))
+    return { ok: false, falla: ['la referència ' + lj.ref + ' ja és d\'un altre negoci' + (ja ? ' («' + ja + '»)' : '') + ', i el seu enllaç ja s\'ha enviat: dues carpetes la comparteixen. Per a «' + lj.nom + '», torna a fer la pàgina en una carpeta nova (sense lead.json). Només si és el mateix negoci amb un altre nom: ' + (ja != null ? '--esborra ' + lj.ref + ', ' : '') + 'treu ' + lj.ref + ' de ' + REGISTRE + ' i torna a publicar'] };
   mkdirSync(join(f, '..'), { recursive: true });
   writeFileSync(f, html);
+  reg[lj.ref] = empremta(lj.nom);
+  writeFileSync(join(desti, REGISTRE), JSON.stringify(reg, null, 2) + '\n');
   return { ok: true, ref: lj.ref, fitxer: f };
+}
+
+/* Qui té cada referència: l'empremta (sha256) del nom normalitzat, perquè
+   després de la visita no hi quedi el nom del negoci. Fora de `public/`: no
+   se serveix. Si el fitxer hi és però no serveix, torna què li passa. */
+const empremta = nom => createHash('sha256').update(L.nomNet(nom)).digest('hex');
+function registre(desti) {
+  const f = join(desti, REGISTRE);
+  if (!existsSync(f)) return {};
+  let r;
+  try { r = JSON.parse(readFileSync(f, 'utf8')); } catch (e) { return 'no és un JSON vàlid'; }
+  return r && typeof r === 'object' && !Array.isArray(r) ? r : 'ha de ser un objecte {"<ref>": "<empremta>"}';
 }
 
 /* El nom del negoci tal com el porta la pàgina (`<p class="marca">`). */

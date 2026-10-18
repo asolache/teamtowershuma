@@ -2,7 +2,8 @@
  * ─────────────────────────────────────────────────────────────────────────
  * `publica-lead.js` copia `lead.html` a `public/<ref>/index.html` del
  * repositori privat només si és la pàgina revisada del mateix `lead.json` i
- * torna a passar les comprovacions. La base del lloc porta les capçaleres que
+ * torna a passar les comprovacions. Una referència és d'un sol negoci, també
+ * després d'esborrar-ne la pàgina (`refs.json`). La base del lloc porta les capçaleres que
  * no deixen indexar, ni enviar referer, ni executar res.
  *
  *   node SOS/tests/test-publica-lead.mjs
@@ -72,16 +73,30 @@ console.log('\nPublicar');
   writeFileSync(join(altre, 'lead.json'), JSON.stringify({ ref: ja.ref, nom: 'Cooperativa Beta' }));
   node(join(TOOLS, 'proposta.js'), altre, '--llengua', 'ca', '--nom', 'Cooperativa Beta', '--lead', '--revisat');
   const rc = publica(altre, repo);
-  ok(JSON.parse(readFileSync(join(altre, 'lead.json'), 'utf8')).ref === ref && rc.status === 4 && /ja és la pàgina de «Celler de Prova»/.test(rc.stderr)
+  ok(JSON.parse(readFileSync(join(altre, 'lead.json'), 'utf8')).ref === ref && rc.status === 4 && /ja és d'un altre negoci \(«Celler de Prova»\)/.test(rc.stderr)
     && /Celler de Prova/.test(readFileSync(f, 'utf8')), 'dues carpetes amb la mateixa referència: la segona no trepitja la pàgina que el primer lead ja té');
   ok(publica(lead, repo).status === 0, 'tornar a publicar la del mateix negoci, sí');
-  rmSync(altre, { recursive: true, force: true });
+  const reg = readFileSync(join(repo, 'refs.json'), 'utf8');
+  ok(/^[0-9a-f]{64}$/.test(JSON.parse(reg)[ref]) && !/Celler/i.test(reg) && !existsSync(join(repo, 'public', 'refs.json')),
+    'refs.json guarda de qui és cada referència amb l\'empremta del nom, no el nom, i fora de public/');
 
   console.log('\nEsborrar després de la visita');
   ok(publica('--esborra', '../../etc', repo).status === 4 && publica('--esborra', 'x', repo).status === 4, 'una referència que no ho és no esborra res');
   const re = publica('--esborra', ref, repo);
   ok(re.status === 0 && !existsSync(join(repo, 'public', ref)) && existsSync(join(repo, 'public', 'index.html')), 'esborra només la carpeta de la referència');
   ok(publica('--esborra', ref, repo).status === 4, 'esborrar-la dues vegades diu que ja no hi és');
+  const rd = publica(altre, repo);
+  ok(rd.status === 4 && /ja és d'un altre negoci/.test(rd.stderr) && !existsSync(join(repo, 'public', ref)),
+    'esborrada la pàgina, l\'enllaç que ja es va enviar no passa a ser d\'un altre negoci');
+  ok(!/--esborra/.test(rd.stderr), 'i, si la pàgina ja no hi és, no diu que l\'esborris');
+  ok(publica(lead, repo).status === 0 && existsSync(join(repo, 'public', ref, 'index.html')), 'el mateix negoci sí que la pot tornar a publicar');
+  rmSync(altre, { recursive: true, force: true });
+  writeFileSync(join(repo, 'refs.json'), '{ trencat');
+  const rt = publica(lead, repo);
+  writeFileSync(join(repo, 'refs.json'), 'null');
+  const rn = publica(lead, repo);
+  ok(rt.status === 4 && /no és un JSON vàlid/.test(rt.stderr) && rn.status === 4 && /ha de ser un objecte/.test(rn.stderr),
+    'si refs.json no es pot llegir, no es publica a cegues, i diu què li passa');
 }
 
 console.log('\nL\'ordre');

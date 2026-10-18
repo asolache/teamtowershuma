@@ -214,7 +214,9 @@ formulari crea un lead nou a Zoho; no marca el que ja hi és.
    base del repositori (`--inicia`: `public/` amb capçaleres `noindex`, sense
    referer i amb una CSP que no deixa executar res), hi copia la pàgina
    revisada a `public/<ref>/` després de tornar-la a comprovar, i l'esborra
-   després de la visita (`--esborra`). Ho prova `test-publica-lead.mjs`. Falta
+   després de la visita (`--esborra`); `refs.json` recorda de qui és cada
+   referència (l'empremta del nom), perquè un enllaç enviat no passi mai a un
+   altre negoci. Ho prova `test-publica-lead.mjs`. Falta
    que l'Àlvar creï `asolache/teamtowers-leads`, privat i buit: l'app de Claude
    no pot crear repositoris (403). Després, el seu lloc de Netlify.
 8. ~~**La skill «propuesta-inicial»** amb el pas «Enviar abans de la visita»~~

@@ -225,7 +225,9 @@ TeamTowers, no desde el del cliente.
    lead nuevo con la referencia de su página. Es la única forma de saber que la
    ha abierto: la página no lleva ningún píxel.
 6. **Borrarla después de la visita:** `node SOS/tools/publica-lead.js
-   --esborra <ref> ../teamtowers-leads/`, y commit y push.
+   --esborra <ref> ../teamtowers-leads/`, y commit y push. La referencia se
+   queda en `refs.json` (con la huella del nombre, no el nombre): ningún otro
+   negocio puede recibir un enlace ya enviado.
 
 ## Lo que nunca entra
 
