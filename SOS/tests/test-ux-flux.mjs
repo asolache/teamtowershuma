@@ -21,7 +21,7 @@ await page.waitForFunction(() => window.__SOS);
 await page.waitForTimeout(1500);
 
 console.log('\n1 · La benvinguda té un sol botó principal, i és el pas següent');
-await page.click('#obApunta');
+await page.click('#obHero');
 await page.waitForSelector('#shSave');
 await page.fill('#shName', 'Marta Vidal');
 await page.fill('#shMuni', 'Vilafranca del Penedès');

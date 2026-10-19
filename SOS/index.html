@@ -1478,9 +1478,11 @@ a{color:var(--blue);text-decoration:none}
 
          Un sol botó, i el que hi ha al costat no és un segon botó sinó el
          preu d'entrar dit en una línia: si demanés registre o correu, aquí
-         és on caldria dir-ho. -->
+         és on caldria dir-ho. Des del 19/10/2026 porta a la primera vegada
+         (`?primer`): una pregunta i el teu mapa. El perfil és a «Sóc una
+         persona», més avall. -->
     <div class="ob-apunta">
-      <button class="ob-ap-btn" id="obApunta">✦ Apunta-t'hi</button>
+      <button class="ob-ap-btn" id="obApunta">✦ Dibuixa el teu negoci</button>
       <span class="ob-ap-n">Sense compte, sense correu i sense quota. Les dades es queden al teu aparell i te les pots endur quan vulguis.</span>
     </div>
     <div class="ob-pains">
@@ -23417,7 +23419,7 @@ $('#obHero').onclick=()=>openSuperheroiOnboarding();
 /* El mateix destí que la porta de sota: una segona manera d'arribar-hi, no una
    segona pantalla. Si algun dia canvia el que fa apuntar-se, canvia per a les
    dues alhora perquè és la mateixa crida. */
-$('#obApunta').onclick=()=>openSuperheroiOnboarding();
+$('#obApunta').onclick=()=>openPrimerMapa();
 $('#obLocate').onclick=()=>openLocateWizard();
 /* El calaix: obrir, tancar, i tancar-lo amb Esc o clicant el vel. Un panell
    que només es tanca amb el mateix botó que l'obre es queda obert sovint. */

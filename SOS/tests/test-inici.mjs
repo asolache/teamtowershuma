@@ -39,11 +39,11 @@ const primer = await page.evaluate(() => {
   };
 });
 ok(!primer.obert, 'cap tour tapant la portada');
-ok(primer.top < 700, '«Apunta-t\'hi» es veu sense fer scroll a 390 px (top ' + primer.top + ')');
+ok(primer.top < 700, 'el botó principal es veu sense fer scroll a 390 px (top ' + primer.top + ')');
 ok(primer.overflow === 0, 'i a 390 px no desborda');
 
 console.log('\n2 · Després de crear el perfil, la benvinguda ofereix el tour curt');
-await page.click('#obApunta');
+await page.click('#obHero');
 await page.waitForSelector('#shSave');
 await page.fill('#shName', 'Marta Vidal');
 await page.fill('#shMuni', 'Vilafranca del Penedès');
