@@ -128,6 +128,18 @@ var FluxViu = (function () {
       if ('espera' in f) { if (ESPERES[f.espera]) x.espera = f.espera; else delete x.espera; }
       if ('termini' in f) { var tm = new Date(f.termini); if (f.termini && isFinite(tm)) x.termini = tm.toISOString(); else delete x.termini; }
       var u = url(f.url); if (u) x.url = u;
+      /* El flux com un fil: qui el porta (una persona o un agent d'IA) i què
+         s'hi ha dit. Les notes, com els fets, entren una vegada per `id`. */
+      if (f.porta && text(f.porta.nom, 80)) x.porta = { nom: text(f.porta.nom, 80), agent: !!f.porta.agent };
+      if (Array.isArray(f.fil)) {
+        x.fil = x.fil || [];
+        f.fil.forEach(function (m) {
+          var mo = text(m.id, 160), mt = new Date(m.ts), tx = text(m.txt, 600);
+          if (!mo || !tx || !isFinite(mt) || x.fil.some(function (y) { return y.orig === mo; })) return;
+          x.fil.push({ orig: mo, ts: mt.toISOString(), qui: text(m.qui, 80), agent: !!m.agent, txt: tx });
+        });
+        x.fil.sort(function (a, b) { return a.ts < b.ts ? -1 : 1; });
+      }
       x.events = x.events || [];
       (f.fets || []).forEach(function (ev) {
         var eo = text(ev.id, 160), ts = new Date(ev.ts);
@@ -187,7 +199,10 @@ var FluxViu = (function () {
         { id: 'ex:f3', from: 'ex:prov', to: 'ex:negoci', label: 'Matèria primera', kind: 'tangible', ritme: 'setmana', fets: fets('c', [11, 18]) },
         { id: 'ex:f4', from: 'ex:equip', to: 'ex:negoci', label: 'Idees de millora', ritme: 'mes', fets: fets('d', [75, 110]) },
         { id: 'ex:f5', from: 'ex:negoci', to: 'ex:aliats', label: 'Recomanacions', ritme: 'mes' },
-        { id: 'ex:f6', from: 'ex:clients', to: 'ex:negoci', label: 'Opinions', ritme: 'mes', espera: 'nosaltres', fets: fets('e', [4, 33, 61]) }] };
+        { id: 'ex:f6', from: 'ex:clients', to: 'ex:negoci', label: 'Opinions', ritme: 'mes', espera: 'nosaltres', fets: fets('e', [4, 33, 61]),
+          porta: { nom: 'Agent de respostes', agent: true },
+          fil: [{ id: 'e-m1', ts: d(4), qui: 'Una clienta', txt: 'El pa d\'espelta de dissabte era boníssim. En fareu també entre setmana?' },
+            { id: 'e-m2', ts: d(3.9), qui: 'Agent de respostes', agent: true, txt: 'Esborrany preparat: sí, els dimecres. Falta que algú de l\'equip el revisi i l\'enviï.' }] }] };
   }
 
   /* La propera vegada, com la data d'entrega d'una comanda: el darrer cop més

@@ -8,6 +8,7 @@
      i el lliscador del temps.
    · Fase 4: cada flux es segueix com una comanda, amb la data de la propera.
    · Fase 5: la primera vegada, una pregunta que acaba al teu mapa.
+   · Cada flux és un fil: qui el porta (persona o agent), el torn i la conversa.
    · Els avisos: «Què ha passat?» posa primer l'urgent i l'important (FluxViu.avis).
    · I dues coses que es buscaven i no es trobaven: «Totes les pàgines» amb els
      noms de debò, i «Importa un perfil» a la vista quan et dones d'alta. */
@@ -62,6 +63,7 @@ const av = await page.evaluate(() => ({
   ordre: [...document.querySelectorAll('#avui .av-fet')].map(x => x.className.replace(/av-fet |av-aturat/g, '').trim()).join(),
   mot: (document.querySelector('#avui .av-fet .av-mot') || {}).textContent || '',
   avisos: (document.querySelector('#avAvisos') || {}).textContent || '',
+  titol: document.title, campana: !!document.querySelector('#avui .av-qp #avNotif') === (window.Notification && Notification.permission === 'default'),
   mapa: !!document.querySelector('#avMapa svg path[data-ex]'),
   mes: [...document.querySelectorAll('.av-mes-b')].map(x => x.textContent),
   plec: !!document.querySelector('details.av-plec') && !document.querySelector('details.av-plec').open,
@@ -70,6 +72,8 @@ const av = await page.evaluate(() => ({
 ok(av.xifra === '3' && /de 6 fluxos/.test(av.de), 'el pols diu 3 de 6 fluxos vius (' + av.xifra + ' ' + av.de + ')');
 ok(/av-urgent/.test(av.primer) && av.ordre === 'av-urgent,av-important,av-important,av-apagant', '«Què ha passat?» avisa: primer l\'urgent, després l\'important i al final el que s\'apaga (' + av.ordre + ')');
 ok(/Urgent · Ens toca respondre/.test(av.mot), 'i cada avís diu per què (' + av.mot + ')');
+ok(/^\(1\) /.test(av.titol), 'el nombre d\'urgents, també al títol de la pestanya (' + av.titol + ')');
+ok(av.campana, '«Avisa\'m» surt només si el navegador encara no ha dit sí o no als avisos del sistema');
 ok(av.avisos === '1 urgent · 2 importants', 'el comptador d\'avisos, al costat del títol (' + av.avisos + ')');
 ok(av.mapa, 'i el mapa del projecte que més circula hi és, petit');
 ok(av.mes.length === 4, 'les altres quatre portades, a la fila «Més»');
@@ -269,6 +273,28 @@ await page.waitForSelector('#shImp');
 await page.setInputFiles('#shImpFile', { name: 'cv.txt', mimeType: 'text/plain', buffer: Buffer.from('12 anys de lampista. Tinc furgoneta.') });
 await page.waitForFunction(() => /lampista/.test((document.querySelector('#shCV') || {}).value || ''));
 ok(await page.evaluate(() => document.querySelector('#shMoreCv').open), 'un CV no és cap còpia: omple la trajectòria i l\'analitza en local');
+await page.evaluate(() => window.__SOS.closeModal());
+
+console.log('\n10 · Cada flux, un fil: qui el porta, de qui és el torn i què s\'hi ha dit');
+await page.goto(APP + '?viu');
+await page.waitForFunction(() => window.__SOS && window.FluxViu);
+await page.evaluate(() => { const S = window.__SOS, n = S.state.nodes.find(x => x.exempleViu), f = n.vna.exchanges.find(x => x.label === 'Opinions'); return S.openSeguiment(n, f.id); });
+await page.waitForSelector('.modal.sg .sg-fil');
+const fil = await page.evaluate(() => ({ av: (document.querySelector('.sg-av') || {}).textContent || '', qui: document.querySelector('#sgQui').textContent,
+  msgs: document.querySelectorAll('#sgMsgs li').length, ag: document.querySelectorAll('#sgMsgs li.ag').length,
+  torn: (document.querySelector('.sg-tb.sel') || {}).textContent }));
+ok(/^Urgent · Ens toca respondre/.test(fil.av), 'el seguiment diu l\'avís i per què (' + fil.av + ')');
+ok(fil.qui === '🤖 Agent de respostes', 'qui el porta, i si és un agent d\'IA es veu (' + fil.qui + ')');
+ok(fil.msgs === 2 && fil.ag === 1 && fil.torn === 'Ens toca a nosaltres', 'el fil porta la conversa (persona i agent) i de qui és el torn');
+await page.fill('#sgTxt', 'Li he dit que sí, els dimecres.');
+await page.click('#sgNou button');
+await page.click('.sg-tb[data-espera="ells"]');
+const desat = await page.evaluate(() => { const S = window.__SOS, n = S.state.nodes.find(x => x.exempleViu), f = n.vna.exchanges.find(x => x.label === 'Opinions');
+  return { n: f.fil.length, darrer: f.fil[f.fil.length - 1].txt, espera: f.espera, avis: window.FluxViu.avis(f, (f.events || []).map(e => e.ts)).nivell }; });
+ok(desat.n === 3 && /dimecres/.test(desat.darrer), 'escriure al fil hi afegeix la nota');
+ok(desat.espera === 'ells' && desat.avis === null, 'passar el torn a l\'altre treu l\'avís urgent');
+sota = await sotaTerra();
+ok(!sota.length, 'cap text del fil per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 await page.evaluate(() => window.__SOS.closeModal());
 
 await b.close();
