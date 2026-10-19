@@ -43,7 +43,7 @@
 
    Escrit a mà no es va tocar mai, i el resultat era el defecte pitjor d'aquest
    fitxer: obrir una pàgina arreglada i seguir veient la trencada. */
-const CAU = 'sos-9836ace2a9';
+const CAU = 'sos-c229e0b588';
 
 /* Només el que és nostre i és estàtic. Es demana de fons en instal·lar perquè
    la segona pàgina que obri algú ja hi sigui, i si alguna falla no es cancel·la
@@ -70,6 +70,8 @@ const PORTA = [
   './fonts/jetbrains-mono-latin.woff2',
   './lib/cat-map.js',
   './lib/flux-viu.js',
+  './lib/lents.js',
+  './lib/pinya.js',
   './lib/qrcode.js'
 ];
 /*/SW-PORTA*/

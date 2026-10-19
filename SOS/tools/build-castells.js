@@ -412,13 +412,17 @@ const POSICIONS = [
    una. Les xifres no s'escriuen enlloc —es compten—, i el que surt és la
    lectura. */
 const { CELLER, XARXA } = require('./build-mapavalor.js');
+/* La regla de les rengles és a `SOS/lib/pinya.js`: la mateixa que fa servir
+   la lent «Torre» del mapa de l'app, perquè les dues no puguin dir coses
+   diferents del mateix mapa. Aquí s'hi afegeixen els angles de la planta. */
+const Pinya = require('../lib/pinya.js');
 
 /* `queEs` surt dels dos últims elements del parell, que els declara
    `build-mapavalor.js`: el que es llegeix a sobre de cada rengla és el mateix
    lliurament que el graf, i ha de dir el mateix a les dues vistes. */
 const fluxosDe = mapa => mapa.parells.flatMap(p => [
-  { de: p[0], a: p[1], mena: p[2], que: p[3], queEs: p[6] || p[3], parell: p },
-  { de: p[1], a: p[0], mena: p[4], que: p[5], queEs: p[7] || p[5], parell: p }
+  { de: p[0], a: p[1], mena: p[2], torna: p[4], que: p[3], queEs: p[6] || p[3], parell: p },
+  { de: p[1], a: p[0], mena: p[4], torna: p[2], que: p[5], queEs: p[7] || p[5], parell: p }
 ]);
 
 /* Les quatre rengles que obre cada pilar, sense perdre de qui són. `direccions`
@@ -443,27 +447,14 @@ function rengles(n) {
 
 function pinyaDeMapa(mapa) {
   const fl = fluxosDe(mapa);
-  const mixt = p => p[2] !== p[4];
-  fl.forEach(f => {
-    f.linia = mixt(f.parell) ? 'vent' : (f.mena === 'tangible' ? 'primera' : 'lateral');
-  });
-  const pilars = rengles(mapa.nodes.length).map(p => {
-    const node = mapa.nodes[p.k];
-    const rep = fl.filter(f => f.a === node.id);
-    const per = {};
-    MENES.forEach(m => { per[m.id] = rep.filter(f => f.linia === m.id); });
-    /* Quantes posicions d'aquella mena obre un sol pilar: 1 primera, 1 vent i
-       2 laterals. És el denominador de tota la lectura. */
-    const te = { primera: 1, vent: 1, lateral: 2 };
-    return { ...p, node, rebuts: rep, per, te };
-  });
+  const lec = Pinya.llegeix(mapa.nodes, fl);
+  const pilars = rengles(mapa.nodes.length).map(p => ({ ...p, ...lec.pilars[p.k] }));
   const enc = mapa.encallament && mapa.encallament.node;
   const tocaEnc = f => f.de === enc || f.a === enc;
   return {
     mapa, fl, pilars, enc, tocaEnc,
-    obertes: 4 * mapa.nodes.length,
-    ocupades: pilars.reduce((a, p) => a + MENES.reduce((b, m) =>
-      b + Math.min(p.per[m.id].length, p.te[m.id]), 0), 0),
+    obertes: lec.obertes,
+    ocupades: lec.ocupades,
     /* Els pilars que no tenen cap vent: àrees que no toquen cap altra àrea.
        És la definició de silo, dita amb el dibuix i no amb l'adjectiu. */
     sols: pilars.filter(p => !p.per.vent.length),

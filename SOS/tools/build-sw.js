@@ -61,8 +61,8 @@ const PORTA = [
   // Les fonts de l'app: sense elles, el primer cop sense cobertura es veuria
   // amb la del sistema. Només les llatines; les extenses s'agafen si cal.
   './fonts/space-grotesk-latin.woff2', './fonts/jetbrains-mono-latin.woff2',
-  // El mapa de comarques i el QR, que l'app carrega quan els fa servir.
-  './lib/cat-map.js', './lib/flux-viu.js', './lib/qrcode.js'
+  // El mapa de comarques, el QR i les lents, que l'app carrega quan els fa servir.
+  './lib/cat-map.js', './lib/flux-viu.js', './lib/lents.js', './lib/pinya.js', './lib/qrcode.js'
 ];
 
 /* ── L'empremta ───────────────────────────────────────────────────────────── */

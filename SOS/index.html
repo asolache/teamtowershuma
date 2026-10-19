@@ -694,6 +694,12 @@ a{color:var(--blue);text-decoration:none}
 .vna-wrap{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start}
 .vna-canvas{background:var(--bg-panel);border:1px solid var(--border);border-radius:12px;position:relative;min-height:440px;overflow:hidden}
 .vna-canvas svg{width:100%;height:440px;display:block}
+.lents{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.6rem .7rem 0}
+.lent{font:600 var(--t0) inherit;font-family:inherit;min-height:40px;padding:.3rem .9rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;white-space:nowrap}
+.lent.sel{background:var(--text);color:var(--bg);border-color:var(--text)}
+.lents-t{display:flex;align-items:center;gap:.4rem;margin-left:auto;color:var(--muted);font:500 var(--t0) 'JetBrains Mono',monospace;white-space:nowrap}
+.lents-t input{width:120px}.lents-t output{min-width:8ch}
+.lents-peu{margin:0;padding:.2rem 1rem .9rem;color:var(--light);font-size:var(--t0);line-height:1.5}
 /* El zoom. Un lloc és un rectangle rodó i un rol un cercle: la forma diu que
    clicar-los fa dues coses diferents, i ho diu abans del clic. */
 .vna-zn{cursor:pointer}
@@ -4159,6 +4165,10 @@ function unattributedEntries(node){
   return (node.ledger||[]).filter(e=>!e.memberId)
     .map(e=>({entry:e,suggerit:att(e.who)}));
 }
+/* Les llesques d'un apunt. El diner va ×cash i la resta ×nonCash; un objecte
+   ja ve valorat en euros, i el temps passa per la tarifa horària. */
+const llesquesDe=(e,cfg)=>{const v=Number(e.value)||0;return e.type==='moneda'?v*cfg.cash:
+  e.type==='objecte'?v*cfg.nonCash:v*(Number(e.rate)||cfg.fmv)*cfg.nonCash;};
 function computeEquityCore(members,ledger,cfg,resolve,byName){
   const slby={};members.forEach(m=>slby[m.id]=0);
   const rid=resolve||(x=>x);
@@ -4166,13 +4176,11 @@ function computeEquityCore(members,ledger,cfg,resolve,byName){
   (ledger||[]).forEach(e=>{
     let mid=e.memberId;
     if(!mid&&byName){const g=byName(e.who);if(g){mid=g;pelNom[g]=(pelNom[g]||0)+1;}}
-    if(!mid)return;const id=rid(mid);if(slby[id]===undefined)return;const v=Number(e.value)||0;
-    if(e.type==='moneda')slby[id]+=v*cfg.cash;
+    if(!mid)return;const id=rid(mid);if(slby[id]===undefined)return;
     /* Un objecte ja ve valorat en euros. Passar-lo per la tarifa horària com si
        fossin hores el multiplicaria per quinze: és una aportació no dinerària
-       valorada en diners, i entra com a tal. */
-    else if(e.type==='objecte')slby[id]+=v*cfg.nonCash;
-    else{const rate=Number(e.rate)||cfg.fmv;slby[id]+=v*rate*cfg.nonCash;}});
+       valorada en diners, i entra com a tal (`llesquesDe`). */
+    slby[id]+=llesquesDe(e,cfg);});
   const total=Object.values(slby).reduce((a,b)=>a+b,0);
   return members.map(m=>({memberId:m.id,name:m.name,slices:slby[m.id],
     pct:total?slby[m.id]/total*100:0,pelNom:pelNom[m.id]||0}))
@@ -10863,7 +10871,8 @@ function renderVNA(body,node){
   const canvas=el('div','vna-canvas');
   const molla=vnaMolla(node);
   if(molla)canvas.appendChild(molla);
-  canvas.appendChild(buildVNASvg(node));
+  const ln=node.vna.roles.length?barraLents(node,canvas,buildVNASvg(node)):null;
+  if(!ln)canvas.appendChild(buildVNASvg(node));
   wrap.appendChild(canvas);
   // side
   const side=el('div','vna-side');
@@ -10954,8 +10963,63 @@ function renderVNA(body,node){
   side.appendChild(buildHealth(node));
   wrap.appendChild(side);
   body.appendChild(wrap);
+  if(ln)body.appendChild(ln.caixa);
   // Els fluxos, llegibles, amb els seus entregables endreçats a sota
   body.appendChild(buildFlowLedger(node));
+}
+/* ═══════════ Les lents del mapa ═══════════
+   El mateix mapa amb una altra pregunta: la torre (pinya), l'equip (qui porta
+   cada rol i la cura), el repartiment (llesques i hores) i el saber. Aquí es
+   compta amb les eines de l'app; lib/lents.js només pinta damunt l'SVG, i es
+   carrega en triar una lent. El lliscador torna el mapa al dia que es vulgui. */
+const LENTS=[['valor','Valor'],['torre','Torre'],['equip','Equip'],['repart','Repartiment'],['saber','Saber']];
+function dadesLent(node,ara){
+  const roles=node.vna.roles||[],ex=node.vna.exchanges||[],meu=(canWrite(node)||{}).ok,cfg=equityCfg(node);
+  const perFlux={};
+  (node.ledger||[]).forEach(e=>{if(!e.flowId||(ara&&Date.parse(e.ts||'')>ara))return;
+    const x=perFlux[e.flowId]||(perFlux[e.flowId]={ll:0,h:0});x.ll+=llesquesDe(e,cfg);x.k=(x.k||0)+1;
+    if(e.type!=='moneda'&&e.type!=='objecte')x.h+=Number(e.value)||0;});
+  const sap=[...new Set(membersOf(node).filter(m=>m.active!==false).flatMap(memberAports))];
+  const porta={};roles.forEach(r=>{if(r.memberId)porta[r.memberId]=(porta[r.memberId]||0)+1;});
+  return{fluxos:ex.map(e=>({id:e.id,de:e.from,a:e.to,mena:isIntangible(e.kind)?'intangible':'tangible'})),
+    rols:roles.map(r=>{const own=roleOwner(node,r),cal=roleCal(r),te=own?memberAports(own):sap;
+      const meus=ex.filter(e=>e.from===r.id),sur=meus.map(e=>perFlux[e.id]||{ll:0,h:0});
+      return{id:r.id,nom:r.name,qui:own?(meu?own.name:'👤'):'',porta:own?porta[own.id]:0,
+        orfes:own?siPlega(node,own.id).orfes.length:0,
+        ll:sur.reduce((a,x)=>a+x.ll,0),h:sur.reduce((a,x)=>a+x.h,0),
+        /* Les vegades que ha circulat, apunts i fets de la xarxa real: és el que
+           es reparteix quan encara no hi ha llesques. */
+        n:meus.reduce((a,e)=>a+(e.events||[]).filter(x=>!ara||Date.parse(x.ts)<=ara).length,0)
+          +sur.reduce((a,x)=>a+(x.k||0),0),
+        cal:cal.length,falta:cal.filter(a=>te.indexOf(a)<0).map(a=>aport(a).lbl.toLowerCase())};})};
+}
+function barraLents(node,canvas,svg0){
+  let svg=svg0,dies=0;
+  const lent=()=>state.lent||'valor';
+  const barra=el('div','lents');barra.setAttribute('role','toolbar');barra.setAttribute('aria-label','Mira el mapa com');
+  const peu=el('p','lents-peu');peu.hidden=true;
+  const caixa=el('div','ln-cv');caixa.hidden=true;
+  const pinta=()=>{if(lent()==='valor'){peu.hidden=true;caixa.hidden=true;return;}
+    const ara=dies?Date.now()-dies*DIA:0;
+    Promise.all([carregaLib('pinya'),carregaLib('lents')])
+      .then(()=>Lents.aplica(svg,lent(),dadesLent(node,ara),peu,caixa)).catch(()=>{});};
+  LENTS.forEach(([id,nom])=>{const b=el('button','lent'+(lent()===id?' sel':''),nom);b.dataset.lent=id;
+    b.setAttribute('aria-pressed',lent()===id?'true':'false');
+    b.onclick=()=>{state.lent=id;barra.querySelectorAll('.lent').forEach(x=>{const s=x===b;x.classList.toggle('sel',s);x.setAttribute('aria-pressed',s?'true':'false');});
+      const nou=buildVNASvg(node,dies?Date.now()-dies*DIA:0);canvas.replaceChild(nou,svg);svg=nou;pinta();};
+    barra.appendChild(b);});
+  /* El temps: el darrer trimestre, dia a dia. A «avui» el mapa és el de sempre. */
+  if((node.vna.exchanges||[]).length){
+    const tl=el('label','lents-t');const r=el('input');r.type='range';r.min=0;r.max=90;r.value=0;r.id='lnTemps';
+    r.setAttribute('aria-label','Torna el mapa enrere en el temps');
+    const o=el('output','','Avui');tl.appendChild(el('span','','⏱'));tl.appendChild(r);tl.appendChild(o);
+    r.oninput=()=>{dies=+r.value;o.textContent=dies?'Fa '+dies+(dies===1?' dia':' dies'):'Avui';
+      const nou=buildVNASvg(node,dies?Date.now()-dies*DIA:0);canvas.replaceChild(nou,svg);svg=nou;pinta();};
+    barra.appendChild(tl);
+  }
+  canvas.appendChild(barra);canvas.appendChild(svg);canvas.appendChild(peu);
+  pinta();
+  return{caixa};
 }
 /* ═══════════ Els fluxos, llegits com una llista ═══════════
    El gràfic serveix per veure la forma de la xarxa; per llegir-la cal una llista.
@@ -11186,7 +11250,7 @@ function vnaMolla(node){
   return b;
 }
 
-function buildVNASvg(node){
+function buildVNASvg(node,ara){
   const roles=node.vna.roles, ex=node.vna.exchanges;
   const W=520,H=440,cx=W/2,cy=H/2,R=Math.min(W,H)/2-70;
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
@@ -11280,7 +11344,7 @@ function buildVNASvg(node){
   });
   if(fills.length)svg.appendChild(zoom());
   // nodes
-  roles.forEach(r=>{const p=pos[r.id],g=mk('g',r.url?{'data-url':r.url,role:'link'}:{});
+  roles.forEach(r=>{const p=pos[r.id],g=mk('g',r.url?{'data-rol':r.id,'data-url':r.url,role:'link'}:{'data-rol':r.id});
     g.appendChild(mk('circle',{cx:p.x,cy:p.y,r:rr,style:'fill:var(--card);stroke:'+p.c,'stroke-width':2}));
     const t=mk('text',{x:p.x,y:p.y+3.5,'text-anchor':'middle',style:'fill:'+p.c,'font-family':'Space Grotesk','font-size':rr<16?7:9,'font-weight':600});
     t.textContent=r.name.length>10?r.name.slice(0,9)+'…':r.name;g.appendChild(t);
@@ -11289,9 +11353,11 @@ function buildVNASvg(node){
   });
   /* El mapa viu: cada flux amb el seu ritme i l'últim cop que va circular
      (apunts del registre i fets de la xarxa real). lib/flux-viu.js el pinta. */
+  /* Amb `ara`, el mapa tal com era aquell dia (el lliscador del temps). */
+  const fins=t=>!ara||Date.parse(t)<=ara;
   const fv={};flowLedger(node).rows.forEach(r=>{fv[r.flow.id]={flux:r.flow,
-    ts:r.items.map(x=>x.e.ts).concat((r.flow.events||[]).map(x=>x.ts))};});
-  if(ex.length)carregaLib('flux-viu').then(()=>FluxViu.pinta(svg,fv)).catch(()=>{});
+    ts:r.items.map(x=>x.e.ts).concat((r.flow.events||[]).map(x=>x.ts)).filter(fins)};});
+  if(ex.length)carregaLib('flux-viu').then(()=>FluxViu.pinta(svg,fv,ara)).catch(()=>{});
   // legend
   svg.appendChild(mk('line',{x1:16,y1:H-14,x2:36,y2:H-14,class:'vx-t','stroke-width':2}));
   const l1=mk('text',{x:40,y:H-11,style:'fill:var(--green)','font-family':'JetBrains Mono','font-size':9,'opacity':.8});l1.textContent='Tangible';svg.appendChild(l1);
@@ -17780,10 +17846,7 @@ function ritmeLlesques(node,memberId,dies){
   (node.ledger||[]).forEach(e=>{
     if(!e.memberId||resolveMemberId(node,e.memberId)!==meu)return;
     const t=Date.parse(e.ts||'');if(isNaN(t)||t<tall)return;
-    const v=Number(e.value)||0;
-    if(e.type==='moneda')s+=v*cfg.cash;
-    else if(e.type==='objecte')s+=v*cfg.nonCash;
-    else s+=v*(Number(e.rate)||cfg.fmv)*cfg.nonCash;
+    s+=llesquesDe(e,cfg);
   });
   return{llesques:s,dies:d,perDia:s/d};
 }

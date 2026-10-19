@@ -154,7 +154,7 @@ else {
 {
   const app = require('node:fs').readFileSync(
     require('node:path').join(__dirname, '..', 'index.html'), 'utf8');
-  const svg = (app.match(/function buildVNASvg\(node\)\{[\s\S]*?\n\}/) || [''])[0];
+  const svg = (app.match(/function buildVNASvg\(node(?:,ara)?\)\{[\s\S]*?\n\}/) || [''])[0];
   const molla = (app.match(/function vnaMolla\(node\)\{[\s\S]*?\n\}/) || [''])[0];
   const li = [];
   if (!svg) li.push('no es troba `buildVNASvg`');
