@@ -8,6 +8,7 @@
      i el lliscador del temps.
    · Fase 4: cada flux es segueix com una comanda, amb la data de la propera.
    · Fase 5: la primera vegada, una pregunta que acaba al teu mapa.
+   · Una acció per fila a cada avís: respon, fet o demà.
    · Cada flux és un fil: qui el porta (persona o agent), el torn i la conversa.
    · Els avisos: «Què ha passat?» posa primer l'urgent i l'important (FluxViu.avis).
    · I dues coses que es buscaven i no es trobaven: «Totes les pàgines» amb els
@@ -296,6 +297,34 @@ ok(desat.espera === 'ells' && desat.avis === null, 'passar el torn a l\'altre tr
 sota = await sotaTerra();
 ok(!sota.length, 'cap text del fil per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 await page.evaluate(() => window.__SOS.closeModal());
+
+console.log('\n11 · Una acció per fila: respon, fet o demà');
+await page.goto(APP + '?viu');
+await page.waitForFunction(() => window.__SOS && window.FluxViu);
+await page.evaluate(() => { const S = window.__SOS; S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
+await page.waitForSelector('#avui .av-acc');
+const acc = await page.evaluate(() => ({ n: document.querySelectorAll('#avui .av-acc').length,
+  btns: [...document.querySelector('#avui .av-acc').querySelectorAll('button')].map(b => b.textContent).join('|') }));
+ok(acc.n === 3 && acc.btns === '↩ Respon|✓ Fet|⏰ Demà', 'cada avís porta les seves accions, i només els avisos (' + acc.n + ': ' + acc.btns + ')');
+await page.click('#avui .av-acc .av-ajorna');
+await page.waitForFunction(() => !/urgent/.test((document.querySelector('#avAvisos') || {}).textContent || ''));
+const aj = await page.evaluate(() => { const S = window.__SOS, n = S.state.nodes.find(x => x.exempleViu), f = n.vna.exchanges.find(x => x.label === 'Opinions');
+  return { aj: !!f.ajornat, avis: window.FluxViu.avis(f, (f.events || []).map(e => e.ts)), compte: document.querySelector('#avAvisos').textContent }; });
+ok(aj.aj && aj.avis.nivell === null && /^Ajornat/.test(aj.avis.motiu), '«Demà» l\'ajorna: deixa d\'avisar fins demà, i ho diu (' + aj.avis.motiu + ')');
+ok(aj.compte === '2 importants', 'i el comptador ho reflecteix (' + aj.compte + ')');
+const evAbans = await page.evaluate(() => { const n = window.__SOS.state.nodes.find(x => x.exempleViu); return n.vna.exchanges.find(x => x.label === 'Pagaments').events.length; });
+await page.evaluate(() => { const r = [...document.querySelectorAll('#avui .av-fet')].findIndex(b => /Pagaments/.test(b.textContent));
+  document.querySelectorAll('#avui .av-fet')[r].nextElementSibling.querySelector('.av-fet-ok').click(); });
+await page.waitForFunction(() => (document.querySelector('#avAvisos') || {}).textContent === '1 important');
+const fet = await page.evaluate(() => { const n = window.__SOS.state.nodes.find(x => x.exempleViu), f = n.vna.exchanges.find(x => x.label === 'Pagaments');
+  return { ev: f.events.length, termini: 'termini' in f, darrer: f.events[f.events.length - 1].what }; });
+ok(fet.ev === evAbans + 1 && !fet.termini && fet.darrer === 'Fet', '«Fet» l\'apunta com un fet del flux i treu el termini');
+await page.click('#avui .av-acc .av-respon');
+await page.waitForSelector('.modal.sg #sgTxt');
+ok(await page.evaluate(() => document.activeElement && document.activeElement.id === 'sgTxt'), '«Respon», sense origen, obre el fil amb el cursor a punt d\'escriure');
+await page.evaluate(() => window.__SOS.closeModal());
+sota = await sotaTerra();
+ok(!sota.length, 'cap text de les accions per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);
