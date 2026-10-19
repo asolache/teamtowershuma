@@ -7,7 +7,9 @@
    · Fase 3: les lents sobre el mateix mapa (Torre, Equip, Repartiment, Saber)
      i el lliscador del temps.
    · Fase 4: cada flux es segueix com una comanda, amb la data de la propera.
-   · Fase 5: la primera vegada, una pregunta que acaba al teu mapa. */
+   · Fase 5: la primera vegada, una pregunta que acaba al teu mapa.
+   · I dues coses que es buscaven i no es trobaven: «Totes les pàgines» amb els
+     noms de debò, i «Importa un perfil» a la vista quan et dones d'alta. */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -234,6 +236,34 @@ ok(await page.evaluate(() => document.querySelectorAll('#avui .btn-primary').len
   'sense cap flux, «Avui» proposa dibuixar el teu negoci (un sol primari) i l\'exemple al costat');
 sota = await sotaTerra();
 ok(!sota.length, 'cap text de la primera vegada per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
+
+console.log('\n9 · Totes les pàgines i importar un perfil');
+await page.evaluate(() => window.__SOS.openEines());
+await page.waitForSelector('#einesBox .eina-c');
+const ei = await page.evaluate(() => ({ txt: document.querySelector('#einesBox').textContent,
+  t: document.querySelector('#einesBox .ec-t').textContent, lbl: document.querySelector('#einesBox .dd-lbl').textContent }));
+ok(!/object/i.test(ei.txt), 'cap pàgina diu «[object Object]»');
+ok(ei.t.length > 2 && /[a-zà]/i.test(ei.lbl), 'cada pàgina porta el seu nom i cada grup el seu títol (' + ei.lbl.trim() + ' · ' + ei.t + ')');
+await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.openSuperheroiOnboarding({ via: 'importa' }); });
+await page.waitForSelector('#shImp');
+ok(await page.evaluate(() => !!document.querySelector('.modal h2 + .sh-importa')),
+  'en crear el perfil, «Importa un perfil» és el primer que hi ha sota el títol');
+const fitxer = (name, obj) => ({ name, mimeType: 'application/json', buffer: Buffer.from(typeof obj === 'string' ? obj : JSON.stringify(obj)) });
+const tipus = await page.evaluate(() => ({ id: window.__SOS.IDENTITY_BACKUP_TYPE, tot: window.__SOS.SOS_BACKUP_TYPE }));
+await page.setInputFiles('#shImpFile', fitxer('sos-identitat-x.json', { type: tipus.id, did: 'did:sos:x' }));
+await page.waitForSelector('#ibText');
+ok(await page.evaluate(() => /did:sos:x/.test(document.querySelector('#ibText').value)), 'la còpia de la identitat obre «Restaura la teva identitat» ja carregada');
+await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.openSuperheroiOnboarding({ via: 'importa' }); });
+await page.waitForSelector('#shImp');
+await page.setInputFiles('#shImpFile', fitxer('sos-copia.json', { type: tipus.tot, enc: false, count: 7, ts: '2026-10-19' }));
+await page.waitForSelector('#bkPeek .ent-card');
+ok(/7 registres/.test(await page.evaluate(() => document.querySelector('#bkPeek').textContent)), 'la còpia de tot el SOS obre «Restaura una còpia» i ensenya què hi entrarà');
+await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.openSuperheroiOnboarding({ via: 'importa' }); });
+await page.waitForSelector('#shImp');
+await page.setInputFiles('#shImpFile', { name: 'cv.txt', mimeType: 'text/plain', buffer: Buffer.from('12 anys de lampista. Tinc furgoneta.') });
+await page.waitForFunction(() => /lampista/.test((document.querySelector('#shCV') || {}).value || ''));
+ok(await page.evaluate(() => document.querySelector('#shMoreCv').open), 'un CV no és cap còpia: omple la trajectòria i l\'analitza en local');
+await page.evaluate(() => window.__SOS.closeModal());
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);

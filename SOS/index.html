@@ -860,6 +860,7 @@ a{color:var(--blue);text-decoration:none}
 .sh-pont{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem;
   padding-top:1.1rem;border-top:1px solid var(--border)}
 .sh-pont-n{font-size:var(--t0);color:var(--muted);line-height:1.45;flex:1;min-width:12rem}
+.sh-importa{margin:0 0 1rem;padding:0 0 1rem;border-top:0;border-bottom:1px solid var(--border)}
 .ai-note{background:var(--indigo-dim);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:.7rem .85rem;font-size:var(--t0);color:var(--light);line-height:1.5;margin-bottom:1rem;display:flex;gap:.5rem}
 .ai-note .ic{color:var(--indigo)}
 /* wizard */
@@ -5696,6 +5697,18 @@ function profileSnapshot(nameOrKey){
   return{name,role:role||'superheroi',municipi:(d&&d.municipi)||'',barri:(d&&d.barri)||'',
     dossier:d||{},skills:[...skills],objects:[...objects],key};
 }
+/* IMPORTA UN PERFIL · una sola porta per als fitxers que fa el mateix SOS.
+   Qui ja té perfil en un altre aparell porta la còpia de la identitat
+   (sos-identitat-….json) o la de tot el SOS (sos-copia-….json); cadascuna
+   s'obre a la seva pantalla de restaurar, ja carregada, i només falta la
+   contrasenya. Qualsevol altre text (un CV, una fitxa) no és un perfil del
+   SOS: torna `null` i qui crida decideix què en fa. */
+function obrePerfilImportat(raw){
+  let j=null;try{j=JSON.parse(String(raw||'').trim());}catch(e){}
+  if(j&&j.type===IDENTITY_BACKUP_TYPE){closeModal();openIdentityBackup('import',raw);return 'identitat';}
+  if(j&&j.type===SOS_BACKUP_TYPE){closeModal();openBackup('import',raw);return 'copia';}
+  return null;
+}
 function openSuperheroiOnboarding(prefill){
   // Sense dades explícites, mana el que ja existeix: no es reobre en blanc.
   if(!prefill||(!prefill.name&&!prefill.dossier)){
@@ -5707,6 +5720,8 @@ function openSuperheroiOnboarding(prefill){
   const munis=CAT_GEO.municipi.slice().sort((a,b)=>a.n.localeCompare(b.n));
   const bg=modal(`
     <h2>🦸 ${editing?'El teu perfil de superheroi/na':'Crea el teu perfil de superheroi/na'}</h2>
+    ${editing&&prefill.via!=='importa'?'':`<div class="sh-pont sh-importa"><label class="btn btn-ghost" id="shImp">⇪ Importa un perfil<input type="file" id="shImpFile" accept=".json,.txt,.md,.csv,.vcf,application/json,text/plain" hidden></label>
+      <span class="sh-pont-n">Ja en tens un? Porta la còpia de la teva identitat o de tot el SOS que vas descarregar en un altre aparell. Si és un CV o un text, l'aprofito per omplir-ho aquí.</span></div>`}
     <p class="m-sub">${editing?'Ja hi ets: <strong>edita</strong> el que vulguis. El que desmarquis es retirarà i el que afegeixis es publicarà — no es dupliquen ni ofertes ni objectes.':'En un sol pas: ubicació + habilitats (banc de temps) + objectes (biblioteca). Es signa amb la teva identitat did:sos i entra al fons cooperatiu local.'}</p>
     <div class="field"><label>El teu nom</label><input id="shName" autocomplete="name" placeholder="p.ex. Àlvar Solache" value="${esc(prefill.name||'')}"><div class="ent-desc" style="margin-top:.3rem">El nom que veurà la comunitat. Verificable via reputació signada del ledger.</div></div>
     <div class="ent-desc" style="margin:-.2rem 0 .8rem">🦸 <strong>Entres com a superheroi/na</strong>, que és per on s'entra:
@@ -5774,6 +5789,19 @@ function openSuperheroiOnboarding(prefill){
   const sel={sk:new Set(prefill.skills||[]),ob:new Set(prefill.objects||[]),role:'superheroi'};
   const wasName=prefill.name||'';
   const blocks=wireDossierBlocks(bg,prefill.dossier||{},'sh',{nameFn:()=>bg.querySelector('#shName').value.trim()});
+  const fiImp=bg.querySelector('#shImpFile');
+  if(fiImp)fiImp.onchange=async()=>{
+    const f=fiImp.files&&fiImp.files[0];if(!f)return;
+    try{
+      const raw=await f.text();
+      if(obrePerfilImportat(raw))return;
+      /* No és cap còpia del SOS: es llegeix com a trajectòria, en local. */
+      const r=await readCVFile(f),cv=bg.querySelector('#shCV');
+      bg.querySelector('#shMoreCv').open=true;cv.value=r.text;
+      bg.querySelector('#shCVScan').click();
+      toast('📄 '+r.filename+' llegit en local: revisa el que n\'he tret');
+    }catch(e){toast(e.msg||'No he pogut llegir aquest fitxer');}
+  };
   const skCnt=bg.querySelector('#shSkCnt'),obCnt=bg.querySelector('#shObCnt');
   const updCounts=()=>{skCnt.textContent='(tria fins a 5 · '+sel.sk.size+'/5)';skCnt.style.color=sel.sk.size===5?'var(--orange)':'var(--muted)';obCnt.textContent='('+sel.ob.size+' tri'+(sel.ob.size===1?'a':'es')+')';};
   bg.querySelectorAll('.sh-sk').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.i);if(sel.sk.has(i)){sel.sk.delete(i);b.classList.remove('sel');}else if(sel.sk.size<5){sel.sk.add(i);b.classList.add('sel');}else{toast('Ja tens 5 superpoders. Treu-ne un abans d\'afegir-ne un altre.');}updCounts();});
@@ -6203,12 +6231,13 @@ const QN_SINONIMS={
   reunio:'assemblea',reunion:'assemblea',asamblea:'assemblea',votar:'assemblea',vot:'assemblea',
   ayuda:'guia',ajuda:'guia',perdut:'guia',perdido:'guia',
   necesito:'demanda publica',busco:'demanda publica aprop',ofrezco:'oferta publica',ofrecer:'oferta publica',
-  perfil:'superheroi',mi:'meu',mis:'meves'
+  perfil:'superheroi importa',importar:'importa',restaurar:'importa',restaura:'importa',mi:'meu',mis:'meves'
 };
 function _qnIndex(){
   const base=[
     {k:'action',id:'qn_log',label:'Registra el que has fet',sub:'⏱ hores, diners o objectes que has aportat · i el que t\'han pagat',action:()=>openLogValue()},
     {k:'action',id:'qn_primer',label:'Dibuixa el mapa del teu negoci',sub:'✦ una pregunta i el teu primer mapa',action:()=>openPrimerMapa()},
+    {k:'action',id:'qn_importa',label:'Importa un perfil',sub:'⇪ la còpia de la identitat o de tot el SOS d\'un altre aparell',action:()=>openSuperheroiOnboarding({via:'importa'})},
     {k:'action',id:'qn_viu',label:'Mira un exemple del mapa viu',sub:'🫀 els fluxos que circulen i els que s\'han aturat',action:()=>obreExempleViu()}
   ].concat(_searchIndex()),vist=new Set(base.map(x=>norm(x.label)));
   ACCIONS.forEach(a=>{if(vist.has(norm(a.t)))return;vist.add(norm(a.t));
@@ -6563,7 +6592,7 @@ async function copiaEstat(){
     per:perApunts?('has registrat '+nous+' apunts des de l\'última còpia')
        :perDies?('fa '+dies+' dies de l\'última còpia'):''};
 }
-function openBackup(mode){
+function openBackup(mode,raw){
   const isExp=mode!=='import';
   const bg=modal(`
     <h2>${isExp?'💾 Còpia de tot el teu SOS':'⭱ Restaura una còpia'}</h2>
@@ -6638,6 +6667,7 @@ function openBackup(mode){
       }catch(e){peek.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>'+esc(e.msg||'Error llegint el fitxer')+'</span></div>';}
     };
     file.onchange=preview;text.oninput=preview;
+    if(raw){text.value=raw;preview();}
     bg.querySelectorAll('.pick').forEach(l=>l.onclick=e=>{if(e.target.tagName!=='INPUT'){const c=l.querySelector('input');c.checked=!c.checked;}l.classList.toggle('sel',l.querySelector('input').checked);});
     go.onclick=async()=>{
       try{
@@ -6655,7 +6685,7 @@ function openBackup(mode){
 }
 /* Portar la identitat d'un dispositiu a l'altre. Dues pantalles, una contrasenya
    i cap servei enmig. */
-function openIdentityBackup(mode){
+function openIdentityBackup(mode,raw){
   const isExp=mode!=='import';
   const bg=modal(`
     <h2>${isExp?'⭳ Exporta la teva identitat':'⭱ Restaura la teva identitat'}</h2>
@@ -6675,6 +6705,7 @@ function openIdentityBackup(mode){
     const f=bg.querySelector('#ibFile');
     f.onchange=()=>{const file=f.files&&f.files[0];if(!file)return;const r=new FileReader();
       r.onload=()=>{bg.querySelector('#ibText').value=String(r.result||'');msg('Fitxer carregat. Ara la contrasenya.','📄');};r.readAsText(file);};
+    if(raw){bg.querySelector('#ibText').value=raw;msg('Fitxer carregat. Ara la contrasenya.','📄');bg.querySelector('#ibPass').focus();}
   }
   bg.querySelector('#ibGo').onclick=async()=>{
     const pass=bg.querySelector('#ibPass').value;
@@ -14272,11 +14303,14 @@ const EINES_SOS=(()=>{
 function einaDe(id){
   const e=EINES_SOS.eines[id];
   if(!e)return null;
-  return {url:e[0],nom:e[1],dins:e[0]==='index.html'};
+  return {url:e[0],nom:einaTxt(e[1]),dins:e[0]==='index.html'};
 }
 function einesFora(){
   return EINES_SOS.grups.map(g=>({lbl:g.lbl,ic:g.ic,links:g.links})).filter(g=>g.links.length);
 }
+/* Els noms i les descripcions de la llista venen en dues llengües ({ca,es}):
+   es tria la de l'app. Passar l'objecte sencer a `esc` escrivia «[object Object]». */
+function einaTxt(v){return v&&typeof v==='object'?(v[state.lang]||v.ca||v.es||''):(v||'');}
 function openEines(){
   const gs=einesFora();
   const bg=modal(`
@@ -14288,12 +14322,12 @@ function openEines(){
     <div class="modal-actions"><button class="btn btn-primary" id="einesClose">${t('Tanca')}</button></div>`);
   const box=bg.querySelector('#einesBox');
   gs.forEach(g=>{
-    box.appendChild(el('div','dd-lbl',g.ic+' '+esc(g.lbl)));
+    box.appendChild(el('div','dd-lbl',g.ic+' '+esc(einaTxt(g.lbl))));
     const graella=el('div','eines-grid');
     g.links.forEach(l=>{
       const a=el('a','eina-c');
       a.href=l.h;a.target='_blank';a.rel='noopener';
-      a.innerHTML='<span class="ec-t">'+esc(l.t)+'</span><span class="ec-d">'+esc(l.d)+'</span>';
+      a.innerHTML='<span class="ec-t">'+esc(einaTxt(l.t))+'</span><span class="ec-d">'+esc(einaTxt(l.d))+'</span>';
       graella.appendChild(a);
     });
     box.appendChild(graella);
