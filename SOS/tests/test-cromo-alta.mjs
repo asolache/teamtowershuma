@@ -36,13 +36,20 @@ const porta = await page.evaluate(() => {
   // Que sigui ABANS de les tres portes és el sentit del canvi, no un detall.
   const abans = paths ? !!(btn.compareDocumentPosition(paths) & Node.DOCUMENT_POSITION_FOLLOWING) : false;
   btn.click();
-  const obert = !!document.querySelector('#modalRoot .modal #shName');
+  const obert = !!document.querySelector('#modalRoot .modal #pmNom');
   window.__SOS.closeModal();
   return { hi: true, abans, obert, txt: btn.textContent.trim() };
 });
 ok(porta.hi, 'el botó d\'apuntar-se existeix a la portada del SOS');
 ok(porta.abans, 'i és abans de les tres portes, no tres pantalles avall');
-ok(porta.obert, 'i en prémer-lo s\'obre l\'alta de debò');
+ok(porta.obert, 'i en prémer-lo s\'obre la primera vegada: una pregunta i el teu mapa');
+const alta = await page.evaluate(() => {
+  document.querySelector('#obHero').click();
+  const o = !!document.querySelector('#modalRoot .modal #shName');
+  window.__SOS.closeModal();
+  return o;
+});
+ok(alta, 'i l\'alta de debò segueix a «Sóc una persona»');
 
 console.log('\n2 · El SOS segueix sent el SOS: el cromo només ve pel Comando');
 const quan = await page.evaluate(() => {
