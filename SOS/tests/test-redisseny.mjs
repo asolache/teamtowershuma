@@ -1,4 +1,4 @@
-/* El redisseny del SOS (18/10/2026), fases 0 a 4.
+/* El redisseny del SOS (18/10/2026), fases 0 a 5.
    · Fase 0: l'app porta la pell del lloc (paper i tinta), cap text per sota
      de 15 px, i el fosc és una opció de Configuració que es recorda.
    · Fase 1: la portada és «Avui»: el pols dels fluxos i «Què ha passat?», amb
@@ -6,7 +6,8 @@
    · Fase 2: una sola barra «Què necessites?».
    · Fase 3: les lents sobre el mateix mapa (Torre, Equip, Repartiment, Saber)
      i el lliscador del temps.
-   · Fase 4: cada flux es segueix com una comanda, amb la data de la propera. */
+   · Fase 4: cada flux es segueix com una comanda, amb la data de la propera.
+   · Fase 5: la primera vegada, una pregunta que acaba al teu mapa. */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -206,6 +207,33 @@ await page.waitForSelector('.modal.sg');
 ok(true, 'i també tocar un flux del mapa');
 sota = await sotaTerra();
 ok(!sota.length, 'cap text del seguiment per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
+
+console.log('\n8 · La primera vegada: una pregunta i el teu mapa');
+await page.goto(APP + '?primer');
+await page.waitForFunction(() => window.__SOS);
+await page.waitForSelector('#pmNom');
+await page.click('.modal .btn-primary');
+ok(await page.evaluate(() => !!document.querySelector('#pmNom')), 'sense nom no dibuixa res i torna a demanar-lo');
+await page.fill('#pmNom', 'La Fleca');
+await page.click('#pmAmb [data-r="Aliats"]');
+await page.fill('#pmMes', 'Ajuntament, Gestoria');
+await page.click('.modal .btn-primary');
+await page.waitForSelector('.vna-canvas .pm-pista');
+const pm = await page.evaluate(() => { const S = window.__SOS, n = S.byId(S.state.activeId);
+  return { nom: n.name, tab: S.state.tab, rols: n.vna.roles.map(r => r.name).join(), ex: n.vna.exchanges.length,
+    retorn: n.vna.exchanges.every(e => n.vna.exchanges.some(f => f.from === e.to && f.to === e.from)) }; });
+ok(pm.nom === 'La Fleca' && pm.tab === 'map', 'crea el negoci i obre directament el seu mapa');
+ok(pm.rols === 'La Fleca,Clients,Equip,Proveïdors,Ajuntament,Gestoria', 'amb qui hi treballa: el que ha deixat marcat i el que ha afegit (' + pm.rols + ')');
+ok(pm.ex === 12 && pm.retorn, 'i cada flux neix amb el seu retorn (' + pm.ex + ' fluxos)');
+await page.evaluate(() => document.querySelector('.vna-canvas path[data-ex]').dispatchEvent(new MouseEvent('click', { bubbles: true })));
+await page.waitForSelector('.modal.sg');
+ok(/Encara no ha circulat/.test(await page.evaluate(() => document.querySelector('.modal.sg').textContent)), 'el mapa diu què tocar, i tocar un flux porta a apuntar-lo');
+await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.state.nodes.forEach(n => { n.vna.exchanges = []; }); S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
+await page.waitForSelector('#avPrimer');
+ok(await page.evaluate(() => document.querySelectorAll('#avui .btn-primary').length === 1 && !!document.querySelector('#avExemple')),
+  'sense cap flux, «Avui» proposa dibuixar el teu negoci (un sol primari) i l\'exemple al costat');
+sota = await sotaTerra();
+ok(!sota.length, 'cap text de la primera vegada per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);
