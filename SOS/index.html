@@ -403,6 +403,10 @@ a{color:var(--blue);text-decoration:none}
 .av-fet.av-aturat{border-left-color:var(--orange)}
 .av-ic{font-size:1.35rem;width:1.4rem;text-align:center;color:var(--muted)}
 .av-fet.av-aturat .av-ic{color:var(--orange)}
+.av-fet.av-urgent{border-left-color:var(--red);border-left-width:5px}.av-fet.av-urgent .av-ic{color:var(--red)}
+.av-fet.av-important{border-left-color:var(--orange);border-left-width:4px}.av-fet.av-important .av-ic{color:var(--orange)}
+.av-mot{font-size:var(--t0);font-weight:600;color:var(--orange)}.av-urgent .av-mot{color:var(--red)}
+.av-avisos{margin-left:.5rem;padding:.1rem .55rem;border-radius:999px;background:var(--red);color:#fff;letter-spacing:0;text-transform:none}
 .av-b{flex:1;display:flex;flex-direction:column;min-width:0}
 .av-t{font-weight:600}
 .av-s{font-size:var(--t0);color:var(--muted)}
@@ -20795,7 +20799,7 @@ function renderAvui(body){
     box.appendChild(c);return;
   }
   carregaLib('flux-viu').then(()=>{
-    const est=fl.map(f=>Object.assign({e:FluxViu.estat(f.flux,f.ts)},f));
+    const est=fl.map(f=>Object.assign({e:FluxViu.estat(f.flux,f.ts),a:FluxViu.avis(f.flux,f.ts)},f));
     const n={viu:0,apagant:0,aturat:0,mai:0};est.forEach(x=>n[x.e.estat]++);
     /* El mapa del pols és el del projecte on més circula. */
     const per={};est.forEach(x=>{per[x.node.id]=(per[x.node.id]||0)+(x.e.estat==='viu'?3:x.e.n90?1:0);});
@@ -20815,18 +20819,31 @@ function renderAvui(body){
       m.onclick=()=>obreMapaDe(top);pols.appendChild(m);
     }
     box.appendChild(pols);
+    /* «Què ha passat?» és on avisa el SOS: primer l'urgent, després
+       l'important (la regla és `FluxViu.avis`, una de sola), i al final el
+       que s'apaga. Cada avís diu per què i porta al seguiment del flux. */
     const qp=el('div','av-card av-qp');
-    qp.appendChild(el('div','av-k','Què ha passat?'));
-    const parats=est.filter(x=>x.e.estat==='aturat'||x.e.estat==='apagant')
-      .sort((a,b)=>(a.e.estat===b.e.estat?0:a.e.estat==='aturat'?-1:1)||(b.e.dies-a.e.dies)).slice(0,4);
-    if(!parats.length)qp.appendChild(el('p','av-d','Tot circula al seu ritme. Res s\'ha parat.'));
+    const cap=el('div','av-k','Què ha passat?');qp.appendChild(cap);
+    const PES={urgent:0,important:1};
+    const parats=est.filter(x=>x.a.nivell||x.e.estat==='apagant')
+      .sort((a,b)=>((PES[a.a.nivell]??2)-(PES[b.a.nivell]??2))||((a.a.termini||Infinity)-(b.a.termini||Infinity))||((b.e.dies||0)-(a.e.dies||0))).slice(0,5);
+    const nAv={urgent:0,important:0};est.forEach(x=>{if(x.a.nivell)nAv[x.a.nivell]++;});
+    if(nAv.urgent||nAv.important){
+      const xa=el('span','av-avisos');xa.id='avAvisos';
+      xa.textContent=[nAv.urgent&&(nAv.urgent+(nAv.urgent===1?' urgent':' urgents')),nAv.important&&(nAv.important+(nAv.important===1?' important':' importants'))].filter(Boolean).join(' · ');
+      cap.appendChild(xa);
+    }
+    if(!parats.length)qp.appendChild(el('p','av-d','Tot circula al seu ritme. Res s\'ha parat i res no t\'espera.'));
     parats.forEach(x=>{
       const nom=r=>((x.node.vna.roles||[]).find(y=>y.id===r)||{}).name||'?';
-      const b=el('button','av-fet av-'+x.e.estat);
-      b.innerHTML='<span class="av-ic" aria-hidden="true">'+(x.e.estat==='aturat'?'⏸':'◔')+'</span><span class="av-b"><span class="av-t">'
-        +esc(x.flux.label||(nom(x.flux.from)+' → '+nom(x.flux.to)))+'</span><span class="av-s">'
-        +esc(nom(x.flux.from)+' → '+nom(x.flux.to)+' · '+x.node.name+' · '+(x.e.estat==='aturat'?'aturat':'s\'apaga')
-        +' · fa '+x.e.dies+' dies'+(x.e.ritme?' (cada '+x.e.ritme+')':''))+'</span></span><span class="av-go" aria-hidden="true">→</span>';
+      const nv=x.a.nivell,cl=nv||x.e.estat;
+      const b=el('button','av-fet av-'+cl+(x.e.estat==='aturat'?' av-aturat':''));
+      b.innerHTML='<span class="av-ic" aria-hidden="true">'+(nv==='urgent'?'●':nv==='important'?(x.e.estat==='aturat'?'⏸':'▲'):'◔')+'</span><span class="av-b"><span class="av-t">'
+        +esc(x.flux.label||(nom(x.flux.from)+' → '+nom(x.flux.to)))+'</span>'
+        +(nv?'<span class="av-mot">'+(nv==='urgent'?'Urgent':'Important')+' · '+esc(x.a.motiu)+'</span>':'')
+        +'<span class="av-s">'
+        +esc(nom(x.flux.from)+' → '+nom(x.flux.to)+' · '+x.node.name+(x.e.darrer?' · '+(x.e.estat==='aturat'?'aturat':x.e.estat==='apagant'?'s\'apaga':'viu')
+        +' · fa '+x.e.dies+' dies'+(x.e.ritme?' (cada '+x.e.ritme+')':''):''))+'</span></span><span class="av-go" aria-hidden="true">→</span>';
       b.onclick=()=>{obreMapaDe(x.node);openSeguiment(x.node,x.flux.id);};qp.appendChild(b);
     });
     box.appendChild(qp);

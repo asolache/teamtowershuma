@@ -122,6 +122,17 @@ const viu = await page.evaluate(async () => {
     deduit: FluxViu.ritmeDies({}, [d(28), d(21), d(14), d(7)]),
     senseRitme: est({}, [d(45)])
   };
+  /* Els avisos: una sola regla (FluxViu.avis). */
+  const H = 36e5, hores = n => new Date(Date.now() - n * H).toISOString(), aqui = n => new Date(Date.now() + n * H).toISOString();
+  const av = (f, tss, ctx) => FluxViu.avis(f, tss, null, ctx).nivell;
+  const avisos = {
+    deuVell: av({}, [hores(30)], { espera: 'nosaltres' }), deuNou: av({}, [hores(6)], { espera: 'nosaltres' }),
+    deuAra: av({}, [hores(1)], { espera: 'nosaltres' }), deuSense: av({}, [], { espera: 'nosaltres' }),
+    ells: av({}, [hores(30)], { espera: 'ells' }), vencut: av({}, [hores(1)], { termini: hores(3) }),
+    termini1: av({}, [hores(1)], { termini: aqui(30) }), termini5: av({}, [hores(1)], { termini: aqui(120) }),
+    termini10: av({}, [hores(1)], { termini: aqui(240) }), aturat: av({ ritme: 'setmana' }, [d(20)]),
+    delFlux: av({ espera: 'nosaltres' }, [hores(30)]), res: av({}, [hores(1)])
+  };
   const n = S.newNode('Xarxa real', 'projecte', null);
   S.state.nodes.push(n); await S.persist(n);
   const pak = { type: 'sos-xarxa-real', v: 1, nodes: [
@@ -131,13 +142,17 @@ const viu = await page.evaluate(async () => {
     fluxos: [
       { id: 'gmail:a', from: 'jo', to: 'zoho:1', label: 'Proposta', ritme: 'setmana', fets: [{ id: 'm1', ts: new Date(Date.now() - 2 * 864e5).toISOString(), what: 'Correu' }] },
       { id: 'gmail:b', from: 'zoho:2', to: 'jo', label: 'Consulta', ritme: 'setmana', fets: [{ id: 'm2', ts: new Date(Date.now() - 40 * 864e5).toISOString() }] },
-      { id: 'gmail:c', from: 'jo', to: 'zoho:2', label: 'Seguiment' }] };
+      { id: 'gmail:c', from: 'jo', to: 'zoho:2', label: 'Seguiment', espera: 'nosaltres', termini: '2026-11-02T10:00:00Z' }] };
   const c1 = FluxViu.importa(n, pak, S.uid), c2 = FluxViu.importa(n, pak, S.uid);
+  const segueix = n.vna.exchanges.find(x => x.orig === 'gmail:c');
+  const portats = { espera: segueix.espera, termini: segueix.termini, vells: n.vna.exchanges.filter(x => 'espera' in x).length };
+  FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', espera: 'ells', termini: null }] }, S.uid);
+  portats.despres = segueix.espera + '|' + ('termini' in segueix);
   await S.persist(n);
   S.state.tab = 'map'; S.selectNode(n.id);
   await new Promise(r2 => setTimeout(r2, 500));
   const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[data-ex]'));
-  return { unit, c1, c2, rols: n.vna.roles.length,
+  return { unit, avisos, portats, c1, c2, rols: n.vna.roles.length,
     viu: svg.querySelectorAll('.fv-viu').length, pols: svg.querySelectorAll('.fv-pols').length,
     aturat: svg.querySelectorAll('.fv-aturat').length, mai: svg.querySelectorAll('.fv-mai').length,
     urls: [...svg.querySelectorAll('[data-url]')].map(e => e.getAttribute('data-url')),
@@ -146,6 +161,13 @@ const viu = await page.evaluate(async () => {
 ok(viu.unit.mai === 'mai' && viu.unit.viu === 'viu' && viu.unit.apagant === 'apagant' && viu.unit.aturat === 'aturat',
   'els quatre estats surten del ritme i de l\'últim cop (' + JSON.stringify(viu.unit) + ')');
 ok(viu.unit.deduit === 7 && viu.unit.senseRitme === 'apagant', 'sense ritme declarat es dedueix dels apunts, i si no, es compta mensual');
+const A = viu.avisos;
+ok(A.deuVell === 'urgent' && A.vencut === 'urgent' && A.termini1 === 'urgent', 'urgent: ens toca respondre fa més de 24 h, o el termini és a menys de 48 h o ja ha passat');
+ok(A.deuNou === 'important' && A.deuSense === 'important' && A.termini5 === 'important' && A.aturat === 'important', 'important: ens toca fa 4-24 h o encara cap fet, termini a menys de 7 dies, o aturat');
+ok(A.deuAra === null && A.ells === null && A.termini10 === null && A.res === null, 'i res més: si espera l\'altre o queda temps, no s\'avisa (' + JSON.stringify(A) + ')');
+ok(A.delFlux === 'urgent', 'sense context, l\'avís llegeix «espera» i «termini» del mateix flux');
+ok(viu.portats.espera === 'nosaltres' && viu.portats.termini === '2026-11-02T10:00:00.000Z' && viu.portats.vells === 1, 'el paquet porta «espera» i «termini», i els paquets sense no toquen res');
+ok(viu.portats.despres === 'ells|false', 'tornar-lo a carregar els actualitza, i un termini buit el treu');
 ok(viu.c1.rols === 3 && viu.c1.fluxos === 3 && viu.c1.fets === 2, 'el paquet entra: 3 nodes, 3 fluxos, 2 fets');
 ok(viu.c2.rols === 0 && viu.c2.fluxos === 0 && viu.c2.fets === 0 && viu.rols === 3, 'tornar-lo a carregar no duplica res');
 ok(viu.viu === 1 && viu.pols === 1, 'el flux que circula es mou en la seva direcció');
