@@ -1,8 +1,11 @@
-/* El redisseny del SOS (18/10/2026), fases 0 i 1.
+/* El redisseny del SOS (18/10/2026), fases 0 a 3.
    · Fase 0: l'app porta la pell del lloc (paper i tinta), cap text per sota
      de 15 px, i el fosc és una opció de Configuració que es recorda.
    · Fase 1: la portada és «Avui»: el pols dels fluxos i «Què ha passat?», amb
-     les altres portades a la fila «Més» i la resta del tauler plegada. */
+     les altres portades a la fila «Més» i la resta del tauler plegada.
+   · Fase 2: una sola barra «Què necessites?».
+   · Fase 3: les lents sobre el mateix mapa (Torre, Equip, Repartiment, Saber)
+     i el lliscador del temps. */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -117,6 +120,54 @@ ok(qn.suggereix > 0, 'sense escriure res, proposa el que ara serveix (' + qn.sug
 ok(qn.fosc && qn.reunio, 'entén «fosc» i «reunió» encara que les accions es diguin d\'una altra manera');
 ok(qn.accio, 'troba les accions del llançador, no només les de la cerca');
 ok(qn.totes, 'i el llançador sencer queda a un clic');
+
+console.log('\n6 · Les lents: el mateix mapa amb una altra pregunta');
+await page.goto(APP + '?viu');
+await page.waitForFunction(() => window.__SOS);
+await page.waitForTimeout(1200);
+const abans = await page.evaluate(() => ({
+  barra: [...document.querySelectorAll('.lents .lent')].map(x => x.textContent),
+  carregada: !!document.querySelector('script[src="lib/lents.js"]'),
+  temps: !!document.querySelector('#lnTemps')
+}));
+ok(abans.barra.join() === 'Valor,Torre,Equip,Repartiment,Saber', 'el mapa té cinc lents (' + abans.barra.join(', ') + ')');
+ok(!abans.carregada, 'i no pesen a l\'arrencada: lib/lents.js només es carrega en triar-ne una');
+ok(abans.temps, 'i el lliscador del temps');
+const lent = async l => {
+  await page.click('.lent[data-lent=' + l + ']');
+  await page.waitForFunction(l => document.querySelector('svg.ln-' + l) || l === 'valor', l);
+  return page.evaluate(() => ({
+    b: [...document.querySelectorAll('.vna-canvas .ln-b')].map(x => x.textContent),
+    peu: document.querySelector('.lents-peu').hidden ? '' : document.querySelector('.lents-peu').textContent,
+    vents: document.querySelectorAll('.vna-canvas path.ln-vent').length,
+    halo: document.querySelectorAll('.vna-canvas .ln-h').length
+  }));
+};
+let L = await lent('torre');
+/* Comandes i Opinions tornen en una mena diferent: són vents. Pagaments torna
+   tangible per tangible, i és una primera mà. */
+ok(L.b.join() === '3/4,1/4,0/4,0/4,1/4' && L.vents === 2, 'Torre: cada rol és un pilar amb les seves rengles, i 2 lliuraments són vents (' + L.b.join(' ') + ' · ' + L.vents + ' vents)');
+ok(/Sense cap vent[^.]*Aliats/.test(L.peu), 'i diu quin pilar és un silo: ' + L.peu.slice(0, 70));
+L = await lent('equip');
+ok(L.b.length === 5 && L.b.every(x => x === 'ningú') && /5 rols no tenen ningú/.test(L.peu), 'Equip: diu qui porta cada rol, i que aquí no en porta cap ningú');
+L = await lent('repart');
+ok(L.b.join() === '33 %,40 %,13 %,13 %,0 %' && L.halo === 4 && /Clients fa circular el 40 %/.test(L.peu), 'Repartiment: la part de cada rol, sense llesques encara, pel que ha circulat (' + L.b.join(' ') + ')');
+L = await lent('saber');
+ok(L.b.every(x => x === '?') && /5 rols no diuen què demana/.test(L.peu), 'Saber: demana què necessita cada rol quan no ho diu');
+L = await lent('valor');
+ok(!L.b.length && !L.peu, 'Valor torna el mapa de sempre, sense res a sobre');
+const t = await page.evaluate(async () => {
+  const r = document.querySelector('#lnTemps'), viu = () => document.querySelectorAll('.vna-canvas .fv-pols').length;
+  await new Promise(x => setTimeout(x, 300));
+  const ara = viu();
+  r.value = 90; r.dispatchEvent(new Event('input'));
+  await new Promise(x => setTimeout(x, 300));
+  return { ara, abans: viu(), o: document.querySelector('.lents-t output').textContent };
+});
+/* Fa 90 dies només circulaven les idees de millora (fets de fa 110 dies). */
+ok(t.ara === 3 && t.abans === 1 && t.o === 'Fa 90 dies', 'el lliscador torna el mapa enrere: avui circulen ' + t.ara + ' fluxos i fa 90 dies, ' + t.abans);
+sota = await sotaTerra();
+ok(!sota.length, 'cap text de les lents per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);
