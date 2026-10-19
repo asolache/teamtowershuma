@@ -1,11 +1,12 @@
-/* El redisseny del SOS (18/10/2026), fases 0 a 3.
+/* El redisseny del SOS (18/10/2026), fases 0 a 4.
    · Fase 0: l'app porta la pell del lloc (paper i tinta), cap text per sota
      de 15 px, i el fosc és una opció de Configuració que es recorda.
    · Fase 1: la portada és «Avui»: el pols dels fluxos i «Què ha passat?», amb
      les altres portades a la fila «Més» i la resta del tauler plegada.
    · Fase 2: una sola barra «Què necessites?».
    · Fase 3: les lents sobre el mateix mapa (Torre, Equip, Repartiment, Saber)
-     i el lliscador del temps. */
+     i el lliscador del temps.
+   · Fase 4: cada flux es segueix com una comanda, amb la data de la propera. */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -72,7 +73,7 @@ await page.waitForTimeout(400);
 const anat = await page.evaluate(() => ({ id: window.__SOS.state.activeId, tab: window.__SOS.state.tab,
   n: (window.__SOS.byId(window.__SOS.state.activeId) || {}).exempleViu }));
 ok(anat.n && anat.tab === 'map', 'tocar un flux parat porta al mapa del seu projecte');
-await page.evaluate(() => { const S = window.__SOS; S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
+await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
 await page.click('.av-mes-b');
 ok(await page.evaluate(() => window.__SOS.state.homeView) === 'missions', 'la fila «Més» porta a les tasques');
 
@@ -168,6 +169,43 @@ const t = await page.evaluate(async () => {
 ok(t.ara === 3 && t.abans === 1 && t.o === 'Fa 90 dies', 'el lliscador torna el mapa enrere: avui circulen ' + t.ara + ' fluxos i fa 90 dies, ' + t.abans);
 sota = await sotaTerra();
 ok(!sota.length, 'cap text de les lents per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
+
+console.log('\n7 · Cada flux, seguit com una comanda');
+await page.goto(APP + '?viu');
+await page.waitForFunction(() => window.__SOS);
+await page.waitForTimeout(1200);
+const seg = async etiqueta => {
+  await page.evaluate(() => window.__SOS.closeModal());
+  const id = await page.evaluate(e => { const S = window.__SOS, n = S.state.nodes.find(x => x.id === S.state.activeId);
+    return n.vna.exchanges.find(x => x.label === e).id; }, etiqueta);
+  await page.click('.fl-sg[data-flux="' + id + '"]');
+  await page.waitForSelector('.modal.sg');
+  return { id, t: await page.evaluate(() => document.querySelector('.modal.sg').textContent) };
+};
+ok(await page.evaluate(() => document.querySelectorAll('.fl-sg').length) === 6, 'cada flux de la llista té el seu «Segueix-lo»');
+let S = await seg('Comandes');
+ok(/Circula al seu ritme/.test(S.t) && /d'aquí 6 dies/.test(S.t), 'un flux viu diu quan toca la propera (setmanal, fa 1 dia: d\'aquí 6 dies)');
+S = await seg('Idees de millora');
+ok(/Aturat/.test(S.t) && /fa 45 dies que s'espera/.test(S.t), 'un d\'aturat diu quant fa que s\'espera (mensual, fa 75 dies: 45)');
+S = await seg('Recomanacions');
+ok(/Encara no ha circulat cap cop/.test(S.t), 'i un sense estrenar ho diu, sense inventar-se cap data');
+S = await seg('Comandes');
+await page.click('.modal.sg .btn-primary');
+await page.waitForTimeout(300);
+const reg = await page.evaluate(id => ({ h: document.querySelector('.modal h2').textContent,
+  flux: [...document.querySelectorAll('.modal select')].some(x => x.value === id) }), S.id);
+ok(/Nova aportació/.test(reg.h) && reg.flux, '«Ha circulat» obre l\'apunt amb el flux ja triat');
+await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
+await page.waitForSelector('#avui .av-fet');
+await page.click('#avui .av-fet');
+await page.waitForSelector('.modal.sg');
+ok(/Aturat/.test(await page.evaluate(() => document.querySelector('.modal.sg').textContent)), 'des d\'«Avui», tocar el que s\'ha parat n\'obre el seguiment');
+await page.evaluate(() => window.__SOS.closeModal());
+await page.evaluate(() => document.querySelector('.vna-canvas path[data-ex]:not([data-url])').dispatchEvent(new MouseEvent('click', { bubbles: true })));
+await page.waitForSelector('.modal.sg');
+ok(true, 'i també tocar un flux del mapa');
+sota = await sotaTerra();
+ok(!sota.length, 'cap text del seguiment per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);
