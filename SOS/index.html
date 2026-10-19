@@ -699,6 +699,15 @@ a{color:var(--blue);text-decoration:none}
 .lent.sel{background:var(--text);color:var(--bg);border-color:var(--text)}
 .lents-t{display:flex;align-items:center;gap:.4rem;margin-left:auto;color:var(--muted);font:500 var(--t0) 'JetBrains Mono',monospace;white-space:nowrap}
 .lents-t input{width:120px}.lents-t output{min-width:8ch}
+.sg-est{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:baseline;padding:.7rem .9rem;border-radius:10px;background:var(--panel);border-left:3px solid var(--muted)}
+.sg-est.sg-viu{border-left-color:var(--green)}.sg-est.sg-aturat{border-left-color:var(--orange)}.sg-est.sg-apagant{border-left-color:var(--gold)}
+.sg-est span{color:var(--muted);font-size:var(--t0)}
+.sg-prop{margin:.8rem 0}.sg-h{margin:1rem 0 .4rem;font-size:var(--t0)}
+.sg-fets{list-style:none;margin:0;padding:0;max-height:40vh;overflow:auto}
+.sg-fets li{display:flex;gap:.8rem;padding:.45rem 0;border-bottom:1px solid var(--border)}
+.sg-d{flex:0 0 5.5rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.sg-buit{color:var(--muted)}
+.vna-canvas path[data-ex]{cursor:pointer}
 .lents-peu{margin:0;padding:.2rem 1rem .9rem;color:var(--light);font-size:var(--t0);line-height:1.5}
 /* El zoom. Un lloc és un rectangle rodó i un rol un cercle: la forma diu que
    clicar-los fa dues coses diferents, i ho diu abans del clic. */
@@ -11018,6 +11027,9 @@ function barraLents(node,canvas,svg0){
     barra.appendChild(tl);
   }
   canvas.appendChild(barra);canvas.appendChild(svg);canvas.appendChild(peu);
+  /* Tocar un flux del mapa n'obre el seguiment (el que té origen ja obre l'origen). */
+  canvas.addEventListener('click',ev=>{const p=ev.target.closest('path[data-ex]');
+    if(p&&!p.hasAttribute('data-url'))openSeguiment(node,p.getAttribute('data-ex'));});
   pinta();
   return{caixa};
 }
@@ -11050,9 +11062,47 @@ function flowLedger(node){
    posa en camí, un apunt pendent de vistiplau és lliurat, i al registre és rebut. */
 const FLUX_PASSOS=['Promès','En camí','Lliurat','Rebut'];
 function estatFlux(node,r){
-  if(r.items.length)return 3;
+  /* Un fet de la xarxa real (Zoho, el correu) també diu que ha arribat. */
+  if(r.items.length||(r.flow.events||[]).length)return 3;
   if(pendingOf(node).some(p=>p.status==='pendent'&&p.entry&&p.entry.flowId===r.flow.id))return 2;
   return(fluxAutomatitzable(r.flow).tipus||entregablesDeFlux(r.flow).length)?1:0;
+}
+/* Les vegades que ha circulat un flux: els apunts del registre i els fets de
+   la xarxa real. És el que llegeixen el mapa viu, «Avui» i el seguiment. */
+const tsDeFlux=r=>r.items.map(x=>x.e.ts).concat((r.flow.events||[]).map(x=>x.ts));
+/* EL SEGUIMENT D'UN FLUX (pla de redisseny, fase 4). Com una comanda: on és,
+   quan ha d'arribar la propera i tot el que ha passat, amb un sol botó per
+   dir que ha tornat a circular. La data surt del ritme (lib/flux-viu.js). */
+function openSeguiment(node,flowId){
+  const r=flowLedger(node).rows.find(x=>x.flow.id===flowId);if(!r)return;
+  return carregaLib('flux-viu').then(()=>{
+    const f=r.flow,tang=!isIntangible(f.kind),ts=tsDeFlux(r),pr=FluxViu.propera(f,ts),e=FluxViu.estat(f,ts);
+    const dia=t=>new Date(t).toLocaleDateString('ca-ES',{weekday:'long',day:'numeric',month:'long'});
+    const fa=d=>d===0?'avui':d===1?'ahir':'fa '+d+' dies';
+    const cap=!pr?'Encara no ha circulat cap cop. Quan passi, apunta-ho i el SOS en calcularà el ritme.'
+      :pr.dies>=0?'La propera, cap al <b>'+esc(dia(pr.quan))+'</b> ('+(pr.dies===0?'avui':pr.dies===1?'demà':'d\'aquí '+pr.dies+' dies')+').'
+      :'S\'esperava el <b>'+esc(dia(pr.quan))+'</b>: fa '+(-pr.dies)+(pr.dies===-1?' dia':' dies')+' que s\'espera.';
+    const fets=r.items.map(x=>({ts:x.e.ts,t:x.e.what||'Aportació',q:x.e.who||''}))
+      .concat((f.events||[]).map(x=>({ts:x.ts,t:x.what||'Ha circulat',url:x.url})))
+      .filter(x=>!isNaN(Date.parse(x.ts))).sort((a,b)=>Date.parse(b.ts)-Date.parse(a.ts));
+    const pas=estatFlux(node,r);
+    const bg=modal('<h2>📦 '+esc(f.label||(tang?'Valor tangible':'Valor intangible'))+'</h2>'+
+      '<p class="m-sub">'+esc(r.from+' → '+r.to+' · '+node.name)+'</p>'+
+      '<div class="sg-est sg-'+e.estat+'"><b>'+({viu:'Circula al seu ritme',apagant:'S\'apaga',aturat:'⏸ Aturat',mai:'Sense estrenar'})[e.estat]+'</b>'+
+      (e.darrer?'<span>Darrer cop '+fa(e.dies)+(e.ritme?' · cada '+e.ritme+(e.ritme===1?' dia':' dies'):'')+'</span>':'')+'</div>'+
+      '<p class="sg-prop">'+cap+'</p>'+
+      '<div class="fl-pas">'+FLUX_PASSOS.map((n,k)=>'<span'+(k<=pas?' class="fet"':'')+'>'+n+'</span>').join('')+'</div>'+
+      '<h3 class="sg-h">Què ha passat</h3><ol class="sg-fets">'+(fets.length?fets.slice(0,12).map(x=>
+        '<li><span class="sg-d">'+esc(new Date(x.ts).toLocaleDateString('ca-ES',{day:'numeric',month:'short'}))+'</span><span>'+
+        (x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener">'+esc(x.t)+'</a>':esc(x.t))+(x.q?' · '+esc(x.q):'')+'</span></li>').join('')
+        :'<li class="sg-buit">Res encara.</li>')+'</ol>'+
+      (fets.length>12?'<p class="m-sub">… i '+(fets.length-12)+' més</p>':''),
+      [{txt:'✓ Ha circulat',cls:'btn btn-primary',fn:()=>{closeModal();openLedgerEntryModal(node,{who:state.activePersona||'',what:(f.label||'').slice(0,80),flowId:f.id,backTab:'map'});}}]
+      .concat(f.url?[{txt:'Obre l\'origen ↗',cls:'btn',fn:()=>window.open(f.url,'_blank','noopener')}]:[])
+      .concat([{txt:'Tanca',cls:'btn',fn:closeModal}]));
+    bg.querySelector('.modal').classList.add('sg');
+    return bg;
+  });
 }
 function fluxDeFrase(node,tx){
   const t=tx.toLowerCase(),rs=node.vna.roles||[];
@@ -11099,6 +11149,8 @@ function buildFlowLedger(node){
       '<span class="ent-b '+(tang?'b-ver':'')+'">'+(tang?'tangible':'intangible')+'</span></div>';
     const pas=estatFlux(node,r);
     c.insertAdjacentHTML('beforeend','<div class="fl-pas" title="'+FLUX_PASSOS[pas]+'">'+FLUX_PASSOS.map((n,k)=>'<span'+(k<=pas?' class="fet"':'')+'>'+n+'</span>').join('')+'</div>');
+    const sg=el('button','btn btn-ghost btn-sm fl-sg','📦 Segueix-lo');sg.dataset.flux=r.flow.id;
+    sg.onclick=()=>openSeguiment(node,r.flow.id);c.appendChild(sg);
     if(pas===2){const cf=el('button','btn btn-primary btn-sm','✓ Confirma que s\'ha rebut');cf.onclick=openPendingInbox;c.appendChild(cf);}
     if(r.items.length){
       const list=el('div','fl-items');
@@ -11355,8 +11407,7 @@ function buildVNASvg(node,ara){
      (apunts del registre i fets de la xarxa real). lib/flux-viu.js el pinta. */
   /* Amb `ara`, el mapa tal com era aquell dia (el lliscador del temps). */
   const fins=t=>!ara||Date.parse(t)<=ara;
-  const fv={};flowLedger(node).rows.forEach(r=>{fv[r.flow.id]={flux:r.flow,
-    ts:r.items.map(x=>x.e.ts).concat((r.flow.events||[]).map(x=>x.ts)).filter(fins)};});
+  const fv={};flowLedger(node).rows.forEach(r=>{fv[r.flow.id]={flux:r.flow,ts:tsDeFlux(r).filter(fins)};});
   if(ex.length)carregaLib('flux-viu').then(()=>FluxViu.pinta(svg,fv,ara)).catch(()=>{});
   // legend
   svg.appendChild(mk('line',{x1:16,y1:H-14,x2:36,y2:H-14,class:'vx-t','stroke-width':2}));
@@ -20640,8 +20691,7 @@ function avuiFluxos(){
   const out=[];
   state.nodes.forEach(n=>{
     if(!n.vna||!(n.vna.exchanges||[]).length)return;
-    flowLedger(n).rows.forEach(r=>out.push({node:n,flux:r.flow,
-      ts:r.items.map(x=>x.e.ts).concat((r.flow.events||[]).map(x=>x.ts))}));
+    flowLedger(n).rows.forEach(r=>out.push({node:n,flux:r.flow,ts:tsDeFlux(r)}));
   });
   return out;
 }
@@ -20690,7 +20740,7 @@ function renderAvui(body){
         +esc(x.flux.label||(nom(x.flux.from)+' → '+nom(x.flux.to)))+'</span><span class="av-s">'
         +esc(nom(x.flux.from)+' → '+nom(x.flux.to)+' · '+x.node.name+' · '+(x.e.estat==='aturat'?'aturat':'s\'apaga')
         +' · fa '+x.e.dies+' dies'+(x.e.ritme?' (cada '+x.e.ritme+')':''))+'</span></span><span class="av-go" aria-hidden="true">→</span>';
-      b.onclick=()=>obreMapaDe(x.node);qp.appendChild(b);
+      b.onclick=()=>{obreMapaDe(x.node);openSeguiment(x.node,x.flux.id);};qp.appendChild(b);
     });
     box.appendChild(qp);
   }).catch(()=>{});

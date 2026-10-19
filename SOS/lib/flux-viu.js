@@ -154,5 +154,16 @@ var FluxViu = (function () {
         { id: 'ex:f6', from: 'ex:clients', to: 'ex:negoci', label: 'Opinions', ritme: 'mes', fets: fets('e', [4, 33, 61]) }] };
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, pinta: pinta, importa: importa, exemple: exemple };
+  /* La propera vegada, com la data d'entrega d'una comanda: el darrer cop més
+     el ritme (o un mes, si no se sap). `dies` positiu és el que falta;
+     negatiu, els dies que fa que s'espera. Sense cap fet, no hi ha data. */
+  function propera(flux, tss, ara) {
+    ara = ara || Date.now();
+    var e = estat(flux, tss, ara);
+    if (!e.darrer) return null;
+    var quan = e.darrer + (e.ritme || 30) * DIA;
+    return { quan: quan, dies: Math.round((quan - ara) / DIA), estat: e };
+  }
+
+  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, propera: propera, pinta: pinta, importa: importa, exemple: exemple };
 })();
