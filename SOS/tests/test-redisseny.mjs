@@ -8,6 +8,7 @@
      i el lliscador del temps.
    · Fase 4: cada flux es segueix com una comanda, amb la data de la propera.
    · Fase 5: la primera vegada, una pregunta que acaba al teu mapa.
+   · Els avisos: «Què ha passat?» posa primer l'urgent i l'important (FluxViu.avis).
    · I dues coses que es buscaven i no es trobaven: «Totes les pàgines» amb els
      noms de debò, i «Importa un perfil» a la vista quan et dones d'alta. */
 import { chromium } from 'playwright';
@@ -58,20 +59,25 @@ const av = await page.evaluate(() => ({
   de: document.querySelector('#avui .av-xf span').textContent,
   primer: (document.querySelector('#avui .av-fet') || {}).className || '',
   fets: document.querySelectorAll('#avui .av-fet').length,
+  ordre: [...document.querySelectorAll('#avui .av-fet')].map(x => x.className.replace(/av-fet |av-aturat/g, '').trim()).join(),
+  mot: (document.querySelector('#avui .av-fet .av-mot') || {}).textContent || '',
+  avisos: (document.querySelector('#avAvisos') || {}).textContent || '',
   mapa: !!document.querySelector('#avMapa svg path[data-ex]'),
   mes: [...document.querySelectorAll('.av-mes-b')].map(x => x.textContent),
   plec: !!document.querySelector('details.av-plec') && !document.querySelector('details.av-plec').open,
   dalt: Math.round(document.querySelector('#avui').getBoundingClientRect().top + scrollY)
 }));
 ok(av.xifra === '3' && /de 6 fluxos/.test(av.de), 'el pols diu 3 de 6 fluxos vius (' + av.xifra + ' ' + av.de + ')');
-ok(/av-aturat/.test(av.primer) && av.fets === 2, '«Què ha passat?» posa primer l\'aturat, i n\'hi ha dos');
+ok(/av-urgent/.test(av.primer) && av.ordre === 'av-urgent,av-important,av-important,av-apagant', '«Què ha passat?» avisa: primer l\'urgent, després l\'important i al final el que s\'apaga (' + av.ordre + ')');
+ok(/Urgent · Ens toca respondre/.test(av.mot), 'i cada avís diu per què (' + av.mot + ')');
+ok(av.avisos === '1 urgent · 2 importants', 'el comptador d\'avisos, al costat del títol (' + av.avisos + ')');
 ok(av.mapa, 'i el mapa del projecte que més circula hi és, petit');
 ok(av.mes.length === 4, 'les altres quatre portades, a la fila «Més»');
 ok(av.plec, 'la resta del tauler, plegada a «Més del tauler»');
 ok(av.dalt < 844, 'Avui comença dins la primera pantalla del mòbil (' + av.dalt + ' px)');
 sota = await sotaTerra();
 ok(!sota.length, 'cap text d\'Avui per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
-await page.click('#avui .av-fet');
+await page.click('#avui .av-fet.av-aturat');
 await page.waitForTimeout(400);
 const anat = await page.evaluate(() => ({ id: window.__SOS.state.activeId, tab: window.__SOS.state.tab,
   n: (window.__SOS.byId(window.__SOS.state.activeId) || {}).exempleViu }));
@@ -200,7 +206,7 @@ const reg = await page.evaluate(id => ({ h: document.querySelector('.modal h2').
 ok(/Nova aportació/.test(reg.h) && reg.flux, '«Ha circulat» obre l\'apunt amb el flux ja triat');
 await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
 await page.waitForSelector('#avui .av-fet');
-await page.click('#avui .av-fet');
+await page.click('#avui .av-fet.av-aturat');
 await page.waitForSelector('.modal.sg');
 ok(/Aturat/.test(await page.evaluate(() => document.querySelector('.modal.sg').textContent)), 'des d\'«Avui», tocar el que s\'ha parat n\'obre el seguiment');
 await page.evaluate(() => window.__SOS.closeModal());

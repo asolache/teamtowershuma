@@ -5,7 +5,7 @@
    apunts) entra com un paquet privat que no surt mai del navegador.
    Una sola còpia: la carreguen l'app i l'editor del mapa amb carregaLib. */
 var FluxViu = (function () {
-  var DIA = 864e5;
+  var DIA = 864e5, HORA = 36e5;
   var RITMES = { setmana: 7, quinzena: 14, mes: 30, trimestre: 91, any: 365 };
   var NOMS = { viu: 'viu', apagant: 'apagant-se', aturat: 'aturat', mai: 'mai no ha circulat' };
 
@@ -123,6 +123,10 @@ var FluxViu = (function () {
       if (!x) { x = { id: uid(), orig: o, from: a.id, to: b.id, kind: f.kind === 'tangible' ? 'tangible' : 'intangible', events: [] }; ex.push(x); compte.fluxos++; }
       x.label = text(f.label, 60) || x.label || '';
       if (RITMES[f.ritme]) x.ritme = f.ritme;
+      /* Qui ha de moure fitxa i per quan. Opcionals: un paquet que no els porta
+         no toca el que hi havia; un que els porta buits, els treu. */
+      if ('espera' in f) { if (ESPERES[f.espera]) x.espera = f.espera; else delete x.espera; }
+      if ('termini' in f) { var tm = new Date(f.termini); if (f.termini && isFinite(tm)) x.termini = tm.toISOString(); else delete x.termini; }
       var u = url(f.url); if (u) x.url = u;
       x.events = x.events || [];
       (f.fets || []).forEach(function (ev) {
@@ -133,6 +137,38 @@ var FluxViu = (function () {
       });
     });
     return compte;
+  }
+
+  /* ── Els avisos ────────────────────────────────────────────────────────
+     Una sola regla per dir què no pot esperar, la mateixa a l'app i als
+     taulers que en copien aquest fitxer.
+       urgent     ens toca respondre i fa més de 24 h del darrer fet, o el
+                  termini és d'aquí menys de 48 h (o ja ha passat)
+       important  el flux s'ha aturat, ens toca respondre fa entre 4 i 24 h
+                  (o encara no hi ha cap fet), o el termini és d'aquí menys
+                  de 7 dies
+     `ctx` = {espera:'nosaltres'|'ells'|null, termini: ISO|null}; si no hi és,
+     es llegeix del flux (on els deixa `importa`).
+     Torna {nivell:'urgent'|'important'|null, motiu, termini} (termini en ms). */
+  var ESPERES = { nosaltres: 1, ells: 1 };
+  function durada(h) { return h < 24 ? Math.max(1, Math.round(h)) + ' h' : Math.round(h / 24) + (Math.round(h / 24) === 1 ? ' dia' : ' dies'); }
+  function avis(flux, tss, ara, ctx) {
+    ara = ara || Date.now(); ctx = ctx || {}; flux = flux || {};
+    var espera = 'espera' in ctx ? ctx.espera : flux.espera;
+    var tm = 'termini' in ctx ? ctx.termini : flux.termini;
+    var t = temps(tss), darrer = t.length ? t[t.length - 1] : null;
+    var q = tm ? +new Date(tm) : NaN, termini = isFinite(q) ? q : null;
+    var falta = termini === null ? null : (termini - ara) / HORA;
+    var deu = espera === 'nosaltres', h = deu && darrer ? (ara - darrer) / HORA : null;
+    var r = function (nivell, motiu) { return { nivell: nivell, motiu: motiu, termini: termini }; };
+    if (h !== null && h > 24) return r('urgent', 'Ens toca respondre, i fa ' + durada(h));
+    if (falta !== null && falta < 0) return r('urgent', 'El termini va passar fa ' + durada(-falta));
+    if (falta !== null && falta < 48) return r('urgent', 'El termini és d\'aquí ' + durada(falta));
+    if (estat(flux, t, ara).estat === 'aturat') return r('important', 'S\'ha aturat: no circula al seu ritme');
+    if (h !== null && h >= 4) return r('important', 'Ens toca respondre, i fa ' + durada(h));
+    if (deu && !darrer) return r('important', 'Ens toca fer el primer pas');
+    if (falta !== null && falta < 7 * 24) return r('important', 'El termini és d\'aquí ' + durada(falta));
+    return r(null, '');
   }
 
   /* Un exemple inventat, per veure els quatre estats sense dades pròpies.
@@ -147,11 +183,11 @@ var FluxViu = (function () {
       { id: 'ex:equip', name: 'Equip' }, { id: 'ex:aliats', name: 'Aliats' }],
       fluxos: [
         { id: 'ex:f1', from: 'ex:negoci', to: 'ex:clients', label: 'Comandes', kind: 'tangible', ritme: 'setmana', fets: fets('a', [1, 6, 12, 19, 26]) },
-        { id: 'ex:f2', from: 'ex:clients', to: 'ex:negoci', label: 'Pagaments', kind: 'tangible', ritme: 'setmana', fets: fets('b', [2, 9, 16]) },
+        { id: 'ex:f2', from: 'ex:clients', to: 'ex:negoci', label: 'Pagaments', kind: 'tangible', ritme: 'setmana', termini: d(-5), fets: fets('b', [2, 9, 16]) },
         { id: 'ex:f3', from: 'ex:prov', to: 'ex:negoci', label: 'Matèria primera', kind: 'tangible', ritme: 'setmana', fets: fets('c', [11, 18]) },
         { id: 'ex:f4', from: 'ex:equip', to: 'ex:negoci', label: 'Idees de millora', ritme: 'mes', fets: fets('d', [75, 110]) },
         { id: 'ex:f5', from: 'ex:negoci', to: 'ex:aliats', label: 'Recomanacions', ritme: 'mes' },
-        { id: 'ex:f6', from: 'ex:clients', to: 'ex:negoci', label: 'Opinions', ritme: 'mes', fets: fets('e', [4, 33, 61]) }] };
+        { id: 'ex:f6', from: 'ex:clients', to: 'ex:negoci', label: 'Opinions', ritme: 'mes', espera: 'nosaltres', fets: fets('e', [4, 33, 61]) }] };
   }
 
   /* La propera vegada, com la data d'entrega d'una comanda: el darrer cop més
@@ -165,5 +201,5 @@ var FluxViu = (function () {
     return { quan: quan, dies: Math.round((quan - ara) / DIA), estat: e };
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, propera: propera, pinta: pinta, importa: importa, exemple: exemple };
+  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, pinta: pinta, importa: importa, exemple: exemple };
 })();
