@@ -406,6 +406,7 @@ a{color:var(--blue);text-decoration:none}
 .av-fet.av-urgent{border-left-color:var(--red);border-left-width:5px}.av-fet.av-urgent .av-ic{color:var(--red)}
 .av-fet.av-important{border-left-color:var(--orange);border-left-width:4px}.av-fet.av-important .av-ic{color:var(--orange)}
 .av-mot{font-size:var(--t0);font-weight:600;color:var(--orange)}.av-urgent .av-mot{color:var(--red)}
+.av-acc{display:flex;flex-wrap:wrap;gap:.4rem;margin:-.25rem 0 .35rem 2.1rem}.av-acc .btn{min-height:40px}
 .av-avisos{margin-left:.5rem;padding:.1rem .55rem;border-radius:999px;background:var(--red);color:#fff;letter-spacing:0;text-transform:none}
 .av-b{flex:1;display:flex;flex-direction:column;min-width:0}
 .av-t{font-weight:600}
@@ -20835,6 +20836,26 @@ function obreMapaDe(n){state.tab='map';selectNode(n.id);}
    i, si la persona ho ha volgut, un avís del sistema quan n'arriba un de nou
    (una sola vegada per flux: es recorden a localStorage). Res no surt de
    l'aparell: és el navegador qui avisa. */
+/* UNA ACCIÓ PER FILA · el que demana un avís es resol des de la mateixa fila:
+   respondre (a l'origen, si en té, o al fil), donar-lo per fet (queda apuntat
+   com un fet i ja no espera ningú) o ajornar-lo a demà. */
+function accionsAvis(x){
+  const f=x.flux,box=el('div','av-acc');box.setAttribute('role','group');box.setAttribute('aria-label','Què en fas');
+  const desa=msg=>persist(x.node).then(()=>{toast(msg);render();}).catch(()=>{});
+  const bt=(txt,cls,fn)=>{const b=el('button','btn btn-sm '+cls,txt);b.onclick=ev=>{ev.stopPropagation();fn();};box.appendChild(b);return b;};
+  bt(f.url?'↩ Respon ↗':'↩ Respon','btn-primary av-respon',()=>{
+    if(f.url){window.open(f.url,'_blank','noopener');return;}
+    obreMapaDe(x.node);Promise.resolve(openSeguiment(x.node,f.id)).then(bg=>{const i=bg&&bg.querySelector('#sgTxt');if(i)i.focus();});
+  });
+  bt('✓ Fet','btn-ghost av-fet-ok',()=>{
+    (f.events=f.events||[]).push({ts:new Date().toISOString(),what:'Fet'});
+    delete f.espera;delete f.termini;delete f.ajornat;desa('✓ Fet: queda apuntat al seu fil');
+  });
+  bt('⏰ Demà','btn-ghost av-ajorna',()=>{
+    const d=new Date();d.setDate(d.getDate()+1);d.setHours(9,0,0,0);f.ajornat=d.toISOString();desa('⏰ Ajornat fins demà a les 9');
+  });
+  return box;
+}
 const AVISATS_ID='sos-avisats';
 function avisaFora(urgents){
   const n=urgents.length;
@@ -20909,6 +20930,7 @@ function renderAvui(body){
         +esc(nom(x.flux.from)+' → '+nom(x.flux.to)+' · '+x.node.name+(x.e.darrer?' · '+(x.e.estat==='aturat'?'aturat':x.e.estat==='apagant'?'s\'apaga':'viu')
         +' · fa '+x.e.dies+' dies'+(x.e.ritme?' (cada '+x.e.ritme+')':''):''))+'</span></span><span class="av-go" aria-hidden="true">→</span>';
       b.onclick=()=>{obreMapaDe(x.node);openSeguiment(x.node,x.flux.id);};qp.appendChild(b);
+      if(nv)qp.appendChild(accionsAvis(x));
     });
     avisaFora(est.filter(x=>x.a.nivell==='urgent'));
     if('Notification' in window&&Notification.permission==='default'&&est.some(x=>x.flux.espera||x.flux.termini)){

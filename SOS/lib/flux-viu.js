@@ -160,7 +160,8 @@ var FluxViu = (function () {
                   (o encara no hi ha cap fet), o el termini és d'aquí menys
                   de 7 dies
      `ctx` = {espera:'nosaltres'|'ells'|null, termini: ISO|null}; si no hi és,
-     es llegeix del flux (on els deixa `importa`).
+     es llegeix del flux (on els deixa `importa`). Un flux `ajornat` fins a una
+     data no avisa fins llavors: ho ha decidit algú, i el motiu ho diu.
      Torna {nivell:'urgent'|'important'|null, motiu, termini} (termini en ms). */
   var ESPERES = { nosaltres: 1, ells: 1 };
   function durada(h) { return h < 24 ? Math.max(1, Math.round(h)) + ' h' : Math.round(h / 24) + (Math.round(h / 24) === 1 ? ' dia' : ' dies'); }
@@ -173,6 +174,8 @@ var FluxViu = (function () {
     var falta = termini === null ? null : (termini - ara) / HORA;
     var deu = espera === 'nosaltres', h = deu && darrer ? (ara - darrer) / HORA : null;
     var r = function (nivell, motiu) { return { nivell: nivell, motiu: motiu, termini: termini }; };
+    var aj = +new Date('ajornat' in ctx ? ctx.ajornat : flux.ajornat);
+    if (isFinite(aj) && aj > ara) return r(null, 'Ajornat fins d\'aquí ' + durada((aj - ara) / HORA));
     if (h !== null && h > 24) return r('urgent', 'Ens toca respondre, i fa ' + durada(h));
     if (falta !== null && falta < 0) return r('urgent', 'El termini va passar fa ' + durada(-falta));
     if (falta !== null && falta < 48) return r('urgent', 'El termini és d\'aquí ' + durada(falta));
