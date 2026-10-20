@@ -5439,3 +5439,18 @@ L'error que evita: un projecte intern esmentat en un text extern sense validar
   validació pel seu compte.
 
 **Guarda:** el fill que en té la comprova als seus correus.
+
+## Veda 179 — Es revisa a la preview, es desplega en tanda
+
+**Adoptada el 20/10/2026** per l'Álvaro, quan els crèdits de Netlify es van
+acabar a mig cicle.
+
+L'error que evita: cada merge a `main` és un desplegament a producció que
+gasta crèdits; uns nou al dia del SOS esgoten el cicle en dues setmanes.
+
+- **La preview és on es mira**: la del PR o la de la branca, gratis, amb
+  l'enllaç davant de l'Álvaro.
+- **A producció, una o dues tandes al dia.**
+- **Les previews no es desactiven mai.**
+
+**Guarda:** cap automàtica; la regla és a `CLAUDE.md`.
