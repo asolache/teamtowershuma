@@ -47,7 +47,7 @@ const r = await page.evaluate(async () => {
   S.state.tab = 'map'; S.selectNode(n.id);
   await new Promise(r2 => setTimeout(r2, 300));
   const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[marker-end]'));
-  const ts = [...svg.querySelectorAll('text')].filter(t => t.getAttribute('font-size') === '8.5')
+  const ts = [...svg.querySelectorAll('text.vna-el')]
     .map(t => t.getBoundingClientRect());
   let xocs = 0;
   for (let i = 0; i < ts.length; i++) for (let j = i + 1; j < ts.length; j++) {

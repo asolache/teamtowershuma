@@ -6,7 +6,8 @@
  * fitxer sense connexió que se'n descarrega per al LMS: el mateix codi, no una
  * còpia. Els càlculs són a `forces.js` i el dibuix a `3d.js`.
  *
- *   CervellVista.munta(caixa, { nodos, aristas, capas }, { lang: 'ca' | 'es' })
+ *   CervellVista.munta(caixa, { nodos, aristas, capas }, { lang: 'ca' | 'es', mot: 'Veda', text: {…} })
+ *     `mot` i `text` canvien les paraules (el SOS hi posa els rols d'un mapa de valor).
  */
 (function (raiz) {
   var T = {
@@ -62,6 +63,7 @@
   function munta(caixa, D, op) {
     op = op || {};
     var t = T[(op.lang || 'ca').slice(0, 2)] || T.ca, F = raiz.CerebroFuerzas;
+    if (op.text) { var t2 = {}; Object.keys(t).forEach(function (k) { t2[k] = k in op.text ? op.text[k] : t[k]; }); t = t2; }
     if (!document.getElementById('cv-css')) { var st = document.createElement('style'); st.id = 'cv-css'; st.textContent = CSS; document.head.appendChild(st); }
     caixa.classList.add('cv');
     if (!D.nodos.length) { caixa.innerHTML = '<p class="cv-now">' + t.buit + '</p>'; return null; }
@@ -92,7 +94,7 @@
       var ent = AN.cuanticos.filter(function (e) { return e.a === id || e.b === id; }).map(function (e) { return e.a === id ? e.b : e.a; });
       var a = AN.alcance[id];
       panel.style.setProperty('--c', col(n.capa));
-      panel.innerHTML = '<p class="cv-m">Veda ' + n.n + ' · ' + esc(capaDe[n.capa].s) + (n.fecha ? ' · ' + esc(n.fecha) : '') + '</p><h3>' + esc(n.t) + '</h3>' +
+      panel.innerHTML = '<p class="cv-m">' + (op.mot || 'Veda') + ' ' + n.n + ' · ' + esc(capaDe[n.capa].s) + (n.fecha ? ' · ' + esc(n.fecha) : '') + '</p><h3>' + esc(n.t) + '</h3>' +
         (n.aprende ? '<p><b>' + esc(n.aprende) + '</b></p>' : '') + '<p>' + esc(n.txt) + '</p>' +
         chips(cita, t.cita) + chips(citen, t.citen) + chips(ent, t.ent) +
         '<p class="cv-m" style="margin-top:10px">' + t.massa + ' ' + AN.masa[id] + ' · ' + t.pot + ' ' + AN.potencial[id] + ' · ' + t.enc(a.vedas, a.capas) + '</p>' +
