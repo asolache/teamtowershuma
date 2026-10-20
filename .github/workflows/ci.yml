@@ -53,6 +53,11 @@ jobs:
       - name: Guarda del relat (un sol roster d'herois)
         run: node SOS/tools/check-comando.js
 
+      # Des del 30/10/2026 Supabase no dona permisos per defecte a les taules
+      # noves: una taula sense GRANT queda muda a l'API i no avisa ningú.
+      - name: Cap taula de public sense permisos explícits
+        run: node SOS/tools/check-permisos.js
+
       # El programa d'escola diu que és el SOS a mida d'aula. Si un superpoder
       # deixa de ser una categoria del banc de temps, o apareix un camp on
       # escriure el nom d'un infant, deixa de ser cert i no ho diu ningú.

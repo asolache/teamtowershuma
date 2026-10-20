@@ -84,3 +84,14 @@ create policy online_afegir on public.online_fitxes
 -- i amb RLS activat l'absència de política és una prohibició. Ni tan sols la
 -- persona pot esborrar la seva fila: es retira publicant-ne una de nova amb
 -- `retirada: true`, que deixa rastre del que va passar i quan.
+
+-- ── Permisos ───────────────────────────────────────────────────────────────
+-- Des del 30/10/2026 Supabase no dona permisos per defecte a les taules noves
+-- de `public`: sense GRANT, ningú no la llegeix per l'API. Es diuen aquí,
+-- explícits, i només els que fan falta: llegir i afegir. Ni `update`, ni
+-- `delete`, ni `truncate` (que RLS no atura). Ho comprova
+-- SOS/tools/check-permisos.js a la CI per a qualsevol taula nova d'aquesta
+-- carpeta.
+revoke all on public.online_fitxes from anon, authenticated;
+grant select, insert on public.online_fitxes to anon, authenticated;
+grant all on public.online_fitxes to service_role;
