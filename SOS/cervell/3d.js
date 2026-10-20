@@ -98,7 +98,10 @@
         var p = proy[id], n = byId[id], txt = n.n + ' · ' + n.t;
         if (txt.length > 48) txt = txt.slice(0, 46) + '…';
         cx.font = '600 12px "Space Grotesk", system-ui, sans-serif';
-        var w = cx.measureText(txt).width, x = p.x + 12 + w > W - 6 ? p.x - 12 - w : p.x + 12;
+        var w = cx.measureText(txt).width;
+        /* Que el nom hi càpiga sencer: en un mòbil es retalla i no surt del llenç. */
+        while (w > W - 12 && txt.length > 8) { txt = txt.slice(0, -2) + '…'; w = cx.measureText(txt).width; }
+        var x = Math.max(6, Math.min(W - 6 - w, p.x + 12 + w > W - 6 ? p.x - 12 - w : p.x + 12));
         cx.lineWidth = 3; cx.strokeStyle = C.papel; cx.strokeText(txt, x, p.y - 8);
         cx.fillStyle = C.tinta; cx.fillText(txt, x, p.y - 8);
       });
