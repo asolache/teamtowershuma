@@ -135,6 +135,7 @@ var FluxViu = (function () {
       if ('marques' in n || 'Tag' in n) r.marques = marques(n);
       var u = url(n.url); if (u) r.url = u;
     });
+    if ([].concat(pak.nodes, fluxos).some(function (x) { return x && marques(x).length; })) { try { localStorage.setItem(VIST, '1'); } catch (e) {} }
     fluxos.forEach(function (f) {
       var a = perOrig[text(f.from, 120)], b = perOrig[text(f.to, 120)], o = text(f.id, 160);
       if (!a || !b || !o) return;
@@ -299,6 +300,25 @@ var FluxViu = (function () {
   /* El dia pintat: cinc passos numerats, cadascun amb els seus fluxos (fins
      a 4) i el que en toca fer. `op.nom(x)` diu el nom del flux i `op.obre(x)`
      què passa en tocar-lo. Sense colors fixos: hereta els de la pàgina. */
+  /* De quina marca és el mapa: un per marca, i un sense marca que ho veu tot.
+     Torna un <select> que desa `node.marca` i crida `desa` quan canvia. Només
+     surt a qui ja ha carregat una xarxa real amb marques: el nom de les marques
+     és dada privada, no s'ensenya a qui visita l'app. */
+  var VIST = 'sos-marques';
+  function triaMarca(node, desa) {
+    var vist = !!node.marca; try { vist = vist || !!localStorage.getItem(VIST); } catch (e) {}
+    if (!vist) return null;
+    var s = document.createElement('select');
+    s.className = 'fv-marca'; s.id = 'vnaMarca';
+    s.style.cssText = 'width:100%;margin:0 0 8px;padding:6px 8px;font-size:1rem;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--card,#fff);color:inherit'; s.setAttribute('aria-label', 'De quina marca és aquest mapa');
+    [['', 'Totes les marques']].concat(Object.keys(MARQUES).map(function (k) { return [k, MARQUES[k]]; })).forEach(function (o) {
+      var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; s.appendChild(op);
+    });
+    s.value = clau(node.marca);
+    s.onchange = function () { if (s.value) node.marca = s.value; else delete node.marca; desa(); };
+    return s;
+  }
+
   function pintaDia(caixa, grups, op) {
     posaEstil();
     if (!document.getElementById('fv-dia')) {
@@ -330,5 +350,5 @@ var FluxViu = (function () {
     return ol;
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, MARQUES: MARQUES, marques: marques, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
+  return { RITMES: RITMES, TIPUS: TIPUS, MARQUES: MARQUES, marques: marques, triaMarca: triaMarca, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
 })();
