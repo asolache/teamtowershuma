@@ -231,11 +231,66 @@ function systemPrompt() {
   ].join('\n');
 }
 
+/* ══ 5b · EL PONT AMB L'APP ═══════════════════════════════════════════════
+   L'app guarda el mapa per id (`node.vna`: rols {id,name} i intercanvis
+   {from,to,kind,label}) perquè hi penja la vida: qui porta cada rol, els fets,
+   els avisos. L'editor, els cervells dels clients i les xarxes germanes el
+   guarden en la forma canònica (`pairs` per nom). Aquests dos traductors fan
+   que les deu regles siguin **les mateixes** a tot arreu: l'app no té fórmula
+   de salut pròpia, tradueix i crida `revisa()`.
+
+   `deApp` aparella cada A→B amb un B→A; el que no troba parella queda amb el
+   retorn buit, i és la regla 4 qui ho diu. Un intercanvi sense nom en porta un
+   de provisional perquè `fluxos()` no el descarti: existeix, i compta. */
+function deApp(vna, op) {
+  const o = op || {}, rols = (vna && vna.roles) || [], ex = (vna && vna.exchanges) || [];
+  const mena = o.mena || (k => k === 'intangible' ? 'intangible' : 'tangible');
+  const nom = {}; rols.forEach(r => { nom[r.id] = String(r.name || r.id); });
+  const grups = {}, ordre = [];
+  ex.forEach(e => {
+    if (!nom[e.from] || !nom[e.to] || e.from === e.to) return;
+    const k = [e.from, e.to].sort().join('|');
+    if (!grups[k]) { grups[k] = { a: e.from, b: e.to, ab: [], ba: [] }; ordre.push(k); }
+    const g = grups[k], m = mena(e.kind), q = String(e.label || '').trim() || '(sense nom)';
+    (e.from === g.a ? g.ab : g.ba).push([m, q]);
+  });
+  const pairs = [];
+  ordre.forEach(k => {
+    const g = grups[k], n = Math.max(g.ab.length, g.ba.length);
+    for (let i = 0; i < n; i++) {
+      const x = g.ab[i] || ['', ''], y = g.ba[i] || ['', ''];
+      pairs.push(g.ab[i] ? [nom[g.a], nom[g.b], x[0], x[1], y[0], y[1]] : [nom[g.b], nom[g.a], y[0], y[1], '', '']);
+    }
+  });
+  return { abast: String(o.abast || ''), roles: rols.map(r => nom[r.id]), pairs, processos: o.processos || [], seq: o.seq || {}, troballes: o.troballes || [] };
+}
+/* I a l'inrevés: un mapa canònic (de l'editor, d'un cervell, d'una xarxa
+   germana) entra a l'app com a rols i intercanvis nous. `id` el posa qui
+   crida, perquè cada lloc té el seu generador. */
+function aApp(m, id) {
+  const nou = id || (() => Math.random().toString(36).slice(2, 10)), per = {};
+  const roles = [...new Set([...(m.roles || []), ...fluxos(m).flatMap(f => [f.de, f.a])])]
+    .map(n => { per[n] = nou(); return { id: per[n], name: n }; });
+  return { roles, exchanges: fluxos(m).map(f => ({ id: nou(), from: per[f.de], to: per[f.a], kind: f.mena, label: f.q })) };
+}
+/* Un sol número per comparar mapes en una taula: surt de les deu regles, i
+   una dura pesa el doble que una tova. No n'hi ha cap altre al sistema. Sense
+   cap lliurament és 0: les regles que diuen «cap X» passen soles en un buit. */
+function salut(m, op) {
+  /* `treu`: les regles que qui crida no pot complir perquè no en guarda les
+     dades (l'app encara no seqüencia processos). No compten, i ho diu `fora`. */
+  const treu = (op && op.treu) || [], r = revisa(m), fora = r.regles.filter(x => treu.includes(x.id));
+  r.regles = r.regles.filter(x => !treu.includes(x.id)); r.fora = fora;
+  const d = r.regles.filter(x => x.dur), t = r.regles.filter(x => !x.dur);
+  const ok = l => l.filter(x => x.ok).length;
+  return Object.assign(r, { punts: fluxos(m || {}).length ? Math.round(100 * (2 * ok(d) + ok(t)) / (2 * d.length + t.length)) : 0 });
+}
+
 /* Fins aquí, la declaració: no toca cap fitxer. El skill diu de fer
    `require('./SOS/tools/build-vna-suport.js').revisa(mapa)`, i una lectura que
    reescrivís quatre fitxers de passada seria una sorpresa. A sota hi comencen
    els destins, que només corren quan s'executa el fitxer. */
-module.exports = { PASSES, REGLES, ANALISIS, fluxos, tocats, textos, revisa, systemPrompt };
+module.exports = { PASSES, REGLES, ANALISIS, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut };
 if (require.main !== module) return;
 
 /* ══ 6 · ELS DESTINS ══════════════════════════════════════════════════════ */
@@ -302,7 +357,7 @@ posa('SOS/vna-suport.html', 'VS-ANALISIS', blocAnalisis(false), 'html');
 /* I el motor: les regles han de córrer **a la pàgina**, no descriure's. El
    mateix codi que corre aquí, literalment, perquè la consola i la guarda no
    puguin dir coses diferents del mateix mapa. */
-posa('SOS/vna-suport.html', 'VS-MOTOR', [
+const MOTOR = [
   '/* GENERAT per SOS/tools/build-vna-suport.js · no s\'edita a mà */',
   'const REGLES=[', REGLES.map(r =>
     `{id:${JSON.stringify(r.id)},n:${r.n},dur:${r.dur},de:${JSON.stringify(r.de)},t:${JSON.stringify(r.t)},test:${r.test.toString()}}`).join(',\n'),
@@ -312,7 +367,34 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', [
   'const textos=' + textos.toString() + ';',
   'const revisa=' + revisa.toString() + ';',
   'const SYSTEM_PROMPT=' + JSON.stringify(systemPrompt()) + ';'
-].join('\n'), 'js');
+].join('\n');
+posa('SOS/vna-suport.html', 'VS-MOTOR', MOTOR, 'js');
+
+/* ── El nucli compartit: SOS/lib/mapa-valor.js ────────────────────────────
+   El mateix motor, sencer, en un fitxer que carrega qualsevol pàgina (l'app,
+   abans del seu mòdul) i qualsevol eina de Node (`require`). Hi van també el
+   pont amb l'app i la nota única. Tot surt d'aquesta declaració: cap lloc té
+   la seva pròpia llista de regles ni la seva pròpia fórmula de salut. */
+{
+  const f = join(SOS, 'lib', 'mapa-valor.js');
+  const cos = ['/* El nucli del mapa de valor · GENERAT per SOS/tools/build-vna-suport.js',
+    '   No s\'edita a mà: les regles, el text per a la IA i el pont amb l\'app es',
+    '   declaren allà un sol cop. Navegador: window.MapaValor. Node: require(). */',
+    '(function (g) {', '\'use strict\';', MOTOR,
+    'const deApp=' + deApp.toString() + ';', 'const aApp=' + aApp.toString() + ';', 'const salut=' + salut.toString() + ';',
+    'const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,SYSTEM_PROMPT};',
+    'if (typeof module !== \'undefined\' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;',
+    '})(typeof globalThis !== \'undefined\' ? globalThis : this);', ''].join('\n');
+  const ara = existsSync(f) ? readFileSync(f, 'utf8') : '';
+  if (ara !== cos) { if (CHECK) vells.push('SOS/lib/mapa-valor.js'); else { writeFileSync(f, cos); escrits++; } }
+  ok('el nucli SOS/lib/mapa-valor.js surt de la mateixa declaració');
+  /* I l'app no en té cap altra: la fórmula de pesos que hi havia (reciprocitat
+     per 0,4 o 0,45, densitat per 0,25) donava tres notes al mateix mapa. */
+  const APP = readFileSync(join(SOS, 'index.html'), 'utf8');
+  if (/recPct\s*\*\s*0\.\d/.test(APP)) bad('SOS/index.html torna a tenir una fórmula de salut pròpia: la nota surt de MapaValor.salut()');
+  else ok('l\'app no té cap fórmula de salut pròpia');
+  if (!APP.includes('<script src="lib/mapa-valor.js"></script>')) bad('SOS/index.html no carrega lib/mapa-valor.js');
+}
 
 /* ── Qui fa cada lliurament: la màquina o una persona ─────────────────────
    La regla de la casa (`SOS/knowledge/negoci/mapa-kanban-ia.md`) viu a l'app:

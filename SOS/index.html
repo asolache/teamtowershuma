@@ -767,6 +767,9 @@ a{color:var(--blue);text-decoration:none}
 .role-item:hover .del{opacity:1}.role-item .del:hover{color:var(--red)}
 .health{background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem}
 .health h3{margin-bottom:.85rem}
+.h-regles{list-style:none;margin:.5rem 0 0;padding:0;display:grid;gap:.35rem}
+.h-regla{font-size:var(--t0);line-height:1.4;color:var(--muted)}.h-regla b{display:block;color:var(--light);font-weight:600}
+.h-fora{font-size:var(--t0);color:var(--muted);margin-top:.4rem}.h-regla.ok b{color:var(--green)}.h-regla.warn b{color:var(--orange)}.h-regla.bad b{color:var(--red)}
 .h-row{display:flex;align-items:center;justify-content:space-between;font-size:var(--t0);margin-bottom:.6rem}
 .h-row:last-child{margin-bottom:0}
 .h-lbl{color:var(--light)}
@@ -1795,7 +1798,8 @@ a{color:var(--blue);text-decoration:none}
 <div id="modalRoot"></div>
 <div id="toast"></div>
 
-
+<!-- Les deu regles del mapa de valor, les mateixes que l'editor (SOS/tools/build-vna-suport.js). Abans del mòdul, que les fa servir. -->
+<script src="lib/mapa-valor.js"></script>
 <script type="module">
 /* ═══════════════════ EMAIL OFUSCAT ═══════════════════ */
 const _U='asolache', _D='mac'+'.'+'com';
@@ -3810,15 +3814,12 @@ function matriuLights(node){
    mirant una pantalla. */
 const LIGHT_RANK={vermell:0,ambre:1,verd:2};
 /* Salut del mapa d'una iniciativa, en un sol número comparable entre files.
-   Els pesos diuen què importa: que els fluxos tornin (45), que la xarxa sigui
-   densa (25), que hi hagi tangible i intangible (15), que ningú quedi penjat
-   (10) i que no tot passi pel nucli (5). */
+   Surt de les deu regles (MapaValor.salut), com a l'editor: cap pes propi. */
 function mapHealthScore(v){
   const roles=(v.vna&&v.vna.roles)||[],ex=(v.vna&&v.vna.exchanges)||[];
   if(roles.length<2||!ex.length)return{score:0,why:'Mapa incomplet',recPct:0,dens:0,isolated:roles.length,hub:0};
   const a=vnaAudit(v);
-  const score=Math.min(100,Math.round(a.recPct*0.45+a.dens*0.25+((a.hasT&&a.hasI)?15:5)+(a.isolated.length?0:10)+(a.hub<=55?5:0)));
-  return{score,why:'',recPct:a.recPct,dens:a.dens,isolated:a.isolated.length,hub:a.hub};
+  return{score:a.score,why:'',recPct:a.recPct,dens:a.dens,isolated:a.isolated.length,hub:a.hub};
 }
 function cohortRow(node,v){
   const sps=sprintsOf(v),items=sps.reduce((a,s)=>a.concat(s.items||[]),[]);
@@ -11859,20 +11860,27 @@ function vnaAudit(node){
   let hubId=null,maxDeg=0;Object.entries(deg).forEach(([k,v])=>{if(v>maxDeg){maxDeg=v;hubId=k;}});
   const hub=ex.length?Math.round(maxDeg*100/(ex.length*2)):0;
   const hubRole=roles.find(r=>r.id===hubId)||null;
-  const score=Math.round((Math.min(recPct,100)*0.4)+(Math.min(dens,100)*0.25)+((hasT&&hasI)?15:0)+(isolated.length?0:10)+(hub<=40?10:hub<=55?5:0));
-  return{roles,exchanges:ex,pairs:pairs.size,recPct,dens,hasT,hasI,isolated,hub,hubRole,oneWay,score};
+  const rv=revisaMapa(node);
+  return{roles,exchanges:ex,pairs:pairs.size,recPct,dens,hasT,hasI,isolated,hub,hubRole,oneWay,score:rv.punts,regles:rv.regles,fora:rv.fora,dures:rv.dures};
 }
+/* El mapa de l'app en la forma canònica, i les deu regles de l'editor sobre
+   ell (lib/mapa-valor.js). L'abast és la missió del node, si en té. */
+const mapaCanon=node=>MapaValor.deApp(node.vna,{abast:(node.metaskill&&node.metaskill.mission)||'',mena:k=>isIntangible(k)?'intangible':'tangible'});
+const revisaMapa=node=>MapaValor.salut(mapaCanon(node),{treu:['processos']});
 function buildHealth(node){
   const box=el('div','health');
   box.appendChild(el('h3','','Salut de la xarxa'));
   const row=(lbl,cls,txt)=>{const r=el('div','h-row');r.appendChild(el('span','h-lbl',lbl));r.appendChild(el('span','h-badge '+cls,txt));box.appendChild(r);};
   if((node.vna.roles||[]).length<2){row('Estat','h-warn','Incompleta');const h=el('p','',' Afegeix rols i intercanvis per avaluar la salut.');h.style.cssText='font-size:var(--t0);color:var(--muted);margin-top:.5rem;line-height:1.4';box.appendChild(h);return box;}
   const a=vnaAudit(node);
-  row('Reciprocitat',a.recPct>=60?'h-ok':a.recPct>=30?'h-warn':'h-bad',a.recPct+'%');
-  row('Densitat',a.dens>=40?'h-ok':a.dens>=20?'h-warn':'h-bad',a.dens+'%');
-  row('Diversitat',a.hasT&&a.hasI?'h-ok':'h-warn',a.hasT&&a.hasI?'Equilibri':a.hasI?'Només intang.':'Només tang.');
-  row('Rols aïllats',a.isolated.length===0?'h-ok':'h-warn',a.isolated.length===0?'Cap':String(a.isolated.length));
-  row('Concentració',a.hub<=40?'h-ok':a.hub<=55?'h-warn':'h-bad',a.hub+'%'+(a.hubRole?' · '+a.hubRole.name:''));
+  /* Les deu regles del mètode, les mateixes que l'editor: una dura que falla
+     és vermella, una tova és un avís. A sota, el que diu cada una. */
+  row('Salut',a.score>=70?'h-ok':a.score>=45?'h-warn':'h-bad',a.score+'/100');
+  const rl=el('ol','h-regles');
+  a.regles.forEach(g=>{const li=el('li','h-regla'+(g.ok?' ok':g.dur?' bad':' warn'));li.dataset.regla=g.id;
+    li.appendChild(el('b','',(g.ok?'✓ ':g.dur?'✗ ':'! ')+g.n+' · '+g.t));li.appendChild(el('span','',g.diu));rl.appendChild(li);});
+  box.appendChild(rl);
+  if(a.fora&&a.fora.length)box.appendChild(el('p','h-fora','La regla '+a.fora.map(g=>g.n).join(', ')+' (processos i seqüència) es treballa a l\'editor del mapa.'));
   // Diagnosticar sense donar la següent passa deixa la feina a mitges.
   if(a.oneWay.length||a.isolated.length){
     const fix=el('button','btn btn-primary btn-sm','⚡ Reforça el mapa · '+(a.oneWay.length+a.isolated.length)+' punts febles');
