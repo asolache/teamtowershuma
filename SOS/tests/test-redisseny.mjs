@@ -359,6 +359,7 @@ ok(nou.join() === 'intangible:Recomanació,intangible:Contactes', 'surten els do
 ok(await page.evaluate(() => !!document.querySelector('.vna-canvas svg.me-on')), 'i el mapa segueix en mode dibuix');
 /* Tocar A i després B, per a qui no arrossega. */
 n0 = await rolsN();
+await page.waitForSelector('.vna-canvas svg.me-on');
 A = await centreRol('Equip'); await page.mouse.click(A.x, A.y);
 ok(await page.evaluate(() => /toca el rol que el rep/i.test(document.querySelector('.me-pista').textContent)), 'tocar un rol el tria i demana el segon');
 B = await centreRol('Aliats'); await page.mouse.click(B.x, B.y);
@@ -366,7 +367,8 @@ await page.waitForSelector('.modal .me-f');
 await page.click('.modal .btn-primary');
 await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu).vna.exchanges.length > n, n0.e);
 ok((await rolsN()).e >= n0.e + 1, 'i tocar-ne un altre crea el flux');
-/* Mantenir premut i moure. */
+/* Mantenir premut i moure (quan el mapa nou ja torna a estar en mode dibuix). */
+await page.waitForSelector('.vna-canvas svg.me-on');
 A = await centreRol('Aliats');
 await page.mouse.move(A.x, A.y); await page.mouse.down(); await page.waitForTimeout(600);
 await page.mouse.move(A.x - 40, A.y + 30, { steps: 5 }); await page.mouse.up();
@@ -375,6 +377,7 @@ const mogut = await page.evaluate(() => window.__SOS.state.nodes.find(y => y.exe
 ok(mogut.name === 'Aliats', 'mantenir premut i arrossegar el canvia de lloc, i s\'hi queda (' + mogut.pos.x + ',' + mogut.pos.y + ')');
 /* Un espai buit: un rol nou allà. */
 n0 = await rolsN();
+await page.waitForSelector('.vna-canvas svg.me-on');
 const buit = await page.evaluate(() => { const b = document.querySelector('.vna-canvas svg').getBoundingClientRect(); return { x: b.x + 14, y: b.y + 14 }; });
 await page.mouse.click(buit.x, buit.y);
 await page.waitForSelector('.modal #meRol');
