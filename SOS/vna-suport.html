@@ -1342,6 +1342,7 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
       <div id="taula"></div>
       <div class="btns">
         <button class="btn" id="btJson" type="button">Copia el JSON</button>
+        <button class="btn" id="btApp" type="button">🫀 Obre'l viu a l'app</button>
         <button class="btn" id="btPrompt" type="button">Copia el que se li dona a la IA</button>
         <button class="btn" id="btWeb" type="button">Copia l'encàrrec de la web</button>
       </div>
@@ -6140,6 +6141,12 @@ function edGanxos() {
 function edInicia() {
   ARBRE = { real: Object.assign(MODEL.nivellBuit(), { t: campsDOM() }), ideal: null };
   recuperaLocal();
+  /* I a l'inrevés: el mapa que l'app hi ha deixat («✎ Obre'l a l'editor»). */
+  if (/[?&]app\b/.test(location.search)) {
+    let t = null; try { t = localStorage.getItem('sos-mapa-cap-editor'); localStorage.removeItem('sos-mapa-cap-editor'); } catch (e) {}
+    if (t) try { edPosaArbre(MODEL.importa(JSON.parse(t)).arbre); LLOC = { vista: 'real', cami: [] }; escriuCamps(nivellActual().t); avisa('S\'ha obert el mapa de l\'app'); }
+    catch (e) { avisa('No s\'ha pogut obrir el mapa de l\'app'); }
+  }
   ['btPrompt', 'btWeb'].forEach(id => { const b = $('#' + id); if (b) b.dataset.etiqueta = b.textContent; });
   window.__VS_ED = edGanxos();
   if (typeof creaLlenc === 'function' && $('#edSvg')) LLENC = creaLlenc();
@@ -9149,6 +9156,9 @@ $('#btBuida').addEventListener('click', () => {
   CTRL.avisa('S\'ha buidat el mapa sencer: el real, l\'ideal i les xarxes de dins', { desfes: true });
 });
 $('#btJson').addEventListener('click', () => ensenya(JSON.stringify(MODEL.exporta(ARBRE), null, 2)));
+/* Al llenç de l'app, on el mapa respira (fluxos, qui els porta, avisos). Passa
+   pel navegador, en la forma canònica: és el mateix origen i no surt d'aquí. */
+$('#btApp').addEventListener('click', () => { try { localStorage.setItem('sos-mapa-cap-app', JSON.stringify(MODEL.exporta(ARBRE))); } catch (e) {} location.href = (location.protocol === 'file:' ? 'index.html' : './') + '?mapa'; });
 $('#btPrompt').addEventListener('click', () => ensenya(promptDeTreball()));
 
 edInicia();

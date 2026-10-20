@@ -9,7 +9,7 @@
  *
  *   node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom "Nom"] [--correu x@y.z]
  *        [--llengua ca|es] [--url https://…] [--casa "Rol 1" --casa "Rol 2"]
- *        [--marca marca.json] [--continguts cerebro/continguts/]
+ *        [--org nom] [--marca marca.json] [--continguts cerebro/continguts/]
  *
  * `mapa.json` és el que dona «Copia el JSON» a l'editor (o el web.json de la
  * pestanya Web: també s'accepta). Escriu a la carpeta la web i el que en fa un
@@ -66,11 +66,19 @@ if (require.main === module) {
       opts.continguts = require('node:fs').readdirSync(d).filter(f => /\.md$/.test(f)).sort().map(f => ({ id: f.slice(0, -3), text: readFileSync(join(d, f), 'utf8') }));
     }
     else if (/^--(nom|correu|llengua|url)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    /* La pàgina o la web d'un partner: surt del seu mapa propi (lib/mapa-valor.js, `mapaOrg`). */
+    else if (a[i] === '--org') opts.org = a[++i];
     else pos.push(a[i]);
   }
-  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …] [--marca marca.json] [--continguts cerebro/continguts/]'); process.exit(2); }
+  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …] [--org nom] [--marca marca.json] [--continguts cerebro/continguts/]'); process.exit(2); }
   opts.avisa = m => console.warn('⚠️  ' + m);
-  genera(JSON.parse(readFileSync(pos[0], 'utf8')), opts).then(fitxers => {
+  let entrada = JSON.parse(readFileSync(pos[0], 'utf8'));
+  if (opts.org) {
+    entrada = require('../lib/mapa-valor.js').mapaOrg(entrada, opts.org);
+    if (!entrada) { console.error('❌ «' + opts.org + '» no té mapa propi: posa-li un `mapa`, o un `dins` a un dels seus rols'); process.exit(1); }
+    opts.nom = opts.nom || opts.org; delete opts.org;
+  }
+  genera(entrada, opts).then(fitxers => {
     fitxers.forEach(f => { const r = join(pos[1], f.ruta); mkdirSync(dirname(r), { recursive: true }); writeFileSync(r, f.cos); });
     console.log('✅ ' + fitxers.length + ' fitxers a ' + pos[1]);
   }).catch(e => { console.error('❌ ' + e.message); process.exit(1); });
