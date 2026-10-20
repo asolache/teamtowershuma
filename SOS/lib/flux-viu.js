@@ -98,30 +98,50 @@ var FluxViu = (function () {
      Claude amb els connectors (Zoho, Gmail, el registre) i que la persona
      arrossega al seu SOS. Cada peça porta el seu `orig` (p. ex. zoho:123,
      gmail:abc): tornar-lo a carregar actualitza, no duplica. Les dades són
-     personals i només viuen al navegador de qui el carrega. */
+     personals i només viuen al navegador de qui el carrega.
+     Un sol CRM serveix totes les marques del titular, amb una etiqueta per
+     marca a cada registre (les Tags de Zoho). Cada peça porta `marques`, la
+     llista de les seves; si en porta dues, és compartida. Sense etiqueta no
+     s'endevina res: entra a tots els mapes i es veu com a «sense marca». Un
+     mapa amb `node.marca` només agafa els fluxos de la seva marca o sense
+     marca, i els rols que hi intervenen; sense `node.marca`, ho agafa tot. */
   var TIPUS = 'sos-xarxa-real';
+  var MARQUES = { teamtowers: 'TeamTowers', eventspenedes: 'Events Penedès' };
+  function clau(x) { var m = String(x && x.name || x || '').toLowerCase().normalize('NFD').replace(/[^a-z]/g, ''); return MARQUES[m] ? m : ''; }
+  function marques(x) {
+    var l = [].concat(x && x.marques || x && x.Tag || []).map(clau).filter(Boolean);
+    return l.filter(function (m, i) { return l.indexOf(m) === i; });
+  }
   function text(x, n) { return String(x == null ? '' : x).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
   function url(x) { x = String(x || ''); return /^https:\/\/[^\s"'<>]+$/.test(x) ? x.slice(0, 500) : ''; }
 
   function importa(node, pak, uid) {
     if (!pak || pak.type !== TIPUS || !Array.isArray(pak.nodes)) throw new Error('Aquest fitxer no és un paquet de xarxa real');
     var vna = node.vna, roles = vna.roles, ex = vna.exchanges, compte = { rols: 0, fluxos: 0, fets: 0 };
-    var perOrig = {};
+    var perOrig = {}, nom = clau(node.marca), cal = {};
+    var meva = function (x) { var l = marques(x); return !nom || !l.length || l.indexOf(nom) >= 0; };
+    var fluxos = (pak.fluxos || []).filter(function (f) {
+      if (meva(f)) { cal[text(f.from, 120)] = cal[text(f.to, 120)] = 1; return true; }
+      compte.altres = (compte.altres || 0) + 1;
+    });
     roles.forEach(function (r) { if (r.orig) perOrig[r.orig] = r; });
     pak.nodes.forEach(function (n) {
       var o = text(n.id, 120); if (!o) return;
+      if (!meva(n) && !cal[o]) return;
       var r = perOrig[o];
       if (!r) { r = { id: uid(), orig: o }; roles.push(r); perOrig[o] = r; compte.rols++; }
       r.name = text(n.name, 80) || r.name || o;
       if (n.kind) r.realKind = text(n.kind, 20);
+      if ('marques' in n || 'Tag' in n) r.marques = marques(n);
       var u = url(n.url); if (u) r.url = u;
     });
-    (pak.fluxos || []).forEach(function (f) {
+    fluxos.forEach(function (f) {
       var a = perOrig[text(f.from, 120)], b = perOrig[text(f.to, 120)], o = text(f.id, 160);
       if (!a || !b || !o) return;
       var x = ex.find(function (y) { return y.orig === o; });
       if (!x) { x = { id: uid(), orig: o, from: a.id, to: b.id, kind: f.kind === 'tangible' ? 'tangible' : 'intangible', events: [] }; ex.push(x); compte.fluxos++; }
       x.label = text(f.label, 60) || x.label || '';
+      if ('marques' in f || 'Tag' in f) x.marques = marques(f);
       if (RITMES[f.ritme]) x.ritme = f.ritme;
       /* Qui ha de moure fitxa i per quan. Opcionals: un paquet que no els porta
          no toca el que hi havia; un que els porta buits, els treu. */
@@ -310,5 +330,5 @@ var FluxViu = (function () {
     return ol;
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
+  return { RITMES: RITMES, TIPUS: TIPUS, MARQUES: MARQUES, marques: marques, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
 })();
