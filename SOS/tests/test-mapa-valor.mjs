@@ -64,5 +64,25 @@ const sp = MV.salut(EXEMPLE, { treu: ['processos'] });
 ok(sp.regles.length === 9 && sp.fora.length === 1 && sp.fora[0].id === 'processos', 'qui no guarda processos en treu la regla 10, i queda dit a `fora`');
 ok(buit.punts === 0 && !buit.passa, 'un mapa sense lliuraments és 0 i no passa');
 
+console.log('\nT5 · Un rol no és una organització');
+{ const R = ['Qui fa el vi', 'Qui acull', 'Qui dinamitza', 'Qui encarrega', 'Qui serveix', 'Qui cobra'];
+  const m = { abast: 'Des que una empresa pensa una jornada fins que està cobrada', roles: R,
+    pairs: [[R[0], R[3], 'tangible', 'el vi', 'intangible', 'el que en pensa'], [R[1], R[3], 'tangible', 'la sala', 'tangible', 'la reserva']],
+    orgs: [{ nom: 'Celler A', rols: [R[0], R[1], R[2]], posicionament: 'Vi de vinya alta', oferta: 'visites' }, { nom: 'Celler B', rols: [R[0]] }],
+    dins: { 'Qui acull': { abast: 'Des que arriba el grup fins que marxa', roles: R, pairs: [] } } };
+  const L = MV.lecturaOrgs(m);
+  ok(L.multi.length === 1 && L.multi[0].rols.length === 3, 'Celler A fa tres rols');
+  ok(L.compartits.length === 1 && L.compartits[0].senseLloc[0] === 'Celler B', 'el rol compartit diu a qui li falta posicionament');
+  ok(L.senseOrg.join() === [R[3], R[4], R[5]].join(), 'i quins rols no ocupa ningú');
+  const eA = MV.escalaOrg(m, 'Celler A'), eB = MV.escalaOrg(m, 'Celler B');
+  ok(eB.esglao === null && eB.seguent === 'fitxa' && /posicionament/.test(eB.falta[0]), 'B encara no té fitxa: li falta el posicionament');
+  ok(eA.esglao === 'pagina' && eA.seguent === 'web' && /regles dures/.test(eA.falta[0]), 'A té pàgina; per a la web, el seu mapa ha de passar les regles');
+  ok(MV.mapaOrg(m, 'Celler A').abast === 'Des que arriba el grup fins que marxa', 'el seu mapa és el de dins del seu rol');
+  const r = MV.fusiona({}, m, (() => { let k = 0; return () => 'o' + (++k); })()), t = MV.exporta(r.vna, { abast: m.abast, resta: r.resta });
+  ok(r.orgs === 2 && JSON.stringify(t.orgs) === JSON.stringify(m.orgs), 'les organitzacions van i tornen de l\'app sense perdre res');
+  ok(JSON.stringify(MV.orgsDe({ ocupa: { A: { nodo: 'x' }, B: { nodo: 'x' }, C: { datos: 'y' } } })) === '[{"nom":"x","rols":["A","B"]}]',
+    'un mapa amb `ocupa` en surt agrupant pel node');
+}
+
 console.log(fails ? `\n❌ ${fails} de ${n} fallen\n` : `\n✅ ${n} comprovacions · el nucli del mapa és un de sol\n`);
 process.exit(fails ? 1 : 0);

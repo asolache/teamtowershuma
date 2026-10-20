@@ -96,10 +96,8 @@ const deApp=function deApp(vna, op) {
   return { abast: String(o.abast || ''), roles: rols.map(r => nom[r.id]), pairs, processos: o.processos || [], seq: o.seq || {}, troballes: o.troballes || [] };
 };
 const aApp=function aApp(m, id) {
-  const nou = id || (() => Math.random().toString(36).slice(2, 10)), per = {};
-  const roles = [...new Set([...(m.roles || []), ...fluxos(m).flatMap(f => [f.de, f.a])])]
-    .map(n => { per[n] = nou(); return { id: per[n], name: n }; });
-  return { roles, exchanges: fluxos(m).map(f => ({ id: nou(), from: per[f.de], to: per[f.a], kind: f.mena, label: f.q })) };
+  const r = fusiona({}, m, id).vna;
+  return { roles: r.roles, exchanges: r.exchanges };
 };
 const salut=function salut(m, op) {
   /* `treu`: les regles que qui crida no pot complir perquè no en guarda les
@@ -110,6 +108,93 @@ const salut=function salut(m, op) {
   const ok = l => l.filter(x => x.ok).length;
   return Object.assign(r, { punts: fluxos(m || {}).length ? Math.round(100 * (2 * ok(d) + ok(t)) / (2 * d.length + t.length)) : 0 });
 };
-const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,SYSTEM_PROMPT};
+const fusiona=function fusiona(vna, m, id) {
+  if (!m || typeof m !== 'object' || (!Array.isArray(m.pairs) && !Array.isArray(m.roles)))
+    throw new Error('Això no és un mapa de valor: hi falten els rols i els parells');
+  const nou = id || (() => Math.random().toString(36).slice(2, 10));
+  const nn = x => String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+  const roles = ((vna && vna.roles) || []).map(r => Object.assign({}, r)), exchanges = ((vna && vna.exchanges) || []).map(e => Object.assign({}, e));
+  const perNom = {}; roles.forEach(r => { perNom[nn(r.name)] = r.id; });
+  let nr = 0, nf = 0;
+  const rol = n => { const k = nn(n); if (!perNom[k]) { perNom[k] = nou(); roles.push({ id: perNom[k], name: String(n).trim() }); nr++; } return perNom[k]; };
+  (m.roles || []).forEach(n => { if (typeof n === 'string' && n.trim()) rol(n); });
+  const hi = new Set(exchanges.map(e => e.from + '|' + e.to + '|' + nn(e.label)));
+  fluxos(m).forEach(f => {
+    const de = rol(f.de), a = rol(f.a), k = de + '|' + a + '|' + nn(f.q);
+    if (hi.has(k)) return; hi.add(k);
+    exchanges.push({ id: nou(), from: de, to: a, kind: f.mena, label: f.q }); nf++;
+  });
+  /* Les organitzacions: una que ja hi és (pel nom) suma els rols nous i
+     conserva el que ja tenia; el que porta el mapa omple el que hi faltava. */
+  const orgs = ((vna && vna.orgs) || []).map(o => Object.assign({}, o, { roles: (o.roles || []).slice() }));
+  const perOrg = {}; orgs.forEach(o => { perOrg[nn(o.name)] = o; });
+  let no = 0;
+  orgsDe(m).forEach(x => {
+    let o = perOrg[nn(x.nom)];
+    if (!o) { o = perOrg[nn(x.nom)] = { id: nou(), name: String(x.nom).trim(), roles: [] }; orgs.push(o); no++; }
+    x.rols.forEach(r => { const id = rol(r); if (!o.roles.includes(id)) o.roles.push(id); });
+    ['posicionament', 'oferta', 'web', 'cervell', 'mapa'].forEach(k => { if (x[k] !== undefined && (o[k] === undefined || o[k] === '')) o[k] = x[k]; });
+  });
+  const resta = {}; Object.keys(m).forEach(k => { if (!['abast', 'roles', 'pairs', 'flows', 'orgs'].includes(k)) resta[k] = m[k]; });
+  return { vna: Object.assign({}, vna, { roles, exchanges, orgs }), abast: String(m.abast || ''), resta, rols: nr, fluxos: nf, orgs: no };
+};
+const exporta=function exporta(vna, op) {
+  const o = op || {}, r = o.resta || {}, nom = {};
+  ((vna && vna.roles) || []).forEach(x => { nom[x.id] = String(x.name || x.id); });
+  const out = Object.assign({}, r, deApp(vna, { abast: o.abast, mena: o.mena, processos: r.processos, seq: r.seq, troballes: r.troballes }));
+  const orgs = ((vna && vna.orgs) || []).map(x => {
+    const y = { nom: x.name, rols: (x.roles || []).filter(id => nom[id]).map(id => nom[id]) };
+    ['posicionament', 'oferta', 'web', 'cervell', 'mapa'].forEach(k => { if (x[k] !== undefined && x[k] !== '') y[k] = x[k]; });
+    return y; });
+  if (orgs.length) out.orgs = orgs;
+  return out;
+};
+const orgsDe=function orgsDe(m) {
+  if (Array.isArray(m && m.orgs)) return m.orgs.filter(o => o && o.nom).map(o => Object.assign({}, o, { rols: (o.rols || []).slice() }));
+  const per = {};
+  Object.entries((m && m.ocupa) || {}).forEach(([rol, v]) => {
+    const k = v && typeof v === 'object' ? v.nodo : null; if (!k) return;
+    (per[k] = per[k] || { nom: k, rols: [] }).rols.push(rol);
+  });
+  return Object.values(per);
+};
+const lecturaOrgs=function lecturaOrgs(m) {
+  const os = orgsDe(m), rols = (m.roles || []).slice(), qui = {};
+  os.forEach(o => o.rols.forEach(r => { (qui[r] = qui[r] || []).push(o.nom); }));
+  return {
+    multi: os.filter(o => o.rols.length >= 2).map(o => ({ nom: o.nom, rols: o.rols.slice() })),
+    senseOrg: rols.filter(r => !qui[r]),
+    compartits: Object.keys(qui).filter(r => qui[r].length >= 2).map(r => ({ rol: r, orgs: qui[r],
+      senseLloc: os.filter(o => qui[r].includes(o.nom) && !String(o.posicionament || '').trim()).map(o => o.nom) }))
+  };
+};
+const mapaOrg=function mapaOrg(m, nom) {
+  const o = orgsDe(m).find(x => x.nom === nom); if (!o) return null;
+  const dins = (m && m.dins) || {}, base = o.mapa || o.rols.map(r => dins[r]).find(Boolean) || null;
+  if (!base) return null;
+  return Object.assign({}, base, { abast: base.abast || o.posicionament || '' });
+};
+const ESCALA=[{id:"fitxa",t:"Fitxa",porta:(m, o) => [
+    !o.rols.length && 'dir quin rol ocupa al mapa',
+    !String(o.posicionament || '').trim() && 'el seu posicionament, en una frase pròpia']},
+{id:"pagina",t:"Pàgina",porta:(m, o) => [
+    !String(o.oferta || '').trim() && 'la seva oferta, dita per ella',
+    !o.rols.some(r => fluxos(m).some(f => f.de === r)) && 'que algun dels seus rols lliuri alguna cosa al mapa']},
+{id:"web",t:"Web pròpia",porta:(m, o) => { const p = mapaOrg(m, o.nom);
+    return [!p && 'el seu mapa propi (a dins d\'un dels seus rols)', p && !revisa(p).passa && 'que el seu mapa passi les regles dures']; }},
+{id:"node",t:"Node",porta:(m, o) => [
+    !String(o.web || '').trim() && 'l\'adreça de la seva web',
+    !String(o.cervell || '').trim() && 'el seu cervell (on viu el seu codex)']}];
+const escalaOrg=function escalaOrg(m, nom) {
+  const o = orgsDe(m).find(x => x.nom === nom); if (!o) return null;
+  let fet = null;
+  for (const e of ESCALA) {
+    const falta = e.porta(m, o).filter(Boolean);
+    if (falta.length) return { esglao: fet, seguent: e.id, t: e.t, falta };
+    fet = e.id;
+  }
+  return { esglao: fet, seguent: null, t: null, falta: [] };
+};
+const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};
 if (typeof module !== 'undefined' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

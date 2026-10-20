@@ -52,6 +52,18 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### Un sol motor del mapa de valor (demanat 20/10/2026)
+
+L'editor (`vna-suport.html`) i el mapa de l'app jutgen i guarden el mapa amb un
+sol nucli, `SOS/lib/mapa-valor.js`, que surt de `build-vna-suport.js`.
+
+- ~~Fase 1 · una sola salut~~ (#273): les deu regles al panell de l'app.
+- ~~Fase 2 · obrir i copiar~~: «⇪ Obre un mapa» i «⧉ Copia el mapa» en la forma de l'editor, sense perdre processos, troballes ni ideal.
+- ~~Fase 3 · qui ocupa els rols~~: organitzacions amb diversos rols i posicionament (`orgs`, `lib/mapa-orgs.js`), i la lent Equip les ensenya.
+- ~~Fase 4 · l'escala del partner~~: Fitxa, Pàgina, Web pròpia i Node com a portes de la MATRIU (`escalaOrg`); el mapa propi s'obre com a projecte de dins i `web-del-mapa.js --org` en fa la web.
+- ~~Fase 5 · d'un llenç a l'altre~~: «🫀 Obre'l viu a l'app» i «✎ Obre'l a l'editor».
+- Pendent: un sol llenç de debò (l'editor encara té el seu, amb nivells, ideal i teclat que l'app no té), i que l'editor conegui `orgs`.
+
 ### Els serveis del cervell col·lectiu per a la web d'un proveïdor (demanat 17/10/2026)
 
 **Demanat per l'Àlvar** (17/10/2026): que la web d'un proveïdor (per exemple, un
