@@ -24,6 +24,8 @@
  * el control (`op.control`).
  *
  *   CervellPla.munta(caixa, { nodos, aristas, capas }, { vista: 'castellera' | 'capes' | 'mapa' | 'pinya', mou: true, ara: <element>, control: <element>, lectura: <element> })
+ *     op.nom(n) diu com es diu un node (per defecte «Veda n · títol») i op.noms
+ *     n'escriu el nom al costat: així el SOS hi posa els rols d'un mapa de valor.
  *   CervellPla.dades(json)   el JSON compacte de build-cervell-dades.js → { nodos, aristas, capas }
  *   CervellPla.franges / geometria / corba   les peces, per a qui hi posa la seva interacció
  */
@@ -37,6 +39,7 @@
     '.cp .cp-n{transition:opacity .4s,transform .4s;transform-box:fill-box;transform-origin:center}' +
     '.cp .cp-h{opacity:0;transform:scale(.2)}.cp .cp-x{opacity:0}' +
     '.cp .cp-u{stroke:var(--text,#15130f);stroke-width:2.5}' +
+    '.cp .cp-nt{font:600 12px system-ui,sans-serif;fill:var(--text,#15130f);paint-order:stroke;stroke:var(--bg-panel,#fff);stroke-width:3px;pointer-events:none;transition:opacity .4s}' +
     '.cp .cp-n{cursor:pointer}.cp .cp-d{opacity:.15}.cp .cp-on{stroke:var(--text,#15130f);stroke-opacity:.9;stroke-width:1.8}' +
     '.cp .cp-a{fill:none;stroke:currentColor;stroke-opacity:.12}.cp .cp-r{stroke-width:2;stroke-linecap:round;stroke-opacity:.35}' +
     '.cp svg.cp-mapa{max-width:640px;margin:0 auto}.cp svg.cp-pinya{max-width:820px}' +
@@ -79,12 +82,12 @@
 
   /* El mapa: un anell per kosha, el propòsit al centre i l'obra a fora; dins
      de cada anell, les vedes en l'ordre en què es van escriure. */
-  function anells(D, W, H) {
+  function anells(D, W, H, gira) {
     var R = Math.min(W, H) / 2 - 18, cx = W / 2, cy = H / 2, pos = {}, per = {}, vist = {};
     var RADI = (raiz.CerebroFuerzas && raiz.CerebroFuerzas.RADIO) || { ananda: .22, vijnana: .44, mano: .63, prana: .81, anna: 1 };
     D.nodos.forEach(function (n) { per[n.capa] = (per[n.capa] || 0) + 1; });
     D.nodos.forEach(function (n) {
-      var j = vist[n.capa] = (vist[n.capa] || 0) + 1, a = -Math.PI / 2 + 2 * Math.PI * (j - .5) / per[n.capa] + RADI[n.capa];
+      var j = vist[n.capa] = (vist[n.capa] || 0) + 1, a = -Math.PI / 2 + 2 * Math.PI * (j - .5) / per[n.capa] + RADI[n.capa] + (gira ? 2.4 * D.capas.findIndex(function (c) { return c.id === n.capa; }) : 0);
       var r = R * RADI[n.capa] * (1 + ((n.n * 37) % 5 - 2) * .015);
       pos[n.id] = { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), pis: D.capas.findIndex(function (c) { return c.id === n.capa; }) };
     });
@@ -120,6 +123,7 @@
 
   function munta(caixa, D, op) {
     op = op || {};
+    var nom = op.nom || function (n) { return 'Veda ' + n.n + ' · ' + n.t; };
     if (!document.getElementById('cp-css')) { var st = document.createElement('style'); st.id = 'cp-css'; st.textContent = CSS; document.head.appendChild(st); }
     caixa.classList.add('cp');
     /* En una pantalla estreta, mitja amplada: els punts i els noms dels pisos
@@ -151,7 +155,7 @@
         el('circle', { cx: lx, cy: ly, r: 5, fill: col(p.capa.id) }, gB);
       });
     } else if (mapa) {
-      A = anells(D, W, H); pos = A.pos;
+      A = anells(D, W, H, op.noms); pos = A.pos;
       bs = D.capas.map(function (c) { return { n: c.n, s: c.s, capas: [c.id] }; }); compte = bs.map(function () { return 0; });
       D.capas.forEach(function (c) {
         el('circle', { cx: A.cx, cy: A.cy, r: A.R * A.RADI[c.id], 'class': 'cp-a' }, gB);
@@ -172,8 +176,9 @@
     var eEls = D.aristas.map(function (a) { return { a: a, el: el('path', { d: arc(pos[a[0]], pos[a[1]]), 'class': 'cp-e' }, gE) }; });
     var nEls = D.nodos.map(function (n) {
       var c = el('circle', { cx: pos[n.id].x, cy: pos[n.id].y, r: pin ? 3 + Math.min(grau[n.id], 4) * .6 : 3.5 + Math.min(grau[n.id], 6), fill: col(n.capa), 'class': 'cp-n' }, gN);
-      el('title', {}, c).textContent = 'Veda ' + n.n + (n.fuente ? ' · ' + n.fuente : '') + ' · ' + n.t + (pin ? ' · ' + { primera: 'primera mà', vent: 'vent', lateral: 'lateral' }[A.menaDe[n.id]] : '');
+      el('title', {}, c).textContent = (op.nom ? nom(n) : 'Veda ' + n.n + (n.fuente ? ' · ' + n.fuente : '') + ' · ' + n.t) + (pin ? ' · ' + { primera: 'primera mà', vent: 'vent', lateral: 'lateral' }[A.menaDe[n.id]] : '');
       c.addEventListener('click', function () { tria(n.id); });
+      if (op.noms) { var dr = pos[n.id].x > W - 140, dx = 8 + Math.min(grau[n.id], 6); c.t = el('text', { x: pos[n.id].x + (dr ? -dx : dx), y: pos[n.id].y + 4, 'text-anchor': dr ? 'end' : 'start', 'class': 'cp-nt' }, gN); c.t.textContent = n.t.length > 18 ? n.t.slice(0, 17) + '…' : n.t; }
       return c;
     });
     var vei = {}; D.aristas.forEach(function (a) { (vei[a[0]] = vei[a[0]] || {})[a[1]] = 1; (vei[a[1]] = vei[a[1]] || {})[a[0]] = 1; });
@@ -181,7 +186,7 @@
     function tria(id) {
       D.nodos.forEach(function (n, i) { nEls[i].classList.toggle('cp-d', !!id && n.id !== id && !(vei[id] || {})[n.id]); });
       eEls.forEach(function (e) { e.el.classList.toggle('cp-on', !!id && (e.a[0] === id || e.a[1] === id)); });
-      if (id && op.ara) op.ara.textContent = 'Veda ' + byId[id].n + ' · ' + byId[id].t;
+      if (id && op.ara) op.ara.textContent = nom(byId[id]);
       if (op.alTriar) op.alTriar(id);
     }
 
@@ -189,13 +194,13 @@
     function fins(k) {
       compte = bs.map(function () { return 0; });
       D.nodos.forEach(function (n, i) {
-        var vis = i < k; nEls[i].classList.toggle('cp-h', !vis); nEls[i].classList.toggle('cp-u', i === k - 1);
+        var vis = i < k; nEls[i].classList.toggle('cp-h', !vis); nEls[i].classList.toggle('cp-u', i === k - 1); if (nEls[i].t) nEls[i].t.classList.toggle('cp-x', !vis);
         if (vis) compte[pos[n.id].pis]++;
       });
       eEls.forEach(function (e) { e.el.classList.toggle('cp-x', byId[e.a[0]].i >= k || byId[e.a[1]].i >= k); });
       etiq.forEach(function (t, i) { t.textContent = (mapa ? bs[i].s.toUpperCase() : bs[i].n) + ' · ' + compte[i]; });
       if (pin && op.lectura) lectura(k);
-      var u = D.nodos[k - 1]; if (op.ara && u) op.ara.textContent = 'Veda ' + u.n + ' · ' + u.t;
+      var u = D.nodos[k - 1]; if (op.ara && u) op.ara.textContent = nom(u);
       if (rang) { rang.value = k; sort.textContent = k + ' / ' + D.nodos.length; }
     }
 

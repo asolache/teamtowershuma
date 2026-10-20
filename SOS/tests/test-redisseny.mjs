@@ -11,6 +11,8 @@
    · Una acció per fila a cada avís: respon, fet o demà.
    · Cada flux és un fil: qui el porta (persona o agent), el torn i la conversa.
    · Els avisos: «Què ha passat?» posa primer l'urgent i l'important (FluxViu.avis).
+   · El mapa es dibuixa amb el dit: arrossega d'un rol a un altre (o toca'ls
+     un rere l'altre) i surt un flux; les vistes del cervell sobre el teu mapa.
    · I dues coses que es buscaven i no es trobaven: «Totes les pàgines» amb els
      noms de debò, i «Importa un perfil» a la vista quan et dones d'alta. */
 import { chromium } from 'playwright';
@@ -145,7 +147,7 @@ const abans = await page.evaluate(() => ({
   carregada: !!document.querySelector('script[src="lib/lents.js"]'),
   temps: !!document.querySelector('#lnTemps')
 }));
-ok(abans.barra.join() === 'Valor,Torre,Equip,Repartiment,Saber', 'el mapa té cinc lents (' + abans.barra.join(', ') + ')');
+ok(abans.barra.join() === '✎ Connecta i mou,Valor,Torre,Equip,Repartiment,Saber,Castell,Cinc capes,Anells,3D', 'el mapa té el botó per dibuixar-lo i nou lents (' + abans.barra.join(', ') + ')');
 ok(!abans.carregada, 'i no pesen a l\'arrencada: lib/lents.js només es carrega en triar-ne una');
 ok(abans.temps, 'i el lliscador del temps');
 const lent = async l => {
@@ -300,7 +302,7 @@ await page.evaluate(() => window.__SOS.closeModal());
 
 console.log('\n11 · Una acció per fila: respon, fet o demà');
 await page.goto(APP + '?viu');
-await page.waitForFunction(() => window.__SOS && window.FluxViu);
+await page.waitForFunction(() => window.__SOS && window.FluxViu && (window.__SOS.byId(window.__SOS.state.activeId) || {}).exempleViu);
 await page.evaluate(() => { const S = window.__SOS; S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
 await page.waitForSelector('#avui .av-acc');
 const acc = await page.evaluate(() => ({ n: document.querySelectorAll('#avui .av-acc').length,
@@ -325,6 +327,92 @@ ok(await page.evaluate(() => document.activeElement && document.activeElement.id
 await page.evaluate(() => window.__SOS.closeModal());
 sota = await sotaTerra();
 ok(!sota.length, 'cap text de les accions per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
+
+console.log('\n12 · Connecta i mou: el mapa es dibuixa amb el dit');
+await page.goto(APP + '?viu');
+await page.waitForFunction(() => window.__SOS);
+await page.waitForTimeout(1200);
+const rolsN = () => page.evaluate(() => { const n = window.__SOS.state.nodes.find(x => x.exempleViu); return { r: n.vna.roles.length, e: n.vna.exchanges.length }; });
+const centreRol = nom => page.evaluate(nom => { const g = [...document.querySelectorAll('.vna-canvas g[data-rol]')].find(x => x.querySelector('title').textContent.startsWith(nom));
+  const b = g.querySelector('circle').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; }, nom);
+const disseny = await page.evaluate(() => ({ ini: [...document.querySelectorAll('.vna-canvas .vna-ini')].map(x => x.textContent), nom: [...document.querySelectorAll('.vna-canvas .vna-nm')].map(x => x.textContent) }));
+ok(disseny.ini.length === 5 && disseny.nom.includes('Clients'), 'cada rol és una fitxa amb inicials i el nom sencer a sota (' + disseny.ini.join(' ') + ')');
+await page.click('#lnEdita');
+await page.waitForSelector('.vna-canvas svg.me-on');
+ok(await page.evaluate(() => !document.querySelector('.me-pista').hidden && /Arrossega/.test(document.querySelector('.me-pista').textContent)), 'en activar-lo, diu què fer: arrossega d\'un rol a un altre');
+let n0 = await rolsN();
+let A = await centreRol('Clients'), B = await centreRol('Aliats');
+await page.mouse.move(A.x, A.y); await page.mouse.down();
+await page.mouse.move((A.x + B.x) / 2, (A.y + B.y) / 2, { steps: 4 });
+ok(await page.evaluate(() => !!document.querySelector('.vna-canvas .me-l')), 'mentre arrossegues, una línia segueix el dit');
+await page.mouse.move(B.x, B.y, { steps: 4 }); await page.mouse.up();
+await page.waitForSelector('.modal .me-f');
+ok(await page.evaluate(() => /Clients → Aliats/.test(document.querySelector('.modal .me-f h2').textContent) && !!document.querySelector('#meTorna')), 'deixar-la anar damunt d\'un altre rol obre el pas ràpid: Clients → Aliats, i si torna alguna cosa');
+await page.click('.modal .me-mena [data-m=intangible]');
+await page.click('.modal .me-sug [data-s="Recomanació"]');
+await page.fill('#meTornaNom', 'Contactes');
+await page.click('.modal .btn-primary');
+await page.waitForFunction(n => { const x = window.__SOS.state.nodes.find(y => y.exempleViu); return x.vna.exchanges.length === n + 2; }, n0.e);
+let nou = await page.evaluate(() => { const n = window.__SOS.state.nodes.find(x => x.exempleViu), e = n.vna.exchanges; return e.slice(-2).map(x => x.kind + ':' + x.label); });
+ok(nou.join() === 'intangible:Recomanació,intangible:Contactes', 'surten els dos fluxos, el d\'anada i el de tornada (' + nou.join(' · ') + ')');
+ok(await page.evaluate(() => !!document.querySelector('.vna-canvas svg.me-on')), 'i el mapa segueix en mode dibuix');
+/* Tocar A i després B, per a qui no arrossega. */
+n0 = await rolsN();
+A = await centreRol('Equip'); await page.mouse.click(A.x, A.y);
+ok(await page.evaluate(() => /toca el rol que el rep/i.test(document.querySelector('.me-pista').textContent)), 'tocar un rol el tria i demana el segon');
+B = await centreRol('Aliats'); await page.mouse.click(B.x, B.y);
+await page.waitForSelector('.modal .me-f');
+await page.click('.modal .btn-primary');
+await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu).vna.exchanges.length > n, n0.e);
+ok((await rolsN()).e >= n0.e + 1, 'i tocar-ne un altre crea el flux');
+/* Mantenir premut i moure. */
+A = await centreRol('Aliats');
+await page.mouse.move(A.x, A.y); await page.mouse.down(); await page.waitForTimeout(600);
+await page.mouse.move(A.x - 40, A.y + 30, { steps: 5 }); await page.mouse.up();
+await page.waitForFunction(() => { const n = window.__SOS.state.nodes.find(y => y.exempleViu); return n.vna.roles.some(r => r.pos); });
+const mogut = await page.evaluate(() => window.__SOS.state.nodes.find(y => y.exempleViu).vna.roles.find(r => r.pos));
+ok(mogut.name === 'Aliats', 'mantenir premut i arrossegar el canvia de lloc, i s\'hi queda (' + mogut.pos.x + ',' + mogut.pos.y + ')');
+/* Un espai buit: un rol nou allà. */
+n0 = await rolsN();
+const buit = await page.evaluate(() => { const b = document.querySelector('.vna-canvas svg').getBoundingClientRect(); return { x: b.x + 14, y: b.y + 14 }; });
+await page.mouse.click(buit.x, buit.y);
+await page.waitForSelector('.modal #meRol');
+await page.fill('#meRol', 'Ajuntament'); await page.keyboard.press('Enter');
+await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu).vna.roles.length === n + 1, n0.r);
+ok(await page.evaluate(() => { const r = window.__SOS.state.nodes.find(y => y.exempleViu).vna.roles.slice(-1)[0]; return r.name === 'Ajuntament' && !!r.pos; }), 'tocar un espai buit hi posa un rol nou, al lloc tocat');
+/* Tocar un flux, en mode dibuix, l'edita (i no n'obre el seguiment). */
+await page.evaluate(() => { const p = [...document.querySelectorAll('.vna-canvas path[data-ex]')].pop(); const b = p.getBoundingClientRect(); window.__pt = { x: b.x + b.width / 2, y: b.y + b.height / 2 }; });
+const ex1 = await page.evaluate(() => { const p = [...document.querySelectorAll('.vna-canvas path[data-ex]')].pop();
+  ['pointerdown', 'pointerup'].forEach(t => p.dispatchEvent(new PointerEvent(t, { bubbles: true, pointerId: 9, clientX: 1, clientY: 1 }))); return p.getAttribute('data-ex'); });
+await page.waitForSelector('.modal .me-f');
+ok(await page.evaluate(() => !document.querySelector('.modal.sg') && [...document.querySelectorAll('.modal .btn')].some(b => b.textContent === 'Treu el flux')), 'tocar un flux l\'obre per canviar-lo o treure\'l');
+await page.evaluate(() => [...document.querySelectorAll('.modal .btn')].find(b => b.textContent === 'Treu el flux').click());
+await page.waitForFunction(id => !window.__SOS.state.nodes.find(y => y.exempleViu).vna.exchanges.some(e => e.id === id), ex1);
+ok(true, 'i «Treu el flux» el treu');
+await page.click('#lnEdita');
+ok(await page.evaluate(() => !document.querySelector('.vna-canvas svg.me-on') && document.querySelector('.me-pista').hidden), 'tornar-lo a tocar deixa el mapa com sempre');
+
+console.log('\n13 · Les vistes del cervell, sobre el teu mapa');
+const vista = async l => {
+  await page.click('.lent[data-lent="' + l + '"]');
+  await page.waitForSelector('.vna-canvas .ln-org[data-lent="' + l + '"] ' + (l === '3d' ? 'canvas' : 'svg'));
+  return page.evaluate(() => ({ amaga: !!document.querySelector('.vna-canvas svg.ln-amaga'), noms: [...document.querySelectorAll('.ln-org .cp-nt')].map(x => x.textContent),
+    nodes: document.querySelectorAll('.ln-org .cp-n').length, peu: document.querySelector('.lents-peu').textContent }));
+};
+let V = await vista('castell');
+ok(V.amaga && V.nodes === 6 && V.noms.includes('Clients') && /pom de dalt/.test(V.peu), 'Castell: els teus rols al pom, el tronc i la pinya, amb el nom (' + V.nodes + ' rols)');
+V = await vista('capes');
+ok(V.nodes === 6 && /cinc capes/i.test(V.peu), 'Cinc capes: cada rol a la capa del que hi circula');
+V = await vista('anells');
+ok(V.nodes === 6 && /anells/.test(V.peu), 'Anells: el propòsit al centre i el cos a fora');
+const cor = await page.evaluate(() => { const n = window.__SOS.state.nodes.find(y => y.exempleViu); return window.Lents.capaDe({ rols: n.vna.roles.map(r => ({ id: r.id, nom: r.name })), fluxos: n.vna.exchanges.map(e => ({ de: e.from, a: e.to, mena: e.kind })) }); });
+ok(Object.values(cor).filter(x => x === 'ananda').length === 1, 'el propòsit és un sol rol, on es creuen més fluxos');
+V = await vista('3d');
+ok(await page.evaluate(() => !!document.querySelector('.ln-org .cv-f article') && /mida d'un rol/.test(document.querySelector('.ln-org .cv-ley').textContent)), '3D: les cinc capes en tres dimensions, amb els rols que sostenen la xarxa');
+await page.click('.lent[data-lent=valor]');
+ok(await page.evaluate(() => !document.querySelector('.vna-canvas .ln-org') && !document.querySelector('.vna-canvas svg.ln-amaga')), 'Valor torna el mapa de sempre');
+sota = await sotaTerra();
+ok(!sota.length, 'cap text del mapa per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);

@@ -702,6 +702,7 @@ a{color:var(--blue);text-decoration:none}
 .lents{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.6rem .7rem 0}
 .lent{font:600 var(--t0) inherit;font-family:inherit;min-height:40px;padding:.3rem .9rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;white-space:nowrap}
 .lent.sel{background:var(--text);color:var(--bg);border-color:var(--text)}
+.lent-ed{border-color:var(--indigo);color:var(--indigo)}.lent-ed.sel{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .lents-t{display:flex;align-items:center;gap:.4rem;margin-left:auto;color:var(--muted);font:500 var(--t0) 'JetBrains Mono',monospace;white-space:nowrap}
 .lents-t input{width:120px}.lents-t output{min-width:8ch}
 .sg-est{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:baseline;padding:.7rem .9rem;border-radius:10px;background:var(--panel);border-left:3px solid var(--muted)}
@@ -723,8 +724,14 @@ a{color:var(--blue);text-decoration:none}
 .sg-msgs li{display:flex;gap:.8rem;padding:.4rem 0;border-bottom:1px solid var(--border)}.sg-msgs li.ag b{color:var(--purple)}
 .sg-nou{display:flex;gap:.4rem}.sg-nou input{flex:1;min-width:0}
 .vna-canvas path[data-ex]{cursor:pointer}
+.vna-nm{font-family:'Space Grotesk',sans-serif;font-weight:600;fill:var(--text);paint-order:stroke;stroke:var(--bg-panel);stroke-width:3.5px;stroke-linejoin:round}
+.vna-ini{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.02em;pointer-events:none}
+.vna-el{font-family:'JetBrains Mono',monospace;font-weight:500;paint-order:stroke;stroke:var(--bg-panel);stroke-width:3px;stroke-linejoin:round}
+.vna-r circle{transition:stroke-width .15s}.vna-r:hover circle,.vna-r:focus circle{stroke-width:3.5}
+.vna-fons{opacity:.7;pointer-events:none}
+@media(max-width:600px){.vna-canvas svg.vna-svg{height:auto}}
 .pm-amb{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.6rem}
-.pm-pista{margin:.5rem .9rem 0;color:var(--light);font-size:var(--t0)}
+.pm-pista,.me-pista{margin:.5rem .9rem 0;color:var(--light);font-size:var(--t0)}.me-pista{color:var(--indigo);font-weight:600}
 #avPrimer{margin:.4rem .6rem .4rem 0}
 .lents-peu{margin:0;padding:.2rem 1rem .9rem;color:var(--light);font-size:var(--t0);line-height:1.5}
 /* El zoom. Un lloc és un rectangle rodó i un rol un cercle: la forma diu que
@@ -11033,7 +11040,7 @@ function renderVNA(body,node){
    cada rol i la cura), el repartiment (llesques i hores) i el saber. Aquí es
    compta amb les eines de l'app; lib/lents.js només pinta damunt l'SVG, i es
    carrega en triar una lent. El lliscador torna el mapa al dia que es vulgui. */
-const LENTS=[['valor','Valor'],['torre','Torre'],['equip','Equip'],['repart','Repartiment'],['saber','Saber']];
+const LENTS=[['valor','Valor'],['torre','Torre'],['equip','Equip'],['repart','Repartiment'],['saber','Saber'],['castell','Castell'],['capes','Cinc capes'],['anells','Anells'],['3d','3D']];
 function dadesLent(node,ara){
   const roles=node.vna.roles||[],ex=node.vna.exchanges||[],meu=(canWrite(node)||{}).ok,cfg=equityCfg(node);
   const perFlux={};
@@ -11042,10 +11049,10 @@ function dadesLent(node,ara){
     if(e.type!=='moneda'&&e.type!=='objecte')x.h+=Number(e.value)||0;});
   const sap=[...new Set(membersOf(node).filter(m=>m.active!==false).flatMap(memberAports))];
   const porta={};roles.forEach(r=>{if(r.memberId)porta[r.memberId]=(porta[r.memberId]||0)+1;});
-  return{fluxos:ex.map(e=>({id:e.id,de:e.from,a:e.to,mena:isIntangible(e.kind)?'intangible':'tangible'})),
+  return{fluxos:ex.map(e=>({id:e.id,de:e.from,a:e.to,nom:e.label,mena:isIntangible(e.kind)?'intangible':'tangible'})),
     rols:roles.map(r=>{const own=roleOwner(node,r),cal=roleCal(r),te=own?memberAports(own):sap;
       const meus=ex.filter(e=>e.from===r.id),sur=meus.map(e=>perFlux[e.id]||{ll:0,h:0});
-      return{id:r.id,nom:r.name,qui:own?(meu?own.name:'👤'):'',porta:own?porta[own.id]:0,
+      return{id:r.id,nom:r.name,capa:r.capa,qui:own?(meu?own.name:'👤'):'',porta:own?porta[own.id]:0,
         orfes:own?siPlega(node,own.id).orfes.length:0,
         ll:sur.reduce((a,x)=>a+x.ll,0),h:sur.reduce((a,x)=>a+x.h,0),
         /* Les vegades que ha circulat, apunts i fets de la xarxa real: és el que
@@ -11060,14 +11067,14 @@ function barraLents(node,canvas,svg0){
   const barra=el('div','lents');barra.setAttribute('role','toolbar');barra.setAttribute('aria-label','Mira el mapa com');
   const peu=el('p','lents-peu');peu.hidden=true;
   const caixa=el('div','ln-cv');caixa.hidden=true;
-  const pinta=()=>{if(lent()==='valor'){peu.hidden=true;caixa.hidden=true;return;}
+  const pinta=()=>{canvas.querySelectorAll('.ln-org').forEach(x=>x.remove());if(lent()==='valor'){peu.hidden=true;caixa.hidden=true;return;}
     const ara=dies?Date.now()-dies*DIA:0;
     Promise.all([carregaLib('pinya'),carregaLib('lents')])
       .then(()=>Lents.aplica(svg,lent(),dadesLent(node,ara),peu,caixa)).catch(()=>{});};
   LENTS.forEach(([id,nom])=>{const b=el('button','lent'+(lent()===id?' sel':''),nom);b.dataset.lent=id;
     b.setAttribute('aria-pressed',lent()===id?'true':'false');
     b.onclick=()=>{state.lent=id;barra.querySelectorAll('.lent').forEach(x=>{const s=x===b;x.classList.toggle('sel',s);x.setAttribute('aria-pressed',s?'true':'false');});
-      const nou=buildVNASvg(node,dies?Date.now()-dies*DIA:0);canvas.replaceChild(nou,svg);svg=nou;pinta();};
+      const nou=buildVNASvg(node,dies?Date.now()-dies*DIA:0);canvas.replaceChild(nou,svg);svg=nou;pinta();edita();};
     barra.appendChild(b);});
   /* El temps: el darrer trimestre, dia a dia. A «avui» el mapa és el de sempre. */
   if((node.vna.exchanges||[]).length){
@@ -11075,10 +11082,21 @@ function barraLents(node,canvas,svg0){
     r.setAttribute('aria-label','Torna el mapa enrere en el temps');
     const o=el('output','','Avui');tl.appendChild(el('span','','⏱'));tl.appendChild(r);tl.appendChild(o);
     r.oninput=()=>{dies=+r.value;o.textContent=dies?'Fa '+dies+(dies===1?' dia':' dies'):'Avui';
-      const nou=buildVNASvg(node,dies?Date.now()-dies*DIA:0);canvas.replaceChild(nou,svg);svg=nou;pinta();};
+      const nou=buildVNASvg(node,dies?Date.now()-dies*DIA:0);canvas.replaceChild(nou,svg);svg=nou;pinta();edita();};
     barra.appendChild(tl);
   }
-  canvas.appendChild(barra);
+  /* Connecta i mou (lib/mapa-edita.js): el mapa es dibuixa amb el dit. */
+  const pe=el('p','me-pista');pe.hidden=true;let ed=null;
+  const edita=()=>{if(ed){ed.treu();ed=null;}pe.hidden=!state.mapaEdita;if(!state.mapaEdita||!canWrite(node).ok)return;
+    carregaLib('mapa-edita').then(()=>{if(ed)ed.treu();ed=MapaEdita.activa(svg,{pista:t=>{pe.textContent=t;},
+      flux:(a,b)=>openNouFlux(node,a,b),edita:x=>openNouFlux(node,0,0,x),
+      mou:(id,x,y)=>{const r=node.vna.roles.find(q=>q.id===id);if(!r)return;r.pos={x,y};persist(node);renderWorkspace();},
+      rol:(x,y)=>openNouRol(node,x,y)});}).catch(()=>{});};
+  if(canWrite(node).ok&&node.vna.roles.length){const eb=el('button','lent lent-ed'+(state.mapaEdita?' sel':''),'✎ Connecta i mou');eb.id='lnEdita';
+    eb.setAttribute('aria-pressed',state.mapaEdita?'true':'false');eb.title='Arrossega d\'un rol a un altre per crear un flux';
+    eb.onclick=()=>{state.mapaEdita=!state.mapaEdita;eb.classList.toggle('sel',state.mapaEdita);eb.setAttribute('aria-pressed',state.mapaEdita?'true':'false');edita();};
+    barra.insertBefore(eb,barra.firstChild);}
+  canvas.appendChild(barra);canvas.appendChild(pe);
   /* Un mapa on encara no ha circulat res és un disseny: diu què tocar perquè respiri. */
   if((node.vna.exchanges||[]).length&&!flowLedger(node).rows.some(r=>tsDeFlux(r).length))
     canvas.appendChild(el('p','pm-pista','👆 Toca un flux quan passi de veritat i apunta\'l: el mapa començarà a respirar.'));
@@ -11086,8 +11104,31 @@ function barraLents(node,canvas,svg0){
   /* Tocar un flux del mapa n'obre el seguiment (el que té origen ja obre l'origen). */
   canvas.addEventListener('click',ev=>{const p=ev.target.closest('path[data-ex]');
     if(p&&!p.hasAttribute('data-url'))openSeguiment(node,p.getAttribute('data-ex'));});
-  pinta();
+  pinta();edita();
   return{caixa};
+}
+/* Enllaçar dos rols al mapa: la mena, què hi flueix i si torna alguna cosa.
+   Amb `exId`, el flux que ja hi és, per canviar-lo o treure'l. */
+function openNouFlux(node,a,b,exId){
+  const R=id=>(node.vna.roles.find(r=>r.id===id)||{}).name||'—',ex=node.vna.exchanges,x=exId&&ex.find(e=>e.id===exId);
+  if(exId&&!x)return;if(x){a=x.from;b=x.to;}
+  const F=MapaEdita.form(R(a),R(b),x?{mena:isIntangible(x.kind)?'intangible':'tangible',nom:x.label}:{torna:!ex.some(e=>e.from===b&&e.to===a)});
+  const desa=async()=>{closeModal();await persist(node);renderWorkspace();};
+  const fet=()=>{const v=F.llegeix(bg);
+    if(x){x.kind=v.mena;x.label=v.nom;}
+    else{ex.push({id:uid(),from:a,to:b,kind:v.mena,label:v.nom});
+      if(v.torna)ex.push({id:uid(),from:b,to:a,kind:v.tornaMena,label:v.tornaNom});}
+    desa();toast(x?'Flux desat':'Flux creat: '+R(a)+' → '+R(b)+(v.torna?' i de tornada':''));};
+  const bg=modal(F.html,[x&&{txt:'Treu el flux',cls:'btn btn-ghost',fn:()=>{node.vna.exchanges=ex.filter(e=>e!==x);desa();}},
+    {txt:'Cancel·la',cls:'btn btn-ghost',fn:closeModal},{txt:x?'Desa':'Crea el flux',cls:'btn btn-primary',fn:fet}]);
+  F.lliga(bg);bg.querySelector('#meNom').onkeydown=e=>{if(e.key==='Enter')fet();};
+}
+function openNouRol(node,x,y){
+  const bg=modal('<h2>Un rol nou aquí</h2><p class="m-sub">Qui hi ha a la teva xarxa: una persona, un equip, un client, un proveïdor.</p><input id="meRol" maxlength="40" placeholder="p. ex. Clients, Proveïdors, Ajuntament" style="width:100%">',
+    [{txt:'Cancel·la',cls:'btn btn-ghost',fn:closeModal},{txt:'Afegeix el rol',cls:'btn btn-primary',fn:()=>fet()}]);
+  const i=bg.querySelector('#meRol'),fet=async()=>{const v=i.value.trim();if(!v)return i.focus();
+    node.vna.roles.push({id:uid(),name:v,pos:{x,y}});closeModal();await persist(node);renderWorkspace();};
+  i.onkeydown=e=>{if(e.key==='Enter')fet();};setTimeout(()=>i.focus(),30);
 }
 /* ═══════════ Els fluxos, llegits com una llista ═══════════
    El gràfic serveix per veure la forma de la xarxa; per llegir-la cal una llista.
@@ -11395,12 +11436,17 @@ function vnaMolla(node){
 
 function buildVNASvg(node,ara){
   const roles=node.vna.roles, ex=node.vna.exchanges;
-  const W=520,H=440,cx=W/2,cy=H/2,R=Math.min(W,H)/2-70;
+  const W=520,H=440,cx=W/2,cy=H/2,R=Math.min(W,H)/2-82;
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 '+W+' '+H);
-  const pos={},rr=Math.max(9,Math.min(22,Math.PI*R/Math.max(1,roles.length)*.8));
-  roles.forEach((r,i)=>{const a=(-Math.PI/2)+(i/roles.length)*Math.PI*2;pos[r.id]={x:cx+R*Math.cos(a),y:cy+R*Math.sin(a),c:ROLE_COLORS[i%ROLE_COLORS.length]};});
-  const ns='http://www.w3.org/2000/svg';
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.setAttribute('class','vna-svg');
+  /* Cada rol al seu lloc: el que algú hi ha deixat arrossegant (`r.pos`) o,
+     si no, al cercle. La mida creix una mica amb els fluxos que hi passen. */
+  const pos={},rr=Math.max(12,Math.min(24,Math.PI*R/Math.max(1,roles.length)*.62)),grau={};
+  ex.forEach(e=>{grau[e.from]=(grau[e.from]||0)+1;grau[e.to]=(grau[e.to]||0)+1;});
+  roles.forEach((r,i)=>{const a=(-Math.PI/2)+(i/roles.length)*Math.PI*2,q=r.pos;
+    pos[r.id]=q&&isFinite(q.x)&&isFinite(q.y)?{x:Math.max(30,Math.min(W-30,q.x)),y:Math.max(30,Math.min(H-50,q.y))}:{x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};
+    pos[r.id].c=ROLE_COLORS[i%ROLE_COLORS.length];pos[r.id].r=rr+Math.min(4,grau[r.id]||0);});
+  const ns='http://www.w3.org/2000/svg',estret=matchMedia('(max-width:600px)').matches;
   const mk=(t,at)=>{const e=document.createElementNS(ns,t);for(const k in at)e.setAttribute(k,at[k]);return e;};
   /* Els llocs de dins van al centre, i es dibuixen **abans** del cas sense
      rols: un node amb tres projectes a dins i cap rol propi tenia un mapa que
@@ -11457,20 +11503,21 @@ function buildVNASvg(node,ara){
      dona i qui rep, que és tota la gràcia. A més, quan A→B i B→A existeixen
      totes dues, es corben cap a bandes contràries perquè es vegin les dues. */
   const defs=mk('defs',{});
+  const gp=mk('pattern',{id:'vnaPunts',width:22,height:22,patternUnits:'userSpaceOnUse'});gp.appendChild(mk('circle',{cx:1,cy:1,r:1,style:'fill:var(--border)'}));defs.appendChild(gp);
   [['arrT','var(--green)'],['arrI','var(--indigo)']].forEach(([id,c])=>{
     const m=mk('marker',{id,viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:6,markerHeight:6,orient:'auto-start-reverse'});
     m.appendChild(mk('path',{d:'M 0 0 L 10 5 L 0 10 z',style:'fill:'+c,'fill-opacity':.85}));
     defs.appendChild(m);
   });
-  svg.appendChild(defs);
+  svg.appendChild(defs);svg.appendChild(mk('rect',{width:W,height:H,fill:'url(#vnaPunts)',class:'vna-fons'}));
   const pairSeen={},placed=[];
   ex.forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
     /* Cada flux paral·lel es corba una mica més (el contrari ja cau a l'altre costat). */
     const key=e.from+'|'+e.to,k=pairSeen[key]||0;pairSeen[key]=k+1;
     const tang=!isIntangible(e.kind);
     // Escurça als extrems perquè la punta de fletxa no quedi sota el cercle del rol
-    const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,pad=rr+2;
-    const x1=a.x+ux*pad,y1=a.y+uy*pad,x2=b.x-ux*pad,y2=b.y-uy*pad;
+    const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len;
+    const x1=a.x+ux*(a.r+2),y1=a.y+uy*(a.r+2),x2=b.x-ux*(b.r+3),y2=b.y-uy*(b.r+3);
     const bend=-Math.min(38,len*0.16)*(1+k*.8);
     const mx=(x1+x2)/2-uy*bend,my=(y1+y2)/2+ux*bend;
     const path=mk('path',{d:'M '+x1+' '+y1+' Q '+mx+' '+my+' '+x2+' '+y2,fill:'none',class:tang?'vx-t':'vx-i',
@@ -11483,15 +11530,22 @@ function buildVNASvg(node,ara){
     svg.appendChild(path);
     if(e.label){const lb=e.label.length>22?e.label.slice(0,21)+'…':e.label,hw=lb.length*2.7,lx=(x1+x2)/4+mx/2;let ly=(y1+y2)/4+my/2-3;
       for(let i=0;i<6&&placed.some(q=>Math.abs(q[0]-lx)<q[1]+hw&&Math.abs(q[2]-ly)<10);i++)ly+=10;placed.push([lx,hw,ly]);
-      const t=mk('text',{x:lx,y:ly,'text-anchor':'middle',style:'fill:var(--'+(tang?'green':'indigo')+')','font-family':'JetBrains Mono','font-size':8.5,'opacity':.85});t.textContent=lb;svg.appendChild(t);}
+      const t=mk('text',{x:lx,y:ly,'text-anchor':'middle',class:'vna-el','font-size':estret?12:9,style:'fill:var(--'+(tang?'green':'indigo')+')'});t.textContent=lb;svg.appendChild(t);}
   });
   if(fills.length)svg.appendChild(zoom());
   // nodes
-  roles.forEach(r=>{const p=pos[r.id],g=mk('g',r.url?{'data-rol':r.id,'data-url':r.url,role:'link'}:{'data-rol':r.id});
-    g.appendChild(mk('circle',{cx:p.x,cy:p.y,r:rr,style:'fill:var(--card);stroke:'+p.c,'stroke-width':2}));
-    const t=mk('text',{x:p.x,y:p.y+3.5,'text-anchor':'middle',style:'fill:'+p.c,'font-family':'Space Grotesk','font-size':rr<16?7:9,'font-weight':600});
-    t.textContent=r.name.length>10?r.name.slice(0,9)+'…':r.name;g.appendChild(t);
-    if(r.url){const tt=mk('title',{});tt.textContent=r.name+' · s\'obre en una pestanya nova';g.appendChild(tt);}
+  /* Cada rol, una fitxa: les inicials dins del cercle tenyit del seu color i
+     el nom sencer a sota, en dues línies si cal, sempre llegible. */
+  roles.forEach(r=>{const p=pos[r.id],g=mk('g',r.url?{'data-rol':r.id,'data-url':r.url,role:'link',class:'vna-r'}:{'data-rol':r.id,class:'vna-r'});
+    g.appendChild(mk('circle',{cx:p.x,cy:p.y,r:p.r,style:'fill:color-mix(in srgb,'+p.c+' 16%,var(--card));stroke:'+p.c,'stroke-width':2.2}));
+    const ini=mk('text',{x:p.x,y:p.y+p.r*.32,'text-anchor':'middle',class:'vna-ini',style:'fill:'+p.c+';font-size:'+Math.round(p.r*.85)+'px'});
+    const pw=(r.name.match(/[\p{L}\p{N}]+/gu)||['?']).filter((w,i,a)=>a.length<2||!/^(el|la|els|les|l|los|las|un|una|de|del|d|i|y|the|of|and)$/i.test(w));
+    ini.textContent=(pw.length?pw:['?']).slice(0,2).map(w=>w[0]).join('').toUpperCase();g.appendChild(ini);
+    const nm=mk('text',{x:p.x,y:p.y+p.r+(estret?16:13),'text-anchor':'middle',class:'vna-nm','font-size':estret?15:10.5}),ws=r.name.split(' '),ls=[''];
+    ws.forEach(w=>{const l=ls.length-1;if(ls[l]&&(ls[l]+' '+w).length>15&&ls.length<2)ls.push(w);else ls[l]=(ls[l]?ls[l]+' ':'')+w;});
+    ls.forEach((l,i)=>{const sp=mk('tspan',{x:p.x,dy:i?'1.1em':0});sp.textContent=l.length>17?l.slice(0,16)+'…':l;nm.appendChild(sp);});
+    g.appendChild(nm);
+    const tt=mk('title',{});tt.textContent=r.name+(r.url?' · s\'obre en una pestanya nova':'');g.appendChild(tt);
     svg.appendChild(g);
   });
   /* El mapa viu: cada flux amb el seu ritme i l'últim cop que va circular

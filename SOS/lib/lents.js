@@ -8,6 +8,7 @@
  *   · Equip     qui porta cada rol, i on es concentra la càrrega i la cura
  *   · Repartiment quina part del que ha circulat surt de cada rol (llesques i hores)
  *   · Saber     si l'equip sap fer el que cada rol demana, i el cervell del SOS
+ *   · Castell, Capes, Anells, 3D   les vistes del cervell amb els rols del mapa
  *
  * L'app compta (té les eines: el registre, les cures, els perfils) i aquí només
  * es pinta damunt l'SVG que ja ha dibuixat: cada rol porta `data-rol` i cada
@@ -32,7 +33,8 @@
       'svg.ln-torre path.ln-primera{stroke:var(--green)!important;stroke-opacity:.8}' +
       'svg.ln-torre path.ln-lateral{stroke:var(--muted)!important;stroke-opacity:.6}' +
       'svg.ln-on .fv-pols{display:none}' +
-      '.ln-cv{margin-top:.8rem}.ln-cv[hidden]{display:none}';
+      '.ln-cv{margin-top:.8rem}.ln-cv[hidden]{display:none}' +
+      'svg.ln-amaga{display:none}.ln-org{padding:.4rem .8rem .2rem}.ln-org .cv-3d canvas{width:100%;height:380px}.ln-ara{margin:.3rem 0 0;color:var(--muted);font-size:var(--t0)}';
     document.head.appendChild(s);
   }
 
@@ -41,7 +43,7 @@
   function i(n, u, p) { return n + ' ' + (n === 1 ? u : p); }
 
   /* Cada lent diu, per a cada rol, com està (ok, mal o res), què s'hi escriu a
-     sota i, si cal, una aurèola; i una sola frase que es llegeix sota el mapa. */
+     sobre (a sota hi ha el nom) i, si cal, una aurèola; i una sola frase que es llegeix sota el mapa. */
   var LENTS = {
     torre: function (D, svg) {
       var Pi = window.Pinya;
@@ -104,13 +106,16 @@
   };
 
   /* El cervell del SOS sota el mapa: el saber que hereta cada projecte. */
-  var cervell = null;
+  var cervell = null, codi = {};
   function script(src) {
-    return new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
+    return codi[src] || (codi[src] = new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { delete codi[src]; ko(); }; document.head.appendChild(s); }));
+  }
+  function carregaPla() {
+    return (window.CerebroFuerzas ? Promise.resolve() : script('cervell/forces.js'))
+      .then(function () { return window.CervellPla ? 0 : script('cervell/pla.js'); });
   }
   function carregaCervell() {
-    return cervell || (cervell = (window.CerebroFuerzas ? Promise.resolve() : script('cervell/forces.js'))
-      .then(function () { return window.CervellPla ? 0 : script('cervell/pla.js'); })
+    return cervell || (cervell = carregaPla()
       .then(function () { return fetch('cervell/teamtowers.json'); })
       .then(function (r) { return r.json(); })
       .catch(function (e) { cervell = null; throw e; }));
@@ -134,9 +139,88 @@
     }).catch(function () { caixa.hidden = true; });
   }
 
+  /* ── Les vistes del cervell, sobre el mapa de cadascú ─────────────────────
+     Les mateixes de la pàgina del cervell (`SOS/cervell/pla.js` i `vista.js`),
+     carregades i no copiades, però amb els rols del mapa en lloc de vedes:
+     cada rol a la seva capa i cada flux una línia. La capa la diu el rol
+     (`capa`) o es dedueix del que hi circula:
+       · propòsit    el rol on es creuen més fluxos, el cor de la xarxa
+       · criteri     qui governa, decideix o fa d'aliat
+       · cos         on només circula el que es toca i es paga
+       · ment        on només circula confiança, saber, opinió
+       · energia     on es barregen les dues coses */
+  var CAPES = [
+    { id: 'anna', n: 'Cos', s: 'el que es toca' }, { id: 'prana', n: 'Energia', s: 'el que es mou' },
+    { id: 'mano', n: 'Ment', s: 'el que se sap' }, { id: 'vijnana', n: 'Criteri', s: 'el que es decideix' },
+    { id: 'ananda', n: 'Propòsit', s: 'per què' }
+  ];
+  var GOVERN = /govern|junta|direcci|consell|patron|ajuntament|aliat|aliança|partner|soci|assemblea|comit|coordina/i;
+  function capaDe(D) {
+    var g = {}, t = {}, i = {}, cap = {};
+    D.fluxos.forEach(function (f) {
+      [f.de, f.a].forEach(function (r) { g[r] = (g[r] || 0) + 1; (f.mena === 'tangible' ? t : i)[r] = ((f.mena === 'tangible' ? t : i)[r] || 0) + 1; });
+    });
+    var cor = D.rols.slice().sort(function (a, b) { return (g[b.id] || 0) - (g[a.id] || 0); })[0];
+    D.rols.forEach(function (r) {
+      cap[r.id] = r.capa || (cor && r === cor && g[r.id] ? 'ananda' : GOVERN.test(r.nom) ? 'vijnana'
+        : t[r.id] && !i[r.id] ? 'anna' : i[r.id] && !t[r.id] ? 'mano' : t[r.id] ? 'prana' : 'anna');
+    });
+    return cap;
+  }
+  function grafOrg(D) {
+    var cap = capaDe(D), lbl = {};
+    D.fluxos.forEach(function (f) { var l = (f.nom || '').toLowerCase(); if (!l) return; [f.de, f.a].forEach(function (r) { (lbl[r] = lbl[r] || []).indexOf(l) < 0 && lbl[r].push(l); }); });
+    return {
+      nodos: D.rols.map(function (r, k) {
+        var dona = D.fluxos.filter(function (f) { return f.de === r.id; }).length, rep = D.fluxos.filter(function (f) { return f.a === r.id; }).length;
+        return { id: r.id, n: k + 1, capa: cap[r.id], t: r.nom, saberes: (lbl[r.id] || []).slice(0, 4), txt: 'Dona ' + dona + (dona === 1 ? ' flux' : ' fluxos') + ' i en rep ' + rep + '.' + (r.qui ? ' El porta ' + r.qui + '.' : '') };
+      }),
+      aristas: D.fluxos.map(function (f) { return [f.de, f.a]; }),
+      capas: CAPES
+    };
+  }
+  var VIST = {
+    castell: { v: 'castellera', f: 'El castell de la teva xarxa: al pom de dalt el propòsit, al tronc el criteri i el saber, a la pinya el que es mou i es toca. Si la pinya és més estreta que el tronc, no aguanta.' },
+    capes: { v: 'capes', f: 'Les cinc capes, del cos (el que es toca i es paga) al propòsit. Cada rol a la capa del que hi circula; una capa buida és una part de l\'organització que el mapa encara no diu.' },
+    anells: { v: 'mapa', f: 'La xarxa en anells: el propòsit al centre i el cos a fora. Els fluxos que creuen anells lliguen el per què amb el què.' },
+    '3d': { f: 'Les cinc capes en tres dimensions. A sota, els rols que sostenen la xarxa, els que més n\'encenen i els fluxos que falten: parelles de rols que comparteixen el que hi circula i encara no es parlen.' }
+  };
+  var TEXT3D = {
+    tria: 'Toca un rol per veure amb quins connecta.', cita: 'Dona a', citen: 'Rep de', ent: 'Comparteixen el que hi circula',
+    enc: function (v, c) { return 'arriba a ' + v + ' rols en ' + c + (c === 1 ? ' capa' : ' capes'); },
+    tret: function (n, v, c) { return 'Des del rol ' + n + ' arriba a ' + v + ' rols en ' + c + ' capes.'; },
+    ley: 'Cada esfera és una capa: el cos a fora i el propòsit al centre. La mida d\'un rol és quants fluxos hi passen. Arrossega per girar.',
+    gravP: 'Els rols on es creuen més fluxos. Sostenen la resta.', cites: ' fluxos', potP: 'Els que arriben a més xarxa quan es mouen.',
+    qT: 'Parlen del mateix', qP: function (n) { return n + ' parelles de rols de capes diferents que no es donen res i comparteixen el que hi circula:'; },
+    falten: 'Fluxos que falten.', faltenP: 'Aquestes parelles tenen els mateixos veïns i encara no es donen res.',
+    soltes: function (s, t) { return '<b>Rols sols.</b> ' + s + ' de ' + t + ' no donen ni reben res.'; },
+    cast: function (p, t, d, ok) { return '<b>El castell.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya és més ampla que el tronc.' : 'No aguanta: hi ha més tronc que pinya.'); },
+    comp: 'comparteixen el que hi circula', mateixa: 'tenen el mateix veí', mateixes: function (n) { return 'tenen ' + n + ' veïns comuns'; },
+    buit: 'Aquest mapa encara no té rols.'
+  };
+  function muntaOrg(svg, lent, D, peu) {
+    var V = VIST[lent], cv = svg.parentNode;
+    var div = document.createElement('div'); div.className = 'ln-org'; div.setAttribute('data-lent', lent);
+    cv.insertBefore(div, svg.nextSibling); svg.classList.add('ln-amaga');
+    var G = grafOrg(D), ara = document.createElement('p'); ara.className = 'ln-ara';
+    if (peu) { peu.textContent = V.f; peu.hidden = false; }
+    var fet = lent === '3d'
+      ? carregaPla().then(function () { return window.Cerebro3D ? 0 : script('cervell/3d.js'); })
+        .then(function () { return window.CervellVista ? 0 : script('cervell/vista.js'); })
+        .then(function () { window.CervellVista.munta(div, G, { lang: 'ca', mot: 'Rol', text: TEXT3D }); })
+      : carregaPla().then(function () {
+        var c = document.createElement('div'); div.appendChild(c); div.appendChild(ara);
+        ara.textContent = 'Toca un rol per veure amb quins es parla.';
+        window.CervellPla.munta(c, G, { vista: V.v, mou: false, noms: true, ara: ara, alt: 340, etiqueta: V.f,
+          nom: function (n) { return n.t + ' · ' + (CAPES.filter(function (k) { return k.id === n.capa; })[0] || {}).n; } });
+      });
+    return fet.catch(function () { div.remove(); svg.classList.remove('ln-amaga'); });
+  }
+
   function aplica(svg, lent, D, peu, caixa) {
     posaEstil();
     if (caixa) caixa.hidden = lent !== 'saber';
+    if (VIST[lent]) { if (D.rols.length) return muntaOrg(svg, lent, D, peu); if (peu) peu.hidden = true; return; }
     var f = LENTS[lent];
     if (!f || !D.rols.length) { if (peu) peu.hidden = true; return; }
     svg.classList.add('ln-on', 'ln-' + lent);
@@ -147,12 +231,12 @@
       c.classList.add('ln-' + x.e);
       var cx = +c.getAttribute('cx'), cy = +c.getAttribute('cy'), r = +c.getAttribute('r');
       if (x.h) g.insertBefore(mk('circle', { cx: cx, cy: cy, r: r + x.h, class: 'ln-h' }), c);
-      var t = mk('text', { x: cx, y: cy + r + 13, 'text-anchor': 'middle', class: 'ln-b ln-tb-' + x.e }, g);
+      var t = mk('text', { x: cx, y: cy - r - 7, 'text-anchor': 'middle', class: 'ln-b ln-tb-' + x.e }, g);
       t.textContent = x.b;
     });
     if (peu) { peu.textContent = L.frase; peu.hidden = false; }
     if (lent === 'saber') munta(caixa);
   }
 
-  window.Lents = { aplica: aplica, LENTS: Object.keys(LENTS) };
+  window.Lents = { aplica: aplica, LENTS: Object.keys(LENTS).concat(Object.keys(VIST)), capaDe: capaDe };
 })();
