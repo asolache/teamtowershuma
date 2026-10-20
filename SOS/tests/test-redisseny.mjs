@@ -13,6 +13,7 @@
    · Els avisos: «Què ha passat?» posa primer l'urgent i l'important (FluxViu.avis).
    · El mapa es dibuixa amb el dit: arrossega d'un rol a un altre (o toca'ls
      un rere l'altre) i surt un flux; les vistes del cervell sobre el teu mapa.
+   · «El teu dia, en ordre»: respon, propostes, produeix, cobra i xarxa.
    · I dues coses que es buscaven i no es trobaven: «Totes les pàgines» amb els
      noms de debò, i «Importa un perfil» a la vista quan et dones d'alta. */
 import { chromium } from 'playwright';
@@ -26,7 +27,7 @@ const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail
 const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
   process.env.SOS_CHROMIUM ? { executablePath: process.env.SOS_CHROMIUM } : {}));
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
-const page = await ctx.newPage();
+let page = await ctx.newPage();
 page.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
 
 /* Els textos per sota del terra, comptats al que es veu (no els dibuixos SVG,
@@ -413,6 +414,26 @@ await page.click('.lent[data-lent=valor]');
 ok(await page.evaluate(() => !document.querySelector('.vna-canvas .ln-org') && !document.querySelector('.vna-canvas svg.ln-amaga')), 'Valor torna el mapa de sempre');
 sota = await sotaTerra();
 ok(!sota.length, 'cap text del mapa per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
+
+console.log('\n14 · El teu dia, en ordre: respon, propostes, produeix, cobra i xarxa');
+/* Un navegador net: les seccions d'abans ja han respost i fet coses a l'exemple. */
+await page.context().close();
+page = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+page.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
+await page.goto(APP + '?viu');
+await page.waitForFunction(() => window.__SOS && window.FluxViu && (window.__SOS.byId(window.__SOS.state.activeId) || {}).exempleViu);
+await page.evaluate(() => { const S = window.__SOS; S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
+await page.waitForSelector('#avDia .fv-dia');
+const dia = await page.evaluate(() => [...document.querySelectorAll('#avDia li')].map(l => l.dataset.fase + ':' + [...l.querySelectorAll('.fv-di b')].map(x => x.textContent).join('|')));
+ok(dia.join(' ') === 'respon:Opinions proposta:Comandes produeix:Matèria primera cobra:Pagaments xarxa:Idees de millora|Recomanacions',
+  'a «Avui», els cinc passos del dia amb els fluxos de cadascun (' + dia.join(' · ') + ')');
+ok(await page.evaluate(() => !!document.querySelector('#avDia li[data-fase=respon] .fv-di.fv-urgent')), 'el que és urgent es veu urgent també aquí');
+await page.click('#avDia li[data-fase=cobra] .fv-di');
+await page.waitForSelector('.modal.sg');
+ok(await page.evaluate(() => /Pagaments/.test(document.querySelector('.modal.sg').textContent)), 'tocar-ne un n\'obre el seguiment');
+await page.evaluate(() => window.__SOS.closeModal());
+sota = await sotaTerra();
+ok(!sota.length, 'cap text del dia per sota de 15 px' + (sota.length ? ': ' + sota.slice(0, 4).join(' · ') : ''));
 
 await b.close();
 console.log(`\n${fail ? '❌' : '✅'} ${pass} ok · ${fail} malament`);

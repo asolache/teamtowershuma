@@ -148,11 +148,21 @@ const viu = await page.evaluate(async () => {
   const portats = { espera: segueix.espera, termini: segueix.termini, vells: n.vna.exchanges.filter(x => 'espera' in x).length };
   FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', espera: 'ells', termini: null }] }, S.uid);
   portats.despres = segueix.espera + '|' + ('termini' in segueix);
+  /* El dia en ordre: cada flux a un sol pas, pel que diu ell o pel que es dedueix. */
+  const fx = (f, ts) => ({ flux: f, ts: ts || [] });
+  const G = FluxViu.dia([fx({ label: 'Correu', espera: 'nosaltres' }, [hores(30)]), fx({ label: 'Pressupost', pas: 'acceptada' }),
+    fx({ label: 'Taller', termini: aqui(72) }), fx({ label: 'Reserva', kind: 'tangible' }), fx({ label: 'Confiança', kind: 'intangible' }, [d(40)]),
+    fx({ label: 'Res', kind: 'tangible' }), fx({ label: 'Pressupost', fase: 'cobra' }), fx({ label: 'X', espera: 'nosaltres', ajornat: aqui(20) })]);
+  const dia = G.map(g => g.id + ':' + g.items.map(i => i.x.flux.label + (g.id === 'proposta' ? '(' + i.motiu + ')' : '')).join('|'));
+  FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', fase: 'proposta', pas: 'enviada' }] }, S.uid);
+  portats.fase = segueix.fase + '|' + segueix.pas;
+  FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', fase: 'res', pas: '' }] }, S.uid);
+  portats.faseFora = ('fase' in segueix) + '|' + ('pas' in segueix);
   await S.persist(n);
   S.state.tab = 'map'; S.selectNode(n.id);
   await new Promise(r2 => setTimeout(r2, 500));
   const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[data-ex]'));
-  return { unit, avisos, portats, c1, c2, rols: n.vna.roles.length,
+  return { unit, avisos, portats, dia, c1, c2, rols: n.vna.roles.length,
     viu: svg.querySelectorAll('.fv-viu').length, pols: svg.querySelectorAll('.fv-pols').length,
     aturat: svg.querySelectorAll('.fv-aturat').length, mai: svg.querySelectorAll('.fv-mai').length,
     urls: [...svg.querySelectorAll('[data-url]')].map(e => e.getAttribute('data-url')),
@@ -168,6 +178,9 @@ ok(A.deuAra === null && A.ells === null && A.termini10 === null && A.res === nul
 ok(A.delFlux === 'urgent', 'sense context, l\'avís llegeix «espera» i «termini» del mateix flux');
 ok(viu.portats.espera === 'nosaltres' && viu.portats.termini === '2026-11-02T10:00:00.000Z' && viu.portats.vells === 1, 'el paquet porta «espera» i «termini», i els paquets sense no toquen res');
 ok(viu.portats.despres === 'ells|false', 'tornar-lo a carregar els actualitza, i un termini buit el treu');
+ok(viu.dia.join(' ') === 'respon:Correu proposta:Pressupost(És acceptada · el pas següent: cobrar-la) produeix:Taller cobra:Reserva|Pressupost xarxa:Confiança',
+  'el dia: respondre, propostes amb el pas següent, produir, cobrar i la xarxa; el que diu «fase» mana, i l\'ajornat no hi surt (' + viu.dia.join(' ') + ')');
+ok(viu.portats.fase === 'proposta|enviada' && viu.portats.faseFora === 'false|false', 'el paquet porta «fase» i «pas», i un valor desconegut els treu');
 ok(viu.c1.rols === 3 && viu.c1.fluxos === 3 && viu.c1.fets === 2, 'el paquet entra: 3 nodes, 3 fluxos, 2 fets');
 ok(viu.c2.rols === 0 && viu.c2.fluxos === 0 && viu.c2.fets === 0 && viu.rols === 3, 'tornar-lo a carregar no duplica res');
 ok(viu.viu === 1 && viu.pols === 1, 'el flux que circula es mou en la seva direcció');

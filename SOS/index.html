@@ -21067,6 +21067,10 @@ function renderAvui(body){
       qp.appendChild(nb);
     }
     box.appendChild(qp);
+    /* El dia en ordre (FluxViu.dia): respondre, propostes, produir, cobrar i la xarxa. */
+    const dc=el('div','av-card av-dia');dc.id='avDia';dc.appendChild(el('div','av-k','El teu dia, en ordre'));
+    FluxViu.pintaDia(dc,FluxViu.dia(est),{nom:x=>x.flux.label||'Flux',obre:x=>{obreMapaDe(x.node);openSeguiment(x.node,x.flux.id);}});
+    box.appendChild(dc);
   }).catch(()=>{});
 }
 function renderDashboard(w){

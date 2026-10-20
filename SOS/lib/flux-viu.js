@@ -128,6 +128,10 @@ var FluxViu = (function () {
       if ('espera' in f) { if (ESPERES[f.espera]) x.espera = f.espera; else delete x.espera; }
       if ('termini' in f) { var tm = new Date(f.termini); if (f.termini && isFinite(tm)) x.termini = tm.toISOString(); else delete x.termini; }
       var u = url(f.url); if (u) x.url = u;
+      /* En quin moment del dia es mira (`dia`) i, si és una proposta, en quin
+         pas de la comanda és. Opcionals, com l'espera. */
+      if ('fase' in f) { if (FASES[f.fase]) x.fase = f.fase; else delete x.fase; }
+      if ('pas' in f) { if (PASSOS.indexOf(f.pas) >= 0) x.pas = f.pas; else delete x.pas; }
       /* El flux com un fil: qui el porta (una persona o un agent d'IA) i què
          s'hi ha dit. Les notes, com els fets, entren una vegada per `id`. */
       if (f.porta && text(f.porta.nom, 80)) x.porta = { nom: text(f.porta.nom, 80), agent: !!f.porta.agent };
@@ -219,5 +223,92 @@ var FluxViu = (function () {
     return { quan: quan, dies: Math.round((quan - ara) / DIA), estat: e };
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, pinta: pinta, importa: importa, exemple: exemple };
+  /* ── El dia, en ordre ──────────────────────────────────────────────────
+     El que una persona fa cada dia amb la seva xarxa, en cinc passos i en
+     aquest ordre: respondre, moure les propostes, produir, cobrar i cuidar
+     la xarxa. Cada flux va a un sol pas: el que diu el flux (`fase`, del
+     paquet o de qui l'ha dibuixat) o, si no ho diu, el que es dedueix de qui
+     espera, del termini, del nom i de la mena. Serveix igual per a un negoci,
+     una associació o un equip: només llegeix el mapa.
+
+       dia(fluxos, ara) → [{id, nom, que, items:[{x, motiu}]}]
+       fluxos = [{flux, ts, ...}]  (qualsevol altra cosa hi passa intacta) */
+  var FASES = {
+    respon: ['Respon', 'el que t\'espera'],
+    proposta: ['Mou les propostes', 'cada una amb el seu pas següent'],
+    produeix: ['Produeix', 'el que toca els propers 14 dies'],
+    cobra: ['Cobra', 'el que s\'ha de cobrar i el que falta'],
+    xarxa: ['Cuida la xarxa', 'qui fa temps que no hi és']
+  };
+  var PASSOS = ['demanada', 'enviada', 'acceptada', 'cobrada', 'feta'];
+  var NOM = {
+    proposta: /propost|pressupost|presupuest|oferta|comand|encàrrec|encarrec|encargo|petici|sol·licitud|lead/i,
+    cobra: /pag|cobr|factur|diner|dinero|reserva|liquida|quota|cuota|abonament/i,
+    produeix: /event|servei|servicio|producci|taller|lliura|entrega|matèria|materia|munta|feina/i,
+    xarxa: /recomana|aliat|aliad|partner|soci|xarxa|red\b|visita|contacte|opini|idea/i
+  };
+  function fase(flux, ara) {
+    if (FASES[flux.fase]) return flux.fase;
+    if (flux.espera === 'nosaltres') return 'respon';
+    var l = (flux.label || '') + ' ' + (flux.nomA || '') + ' ' + (flux.nomB || ''), tm = +new Date(flux.termini);
+    if (NOM.proposta.test(flux.label || '')) return 'proposta';
+    if (NOM.cobra.test(flux.label || '')) return 'cobra';
+    if (NOM.produeix.test(flux.label || '') || (isFinite(tm) && tm - ara < 14 * DIA && tm > ara - DIA)) return 'produeix';
+    if (NOM.xarxa.test(l) || flux.kind === 'intangible') return 'xarxa';
+    return null;
+  }
+  function dia(fluxos, ara) {
+    ara = ara || Date.now();
+    var per = {}; Object.keys(FASES).forEach(function (k) { per[k] = []; });
+    fluxos.forEach(function (x) {
+      var f = x.flux, k = fase(f, ara); if (!k) return;
+      var e = estat(f, x.ts, ara), av = avis(f, x.ts, ara), tm = +new Date(f.termini), m;
+      if (av.nivell === null && /^Ajornat/.test(av.motiu)) return;
+      if (k === 'respon') m = av.motiu || 'Ens toca moure fitxa';
+      else if (k === 'proposta') { var p = f.pas || (e.darrer ? 'enviada' : 'demanada'), i = PASSOS.indexOf(p);
+        m = 'És ' + p + (i < PASSOS.length - 1 ? ' · el pas següent: ' + ['enviar-la', 'que l\'acceptin', 'cobrar-la', 'fer-la'][i] : ''); }
+      else if (k === 'produeix') m = isFinite(tm) ? (tm < ara ? 'Havia de ser fa ' + Math.round((ara - tm) / DIA) + ' dies' : 'D\'aquí ' + Math.round((tm - ara) / DIA) + ' dies') : (e.darrer ? 'L\'últim cop, fa ' + e.dies + ' dies' : 'Encara no ha passat mai');
+      else if (k === 'cobra') m = av.nivell ? av.motiu : e.darrer ? 'L\'últim cobrament, fa ' + e.dies + ' dies' : 'Encara no s\'ha cobrat mai';
+      else m = e.darrer ? NOMS[e.estat].replace(/^./, function (c) { return c.toUpperCase(); }) + ' · l\'últim intercanvi, fa ' + e.dies + ' dies' : 'Encara no hi ha hagut cap intercanvi';
+      per[k].push({ x: x, motiu: m, pes: (av.nivell === 'urgent' ? 0 : av.nivell === 'important' ? 1 : 2) * 1e4 - (k === 'xarxa' ? (e.dies || 999) : 0) + (isFinite(tm) ? (tm - ara) / DIA : 999) });
+    });
+    return Object.keys(FASES).map(function (k) {
+      return { id: k, nom: FASES[k][0], que: FASES[k][1], items: per[k].sort(function (a, b) { return a.pes - b.pes; }) };
+    });
+  }
+  /* El dia pintat: cinc passos numerats, cadascun amb els seus fluxos (fins
+     a 4) i el que en toca fer. `op.nom(x)` diu el nom del flux i `op.obre(x)`
+     què passa en tocar-lo. Sense colors fixos: hereta els de la pàgina. */
+  function pintaDia(caixa, grups, op) {
+    posaEstil();
+    if (!document.getElementById('fv-dia')) {
+      var s = document.createElement('style'); s.id = 'fv-dia';
+      s.textContent = '.fv-dia{list-style:none;margin:0;padding:0;counter-reset:fvd}' +
+        '.fv-dia>li{counter-increment:fvd;padding:.7rem 0;border-top:1px solid var(--border,#ddd)}.fv-dia>li:first-child{border-top:0}' +
+        '.fv-dh{display:flex;flex-wrap:wrap;align-items:center;gap:.1rem .5rem;font-weight:700}.fv-dh::before{content:counter(fvd);display:inline-grid;place-items:center;min-width:1.6rem;height:1.6rem;border-radius:50%;background:var(--text,#222);color:var(--bg,#fff);font-size:var(--t0,15px)}' +
+        '.fv-dh small{order:3;flex-basis:100%;padding-left:2.1rem;font-weight:400;color:var(--muted,#666);font-size:var(--t0,15px)}.fv-dn{margin-left:auto;font-family:"JetBrains Mono",monospace;color:var(--muted,#666)}' +
+        '.fv-di{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;border-left:3px solid var(--border,#ddd);margin:.4rem 0 0 .7rem;padding:.25rem .6rem;cursor:pointer;min-height:40px}' +
+        '.fv-di.fv-urgent{border-left-color:var(--red,#c00)}.fv-di.fv-important{border-left-color:var(--orange,#e80)}' +
+        '.fv-di span{color:var(--muted,#666);font-size:var(--t0,15px)}.fv-buit{margin:.3rem 0 0 2.1rem;color:var(--muted,#666);font-size:var(--t0,15px)}';
+      document.head.appendChild(s);
+    }
+    var ol = document.createElement('ol'); ol.className = 'fv-dia';
+    grups.forEach(function (g) {
+      var li = document.createElement('li'); li.setAttribute('data-fase', g.id);
+      li.innerHTML = '<div class="fv-dh">' + g.nom + ' <small>' + g.que + '</small><span class="fv-dn">' + g.items.length + '</span></div>';
+      if (!g.items.length) { var p = document.createElement('p'); p.className = 'fv-buit'; p.textContent = 'Res per ara.'; li.appendChild(p); }
+      g.items.slice(0, 4).forEach(function (it) {
+        var b = document.createElement('button'), av = avis(it.x.flux, it.x.ts).nivell;
+        b.className = 'fv-di' + (av ? ' fv-' + av : ''); b.type = 'button';
+        var t = document.createElement('b'); t.textContent = op.nom(it.x); var m = document.createElement('span'); m.textContent = it.motiu;
+        b.appendChild(t); b.appendChild(m); b.onclick = function () { op.obre(it.x); }; li.appendChild(b);
+      });
+      if (g.items.length > 4) { var q = document.createElement('p'); q.className = 'fv-buit'; q.textContent = 'I ' + (g.items.length - 4) + ' més.'; li.appendChild(q); }
+      ol.appendChild(li);
+    });
+    caixa.appendChild(ol);
+    return ol;
+  }
+
+  return { RITMES: RITMES, TIPUS: TIPUS, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
 })();
