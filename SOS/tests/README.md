@@ -38,6 +38,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-gent.mjs` | V56 · V57 | Rànquing recíproc, presència honesta i xat ancorat que no perd missatges |
 | `test-rele.mjs` | V58 | El relé contra un servidor que parla el protocol: dos navegadors es veuen i es parlen |
 | `test-identitat.mjs` | V59 | El `did` mana sobre el nom: ni fusiona homònims ni parteix ningú |
+| `test-referencia.mjs` | v2 | Models de referència per àmbit: un negoci es compara amb models de negoci, el sector (CCAE-2009) tria el model i el social continua amb els seus |
 | `test-permaweb.mjs` | V60 · V61 | Oferta comuna amb sedàs d'entrada, i pont de claus que diu què no verifica |
 | `test-kiss.mjs` | V62 · V63 | Que de cap portada es quedi ningú atrapat, cap pestanya sense guia, el llançador agrupat i la feina que no és de ningú |
 | `test-fusio.mjs` | V64 | Que sincronitzar no destrueixi res: triple entrada, unió, i una cadena per autor |
