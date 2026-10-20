@@ -159,6 +159,8 @@ const viu = await page.evaluate(async () => {
   FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', fase: 'res', pas: '' }] }, S.uid);
   portats.faseFora = ('fase' in segueix) + '|' + ('pas' in segueix);
   /* Un sol CRM, una etiqueta per marca: cada mapa agafa la seva i el que no en porta. */
+  try { localStorage.removeItem('sos-marques'); } catch (e) {}
+  const marcaAbans = FluxViu.triaMarca({ vna: { roles: [], exchanges: [] } }, () => {}) ? 'surt' : 'cap';
   const pm = { type: 'sos-xarxa-real', v: 1, nodes: [{ id: 'z:jo', name: 'Jo' }, { id: 'z:ep', name: 'Espai', Tag: [{ name: 'Events Penedès' }] },
     { id: 'z:tt', name: 'Client', marques: ['TeamTowers'] }, { id: 'z:sol', name: 'Sol', marques: ['Events Penedès'] }],
     fluxos: [{ id: 'm:ep', from: 'z:jo', to: 'z:ep', label: 'Reserva', Tag: [{ name: 'Events Penedès' }] },
@@ -174,11 +176,14 @@ const viu = await page.evaluate(async () => {
   S.state.tab = 'map'; S.selectNode(n.id);
   await new Promise(r2 => setTimeout(r2, 500));
   const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[data-ex]'));
-  return { unit, avisos, portats, marq, dia, c1, c2, rols: n.vna.roles.length,
+  return { unit, avisos, portats, marq, marcaAbans, dia, c1, c2, rols: n.vna.roles.length,
     viu: svg.querySelectorAll('.fv-viu').length, pols: svg.querySelectorAll('.fv-pols').length,
     aturat: svg.querySelectorAll('.fv-aturat').length, mai: svg.querySelectorAll('.fv-mai').length,
     urls: [...svg.querySelectorAll('[data-url]')].map(e => e.getAttribute('data-url')),
-    boto: !!document.querySelector('.vna-xr input[type=file]') };
+    boto: !!document.querySelector('.vna-xr input[type=file]'),
+    marcaSel: await (async () => { const m = document.getElementById('vnaMarca'); if (!m) return 'cap';
+      const ops = [...m.options].map(o => o.textContent).join('|'); m.value = 'eventspenedes'; m.dispatchEvent(new Event('change'));
+      const r = ops + '>' + n.marca; m.value = ''; m.dispatchEvent(new Event('change')); return r + '>' + ('marca' in n); })() };
 });
 ok(viu.unit.mai === 'mai' && viu.unit.viu === 'viu' && viu.unit.apagant === 'apagant' && viu.unit.aturat === 'aturat',
   'els quatre estats surten del ritme i de l\'últim cop (' + JSON.stringify(viu.unit) + ')');
@@ -201,9 +206,12 @@ ok(viu.viu === 1 && viu.pols === 1, 'el flux que circula es mou en la seva direc
 ok(viu.aturat === 1 && viu.mai === 1, 'el que fa tard surt aturat, i el que no ha circulat mai, com una promesa');
 ok(viu.urls.length === 1 && viu.urls[0].startsWith('https://crm.zoho.eu/'), 'només els orígens https s\'obren en una pestanya nova');
 ok(viu.boto, 'el mapa ofereix carregar la xarxa real');
+ok(viu.marcaAbans === 'cap', 'qui no ha carregat cap xarxa amb marques no veu el selector ni els noms de les marques');
+ok(viu.marcaSel === 'Totes les marques|TeamTowers|Events Penedès>eventspenedes>false', 'cada mapa tria la seva marca, o totes', viu.marcaSel);
 await page.evaluate(() => { history.replaceState(null, '', '?viu'); location.reload(); });
 await page.waitForFunction(() => window.__SOS);
-await page.waitForFunction(() => document.querySelectorAll('#workspace .fv-pols').length > 0, null, { timeout: 5000 }).catch(() => {});
+/* L'exemple es pinta quan arriba la llibreria: s'espera als quatre estats, no al primer. */
+await page.waitForFunction(() => ['pols', 'aturat', 'mai', 'apagant'].every(k => document.querySelector('#workspace .fv-' + k)), null, { timeout: 15000 }).catch(() => {});
 const ex = await page.evaluate(() => ({ pols: document.querySelectorAll('#workspace .fv-pols').length,
   aturat: document.querySelectorAll('#workspace .fv-aturat').length, mai: document.querySelectorAll('#workspace .fv-mai').length,
   apagant: document.querySelectorAll('#workspace .fv-apagant').length }));

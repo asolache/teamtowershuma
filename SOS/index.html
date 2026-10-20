@@ -11025,9 +11025,10 @@ function renderVNA(body,node){
   xf.onchange=async()=>{const f=xf.files[0];if(!f)return;
     try{await carregaLib('flux-viu');const c=FluxViu.importa(node,JSON.parse(await f.text()),uid);
       await persist(node);renderWorkspace();
-      toast('Xarxa real: '+c.rols+' nodes i '+c.fluxos+' fluxos nous, '+c.fets+' fets');}
+      toast('Xarxa real: '+c.rols+' nodes i '+c.fluxos+' fluxos nous, '+c.fets+' fets'+(c.altres?', '+c.altres+' d\'altres marques fora':''));}
     catch(e){toast(e.message||'No s\'ha pogut llegir el paquet');}};
   side.appendChild(xr);
+  carregaLib('flux-viu').then(()=>{const m=FluxViu.triaMarca(node,()=>persist(node));if(m)xr.before(m);}).catch(()=>{});
   /* El mapa de l'editor entra i surt tal com és (lib/mapa-valor.js). */
   const om=el('label','btn btn-ghost btn-sm vna-xr','⇪ Obre un mapa');om.id='vnaObre';
   om.title='Un JSON de l\'editor del mapa de valor, o un cerebro/mapa-real.json';
