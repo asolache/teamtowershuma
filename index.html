@@ -145,7 +145,12 @@
         /* Tres blocs i no dos, perquè al mòbil la imatge ha d'anar entremig.
            Amb dues columnes, en una sola columna la imatge queda l'última i el
            que explica el negoci d'un cop d'ull cau a la segona pantalla. */
-        .hero-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 4rem; align-items:center;
+        /* El text s'emporta més amplada que el dibuix. Des que el cervell obre
+           la pàgina (17/10/2026) el hero comença uns 130 px més avall, i a la
+           meitat (516 px) els dos botons de la crida (552) i les tres portes
+           (586) es partien en dues línies que treien la crida del plec a 1280 i
+           a 1440. Els castells s'escalen sols; un botó partit, no. */
+        .hero-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:0 4rem; align-items:center;
             grid-template-areas:'cap vis' 'cos vis'; }
         .hero-cap { grid-area:cap; } .hero-cos { grid-area:cos; } .hero-visual { grid-area:vis; }
         .hero-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1rem; display:flex; align-items:center; gap:.75rem; }
@@ -155,10 +160,14 @@
            que empenyien el botó principal per sota del plec —la cosa que la
            prova de la primera pantalla vigila. Baixar el sostre i el mínim és
            la resposta tipogràfica normal a un text més llarg; escurçar el que
-           s'ha de dir per encabir-hi una mida seria fer-ho al revés. */
-        .hero h1 { font-family:var(--sans); font-size:clamp(1.85rem,3vw,3rem); font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:1rem; }
+           s'ha de dir per encabir-hi una mida seria fer-ho al revés.
+           `balance`: amb la columna més ampla «funcionant» pujava a la primera
+           línia i partia el blau en dos; equilibrat, torna a tallar a la coma. */
+        .hero h1 { font-family:var(--sans); font-size:clamp(1.85rem,3vw,3rem); font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:1rem; text-wrap:balance; }
         .hero h1 em { font-style:normal; color:var(--blue); }
-        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1rem; max-width:540px; }
+        /* Fins a 600 px, uns setanta caràcters, encara bons de llegir: a 540
+           feia cinc línies i ara quatre, una menys abans de la crida. */
+        .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1rem; max-width:37.5rem; }
 
         /* ── L'EVOLUCIÓ, EN TRES PASSOS ───────────────────────────────────────
            Tres caselles de costat, no una llista: de costat es llegeixen com un
@@ -812,10 +821,11 @@
         /* El cervell de xarxa: el que queda de qualsevol dels tres serveis, a
            tot l'ample i sota les tres targetes. */
         .srv-cervell { margin-top:1.25rem; }
-        /* El cervell de la casa a dalt de tot: el dibuix és de `SOS/cervell/pla.js`. */
-        .cervell-top { padding:.5rem 0; border-bottom:1px solid var(--border); font-size:var(--t0); }
+        /* El cervell de la casa a dalt de tot: el dibuix és de `SOS/cervell/pla.js`.
+           L'aire va al text: el dibuix ja porta el seu, i sumats empenyien la crida del hero. */
+        .cervell-top { border-bottom:1px solid var(--border); font-size:var(--t0); }
         .cervell-top .container { display:grid; grid-template-columns:19rem minmax(0,1fr); gap:.4rem 1.5rem; align-items:center; }
-        .cervell-top p { display:flex; flex-wrap:wrap; gap:.3rem .9rem; align-items:center; color:var(--light); line-height:1.35; }
+        .cervell-top p { display:flex; flex-wrap:wrap; gap:.3rem .9rem; align-items:center; color:var(--light); line-height:1.35; padding:.5rem 0; }
         .cervell-top a { color:var(--light); font-weight:600; text-underline-offset:3px; }
         .cervell-top-g { min-height:3rem; }
         .cervell-top-tria { display:flex; flex-wrap:wrap; gap:.3rem; }
