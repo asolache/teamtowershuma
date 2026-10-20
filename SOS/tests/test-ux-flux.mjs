@@ -158,11 +158,23 @@ const viu = await page.evaluate(async () => {
   portats.fase = segueix.fase + '|' + segueix.pas;
   FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', fase: 'res', pas: '' }] }, S.uid);
   portats.faseFora = ('fase' in segueix) + '|' + ('pas' in segueix);
+  /* Un sol CRM, una etiqueta per marca: cada mapa agafa la seva i el que no en porta. */
+  const pm = { type: 'sos-xarxa-real', v: 1, nodes: [{ id: 'z:jo', name: 'Jo' }, { id: 'z:ep', name: 'Espai', Tag: [{ name: 'Events Penedès' }] },
+    { id: 'z:tt', name: 'Client', marques: ['TeamTowers'] }, { id: 'z:sol', name: 'Sol', marques: ['Events Penedès'] }],
+    fluxos: [{ id: 'm:ep', from: 'z:jo', to: 'z:ep', label: 'Reserva', Tag: [{ name: 'Events Penedès' }] },
+      { id: 'm:tt', from: 'z:jo', to: 'z:tt', label: 'Diagnòstic', marques: ['teamtowers'] },
+      { id: 'm:dues', from: 'z:ep', to: 'z:tt', label: 'Compartit', marques: ['TeamTowers', 'Events Penedès'] },
+      { id: 'm:cap', from: 'z:tt', to: 'z:jo', label: 'Sense' }] };
+  const mEP = { vna: { roles: [], exchanges: [] }, marca: 'Events Penedès' }, mTot = { vna: { roles: [], exchanges: [] } };
+  const cEP = FluxViu.importa(mEP, pm, S.uid); FluxViu.importa(mTot, pm, S.uid);
+  const marq = { ep: mEP.vna.exchanges.map(x => x.orig).sort().join(','), rolsEP: mEP.vna.roles.map(r => r.orig).sort().join(','), altres: cEP.altres,
+    tot: mTot.vna.exchanges.length + '/' + mTot.vna.roles.length, dues: mTot.vna.exchanges.find(x => x.orig === 'm:dues').marques.join(','),
+    cap: 'marques' in mTot.vna.exchanges.find(x => x.orig === 'm:cap') };
   await S.persist(n);
   S.state.tab = 'map'; S.selectNode(n.id);
   await new Promise(r2 => setTimeout(r2, 500));
   const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[data-ex]'));
-  return { unit, avisos, portats, dia, c1, c2, rols: n.vna.roles.length,
+  return { unit, avisos, portats, marq, dia, c1, c2, rols: n.vna.roles.length,
     viu: svg.querySelectorAll('.fv-viu').length, pols: svg.querySelectorAll('.fv-pols').length,
     aturat: svg.querySelectorAll('.fv-aturat').length, mai: svg.querySelectorAll('.fv-mai').length,
     urls: [...svg.querySelectorAll('[data-url]')].map(e => e.getAttribute('data-url')),
@@ -180,6 +192,8 @@ ok(viu.portats.espera === 'nosaltres' && viu.portats.termini === '2026-11-02T10:
 ok(viu.portats.despres === 'ells|false', 'tornar-lo a carregar els actualitza, i un termini buit el treu');
 ok(viu.dia.join(' ') === 'respon:Correu proposta:Pressupost(És acceptada · el pas següent: cobrar-la) produeix:Taller cobra:Reserva|Pressupost xarxa:Confiança',
   'el dia: respondre, propostes amb el pas següent, produir, cobrar i la xarxa; el que diu «fase» mana, i l\'ajornat no hi surt (' + viu.dia.join(' ') + ')');
+ok(viu.marq.ep === 'm:cap,m:dues,m:ep' && viu.marq.altres === 1 && viu.marq.rolsEP === 'z:ep,z:jo,z:sol,z:tt', 'un mapa amb marca agafa la seva, les compartides i les sense etiqueta, i els rols que hi intervenen');
+ok(viu.marq.tot === '4/4' && viu.marq.dues === 'teamtowers,eventspenedes' && viu.marq.cap === false, 'sense marca al mapa ho agafa tot; les Tags de Zoho valen igual i res no s\'endevina');
 ok(viu.portats.fase === 'proposta|enviada' && viu.portats.faseFora === 'false|false', 'el paquet porta «fase» i «pas», i un valor desconegut els treu');
 ok(viu.c1.rols === 3 && viu.c1.fluxos === 3 && viu.c1.fets === 2, 'el paquet entra: 3 nodes, 3 fluxos, 2 fets');
 ok(viu.c2.rols === 0 && viu.c2.fluxos === 0 && viu.c2.fets === 0 && viu.rols === 3, 'tornar-lo a carregar no duplica res');
