@@ -5450,7 +5450,8 @@ gasta crèdits; uns nou al dia del SOS esgoten el cicle en dues setmanes.
 
 - **La preview és on es mira**: la del PR o la de la branca, gratis, amb
   l'enllaç davant de l'Álvaro.
-- **A producció, una o dues tandes al dia.**
+- **A producció, dues tandes al dia: 13:00 i 20:00** (decidit el 21/10), amb
+  una branca `tanda/…` i una sola preview que l'Álvaro mira una vegada.
 - **Les previews no es desactiven mai.**
 
 **Guarda:** cap automàtica; la regla és a `CLAUDE.md`.
