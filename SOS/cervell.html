@@ -94,6 +94,9 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 .vistes button[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
 .vistes button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 .vistes-d{color:var(--muted);font-size:.92rem;margin:0 0 8px;min-height:1.4em}
+.koshes{margin:28px 0 0}.koshes-l{list-style:none;padding:0;margin:12px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.koshes-l li{border:1px solid var(--border);border-left:4px solid var(--k);border-radius:12px;padding:10px 14px;background:var(--card);font-size:1rem;line-height:1.5}
+.koshes-l b{font-size:1.05rem}.koshes-q{color:var(--muted)}.koshes-l small{display:block;color:var(--muted);font-size:.95rem;margin:2px 0 4px}
 .pinya-l{font-size:.92rem;margin:10px 0 0}.pinya-l ul{margin:0;padding-left:1.2em}.pinya-l p{margin:6px 0 0}
 #cvPla{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px}
 #cv.pla .cv-3d,#cv.pla .cv-ley{display:none}
@@ -228,7 +231,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 <main class="cw">
   <p class="kick">El cervell de cadascú</p>
   <h1>El teu cervell</h1>
-  <p class="lead">Cada persona i cada projecte té el seu codex: els errors que ja ha pagat, escrits perquè no es tornin a pagar. Aquí es dibuixa en tres dimensions, per koshas, amb les forces que l'uneixen. I te l'emportes: com a context per a les teves IA i com a paquet per al teu LMS.</p>
+  <p class="lead">Cada persona i cada projecte té el seu codex: els errors que ja ha pagat, escrits perquè no es tornin a pagar. Aquí es mira de cinc maneres, per capes i amb les forces que l'uneixen. I te l'emportes: com a context per a les teves IA i com a paquet per al teu LMS.</p>
 
   <form class="font" id="font">
     <label for="repo" style="position:absolute;left:-9999px">Repositori públic</label>
@@ -254,10 +257,27 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   <div class="pinya-l" id="cvPinya" hidden aria-live="polite"></div>
   <div id="cv"></div>
 
+  <!-- Les cinc capes dites de tres maneres alhora: la paraula de cada dia, el
+       castell i el Vedanta. El mètode sencer, amb l'antahkarana i la Trinitat, és
+       a knowledge/references/koshes-antahkarana.md. -->
+  <section class="koshes" id="koshes" aria-labelledby="koshesT">
+    <h2 id="koshesT">Les cinc capes, dites per a qui les mira</h2>
+    <p>Cada veda va a la capa de la qual parla. Les capes venen del Vedanta, que en diu koshas: les cinc capes de la persona, de la més densa a la més subtil. Aquí no demanen creure en res; són una manera d'ordenar el que un projecte aprèn, i cadascú les llegeix amb les seves paraules.</p>
+    <ul class="koshes-l">
+      <li style="--k:#7c3aed"><b>Propòsit</b> <span class="koshes-q">Per a què ho fem?</span><small>Al castell, el pom de dalt · al Vedanta, Anandamaya</small>La missió, la comunitat, les persones i el relat que ho uneix.</li>
+      <li style="--k:#1d4ed8"><b>Discerniment</b> <span class="koshes-q">Com sabem que és cert?</span><small>Al castell, el tronc · al Vedanta, Vijnanamaya</small>El criteri: dir només el que es pot sostenir i mesurar abans d'estimar.</li>
+      <li style="--k:#0e7490"><b>Ment</b> <span class="koshes-q">On és i com ho pensem?</span><small>Al castell, el tronc · al Vedanta, Manomaya</small>Les dades, els mapes, el cervell i l'ordre de cada cosa.</li>
+      <li style="--k:#15803d"><b>Energia</b> <span class="koshes-q">D'on surt la força i on es perd?</span><small>Al castell, la pinya · al Vedanta, Pranamaya</small>El valor, els diners, els intercanvis i qui aporta què.</li>
+      <li style="--k:#b45309"><b>Cos</b> <span class="koshes-q">Què fem i què toquem?</span><small>Al castell, la pinya · al Vedanta, Annamaya</small>L'obra: el codi, les pàgines, les eines i el que es lliura.</li>
+    </ul>
+    <p>La regla del castell hi afegeix una cosa: la pinya (cos i energia) ha de ser més ampla que el tronc (ment i discerniment). Un projecte que pensa més del que fa cau per baix.</p>
+  </section>
+
   <section class="crea" id="crea" aria-labelledby="creaT">
     <h2 id="creaT">Crea el teu cervell de xarxa</h2>
     <p>El que el teu projecte aprèn, escrit perquè ni l'equip ni cap IA l'hagi de tornar a aprendre: el codex, el mapa i les guardes que avisen quan una cosa deixa de ser certa. Neix amb les vedes de TeamTowers heretades i es mira de totes aquestes maneres. El pas següent és la xarxa: que el que aprens tu, passat pel sedàs, pugui servir als projectes germans.</p>
-    <p><a href="/SOS/pressupost.html">Demana el teu →</a></p>
+    <p>És formació-acció: l'equip construeix el seu cervell amb IA i, mentre el construeix, aprèn IA i innovació fent-ho. No en surt amb un diploma, sinó amb un cervell que funciona i que és seu.</p>
+    <p><a href="/SOS/">Tria com començar: Gratis, Viu o Xarxa →</a> · <a href="/SOS/pressupost.html">Demana el teu →</a></p>
   </section>
 
   <h2 id="emporta">Te l'emportes</h2>
