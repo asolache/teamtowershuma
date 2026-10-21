@@ -103,6 +103,7 @@
     "herramientas/tools/analitza-contingut.js": "SOS/tools/analitza-contingut.js",
     "herramientas/tools/proposta.js": "SOS/tools/proposta.js",
     "herramientas/tools/automatitza.js": "SOS/tools/automatitza.js",
+    "herramientas/tools/proces-web.js": "SOS/tools/proces-web.js",
     "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json"
   },
   "serveis": {
