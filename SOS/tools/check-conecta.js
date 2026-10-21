@@ -96,6 +96,27 @@ D.conectores.forEach(c => { if (!usats.has(c.id)) bad(`«${c.id}» no surt a cap
 D.roles.forEach(r => { if (!rolsAmbFlux.has(r.id)) bad(`el rol «${r.nombre}» no té cap flux`); });
 ok(`${D.flujos.length} fluxos, ${D.conectores.length} serveis i ${D.roles.length} rols, tots enllaçats`);
 
+/* Els casos reals: un cas «hoy» diu que ja funciona a casa, i per això totes
+   les seves peces han d'estar en ús; i la jornada suma les hores que diu. */
+const EST = D.estados_caso || {};
+(D.casos || []).forEach(c => {
+  if (!EST[c.estado]) bad(`el cas «${c.id}» té un estat que no existeix: ${c.estado}`);
+  if (!c.que || !c.como || !c.via) bad(`al cas «${c.id}» li falta què fa, com o per on`);
+  c.piezas.forEach(id => {
+    if (!CON[id]) bad(`el cas «${c.id}» fa servir «${id}», que no és un servei`);
+    else if (c.estado === 'hoy' && !CON[id].uso) bad(`el cas «${c.id}» diu que funciona avui amb ${CON[id].nombre}, que no està en ús`);
+  });
+});
+if ((D.casos || []).length) ok(`${D.casos.length} casos reals, i els d'avui només amb peces en ús`);
+else bad('no hi ha casos reals: la pàgina promet sense ensenyar res');
+const J = D.jornada;
+if (!J || !J.bloques.length) bad('falta la jornada');
+else {
+  const suma = J.bloques.reduce((a, b) => a + b.h, 0);
+  if (Math.abs(suma - J.horas) > 1e-9) bad(`la jornada diu ${J.horas} h i els blocs en sumen ${suma}`);
+  else ok(`la jornada suma ${J.horas} h, bloc a bloc`);
+}
+
 D.categorias.forEach(cat => {
   const lliures = D.conectores.filter(c => c.cat === cat.id && c.libre);
   if (!lliures.length) bad(`la categoria «${cat.nombre}» no té cap opció lliure`);

@@ -14,6 +14,8 @@
 const { readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const P = require('./proces-web.js');
+const V = require('./web-viva.js');
+const VP = V.pinta('        ');
 
 const CHECK = process.argv.includes('--check');
 const FITXER = join(__dirname, '..', '..', 'mapa-web', 'index.html');
@@ -32,8 +34,23 @@ const SECCIO = [
   '                <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Empezar · Mapa y web" data-cuerpo="borrador">Empezar por el paso 1</a>',
   '                <p class="micro">Se abre tu correo.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>',
   '            </div>',
-  '            <a class="btn btn-ghost" href="/conecta/#modelo">Qué incluye la web viva</a>',
+  '            <a class="btn btn-ghost" href="#viva">Qué web quieres</a>',
   '        </div>',
+  '    </div>',
+  '</section>',
+  '',
+  '<section id="viva" aria-labelledby="t-viva">',
+  '    <div class="container">',
+  '        <div class="cabeza">',
+  '            <p class="eyebrow">Qué web quieres · hasta dónde</p>',
+  '            <h2 id="t-viva">Empieza por lo mínimo que te sirve. Crece cuando lo necesites.</h2>',
+  '            <p class="lead">Cuatro niveles. Los tres primeros se presupuestan por flujos y son tuyos sin cuota. El cuarto es la web viva: lo que se repite en tu negocio deja de depender de ti.</p>',
+  '        </div>',
+  VP.nivells,
+  VP.garantia,
+  '        <h3 class="sub" id="procesos">Los procesos que se repiten, y se quedan vivos</h3>',
+  '        <p>Un proyecto tiene sus pasos. Un negocio, además, tiene procesos que no acaban nunca. Los ordenamos en tres: crear lo que todavía no existe, sostener lo que ya funciona y transformar lo que se ha quedado corto.</p>',
+  VP.trinitat,
   '    </div>',
   '</section>'
 ].join('\n');
@@ -45,7 +62,7 @@ const entre = (s, a, b, nou) => {
 };
 
 const abans = readFileSync(FITXER, 'utf8');
-const ara = entre(entre(abans, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', SECCIO), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS);
+const ara = entre(entre(abans, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', SECCIO), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS + V.CSS);
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m), bad = m => { fails++; console.log('  ✗ ' + m); };
@@ -53,7 +70,9 @@ if (CHECK) {
   console.log('\nGuarda del procés del client · /mapa-web/ diu els passos de proces-web.js');
   if (ara === abans) ok('«Cómo se contrata» és el que surt de proces-web.js (' + P.PASSOS.length + ' passos)');
   else bad('mapa-web/index.html no és el que sortiria ara: node SOS/tools/build-proces.js');
-  const txt = JSON.stringify(P.PASSOS);
+  const errV = V.revisa();
+  if (errV.length) errV.forEach(bad); else ok('web viva: ' + V.NIVELLS.length + ' nivells i ' + V.TRINITAT.reduce((a, t) => a + t.processos.length, 0) + ' processos, i els d\'avui diuen amb què');
+  const txt = JSON.stringify([P.PASSOS, V.NIVELLS, V.GARANTIA, V.TRINITAT]);
   if (/\d[\d.,]*\s?€|€\s?\d/.test(txt)) bad('un pas porta un import en euros: el preu va per fluxos');
   else ok('cap pas porta un import en euros');
   process.exit(fails ? 1 : 0);

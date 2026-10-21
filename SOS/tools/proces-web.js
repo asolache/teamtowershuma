@@ -42,8 +42,8 @@ const PASSOS = [
     es: ['Todo a tu nombre', 'Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.', 'El cerebro de tu negocio por escrito, tu backoffice y media hora de revisión a las dos semanas.'],
     ca: ['Tot a nom teu', 'El teu repositori privat al teu GitHub, la web al teu Netlify i el teu domini.', 'El cervell del teu negoci per escrit, el teu backoffice i mitja hora de revisió a les dues setmanes.'] },
   { id: 'viva', qui: ['ia', 'al'], zoho: 'Cerrado (ganado)', opcional: true,
-    es: ['Tu web, viva', 'Si quieres, una cuota mensual sin permanencia: comprobaciones, cambios pequeños y el mapa al día.', 'Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.'],
-    ca: ['La teva web, viva', 'Si vols, una quota mensual sense permanència: comprovacions, canvis petits i el mapa al dia.', 'Cada mes, l\'informe del teu mapa: què es mou, què s\'atura i què s\'ha automatitzat.'] }
+    es: ['Tu web, viva', 'Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.', 'Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.'],
+    ca: ['La teva web, viva', 'Si vols, una quota mensual sense permanència: les teves automatitzacions definides i gestionades, comprovacions i el mapa al dia.', 'Cada mes, l\'informe del teu mapa: què es mou, què s\'atura i què s\'ha automatitzat.'] }
 ];
 
 const QUI = { es: { tu: 'Tú', ia: 'IA', al: 'Álvaro' }, ca: { tu: 'Tu', ia: 'IA', al: 'Àlvar' } };
