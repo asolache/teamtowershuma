@@ -364,6 +364,12 @@ jobs:
       - name: Flux de nivell 2 · formulari → Zoho CRM
         run: node SOS/tests/test-zoho-nivell2.mjs
 
+      # L'espai de cada agència: llegeix de Zoho amb un enllaç privat. Sense
+      # xarxa: que una clau només obri la seva agència, que no surti res del
+      # compte fora de la llista i que el registre no porti la clau.
+      - name: L'espai de les agències · Zoho CRM
+        run: node SOS/tests/test-espai-partner.mjs
+
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció
       # no passi sense permís i que l'avís de Stripe sense signatura bona no compti.
