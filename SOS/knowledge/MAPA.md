@@ -78,7 +78,7 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 
 ## arrel · pàgines HTML
 
-8 pàgines HTML a l'arrel del repositori (`avis-legal.html`, `cataleg.html`, `finances.html`, `home-nova.html`…).
+9 pàgines HTML a l'arrel del repositori (`avis-legal.html`, `cataleg.html`, `finances.html`, `home-nova.html`…).
 Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.
 No són referència de com es fan les coses ara.
 

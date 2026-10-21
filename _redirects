@@ -214,3 +214,6 @@
 /qui-som-nosaltres /qui-som.html    301
 
 # La secció `#trajectoria` ja no és a la portada: és a `qui-som.html`.
+
+# El seguiment d'una proposta per al client (les dades, d'eventspenedes.com)
+/seguiment/*  /seguiment.html  200
