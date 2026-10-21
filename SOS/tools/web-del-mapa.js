@@ -25,14 +25,10 @@ const { readFileSync, writeFileSync, mkdirSync } = require('node:fs');
 const { join, dirname, resolve } = require('node:path');
 const { createHash } = require('node:crypto');
 
+const MW = require('../lib/motor-web.js');
 const html = readFileSync(join(__dirname, '..', 'vna-suport.html'), 'utf8');
-const bloc = nom => {
-  const a = html.indexOf('/*' + nom + '*/'), b = html.indexOf('/*/' + nom + '*/');
-  if (a < 0 || b <= a) throw new Error('Falta el bloc ' + nom + ' a vna-suport.html');
-  return html.slice(a, b);
-};
-const motor = new Function('\'use strict\';\n' + ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-IMPORTA', 'VS-GENERA'].map(bloc).join('\n')
-  + '\nreturn { revisa, fluxos, creaDiagnosi, creaModel, webDelMapa, webASite, ambPermaweb, generaWeb, codiRepositori, KIT_TXT, rastreja };')();
+const bloc = nom => MW.bloc(html, nom);
+const motor = MW.motor(html);
 const sencer = nom => bloc(nom) + '/*/' + nom + '*/';
 const k = html.indexOf('const EXEMPLE = {'), exemple = html.slice(k, html.indexOf('};', k) + 2);
 

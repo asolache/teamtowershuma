@@ -100,6 +100,7 @@
     "herramientas/vna-suport.html": "SOS/vna-suport.html",
     "herramientas/tools/revisa-mapa.js": "SOS/tools/revisa-mapa.js",
     "herramientas/tools/web-del-mapa.js": "SOS/tools/web-del-mapa.js",
+    "herramientas/lib/motor-web.js": "SOS/lib/motor-web.js",
     "herramientas/tools/analitza-contingut.js": "SOS/tools/analitza-contingut.js",
     "herramientas/tools/proposta.js": "SOS/tools/proposta.js",
     "herramientas/tools/automatitza.js": "SOS/tools/automatitza.js",

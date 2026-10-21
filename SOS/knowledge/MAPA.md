@@ -13,12 +13,12 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 329 · 18979 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 332 · 19000 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 127 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
-| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 8 · 126 KB |
+| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 10 · 137 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 1 · 9207 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 352 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
@@ -26,7 +26,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 83 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 204 KB |
-| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created) i el pagament (checkout) | 3 · 15 KB |
+| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created) i el pagament (checkout) | 3 · 16 KB |
 | `visita/` | On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així | 1 · 6 KB |
 
 ## prova
@@ -36,8 +36,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 33 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 120 · 1575 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 69 · 1440 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 121 · 1583 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 69 · 1441 KB |
 
 ## saber
 
@@ -84,4 +84,4 @@ No són referència de com es fan les coses ara.
 
 ---
 
-*41 carpetes declarades · generat des de l'arbre, no escrit.*
+*42 carpetes declarades · generat des de l'arbre, no escrit.*

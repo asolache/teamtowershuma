@@ -81,6 +81,15 @@ function pinta(sagnat) {
   return { nivells, garantia: ind + '<p class="vv-g"><strong>Lo que garantiza la cuota.</strong> ' + esc(GARANTIA) + '</p>', trinitat: trin };
 }
 
+/* Els nivells com a tria, per a l'espai de client (/cliente/): una targeta
+   amb el seu botó de ràdio, i el que porta cadascun. */
+function pintaTria(sagnat) {
+  const ind = sagnat || '';
+  return NIVELLS.map((n, i) => ind + '<label class="nivell" for="cl-n-' + n.id + '"><span class="k">Nivel ' + (i + 1) + (n.cuota ? ' · cuota mensual' : ' · por flujos') + '</span>'
+    + '<span><input type="radio" name="nivel" id="cl-n-' + n.id + '" value="' + esc(n.nom) + '"> <b>' + esc(n.nom) + '</b></span><span>' + esc(n.per) + '</span>'
+    + '<ul>' + n.te.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></label>').join('\n');
+}
+
 /* Per a la guarda: què ha de complir cada peça. */
 function revisa() {
   const err = [];
@@ -92,7 +101,7 @@ function revisa() {
   return err;
 }
 
-module.exports = { NIVELLS, GARANTIA, TRINITAT, CSS, pinta, revisa };
+module.exports = { NIVELLS, GARANTIA, TRINITAT, CSS, pinta, pintaTria, revisa };
 
 if (require.main === module) {
   NIVELLS.forEach((n, i) => console.log('Nivel ' + (i + 1) + ' · ' + n.nom));

@@ -19,6 +19,9 @@ const VP = V.pinta('        ');
 
 const CHECK = process.argv.includes('--check');
 const FITXER = join(__dirname, '..', '..', 'mapa-web', 'index.html');
+/* L'espai de client (/cliente/) porta els mateixos passos («Lo que viene
+   después») i els nivells com a tria, de les mateixes dues fonts. */
+const CLIENT = join(__dirname, '..', '..', 'cliente', 'index.html');
 
 const SECCIO = [
   '<section id="contratar" class="alt" aria-labelledby="t-contratar">',
@@ -31,8 +34,8 @@ const SECCIO = [
   P.pinta({ llengua: 'es', sagnat: '        ' }),
   '        <div class="accions">',
   '            <div class="cta">',
-  '                <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Empezar · Mapa y web" data-cuerpo="borrador">Empezar por el paso 1</a>',
-  '                <p class="micro">Se abre tu correo.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>',
+  '                <a class="btn btn-primary" href="/cliente/">Empezar por el paso 1</a>',
+  '                <p class="micro">Tu espacio de cliente: te creas la cuenta y nos cuentas qué quieres.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>',
   '            </div>',
   '            <a class="btn btn-ghost" href="#viva">Qué web quieres</a>',
   '        </div>',
@@ -63,6 +66,9 @@ const entre = (s, a, b, nou) => {
 
 const abans = readFileSync(FITXER, 'utf8');
 const ara = entre(entre(abans, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', SECCIO), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS + V.CSS);
+const abansC = readFileSync(CLIENT, 'utf8');
+const araC = entre(entre(entre(abansC, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', P.pinta({ llengua: 'es', sagnat: '        ' })),
+  '<!--TT-NIVELLS-->', '<!--/TT-NIVELLS-->', V.pintaTria('            ')), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS);
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m), bad = m => { fails++; console.log('  ✗ ' + m); };
@@ -70,6 +76,8 @@ if (CHECK) {
   console.log('\nGuarda del procés del client · /mapa-web/ diu els passos de proces-web.js');
   if (ara === abans) ok('«Cómo se contrata» és el que surt de proces-web.js (' + P.PASSOS.length + ' passos)');
   else bad('mapa-web/index.html no és el que sortiria ara: node SOS/tools/build-proces.js');
+  if (araC === abansC) ok('/cliente/ porta els mateixos passos i els ' + V.NIVELLS.length + ' nivells');
+  else bad('cliente/index.html no és el que sortiria ara: node SOS/tools/build-proces.js');
   const errV = V.revisa();
   if (errV.length) errV.forEach(bad); else ok('web viva: ' + V.NIVELLS.length + ' nivells i ' + V.TRINITAT.reduce((a, t) => a + t.processos.length, 0) + ' processos, i els d\'avui diuen amb què');
   const txt = JSON.stringify([P.PASSOS, V.NIVELLS, V.GARANTIA, V.TRINITAT]);
@@ -79,3 +87,5 @@ if (CHECK) {
 }
 if (ara !== abans) { writeFileSync(FITXER, ara); console.log('mapa-web/index.html · «Cómo se contrata» escrit'); }
 else console.log('mapa-web/index.html · ja estava al dia');
+if (araC !== abansC) { writeFileSync(CLIENT, araC); console.log('cliente/index.html · passos i nivells escrits'); }
+else console.log('cliente/index.html · ja estava al dia');
