@@ -159,6 +159,14 @@ const viu = await page.evaluate(async () => {
   FluxViu.importa(n, { type: 'sos-xarxa-real', v: 1, nodes: pak.nodes, fluxos: [{ id: 'gmail:c', from: 'jo', to: 'zoho:2', fase: 'res', pas: '' }] }, S.uid);
   portats.faseFora = ('fase' in segueix) + '|' + ('pas' in segueix);
   /* Un sol CRM, una etiqueta per marca: cada mapa agafa la seva i el que no en porta. */
+  /* El que costa cada fet: minuts i còmput, i el dia d'avui pot créixer. */
+  const ct = { vna: { roles: [], exchanges: [] } }, cp = f => ({ type: 'sos-xarxa-real', v: 1, nodes: [{ id: 'teamtowers', name: 'TeamTowers' }, { id: 'cli', name: 'Client' }],
+    fluxos: [{ id: 'servei:p', from: 'teamtowers', to: 'cli', label: 'Servei', fets: f }] });
+  FluxViu.importa(ct, cp([{ id: 'traza:p:2026-10-20', ts: '2026-10-20T18:00:00Z', cost: { min: 90 } }, { id: 'traza:p:ia:2026-10', ts: '2026-10-20T18:00:00Z', cost: { usd: 3.456 } },
+    { id: 'traza:p:2026-10-21', ts: '2026-10-21T12:00:00Z', cost: { min: 30, usd: -1, eur: 50 } }, { id: 'x', ts: '2026-10-21T12:00:00Z', cost: 'molt' }]), S.uid);
+  FluxViu.importa(ct, cp([{ id: 'traza:p:2026-10-21', ts: '2026-10-21T17:00:00Z', cost: { min: 75 } }]), S.uid);
+  const sx = ct.vna.exchanges[0], costos = { tot: FluxViu.cost(sx), dia20: FluxViu.cost(sx, '2026-10-20', '2026-10-20T23:59:59Z'), fets: sx.events.length,
+    net: JSON.stringify(sx.events.find(e => e.orig === 'traza:p:2026-10-21').cost), brut: 'cost' in sx.events.find(e => e.orig === 'x') };
   try { localStorage.removeItem('sos-marques'); } catch (e) {}
   const marcaAbans = FluxViu.triaMarca({ vna: { roles: [], exchanges: [] } }, () => {}) ? 'surt' : 'cap';
   const pm = { type: 'sos-xarxa-real', v: 1, nodes: [{ id: 'z:jo', name: 'Jo' }, { id: 'z:ep', name: 'Espai', Tag: [{ name: 'Events Penedès' }] },
@@ -176,7 +184,7 @@ const viu = await page.evaluate(async () => {
   S.state.tab = 'map'; S.selectNode(n.id);
   await new Promise(r2 => setTimeout(r2, 500));
   const svg = [...document.querySelectorAll('#workspace svg')].find(s => s.querySelector('path[data-ex]'));
-  return { unit, avisos, portats, marq, marcaAbans, dia, c1, c2, rols: n.vna.roles.length,
+  return { unit, avisos, portats, marq, marcaAbans, costos, dia, c1, c2, rols: n.vna.roles.length,
     viu: svg.querySelectorAll('.fv-viu').length, pols: svg.querySelectorAll('.fv-pols').length,
     aturat: svg.querySelectorAll('.fv-aturat').length, mai: svg.querySelectorAll('.fv-mai').length,
     urls: [...svg.querySelectorAll('[data-url]')].map(e => e.getAttribute('data-url')),
@@ -206,6 +214,8 @@ ok(viu.viu === 1 && viu.pols === 1, 'el flux que circula es mou en la seva direc
 ok(viu.aturat === 1 && viu.mai === 1, 'el que fa tard surt aturat, i el que no ha circulat mai, com una promesa');
 ok(viu.urls.length === 1 && viu.urls[0].startsWith('https://crm.zoho.eu/'), 'només els orígens https s\'obren en una pestanya nova');
 ok(viu.boto, 'el mapa ofereix carregar la xarxa real');
+ok(viu.costos.fets === 4 && viu.costos.tot.min === 165 && viu.costos.tot.usd === 3.46 && viu.costos.tot.fets === 3, 'cada fet porta el que costa, en minuts i en còmput, i el flux ho suma', JSON.stringify(viu.costos));
+ok(viu.costos.dia20.min === 90 && viu.costos.net === '{"min":75}' && viu.costos.brut === false, 'per periodes; tornar a carregar el dia l\'actualitza; res negatiu, cap euro ni res que no sigui un número');
 ok(viu.marcaAbans === 'cap', 'qui no ha carregat cap xarxa amb marques no veu el selector ni els noms de les marques');
 ok(viu.marcaSel === 'Totes les marques|TeamTowers|Events Penedès>eventspenedes>false', 'cada mapa tria la seva marca, o totes', viu.marcaSel);
 await page.evaluate(() => { history.replaceState(null, '', '?viu'); location.reload(); });

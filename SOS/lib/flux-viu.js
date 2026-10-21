@@ -115,6 +115,26 @@ var FluxViu = (function () {
   function text(x, n) { return String(x == null ? '' : x).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n); }
   function url(x) { x = String(x || ''); return /^https:\/\/[^\s"'<>]+$/.test(x) ? x.slice(0, 500) : ''; }
 
+  /* La comptabilitat del valor: el que ha costat cada fet, en minuts de
+     dedicació d'una persona (`min`) i en còmput a preu d'API (`usd`). Sense
+     tarifes ni euros: només el que s'ha fet servir. */
+  function cost1(c) {
+    if (!c || typeof c !== 'object') return null;
+    var r = {};
+    ['min', 'usd'].forEach(function (k) { var v = Number(c[k]); if (c[k] != null && isFinite(v) && v >= 0) r[k] = v; });
+    return Object.keys(r).length ? r : null;
+  }
+  /* Suma el cost d'un flux entre `desde` i `fins` (ms o data, opcionals). */
+  function cost(flux, desde, fins) {
+    var a = desde == null ? -Infinity : +new Date(desde), b = fins == null ? Infinity : +new Date(fins), r = { min: 0, usd: 0, fets: 0 };
+    (flux && flux.events || []).forEach(function (e) {
+      var t = +new Date(e.ts); if (!e.cost || !(t >= a && t <= b)) return;
+      r.min += e.cost.min || 0; r.usd += e.cost.usd || 0; r.fets++;
+    });
+    r.usd = Math.round(r.usd * 100) / 100;
+    return r;
+  }
+
   function importa(node, pak, uid) {
     if (!pak || pak.type !== TIPUS || !Array.isArray(pak.nodes)) throw new Error('Aquest fitxer no és un paquet de xarxa real');
     var vna = node.vna, roles = vna.roles, ex = vna.exchanges, compte = { rols: 0, fluxos: 0, fets: 0 };
@@ -167,9 +187,15 @@ var FluxViu = (function () {
       }
       x.events = x.events || [];
       (f.fets || []).forEach(function (ev) {
-        var eo = text(ev.id, 160), ts = new Date(ev.ts);
-        if (!eo || !isFinite(ts) || x.events.some(function (y) { return y.orig === eo; })) return;
-        x.events.push({ orig: eo, ts: ts.toISOString(), what: text(ev.what, 120), url: url(ev.url) || undefined });
+        var eo = text(ev.id, 160), ts = new Date(ev.ts), c = cost1(ev.cost);
+        if (!eo || !isFinite(ts)) return;
+        /* Un fet que ja hi és només actualitza el que costa: el dia d'avui
+           encara pot créixer en minuts. */
+        var ja = x.events.find(function (y) { return y.orig === eo; });
+        if (ja) { if ('cost' in ev) { if (c) ja.cost = c; else delete ja.cost; } return; }
+        var e = { orig: eo, ts: ts.toISOString(), what: text(ev.what, 120), url: url(ev.url) || undefined };
+        if (c) e.cost = c;
+        x.events.push(e);
         compte.fets++;
       });
     });
@@ -350,5 +376,5 @@ var FluxViu = (function () {
     return ol;
   }
 
-  return { RITMES: RITMES, TIPUS: TIPUS, MARQUES: MARQUES, marques: marques, triaMarca: triaMarca, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
+  return { RITMES: RITMES, TIPUS: TIPUS, MARQUES: MARQUES, marques: marques, triaMarca: triaMarca, FASES: FASES, PASSOS: PASSOS, ritmeDies: ritmeDies, estat: estat, propera: propera, cost: cost, avis: avis, fase: fase, dia: dia, pintaDia: pintaDia, pinta: pinta, importa: importa, exemple: exemple };
 })();
