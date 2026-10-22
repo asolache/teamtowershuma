@@ -25,6 +25,7 @@
    · **Cap clau al client ni al repositori.** ANTHROPIC_API_KEY a Netlify,
      millor d'un espai de treball amb límit de despesa mensual a la consola.
    · **El text del client és dada, no instruccions** (va dins de <dades>). */
+import { magatzem as blobs } from '../lib/magatzem.mjs';
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
@@ -139,19 +140,8 @@ export function cost(r) {
 }
 export const reserva = (pas, entrada) => ((Math.ceil(entrada.length / 2.5) + 1500) * PITJOR[0] + MAX_TOKENS[pas] * PITJOR[1]) / 1e6;
 
-/* ─── El registre de la despesa: Netlify Blobs, sense dependències ─── */
-export function magatzem(event) {
-  let ctx = null;
-  try { ctx = event.blobs ? JSON.parse(Buffer.from(event.blobs, 'base64').toString('utf8')) : null; } catch (e) { ctx = null; }
-  const site = (event.headers || {})['x-nf-site-id'];
-  if (!ctx || !ctx.url || !ctx.token || !site) return null;
-  const url = k => ctx.url.replace(/\/+$/, '') + '/' + site + '/site:ia-cliente/' + k;
-  const cap = { authorization: 'Bearer ' + ctx.token };
-  return {
-    get: async k => { const r = await fetch(url(k), { headers: cap }); if (r.status === 404) return null; if (!r.ok) throw new Error('blobs ' + r.status); return r.json(); },
-    set: async (k, v) => { const r = await fetch(url(k), { method: 'PUT', headers: Object.assign({ 'content-type': 'application/json' }, cap), body: JSON.stringify(v) }); if (!r.ok) throw new Error('blobs ' + r.status); }
-  };
-}
+/* ─── El registre de la despesa: Netlify Blobs (netlify/lib/magatzem.mjs) ─── */
+const magatzem = event => blobs(event, 'ia-cliente');
 
 const json = (statusCode, o) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(o) });
 

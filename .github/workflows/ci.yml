@@ -402,6 +402,11 @@ jobs:
       - name: La IA de l'espai de client, identificada i amb tope
         run: node SOS/tests/test-pule-mapa.mjs
 
+      # El preu de cada client (proposta.mjs): només el veu qui ha entrat amb la
+      # seva sessió, i carregar-lo demana el testimoni de gestió.
+      - name: La proposta de cada client, només per a ell
+        run: node SOS/tests/test-preu-client.mjs
+
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció
       # no passi sense permís i que l'avís de Stripe sense signatura bona no compti.

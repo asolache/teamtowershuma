@@ -195,6 +195,16 @@
         .ia-pensant p { font-size: var(--t0); color: var(--indigo); font-weight: 600; min-height: 1.5em; }
         .ia-esq { height: 4.2rem; border-radius: 12px; background: linear-gradient(90deg, #eceafd 25%, #f8f7ff 50%, #eceafd 75%); background-size: 200% 100%; animation: ia-brilla 1.3s ease-in-out infinite; }
         @keyframes ia-brilla { to { background-position: -200% 0; } }
+        .nivells-f { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: 1.2rem; }
+        .nivells-f > div { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+        .nivells-f .k { font-family: var(--mono); font-size: var(--t0); color: var(--indigo); }
+        .nivells-f p { font-size: var(--t0); color: var(--light); margin-top: .3rem; }
+        .prop-t { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: var(--t0); }
+        .prop-t th, .prop-t td { text-align: left; padding: .5rem .4rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .prop-t td.n, .prop-t th.n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .prop-t tfoot td { font-weight: 700; border-bottom: 0; }
+        .prop-t td:nth-child(2) { white-space: nowrap; }
+        #cl-prop-res h3 { margin-top: 1.4rem; }
         .ia-resum { margin-top: 1.1rem; padding: .8rem 1rem; border-left: 3px solid var(--purple); background: rgba(255, 255, 255, .7); border-radius: 0 10px 10px 0; font-style: italic; color: var(--text); max-width: 70ch; }
         .ia-props { display: grid; gap: .7rem; margin-top: 1rem; }
         .ia-prop { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: .85rem 1rem; display: grid; gap: .35rem; animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; transition: opacity .3s, transform .3s; }
@@ -533,6 +543,29 @@
     </div>
 </section>
 
+<section id="propuesta" class="alt" aria-labelledby="t-propuesta">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">7 · Tu propuesta</p>
+            <h2 id="t-propuesta">Quién trabaja en tu proyecto, y lo que te cuesta a ti.</h2>
+            <p>Tu proyecto lo llevan personas de tres niveles, con formación y mentoría entre ellas. Tu precio sale de las horas de cada nivel que necesita tu proyecto, más la IA y las herramientas. No lo publicamos: lo ves solo tú, aquí, cuando entras.</p>
+        </div>
+        <div class="nivells-f" aria-label="Los tres niveles">
+            <div><span class="k">Nivel 1</span><h3>Practicante</h3><p>Hace el trabajo acompañado: recoge lo que le cuentas, lo registra y prepara las sesiones.</p></div>
+            <div><span class="k">Nivel 2</span><h3>Gestor o gestora</h3><p>Sostiene tu proyecto entero: facilita, dibuja el mapa, lleva las cuentas y el seguimiento.</p></div>
+            <div><span class="k">Nivel 3</span><h3>Mentor o mentora</h3><p>Diseña el encargo contigo, pone el criterio, decide a tu lado y forma a los demás.</p></div>
+        </div>
+        <div class="ia" id="cl-prop" hidden data-per="Para ver tu propuesta, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
+            <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
+                <div><h3>Tu propuesta, solo para ti</h3><p>Cuando hablemos, aquí verás lo que incluye tu proyecto, las horas de cada nivel y tu precio. Entra con la misma cuenta que nos diste.</p></div></div>
+            <div class="ia-qui" data-ia="qui"></div>
+            <div class="ia-sessio" data-ia="sessio" hidden></div>
+            <button type="button" class="btn btn-primary ia-boto" id="cl-prop-veu" hidden>Ver mi propuesta</button>
+            <div id="cl-prop-res" aria-live="polite"></div>
+        </div>
+    </div>
+</section>
+
 </main>
 
 <!--TT-PEU-->
@@ -834,7 +867,7 @@
         var CI = 'tt.cliente.ia', I = {};
         try { I = JSON.parse(localStorage.getItem(CI) || 'null') || {}; } catch (e) { I = {}; }
         function desaI() { try { localStorage.setItem(CI, JSON.stringify(I)); } catch (e) { /* sin memoria */ } }
-        var VIES = [], caixes = [$('#cl-ia'), $('#cl-ia-web')];
+        var VIES = [], ACTIVA = false, caixes = [$('#cl-ia'), $('#cl-ia-web'), $('#cl-prop')];
         /* Al volver de GitHub, la sesión llega en el fragmento: se guarda y se borra de la barra. */
         var h = /^#sessio=([\w-]+\.[\w-]+)$/.exec(location.hash);
         if (h) {
@@ -854,18 +887,19 @@
         function pinta() {
             caixes.forEach(function (cx) {
                 if (!cx) return;
-                cx.hidden = !VIES.length && !I.sessio;
+                var esIA = cx.id !== 'cl-prop';
+                cx.hidden = (esIA && !ACTIVA) || (!VIES.length && !I.sessio);
                 var qui = cx.querySelector('[data-ia="qui"]'), ses = cx.querySelector('[data-ia="sessio"]'), boto = cx.querySelector('.ia-boto');
                 qui.textContent = ''; ses.textContent = '';
                 if (I.sessio) {
                     qui.hidden = true; ses.hidden = false; boto.hidden = false;
                     ses.appendChild(el('span', {}, 'Hola, ' + (I.nom || 'tú') + (I.via === 'github' ? ' · con GitHub' : ' · con tu correo')));
-                    energia(ses);
+                    if (esIA) energia(ses);
                     var sb = el('button', { type: 'button' }, 'Salir'); sb.addEventListener('click', function () { I = {}; desaI(); pinta(); }); ses.appendChild(sb);
                     return;
                 }
                 qui.hidden = false; ses.hidden = true; boto.hidden = true;
-                qui.appendChild(el('p', {}, 'Para usar la IA, dinos quién eres. Elige cómo:'));
+                qui.appendChild(el('p', {}, cx.getAttribute('data-per') || 'Para usar la IA, dinos quién eres. Elige cómo:'));
                 var acc = el('div', { class: 'accions' }); acc.style.marginTop = '0';
                 if (VIES.indexOf('github') >= 0) { var g = el('a', { class: 'btn btn-ghost', href: '/.netlify/functions/identitat?via=github' }, 'Con GitHub'); acc.appendChild(g); }
                 if (VIES.indexOf('correu') >= 0) {
@@ -874,7 +908,7 @@
                 }
                 qui.appendChild(acc);
                 var lp = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox', 'data-ia': 'priv' });
-                lp.appendChild(ck); lp.appendChild(el('span', {}, ' He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.'));
+                lp.appendChild(ck); lp.appendChild(el('span', {}, cx.getAttribute('data-priv') || ' He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.'));
                 qui.appendChild(lp);
                 var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode('Más en el ')); nl.appendChild(el('a', { href: '/avis-legal.html' }, 'aviso legal')); nl.appendChild(document.createTextNode('. Con el correo usamos el de tu cuenta (paso 1).'));
                 qui.appendChild(nl);
@@ -887,7 +921,7 @@
             b.disabled = true;
             fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true }) })
                 .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || 'No se ha podido'); return j; }); })
-                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); aviso('Hola, ' + j.nom + ': ya puedes usar la IA'); })
+                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); aviso('Hola, ' + j.nom + (cx.id === 'cl-prop' ? ': ya puedes ver tu propuesta' : ': ya puedes usar la IA')); })
                 .catch(function (e) { b.disabled = false; aviso(e.message); });
         }
 
@@ -1010,8 +1044,38 @@
         }
         $('#cl-ia-escriu').addEventListener('click', escriu);
 
-        fetch('/.netlify/functions/pule-mapa').then(function (r) { if (!r.ok) throw 0; return fetch('/.netlify/functions/identitat'); })
-            .then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
+        /* Tu propuesta (proposta.mjs): el precio no está en la página ni en el repositorio; llega solo a quien ha entrado. */
+        var EUR = function (n) { return Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; };
+        function proposta() {
+            var res = $('#cl-prop-res'), b = $('#cl-prop-veu'); b.disabled = true; res.textContent = '';
+            fetch('/.netlify/functions/proposta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessio: I.sessio }) })
+                .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); })
+                .then(function (r) {
+                    b.disabled = false;
+                    if (r.estat === 'identifica') { I = {}; desaI(); pinta(); aviso('Tu sesión ha caducado: vuelve a entrar'); return; }
+                    if (r.estat !== 'fet') { res.appendChild(el('p', { class: 'nota' }, r.estat === 'cap' ? 'Todavía no tienes propuesta. Cuando hablemos, la verás aquí.' : 'Ahora no llego a tu propuesta. Prueba en un rato.')); return; }
+                    var p = r.proposta, t = el('table', { class: 'prop-t' }), th = el('thead'), tr = el('tr'), tb = el('tbody'), tf = el('tfoot'), ft = el('tr');
+                    res.appendChild(el('h3', {}, p.titol));
+                    ['Qué incluye', 'Nivel', 'Horas', 'Importe'].forEach(function (x, k) { tr.appendChild(el('th', k > 1 ? { class: 'n' } : {}, x)); });
+                    th.appendChild(tr); t.appendChild(th);
+                    p.linies.forEach(function (l) {
+                        var f = el('tr');
+                        f.appendChild(el('td', {}, l.que)); f.appendChild(el('td', {}, l.nivell ? 'Nivel ' + l.nivell : ''));
+                        f.appendChild(el('td', { class: 'n' }, l.hores != null ? String(l.hores).replace('.', ',') + ' h' : ''));
+                        f.appendChild(el('td', { class: 'n' }, l.import != null ? EUR(l.import) : '')); tb.appendChild(f);
+                    });
+                    t.appendChild(tb);
+                    ft.appendChild(el('td', { colspan: '3' }, 'Total' + (p.iva ? ' (IVA incluido)' : ' (sin IVA)'))); ft.appendChild(el('td', { class: 'n' }, EUR(p.total)));
+                    tf.appendChild(ft); t.appendChild(tf); res.appendChild(t);
+                    if (p.nota) res.appendChild(el('p', { class: 'ia-resum' }, p.nota));
+                    res.appendChild(el('p', { class: 'nota' }, 'Actualizada el ' + p.actualitzada + (p.valida ? ' · válida hasta el ' + p.valida : '') + '. Solo la ves tú.'));
+                })
+                .catch(function () { b.disabled = false; aviso('Ahora no llego a tu propuesta'); });
+        }
+        $('#cl-prop-veu').addEventListener('click', proposta);
+
+        fetch('/.netlify/functions/identitat').then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
+        fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
         pinta();
         return { resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
