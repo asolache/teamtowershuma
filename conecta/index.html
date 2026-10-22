@@ -218,6 +218,21 @@
         .notas li { padding-left: 1rem; border-left: 2px solid var(--border-strong); }
 
         /* 5 · Tu web y tu IA */
+        .casos { display: grid; gap: 1rem; }
+        @media (min-width: 760px) { .casos { grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); } }
+        .caso { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.2rem; display: grid; gap: .5rem; align-content: start; }
+        .caso.caso-hoy { border-top: 3px solid var(--green); }
+        .caso.caso-pilotos { border-top: 3px dashed var(--border-strong); }
+        .caso h3 { font-size: 1.0625rem; line-height: 1.35; }
+        .caso p { color: var(--light); line-height: 1.55; }
+        .caso-e { font-family: var(--mono); font-size: var(--t0); letter-spacing: .04em; }
+        .caso-hoy .caso-e { color: var(--green); }
+        .caso-p { display: flex; flex-wrap: wrap; gap: .35rem; }
+        .jornada { list-style: none; display: grid; gap: .6rem; margin: 1rem 0; }
+        .jornada li { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1rem; align-items: start; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem 1rem; }
+        .jornada .j-h { font-family: var(--mono); font-weight: 600; color: var(--indigo); font-size: 1.125rem; }
+        .jornada li p + p { margin-top: .4rem; }
+        .jornada-total { font-weight: 600; margin: .5rem 0 1rem; }
         .tubo { display: grid; gap: .6rem; align-items: stretch; margin: .5rem 0 2rem; }
         @media (min-width: 760px) { .tubo { grid-template-columns: 1fr auto 1.3fr auto 1fr; align-items: center; } }
         .tubo > div { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem 1rem; text-align: center; font-size: var(--t0); color: var(--light); }
@@ -398,7 +413,7 @@
         <p class="lead">Elige tu rol y te mostramos los flujos que más tiempo ahorran, qué servicios enchufar y qué cuesta la IA de cada tarea. <strong>Cualquier pieza se cambia por otra sin rehacer el resto.</strong></p>
         <div class="accions">
             <a class="btn btn-primary" href="#flujos">Montar mi pila</a>
-            <a class="btn btn-ghost" href="#ia">Ver el coste de la IA</a>
+            <a class="btn btn-ghost" href="#casos">Ver lo que ya funciona</a>
         </div>
         <div class="tabla-wrap">
             <table class="compara">
@@ -413,6 +428,18 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</section>
+
+<!-- 1b · Lo que ya funciona: los casos del bloc de dades -->
+<section id="casos" aria-labelledby="t-casos">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Casos reales · el piloto 1 somos nosotros</p>
+            <h2 id="t-casos">Lo que ya hacemos cada día con IA, y con qué piezas.</h2>
+            <p class="lead">No es una lista de promesas. Son los flujos con los que llevamos nuestro propio negocio: los que funcionan hoy, y los que ya están escritos y se estrenan con los pilotos. Muchos van por <strong>MCP</strong>, el estándar abierto con el que tu IA habla con tu CRM, tu correo o tu web con los permisos que le das.</p>
+        </div>
+        <div class="casos" id="cx-casos"></div>
     </div>
 </section>
 
@@ -515,6 +542,27 @@
     </div>
 </section>
 
+<!-- 5b · Una jornada para empezar -->
+<section id="jornada" aria-labelledby="t-jornada">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Consultoría · una jornada para empezar</p>
+            <h2 id="t-jornada">En un día, de la primera petición a tu IA a un negocio que ya avisa solo.</h2>
+            <p class="lead">Desde la primera petición a Claude ya se puede hacer una landing, y de ahí se crece flujo a flujo. Esta es la estimación de una jornada de trabajo, en horas. El presupuesto se hace por flujos con <a href="/cataleg.html#cost">la escala horaria</a>, y ves el desglose antes de empezar.</p>
+        </div>
+        <ol class="jornada" id="cx-jornada"></ol>
+        <p class="jornada-total" id="cx-jornada-total"></p>
+        <ul class="notas">
+            <li>La IA te la factura el proveedor a tu nombre. En una jornada así suele ser poco, y el contador de arriba te dice cuánto.</li>
+            <li>Si después quieres más flujos, cada uno se presupuesta igual. Si quieres que siga vivo, está la <a href="#modelo">cuota del sistema vivo</a>.</li>
+        </ul>
+        <div class="accions">
+            <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Jornada · Servicios conectables">Quiero una jornada</a>
+            <a class="btn btn-ghost" href="/mapa-web/#contratar">Ver los pasos</a>
+        </div>
+    </div>
+</section>
+
 <!-- 6 · Cómo se sostiene -->
 <section id="modelo" class="alt" aria-labelledby="t-modelo">
     <div class="container">
@@ -524,7 +572,7 @@
         </div>
         <div class="modelo">
             <article><h3>Puesta en marcha, por flujos</h3><p>Cada flujo de tu pila se presupuesta aparte, con horas y coste de IA. Sin paquete cerrado: pagas lo que montas. <a href="/SOS/pressupost.html">Pedir presupuesto</a>.</p></article>
-            <article><h3>Sistema vivo, cada mes</h3><p>Mantenemos las conexiones y las mejoramos con lo que mide el SOS. Cuanto más se automatiza, menos horas nuestras hacen falta. La cuota se decide con los pilotos.</p></article>
+            <article><h3>Sistema vivo, cada mes</h3><p>Mantenemos las conexiones y las mejoramos con lo que mide el SOS. Cuanto más se automatiza, menos horas nuestras hacen falta. La cuota se decide con los pilotos. <a href="/mapa-web/#viva">Qué garantiza y qué procesos cubre</a>.</p></article>
             <article><h3>Facilitación de servicios</h3><p>Damos de alta y configuramos cada servicio en tu cuenta, a tu nombre. Si un proveedor nos paga por traerte, lo pone en la propuesta. Y siempre hay una opción libre al lado.</p></article>
         </div>
         <ul class="reglas">
@@ -652,10 +700,10 @@
     "libre":       "Sin licencia: tu servidor o tu máquina"
   },
   "conectores": [
-    { "id": "netlify",     "nombre": "Netlify",            "cat": "web",        "uso": true,  "libre": false, "via": "API · webhooks · funciones", "clave": "servidor",    "coste": "suscripcion", "para": "Publica tu web y ejecuta las funciones que guardan las claves." },
-    { "id": "github",      "nombre": "GitHub",             "cat": "web",        "uso": true,  "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "El cerebro versionado: cada cambio de la web y del mapa, con su historia." },
-    { "id": "supabase",    "nombre": "Supabase",           "cat": "web",        "uso": true,  "libre": true,  "via": "API · webhooks",             "clave": "servidor",    "coste": "autoaloja",   "para": "Base de datos Postgres de código abierto, en su nube o en tu servidor." },
-    { "id": "zoho",        "nombre": "Zoho CRM",           "cat": "crm",        "uso": true,  "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "usuario",     "para": "Contactos, embudo de ventas y app móvil." },
+    { "id": "netlify",     "nombre": "Netlify",            "cat": "web",        "uso": true,  "libre": false, "via": "API · webhooks · funciones · MCP", "clave": "servidor",    "coste": "suscripcion", "para": "Publica tu web y ejecuta las funciones que guardan las claves." },
+    { "id": "github",      "nombre": "GitHub",             "cat": "web",        "uso": true,  "libre": false, "via": "API · webhooks · MCP",             "clave": "servidor",    "coste": "suscripcion", "para": "El cerebro versionado: cada cambio de la web y del mapa, con su historia." },
+    { "id": "supabase",    "nombre": "Supabase",           "cat": "web",        "uso": true,  "libre": true,  "via": "API · webhooks · MCP",             "clave": "servidor",    "coste": "autoaloja",   "para": "Base de datos Postgres de código abierto, en su nube o en tu servidor." },
+    { "id": "zoho",        "nombre": "Zoho CRM",           "cat": "crm",        "uso": true,  "libre": false, "via": "API · webhooks · MCP",             "clave": "servidor",    "coste": "usuario",     "para": "Contactos, embudo de ventas y app móvil." },
     { "id": "hubspot",     "nombre": "HubSpot",            "cat": "crm",        "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "usuario",     "para": "CRM con embudo, correo y formularios." },
     { "id": "holded",      "nombre": "Holded",             "cat": "crm",        "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "usuario",     "para": "Facturación, contabilidad e inventario, pensado para empresas en España." },
     { "id": "odoo",        "nombre": "Odoo",               "cat": "crm",        "uso": false, "libre": true,  "via": "API",                        "clave": "servidor",    "coste": "autoaloja",   "para": "CRM, facturación e inventario en una sola pieza. La edición Community es libre." },
@@ -670,7 +718,7 @@
     { "id": "amazon",      "nombre": "Amazon",             "cat": "venta",      "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "venta",       "para": "Vender en Amazon y traer sus pedidos y su stock." },
     { "id": "shopify",     "nombre": "Shopify",            "cat": "venta",      "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "suscripcion", "para": "Tienda en línea con cobros y envíos." },
     { "id": "woocommerce", "nombre": "WooCommerce",        "cat": "venta",      "uso": false, "libre": true,  "via": "API · webhooks",             "clave": "servidor",    "coste": "libre",       "para": "Tienda libre sobre WordPress, en tu servidor." },
-    { "id": "workspace",   "nombre": "Google Workspace",   "cat": "oficina",    "uso": true,  "libre": false, "via": "API",                        "clave": "servidor",    "coste": "usuario",     "para": "Gmail, Calendar y Drive." },
+    { "id": "workspace",   "nombre": "Google Workspace",   "cat": "oficina",    "uso": true,  "libre": false, "via": "API · MCP",                        "clave": "servidor",    "coste": "usuario",     "para": "Gmail, Calendar y Drive." },
     { "id": "m365",        "nombre": "Microsoft 365",      "cat": "oficina",    "uso": false, "libre": false, "via": "API",                        "clave": "servidor",    "coste": "usuario",     "para": "Outlook, Teams y OneDrive." },
     { "id": "nextcloud",   "nombre": "Nextcloud",          "cat": "oficina",    "uso": false, "libre": true,  "via": "API · WebDAV · CalDAV",      "clave": "servidor",    "coste": "libre",       "para": "Archivos, calendario y videollamadas en tu servidor." },
     { "id": "whatsapp",    "nombre": "WhatsApp Business",  "cat": "comunica",   "uso": false, "libre": false, "via": "API · webhooks",             "clave": "servidor",    "coste": "uso",         "para": "La app para empezar, la API para automatizar." },
@@ -686,6 +734,47 @@
     "1": "Nivel 1 · exporta",
     "2": "Nivel 2 · la web avisa",
     "3": "Nivel 3 · tu IA actúa"
+  },
+  "estados_caso": { "hoy": "Funciona hoy", "pilotos": "Escrito, se estrena con los pilotos" },
+  "casos": [
+    { "id": "alta-crm",      "estado": "hoy",     "via": "MCP",         "piezas": ["claude", "zoho"],
+      "que": "Un mensaje a tu IA da de alta al cliente en el CRM",
+      "como": "Se le pide en una frase. Busca antes si ya existe y crea la cuenta, el contacto y la oportunidad con lo que se sabe. Lo que no sabe lo deja marcado como pendiente." },
+    { "id": "correo-visita", "estado": "hoy",     "via": "MCP",         "piezas": ["claude", "workspace", "zoho"],
+      "que": "El correo de antes de una reunión, con lo que sabemos y las preguntas",
+      "como": "Lee el CRM y los correos anteriores, prepara el resumen y las preguntas y lo envía desde tu Gmail cuando tú lo dices." },
+    { "id": "borrador-mapa", "estado": "hoy",     "via": "Claude Code", "piezas": ["claude", "github"], "url": "/SOS/vna-suport.html",
+      "que": "De tu web al borrador de tu mapa y de tu nueva web",
+      "como": "Lee tu web con tu permiso, saca tu marca, propone los roles y lo que se da cada uno, y monta la web que sale del mapa. Una persona lo revisa antes de enseñarlo." },
+    { "id": "pagina-lead",   "estado": "hoy",     "via": "Claude Code", "piezas": ["github", "netlify"],
+      "que": "Una página privada para el cliente antes de vernos",
+      "como": "Con la parte de su mapa que ya está hecha, sin datos personales ni frases copiadas. Se borra después de la visita." },
+    { "id": "tablero-dia",   "estado": "hoy",     "via": "Paquete privado", "piezas": ["zoho", "workspace"], "url": "/SOS/?viu",
+      "que": "El tablero del día: qué responder, qué cobrar y qué se para",
+      "como": "El CRM y el correo entran en el mapa vivo. Avisa de lo urgente (debemos una respuesta desde hace más de un día) y ordena el día: responder, propuestas, producir, cobrar y cuidar la red." },
+    { "id": "pasos-proyecto", "estado": "hoy",    "via": "Claude Code", "piezas": ["github"], "url": "/mapa-web/#contratar",
+      "que": "Cada proyecto, por pasos, y el cliente ve en cuál está",
+      "como": "Los mismos siete pasos en la web del servicio, en el backoffice del cliente y en la etapa del CRM." },
+    { "id": "vigia",         "estado": "hoy",     "via": "Tarea programada", "piezas": ["github", "netlify"],
+      "que": "Un vigía que mira cada hora que la web y los servicios responden",
+      "como": "Una tarea programada comprueba cada hora la web y los servicios de los que depende, y lo deja anotado." },
+    { "id": "form-crm-caso", "estado": "pilotos", "via": "Función",     "piezas": ["netlify", "zoho"],
+      "que": "El formulario de la web entra en el CRM con su ficha",
+      "como": "Una función en el servidor de tu web, con tus claves, crea el contacto. Ya está escrita y probada en seco." },
+    { "id": "cierre-mes",    "estado": "pilotos", "via": "Tarea programada", "piezas": ["claude", "github"],
+      "que": "El cierre del mes, con lo que ha costado la IA de cada flujo",
+      "como": "El día 1 junta lo cobrado, los costes y el consumo de IA, y lo deja en un informe. Falta la clave de administración a nombre de cada cliente." }
+  ],
+  "jornada": {
+    "horas": 8,
+    "bloques": [
+      { "h": 0.5, "quien": ["ia", "al"], "que": "Antes: tu web y dos líneas se convierten en el borrador de tu mapa" },
+      { "h": 1.5, "quien": ["tu", "al"], "que": "El mapa contigo: los roles, lo que se da cada uno y el flujo que importa ahora" },
+      { "h": 2,   "quien": ["tu", "al", "ia"], "que": "Tu landing, desde la primera petición a tu IA, publicada en tu Netlify" },
+      { "h": 2,   "quien": ["al", "ia"], "que": "Un flujo conectado: formulario, tu CRM y el aviso a tu IA, con MCP o con una función" },
+      { "h": 1,   "quien": ["tu", "al"], "que": "Tu tablero del día y tus avisos, con tus datos" },
+      { "h": 1,   "quien": ["al", "ia"], "que": "El cerebro por escrito, la guía de una página y el cierre" }
+    ]
   },
   "flujos": [
     { "id": "mapa-vivo",     "roles": ["direccion"],               "nivel": 1, "ia": "claude-opus-5-5",   "que": "El mapa de tu negocio, al día y con su historia",
@@ -946,6 +1035,29 @@
         document.getElementById('cx-mes-prop').textContent = usd(p);
         document.getElementById('cx-ahorro').textContent = h > 0 ? '−' + Math.round((1 - p / h) * 100) + ' %' : '—';
     }
+
+    /* Los casos reales y la jornada, del mateix bloc de dades. */
+    var QUIEN = { tu: 'Tú', ia: 'IA', al: 'Álvaro' };
+    var casosEl = document.getElementById('cx-casos');
+    ['hoy', 'pilotos'].forEach(function (est) {
+        D.casos.filter(function (c) { return c.estado === est; }).forEach(function (c) {
+            casosEl.appendChild(el('article', { class: 'caso caso-' + est, 'data-caso': c.id }, [
+                el('p', { class: 'caso-e', text: D.estados_caso[est] }),
+                el('h3', { text: c.que }),
+                el('p', { text: c.como }),
+                el('p', { class: 'caso-p' }, [el('span', { class: 'marca-n', text: c.via })].concat(c.piezas.map(function (id) { return el('span', { class: 'marca-n', text: CON[id].nombre }); }))),
+                c.url ? el('a', { class: 'flecha', href: c.url, text: 'Verlo' }) : null
+            ]));
+        });
+    });
+    var jEl = document.getElementById('cx-jornada');
+    function horas(h) { return (h + ' h').replace('.', ','); }
+    D.jornada.bloques.forEach(function (b) {
+        jEl.appendChild(el('li', null, [el('span', { class: 'j-h', text: horas(b.h) }), el('div', null, [
+            el('p', { text: b.que }),
+            el('p', { class: 'caso-p' }, b.quien.map(function (q) { return el('span', { class: 'marca-n', text: QUIEN[q] }); }))])]));
+    });
+    document.getElementById('cx-jornada-total').textContent = 'En total, ' + horas(D.jornada.horas) + ' de trabajo, una jornada.';
 
     pintaFlujos(); pintaPila(); pintaCatalogo(); sumaMes();
     window.__CX = { datos: D, estado: S, pilaJSON: pilaJSON, techo: techo };

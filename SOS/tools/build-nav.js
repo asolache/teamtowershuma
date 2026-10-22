@@ -522,7 +522,9 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
 
    La clau és l'adreça i no el fitxer: és com les nomena `LLOC`, i així la
    pàgina actual es reconeix sense cap cas a part. */
-const CARPETES = { '/mapa-web/': 'mapa-web/index.html', '/conecta/': 'conecta/index.html' };
+/* `/cliente/` (21/10/2026) és l'espai de client: hi té barra i peu, però no
+   surt al menú; s'hi entra des de «Empezar por el paso 1» de /mapa-web/. */
+const CARPETES = { '/mapa-web/': 'mapa-web/index.html', '/conecta/': 'conecta/index.html', '/cliente/': 'cliente/index.html' };
 const llenguaDe = p => (CARPETES[p] ? 'es' : 'ca');
 
 const esLloc = p => PORTADES.indexOf(p) >= 0 || PAGINES_LLOC.indexOf(p) >= 0 || !!CARPETES[p];

@@ -27,6 +27,8 @@
  *      pàgina que s'obre amb doble clic, amb la seva marca, que porta la
  *      proposta i les preguntes tal com són (surten dels .md, no es copien) i
  *      diu què fer la primera mitja hora, cada mes i amb Claude.
+ *      Comença per «Dónde estamos»: els passos del client (`proces-web.js`)
+ *      amb el pas on és, que diu `proces.json` de la proposta ({"pas": …}).
  *
  *   7. amb `--lead`, escriu `lead.html`: la pàgina que rep el lead abans de la
  *      visita, amb el x % del seu mapa (`pagina-lead.js`). Sense `--revisat`
@@ -57,6 +59,7 @@ const A = require('./analitza-contingut.js');
 const { diagnostica } = require('./revisa-mapa.js');
 const W = require('./web-del-mapa.js');
 const X = require('./automatitza.js');
+const PR = require('./proces-web.js');
 
 /* Mentre un fitxer porti aquesta línia, és de l'eina i es torna a escriure. */
 const MARCA_GEN = '<!-- proposta.js: es regenera mentre aquesta línia hi sigui. Esborra-la per fer-lo teu. -->';
@@ -109,7 +112,8 @@ const TXT = {
 const BO = {
   es: { titol: 'Tu backoffice', lang: 'es',
     intro: 'Tu web sigue siendo la tuya. Esto es lo que hay detrás: lo que sabe tu negocio, escrito para que tú, tu equipo y cualquier IA lo uséis para seguir mejorando el negocio, los servicios y la web.',
-    nav: { empieza: 'Empieza', propuesta: 'La propuesta', preguntas: 'Las preguntas', mes: 'Cada mes', claude: 'Con Claude', carpeta: 'Qué hay aquí' },
+    nav: { donde: 'Dónde estamos', empieza: 'Empieza', propuesta: 'La propuesta', preguntas: 'Las preguntas', mes: 'Cada mes', claude: 'Con Claude', carpeta: 'Qué hay aquí' },
+    donde: 'Dónde estamos', dondeD: 'Los pasos de tu proyecto, de tu primer mensaje a tu web viva. Son los mismos para todos, y los cuenta [la página del servicio](https://teamtowershuma.com/mapa-web/#contratar).',
     empieza: 'La primera media hora',
     pasos: ['**Lee la propuesta**, aquí debajo: el flujo que hemos mirado, tu mapa y lo que ha encontrado el diagnóstico.',
       '**Contesta las preguntas.** Con tus respuestas el mapa deja de ser un borrador. Basta con escribirlas en un correo o en tu proyecto de Claude.',
@@ -133,7 +137,8 @@ const BO = {
     gen: 'Página generada a partir de la propuesta: se rehace cada vez que cambian el mapa, la propuesta o las preguntas.' },
   ca: { titol: 'El teu backoffice', lang: 'ca',
     intro: 'La teva web segueix sent la teva. Això és el que hi ha darrere: el que sap el teu negoci, escrit perquè tu, el teu equip i qualsevol IA ho feu servir per seguir millorant el negoci, els serveis i la web.',
-    nav: { empieza: 'Comença', propuesta: 'La proposta', preguntas: 'Les preguntes', mes: 'Cada mes', claude: 'Amb Claude', carpeta: 'Què hi ha aquí' },
+    nav: { donde: 'On som', empieza: 'Comença', propuesta: 'La proposta', preguntas: 'Les preguntes', mes: 'Cada mes', claude: 'Amb Claude', carpeta: 'Què hi ha aquí' },
+    donde: 'On som', dondeD: 'Els passos del teu projecte, del primer missatge a la web viva. Són els mateixos per a tothom, i els explica [la pàgina del servei](https://teamtowershuma.com/mapa-web/#contratar).',
     empieza: 'La primera mitja hora',
     pasos: ['**Llegeix la proposta**, aquí sota: el flux que hem mirat, el teu mapa i el que ha trobat el diagnòstic.',
       '**Contesta les preguntes.** Amb les teves respostes el mapa deixa de ser un esborrany. N\'hi ha prou d\'escriure-les en un correu o al teu projecte de Claude.',
@@ -206,15 +211,18 @@ function paginaInici(dir, desti, nom, llengua) {
   const md = (f, n) => (existsSync(join(dir, f)) ? mdHtml(readFileSync(join(dir, f), 'utf8'), prop === '.' ? '' : prop, n) : '');
   const l = s => mdHtml(omple(s)).replace(/^<p>|<\/p>$/g, '');
   const lema = (() => { try { return JSON.parse(readFileSync(join(dir, 'marca.json'), 'utf8')).lema || ''; } catch (x) { return ''; } })();
+  /* El pas del projecte: `proces.json` de la proposta, que actualitza qui el porta. */
+  const proces = existsSync(join(dir, 'proces.json')) ? JSON.parse(readFileSync(join(dir, 'proces.json'), 'utf8')) : null;
   const e = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const sec = (id, h, cos) => '<section id="' + id + '" aria-labelledby="t-' + id + '">\n<h2 id="t-' + id + '">' + e(h) + '</h2>\n' + cos + '\n</section>';
   const html = '<!DOCTYPE html>\n<html lang="' + T.lang + '">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<meta name="robots" content="noindex">\n<title>' + e(T.titol + ' · ' + nom) + '</title>\n<link rel="stylesheet" href="' + e(web + '/estil.css') + '">\n'
     + '<style>section{margin-top:2.2rem}.taula{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.95rem}th,td{border-bottom:1px solid var(--lin);padding:.45rem .5rem;text-align:left;vertical-align:top}'
-    + 'blockquote{margin:1rem 0;padding:.25rem 1rem;border-left:3px solid var(--acc);color:var(--mut)}code{font-size:.9em}.ex li{font-style:italic}.intro{font-size:1.1rem}</style>\n</head>\n<body>\n'
+    + 'blockquote{margin:1rem 0;padding:.25rem 1rem;border-left:3px solid var(--acc);color:var(--mut)}code{font-size:.9em}.ex li{font-style:italic}.intro{font-size:1.1rem}' + PR.CSS + '</style>\n</head>\n<body>\n'
     + '<header>\n<p class="marca">' + e(nom) + '</p>\n' + (lema ? '<p class="lema">' + e(lema) + '</p>\n' : '') + '<nav aria-label="' + e(T.titol) + '"><ul>'
     + Object.keys(T.nav).map(k => '<li><a href="#' + k + '">' + e(T.nav[k]) + '</a></li>').join('') + '</ul></nav>\n</header>\n<main id="contingut">\n'
     + '<h1>' + e(T.titol) + '</h1>\n<p class="intro">' + e(T.intro) + '</p>\n'
+    + sec('donde', T.donde, '<p>' + l(T.dondeD) + '</p>\n' + PR.pinta({ llengua, ara: PR.pasDe(proces) })) + '\n'
     + sec('empieza', T.empieza, '<ol>' + T.pasos.map(x => '<li>' + l(x) + '</li>').join('') + '</ol>') + '\n'
     + sec('propuesta', T.nav.propuesta, md('README.md', 1)) + '\n'
     + sec('preguntas', T.nav.preguntas, md('preguntas.md', 1)) + '\n'

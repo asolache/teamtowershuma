@@ -123,6 +123,9 @@
 .targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
 .targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
 /*/TT-COMPONENTS*/
+/*TT-PROCES*/
+.pr{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:0;counter-reset:pr}.pr-p{counter-increment:pr;position:relative;display:grid;align-content:start;grid-template-columns:2.6rem minmax(0,1fr);column-gap:1rem;padding:0 0 1.4rem}.pr-p::before{content:counter(pr);display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;border:2px solid var(--indigo,var(--acc,#3b3fb6));color:var(--indigo,var(--acc,#3b3fb6));font-weight:600;background:var(--bg,#fff);position:relative;z-index:1}.pr-p::after{content:"";position:absolute;left:1.2rem;top:2.4rem;bottom:0;width:2px;margin-left:-1px;background:var(--border,var(--lin,#d6d6e0))}.pr-p:last-child::after{display:none}.pr-p h3{font-size:1.125rem;line-height:1.3;margin:.35rem 0 .35rem}.pr-p p{margin:.2rem 0;line-height:1.55;max-width:62ch}.pr-reps{color:var(--muted,var(--mut,#555))}.pr-q{display:inline-flex;flex-wrap:wrap;gap:.35rem;margin:.1rem 0 .3rem}.pr-q span,.pr-e{font-size:.9375rem;border:1px solid var(--border-strong,var(--lin,#bbb));border-radius:999px;padding:.05rem .55rem}.pr .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.pr-p.opc::before{border-style:dashed}.pr-p.fet::before{content:"✓";background:var(--indigo,var(--acc,#3b3fb6));color:#fff}.pr-p.ara::before{box-shadow:0 0 0 4px color-mix(in srgb,var(--indigo,var(--acc,#3b3fb6)) 25%,transparent)}.pr-p.ara h3::after{content:attr(data-ara);margin-left:.5rem;font-size:.9375rem;font-weight:500;color:var(--indigo,var(--acc,#3b3fb6))}@media (min-width:60rem){.pr{grid-template-columns:repeat(7,minmax(0,1fr));gap:1rem}.pr-p{grid-template-columns:1fr;row-gap:.4rem;padding:0}.pr-p::after{left:2.4rem;right:-1rem;top:1.2rem;bottom:auto;width:auto;height:2px;margin:-1px 0 0}}.vv-n{display:grid;gap:1rem;margin:1.5rem 0 0}@media (min-width:60rem){.vv-n{grid-template-columns:repeat(4,minmax(0,1fr))}}.vv-n article{border:1px solid var(--border,#d6d6e0);border-radius:14px;padding:1.1rem 1.2rem;background:var(--card,#fff);display:grid;gap:.45rem;align-content:start}.vv-n article.cuota{border-color:var(--indigo,#3b3fb6);border-width:2px}.vv-n .vv-k{font-family:var(--mono,monospace);font-size:.9375rem;color:var(--indigo,#3b3fb6)}.vv-n h3{font-size:1.125rem;line-height:1.3}.vv-n p,.vv-n li{line-height:1.55}.vv-n ul{display:grid;gap:.3rem;padding-left:1.1rem;list-style:disc}.vv-g{margin:2rem 0 0;padding:1rem 1.2rem;border-left:3px solid var(--indigo,#3b3fb6);background:var(--card,#fff);border-radius:0 12px 12px 0;line-height:1.6;max-width:70ch}.vv-t{display:grid;gap:1rem;margin:1.5rem 0 0}@media (min-width:60rem){.vv-t{grid-template-columns:repeat(3,minmax(0,1fr))}}.vv-t section{display:grid;gap:.6rem;align-content:start}.vv-t h4{font-size:1.125rem}.vv-t h4 span{font-weight:400;color:var(--muted,#555)}.vv-t ul{list-style:none;display:grid;gap:.6rem;padding:0}.vv-t li{border:1px solid var(--border,#d6d6e0);border-radius:12px;padding:.7rem .9rem;background:var(--card,#fff);line-height:1.5}.vv-t li b{display:block}.vv-t .vv-e{font-family:var(--mono,monospace);font-size:.9375rem;color:var(--muted,#555)}.vv-t .vv-e.hoy{color:var(--green,#0c6640)}
+/*/TT-PROCES*/
         @media (min-width: 600px) { :root { --gutter: 2rem; } }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1437,12 +1440,12 @@
                 <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Reserva · Mapa y web">Escribir para reservar sesión o taller</a>
                 <p class="micro">Se abre tu correo.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
             </div>
-            <a class="btn btn-ghost" href="#empezar">Empezar por el borrador gratis</a>
+            <a class="btn btn-ghost" href="#contratar">Ver los siete pasos</a>
         </div>
 
         <div class="despues-f">
             <h3>Después, si quieres <span class="sello-pend">A validar</span></h3>
-            <p>Sin permanencia. Nada de esto hace falta para que la web funcione. Las cuotas del <a href="/conecta/#modelo">Sistema vivo</a> se deciden con los pilotos.</p>
+            <p>Sin permanencia. Nada de esto hace falta para que la web funcione. Las cuotas del <a href="/conecta/#modelo">Sistema vivo</a> se deciden con los pilotos. Qué incluye cada nivel, <a href="#viva">aquí</a>.</p>
             <div class="extras">
                 <div class="extra">
                     <h4>Acompañamiento <b>3 meses · por flujos</b></h4>
@@ -1477,6 +1480,59 @@
         </ul>
     </div>
 </section>
+
+<!-- 8b · Cómo se contrata: generat per SOS/tools/build-proces.js -->
+<!--TT-PROCES-->
+<section id="contratar" class="alt" aria-labelledby="t-contratar">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Cómo se contrata</p>
+            <h2 id="t-contratar">Siete pasos. En cada uno sabes quién hace qué y qué recibes.</h2>
+            <p class="lead">Es el mismo camino para todos los proyectos. Los tres primeros no cuestan nada, y desde el borrador ves en tu backoffice en qué paso está el tuyo.</p>
+        </div>
+        <ol class="pr" aria-label="Los pasos">
+          <li class="pr-p" id="pas-escribes"><div><h3>Nos escribes</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Tú</span></p><p>Tu web, si la tienes, y dos líneas sobre qué haces.</p><p class="pr-reps"><strong>Recibes: </strong>Te contesta una persona, con unas preguntas para empezar tu mapa.</p></div></li>
+          <li class="pr-p" id="pas-leemos"><div><h3>Leemos lo que ya tienes</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Con tu permiso, tu web, su diseño y sus imágenes, y lo que nos mandes.</p><p class="pr-reps"><strong>Recibes: </strong>Tu marca por escrito, las imágenes que sirven y lo que tu web no dice.</p></div></li>
+          <li class="pr-p" id="pas-borrador"><div><h3>El borrador de tu mapa</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Gratis, en tres días laborables. Lo prepara la IA y lo revisa una persona.</p><p class="pr-reps"><strong>Recibes: </strong>El borrador del mapa, las preguntas abiertas y una página privada con lo que ya está hecho.</p></div></li>
+          <li class="pr-p" id="pas-presupuesto"><div><h3>El presupuesto, por flujos</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Álvaro</span><span>Tú</span></p><p>Cada flujo con sus horas y su coste de IA. Lo aceptas y ya no cambia.</p><p class="pr-reps"><strong>Recibes: </strong>El presupuesto desglosado y la fecha de la sesión.</p></div></li>
+          <li class="pr-p" id="pas-sesion"><div><h3>La sesión: mapa y web</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Tú</span><span>Álvaro</span><span>IA</span></p><p>Una hora para el mapa y otra para la web, que se publica delante de ti.</p><p class="pr-reps"><strong>Recibes: </strong>Tu mapa validado y tu web publicada, con tu primer cambio hecho por ti.</p></div></li>
+          <li class="pr-p" id="pas-entrega"><div><h3>Todo a tu nombre</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.</p><p class="pr-reps"><strong>Recibes: </strong>El cerebro de tu negocio por escrito, tu backoffice y media hora de revisión a las dos semanas.</p></div></li>
+          <li class="pr-p opc" id="pas-viva"><div><h3>Tu web, viva</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span><span class="pr-e">Opcional</span></p><p>Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.</p><p class="pr-reps"><strong>Recibes: </strong>Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.</p></div></li>
+        </ol>
+        <div class="accions">
+            <div class="cta">
+                <a class="btn btn-primary" href="/cliente/">Empezar por el paso 1</a>
+                <p class="micro">Tu espacio de cliente: te creas la cuenta y nos cuentas qué quieres.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+            </div>
+            <a class="btn btn-ghost" href="#viva">Qué web quieres</a>
+        </div>
+    </div>
+</section>
+
+<section id="viva" aria-labelledby="t-viva">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Qué web quieres · hasta dónde</p>
+            <h2 id="t-viva">Empieza por lo mínimo que te sirve. Crece cuando lo necesites.</h2>
+            <p class="lead">Cuatro niveles. Los tres primeros se presupuestan por flujos y son tuyos sin cuota. El cuarto es la web viva: lo que se repite en tu negocio deja de depender de ti.</p>
+        </div>
+        <div class="vv-n">
+          <article class="" id="nivel-pagina"><p class="vv-k">Nivel 1 · por flujos</p><h3>Una página</h3><p>Para estar y que te encuentren</p><ul><li>Portada y contacto, en un idioma</li><li>Sale del borrador de tu mapa</li><li>Tuya: en tu GitHub y tu Netlify</li></ul></article>
+          <article class="" id="nivel-mapa"><p class="vv-k">Nivel 2 · por flujos</p><h3>La web de tu mapa</h3><p>Para que cada rol encuentre su puerta</p><ul><li>Todo lo anterior</li><li>Hasta tres puertas del flujo que importa ahora</li><li>Formularios que te llegan por correo</li><li>Datos para buscadores e IA en cada página</li></ul></article>
+          <article class="" id="nivel-conectada"><p class="vv-k">Nivel 3 · por flujos</p><h3>La web conectada</h3><p>Para dejar de copiar y pegar</p><ul><li>Todo lo anterior</li><li>Tu CRM, tus reservas o tus matrículas</li><li>La web avisa a tu IA, con MCP o con una función</li><li>Más idiomas o más puertas, como flujos</li></ul></article>
+          <article class="cuota" id="nivel-viva"><p class="vv-k">Nivel 4 · cuota mensual</p><h3>La web viva</h3><p>Para que el sistema mejore cada mes</p><ul><li>Todo lo anterior</li><li>Tus procesos repetitivos, definidos y gestionados</li><li>El tablero del día y el informe del mes</li><li>Comprobaciones automáticas y cambios pequeños</li></ul></article>
+        </div>
+        <p class="vv-g"><strong>Lo que garantiza la cuota.</strong> Con la cuota de la web viva, cada automatización que necesites se define contigo, tiene quien la lleva (una persona o un agente con tu IA), se ve en tu mapa y se mide cada mes. Si un proceso deja de funcionar, te llega el aviso y se arregla dentro de la cuota.</p>
+        <h3 class="sub" id="procesos">Los procesos que se repiten, y se quedan vivos</h3>
+        <p>Un proyecto tiene sus pasos. Un negocio, además, tiene procesos que no acaban nunca. Los ordenamos en tres: crear lo que todavía no existe, sostener lo que ya funciona y transformar lo que se ha quedado corto.</p>
+        <div class="vv-t">
+          <section aria-labelledby="vv-crear"><h4 id="vv-crear">Crear <span>· Lo que todavía no existe</span></h4><ul><li><b>Creatividad</b>Cada mes, una idea que sale de tu mapa: un rol que nadie cubre o algo que das y nadie te reconoce. <span class="vv-e">Se define contigo</span></li><li><b>Desarrollo</b>Cambios en tu web y en tus herramientas, propuestos por la IA y revisados antes de publicar. <span class="vv-e hoy">Funciona hoy, con GitHub y Netlify</span></li><li><b>Nuevos mercados</b>A quién más le sirve lo que das: nuevos roles, nuevos idiomas, nuevos lugares. <span class="vv-e">Se define contigo</span></li></ul></section>
+          <section aria-labelledby="vv-sostener"><h4 id="vv-sostener">Sostener <span>· Lo que ya funciona, sin que dependa de ti</span></h4><ul><li><b>Marketing</b>Publicar una vez y que salga en la web, en el boletín y en las redes. <span class="vv-e">Se define contigo</span></li><li><b>Finanzas</b>El cierre del mes: lo cobrado, lo pendiente y lo que ha costado la IA de cada flujo. <span class="vv-e">Se define contigo</span></li><li><b>Auditoría</b>Las diez reglas de tu mapa, la web y los servicios comprobados, con el aviso si algo falla. <span class="vv-e hoy">Funciona hoy, con la consola del mapa y una tarea programada</span></li></ul></section>
+          <section aria-labelledby="vv-transformar"><h4 id="vv-transformar">Transformar <span>· Lo que se ha quedado corto</span></h4><ul><li><b>Competencia y oportunidades</b>Qué cambia fuera y qué encaja con tu mapa: convocatorias, clientes, colaboraciones. <span class="vv-e">Se define contigo</span></li><li><b>Organización</b>Quién da y no recibe, quién lleva demasiados roles y qué zonas se calientan. <span class="vv-e hoy">Funciona hoy, con el diagnóstico del mapa</span></li><li><b>Flujos de valor</b>Los flujos que se paran, con su aviso y su orden del día: responder, cobrar, producir. <span class="vv-e hoy">Funciona hoy, con el tablero del día</span></li></ul></section>
+        </div>
+    </div>
+</section>
+<!--/TT-PROCES-->
 
 <!-- 9 · CTA final -->
 <section id="empezar" class="oscuro" aria-labelledby="t-empezar">

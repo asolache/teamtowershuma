@@ -130,6 +130,7 @@ aquesta llista i res més.
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
+- `cliente` · obra · Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany
 - `visita` · obra · On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així
 - `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout) i l'espai de cada agència (espai-partner)
 - `data` · arxiu · Llavors de dades d'una versió anterior

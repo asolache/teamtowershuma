@@ -22,7 +22,7 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html cliente/index.html
 
       # La portada de l'arrel és per on entra tothom i no la comprovava res.
       # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
@@ -99,6 +99,12 @@ jobs:
       # silenci — que és exactament el que va passar amb els herois.
       - name: Guarda del mapa de valor
         run: node SOS/tools/check-vna.js
+
+      # Els passos del client web es declaren un cop (proces-web.js) i surten a
+      # /mapa-web/#contratar i al backoffice de cada client. Escrits a mà a la
+      # pàgina, el client llegiria un camí a la web i un altre al seu backoffice.
+      - name: Guarda del procés del client (/mapa-web/ diu els passos d'una sola font)
+        run: node SOS/tools/build-proces.js --check
 
       # Les caselles de bonus de la plaça porten el nom d'un projecte del SOS i
       # plantar-hi hi registra una aportació. Si a l'app se'n canvia el nom, la
