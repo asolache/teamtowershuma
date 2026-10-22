@@ -55,7 +55,8 @@ function marcaNeta(m) {
   });
   if (Object.keys(portes).length) out.portes = portes;
   const c = x.contacte && typeof x.contacte === 'object' ? x.contacte : {}, cc = {};
-  ['adreca', 'telefon', 'horari'].forEach(k => { if (t(c[k])) cc[k] = t(c[k]).slice(0, 200); });
+  /* titular i nif: el que demana l'avís legal (LSSI, art. 10) de qui fa la web. */
+  ['adreca', 'telefon', 'horari', 'titular', 'nif'].forEach(k => { if (t(c[k])) cc[k] = t(c[k]).slice(0, 200); });
   if (Object.keys(cc).length) out.contacte = cc;
   return out;
 }
