@@ -15,7 +15,7 @@
 - **Para qué:** Contestar a quien nos escribe, preparar el diagnóstico, la propuesta y el proyecto, y hacer el seguimiento comercial.
 - **Base legal:** Medidas precontractuales y contrato (art. 6.1.b RGPD); la casilla de privacidad del espacio de cliente deja constancia de que se ha informado.
 - **De quién:** Personas que piden un diagnóstico, una visita, un pedido o abren su espacio de cliente.
-- **Qué datos:** Nombre, correo, teléfono si lo dan, cargo, organización, web, lo que cuentan del proyecto y el dibujo de quién tienen alrededor (nombres de grupos, no de personas).
+- **Qué datos:** Nombre, correo, teléfono si lo dan, cargo, organización, web, lo que cuentan del proyecto y el dibujo de quién tienen alrededor (nombres de grupos, no de personas). Si usan la IA del espacio de cliente: cómo se han identificado (correo o usuario de GitHub) y cuánto la han usado, guardado con una huella del correo y no con el correo (Netlify Blobs); el texto no se guarda.
 - **Por dónde llegan:** los formularios `diagnostic-org`, `comanda`, `visita`, `cliente-web`, `incidencia`.
 - **Quién los trata por encargo:** Netlify, Zoho, GitHub, Anthropic.
 - **Cuánto tiempo:** Mientras dure la relación y, si no hay contrato, 2 años desde el último contacto.
@@ -49,7 +49,7 @@
 | Zoho | CRM: contactos, oportunidades y lo que llega de los formularios | UE (centro de datos de la UE) | [DPA](https://www.zoho.com/gdpr.html) | Pendiente: hay que firmarlo |
 | GitHub | repositorios privados con las páginas de cada cliente potencial | EE. UU. (Marco de Privacidad de Datos UE-EE. UU. y cláusulas tipo) | [DPA](https://github.com/customer-terms) | Pendiente: comprobar |
 | Supabase | el directorio del SOS (fichas que cada uno publica) | UE (región de la UE) | [DPA](https://supabase.com/legal/dpa) | Pendiente: comprobar |
-| Anthropic | la IA del servicio «Mapa y web» (Claude) | EE. UU. (cláusulas tipo) | [DPA](https://www.anthropic.com/legal/commercial-terms) | Pendiente: comprobar |
+| Anthropic | la IA del servicio «Mapa y web» y la del espacio de cliente (Claude), con la API: lo que escribe el cliente solo para preparar las propuestas | EE. UU. (cláusulas tipo) | [DPA](https://www.anthropic.com/legal/commercial-terms) | Pendiente: comprobar |
 | Stripe | cobros (las tarjetas nunca pasan por nosotros) | UE e EE. UU. (Marco de Privacidad de Datos) | [DPA](https://stripe.com/es/legal/dpa) | Incorporado en sus términos |
 | Apple (iCloud) | nuestro correo | | | Servicio de correo con sus condiciones; no es un encargo a medida. |
 

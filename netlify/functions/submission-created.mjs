@@ -74,6 +74,8 @@ export function aLead(formName, d, opts = {}) {
       d.objectiu && 'Objectiu: ' + net(d.objectiu),
       d.nivel && 'Nivell de web: ' + net(d.nivel),
       d.privacidad && 'Privacitat: ' + tall(d.privacidad, 120),
+      d.capas && 'Capes: ' + tall(d.capas, 80),
+      d.ia && 'IA de /cliente/: ' + tall(d.ia, 120),
       d.termini && 'Termini: ' + net(d.termini),
       d.decideix && 'Qui decideix: ' + net(d.decideix),
       d.ampliacio && 'Ho amplien així: ' + net(d.ampliacio),

@@ -171,6 +171,55 @@
         .resposta { margin-top: 1rem; font-weight: 600; }
         .resposta.ko { color: var(--red); }
         .resposta.ok { color: var(--green); }
+        /* La IA que ponemos nosotros (pule-mapa.mjs): una tarjeta viva, con la
+           energía que le queda a cada persona y las propuestas una a una. */
+        .ia { position: relative; margin-top: 1.6rem; padding: 1.3rem 1.3rem 1.4rem; border-radius: 18px; background: linear-gradient(135deg, #f3f1ff 0%, #fff 55%, #fdf3fb 100%); border: 1px solid #d9d4fb; box-shadow: 0 10px 30px -18px rgba(79, 70, 229, .55); overflow: hidden; }
+        .ia[hidden], .ia [hidden] { display: none; }
+        .ia::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 18rem; height: 18rem; background: radial-gradient(circle, rgba(163, 24, 127, .12), transparent 65%); pointer-events: none; }
+        .ia-cap { display: flex; gap: .9rem; align-items: flex-start; position: relative; }
+        .ia-cap h3 { margin: 0; }
+        .ia-cap p { color: var(--light); font-size: var(--t0); max-width: 60ch; }
+        .ia-estrella { flex: none; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 12px; background: linear-gradient(135deg, var(--indigo), var(--purple)); color: #fff; font-size: 1.3rem; box-shadow: 0 6px 16px -6px rgba(79, 70, 229, .7); }
+        .ia-pensa .ia-estrella { animation: ia-gira 2.4s linear infinite; }
+        @keyframes ia-gira { to { transform: rotate(360deg); } }
+        .ia-qui { margin-top: 1rem; display: grid; gap: .6rem; position: relative; }
+        .ia-qui .cl-priv { font-size: var(--t0); }
+        .ia-sessio { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; margin-top: 1rem; font-size: var(--t0); color: var(--light); position: relative; }
+        .ia-sessio button { font: inherit; font-size: var(--t0); background: none; border: 0; color: var(--indigo); text-decoration: underline; cursor: pointer; min-height: 44px; }
+        .ia-energia { display: flex; align-items: center; gap: .5rem; }
+        .ia-energia > span:last-child { white-space: nowrap; }
+        .ia-energia .barra-e { width: 6rem; height: .5rem; border-radius: 99px; background: #e4e0fb; overflow: hidden; }
+        .ia-energia .barra-e i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--indigo), var(--purple)); transition: width .8s cubic-bezier(.2, .8, .2, 1); }
+        .ia-boto { margin-top: 1rem; position: relative; }
+        .ia-pensant { display: grid; gap: .7rem; margin-top: 1.1rem; }
+        .ia-pensant p { font-size: var(--t0); color: var(--indigo); font-weight: 600; min-height: 1.5em; }
+        .ia-esq { height: 4.2rem; border-radius: 12px; background: linear-gradient(90deg, #eceafd 25%, #f8f7ff 50%, #eceafd 75%); background-size: 200% 100%; animation: ia-brilla 1.3s ease-in-out infinite; }
+        @keyframes ia-brilla { to { background-position: -200% 0; } }
+        .ia-resum { margin-top: 1.1rem; padding: .8rem 1rem; border-left: 3px solid var(--purple); background: rgba(255, 255, 255, .7); border-radius: 0 10px 10px 0; font-style: italic; color: var(--text); max-width: 70ch; }
+        .ia-props { display: grid; gap: .7rem; margin-top: 1rem; }
+        .ia-prop { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: .85rem 1rem; display: grid; gap: .35rem; animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; transition: opacity .3s, transform .3s; }
+        @keyframes ia-entra { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+        .ia-prop .tip { justify-self: start; font-size: var(--t0); font-weight: 700; padding: .1rem .55rem; border-radius: 99px; background: #eceafd; color: var(--indigo); }
+        .ia-prop[data-tipo="nuevo"] .tip { background: #e3f3ea; color: var(--green); }
+        .ia-prop[data-tipo="quita"] .tip { background: #fbe9e7; color: var(--red); }
+        .ia-prop b { font-size: var(--t1); }
+        .ia-prop .que { font-size: var(--t0); color: var(--light); }
+        .ia-prop del { color: var(--muted); }
+        .ia-prop ins { text-decoration: none; background: #fff4d6; padding: 0 .2rem; border-radius: 4px; color: var(--text); }
+        .ia-prop .per { font-size: var(--t0); color: var(--muted); font-style: italic; }
+        .ia-prop .accions { margin-top: .3rem; }
+        .ia-prop.fet { opacity: .65; }
+        .ia-prop.fet .accions { display: none; }
+        .ia-prop .ok { font-size: var(--t0); font-weight: 700; color: var(--green); }
+        .ia-preg { margin-top: 1.1rem; display: grid; gap: .5rem; max-width: 64ch; }
+        .ia-preg label { font-weight: 600; }
+        .ia-preg textarea { min-height: 4.5rem; }
+        .ia-final { margin-top: 1rem; font-size: var(--t0); color: var(--light); }
+        .ia-textos { display: grid; gap: .8rem; margin-top: 1rem; }
+        .ia-textos .fila { animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; }
+        .fila.nou { animation: ia-llum 1.6s ease-out; }
+        @keyframes ia-llum { from { box-shadow: 0 0 0 3px var(--indigo); background: #f3f1ff; } }
+        @media (prefers-reduced-motion: reduce) { .ia *, .ia, .fila.nou { animation: none !important; transition: none !important; } }
         .aviso { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 10px; font-size: var(--t0); z-index: 300; }
 /*TT-PROCES*/
 .pr{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:0;counter-reset:pr}.pr-p{counter-increment:pr;position:relative;display:grid;align-content:start;grid-template-columns:2.6rem minmax(0,1fr);column-gap:1rem;padding:0 0 1.4rem}.pr-p::before{content:counter(pr);display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;border:2px solid var(--indigo,var(--acc,#3b3fb6));color:var(--indigo,var(--acc,#3b3fb6));font-weight:600;background:var(--bg,#fff);position:relative;z-index:1}.pr-p::after{content:"";position:absolute;left:1.2rem;top:2.4rem;bottom:0;width:2px;margin-left:-1px;background:var(--border,var(--lin,#d6d6e0))}.pr-p:last-child::after{display:none}.pr-p h3{font-size:1.125rem;line-height:1.3;margin:.35rem 0 .35rem}.pr-p p{margin:.2rem 0;line-height:1.55;max-width:62ch}.pr-reps{color:var(--muted,var(--mut,#555))}.pr-q{display:inline-flex;flex-wrap:wrap;gap:.35rem;margin:.1rem 0 .3rem}.pr-q span,.pr-e{font-size:.9375rem;border:1px solid var(--border-strong,var(--lin,#bbb));border-radius:999px;padding:.05rem .55rem}.pr .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.pr-p.opc::before{border-style:dashed}.pr-p.fet::before{content:"✓";background:var(--indigo,var(--acc,#3b3fb6));color:#fff}.pr-p.ara::before{box-shadow:0 0 0 4px color-mix(in srgb,var(--indigo,var(--acc,#3b3fb6)) 25%,transparent)}.pr-p.ara h3::after{content:attr(data-ara);margin-left:.5rem;font-size:.9375rem;font-weight:500;color:var(--indigo,var(--acc,#3b3fb6))}@media (min-width:60rem){.pr{grid-template-columns:repeat(7,minmax(0,1fr));gap:1rem}.pr-p{grid-template-columns:1fr;row-gap:.4rem;padding:0}.pr-p::after{left:2.4rem;right:-1rem;top:1.2rem;bottom:auto;width:auto;height:2px;margin:-1px 0 0}}
@@ -397,6 +446,14 @@
         </div>
         <div class="files" id="cl-files"></div>
         <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
+        <div class="ia" id="cl-ia" hidden>
+            <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
+                <div><h3>Pule tu dibujo con IA</h3><p>Lee lo que nos has contado y te propone mejoras: quién falta, qué se da que no se paga, cómo decirlo más claro. Tú decides qué se queda.</p></div></div>
+            <div class="ia-qui" data-ia="qui"></div>
+            <div class="ia-sessio" data-ia="sessio" hidden></div>
+            <button type="button" class="btn btn-primary ia-boto" id="cl-ia-pule" hidden>✦ Pulir mi dibujo</button>
+            <div id="cl-ia-res" aria-live="polite"></div>
+        </div>
         <div class="boceto editor" id="cl-ed" hidden>
             <div class="barra"><span>Tu dibujo, con el mismo editor que usamos en la sesión. Mueve, añade a alguien o una flecha, y guárdalo en tu ficha.</span>
                 <button type="button" class="btn btn-sm btn-primary" id="cl-ed-desa">Guardar en mi ficha</button>
@@ -429,6 +486,14 @@
             <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
             <label><input type="checkbox" data-capa="extranet"> <b>La extranet</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
             <label><input type="checkbox" data-capa="intranet"> <b>La intranet</b><span>Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
+        </div>
+        <div class="ia" id="cl-ia-web" hidden>
+            <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
+                <div><h3>Escribe tus textos con IA</h3><p>A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en el boceto.</p></div></div>
+            <div class="ia-qui" data-ia="qui"></div>
+            <div class="ia-sessio" data-ia="sessio" hidden></div>
+            <button type="button" class="btn btn-primary ia-boto" id="cl-ia-escriu" hidden>✦ Escribir mis textos</button>
+            <div id="cl-ia-web-res" aria-live="polite"></div>
         </div>
         <div class="accions">
             <button type="button" class="btn btn-primary" id="cl-boceto">Ver el boceto de mi web</button>
@@ -513,7 +578,7 @@
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
   <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
-  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><textarea name="resum"></textarea>
+  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea>
 </form>
 
 <script src="/SOS/lib/mapa-valor.js"></script>
@@ -661,7 +726,7 @@
         r.textContent = 'Preparando el boceto…';
         motor().then(function (html) {
             var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
-                f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: 'es', url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes() });
+                f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: 'es', url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes(), marca: S.marca || null });
             PAGS = {}; f.forEach(function (x) { PAGS[x.ruta] = x.cos; });
             var bar = $('#cl-pags'); bar.textContent = '';
             f.filter(function (x) { return /^[^/]+\.html$/.test(x.ruta) && !/^(404|gracies|registre)\.html$/.test(x.ruta) && (x.ruta !== 'equip.html' || capes().indexOf('intranet') >= 0); }).forEach(function (x) {
@@ -740,7 +805,7 @@
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = 'Marca la casilla de privacidad para poder enviarlo.'; $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
             objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S),
-            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' };
+            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/', ia: IA.resum() };
         b.disabled = true; r.className = 'resposta'; r.textContent = 'Enviando…';
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: Object.keys(dades).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(dades[k] || ''); }).join('&') })
@@ -761,6 +826,195 @@
             if (n === i) { x.setAttribute('aria-current', 'step'); h.setAttribute('data-ara', '· Estamos aquí'); } else { x.removeAttribute('aria-current'); h.removeAttribute('data-ara'); }
         });
     }
+
+    /* 7 · La IA que ponemos nosotros (netlify/functions/pule-mapa.mjs).
+       Se usa identificado (identitat.mjs): cada uno elige cómo, y el tope se
+       cuenta por persona. Las propuestas no tocan nada hasta que se aceptan. */
+    var IA = (function () {
+        var CI = 'tt.cliente.ia', I = {};
+        try { I = JSON.parse(localStorage.getItem(CI) || 'null') || {}; } catch (e) { I = {}; }
+        function desaI() { try { localStorage.setItem(CI, JSON.stringify(I)); } catch (e) { /* sin memoria */ } }
+        var VIES = [], caixes = [$('#cl-ia'), $('#cl-ia-web')];
+        /* Al volver de GitHub, la sesión llega en el fragmento: se guarda y se borra de la barra. */
+        var h = /^#sessio=([\w-]+\.[\w-]+)$/.exec(location.hash);
+        if (h) {
+            try { var d = JSON.parse(decodeURIComponent(escape(atob(h[1].split('.')[0].replace(/-/g, '+').replace(/_/g, '/'))))); I.sessio = h[1]; I.nom = d.nom; I.via = d.via; desaI(); } catch (e) { /* sesión ilegible */ }
+            history.replaceState(null, '', location.pathname + '#alrededor');
+            setTimeout(function () { aviso('Hola, ' + (I.nom || '') + ': ya puedes usar la IA'); var c = $('#cl-ia'); if (c) c.scrollIntoView({ block: 'center' }); }, 300);
+        } else if (location.hash === '#sessio-error') { history.replaceState(null, '', location.pathname + '#alrededor'); setTimeout(function () { aviso('No hemos podido entrar con GitHub. Prueba otra vez o usa tu correo.'); }, 300); }
+
+        function energia(c) {
+            var q = I.queda == null ? 100 : I.queda, v = I.voltes || 0, gast = 100 - q;
+            var n = v && gast ? Math.floor(q / (gast / v)) : null;
+            var w = el('span', { class: 'ia-energia', title: 'La IA que te regalamos' }), b = el('span', { class: 'barra-e', role: 'meter', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(q), 'aria-label': 'Energía de IA que te queda' }), i = el('i');
+            i.style.width = q + '%'; b.appendChild(i); w.appendChild(b);
+            w.appendChild(el('span', {}, q <= 0 ? 'Sin energía' : n != null ? 'Te quedan unas ' + n + ' vueltas' : 'Energía al ' + q + ' %'));
+            c.appendChild(w);
+        }
+        function pinta() {
+            caixes.forEach(function (cx) {
+                if (!cx) return;
+                cx.hidden = !VIES.length && !I.sessio;
+                var qui = cx.querySelector('[data-ia="qui"]'), ses = cx.querySelector('[data-ia="sessio"]'), boto = cx.querySelector('.ia-boto');
+                qui.textContent = ''; ses.textContent = '';
+                if (I.sessio) {
+                    qui.hidden = true; ses.hidden = false; boto.hidden = false;
+                    ses.appendChild(el('span', {}, 'Hola, ' + (I.nom || 'tú') + (I.via === 'github' ? ' · con GitHub' : ' · con tu correo')));
+                    energia(ses);
+                    var sb = el('button', { type: 'button' }, 'Salir'); sb.addEventListener('click', function () { I = {}; desaI(); pinta(); }); ses.appendChild(sb);
+                    return;
+                }
+                qui.hidden = false; ses.hidden = true; boto.hidden = true;
+                qui.appendChild(el('p', {}, 'Para usar la IA, dinos quién eres. Elige cómo:'));
+                var acc = el('div', { class: 'accions' }); acc.style.marginTop = '0';
+                if (VIES.indexOf('github') >= 0) { var g = el('a', { class: 'btn btn-ghost', href: '/.netlify/functions/identitat?via=github' }, 'Con GitHub'); acc.appendChild(g); }
+                if (VIES.indexOf('correu') >= 0) {
+                    var m = el('button', { type: 'button', class: 'btn btn-ghost' }, 'Con mi correo');
+                    m.addEventListener('click', function () { perCorreu(cx, m); }); acc.appendChild(m);
+                }
+                qui.appendChild(acc);
+                var lp = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox', 'data-ia': 'priv' });
+                lp.appendChild(ck); lp.appendChild(el('span', {}, ' He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.'));
+                qui.appendChild(lp);
+                var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode('Más en el ')); nl.appendChild(el('a', { href: '/avis-legal.html' }, 'aviso legal')); nl.appendChild(document.createTextNode('. Con el correo usamos el de tu cuenta (paso 1).'));
+                qui.appendChild(nl);
+            });
+        }
+        function priv(cx) { var c = cx.querySelector('[data-ia="priv"]'); if (c && c.checked) return true; aviso('Marca la casilla de privacidad para usar la IA'); if (c) c.focus(); return false; }
+        function perCorreu(cx, b) {
+            if (!priv(cx)) return;
+            if (!S.cuenta || !S.mail) { aviso('Primero crea tu cuenta con tu correo (paso 1)'); location.hash = 'cuenta'; return; }
+            b.disabled = true;
+            fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true }) })
+                .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || 'No se ha podido'); return j; }); })
+                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); aviso('Hola, ' + j.nom + ': ya puedes usar la IA'); })
+                .catch(function (e) { b.disabled = false; aviso(e.message); });
+        }
+
+        var FRASES = { mapa: ['Leyendo quién está a tu alrededor…', 'Buscando lo que se da y no se paga…', 'Pensando en quién te falta…', 'Poniéndolo con tus palabras…'],
+            web: ['Leyendo tu dibujo…', 'Buscando la frase que dice lo que haces…', 'Escribiendo para cada uno…', 'Ajustando el tono…'] };
+        function pensant(res, pas, cx) {
+            res.textContent = ''; cx.classList.add('ia-pensa');
+            var w = el('div', { class: 'ia-pensant' }), p = el('p', { role: 'status' }, FRASES[pas][0]); w.appendChild(p);
+            for (var k = 0; k < 3; k++) { var e = el('div', { class: 'ia-esq' }); e.style.animationDelay = (k * .15) + 's'; w.appendChild(e); }
+            res.appendChild(w);
+            var n = 0, t = setInterval(function () { n = (n + 1) % FRASES[pas].length; p.textContent = FRASES[pas][n]; }, 1700);
+            return function () { clearInterval(t); cx.classList.remove('ia-pensa'); };
+        }
+        function dades(nota) {
+            return { casa: S.casa, org: S.org, inicial: S.inicial, nota: nota || '', nivel: S.nivel, capes: capes(),
+                respuestas: D.PREGUNTES.map(function (p) { return { q: p.q, a: S.respuestas[p.id] || '' }; }),
+                alrededor: S.alrededor.map(function (f) { return { quien: f.quien, meDa: f.meDa, meDaEs: f.meDaEs, leDoy: f.leDoy, leDoyEs: f.leDoyEs }; }) };
+        }
+        function crida(pas, nota, cx, res, boto) {
+            var para = pensant(res, pas, cx); boto.disabled = true;
+            return fetch('/.netlify/functions/pule-mapa', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessio: I.sessio, pas: pas, dades: dades(nota) }) })
+                .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); })
+                .then(function (j) {
+                    para(); boto.disabled = false; res.textContent = '';
+                    if (j.voltes != null) { I.voltes = j.voltes; I.queda = j.queda; I.usd = j.usd; desaI(); pinta(); }
+                    if (j.estat === 'identifica') { I = {}; desaI(); pinta(); aviso('Tu sesión ha caducado: identifícate otra vez'); return null; }
+                    if (j.estat === 'topall') { final(res, 'Has usado toda la IA que te regalamos. Envíanos tu dibujo tal como está y seguimos juntos en la sesión.'); return null; }
+                    if (j.estat === 'ocupat') { final(res, 'Hoy la IA ha tenido mucho trabajo. Vuelve mañana, o envíanos tu dibujo y lo vemos juntos.'); return null; }
+                    if (j.estat !== 'fet') { final(res, j.motiu || 'No llego a la IA ahora mismo. Prueba en un rato.'); return null; }
+                    return j.resultat;
+                }).catch(function () { para(); boto.disabled = false; final(res, 'No llego a la IA ahora mismo. Prueba en un rato.'); return null; });
+        }
+        function final(res, t) { var p = el('p', { class: 'ia-final' }, t + ' '); p.appendChild(el('a', { href: '#enviar' }, 'Ir a enviar')); res.appendChild(p); }
+
+        /* El mapa: cada propuesta, con el antes y el después, se acepta o se descarta. */
+        var MENA = { tangible: 'se paga', intangible: 'no se paga' };
+        function canvi(ant, nou, es) {
+            var s = el('span'); if (ant && ant !== nou) { s.appendChild(el('del', {}, ant)); s.appendChild(document.createTextNode(' → ')); }
+            s.appendChild(el(ant === nou ? 'span' : 'ins', {}, nou || '—')); s.appendChild(document.createTextNode(' · ' + MENA[es])); return s;
+        }
+        function linia(et, ant, nou, es) { var p = el('p', { class: 'que' }, et + ' '); p.appendChild(canvi(ant, nou, es)); return p; }
+        var ultima = null;
+        function pule(nota) {
+            var cx = $('#cl-ia'), res = $('#cl-ia-res'), boto = $('#cl-ia-pule');
+            var files = S.alrededor.slice();
+            crida('mapa', nota, cx, res, boto).then(function (r) {
+                if (!r) return;
+                ultima = r;
+                if (r.resumen) res.appendChild(el('p', { class: 'ia-resum' }, r.resumen));
+                var props = el('div', { class: 'ia-props' }), pend = [];
+                r.sugerencias.forEach(function (s, n) {
+                    var f = s.fila >= 0 ? files[s.fila] : null, c = el('div', { class: 'ia-prop', 'data-tipo': s.tipo });
+                    c.style.animationDelay = (n * .09) + 's';
+                    c.appendChild(el('span', { class: 'tip' }, s.tipo === 'nuevo' ? '+ Alguien nuevo' : s.tipo === 'quita' ? 'Quitar' : 'Mejor dicho'));
+                    c.appendChild(el('b', {}, s.tipo === 'nuevo' ? s.quien : (f && f.quien) + (s.tipo === 'cambia' && s.quien && f && s.quien !== f.quien ? ' → ' + s.quien : '')));
+                    if (s.tipo !== 'quita') { c.appendChild(linia('Te da:', f && f.meDa, s.meDa, s.meDaEs)); c.appendChild(linia('Le das:', f && f.leDoy, s.leDoy, s.leDoyEs)); }
+                    if (s.porque) c.appendChild(el('p', { class: 'per' }, s.porque));
+                    var acc = el('div', { class: 'accions' }), si = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, 'Aplicar'), no = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, 'Descartar');
+                    function fet(t) { c.classList.add('fet'); c.appendChild(el('span', { class: 'ok' }, t)); pend.splice(pend.indexOf(aplica), 1); if (!pend.length && tot) tot.remove(); }
+                    function aplica() {
+                        var idx = f ? S.alrededor.indexOf(f) : -1, nova = null;
+                        if (s.tipo === 'nuevo') { nova = { quien: s.quien, meDa: s.meDa, meDaEs: s.meDaEs, leDoy: s.leDoy, leDoyEs: s.leDoyEs }; S.alrededor.push(nova); }
+                        else if (idx < 0) { fet('Esa fila ya no está'); return; }
+                        else if (s.tipo === 'quita') S.alrededor.splice(idx, 1);
+                        else { nova = f; Object.assign(f, { quien: s.quien || f.quien, meDa: s.meDa || f.meDa, meDaEs: s.meDaEs, leDoy: s.leDoy || f.leDoy, leDoyEs: s.leDoyEs }); }
+                        S.extra = null; desa(); pintaFiles();
+                        if (nova) { var fi = document.querySelectorAll('#cl-files .fila')[S.alrededor.indexOf(nova)]; if (fi) fi.classList.add('nou'); }
+                        fet('✓ Aplicado');
+                    }
+                    pend.push(aplica);
+                    si.addEventListener('click', aplica); no.addEventListener('click', function () { fet('Descartado'); });
+                    acc.appendChild(si); acc.appendChild(no); c.appendChild(acc); props.appendChild(c);
+                });
+                if (!r.sugerencias.length) props.appendChild(el('p', { class: 'ia-final' }, 'Tu dibujo está muy completo: no veo nada que cambiar ahora.'));
+                res.appendChild(props);
+                var tot = null;
+                if (r.sugerencias.length > 1) {
+                    tot = el('button', { type: 'button', class: 'btn btn-ghost' }, 'Aplicar todas');
+                    tot.addEventListener('click', function () { pend.slice().forEach(function (a) { a(); }); });
+                    var ta = el('div', { class: 'accions' }); ta.appendChild(tot); res.appendChild(ta);
+                }
+                if (r.pregunta) {
+                    var pg = el('div', { class: 'ia-preg' }), id = 'cl-ia-nota';
+                    pg.appendChild(el('label', { for: id }, r.pregunta));
+                    var tx = el('textarea', { id: id, placeholder: 'Tu respuesta, con tus palabras' }); pg.appendChild(tx);
+                    var ot = el('button', { type: 'button', class: 'btn btn-primary' }, '✦ Otra vuelta');
+                    ot.addEventListener('click', function () { pule(tx.value); });
+                    var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(ot); pg.appendChild(a2); res.appendChild(pg);
+                }
+            });
+        }
+        $('#cl-ia-pule').addEventListener('click', function () { pule(''); });
+
+        /* La web: los textos van a la marca del motor (lema, presentación y la intro de cada puerta). */
+        function escriu() {
+            var cx = $('#cl-ia-web'), res = $('#cl-ia-web-res'), boto = $('#cl-ia-escriu');
+            if (D.mapa(S).roles.length < 3) { aviso('Primero di al menos quién está a tu alrededor (paso 4)'); return; }
+            crida('web', '', cx, res, boto).then(function (r) {
+                if (!r) return;
+                var w = el('div', { class: 'ia-textos' });
+                function camp2(et, v, gran) { var l = el('label', {}, et), i = el(gran ? 'textarea' : 'input'); i.value = v || ''; l.appendChild(i); return [l, i]; }
+                var f0 = el('div', { class: 'fila' }), lm = camp2('La frase de tu web', r.lema), pr = camp2('La presentación', r.presentacion, true);
+                f0.appendChild(lm[0]); f0.appendChild(pr[0]); w.appendChild(f0);
+                var secs = r.secciones.map(function (s, n) {
+                    var f = el('div', { class: 'fila' }); f.style.animationDelay = ((n + 1) * .09) + 's';
+                    f.appendChild(el('b', {}, 'Para ' + s.quien));
+                    var nm = camp2('Cómo le llamas en la web', s.nombre), it = camp2('Lo que le dices', s.intro, true);
+                    f.appendChild(nm[0]); f.appendChild(it[0]); w.appendChild(f);
+                    return { quien: s.quien, nom: nm[1], intro: it[1] };
+                });
+                res.appendChild(w);
+                var acc = el('div', { class: 'accions' }), us = el('button', { type: 'button', class: 'btn btn-primary' }, 'Verlo en el boceto');
+                us.addEventListener('click', function () {
+                    var portes = {}; secs.forEach(function (s) { portes[s.quien] = { nom: s.nom.value, intro: s.intro.value }; });
+                    S.marca = { lema: lm[1].value, presentacio: pr[1].value, portes: portes }; desa();
+                    $('#cl-boceto').click(); $('#cl-marc-caixa').scrollIntoView({ block: 'start' });
+                });
+                acc.appendChild(us); res.appendChild(acc);
+            });
+        }
+        $('#cl-ia-escriu').addEventListener('click', escriu);
+
+        fetch('/.netlify/functions/pule-mapa').then(function (r) { if (!r.ok) throw 0; return fetch('/.netlify/functions/identitat'); })
+            .then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
+        pinta();
+        return { resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
+    })();
 
     function pintaTot() { pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];

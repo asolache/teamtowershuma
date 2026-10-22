@@ -393,6 +393,11 @@ jobs:
       - name: L'espai de les agències · Zoho CRM
         run: node SOS/tests/test-espai-partner.mjs
 
+      # La IA de /cliente/ (pule-mapa.mjs) i la identitat (identitat.mjs): sense
+      # identitat no hi ha IA, i el tope de 0,50 per persona no se supera mai.
+      - name: La IA de l'espai de client, identificada i amb tope
+        run: node SOS/tests/test-pule-mapa.mjs
+
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció
       # no passi sense permís i que l'avís de Stripe sense signatura bona no compti.
