@@ -509,7 +509,9 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
   /* `/vna` és bilingüe des del 03/10/2026 —264 claus— i la barra no ho era: qui
      la posava en castellà llegia el menú sencer en català, i la pàgina seguia
      sent correcta a la vista. Era l'última costura que es veia mirant. */
-  'vna.html'];
+  'vna.html',
+  /* El blog, en català i en castellà des del 22/10/2026. */
+  'blog.html'];
 
 /* ══ LES CARPETES DEL LLOC (10/10/2026) ═══════════════════════════════════
    Les dues pàgines de «La teva web» viuen a la seva carpeta (`index.html` a
@@ -996,7 +998,7 @@ let tocades = 0;
    un error de muntatge, i val més que ho digui aquí que no pas que es trobi
    mirant. */
 const AMB_DICCIONARI = ['diagnostic.html', 'diagnostic-org.html',
-  'diagnostic-territori.html', 'pressupost.html', 'vna.html'];
+  'diagnostic-territori.html', 'pressupost.html', 'vna.html', 'blog.html'];
 
 /* Les claus del menú als dos diccionaris d'una pàgina del SOS. Mateixa feina
    que `posaPortada`, amb unes marques que són d'aquestes pàgines. */

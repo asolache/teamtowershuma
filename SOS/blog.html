@@ -122,6 +122,9 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 @media(max-width:860px){.emb-r{grid-template-columns:1fr}}
 @media(max-width:620px){.emb-portes{grid-template-columns:1fr}.emb-cta{width:100%;justify-content:center}}
 /*/TT-EMBUT-CSS*/
+/* Dues llengües (22/10/2026): cada entrada porta el català i el castellà, i
+   el selector de la barra n'amaga una. Sense JS es veu el català. */
+html:not([lang="es"]) .l-es,html[lang="es"] .l-ca{display:none}
 </style>
 </head>
 <body>
@@ -234,6 +237,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html" aria-current="page"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
+  <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
   <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
 </nav>
 <script>
@@ -248,13 +252,20 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <!--/TT-NAV-->
 
 <header>
+<div class="l-ca" lang="ca">
 <h1>Blog de TeamTowers Humà · el que construïm, explicat</h1>
 <p>Tots els projectes de TeamTowers Humà en un sol lloc: els <strong>mapes de valor</strong>, les <strong>webs vives</strong> dels clients, el <strong>SOS</strong> i la xarxa. Cada millora, explicada per a qui la fa servir, amb l'enllaç i la imatge de cada vista. Llegits en ordre, fan el manual del sistema.</p>
+</div>
+<div class="l-es" lang="es">
+<h1>Blog de TeamTowers Humà · lo que construimos, explicado</h1>
+<p>Todos los proyectos de TeamTowers Humà en un solo sitio: los <strong>mapas de valor</strong>, las <strong>webs vivas</strong> de los clientes, el <strong>SOS</strong> y la red. Cada mejora, explicada para quien la usa, con el enlace y la imagen de cada vista. Leídos en orden, forman el manual del sistema.</p>
+</div>
 </header>
 
 <main class="wrap">
 
 <article id="post-espai-client">
+<div class="l-ca" lang="ca">
 <h2>🚪 L'espai de client: el compte, el primer dibuix i el boceto de la web</h2>
 <div class="meta">
 <span class="tag">Mapa i web</span>
@@ -272,9 +283,30 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li><strong>El boceto de la web</strong>, amb el mateix motor que l'editor del mapa: una porta per a cadascú. I el nivell de web que vol, dels quatre de <a href="/mapa-web/#viva">/mapa-web/</a>.</li>
 <li><strong>Res surt del navegador</strong> fins que prem «Enviar». Llavors ens arriba com un client nou, amb el mapa a dins, i els passos de <a href="/mapa-web/#contratar">Com es contracta</a> marquen que ja és al pas 2.</li>
 </ul>
+</div>
+<div class="l-es" lang="es">
+<h2>🚪 El espacio de cliente: la cuenta, el primer dibujo y el boceto de la web</h2>
+<div class="meta">
+<span class="tag">Mapa y web</span>
+<span class="tag">Clientes</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">En <a href="/cliente/">/cliente/</a> un cliente empieza su proyecto solo: se hace la cuenta, dice qué quiere con sus palabras y en unos minutos ve con quién trabaja y un boceto de su web.</p>
+
+<div class="who"><strong>Para quién:</strong> quien ya ha hablado con nosotros y quiere empezar sin esperar a la reunión.</div>
+
+<h3>Qué hay de nuevo</h3>
+<ul>
+<li><strong>Ocho preguntas, o su IA</strong>: las contesta él, o copia un texto en Claude o ChatGPT, que le responde las preguntas y le dice quién tiene alrededor. La respuesta se pega y rellena el formulario.</li>
+<li><strong>El primer dibujo, revisado solo</strong>: quién hay, qué le da y qué da él, con las reglas del mapa de valor dichas en sus palabras («falta lo que no se paga»).</li>
+<li><strong>El boceto de la web</strong>, con el mismo motor que el editor del mapa: una puerta para cada uno. Y el nivel de web que quiere, de los cuatro de <a href="/mapa-web/#viva">/mapa-web/</a>.</li>
+<li><strong>Nada sale del navegador</strong> hasta que pulsa «Enviar». Entonces nos llega como un cliente nuevo, con el mapa dentro, y los pasos de <a href="/mapa-web/#contratar">Cómo se contrata</a> marcan que ya está en el paso 2.</li>
+</ul>
+</div>
 </article>
 
 <article id="post-ja-funciona">
+<div class="l-ca" lang="ca">
 <h2>🔌 El que ja fem cada dia amb IA, i una jornada per començar</h2>
 <div class="meta">
 <span class="tag">Serveis connectables</span>
@@ -291,9 +323,29 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li><strong>Una jornada per començar</strong>: de la primera petició a la IA a una landing publicada i un flux connectat, en vuit hores comptades bloc a bloc. El pressupost, per fluxos.</li>
 <li><strong>Una guarda</strong>: un cas que diu «funciona avui» només pot fer servir peces que ja estan en ús, i la jornada ha de sumar les hores que diu.</li>
 </ul>
+</div>
+<div class="l-es" lang="es">
+<h2>🔌 Lo que ya hacemos cada día con IA, y una jornada para empezar</h2>
+<div class="meta">
+<span class="tag">Servicios conectables</span>
+<span class="tag">MCP</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">En <a href="/conecta/#casos">Servicios conectables</a> ahora se ven los flujos con los que llevamos nuestro propio negocio: cuáles funcionan hoy, cuáles se estrenan con los pilotos y con qué piezas. Y qué se puede tener en una jornada de trabajo.</p>
+
+<div class="who"><strong>Para quién:</strong> negocios que quieren ver qué hace la IA antes de contratar nada.</div>
+
+<h3>Qué hay de nuevo</h3>
+<ul>
+<li><strong>Casos reales</strong>: dar de alta un cliente en el CRM con un mensaje, el correo de antes de una reunión, el borrador del mapa y de la web, la página privada antes de la visita, el tablero del día, los pasos de cada proyecto y el vigía de cada hora. Muchos van por MCP, el estándar abierto con el que la IA habla con el CRM, el correo o la web con los permisos que le das.</li>
+<li><strong>Una jornada para empezar</strong>: de la primera petición a la IA a una landing publicada y un flujo conectado, en ocho horas contadas bloque a bloque. El presupuesto, por flujos.</li>
+<li><strong>Una guarda</strong>: un caso que dice «funciona hoy» solo puede usar piezas que ya están en uso, y la jornada tiene que sumar las horas que dice.</li>
+</ul>
+</div>
 </article>
 
 <article id="post-set-passos">
+<div class="l-ca" lang="ca">
 <h2>🪜 Set passos, del primer missatge a la web viva</h2>
 <div class="meta">
 <span class="tag">Mapa i web</span>
@@ -311,9 +363,30 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li><strong>Quina web vols</strong>, a <a href="/mapa-web/#viva">la mateixa pàgina</a>: quatre nivells, de la pàgina mínima a la web viva. La quota de la web viva garanteix que cada automatització es defineix, té qui la porta i es mesura cada mes, amb els processos continus ordenats per la trinitat: crear, sostenir i transformar.</li>
 <li><strong>Una sola font</strong>: els passos es declaren un cop i surten a la pàgina, al backoffice i a l'etapa del CRM. Si un pas canvia, canvia a tot arreu, i una guarda al CI peta si la pàgina se n'aparta.</li>
 </ul>
+</div>
+<div class="l-es" lang="es">
+<h2>🪜 Siete pasos, del primer mensaje a la web viva</h2>
+<div class="meta">
+<span class="tag">Mapa y web</span>
+<span class="tag">Clientes</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Quien contrata un mapa de valor y una web ahora ve el camino entero antes de empezar: siete pasos, quién hace cada uno y qué recibe. Y el mismo camino sale en su backoffice, con el paso en el que está su proyecto.</p>
+
+<div class="who"><strong>Para quién:</strong> negocios que quieren su web hecha desde su mapa de valor, y quien los acompaña.</div>
+
+<h3>Qué hay de nuevo</h3>
+<ul>
+<li><strong>«Cómo se contrata»</strong>, en <a href="/mapa-web/#contratar">Mapa y web en una hora</a>: nos escribes, leemos lo que ya tienes, el borrador del mapa, el presupuesto por flujos, la sesión, todo a tu nombre y, si quieres, la web viva. Los tres primeros no cuestan nada.</li>
+<li><strong>«Dónde estamos»</strong>, en el backoffice de cada cliente: los mismos pasos, con los hechos marcados y el actual destacado. Quien lleva el proyecto solo tiene que decir en qué paso está.</li>
+<li><strong>Qué web quieres</strong>, en <a href="/mapa-web/#viva">la misma página</a>: cuatro niveles, de la página mínima a la web viva. La cuota de la web viva garantiza que cada automatización se define, tiene quien la lleva y se mide cada mes, con los procesos continuos ordenados por la trinidad: crear, sostener y transformar.</li>
+<li><strong>Una sola fuente</strong>: los pasos se declaran una vez y salen en la página, en el backoffice y en la etapa del CRM. Si un paso cambia, cambia en todas partes, y una guarda en el CI falla si la página se aparta.</li>
+</ul>
+</div>
 </article>
 
 <article id="post-qui-ocupa">
+<div class="l-ca" lang="ca">
 <h2>🏢 Un rol no és una organització</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -332,9 +405,31 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li><strong>El seu mapa</strong>: el mapa de dins d'una organització s'obre com a projecte propi, i la seva pàgina i la seva web surten d'aquest mapa amb la mateixa eina que fa les webs dels clients.</li>
 <li><strong>D'un llenç a l'altre</strong>: «⇪ Obre un mapa» i «⧉ Copia el mapa» porten el mapa de <a href="vna-suport.html">l'editor</a> a l'app i el tornen sencer, amb els processos, les troballes i l'ideal. A l'editor, «🫀 Obre'l viu a l'app», i a l'app, «✎ Obre'l a l'editor».</li>
 </ul>
+</div>
+<div class="l-es" lang="es">
+<h2>🏢 Un rol no es una organización</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa de valor</span>
+<span class="tag">MATRIU</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Una bodega puede hacer el vino, acoger a los grupos y dinamizar la visita: es una sola casa con tres roles. Y un mismo rol lo pueden hacer varias bodegas, que entonces solo se distinguen por lo que es cada una. El mapa de valor ahora lo dice.</p>
+
+<div class="who"><strong>Para quién:</strong> redes de partners, cooperativas y territorios donde las mismas casas hacen cosas distintas según el día.</div>
+
+<h3>Qué hay de nuevo</h3>
+<ul>
+<li><strong>Quién ocupa los roles</strong>, junto al mapa: cada organización con sus roles y su posicionamiento, en una frase propia. El SOS avisa de quién hace varios roles (si lo deja, se van todos a la vez), de qué roles comparten varias casas y a cuál le falta un posicionamiento para no ser intercambiable, y de qué roles no ocupa nadie.</li>
+<li><strong>La escalera de cada partner</strong>, con las puertas de la MATRIU: Ficha, Página, Web propia y Nodo. Cada peldaño se gana con lo que se puede comprobar en el mapa, y el SOS dice qué falta para el siguiente.</li>
+<li><strong>Su mapa</strong>: el mapa de dentro de una organización se abre como proyecto propio, y su página y su web salen de ese mapa con la misma herramienta que hace las webs de los clientes.</li>
+<li><strong>De un lienzo al otro</strong>: «⇪ Obre un mapa» y «⧉ Copia el mapa» llevan el mapa de <a href="vna-suport.html">el editor</a> a la app y lo devuelven entero, con los procesos, los hallazgos y el ideal. En el editor, «🫀 Obre'l viu a l'app», y en la app, «✎ Obre'l a l'editor».</li>
+</ul>
+</div>
 </article>
 
 <article id="post-un-sol-mapa">
+<div class="l-ca" lang="ca">
 <h2>🧭 Un sol mapa, unes sols regles</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -351,9 +446,29 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li>La nota sobre 100 de les taules surt de les mateixes regles, i una dura pesa el doble que una tova.</li>
 <li>El motor de les regles es declara un sol cop i l'app el carrega de <code>lib/mapa-valor.js</code>, que també sap traduir el mapa d'una eina a l'altra sense perdre res. És el primer pas perquè un mapa fet a l'editor, o el d'un cervell de client, s'obri viu a l'app.</li>
 </ul>
+</div>
+<div class="l-es" lang="es">
+<h2>🧭 Un solo mapa, unas solas reglas</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa de valor</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">El editor del mapa de valor y el mapa de la app ya juzgan igual. Antes, un mismo mapa podía salir sano en un sitio y enfermo en el otro: había tres notas de salud distintas. Ahora solo hay una, y sale de las diez reglas del método.</p>
+
+<div class="who"><strong>Para quién:</strong> quien dibuja el mapa de su negocio o de su red, en la app o en <a href="vna-suport.html">el editor</a>.</div>
+
+<h3>Qué cambia</h3>
+<ul>
+<li>El panel <strong>Salud de la red</strong> de la app muestra las diez reglas, cada una con lo que dice de tu mapa. Una regla dura que falla sale en rojo, y una blanda, como un aviso.</li>
+<li>La nota sobre 100 de las tablas sale de las mismas reglas, y una dura pesa el doble que una blanda.</li>
+<li>El motor de las reglas se declara una sola vez y la app lo carga de <code>lib/mapa-valor.js</code>, que también sabe traducir el mapa de una herramienta a la otra sin perder nada. Es el primer paso para que un mapa hecho en el editor, o el de un cerebro de cliente, se abra vivo en la app.</li>
+</ul>
+</div>
 </article>
 
 <article id="post-un-crm-moltes-marques">
+<div class="l-ca" lang="ca">
 <h2>🏷 Un sol CRM, un mapa per marca</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -371,9 +486,30 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li>A cada mapa tries la marca. Un mapa sense marca ho veu tot: és la vista de tota la xarxa.</li>
 </ul>
 <p>El paquet de la xarxa real porta les etiquetes tal com venen del CRM, i el selector de marca només apareix a qui ja n'ha carregat un: els noms de les teves marques són dades teves.</p>
+</div>
+<div class="l-es" lang="es">
+<h2>🏷 Un solo CRM, un mapa por marca</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa vivo</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Si llevas más de una marca, no hace falta un CRM para cada una. Un solo CRM, una etiqueta por marca en cada contacto y en cada proyecto, y el SOS hace un mapa por marca y otro con todo.</p>
+
+<div class="who"><strong>Para quién:</strong> quien lleva varios proyectos o marcas con la misma gente y las mismas herramientas.</div>
+
+<h3>Cómo funciona</h3>
+<ul>
+<li>Cada registro lleva la etiqueta de su marca. Si lleva dos, es compartido y sale en ambos mapas.</li>
+<li>Lo que no tiene etiqueta sale como «sin marca»: el SOS no adivina de quién es.</li>
+<li>En cada mapa eliges la marca. Un mapa sin marca lo ve todo: es la vista de toda la red.</li>
+</ul>
+<p>El paquete de la red real lleva las etiquetas tal como vienen del CRM, y el selector de marca solo aparece a quien ya ha cargado uno: los nombres de tus marcas son datos tuyos.</p>
+</div>
 </article>
 
 <article id="post-el-dia">
+<div class="l-ca" lang="ca">
 <h2>☀ El teu dia, en ordre</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -395,9 +531,34 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>El SOS ho dedueix del mapa: de qui ha de moure fitxa, del termini, del nom i de la mena de cada flux. Si un flux vol anar a un altre pas, el paquet de la xarxa real li pot dir amb <code>fase</code>, i a una proposta, en quin <code>pas</code> és. Tocar qualsevol fila n'obre el seguiment.</p>
 
 <p>Ho pots veure a <a href="./?viu">l'exemple viu</a>, a «Avui», sota «Què ha passat?».</p>
+</div>
+<div class="l-es" lang="es">
+<h2>☀ Tu día, en orden</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa vivo</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">«Hoy» ya no solo avisa: también ordena el día en cinco pasos, siempre los mismos y en este orden. Cada flujo de tu mapa va al paso que le toca.</p>
+
+<div class="who"><strong>Para quién:</strong> quien lleva un negocio, una entidad o un equipo y quiere abrir el SOS por la mañana y saber por dónde empezar.</div>
+
+<h3>Los cinco pasos</h3>
+<ol>
+<li><strong>Responde</strong>: lo que te espera, primero lo urgente.</li>
+<li><strong>Mueve las propuestas</strong>: cada una seguida como un pedido (pedida, enviada, aceptada, cobrada y hecha), con el paso siguiente.</li>
+<li><strong>Produce</strong>: lo que toca los próximos 14 días.</li>
+<li><strong>Cobra</strong>: lo que hay que cobrar y cuándo, sin importes en la pantalla.</li>
+<li><strong>Cuida la red</strong>: con quién hace tiempo que no pasa nada.</li>
+</ol>
+<p>El SOS lo deduce del mapa: de quién tiene que mover ficha, del plazo, del nombre y del tipo de cada flujo. Si un flujo quiere ir a otro paso, el paquete de la red real se lo puede decir con <code>fase</code>, y a una propuesta, en qué <code>pas</code> está. Tocar cualquier fila abre su seguimiento.</p>
+
+<p>Lo puedes ver en <a href="./?viu">el ejemplo vivo</a>, en «Avui», bajo «Què ha passat?».</p>
+</div>
 </article>
 
 <article id="post-mapa-a-ma">
+<div class="l-ca" lang="ca">
 <h2>✎ El mapa de valor, dibuixat amb el dit</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -423,9 +584,38 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Quatre lents noves: <strong>Castell</strong> (pom de dalt, tronc i pinya), <strong>Cinc capes</strong> (del que es toca al propòsit), <strong>Anells</strong> i <strong>3D</strong>. Són les mateixes vistes de la pàgina del cervell, carregades i no copiades, amb els teus rols en lloc de vedes. Cada rol cau a la capa del que hi circula: el cor de la xarxa al propòsit, qui decideix al criteri, el que només es toca al cos. La 3D, a més, diu quins fluxos falten.</p>
 
 <p><a href="./?viu">Prova-ho amb l'exemple viu</a>: obre el mapa, toca «✎ Connecta i mou» i arrossega de Clients a Aliats.</p>
+</div>
+<div class="l-es" lang="es">
+<h2>✎ El mapa de valor, dibujado con el dedo</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa de valor</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Un flujo de valor es una línea entre dos roles, y ahora se dibuja así: arrastras de un rol a otro y el SOS te pregunta qué circula. Y el mismo mapa se puede mirar como un castell o en cinco capas, las vistas del cerebro aplicadas a tu organización.</p>
+
+<div class="who"><strong>Para quién:</strong> cualquier equipo, negocio o red que quiera ver quién da qué a quién sin rellenar formularios.</div>
+
+<h3>Conecta y mueve</h3>
+<ul>
+<li><strong>Arrastra</strong> de un rol a otro, o tócalos uno tras otro si vas con el móvil, y sale el flujo.</li>
+<li>Un paso rápido: tangible o intangible, qué fluye (con sugerencias) y si el otro <strong>devuelve algo</strong>, porque en una red de valor casi todo vuelve.</li>
+<li><strong>Mantén pulsado</strong> un rol para moverlo donde quieras; se queda allí.</li>
+<li>Toca un <strong>espacio vacío</strong> para añadir un rol, y toca un flujo para cambiarlo o quitarlo.</li>
+</ul>
+
+<h3>Un mapa que se lee</h3>
+<p>Cada rol es una ficha con sus iniciales y el nombre entero debajo, un poco más grande cuantos más flujos pasan por él. Los nombres de los flujos llevan un halo para que no se pierdan entre las líneas.</p>
+
+<h3>Las vistas del cerebro, sobre tu mapa</h3>
+<p>Cuatro lentes nuevas: <strong>Castell</strong> (pom de dalt, tronco y pinya), <strong>Cinco capas</strong> (de lo que se toca al propósito), <strong>Anillos</strong> y <strong>3D</strong>. Son las mismas vistas de la página del cerebro, cargadas y no copiadas, con tus roles en lugar de vedas. Cada rol cae en la capa de lo que circula por él: el corazón de la red en el propósito, quien decide en el criterio, lo que solo se toca en el cuerpo. La 3D, además, dice qué flujos faltan.</p>
+
+<p><a href="./?viu">Pruébalo con el ejemplo vivo</a>: abre el mapa, toca «✎ Connecta i mou» y arrastra de Clientes a Aliados.</p>
+</div>
 </article>
 
 <article id="post-una-accio">
+<div class="l-ca" lang="ca">
 <h2>↩ Cada avís, una acció</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -445,9 +635,32 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Ho pots provar a <a href="./?viu">l'exemple viu</a>.</p>
 
 <blockquote>L'avís i la resposta, a la mateixa fila.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>↩ Cada aviso, una acción</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa vivo</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Un aviso no debería hacerte abrir tres pantallas. En «Què ha passat?», cada aviso urgente o importante lleva debajo lo que puedes hacer con él, con un solo toque.</p>
+
+<div class="who"><strong>Para quién:</strong> quien abre el SOS con poco tiempo y quiere dejar resuelto lo que le espera.</div>
+
+<h3>Las tres acciones</h3>
+<ul>
+<li><strong>↩ Responde</strong>: abre el origen (el correo, la ficha del CRM) si el flujo lo tiene. Si no, abre el hilo con el cursor listo para escribir.</li>
+<li><strong>✓ Hecho</strong>: queda apuntado como un hecho del flujo, y ya no espera a nadie ni tiene plazo.</li>
+<li><strong>⏰ Mañana</strong>: lo aplaza hasta mañana a las 9. Hasta entonces no avisa, y el seguimiento dice que lo has aplazado tú.</li>
+</ul>
+<p>Lo puedes probar en <a href="./?viu">el ejemplo vivo</a>.</p>
+
+<blockquote>El aviso y la respuesta, en la misma fila.</blockquote>
+</div>
 </article>
 
 <article id="post-fil">
+<div class="l-ca" lang="ca">
 <h2>🧵 Cada flux, un fil</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -468,9 +681,33 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Ho pots veure a <a href="./?viu">l'exemple viu</a>: «Opinions» la porta un agent de respostes i està esperant que algú de l'equip revisi la resposta.</p>
 
 <blockquote>Un projecte no és una llista de tasques: és qui parla amb qui, i de qui és el torn.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>🧵 Cada flujo, un hilo</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa vivo</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Ahora cada flujo del mapa es una conversación, como un hilo de un proyecto: dice <strong>quién lo lleva</strong>, <strong>de quién es el turno</strong> y <strong>qué se ha dicho</strong>. Lo puede llevar una persona o un agente de IA.</p>
+
+<div class="who"><strong>Para quién:</strong> quien lleva un negocio con gente y con agentes, y quiere saber en cada momento a quién le toca mover ficha.</div>
+
+<h3>Qué encuentras</h3>
+<ul>
+<li>Toca un flujo y, en el seguimiento, verás quién lo lleva. Si no lo has dicho, sale quien lleva el rol que lo entrega.</li>
+<li>Elige el turno: «Nos toca a nosotros», «Esperamos al otro» o nadie. Si te toca y se alarga, el SOS te avisa. Si esperas al otro, no te avisa.</li>
+<li>Escribe en el hilo qué has dicho o qué has acordado. Las notas de un agente salen marcadas con 🤖.</li>
+<li>Los urgentes salen en el título de la pestaña, y si quieres, el navegador te avisa cuando llega uno nuevo.</li>
+</ul>
+<p>Lo puedes ver en <a href="./?viu">el ejemplo vivo</a>: «Opiniones» la lleva un agente de respuestas y está esperando que alguien del equipo revise la respuesta.</p>
+
+<blockquote>Un proyecto no es una lista de tareas: es quién habla con quién, y de quién es el turno.</blockquote>
+</div>
 </article>
 
 <article id="post-avisos">
+<div class="l-ca" lang="ca">
 <h2>● El que no pot esperar, primer</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -491,9 +728,33 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Ho pots veure a <a href="./?viu">l'exemple viu</a>.</p>
 
 <blockquote>Un avís que no diu per què és soroll.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>● Lo que no puede esperar, primero</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa vivo</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">«Què ha passat?» ahora avisa. Arriba del todo está lo que es <strong>urgente</strong>, después lo que es <strong>importante</strong>, y cada aviso dice por qué.</p>
+
+<div class="who"><strong>Para quién:</strong> quien lleva un negocio y abre el SOS para saber a qué tiene que responder hoy.</div>
+
+<h3>Cuándo avisa</h3>
+<ul>
+<li><strong>Urgente</strong>: te toca responder y hace más de un día que nadie ha movido ficha, o un plazo vence en menos de 48 horas (o ya ha pasado).</li>
+<li><strong>Importante</strong>: un flujo se ha parado, te toca responder y hace más de cuatro horas, todavía no has dado el primer paso, o un plazo vence esta semana.</li>
+<li>Junto al título, la cuenta: cuántos hay urgentes y cuántos importantes. Toca uno y se abre el seguimiento de ese flujo.</li>
+</ul>
+<p>Cuando cargas la red real, cada lead, correo o tarea puede decir quién tiene que responder y para cuándo, y de ahí salen los avisos. La regla es una sola, y la usan la app y los tableros que la comparten.</p>
+<p>Lo puedes ver en <a href="./?viu">el ejemplo vivo</a>.</p>
+
+<blockquote>Un aviso que no dice por qué es ruido.</blockquote>
+</div>
 </article>
 
 <article id="post-importa-perfil">
+<div class="l-ca" lang="ca">
 <h2>⇪ El teu perfil, on el tinguis</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -514,9 +775,33 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>I «Totes les pàgines» torna a dir el nom de cada pàgina, en lloc d'un text que no deia res.</p>
 
 <blockquote>Qui ja hi era no ha de començar de zero.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>⇪ Tu perfil, donde lo tengas</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Perfil</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Si ya tienes perfil en el SOS en otro aparato, ahora lo traes desde el primer paso. Al crear el perfil, el primer botón es <strong>«Importa un perfil»</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> quien cambia de móvil o de ordenador, o se da de alta y ya tenía una copia guardada.</div>
+
+<h3>Qué pasa</h3>
+<ul>
+<li>Eliges el archivo. Si es la copia de tu identidad, se abre la pantalla de restaurarla ya cargada: solo falta la contraseña.</li>
+<li>Si es la copia de todo el SOS, antes de restaurarla te dice cuántos registros entrarán.</li>
+<li>Si es un CV o un texto, lo aprovecha para rellenar tu trayectoria, y lo lee en tu aparato.</li>
+<li>También lo encuentras escribiendo «importa» o «perfil» en «Què necessites?».</li>
+</ul>
+<p>Y «Totes les pàgines» vuelve a decir el nombre de cada página, en lugar de un texto que no decía nada.</p>
+
+<blockquote>Quien ya estaba no tiene que empezar de cero.</blockquote>
+</div>
 </article>
 
 <article id="post-primer-mapa">
+<div class="l-ca" lang="ca">
 <h2>✦ El teu negoci, en un minut</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -536,9 +821,32 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Ho pots provar amb <a href="./?primer">el teu negoci</a>. Les dades es queden al teu aparell.</p>
 
 <blockquote>Primer veus el teu negoci. Els menús, després.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>✦ Tu negocio, en un minuto</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa de valor</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">La primera vez que abres el SOS no hace falta que aprendas ningún menú. Te hace <strong>una pregunta</strong>: cómo se llama tu negocio y con quién trabajas. Y te dibuja el primer mapa.</p>
+
+<div class="who"><strong>Para quién:</strong> quien abre el SOS por primera vez y quiere ver algo suyo antes de leer nada.</div>
+
+<h3>Qué pasa</h3>
+<ul>
+<li>Escribes el nombre del negocio y eliges con quién trabajas: clientes, equipo, proveedores, aliados o quien quieras añadir.</li>
+<li>El SOS dibuja quién da qué a quién, y <strong>cada flujo nace con su retorno</strong>: quien da también recibe.</li>
+<li>El mapa te dice qué tocar. Cuando un flujo pasa de verdad, lo apuntas y el mapa empieza a respirar.</li>
+</ul>
+<p>Lo puedes probar con <a href="./?primer">tu negocio</a>. Los datos se quedan en tu aparato.</p>
+
+<blockquote>Primero ves tu negocio. Los menús, después.</blockquote>
+</div>
 </article>
 
 <article id="post-seguiment">
+<div class="l-ca" lang="ca">
 <h2>📦 Cada flux, seguit com una comanda</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -558,9 +866,32 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Ho pots provar amb <a href="./?viu">l'exemple viu</a>, que és inventat.</p>
 
 <blockquote>Una promesa sense data és un desig. Amb data, és una comanda.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>📦 Cada flujo, seguido como un pedido</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa de valor</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Cuando pides algo por internet sabes dónde está y cuándo llega. Ahora cada flujo de tu mapa de valor se lee igual: <strong>dónde está, cuándo toca el próximo y todo lo que ha pasado</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> quien quiere saber si lo que alguien le debe, o lo que él debe, llegará a tiempo.</div>
+
+<h3>Cómo se llega</h3>
+<ul>
+<li>Tocando un flujo del mapa, o «📦 Segueix-lo» en la lista de flujos.</li>
+<li>Desde «Avui», tocando lo que se ha parado.</li>
+</ul>
+<p>La fecha sale del ritmo del flujo: si es semanal y circuló el lunes, el próximo toca el lunes siguiente. Si ya hace días que se espera, lo dice. Y con un solo botón, <strong>«Ha circulat»</strong>, lo apuntas en el registro con el flujo ya elegido.</p>
+<p>Lo puedes probar con <a href="./?viu">el ejemplo vivo</a>, que es inventado.</p>
+
+<blockquote>Una promesa sin fecha es un deseo. Con fecha, es un pedido.</blockquote>
+</div>
 </article>
 
 <article id="post-lents">
+<div class="l-ca" lang="ca">
 <h2>🔭 Un mapa, cinc preguntes: les lents del SOS</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -583,9 +914,35 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Ho pots provar amb <a href="./?viu">l'exemple viu</a>, que és inventat.</p>
 
 <blockquote>No són cinc eines. És una xarxa, mirada amb cinc preguntes.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>🔭 Un mapa, cinco preguntas: las lentes del SOS</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Mapa de valor</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">El castell, los cuidados, las porciones y el cerebro vivían cada uno en su pantalla. Ahora son <strong>lentes sobre el mismo mapa de valor</strong>: eliges una pregunta y el mapa se vuelve a pintar, sin cambiar de sitio.</p>
+
+<div class="who"><strong>Para quién:</strong> quien ya tiene el mapa de su negocio y quiere saber si aguanta, quién lo lleva y qué aporta cada parte.</div>
+
+<h3>Las cinco lentes</h3>
+<ul>
+<li><strong>Valor:</strong> quién da qué a quién, el mapa de siempre.</li>
+<li><strong>Torre:</strong> cada rol es un pilar de la pinya. Las entregas que van y vuelven en tipos distintos son vientos, y el pilar que no tiene ninguno es un silo.</li>
+<li><strong>Equipo:</strong> quién lleva cada rol, quién lleva demasiados y quién dejaría a alguien sin cuidado si lo dejara.</li>
+<li><strong>Reparto:</strong> qué parte de lo que ha circulado sale de cada rol, en porciones y horas del Banco de Tiempo.</li>
+<li><strong>Saber:</strong> si el equipo sabe hacer lo que pide cada rol, y el cerebro del SOS que hereda el proyecto.</li>
+</ul>
+<p>Debajo de cada lente hay una sola frase que dice lo que importa. Y el deslizador del tiempo devuelve el mapa hasta tres meses atrás, para ver qué circulaba entonces.</p>
+<p>Lo puedes probar con <a href="./?viu">el ejemplo vivo</a>, que es inventado.</p>
+
+<blockquote>No son cinco herramientas. Es una red, mirada con cinco preguntas.</blockquote>
+</div>
 </article>
 
 <article id="post-que-necessites">
+<div class="l-ca" lang="ca">
 <h2>🔍 «Què necessites?»: una sola barra per trobar-ho tot al SOS</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -605,9 +962,32 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Sense escriure res, et proposa el que ara et serveix i els llocs on has estat fa poc. I si vols veure-ho tot, «Totes les accions» és a un clic.</p>
 
 <blockquote>No has d'aprendre com es diu una cosa per poder-la fer.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>🔍 «Què necessites?»: una sola barra para encontrarlo todo en el SOS</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Diseño</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">El SOS tenía dos puertas para lo mismo: una búsqueda y un menú de treinta y seis acciones. Ahora hay una, arriba del todo: <strong>«Què necessites?»</strong>, también con ⌘K o Ctrl+K.</p>
+
+<div class="who"><strong>Para quién:</strong> quien sabe qué quiere hacer pero no sabe cómo se llama dentro de la aplicación.</div>
+
+<h3>Con tus palabras</h3>
+<ul>
+<li>Escribes «factura» u «horas» y sale <strong>Registra lo que has hecho</strong>.</li>
+<li>Escribes «reunión» y salen las asambleas; «oscuro», donde se cambia la apariencia.</li>
+<li>También encuentra tus proyectos, la gente y las entidades por el nombre.</li>
+</ul>
+<p>Sin escribir nada, te propone lo que ahora te sirve y los sitios donde has estado hace poco. Y si quieres verlo todo, «Totes les accions» está a un clic.</p>
+
+<blockquote>No tienes que aprender cómo se llama una cosa para poder hacerla.</blockquote>
+</div>
 </article>
 
 <article id="post-sos-avui">
+<div class="l-ca" lang="ca">
 <h2>☀ El SOS es renova: paper, tinta i una pantalla que comença per avui</h2>
 <div class="meta">
 <span class="tag">SOS</span>
@@ -629,9 +1009,34 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Cap text per sota de 15 px i botons de 44 px, els mateixos que a la resta del lloc. Si prefereixes la pantalla fosca de sempre, la tens a <em>Configuració › Aparença</em>, i el SOS se'n recorda.</p>
 
 <blockquote>Primer, com circula el valor avui. Després, tota la resta.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>☀ El SOS se renueva: papel, tinta y una pantalla que empieza por hoy</h2>
+<div class="meta">
+<span class="tag">SOS</span>
+<span class="tag">Diseño</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">La aplicación del SOS ya se parece a la web: <strong>el mismo papel claro, la misma tinta y los mismos botones</strong>. Y cuando la abres, la primera pantalla ya no es un tablero lleno de contadores: es <strong>Hoy</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> quien usa el SOS cada día y quiere saber de un vistazo si su negocio circula.</div>
+
+<h3>Hoy, en dos preguntas</h3>
+<ul>
+<li><strong>El pulso:</strong> cuántos flujos de tu mapa de valor circulan a su ritmo, y el mapa del proyecto que más se mueve, respirando.</li>
+<li><strong>¿Qué ha pasado?</strong> Los flujos que se han parado o se apagan, primero los parados. Un toque y estás en el mapa donde pasa.</li>
+</ul>
+<p>El paso siguiente te lo sigue dando tu camino, justo debajo, y es el único botón destacado. Las tareas, el mapa de Cataluña, el fondo y la gente están en la fila «Més»; el resto del tablero, plegado.</p>
+
+<h3>Legible, también en el móvil</h3>
+<p>Ningún texto por debajo de 15 px y botones de 44 px, los mismos que en el resto del sitio. Si prefieres la pantalla oscura de siempre, la tienes en <em>Configuració › Aparença</em>, y el SOS se acuerda.</p>
+
+<blockquote>Primero, cómo circula el valor hoy. Después, todo lo demás.</blockquote>
+</div>
 </article>
 
 <article id="post-mapa-viu">
+<div class="l-ca" lang="ca">
 <h2>🫀 El mapa que respira: el valor que circula, i el que s'ha aturat</h2>
 <div class="meta">
 <span class="tag">Mapa de valor</span>
@@ -655,9 +1060,36 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Els contactes, les converses i els lliuraments reals entren al mapa com un paquet que es carrega al teu navegador. Cada node s'obre en una pestanya nova, on viu de debò. Aquestes dades són teves i <strong>no surten del teu navegador</strong>: no van a cap servidor ni a cap pàgina pública.</p>
 
 <blockquote>Un mapa que no es mou explica com hauria de funcionar el negoci. Un que respira ensenya com funciona.</blockquote>
+</div>
+<div class="l-es" lang="es">
+<h2>🫀 El mapa que respira: el valor que circula, y el que se ha parado</h2>
+<div class="meta">
+<span class="tag">Mapa de valor</span>
+<span class="tag">Visual thinking</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Un mapa de valor dice quién da qué a quién. Hasta ahora era un dibujo fijo: el flujo que funciona cada semana y el que no se ha movido nunca se veían igual. Ahora <strong>el mapa del SOS se mueve</strong>, y lo que no circula también se ve.</p>
+
+<div class="who"><strong>Para quién:</strong> quien lleva un negocio o una red y quiere ver de un vistazo dónde se atasca el valor, sin abrir ningún informe.</div>
+
+<h3>Cuatro maneras de estar</h3>
+<ul>
+<li><strong>Vivo:</strong> el flujo se mueve en su dirección, y cuanto más circula, más deprisa.</li>
+<li><strong>Apagándose:</strong> ha pasado su ritmo sin ninguna actividad y se va desvaneciendo.</li>
+<li><strong>Parado:</strong> va tarde. Queda quieto, de color naranja y con una marca.</li>
+<li><strong>Nunca ha circulado:</strong> es una promesa del mapa, en gris.</li>
+</ul>
+<p>El ritmo de cada flujo lo decides tú (semanal, mensual…) o lo deduce el mapa de los apuntes que ya hay. Y mientras un mapa todavía es un diseño, sin ningún apunte, no se toca: solo se pone a respirar cuando empieza a circular algo.</p>
+
+<h3>Tu red de verdad, en el mismo mapa</h3>
+<p>Los contactos, las conversaciones y las entregas reales entran en el mapa como un paquete que se carga en tu navegador. Cada nodo se abre en una pestaña nueva, donde vive de verdad. Estos datos son tuyos y <strong>no salen de tu navegador</strong>: no van a ningún servidor ni a ninguna página pública.</p>
+
+<blockquote>Un mapa que no se mueve explica cómo debería funcionar el negocio. Uno que respira enseña cómo funciona.</blockquote>
+</div>
 </article>
 
 <article id="post-cervell">
+<div class="l-ca" lang="ca">
 <h2>🧠 El cervell del teu projecte, i per què avisa quan menteix</h2>
 <div class="meta">
 <span class="tag">IA</span>
@@ -692,9 +1124,47 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">A partir d'ara, cada projecte que lliurem porta el seu cervell.</div>
 <a class="btn-primary" href="/mapa-web/">Mapa i web en una hora →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🧠 El cerebro de tu proyecto, y por qué avisa cuando miente</h2>
+<div class="meta">
+<span class="tag">IA</span>
+<span class="tag">Servicio</span>
+<span class="tag">Antifrágil</span>
+<span>Octubre 2026</span>
+</div>
+<p class="lead">Cuando una IA trabaja en un proyecto, primero lee lo que el proyecto dice de sí mismo: dónde va cada cosa, qué reglas hay, qué queda por hacer. Eso es el cerebro del proyecto. Y si dice algo que ya no es cierto, la IA no pregunta: <strong>se equivoca con toda la confianza del mundo</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> quien encarga una web, un mapa de valor o un negocio operativo y quiere que dentro de seis meses cualquier IA pueda seguir trabajando en él sin estropearlo.</div>
+
+<h3>Un mapa falso es peor que ningún mapa</h3>
+<p>Sin mapa, miras. Con un mapa falso, vas. Lo aprendimos en casa: el documento que explicaba a la IA cómo trabajar en el SOS decía que había 18 reglas cuando ya había 116. Nadie se había dado cuenta, porque un documento no falla nunca.</p>
+
+<h3>Seis piezas y una guarda</h3>
+<ul>
+<li><strong>La taxonomía:</strong> cada carpeta dice qué es. Crear una sin decirlo no pasa.</li>
+<li><strong>El mapa:</strong> no se escribe a mano; sale del árbol real cada vez.</li>
+<li><strong>Las vedas:</strong> cada error que ya pagamos, escrito para que nadie lo vuelva a pagar.</li>
+<li><strong>El contrato de la IA:</strong> cómo se trabaja, y los errores reales que ha cometido.</li>
+<li><strong>El backlog:</strong> ninguna petición se queda en una conversación.</li>
+<li><strong>La comunicación:</strong> cómo quiere recibir el trabajo quien trabaja en él.</li>
+</ul>
+<p>Y la guarda, que es lo que lo hace cerebro y no documentación: cada vez que alguien cambia algo, comprueba que todo lo que el cerebro nombra existe de verdad. El primer día que la encendimos nos pilló a nosotros, citando un archivo que todavía no habíamos escrito.</p>
+
+<h3>El mismo cerebro, en cada servicio</h3>
+<p>Cada proyecto que entregamos lleva este cerebro, con la misma herramienta que usamos nosotros. No es una copia: cuando un proyecto nos enseña algo, la mejora vuelve a la herramienta y llega a todos los demás.</p>
+
+<blockquote>Una web hecha con una IA en una tarde funciona el primer día. Una con cerebro sigue sabiendo qué es el día que alguien la toca seis meses después.</blockquote>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">A partir de ahora, cada proyecto que entregamos lleva su cerebro.</div>
+<a class="btn-primary" href="/mapa-web/">Mapa y web en una hora →</a>
+</div>
+</div>
 </article>
 
 <article id="post-certificat">
+<div class="l-ca" lang="ca">
 <h2>🎖 Un certificat on el rol no es pot escriure</h2>
 <div class="meta">
 <span class="tag">Reconeixement</span>
@@ -729,9 +1199,47 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Obre SOS → el teu perfil → 🎖 Certificat del rol. I per comprovar-ne un que t'arribi: menú → Els meus ancoratges → Verifica un paquet.</div>
 <a class="btn-primary" href="uneix-te.html#pioneres">Com va el Programa Pioneres →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🎖 Un certificado donde el rol no se puede escribir</h2>
+<div class="meta">
+<span class="tag">Reconocimiento</span>
+<span class="tag">Programa Pioneras</span>
+<span class="tag">Verificable</span>
+<span>Agosto 2026</span>
+</div>
+<p class="lead">Hace semanas que prometemos «un certificado del rol que hayas ejercido». Ya existe. Y la pieza que lo hace un certificado y no un PDF bonito es una que cuesta explicar en un titular: <strong>el rol no está escrito, se vuelve a calcular cuando alguien lo comprueba</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> quien se apunte al Programa Pioneras, quien tenga que acreditar trabajo comunitario ante una entidad o un ayuntamiento, y cualquiera que reciba uno de estos archivos y se pregunte si se lo puede creer.</div>
+
+<h3>Por qué una firma no basta</h3>
+<p>Imagina un certificado con un campo que diga «rol: coordinadora», firmado criptográficamente. La firma es perfecta, es tuya, y cualquiera puede comprobar que no se ha tocado. Y no quiere decir nada: <strong>la firma dice quién lo ha escrito, no si es cierto</strong>. Podrías poner lo que quisieras y seguiría verificando.</p>
+
+<p>Confundir estas dos cosas es lo que convierte una herramienta de verificación en una máquina de fabricar credenciales. Por eso el certificado lleva la <strong>evidencia</strong> dentro —cuántas aportaciones verificadas, cuántas horas, cuántas comunidades, en qué categorías, y el hash de cada apunte— y quien lo comprueba <strong>recalcula el rol desde esa evidencia</strong>. Si lo que dice no coincide con lo que sale, el certificado no vale, por impecable que sea la firma.</p>
+
+<h3>Qué quiere decir «no te lo doy yo»</h3>
+<ul>
+<li><strong>Lo firma quien lo ha ganado.</strong> La autoridad es la clave de la persona. Yo no salgo como emisor porque no lo soy.</li>
+<li><strong>Mi confirmación va aparte.</strong> Cuando he acompañado a alguien tres semanas, lo firmo, y es un registro separado, pegado encima. Un certificado <strong>sin ninguna confirmación ya es válido</strong>; lo que la mía añade es un testimonio, y se ve de quién es.</li>
+<li><strong>Una confirmación falsa no tumba el certificado.</strong> Se marca como falsa y basta: quien miente es el testigo, no la persona.</li>
+</ul>
+
+<h3>Lo que no es, dicho dentro del archivo</h3>
+<p>El certificado viaja solo, por sitios donde nadie tendrá contexto. Así que lleva escrito dentro que <strong>no es un diploma de asistencia</strong> (certifica lo que has hecho, no que hayas ido), que <strong>no tiene reconocimiento oficial</strong> ni homologación, y que <strong>no lo otorga nadie</strong>. Lo que sí hace es poderse comprobar, que es más de lo que se puede decir de la mayoría de certificados.</p>
+
+<p>Y si el periodo que cubre es más corto que las tres semanas del programa, lo dice y se emite igual. El periodo es un hecho, no un examen.</p>
+
+<blockquote>Un certificado que da alguien vale lo que valga ese alguien. Este no lo da nadie: sale de tu registro y lo puede comprobar cualquiera.</blockquote>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Abre el SOS → tu perfil → 🎖 Certificat del rol. Y para comprobar uno que te llegue: menú → Els meus ancoratges → Verifica un paquet.</div>
+<a class="btn-primary" href="uneix-te.html#pioneres">Cómo va el Programa Pioneras →</a>
+</div>
+</div>
 </article>
 
 <article id="post-origen">
+<div class="l-ca" lang="ca">
 <h2>🎬 L'origen · Mazinguer i Horacio Motomachi arriben del Gran Molekulon</h2>
 <div class="meta">
 <span class="tag">Mitologia</span>
@@ -777,9 +1285,58 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">La banda ja toca. Vine a buscar el teu cromo.</div>
 <a class="btn-primary" href="index.html">Uneix-te al Comando →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🎬 El origen · Mazinguer y Horacio Motomachi llegan del Gran Molekulon</h2>
+<div class="meta">
+<span class="tag">Mitología</span>
+<span class="tag">Cómic</span>
+<span class="tag">Comando</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">Enviados a la Tierra por el <strong>Gran Molekulon</strong> —la molécula que gobierna las galaxias desde el hiperespacio—, <strong>Mazinguer y Horacio</strong> tienen una misión aparentemente imposible: reclutar un Comando de <strong>150.000 superhéroes</strong> antes de que el <strong>Mundo Muerto</strong> lo apague todo.</p>
+
+<div class="who"><strong>Para quién:</strong> lectores del cómic, miembros del Comando, comunidades que quieren entender de dónde viene todo esto.</div>
+
+<h3>Sin poderes aparentes · la estrategia Blues Brothers</h3>
+<p>El truco: Mazinguer y Horacio no tienen ningún superpoder visible. Quizá su poder es haber perdido el ego. Su estrategia es digna de <em>Granujas a todo ritmo</em>: <strong>montan una banda de música</strong> y recorren todas las poblaciones de Cataluña y del mundo buscando a los superhéroes escondidos a plena vista.</p>
+
+<p>El núcleo del Comando son <strong>catorce</strong>, y cada uno lleva su superarma:</p>
+<ul>
+<li><strong>Mazinguer</strong> — sabe lo que hay que hacer. Sin superpoder aparente: el ego perdido es su poder</li>
+<li><strong>Horacio Motomachi</strong> — el sabio que recibe el mandato y convierte la experiencia en relato</li>
+<li><strong>Guiri-Guay</strong> — <em>«Con mi guitarra curo heridas, bailando se mueven las neuronas»</em></li>
+<li><strong>Purpleman</strong> — atraviesa los gases tóxicos y los vuelve flor y amor, con el Rayo Eliminador</li>
+<li><strong>Afrodita</strong> — el corazón funk, escondido bajo el abrigo de cuero hasta que suena la Bomba Disco</li>
+<li><strong>El Aviador</strong> — <em>«No tiene mojo, no tiene duende, no tiene don, pero tiene un bajo volador»</em></li>
+<li><strong>Pigmentón</strong> — pinta incluso los agujeros negros, con el Güengüentón</li>
+<li><strong>La Medusa Andaluza</strong> — el cromosoma X: pone los cables que conectan a todo el mundo</li>
+<li><strong>Electroplasman</strong> — un fantasma con viola que inyecta liquidez a las naves que no despegaban</li>
+<li><strong>El Anguila</strong> — la batería. Se escabulle de cualquier sitio</li>
+<li><strong>Barbamuda</strong> — hace supertrajes y enseña desde el silencio</li>
+<li><strong>Reciclator</strong> — fabrica las superarmas con lo que los demás han tirado</li>
+<li><strong>Supergerminador</strong> — te enseña a germinar superalimentos, y canta con su risa</li>
+<li><strong>Fraktalman</strong> — <em>«Es uno y son mil millones»</em>: convierte el caos en orden</li>
+</ul>
+<p>Cada uno está <a href="comando.html#historia">en la página del Comando</a> con su verso, su superarma y —lo que de verdad importa aquí— <strong>qué quiere decir ese personaje dentro de un equipo</strong>.</p>
+
+<h3>Contra el Mundo Muerto</h3>
+<p>El <strong>Mundo Muerto</strong> —y su brazo ejecutor, <strong>Mr. McGragor</strong>— es el antimodelo del SOS: extractivo, opaco, centralizado, sin firmar nada, sin devolver valor. Rompe vínculos y deja a las comunidades huérfanas. Es también, a menudo, la manera como el capitalismo extractivo opera en el mundo real: cada palanca del SOS es una contraobra: firmas en lugar de opacidad, circulación en lugar de extracción, matriz en lugar de núcleo concentrado.</p>
+
+<blockquote>Cada superhéroe que crea su perfil en el SOS, cada intercambio firmado y cada narrativa guardada en el multiverso es una semilla. En el cómic 2, el Comando acaba en un páramo gris picando piedra para McGragor, y bajo sus pies, sin que lo vea nadie, crecen plantas. Esta es una.</blockquote>
+
+<h3>Cómo participar</h3>
+<p>Abre <strong>SOS → 🎬 Comando Molekulon</strong>. Verás los <strong>Protagonistas originales</strong> arriba y los cromos de la tribu real que ya crece. Si todavía no estás, pulsa <strong>🦸 Crea el meu perfil</strong>: el sistema te vincula a tu población, te deja elegir hasta 5 superpoderes, y entras en el roster.</p>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">La banda ya toca. Ven a buscar tu cromo.</div>
+<a class="btn-primary" href="index.html">Únete al Comando →</a>
+</div>
+</div>
 </article>
 
 <article id="post-seny">
+<div class="l-ca" lang="ca">
 <h2>🏛 Seny · l'estructura que sosté quan els reptes es tornen intensos</h2>
 <div class="meta">
 <span class="tag">Estructura</span>
@@ -811,9 +1368,44 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Obre SOS i mira la Configuració → 🏛 Sabiduria del node actiu. Veuràs la pinya digital de la teva comunitat.</div>
 <a class="btn-primary" href="index.html">Fes un cop d'ull →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🏛 Seny · la estructura que sostiene cuando los retos se vuelven intensos</h2>
+<div class="meta">
+<span class="tag">Estructura</span>
+<span class="tag">Pinya</span>
+<span class="tag">Castells</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">¿Qué sostiene realmente a un equipo cuando los retos se vuelven intensos y complejos? En nuestro ecosistema de trabajo, a esta base la llamamos <strong>seny</strong>: estructura, marco, análisis y proceso. La palabra es catalana y quiere decir exactamente eso, así que no hace falta ir a buscarla más lejos.</p>
+
+<div class="who"><strong>Para quién:</strong> direcciones de personas, coordinaciones de ateneos, técnicos de ayuntamiento que tienen que poner orden antes de invertir energía.</div>
+
+<h3>Levantar el castell: primero la pinya</h3>
+<p>En Cataluña sabemos bien que <strong>para levantar un buen castell, primero hay que armar una pinya milimétrica</strong>. Sin esa base técnica y estratégica, no hay altura que valga. La canalla, los dosos y el tres de vuit son imposibles sobre una base blanda. La pinya no es espectáculo: es matemática, biomecánica, distribución exacta del peso, cada uno sabiendo dónde le toca ponerse y qué le toca aguantar.</p>
+
+<p>En el desarrollo organizacional y el team building pasa exactamente lo mismo: <strong>antes de la acción, necesitamos claridad, procesos sólidos y un marco teórico que nos dé seguridad</strong>. Es puro <strong>seny</strong> aplicado a la empresa, el ateneo o el proyecto comunitario.</p>
+
+<h3>Cómo lo hace el SOS</h3>
+<p>La capa de seny del SOS son las piezas que no se ven cuando todo va bien pero que lo aguantan todo:</p>
+<ul>
+<li><strong>Identidad did:sos + firma criptográfica</strong> en cada acción relevante: ninguna decisión puede decirse anónima ni puede desdecirse a posteriori.</li>
+<li><strong>Cadena hash del ledger</strong>: cada apunte encadenado al siguiente, a prueba de manipulaciones. Si alguien toca un número antiguo, se ve inmediatamente.</li>
+<li><strong>Sabiduría + roles + quórum</strong>: cada nodo tiene un owner (opcional), stewards (opcionales) y un quórum configurable. Las propuestas entran pendientes y solo se fusionan con el número de votos firmados necesarios.</li>
+<li><strong>Asamblea federativa Penrose-√población</strong>: matemática de voto ponderado que reparte peso justo entre poblaciones de tamaños muy distintos, con corrección Gini para la máxima equidad.</li>
+</ul>
+
+<blockquote>Para escalar, primero hay que arraigar. Un castell de vuit sin pinya es un accidente esperando a pasar.</blockquote>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Abre el SOS y mira Configuració → 🏛 Sabiduria del node actiu. Verás la pinya digital de tu comunidad.</div>
+<a class="btn-primary" href="index.html">Échale un vistazo →</a>
+</div>
+</div>
 </article>
 
 <article id="post-rauxa">
+<div class="l-ca" lang="ca">
 <h2>🔥 Rauxa · l'energia que encén quan la matriu ja està armada</h2>
 <div class="meta">
 <span class="tag">Energia</span>
@@ -845,9 +1437,44 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Obre SOS → clica 🦸 Crea el meu perfil des de la home. Un pas i el teu superheroi entra al fons cooperatiu local.</div>
 <a class="btn-primary" href="index.html">Encén el teu perfil →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🔥 Rauxa · la energía que enciende cuando la matriz ya está armada</h2>
+<div class="meta">
+<span class="tag">Energía</span>
+<span class="tag">Movimiento</span>
+<span class="tag">Comunidad</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">De nada sirve tener la estructura más perfecta del mundo si no hay pulso, vibración ni movimiento. Bienvenidas a la <strong>rauxa</strong>: el motor.</p>
+
+<div class="who"><strong>Para quién:</strong> dinamizadoras culturales, colles, asociaciones vecinales, promotoras de eventos comunitarios, gente que levanta proyectos de cero.</div>
+
+<h3>Si el seny es el mapa, la rauxa es el motor</h3>
+<p>La rauxa es la acción creativa, el desarrollo comunitario y esa chispa vital que lo enciende todo. Es el instante exacto en que <strong>cambia el beat, la gente conecta y se genera un estado emocional colectivo que no se puede fingir</strong>. En los locales lo sabemos: hay noches que pasan cosas y noches que no; hay jornadas en que la comunidad se levanta y jornadas en que se queda sentada.</p>
+
+<p>En los proyectos y las organizaciones, es la <strong>rauxa</strong>: el atrevimiento para innovar, la fuerza para romper esquemas y la energía que transforma un simple grupo de trabajo en una comunidad viva y vibrante. La teoría está muy bien, pero el impacto real requiere <strong>sudar la camiseta y poner el corazón en movimiento</strong>.</p>
+
+<h3>Cómo lo hace el SOS</h3>
+<p>La capa de rauxa del SOS son las piezas que hacen que la gente se mueva:</p>
+<ul>
+<li><strong>Perfil transversal superhéroe</strong>: cada persona ve su propia historia de aportaciones: horas dadas, objetos compartidos, comunidades servidas, reputación verificable. La gente lo lee y quiere volver a aportar.</li>
+<li><strong>Kit narrativo Molekulon</strong>: sinopsis de cómic, himno y escena performativa generados con IA para cada grupo activo. La comunidad se reconoce y se celebra.</li>
+<li><strong>Molekulon matching</strong>: cuando hay una necesidad abierta, el sistema propone quién encaja mejor por sus superpoderes.</li>
+<li><strong>Balance entre abrir y cortar, por persona</strong>: cada superhéroe tiene su mezcla; ni encasillamiento ni caos, saber qué tipos de persona necesitas para un proyecto.</li>
+</ul>
+
+<blockquote>La rauxa sin pinya es un accidente. La pinya sin rauxa es arqueología. Las dos juntas son castells de nou.</blockquote>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Abre el SOS → pulsa 🦸 Crea el meu perfil desde la portada. Un paso y tu superhéroe entra en el fondo cooperativo local.</div>
+<a class="btn-primary" href="index.html">Enciende tu perfil →</a>
+</div>
+</div>
 </article>
 
 <article id="post-molekulon">
+<div class="l-ca" lang="ca">
 <h2>🧬 Comando Molekulon · la síntesi seny+rauxa a peu de carrer</h2>
 <div class="meta">
 <span class="tag">Acció</span>
@@ -882,9 +1509,47 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Muntem el proper projecte? Obre SOS, crea un molekulon i mira com es materialitza la síntesi.</div>
 <a class="btn-primary" href="index.html">Comença un molekulon →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🧬 Comando Molekulon · la síntesis seny+rauxa a pie de calle</h2>
+<div class="meta">
+<span class="tag">Acción</span>
+<span class="tag">Colla</span>
+<span class="tag">Mondragón</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">Tenemos la estructura (el seny) y tenemos la energía vibrante (la rauxa). ¿Cómo unimos las dos para que pasen cosas reales sobre el terreno? Entra en acción el <strong>Comando Molekulon</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> equipos de proyecto ágiles, incubadoras sociales, dinamizadoras de ateneos, coordinaciones de red intermunicipal, cooperativas que quieren intercooperar sin burocracia.</div>
+
+<h3>La colla del siglo XXI</h3>
+<p>No es ciencia ficción. El Comando Molekulon es nuestra forma de entender la colaboración dinámica del siglo XXI: <strong>equipos de intervención ágiles, células descentralizadas y proyectos donde la estrategia pisa el barro</strong>.</p>
+
+<p>Funciona <strong>como una buena colla</strong>: cada persona tiene su rol exacto (los dosos, el aixecador, la enxaneta, la pinya…), asumiendo responsabilidades en tiempo real para que la magia pase. Ya sea incubando una nueva iniciativa social, desplegando una dinámica corporativa o montando un evento de cero, aquí es donde <strong>la idea se convierte en materia y la teoría genera impacto directo en la comunidad</strong>.</p>
+
+<h3>Cómo lo hace el SOS</h3>
+<p>La capa Molekulon del SOS materializa esta síntesis:</p>
+<ul>
+<li><strong>MATRIU + ventures</strong>: cada proyecto económico incubado vive como venture dentro de una MATRIU. Se puede graduar (convertirse en proyecto propio) o quedarse dentro del fondo cooperativo.</li>
+<li><strong>Slicing Pie por venture</strong>: cada proyecto reparte su valor por aportaciones reales (tiempo × FMV × multiplicador; dinero × multiplicador cash). La tarta se recalcula sola.</li>
+<li><strong>Intercooperación entre ventures</strong>: modelo Mondragón llevado al navegador. Una venture puede ceder horas, objetos, talento o capital a otra, con firma y cadena hash. El fondo no sale de la comunidad; circula dentro y crece por rotación.</li>
+<li><strong>Fondo cooperativo roll-up + valor del fondo</strong>: el músculo movilizado se traduce en un rango €/año auditable (oráculo FMV editable + Glass-Box).</li>
+</ul>
+
+<blockquote>Menos reuniones estáticas y más colaboración dinámica. Menos abogados y despachos, más firmas criptográficas y tablero kanban compartido.</blockquote>
+
+<h3>Sin servidor propio, sin romper ninguna veda</h3>
+<p>Todo esto corre en el navegador. Ni Anthropic, ni AWS, ni ningún SaaS de TeamTowers. Solo <strong>WebRTC (P2P) + IndexedDB + SubtleCrypto</strong>: el codex W3C llevado a fondo. La comunidad es soberana de sus datos <strong>por contrato técnico</strong>, no por buena voluntad.</p>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">¿Montamos el próximo proyecto? Abre el SOS, crea un molekulon y mira cómo se materializa la síntesis.</div>
+<a class="btn-primary" href="index.html">Empieza un molekulon →</a>
+</div>
+</div>
 </article>
 
 <article id="post-model-pais">
+<div class="l-ca" lang="ca">
 <h2>🧭 Catalunya no era un cas d'ús: estava soldada</h2>
 <div class="meta">
 <span class="tag">Arquitectura</span>
@@ -927,9 +1592,55 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <p>Revisant els comptes n'hi havia un que no estava a la llista: <strong>un objecte valia hores</strong>. Quan la biblioteca circular va començar a registrar el desgast dels préstecs en euros, tres llocs seguien assumint que «el que no és diner són hores». Cada préstec inflava les hores del territori amb un import en €. Corregit als tres. Les xifres de consolidació d'abans d'avui estaven inflades i ara no ho estan.</p>
 
 <p><em>Un cas d'ús que no es pot obrir, editar ni copiar no és un cas d'ús: és documentació. Catalunya ja es pot copiar.</em></p>
+</div>
+<div class="l-es" lang="es">
+<h2>🧭 Cataluña no era un caso de uso: estaba soldada</h2>
+<div class="meta">
+<span class="tag">Arquitectura</span>
+<span class="tag">Modelo de negocio</span>
+<span class="tag">Fondo cooperativo</span>
+<span>Agosto 2026</span>
+</div>
+<p class="lead">Decíamos tres cosas: que el modelo es replicable, que el destino es el <strong>fondo cooperativo</strong>, y que Cataluña es el <strong>primer</strong> caso y no el único. La app hacía tres distintas. Esta es la revisión que lo ha destapado y lo que se ha hecho.</p>
+
+<div class="who"><strong>Para quién:</strong> quien quiera llevar el SOS a otro territorio sin tocar el código, y quien tenga que defender ante un ayuntamiento o un financiador cuánto vale lo que su comunidad ya hace.</div>
+
+<h3>La prueba era pulsar «nuevo país»</h3>
+<p>Salía un nodo vacío. El autocompletar ofrecía una sola opción —Cataluña—, y el mapa de valor de Euskadi nacía con un rol llamado <strong>«Generalitat»</strong> y otro «Consells comarcals». Cuando añadías territorios, el sistema los llamaba «provincia» y «comarca», que allí no son las divisiones que usa la gente.</p>
+
+<p>Nada de eso era un error de programación: todo funcionaba. Era un error de modelo: había <strong>un caso particular en el sitio donde tiene que haber una plantilla</strong>, en seis puntos del archivo a la vez.</p>
+
+<h3>Los niveles pasan a ser datos</h3>
+<p>Ahora hay un objeto que antes no existía: el <strong>modelo de país</strong>. Dice cómo se llaman los niveles, qué instituciones salen en el mapa de valor y qué geografía se puede cargar. Tres reglas lo hacen útil de verdad:</p>
+<ul>
+<li><strong>Los ids internos no cambian nunca.</strong> De ellos cuelgan los mapas de valor por nivel y los tipos de entidad; renombrarlos rompería todos los SOS que ya existen. Lo que cambia es la etiqueta y <em>cuántos hay</em>: se puede decir «herrialdea» y se puede pasar de cinco niveles a tres.</li>
+<li><strong>Cataluña es de solo lectura.</strong> Hacerle un fork crea una copia con geografía e instituciones propias. Un caso de referencia que se puede estropear sin querer deja de ser una referencia.</li>
+<li><strong>Eliminar un modelo no borra ningún territorio.</strong> Los países que lo usaban vuelven a los nombres por defecto. Un catálogo no puede ser propietario de la cosa catalogada.</li>
+</ul>
+<p>Y el asistente «crea tu país» ya no deja un nodo vacío: eliges modelo, cambias los nombres y las instituciones, y lo que sale es un <strong>país vivo</strong>, con esqueleto territorial y mapa de valor.</p>
+
+<h3>El fondo tenía cifra pero no tenía puerta</h3>
+<p>El segundo defecto era más gordo. El fondo cooperativo era una función dentro de una pestaña de un nodo MATRIU: tres clics desde la portada, y solo si ese nodo existía. <strong>Un territorio con tres bancos de tiempo y dos bibliotecas moviendo horas cada semana tenía un fondo de cero</strong>, porque el cálculo solo sabía contar lo que colgaba de una incubadora.</p>
+
+<p>Ahora el fondo es una pantalla enlazable, se mide sobre el ámbito entero, y tiene dos cifras que <strong>no se mezclan nunca</strong>:</p>
+<ul>
+<li><strong>Verificado</strong>: lo que está firmado y encadenado. Los euros en euros y <strong>las horas en horas</strong>. Presentarlo todo como un solo número en euros obligaría a valorar las horas, y entonces ya no sería verificado.</li>
+<li><strong>Movilizado</strong>: la estimación del oráculo, con rango y con la fuente escrita junto a cada partida.</li>
+</ul>
+<p>Debajo, la comparación con el hito del plan fundador de ese año. Si vamos retrasados, lo dice. Y si el año en curso no es un hito declarado, toma el siguiente y <strong>dice que es el siguiente</strong>: inventar una cifra intermedia sería poner un compromiso que nadie ha tomado.</p>
+
+<h3>La cobertura, que es lo que mueve a la gente</h3>
+<p>El fondo dice cuánto se ha movido. La cobertura dice <strong>dónde todavía no se ha movido nada</strong>. Sin la segunda, la primera solo es una noticia. La portada de un país ahora encabeza con las dos y lista las regiones vacías con nombre y botón: no es un reproche, es la única lista que dice dónde vale la pena llamar.</p>
+
+<h3>El defecto que salió por el camino</h3>
+<p>Revisando las cuentas había uno que no estaba en la lista: <strong>un objeto valía horas</strong>. Cuando la biblioteca circular empezó a registrar el desgaste de los préstamos en euros, tres sitios seguían asumiendo que «lo que no es dinero son horas». Cada préstamo inflaba las horas del territorio con un importe en €. Corregido en los tres. Las cifras de consolidación de antes de hoy estaban infladas y ahora no lo están.</p>
+
+<p><em>Un caso de uso que no se puede abrir, editar ni copiar no es un caso de uso: es documentación. Cataluña ya se puede copiar.</em></p>
+</div>
 </article>
 
 <article id="post-equip-v1">
+<div class="l-ca" lang="ca">
 <h2>👥 El defecte que teníem a casa: formàvem gestors solitaris</h2>
 <div class="meta">
 <span class="tag">Formació</span>
@@ -977,9 +1688,60 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Els cinc rols, les dotze setmanes i els llindars de tracció, al detall.</div>
 <a class="btn-primary" href="formacio.html#equipv1">Programa d'equip gestor v1 →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>👥 El defecto que teníamos en casa: formábamos gestores solitarios</h2>
+<div class="meta">
+<span class="tag">Formación</span>
+<span class="tag">Modelo de negocio</span>
+<span class="tag">Entidades</span>
+<span>Agosto 2026</span>
+</div>
+<p class="lead">El SOS dice en todas partes que <strong>ningún proyecto puede depender de una sola persona</strong>. Lo dice el primero de los cuatro valores. Lo comprueba la gobernanza, que avisa de que un solo guardián es un punto único de fallo. Lo impide la puerta de la MATRIU, que no deja graduar ninguna iniciativa con el 70 % de la propiedad en las mismas manos. Y sin embargo, nuestro programa formativo acreditaba a <strong>una persona</strong>.</p>
+
+<div class="who"><strong>Para quién:</strong> entidades que llevan años sosteniendo una dinámica con cuatro personas, ayuntamientos que financian participación y no pueden demostrar el resultado, y profesionales que quieren acompañar territorios.</div>
+
+<p>Cuarenta y cinco horas, seis competencias, un territorio, un acreditado. Si esa persona lo deja —y en el trabajo comunitario la gente lo deja—, el territorio se queda exactamente igual que estaba. Predicábamos una cosa y acreditábamos otra.</p>
+
+<h3>Cinco roles y seis personas, no un héroe</h3>
+<p>Las seis competencias no cambian. Lo que cambia es que <strong>nadie las tiene que tener todas</strong>:</p>
+<ul>
+<li><strong>🏛 Guardiana</strong>: que las decisiones se tomen, queden escritas y se puedan defender. No decide ella: hace que se decida.</li>
+<li><strong>⏳ Dinamizadora</strong>: que la gente vuelva. Es el único rol que se mide por lo que hacen los demás.</li>
+<li><strong>⬢ Contable de valor</strong>: que lo que se hace se cuente, y que la cifra se pueda explicar a alguien que solo cuenta euros.</li>
+<li><strong>🎓 Mentora de iniciativas</strong>: cuando del banco de tiempo sale un proyecto, que no se pierda.</li>
+<li><strong>🌐 Enlace institucional</strong>: traduce en las dos direcciones. A menudo es quien consigue que esto se pague.</li>
+</ul>
+
+<p>Cinco roles, <strong>seis personas</strong>: los dos roles críticos llevan pareja de relevo <em>desde el primer día</em>, no cuando alguien avisa de que lo deja. Esta es la diferencia práctica entre predicar Fuerza y practicarla.</p>
+
+<h3>Doce semanas, y una regla que no se negocia</h3>
+<p>Existir (que lo que ya pasa quede registrado) → circular (que pasen cosas y queden contadas) → contar y defender (poder responder «¿y esto cuánto vale?» ante quien lo paga) → sostener sin nosotros.</p>
+<p>La regla: <strong>cada semana tiene que dejar evidencia en el registro</strong>. Una semana que acaba sin nada registrado no ha pasado, y es la señal más temprana de que esto se está volviendo un curso en lugar de una puesta en marcha.</p>
+<p>El hito final no es un diploma. Es <strong>la prueba del relevo</strong>: alguien que no ha llevado un rol toma el nodo de otra persona y lo continúa una semana <em>sin llamar a nadie</em>. Si eso no pasa, el equipo no está acreditado aunque tenga todas las evidencias.</p>
+
+<h3>Por dónde empezamos</h3>
+<p>No por el cliente que más paga ni por el canal que más multiplica. Por el que <strong>produce el caso de éxito más rápido y más defendible</strong>: una dinámica comunitaria que ya existe y se está apagando, en un municipio pequeño, con el ayuntamiento pagando el acompañamiento y la entidad poniendo las horas.</p>
+<p>El dolor ya existe y no hace falta convencer a nadie. El resultado se ve en semanas. Y el caso que sale —«pasábamos de 40 socios a 18 y ahora tenemos 35 activos»— vale más que cualquier propuesta comercial.</p>
+
+<blockquote>La tracción no es que les guste. Es que sigan sin nosotros. El día que alguien del equipo convoca una sesión que no hemos convocado nosotros, hay tracción. Hasta entonces hay un servicio bien valorado, que no es lo mismo.</blockquote>
+
+<h3>Lo que este plan no promete</h3>
+<ul>
+<li><strong>Que la dinámica se recupere.</strong> Si lo que la mata es que nadie quiere el relevo, eso no se resuelve con método. Se dice en la semana 3 y se ajusta el objetivo; no se infla el informe.</li>
+<li><strong>Sustituir la dinamización.</strong> El SOS cuenta lo que pasa; que pase es trabajo de personas.</li>
+<li><strong>Servir para un colectivo que todavía no hace nada.</strong> Sin actividad no hay nada que contabilizar y la herramienta se convierte en deberes.</li>
+</ul>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Los cinco roles, las doce semanas y los umbrales de tracción, al detalle.</div>
+<a class="btn-primary" href="formacio.html#equipv1">Programa de equipo gestor v1 →</a>
+</div>
+</div>
 </article>
 
 <article id="post-1">
+<div class="l-ca" lang="ca">
 <h2>🏛 Els Guardians ja tenen assemblea federativa</h2>
 <div class="meta">
 <span class="tag">Governança</span>
@@ -1015,9 +1777,48 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Obre SOS i simula la vostra assemblea territorial en 60 segons.</div>
 <a class="btn-primary" href="index.html">Prova-ho ara →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🏛 Los Guardianes ya tienen asamblea federativa</h2>
+<div class="meta">
+<span class="tag">Gobernanza</span>
+<span class="tag">Municipios</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">Un voto por municipio aplasta a las minorías. Un voto por persona aplasta a la mayoría de los pueblos pequeños. La <strong>ley de la raíz cuadrada de Penrose</strong> (1946) lo resuelve matemáticamente, y ahora la tienes a un clic dentro del SOS.</p>
+
+<div class="who"><strong>Para quién:</strong> concejalías de participación, consejos comarcales, redes intermunicipales, ateneos cooperativos.</div>
+
+<p>Hasta ahora, cuando una comarca tenía que decidir algo junta —una compra colectiva de energía, un banco de tiempo compartido entre pueblos, una candidatura a una subvención— tocaba pelearse con un problema viejo: <strong>¿cómo damos el mismo peso a Vilanova (60.000 habitantes) y a Sant Pere de Ribes (30.000)?</strong> ¿Y qué hacemos con Olesa de Bonesvalls (1.900)?</p>
+
+<h3>La respuesta que ya tiene matemáticas</h3>
+<p>El inglés Lionel Penrose lo demostró en 1946: el peso justo del voto de una población, cuando cada población tiene dentro diversidad de opiniones, es <strong>proporcional a la raíz cuadrada de su tamaño</strong>. Ni lineal (aplasta a los pequeños), ni uno a uno (aplasta a los grandes). La raíz cuadrada da equidad matemáticamente justa.</p>
+
+<p>El SOS la aplica sola. Abre <strong>Configuració → 🌐 Assemblea federativa</strong>, elige un territorio (o simula una asamblea hipotética), y verás:</p>
+<ul>
+<li><strong>Peso bruto</strong> = √población × actividad (0,5-1,5, moduladora)</li>
+<li><strong>Corrección Gini</strong>: si un bloque concentra decisión, su cuota se reduce suavemente hasta que la asamblea distribuye sabiduría.</li>
+<li><strong>Aprobación en directo</strong> cuando cambias votos de aquí y de allá.</li>
+</ul>
+
+<blockquote>Una red federativa que tiende a la máxima equidad como un ecosistema maduro. Diversidad = resiliencia.</blockquote>
+
+<h3>Qué ganáis, ayuntamientos</h3>
+<ul>
+<li><strong>Justo por contrato</strong>: ningún pueblo se siente forzado, ningún pueblo domina.</li>
+<li><strong>Sin servidor</strong>: el cálculo corre en tu navegador y cada voto va firmado, así que se puede comprobar quién lo ha emitido sin preguntárselo a nadie.</li>
+<li><strong>Auditable</strong>: cada decisión deja rastro encadenado y firmado. Contabilidad política real, no acta vacía.</li>
+</ul>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Abre el SOS y simula vuestra asamblea territorial en 60 segundos.</div>
+<a class="btn-primary" href="index.html">Pruébalo ahora →</a>
+</div>
+</div>
 </article>
 
 <article id="post-2">
+<div class="l-ca" lang="ca">
 <h2>🦸 Molekulon — el teu perfil és una xarxa neuronal creativa</h2>
 <div class="meta">
 <span class="tag">Comunitat</span>
@@ -1052,9 +1853,47 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Obre SOS, dóna d'alta un soci, i clica "👁 Perfil". Veuràs immediatament les seves superforces.</div>
 <a class="btn-primary" href="index.html">Explora el perfil transversal →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>🦸 Molekulon: tu perfil es una red neuronal creativa</h2>
+<div class="meta">
+<span class="tag">Comunidad</span>
+<span class="tag">Reputación</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">Ya no hace falta decidir si «eres del banco de tiempo» o «de la biblioteca de las cosas» o «de la MATRIU». Ahora eres <strong>una sola persona</strong> con una única reputación verificable que atraviesa todas las capas del ecosistema.</p>
+
+<div class="who"><strong>Para quién:</strong> personas activas de ateneos, gente de bancos de tiempo, cooperativas, entidades de barrio; también educadores y formadores que quieran usar el marco superhéroe.</div>
+
+<h3>Superhéroe = persona que aplica sus superpoderes</h3>
+<p>Un superhéroe, en el marco SOS, no es quien salva el mundo. Es quien <strong>aplica sus talentos (superpoderes) aportando valor contable</strong> a comunidades y proyectos comunitarios. Cada hora que dedicas, cada objeto que compartes, cada acompañamiento que haces se convierte en:</p>
+<ul>
+<li><strong>Reputación comunitaria</strong>: visible en tu perfil transversal, trazable a actividad firmada real</li>
+<li><strong>Reputación profesional</strong>: CV verificable que sirve para entidades y contrataciones</li>
+<li><strong>Slicing Pie</strong>: tarta de equidad dinámica en los proyectos económicos de la MATRIU</li>
+</ul>
+
+<h3>El balance entre abrir y cortar</h3>
+<p>Cada superhéroe tiene dos vectores polares: <strong>abrir y sembrar</strong> (creación, cuidado, enseñanza) y <strong>cortar y renovar</strong> (transformación, auditoría, reparación). No es encasillamiento: cada persona tiene su mezcla única, y se calcula a partir de las categorías de lo que hace de verdad, no de un test de personalidad. Los <strong>molekulons</strong> (grupos de 5-12 superhéroes) funcionan mejor cuando el balance está equilibrado: el sistema lo detecta y sugiere el matching.</p>
+
+<div class="who"><strong>Enmienda.</strong> Estos dos vectores se habían llamado <em>Shakti</em> y <em>Shiva</em>, y las otras entradas de este blog usaban los mismos dos nombres para otra cosa: la estructura y la energía de una organización —lo que aquí llamamos <a href="#post-seny">seny</a> y <a href="#post-rauxa">rauxa</a>. Eran dos ejes distintos con las mismas palabras, y una palabra que quiere decir dos cosas en el mismo texto no quiere decir ninguna. El primer eje se llama ahora por su nombre de aquí; el segundo, por lo que mide. Quien repara bicicletas no tiene «menos seny» que quien da clases de repaso: hacen cosas distintas, y ya está.</div>
+
+<p>Los arquetipos funcionales están disponibles con <strong>cuatro sistemas simbólicos</strong> intercambiables (védico · celta · andino · secular): elige el que te encaje, sin dogmatismo.</p>
+
+<h3>Y el kit narrativo</h3>
+<p>Cada molekulon activo puede pedir su <strong>kit narrativo</strong> a la IA: sinopsis de cómic, himno (16 versos) y escena performativa de graduación. La narrativa vive junto a la contabilidad. Marketing e identidad se convierten en artefacto comunitario real.</p>
+
+<blockquote>Reputación que no es puntuación opaca, sino historia de aportaciones verificables.</blockquote>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Abre el SOS, da de alta un socio y pulsa «👁 Perfil». Verás inmediatamente sus superfuerzas.</div>
+<a class="btn-primary" href="index.html">Explora el perfil transversal →</a>
+</div>
+</div>
 </article>
 
 <article id="post-3">
+<div class="l-ca" lang="ca">
 <h2>💰 Fons cooperatiu local — quant val realment el vostre teixit veïnal?</h2>
 <div class="meta">
 <span class="tag">Economia</span>
@@ -1095,15 +1934,69 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div style="color:var(--muted);font-size:var(--t0)">Simula l'impacte del vostre municipi ara — dades reals en 60 segons.</div>
 <a class="btn-primary" href="index.html">Obre el simulador →</a>
 </div>
+</div>
+<div class="l-es" lang="es">
+<h2>💰 Fondo cooperativo local: ¿cuánto vale realmente vuestro tejido vecinal?</h2>
+<div class="meta">
+<span class="tag">Economía</span>
+<span class="tag">Caso Cataluña</span>
+<span>Noviembre 2025</span>
+</div>
+<p class="lead">Un banco de tiempo de 300 horas anuales en un pueblo mediano vale <strong>unos 6.000 € en servicios reales</strong>. Una biblioteca de las cosas de 40 objetos que rotan 3 veces al año, unos <strong>4.000 €</strong>. Sumado, son <strong>unos 10.000 € que no salen de la comunidad y circulan dentro</strong>. Y esto solo es el principio.</p>
+
+<div class="who"><strong>Para quién:</strong> técnicos de desarrollo local, agentes de participación, cooperativas, ateneos, entidades que buscan subvenciones y tienen que justificar impacto.</div>
+
+<h3>Del «sentimiento» a la cifra</h3>
+<p>Todo el mundo sabe que un banco de tiempo genera valor. Nadie sabía ponerle una cifra sin hacer una evaluación externa cara y puntual. Ahora el SOS lo hace <strong>en directo y editable</strong>:</p>
+<ul>
+<li><strong>Oráculo FMV</strong> por habilidad del banco de tiempo (idiomas 20 €/h · informática 35 €/h · cuidados 15 €/h… editables)</li>
+<li><strong>Valor base por tipología</strong> de objeto en la biblioteca con depreciación por años</li>
+<li><strong>Talento asignado</strong> valorado a 40 h/mes × FMV medio</li>
+<li><strong>Capital aportado</strong> del ledger real</li>
+<li>Rango <strong>mínimo–esperado–máximo</strong> (±30 % de incertidumbre): comunicamos que es una estimación, no una promesa</li>
+</ul>
+
+<p>Y en el panel <strong>🔮 Impacte hipotètic · cas Catalunya</strong>, pones la población del municipio y el % de penetración, y el sistema devuelve:</p>
+<ul>
+<li>Ahorro €/año por hogar</li>
+<li>Reducción estimada de soledad y mejora de participación</li>
+<li>tCO₂ evitadas</li>
+<li>Fuente de cada estimación (Glass-Box: ves de dónde viene todo)</li>
+</ul>
+
+<h3>Por qué es crítico ahora</h3>
+<p>Las subvenciones europeas NextGen, los fondos de cohesión territorial y las convocatorias de ayuntamientos piden cada vez más <strong>indicadores de impacto cuantificado</strong>. El SOS os los genera automáticamente, firmados y auditables. La justificación de una subvención se convierte en 3 clics.</p>
+
+<blockquote>El fondo cooperativo local es, potencialmente, la infraestructura de inversión más potente de vuestro territorio. No porque extraiga rendimientos, sino porque los reinvierte en el ecosistema humano y natural que lo sostiene.</blockquote>
+
+<h3>Modelo Mondragón · intercooperación</h3>
+<p>Dentro de una MATRIU, las ventures económicas pueden <strong>cooperar entre ellas</strong>: ceder horas, objetos, talento o capital, con firma criptográfica y cadena hash a prueba de manipulaciones. Es el modelo Mondragón llevado al navegador, sin abogados y sin despachos. La circulación de valor no sale del fondo; el fondo crece por rotación.</p>
+
+<div class="cta">
+<div style="color:var(--muted);font-size:var(--t0)">Simula el impacto de vuestro municipio ahora: datos reales en 60 segundos.</div>
+<a class="btn-primary" href="index.html">Abre el simulador →</a>
+</div>
+</div>
 </article>
 
-<article>
+<article id="contacte">
+<div class="l-ca" lang="ca">
 <h2>📬 Vols que t'avisem de les noves entrades?</h2>
 <div class="meta"><span class="tag">Contacte</span></div>
-<p class="lead">SOS s'actualitza cada setmana amb noves capacitats. Si sou ajuntament, cooperativa o entitat i voleu ser dels primers a provar-les:</p>
-<p>Escriu a <a href="mailto:hola@teamtowershuma.com" style="color:var(--indigo)">hola@teamtowershuma.com</a> amb "SOS + [nom del vostre territori]" i us mantindrem informats + us convidem a les demostracions.</p>
+<p class="lead">El blog creix amb cada millora de TeamTowers Humà i dels seus projectes. Si sou ajuntament, cooperativa, empresa o entitat i voleu ser dels primers a provar-les:</p>
+<p>Escriu a <a href="mailto:hola@teamtowershuma.com" style="color:var(--indigo)">hola@teamtowershuma.com</a> amb «Blog + [el vostre nom]» i us mantindrem informats i us convidarem a les demostracions.</p>
 <div class="cta">
 <a class="btn-primary" href="../index.html">Coneix TeamTowers Humà →</a>
+</div>
+</div>
+<div class="l-es" lang="es">
+<h2>📬 ¿Quieres que te avisemos de las nuevas entradas?</h2>
+<div class="meta"><span class="tag">Contacto</span></div>
+<p class="lead">El blog crece con cada mejora de TeamTowers Humà y de sus proyectos. Si sois ayuntamiento, cooperativa, empresa o entidad y queréis ser de los primeros en probarlas:</p>
+<p>Escribe a <a href="mailto:hola@teamtowershuma.com" style="color:var(--indigo)">hola@teamtowershuma.com</a> con «Blog + [vuestro nombre]» y os mantendremos informados y os invitaremos a las demostraciones.</p>
+<div class="cta">
+<a class="btn-primary" href="../index.html">Conoce TeamTowers Humà →</a>
+</div>
 </div>
 </article>
 
@@ -1191,5 +2084,116 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 </footer>
 <!--/TT-PEU-->
 
+<script>
+/* ══ LES DUES LLENGÜES ═══════════════════════════════════════════════════
+   El blog és en català i en castellà (l'Álvaro, 22/10/2026). Cada entrada
+   porta les dues versions (`.l-ca`, `.l-es`) i aquí només es tria quina es
+   veu i es tradueix la barra, que rep les seves claus del generador.
+   `?lang=es` obre el castellà: és l'enllaç que es passa a qui no llegeix
+   català. La tria es desa a `tt_lang` i `sos.lang`, com a la resta del lloc. */
+var BL_I18N = {
+ca: {
+/*NAV-I18N-CA*/
+  'nv.g.valor':'Mapa de valor',
+  'nv.t.diagnostic':'Diagnòstic',
+  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
+  'nv.t.vna':'El mètode',
+  'nv.d.vna':'Què és un mapa de valor, sobre un cas',
+  'nv.t.vna-suport':'Fer-ne un',
+  'nv.d.vna-suport':'L\'editor visual: rols, lliuraments, real i ideal',
+  'nv.t.arrel-cataleg':'El catàleg',
+  'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
+  'nv.t.pressupost':'Preus i contractació',
+  'nv.d.pressupost':'De l\'esborrany al negoci operatiu, i la resta a mida',
+  'nv.g.web':'La teva web',
+  'nv.t.carpeta-mapa-web':'Mapa i web en una hora',
+  'nv.d.carpeta-mapa-web':'El mapa del teu negoci i la web, en una sessió',
+  'nv.t.carpeta-conecta':'Serveis connectables',
+  'nv.d.carpeta-conecta':'La teva web amb la teva IA, el CRM i els cobraments',
+  'nv.g.formacio':'SOS i formació',
+  'nv.t.app':'Entra al SOS',
+  'nv.d.app':'El sistema que manté viu el mapa, sense compte',
+  'nv.t.formacio':'Formació acció',
+  'nv.d.formacio':'Els mòduls, de N0 a N3, i el certificat és teu',
+  'nv.t.ia':'Fluxos amb IA',
+  'nv.d.ia':'Automatitzar el tangible, valorar l\'intangible',
+  'nv.g.casa':'Qui som',
+  'nv.t.arrel-qui-som':'Qui som',
+  'nv.d.arrel-qui-som':'Vint anys, els clients i d\'on ve el mètode',
+  'nv.t.arrel-premsa':'Premsa',
+  'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacitat, explicada',
+  'nv.cta':'Fes el diagnòstic',
+  'nv.menu':'Menú',
+  'nv.peu.mail':'Escriu-nos',
+  'nv.peu.legal':'Avís legal i privacitat',
+/*/NAV-I18N-CA*/
+},
+es: {
+/*NAV-I18N-ES*/
+  'nv.g.valor':'Mapa de valor',
+  'nv.t.diagnostic':'Diagnóstico',
+  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
+  'nv.t.vna':'El método',
+  'nv.d.vna':'Qué es un mapa de valor, sobre un caso',
+  'nv.t.vna-suport':'Hacer uno',
+  'nv.d.vna-suport':'El editor visual: roles, entregables, real e ideal',
+  'nv.t.arrel-cataleg':'El catálogo',
+  'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
+  'nv.t.pressupost':'Precios y contratación',
+  'nv.d.pressupost':'Del borrador al negocio operativo, y el resto a medida',
+  'nv.g.web':'Tu web',
+  'nv.t.carpeta-mapa-web':'Mapa y web en una hora',
+  'nv.d.carpeta-mapa-web':'El mapa de tu negocio y la web, en una sesión',
+  'nv.t.carpeta-conecta':'Servicios conectables',
+  'nv.d.carpeta-conecta':'Tu web con tu IA, el CRM y los cobros',
+  'nv.g.formacio':'SOS y formación',
+  'nv.t.app':'Entra al SOS',
+  'nv.d.app':'El sistema que mantiene vivo el mapa, sin cuenta',
+  'nv.t.formacio':'Formación acción',
+  'nv.d.formacio':'Los módulos, de N0 a N3, y el certificado es tuyo',
+  'nv.t.ia':'Flujos con IA',
+  'nv.d.ia':'Automatizar lo tangible, valorar lo intangible',
+  'nv.g.casa':'Quiénes somos',
+  'nv.t.arrel-qui-som':'Quiénes somos',
+  'nv.d.arrel-qui-som':'Veinte años, los clientes y de dónde viene el método',
+  'nv.t.arrel-premsa':'Prensa',
+  'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
+  'nv.t.blog':'Blog',
+  'nv.d.blog':'Cada capacidad, explicada',
+  'nv.cta':'Haz el diagnóstico',
+  'nv.menu':'Menú',
+  'nv.peu.mail':'Escríbenos',
+  'nv.peu.legal':'Aviso legal y privacidad',
+/*/NAV-I18N-ES*/
+}
+};
+var BL_TITOL = { ca: 'Blog de TeamTowers Humà · El que construïm, explicat', es: 'Blog de TeamTowers Humà · Lo que construimos, explicado' };
+function blAplicaLang(l) {
+  if (!BL_I18N[l]) l = 'ca';
+  try { localStorage.setItem('tt_lang', l); localStorage.setItem('sos.lang', l); } catch (e) {}
+  document.documentElement.lang = l;
+  document.title = BL_TITOL[l];
+  var t = BL_I18N[l];
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var k = el.getAttribute('data-i18n');
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('.lang-b').forEach(function (b) {
+    b.classList.toggle('on', b.getAttribute('data-lang') === l);
+  });
+}
+(function () {
+  var l = 'ca';
+  try { l = localStorage.getItem('tt_lang') || localStorage.getItem('sos.lang') || 'ca'; } catch (e) {}
+  var q = /[?&]lang=(ca|es)\b/.exec(location.search);
+  if (q) l = q[1];
+  document.querySelectorAll('.lang-b').forEach(function (b) {
+    b.addEventListener('click', function () { blAplicaLang(b.getAttribute('data-lang')); });
+  });
+  blAplicaLang(l);
+})();
+</script>
 </body>
 </html>
