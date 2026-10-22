@@ -31,7 +31,7 @@
  */
 (function (raiz) {
   var NS = 'http://www.w3.org/2000/svg';
-  var CSS = '.cp{--k-anna:#b45309;--k-prana:#15803d;--k-mano:#0e7490;--k-vijnana:#1d4ed8;--k-ananda:#7c3aed}' +
+  var CSS = '.cp,.cp-lp{--cp-lliga:#be185d;--k-anna:#b45309;--k-prana:#15803d;--k-mano:#0e7490;--k-vijnana:#1d4ed8;--k-ananda:#7c3aed}' +
     '.cp svg{display:block;width:100%;height:auto}' +
     '.cp .cp-b{opacity:.08}.cp .cp-l{font:600 15px system-ui,sans-serif;fill:var(--text,#15130f)}' +
     '.cp .cp-s{font:500 11px ui-monospace,monospace;fill:var(--muted,#5e594d);letter-spacing:.06em}' +
@@ -45,7 +45,16 @@
     '.cp svg.cp-mapa{max-width:640px;margin:0 auto}.cp svg.cp-pinya{max-width:820px}' +
     '.cp-t{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0}' +
     '.cp-t button{font:600 .9rem inherit;font-family:inherit;min-height:40px;padding:6px 16px;border-radius:999px;border:1px solid var(--border,#ddd7c8);background:var(--card,#fff);color:var(--text,#15130f);cursor:pointer}' +
-    '.cp-t input{flex:1;min-width:160px}.cp-t output{font:500 .85rem ui-monospace,monospace;color:var(--muted,#5e594d);min-width:9ch}';
+    '.cp-t input{flex:1;min-width:160px}.cp-t output{font:500 .85rem ui-monospace,monospace;color:var(--muted,#5e594d);min-width:9ch}' +
+    /* La lectura de la pinya com a dibuix: una barra per àrea, tres colors i una frase. */
+    '.cp-lp{font-size:1rem;margin:12px 0 0}.cp-lp-ll{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 10px;padding:0;list-style:none;color:var(--muted,#5e594d)}' +
+    '.cp-lp-ll i,.cp-lp-b i{display:inline-block}.cp-lp-ll i{width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}' +
+    '.cp-lp-f{display:grid;grid-template-columns:minmax(7.5em,auto) 1fr;gap:8px 12px;align-items:center;margin:0 0 6px}' +
+    '.cp-lp-f b{line-height:1.15}.cp-lp-f b small{display:block;font:500 .95rem ui-monospace,monospace;color:var(--muted,#5e594d)}' +
+    '.cp-lp-b{display:flex;height:30px;border-radius:6px;overflow:hidden;background:var(--border,#ddd7c8)}' +
+    '.cp-lp-b i{height:100%;min-width:0;color:#fff;font:600 1rem system-ui,sans-serif;font-style:normal;display:flex;align-items:center;justify-content:center;overflow:hidden}' +
+    '.cp-lp-b .cp-lp-v{background:var(--cp-lliga)}.cp-lp-b .cp-lp-s{color:var(--text,#15130f);background:repeating-linear-gradient(135deg,transparent 0 5px,rgba(0,0,0,.12) 5px 7px)}' +
+    '.cp-lp p{margin:10px 0 0}';
 
   function el(t, at, p) { var e = document.createElementNS(NS, t); for (var k in at) e.setAttribute(k, at[k]); if (p) p.appendChild(e); return e; }
   function col(id) { return 'var(--k-' + id + ')'; }
@@ -96,7 +105,6 @@
 
   /* La pinya des de dalt: cada kosha, un pilar amb les seves quatre rengles,
      i cada veda a la rengla que li toca segons amb qui parla. */
-  var MENA_PINYA = { primera: ['primera mà', 'primeres mans'], vent: ['vent', 'vents'], lateral: ['lateral', 'laterals'] };
   function pinya(D, W, H) {
     var R = Math.min(W, H) / 2 - 40, cx = W / 2, cy = H / 2, R0 = R * .16, pos = {}, capa = {}, cites = {};
     D.nodos.forEach(function (n) { capa[n.id] = n.capa; cites[n.id] = { dins: 0, fora: 0 }; });
@@ -145,7 +153,7 @@
       A.pilars.forEach(function (p) {
         Object.keys(p.rengles).forEach(function (m) {
           p.rengles[m].forEach(function (a) {
-            var l = el('line', { x1: A.cx + A.R0 * Math.cos(a), y1: A.cy + A.R0 * Math.sin(a), x2: A.cx + A.R * Math.cos(a), y2: A.cy + A.R * Math.sin(a), stroke: m === 'vent' ? 'var(--orange,#c2410c)' : col(p.capa.id), 'class': 'cp-r' }, gB);
+            var l = el('line', { x1: A.cx + A.R0 * Math.cos(a), y1: A.cy + A.R0 * Math.sin(a), x2: A.cx + A.R * Math.cos(a), y2: A.cy + A.R * Math.sin(a), stroke: m === 'vent' ? 'var(--cp-lliga)' : col(p.capa.id), 'class': 'cp-r' }, gB);
             if (m === 'lateral') l.setAttribute('stroke-dasharray', '2 5');
           });
         });
@@ -204,15 +212,36 @@
       if (rang) { rang.value = k; sort.textContent = k + ' / ' + D.nodos.length; }
     }
 
-    /* El recompte de la pinya fins a la veda k: quantes de cada mena té cada
-       pilar, i quins no tenen cap vent (els silos). */
+    /* La lectura de la pinya fins a la veda k, per a qui no sap què és una
+       kosha ni una pinya: una barra per àrea, amb tres colors que diuen el
+       mateix que les rengles (veda que sosté la seva àrea, que lliga amb una
+       altra, que va sola), i una frase amb el que se'n treu. */
+    var DIA = { anna: 'Cos', prana: 'Energia', mano: 'Ment', vijnana: 'Discerniment', ananda: 'Propòsit' };
+    var DIU_MENA = { primera: 'sosté la seva àrea', vent: 'lliga amb una altra àrea', lateral: 'va sola' };
     function lectura(k) {
       var per = A.pilars.map(function () { return { primera: 0, vent: 0, lateral: 0 }; });
       D.nodos.forEach(function (n, i) { if (i < k) per[pos[n.id].pis][A.menaDe[n.id]]++; });
-      var sols = A.pilars.filter(function (p, i) { return !per[i].vent; }).map(function (p) { return p.capa.s; });
-      op.lectura.innerHTML = '<ul>' + A.pilars.map(function (p, i) {
-        return '<li><b>' + p.capa.s + '</b> · ' + Object.keys(MENA_PINYA).map(function (m) { return per[i][m] + ' ' + MENA_PINYA[m][per[i][m] === 1 ? 0 : 1]; }).join(' · ') + '</li>';
-      }).join('') + '</ul><p>' + (sols.length ? 'Sense cap vent: <b>' + sols.join(', ') + '</b>. És una àrea que no toca cap altra, un silo.' : 'Tots els pilars tenen algun vent: cap àrea queda sola.') + '</p>';
+      var tot = per.map(function (x) { return x.primera + x.vent + x.lateral; }), max = Math.max.apply(null, tot.concat(1));
+      var nomDe = function (p) { return DIA[p.capa.id] || p.capa.n; };
+      var seg = function (x, m, i) {
+        if (!x[m]) return '';
+        var w = 100 * x[m] / max, cl = m === 'vent' ? 'cp-lp-v' : m === 'lateral' ? 'cp-lp-s' : '';
+        return '<i class="' + cl + '" style="width:' + w + '%' + (m === 'primera' ? ';background:' + col(A.pilars[i].capa.id) : '') + '" title="' + x[m] + ' ' + DIU_MENA[m] + '">' + (w > 7 ? x[m] : '') + '</i>';
+      };
+      var llista = A.pilars.map(function (p, i) {
+        return '<div class="cp-lp-f"><b>' + nomDe(p) + '<small>' + p.capa.s + '</small></b><div class="cp-lp-b" role="img" aria-label="' + nomDe(p) + ': ' +
+          per[i].primera + ' ' + DIU_MENA.primera + ', ' + per[i].vent + ' ' + DIU_MENA.vent + ', ' + per[i].lateral + ' ' + DIU_MENA.lateral + '">' +
+          seg(per[i], 'primera', i) + seg(per[i], 'vent', i) + seg(per[i], 'lateral', i) + '</div></div>';
+      }).join('');
+      /* La frase: l'àrea que més lliga, la que més va sola, i les que no lliguen amb cap. */
+      var quota = function (m) { var b = -1, bi = -1; per.forEach(function (x, i) { var q = tot[i] ? x[m] / tot[i] : -1; if (q > b) { b = q; bi = i; } }); return bi; };
+      var sols = A.pilars.filter(function (p, i) { return tot[i] && !per[i].vent; }).map(nomDe);
+      var lliga = quota('vent'), sola = quota('lateral');
+      var frase = sols.length ? 'No lliga amb cap altra àrea: <b>' + sols.join(', ') + '</b>. És un silo: el que s\'hi aprèn no arriba a la resta.'
+        : 'Totes les àrees lliguen amb alguna altra: cap no queda aïllada.';
+      if (lliga >= 0 && tot[lliga]) frase += ' La que més lliga és <b>' + nomDe(A.pilars[lliga]) + '</b>' + (sola >= 0 && sola !== lliga && per[sola].lateral ? '; la que més va sola, <b>' + nomDe(A.pilars[sola]) + '</b>.' : '.');
+      op.lectura.innerHTML = '<div class="cp-lp"><ul class="cp-lp-ll"><li><i style="background:linear-gradient(90deg,' + A.pilars.map(function (p) { return col(p.capa.id); }).join(',') + ')"></i>' + DIU_MENA.primera + ' (el color de l\'àrea)</li><li><i class="cp-lp-v" style="background:var(--cp-lliga)"></i>' + DIU_MENA.vent +
+        '</li><li><i style="background:repeating-linear-gradient(135deg,transparent 0 3px,rgba(0,0,0,.25) 3px 5px);border:1px solid var(--border,#ddd7c8)"></i>' + DIU_MENA.lateral + '</li></ul>' + llista + '<p>' + frase + '</p></div>';
     }
 
     /* En moviment, en bucle, i només quan es veu: fora de pantalla o amb la
