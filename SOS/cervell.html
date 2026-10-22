@@ -459,10 +459,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     }).catch(function () { estat.textContent = 'No he pogut preparar el fitxer. Torna-ho a provar.'; });
   });
 
-  /* El botó només surt si el web té l'entrada amb GitHub configurada. */
+  /* El botó només surt quan la funció d'identitat anuncia la lectura de repos
+     (`repos`), que ha de ser només de lectura: no n'hi ha prou amb l'entrada de /cliente/. */
   if (token()) { gh.hidden = false; triaRepos(); }
   else fetch('/.netlify/functions/identitat', { cache: 'no-store' }).then(function (r) { return r.ok || r.status === 503 ? r.json() : null; })
-    .then(function (j) { if (j && (j.vies || []).indexOf('github') >= 0) { gh.hidden = false; surt(); } }).catch(function () {});
+    .then(function (j) { if (j && (j.vies || []).indexOf('repos') >= 0) { gh.hidden = false; surt(); } }).catch(function () {});
   var q = new URLSearchParams(location.search).get('repo') || MATRIU;
   document.getElementById('repo').value = q;
   llegeix(q);
