@@ -52,6 +52,29 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### L'espai de client amb login · projecte, facturació i contrasenya (demanat 22/10/2026)
+
+Avui `/cliente/` (#282) té un compte lleuger: nom i correu desats al navegador,
+una fitxa que es descarrega i es torna a carregar, i un sol enviament al
+formulari `cliente-web`, que entra a Zoho. L'Àlvar demana el pas següent:
+
+- **Login** amb correu i contrasenya, perquè el client entri des de qualsevol
+  aparell sense carregar la fitxa a mà.
+- **La fitxa desada amb contrasenya**: el diagnòstic, el mapa, el nivell de web
+  i el material, guardats al servidor i xifrats.
+- **Les dades del projecte**: el pas on és (`proces-web.js`, el mateix que
+  «Dónde estamos»), les hores i les entregues de la seva traça (vista «horas»
+  sense IA ni imports, decidida el 21/10), els enllaços a la seva web i al seu
+  repositori.
+- **La facturació**: les seves dades fiscals, les factures i els pagaments
+  (el motor de cobrament és al repositori d'estratègia, `finanzas/cobros.mjs`;
+  l'espai només hi llegeix el que és seu).
+
+Per decidir abans de construir-lo: on viuen els comptes (Supabase, Netlify
+Identity o una funció pròpia), qui custodia les dades fiscals i el RGPD
+(encàrrec de tractament), i que cap client vegi res d'un altre. Cap import a la
+web pública: els preus només dins del seu espai.
+
 ### Un sol motor del mapa de valor (demanat 20/10/2026)
 
 L'editor (`vna-suport.html`) i el mapa de l'app jutgen i guarden el mapa amb un
