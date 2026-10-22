@@ -5453,5 +5453,16 @@ gasta crèdits; uns nou al dia del SOS esgoten el cicle en dues setmanes.
 - **A producció, dues tandes al dia: 13:00 i 20:00** (decidit el 21/10), amb
   una branca `tanda/…` i una sola preview que l'Álvaro mira una vegada.
 - **Les previews no es desactiven mai.**
+- **Per què dues i a hores fixes** (l'Álvaro, 22/10): perquè el cost dels
+  serveis, nostres i dels clients, es pugui planificar. Dues tandes al dia són
+  dos desplegaments comptats, no un per PR. Val per a **tot repositori que es
+  desplega a Netlify** (aquest, les webs dels clients, Events Penedès); els que
+  no es despleguen poden mergear quan toca, però també s'agrupen.
+- **Res de merges fora de tanda** (22/10, 13:40): cada PR espera llest i en
+  verd la tanda següent. Només el que és urgent per a un client surt al moment.
+- **Cada tanda surt amb el seu post al blog** (`SOS/blog.html`, `#post-tanda-…`):
+  què ha millorat, en paraules del client, amb l'enllaç i el pantallàs de cada
+  vista. Mateixa estructura sempre (una secció per àrea, «Per a qui», «On és»),
+  perquè els posts es puguin compilar com a manual del sistema.
 
 **Guarda:** cap automàtica; la regla és a `CLAUDE.md`.
