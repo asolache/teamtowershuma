@@ -18,6 +18,8 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+const DIR = dirname(fileURLToPath(import.meta.url));
 
 const APP = 'file://' + join(dirname(fileURLToPath(import.meta.url)), '..', 'energia.html');
 let pass = 0, fail = 0;
@@ -200,7 +202,32 @@ console.log('\n7 · A la pantalla: el marc legal amb la seva data, i que aquí n
     'amb l\'avís que una distància sense any no vol dir res');
   ok(/Aquí no es contracta res/.test(r.txt),
     'i la pàgina diu que no contracta ni dona d\'alta res');
-  ok(r.tabs === r.pans && r.tabs === 7, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
+  ok(r.tabs === r.pans && r.tabs === 8, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
+console.log('\n7b · La minigrid, fase a fase de la MATRIU, amb els rols del catàleg');
+{
+  const { ctx, p, errs } = await nova(390, 800);
+  await p.click('#tabs button[data-p="minigrid"]');
+  const r = await p.evaluate(() => {
+    const et = [...document.querySelectorAll('#pMinigrid .mg-et')];
+    const rols = new Set();
+    et.forEach(e => e.querySelectorAll('.mg-fl li strong').forEach(s => s.textContent.split(' → ').forEach(x => rols.add(x.trim()))));
+    return { ids: et.map(e => e.id), fluxos: et.map(e => e.querySelectorAll('.mg-fl li').length),
+      portes: et.filter(e => e.querySelector('.mg-porta')).length, rols: [...rols],
+      visible: !!document.querySelector('#pMinigrid.on'),
+      txt: document.querySelector('#pMinigrid').textContent.replace(/\s+/g, ' '),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+  });
+  ok(r.visible && JSON.stringify(r.ids) === '["mg-idea","mg-prototip","mg-validacio","mg-graduacio"]',
+    'les quatre etapes de la MATRIU, en ordre: ' + r.ids.join(', '));
+  ok(r.fluxos.every(n => n >= 3) && r.portes === 4, 'cada etapa té els seus fluxos (' + r.fluxos.join('·') + ') i la porta per passar');
+  const cat = readFileSync(join(DIR, '..', 'index.html'), 'utf8').match(/id:'comunitat_energetica'[\s\S]*?roles:\[([^\]]*)\]/)[1];
+  ok(r.rols.every(x => cat.includes("'" + x + "'")), 'i cada rol és un dels del mapa del catàleg: ' + r.rols.length);
+  ok(/la línia la segueix posant la distribuïdora/.test(r.txt), 'diu que no és una xarxa pròpia: autoconsum col·lectiu amb bateria');
+  ok(r.overflow === 0, 'a 390 px no desborda');
   ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
