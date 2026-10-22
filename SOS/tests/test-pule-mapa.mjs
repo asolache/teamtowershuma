@@ -10,7 +10,7 @@
    · El cost real surt de `usage` (i de cada intent si hi ha hagut fallback).
    · Del que respon el model només passa el que es pot aplicar.
    · El text del client va dins de <dades> i no surt al registre. */
-import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA } from '../../netlify/functions/pule-mapa.mjs';
+import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament } from '../../netlify/functions/pule-mapa.mjs';
 import { perCorreu, aGithub, deGithub, vies, sessio } from '../../netlify/functions/identitat.mjs';
 import { signa, llegeix, secret } from '../../netlify/lib/signatura.mjs';
 
@@ -147,6 +147,19 @@ console.log('\n6 · Les dades que arriben');
   const v = valida('mapa', { sugerencias: Array.from({ length: 10 }, () => ({ tipo: 'nuevo', fila: -1, quien: 'A' })) }, neteja(DADES));
   ok(v.sugerencias.length === 6, 'com a molt sis propostes');
   ok((await pule({ sessio: ses(), pas: 'mapa', dades: { inicial: 'x'.repeat(1500), respuestas: Array.from({ length: 12 }, () => ({ q: 'q'.repeat(200), a: 'a'.repeat(600) })), alrededor: Array.from({ length: 20 }, () => ({ quien: 'q'.repeat(80), meDa: 'm'.repeat(160), leDoy: 'l'.repeat(160) })) } }, ENV, memoria(), fals([claude(RESP_MAPA)]))).estat === 'error', 'un dibuix massa llarg no es crida');
+}
+
+console.log('\n7 · El tancament del mes');
+{
+  const reg = memoria(), f = fals([claude(RESP_MAPA)]), TOK = 't'.repeat(30), E = Object.assign({ IA_CIERRE_TOKEN: TOK }, ENV);
+  await pule({ sessio: ses(E, 'mail:a'), pas: 'mapa', dades: DADES }, E, reg, f);
+  await pule({ sessio: ses(E, 'mail:a'), pas: 'mapa', dades: DADES }, E, reg, f);
+  await pule({ sessio: ses(E, 'mail:b'), pas: 'mapa', dades: DADES }, E, reg, f);
+  const mes = new Date().toISOString().slice(0, 7), u = (2000 * 4 + 1000 * 20) / 1e6;
+  ok(await tancament(mes, 'Bearer x', E, reg) === null && await tancament(mes, 'Bearer ' + TOK, ENV, reg) === null, 'sense el testimoni bo (o sense IA_CIERRE_TOKEN), res');
+  const t = await tancament(mes, 'Bearer ' + TOK, E, reg);
+  ok(Math.abs(t.usd - 3 * u) < 1e-4 && t.persones === 2 && Math.abs(t.maxim - 2 * u) < 1e-4, 'el total del mes, quantes persones i el màxim per persona');
+  ok(!/mail|@|abc/.test(JSON.stringify(t)), 'sense dades personals');
 }
 
 console.log('\n' + pass + ' bé, ' + fail + ' malament');

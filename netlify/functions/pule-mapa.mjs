@@ -198,11 +198,32 @@ export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new 
   delete p.reservat;
   await reg.set(kp, p);
   await reg.set(kd, { gastat: dia.gastat + gast });
+  /* El mes, per al tancament del dia 1: el total i quant per empremta. */
+  if (gast) {
+    const km = 'mes/' + ara.toISOString().slice(0, 7), mes = (await reg.get(km)) || { gastat: 0, persones: {} }, h = empremta(qui.id).slice(0, 12);
+    mes.gastat += gast; mes.persones[h] = (mes.persones[h] || 0) + gast;
+    await reg.set(km, mes);
+  }
   return Object.assign(sortida, { cost: gast }, estat());
 }
 
+/* El tancament del dia 1 (repositori d'estratègia): el mes, sense dades
+   personals. `GET …/pule-mapa?cierre=AAAA-MM` amb `Authorization: Bearer
+   IA_CIERRE_TOKEN`. Sense el testimoni (o curt), 404, com si no hi fos. */
+export async function tancament(mes, autoritzacio, env, reg) {
+  const tok = net(env.IA_CIERRE_TOKEN);
+  if (tok.length < 24 || !reg || autoritzacio !== 'Bearer ' + tok) return null;
+  if (!/^\d{4}-\d{2}$/.test(net(mes))) return { estat: 'error', motiu: 'cierre=AAAA-MM' };
+  const m = (await reg.get('mes/' + mes)) || { gastat: 0, persones: {} }, v = Object.values(m.persones || {});
+  return { mes, usd: +m.gastat.toFixed(4), persones: v.length, maxim: +(v.length ? Math.max(...v) : 0).toFixed(4) };
+}
+
 export const handler = async (event) => {
-  const env = process.env;
+  const env = process.env, q = event.queryStringParameters || {};
+  if (event.httpMethod === 'GET' && q.cierre) {
+    const t = await tancament(q.cierre, (event.headers || {}).authorization, env, magatzem(event)).catch(() => null);
+    return t ? json(t.estat === 'error' ? 400 : 200, t) : json(404, {});
+  }
   if (event.httpMethod === 'GET') {
     const c = config(env), ok = c.ok && !!magatzem(event);
     return json(ok ? 200 : 503, ok ? { actiu: true } : { actiu: false });
