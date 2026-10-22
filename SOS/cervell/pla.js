@@ -105,6 +105,13 @@
 
   /* La pinya des de dalt: cada kosha, un pilar amb les seves quatre rengles,
      i cada veda a la rengla que li toca segons amb qui parla. */
+  /* Les paraules universals de les cinc capes, per a qui no coneix les koshas.
+     Un sol lloc per a tothom que les ensenya (la portada, la pàgina del cervell,
+     les webs filles): «Criteri» i no «Discerniment», més planer (22/10/2026). */
+  var PARAULES = {
+    ca: { anna: 'Cos', prana: 'Energia', mano: 'Ment', vijnana: 'Criteri', ananda: 'Propòsit' },
+    es: { anna: 'Cuerpo', prana: 'Energía', mano: 'Mente', vijnana: 'Criterio', ananda: 'Propósito' }
+  };
   function pinya(D, W, H) {
     var R = Math.min(W, H) / 2 - 40, cx = W / 2, cy = H / 2, R0 = R * .16, pos = {}, capa = {}, cites = {};
     D.nodos.forEach(function (n) { capa[n.id] = n.capa; cites[n.id] = { dins: 0, fora: 0 }; });
@@ -216,7 +223,7 @@
        kosha ni una pinya: una barra per àrea, amb tres colors que diuen el
        mateix que les rengles (veda que sosté la seva àrea, que lliga amb una
        altra, que va sola), i una frase amb el que se'n treu. */
-    var DIA = { anna: 'Cos', prana: 'Energia', mano: 'Ment', vijnana: 'Discerniment', ananda: 'Propòsit' };
+    var DIA = PARAULES.ca;
     var DIU_MENA = { primera: 'sosté la seva àrea', vent: 'lliga amb una altra àrea', lateral: 'va sola' };
     function lectura(k) {
       var per = A.pilars.map(function () { return { primera: 0, vent: 0, lateral: 0 }; });
@@ -273,5 +280,5 @@
     return { nodos: nodos, aristas: J.cites.map(function (c) { return ['tt:' + c[0], 'tt:' + c[1]]; }), capas: J.capes };
   }
 
-  raiz.CervellPla = { munta: munta, dades: dades, franges: franges, geometria: geometria, corba: corba };
+  raiz.CervellPla = { munta: munta, dades: dades, franges: franges, geometria: geometria, corba: corba, PARAULES: PARAULES };
 })(window);
