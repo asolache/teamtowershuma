@@ -174,6 +174,12 @@ const mapaOrg=function mapaOrg(m, nom) {
   if (!base) return null;
   return Object.assign({}, base, { abast: base.abast || o.posicionament || '' });
 };
+const llocOrg=function llocOrg(m, nom) {
+  const o = orgsDe(m).find(x => x.nom === nom); if (!o) return null;
+  const f = fluxos(m), meu = r => o.rols.includes(r), un = l => [...new Set(l)];
+  const surt = f.filter(x => meu(x.de) && !meu(x.a)), entra = f.filter(x => meu(x.a) && !meu(x.de));
+  return { rol: o.rols.join(', '), aporta: un(surt.map(x => x.q)), recibe: un(entra.map(x => x.q)), para: un(surt.map(x => x.a)) };
+};
 const ESCALA=[{id:"fitxa",t:"Fitxa",porta:(m, o) => [
     !o.rols.length && 'dir quin rol ocupa al mapa',
     !String(o.posicionament || '').trim() && 'el seu posicionament, en una frase pròpia']},
@@ -195,6 +201,6 @@ const escalaOrg=function escalaOrg(m, nom) {
   }
   return { esglao: fet, seguent: null, t: null, falta: [] };
 };
-const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};
+const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};
 if (typeof module !== 'undefined' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

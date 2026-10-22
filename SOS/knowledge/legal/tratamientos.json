@@ -1,0 +1,69 @@
+{
+  "_": "La font única de la protecció de dades. D'aquí surten el registre d'activitats (registro-actividades.md) i el contracte d'encàrrec de cada client. `node SOS/tools/rgpd.js` ho regenera i `--check` ho vigila a la CI. En castellà, perquè és el que llegeix l'AEPD.",
+  "responsable": {
+    "nombre": "Alvaro Solache",
+    "forma": "autónomo",
+    "marcas": ["TeamTowers", "TeamTowers Humà", "Events Penedès"],
+    "contacto": "el correo de la página de contacto (/qui-som)",
+    "dpd": "No hace falta delegado de protección de datos: no se tratan datos a gran escala ni categorías especiales (art. 37 RGPD)."
+  },
+  "encargados": [
+    { "id": "netlify", "nombre": "Netlify", "para": "alojamiento de la web y formularios", "pais": "EE. UU. (Marco de Privacidad de Datos UE-EE. UU. y cláusulas tipo)",
+      "dpa": "https://www.netlify.com/pdf/netlify-dpa.pdf", "estado": "incorporado",
+      "como": "El DPA forma parte de los términos de Netlify: no hay que firmar nada. Guarda el PDF." },
+    { "id": "zoho", "nombre": "Zoho", "para": "CRM: contactos, oportunidades y lo que llega de los formularios", "pais": "UE (centro de datos de la UE)",
+      "dpa": "https://www.zoho.com/gdpr.html", "estado": "firmar",
+      "como": "Hay que firmarlo: en Zoho, Mi cuenta → Preferencias → Privacidad → «Data Processing Addendum» → Initiate Now. Llega un correo con el enlace para firmar." },
+    { "id": "github", "nombre": "GitHub", "para": "repositorios privados con las páginas de cada cliente potencial", "pais": "EE. UU. (Marco de Privacidad de Datos UE-EE. UU. y cláusulas tipo)",
+      "dpa": "https://github.com/customer-terms", "estado": "revisar",
+      "como": "El DPA de GitHub va con sus términos de cliente. Comprobar que la cuenta los tiene aceptados." },
+    { "id": "supabase", "nombre": "Supabase", "para": "el directorio del SOS (fichas que cada uno publica)", "pais": "UE (región de la UE)",
+      "dpa": "https://supabase.com/legal/dpa", "estado": "revisar",
+      "como": "Se pide desde el panel de Supabase (organización → documentos legales). Comprobar que está pedido." },
+    { "id": "anthropic", "nombre": "Anthropic", "para": "la IA del servicio «Mapa y web» y la del espacio de cliente (Claude), con la API: lo que escribe el cliente solo para preparar las propuestas", "pais": "EE. UU. (cláusulas tipo)",
+      "dpa": "https://www.anthropic.com/legal/commercial-terms", "estado": "revisar",
+      "como": "Con la API, el DPA va dentro de los términos comerciales. Con un plan personal de Claude no hay DPA: no meter ahí datos de clientes." },
+    { "id": "stripe", "nombre": "Stripe", "para": "cobros (las tarjetas nunca pasan por nosotros)", "pais": "UE e EE. UU. (Marco de Privacidad de Datos)",
+      "dpa": "https://stripe.com/es/legal/dpa", "estado": "incorporado",
+      "como": "El DPA forma parte del acuerdo de servicios de Stripe: no hay que firmar nada. Para los pagos Stripe es también responsable por su cuenta." }
+  ],
+  "propios": [
+    { "nombre": "Apple (iCloud)", "para": "nuestro correo", "nota": "Servicio de correo con sus condiciones; no es un encargo a medida." }
+  ],
+  "tratamientos": [
+    { "id": "clientes", "nombre": "Clientes y clientes potenciales",
+      "fines": "Contestar a quien nos escribe, preparar el diagnóstico, la propuesta y el proyecto, y hacer el seguimiento comercial.",
+      "base": "Medidas precontractuales y contrato (art. 6.1.b RGPD); la casilla de privacidad del espacio de cliente deja constancia de que se ha informado.",
+      "interesados": "Personas que piden un diagnóstico, una visita, un pedido o abren su espacio de cliente.",
+      "datos": "Nombre, correo, teléfono si lo dan, cargo, organización, web, lo que cuentan del proyecto y el dibujo de quién tienen alrededor (nombres de grupos, no de personas). Si usan la IA del espacio de cliente: cómo se han identificado (correo o usuario de GitHub) y cuánto la han usado, guardado con una huella del correo y no con el correo (Netlify Blobs); el texto no se guarda.",
+      "formularios": ["diagnostic-org", "comanda", "visita", "cliente-web", "incidencia"],
+      "encargados": ["netlify", "zoho", "github", "anthropic"],
+      "plazo": "Mientras dure la relación y, si no hay contrato, 2 años desde el último contacto.",
+      "transferencias": "A EE. UU. por Netlify, GitHub y Anthropic, con el Marco de Privacidad de Datos o cláusulas tipo." },
+    { "id": "facturacion", "nombre": "Facturación y cobros",
+      "fines": "Cobrar los proyectos y las cuotas, emitir facturas y cumplir con Hacienda.",
+      "base": "Contrato (art. 6.1.b) y obligación legal (art. 6.1.c): normativa fiscal y mercantil.",
+      "interesados": "Clientes que pagan.",
+      "datos": "Nombre o razón social, NIF, dirección de facturación, correo, importes y fechas. Los datos de la tarjeta los guarda Stripe.",
+      "formularios": [],
+      "encargados": ["stripe", "zoho"],
+      "plazo": "6 años (Código de Comercio, art. 30) y 4 años a efectos fiscales.",
+      "transferencias": "Las que haga Stripe, con sus garantías." },
+    { "id": "directorio", "nombre": "Directorio del SOS",
+      "fines": "Mostrar las fichas que cada persona u organización decide publicar.",
+      "base": "Consentimiento de quien publica su ficha (art. 6.1.a).",
+      "interesados": "Personas y organizaciones que publican su ficha.",
+      "datos": "Lo que cada uno pone en su ficha pública.",
+      "formularios": [],
+      "encargados": ["supabase", "netlify"],
+      "plazo": "Hasta que la persona la retira.",
+      "transferencias": "Ninguna fuera de la UE prevista." }
+  ],
+  "seguridad": [
+    "Los datos de tarjeta nunca pasan por nuestros sistemas (Stripe).",
+    "Las herramientas del SOS y el espacio de cliente guardan los datos en el navegador de cada uno.",
+    "Las páginas de clientes potenciales viven en un repositorio privado y se borran después de la visita.",
+    "Ningún dato de cliente va al repositorio público.",
+    "Cuentas con contraseña única y verificación en dos pasos donde el servicio la ofrece."
+  ]
+}

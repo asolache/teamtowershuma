@@ -734,6 +734,16 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
   ok(!/mailto/.test(S.webASite(web, { correu: 'no és un correu' }).fitxers.filter(x => x.tipus === 'text/html').map(x => x.cos).join('')), 'un correu que no ho és no s\'hi posa');
   const es = S.webASite(web, { llengua: 'es' }).fitxers.find(x => x.ruta === 'el-visitant.html').cos;
   ok(/<html lang="es">/.test(es) && /Qué te damos/.test(es) && /Crea tu cuenta/.test(es), 'també en castellà');
+  /* La vista bàsica: la capa informativa en una pàgina, una secció per rol principal. */
+  const bas = S.webASite(web, { llengua: 'es', vista: 'basica' }).fitxers, bi = bas.find(x => x.ruta === 'index.html').cos;
+  const princ = web.portes.filter(x => !x.buida);
+  ok(!bas.some(x => x.ruta === 'el-visitant.html') && princ.every(x => bi.includes('<section id="' + x.id + '"') && bi.includes('href="index.html#' + x.id + '"')),
+    'la vista bàsica: cap pàgina per porta, una secció per a cada rol principal i el menú hi porta');
+  ok(!/<form /.test(bi) && /Lo que encuentras aquí/.test(bi) && bas.some(x => x.ruta === 'avis-legal.html') && !/href="equip.html"/.test(bi),
+    'sense formularis: és el contenidor de les primeres fases, amb l\'avís legal i sense enllaçar la intranet');
+  const amb = S.webASite(web, { llengua: 'es', vista: 'basica', correu: 'hola@exemple.cat', capes: ['intranet'] }).fitxers.find(x => x.ruta === 'index.html').cos;
+  ok(!amb.includes('hola@exemple.cat') && amb.includes('href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;') && /href="equip.html"/.test(amb),
+    'el correu hi va amagat als robots (entitats, sense escriure\'l), i la intranet s\'enllaça només si es tria');
   ok(J(JSON.parse(f('web.json'))) === abans, 'web.json va dins, igual');
   ok(S.crc32(new TextEncoder().encode('123456789')) === 0xCBF43926, 'el CRC-32 del zip és el de l\'estàndard');
   const z = S.zipFitxers(site.fitxers), z2 = S.zipFitxers(S.webASite(S.webDelMapa(celler()), { nom: 'Celler <prova>', correu: 'hola@exemple.cat' }).fitxers);

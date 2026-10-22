@@ -108,6 +108,10 @@ nav.top .links a:hover{color:var(--text)}
   border:1px solid var(--border);background:var(--card);color:var(--light)}
 .tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
 .pan{display:none} .pan.on{display:block}
+.mg-fl{margin:.5rem 0 .2rem;padding-left:1.1rem;line-height:1.55}.mg-fl li{margin:.35rem 0}
+.mg-m{font:600 .8rem var(--mono);padding:.05rem .4rem;border-radius:99px;border:1px solid var(--border)}
+.mg-m.tangible{color:var(--green)}.mg-m.intangible{color:var(--indigo)}
+.mg-porta{border-left:3px solid var(--indigo);padding-left:.7rem;margin-top:.6rem}
 
 section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
 section.box h3{font-size:1.02rem;margin-bottom:.5rem}
@@ -315,6 +319,7 @@ td.n,th.n{text-align:right;font-family:var(--mono)}
   <button data-p="tramit">5 · El tràmit</button>
   <button data-p="mapa">6 · El mapa de valor</button>
   <button data-p="metode">7 · Com es fa</button>
+  <button data-p="minigrid">8 · La minigrid</button>
 </div>
 
 <!-- ══ 1 · LA INSTAL·LACIÓ ═══════════════════════════════════════════════ -->
@@ -489,9 +494,62 @@ td.n,th.n{text-align:right;font-family:var(--mono)}
     o el grup es desinflarà a mitges.</p>
 
     <h4>Què no cobreix aquesta pàgina</h4>
-    <p>No hi ha bateries, ni comunitats amb consum industrial, ni la fiscalitat de cada cas. És una
+    <p>No hi ha els números de la bateria (el camí de la minigrid és a la pestanya 8), ni comunitats amb consum industrial, ni la fiscalitat de cada cas. És una
     estimació per <strong>decidir si val la pena continuar</strong>, no un projecte executiu: el
     projecte el signa qui té competència per signar-lo.</p>
+  </section>
+</div>
+
+<!-- ══ 8 · LA MINIGRID ═══════════════════════════════════════════════════
+     L'Àlvaro, 22/10/2026: afegir al model la creació de minigrids comunitàries
+     amb els fluxos de valor de cada fase del projecte, seguint la MATRIU.
+     Les etapes i les portes són les de matriu.html (ETAPES i PORTES), dites
+     per a l'energia; els rols són els del mapa del catàleg (pestanya 6). -->
+<div class="pan" id="pMinigrid">
+  <section class="box">
+    <h3>Una minigrid comunitària, fase a fase</h3>
+    <p class="lead">Una minigrid és el pas següent d'una comunitat energètica: <strong>generació,
+    bateria compartida i consum coordinat</strong>, perquè el sol del migdia serveixi també al vespre
+    i el barri depengui menys de fora. Es munta com qualsevol projecte de la
+    <a href="matriu.html">MATRIU</a>: quatre etapes, i a cada una uns fluxos de valor que han de
+    passar de debò abans d'obrir la porta següent.</p>
+    <p>Aquí <strong>la línia la segueix posant la distribuïdora</strong>. Una xarxa pròpia entre
+    edificis no és el camí: és autoconsum col·lectiu amb bateria, dins el radi que diu el marc legal
+    de la pestanya 5. Els números de la bateria encara no són en aquesta pàgina; el que hi ha és el
+    camí per arribar-hi sense perdre ningú.</p>
+  </section>
+  <section class="box mg-et" id="mg-idea">
+    <h4>1 · Idea</h4>
+    <p>Hi ha una necessitat i algú que la vol portar.</p>
+    <ul class="mg-fl"><li><strong>Comunitat local → Nucli promotor</strong> <span class="mg-m intangible">intangible</span> la necessitat: factures que pugen, talls, ganes de fer-ho junts</li><li><strong>Ajuntament → Nucli promotor</strong> <span class="mg-m tangible">tangible</span> l'inventari de teulades i equipaments on posar plaques i bateria</li><li><strong>Assessoria tècnica-legal → Nucli promotor</strong> <span class="mg-m intangible">intangible</span> una primera lectura: què permet el marc legal en el vostre radi</li><li><strong>Nucli promotor → Comunitat local</strong> <span class="mg-m intangible">intangible</span> una sessió oberta on s'explica què és i què no és</li></ul>
+    <p class="mg-porta"><strong>Per passar a la següent:</strong> Algú lidera, hi ha almenys tres rols al mapa i tres fluxos de valor.</p>
+  </section>
+  <section class="box mg-et" id="mg-prototip">
+    <h4>2 · Prototip</h4>
+    <p>El mapa es converteix en feina i es tanca un primer cicle.</p>
+    <ul class="mg-fl"><li><strong>Sòcies consumidores → Nucli promotor</strong> <span class="mg-m tangible">tangible</span> les corbes de consum de cada llar, hora a hora</li><li><strong>Nucli promotor → Sòcies consumidores</strong> <span class="mg-m intangible">intangible</span> els coeficients proposats i el que suposen per a cadascuna (pestanya 3)</li><li><strong>Assessoria tècnica-legal → Nucli promotor</strong> <span class="mg-m intangible">intangible</span> el disseny de la minigrid: generació, bateria compartida i consum coordinat</li><li><strong>Instal·ladora → Nucli promotor</strong> <span class="mg-m tangible">tangible</span> el pressupost d'un primer edifici amb bateria, per aprendre-hi abans de créixer</li></ul>
+    <p class="mg-porta"><strong>Per passar a la següent:</strong> Pla d'sprints sembrat, primer sprint tancat, un 30 % del backlog fet i una primera aportació al llibre.</p>
+  </section>
+  <section class="box mg-et" id="mg-validacio">
+    <h4>3 · Validació</h4>
+    <p>Hi ha comptabilitat de valor real: algú hi ha posat hores o diners.</p>
+    <ul class="mg-fl"><li><strong>Sòcies consumidores → Nucli promotor</strong> <span class="mg-m tangible">tangible</span> la inversió i les quotes, al llibre de comptes</li><li><strong>Instal·ladora → Sòcies consumidores</strong> <span class="mg-m tangible">tangible</span> les plaques, la bateria i la posada en marxa a casa</li><li><strong>Cooperativa energètica → Sòcies consumidores</strong> <span class="mg-m tangible">tangible</span> la factura amb el repartiment aplicat</li><li><strong>Sòcies consumidores → Comunitat local</strong> <span class="mg-m intangible">intangible</span> el consum mogut a les hores de sol: flexibilitat que val més que un panell de més</li></ul>
+    <p class="mg-porta"><strong>Per passar a la següent:</strong> Soci líder, un sprint completat, el 60 % del backlog fet, tres aportacions al llibre i cap membre amb més del 70 % de la propietat.</p>
+  </section>
+  <section class="box mg-et" id="mg-graduacio">
+    <h4>4 · Graduada</h4>
+    <p>Camina sola: és un node propi i se li fa seguiment als 3, 6 i 12 mesos.</p>
+    <ul class="mg-fl"><li><strong>Nucli promotor → Comunitat local</strong> <span class="mg-m intangible">intangible</span> l'informe obert de producció, consum i estalvi de cada mes</li><li><strong>Sòcies consumidores → Nucli promotor</strong> <span class="mg-m tangible">tangible</span> els excedents reinvertits al fons comú, com diu la governança</li><li><strong>Nucli promotor → Comunitat local</strong> <span class="mg-m intangible">intangible</span> el cas replicable perquè el barri del costat munti la seva</li><li><strong>Ajuntament → Comunitat local</strong> <span class="mg-m tangible">tangible</span> el pla d'energia que incorpora la minigrid com a equipament del poble</li></ul>
+    <p class="mg-porta"><strong>Per passar a la següent:</strong> La mateixa porta de la MATRIU per a qualsevol projecte; el llindar de sostenibilitat només s'aplica si té ànim de lucre.</p>
+  </section>
+  <section class="box">
+    <h4>On es fa cada cosa, al SOS</h4>
+    <ul class="mg-fl">
+      <li>El mapa de valor i els seus fluxos, al <a href="index.html">SOS</a>: cada flux es segueix com una comanda.</li>
+      <li>Les hores del nucli promotor, al <a href="banc-temps.html">Banc de Temps</a>, i la propietat que generen, amb l'Slicing Pie de la <a href="matriu.html">MATRIU</a>.</li>
+      <li>Les eines compartides (mesuradors, escales, eines de muntatge), a la <a href="biblioteca.html">Biblioteca de les Coses</a>.</li>
+      <li>El que s'aprèn muntant-la, a <a href="formacio.html">la formació</a>: es fa fent, i queda al registre de qui ho fa.</li>
+    </ul>
   </section>
 </div>
 

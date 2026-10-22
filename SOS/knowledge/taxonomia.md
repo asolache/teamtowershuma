@@ -98,6 +98,64 @@ O sigui que **crear una carpeta nova sense dir què és** trenca el CI. No és
 burocràcia: és l'única manera que la resposta a «on va això?» segueixi existint
 d'aquí a dos anys.
 
+## Els documents: un tronc comú i les fulles de cada ecosistema
+
+Les cares diuen on va una carpeta. Un document estratègic necessita dir més:
+**què és i a què serveix**. Demanat per l'Àlvar el 22/10/2026: «una estructura
+de documents estratègics amb una taxonomia universal integrada amb les seves
+folksonomies per a cada ecosistema», que serveixi al sector privat i al públic,
+i on el rol de cada document siguin les àrees crítiques que marca qualsevol pla
+de negoci (comunicació, màrqueting, vendes, finances, logística, producció,
+operacions…).
+
+**El tronc** és el mateix a tots els cervells i es defineix un sol cop a
+`SOS/knowledge/cervell/taxonomia-universal.json`. Cada document el porta a la
+capçalera:
+
+```
+---
+tipo: plan            # visió, pla, decisió, model, proposta, acord, informe, procés, aprenentatge
+de: huma              # l'ecosistema, dels que declara la folksonomia
+rol: [vendes, finances]   # dotze àrees del pla de negoci
+fase: sosté           # crea, sosté, transforma (opcional)
+sector: [privat, públic]  # privat, públic, social (opcional; sense, val per a tots)
+visible: pública      # pública, client, privada
+estado: vigent        # esborrany, vigent, superat
+etiquetas: [tanda, cata]  # les fulles, lliures
+---
+```
+
+Les claus i els valors s'accepten en català, en castellà o en anglès, i amb
+àlies (`presupuesto` és `finances`, `ciudadanía` és `vendes`): el client escriu
+amb les seves paraules i el tronc no canvia.
+
+**Les fulles** són les etiquetes de cada ecosistema, amb les seves paraules.
+Cada cervell té la seva folksonomia (`folksonomia.json`) amb dues llistes: els
+ecosistemes que hi surten (els noms dels clients són dades seves, mai d'aquí) i
+de quin rol penja cada etiqueta. Una etiqueta no fa petar mai el CI; la que es
+repeteix sense penjar de res surt al mapa com a **candidata**, i algú decideix
+si puja a un rol o queda lliure a posta (`null`).
+
+**Encaixa amb el cervell humà que ja fem servir.** Cada rol cau en una de les
+cinc koshas de `SOS/cervell/codex-parse.js` (les finances i les vendes a
+l'energia, els sistemes a la ment, la llei a discerniment, les persones i la
+comunicació al propòsit, el que es fa al cos), i cada mena de document és una
+mena de memòria: episòdica (decisions i informes: el que va passar, no es
+reescriu), semàntica (visió, models, aprenentatges: el que se sap), procedimental
+(processos: el que se sap fer) i prospectiva (plans, propostes, acords: el que
+s'ha de fer, que caduca o es compleix).
+
+**La guarda.** Si `cervell.json` declara `documents` (carpetes o fitxers),
+`cervell.js --check` peta quan un document no porta capçalera, deixa sense
+resposta una pregunta obligatòria, posa un valor que el tronc no té o cita un
+ecosistema que la folksonomia no declara. I **el que és públic passa pel
+sedàs**: un import o un nom que no pot sortir fa petar el CI. El mapa en surt
+amb la taula de documents, les etiquetes i les candidates.
+
+**Un sol lloc.** El tronc baixa als cervells fills amb l'herència
+(`cervell.js --actualitza`), al costat del sedàs, que ara també hi viu. El blog
+hi etiqueta igual: un rol del tronc i les seves etiquetes.
+
 ## Declaració de cares
 
 Format: `- ruta · cara · una línia del que hi entra`. El generador llegeix
@@ -112,6 +170,7 @@ aquesta llista i res més.
 - `SOS/knowledge/cervell` · saber · El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la
 - `SOS/knowledge/for-ai` · saber · El contracte de treball per a una IA que hi contribueix
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
+- `SOS/knowledge/legal` · saber · Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js)
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
 - `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
 - `SOS/prompts` · saber · Un fitxer per intent d'IA: el que se li demana, versionat
@@ -132,7 +191,7 @@ aquesta llista i res més.
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
 - `cliente` · obra · Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany
 - `visita` · obra · On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així
-- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout) i l'espai de cada agència (espai-partner)
+- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat)
 - `data` · arxiu · Llavors de dades d'una versió anterior
 - `js` · arxiu · Codi solt d'abans que tot fos autocontingut
 - `ia` · arxiu · Prototip d'app amb IA (SOS V10) i el seu proxy d'IA; ja no se serveix

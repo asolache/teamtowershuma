@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: casa
+rol: [sistemas, marketing]
+visible: pública
+estado: vigente
+etiquetas: [molekulon, redireccions, menú]
+---
+
 # La frontera amb molekulon.org
 
 > **Per què existeix aquest fitxer.** El 04/10/2026, unificant els menús, es

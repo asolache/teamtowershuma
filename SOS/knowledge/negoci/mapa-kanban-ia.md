@@ -1,3 +1,13 @@
+---
+tipo: plan
+de: huma
+rol: [sistemas, operaciones]
+fase: crea
+visible: pública
+estado: borrador
+etiquetas: [kanban, mapa-viu, automatització]
+---
+
 # Del mapa de valor al Kanban que s'executa sol
 
 > Anàlisi i pla, 2026-09-25. Escrita **llegint el codi**, no de memòria: cada

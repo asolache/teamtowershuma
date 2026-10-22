@@ -52,6 +52,55 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### L'espai de client amb login · projecte, facturació i contrasenya (demanat 22/10/2026)
+
+Avui `/cliente/` (#282) té un compte lleuger: nom i correu desats al navegador,
+una fitxa que es descarrega i es torna a carregar, i un sol enviament al
+formulari `cliente-web`, que entra a Zoho. L'Àlvar demana el pas següent:
+
+- **Login** amb correu i contrasenya, perquè el client entri des de qualsevol
+  aparell sense carregar la fitxa a mà.
+- **La fitxa desada amb contrasenya**: el diagnòstic, el mapa, el nivell de web
+  i el material, guardats al servidor i xifrats.
+- **Les dades del projecte**: el pas on és (`proces-web.js`, el mateix que
+  «Dónde estamos»), les hores i les entregues de la seva traça (vista «horas»
+  sense IA ni imports, decidida el 21/10), els enllaços a la seva web i al seu
+  repositori.
+- **La facturació**: les seves dades fiscals, les factures i els pagaments
+  (el motor de cobrament és al repositori d'estratègia, `finanzas/cobros.mjs`;
+  l'espai només hi llegeix el que és seu).
+
+Per decidir abans de construir-lo: on viuen els comptes (Supabase, Netlify
+Identity o una funció pròpia), qui custodia les dades fiscals i el RGPD
+(encàrrec de tractament), i que cap client vegi res d'un altre.
+
+**Protecció de dades (l'Àlvar, 22/10):** les dades sensibles, en mans de
+tercers que ja en gestionen la seguretat. Les targetes, a Stripe, sense que
+passin mai per nosaltres. Els comptes, a un proveïdor d'identitat. Les dades
+dels clients, a Zoho. Cap contrasenya ni dada fiscal en un repositori. Això
+redueix el risc, però no la responsabilitat: l'Àlvar segueix sent el
+responsable del tractament. Per això cal:
+- el contracte d'encàrrec (DPA) de cada proveïdor;
+- el registre d'activitats de tratament, fet amb l'eina Facilita RGPD de l'AEPD;
+- la casella de privacitat als formularis de `/cliente/`;
+- un contracte d'encàrrec amb cada client per a les dades de la seva web. Cap import a la
+web pública: els preus només dins del seu espai.
+
+### Un sol camí del client per a totes les marques (demanat 22/10/2026)
+
+**Demanat per l'Àlvar** (22/10/2026): primer aportem valor, després una pàgina
+al nostre entorn pagada per ús limitat segons quota, després la seva web; i que
+tots els actors de l'ecosistema operin integrats, amb SOS com a model
+d'organització.
+
+- ~~Una sola definició~~: `camiClient` a (no és «El meu camí» de `SOS/lib/cami.js`, que és el de formació de cada persona) `SOS/knowledge/cervell/heretat.json`, cada
+  pas lligat a un esglaó de `MapaValor.ESCALA`, al pla del portal de partners
+  (`ficha`, `pagina`, `web`) i a un mode dels serveis. Cada fill el rep a
+  `saber/servicios.md`; un pas cap a res atura l'herència (`test-cervell.mjs`).
+- Pendent (amb el sí de l'Àlvar): el pas 2 de qualsevol marca al portal que ja
+  funciona a producció, amb la marca de cada client; `/cliente/` hi porta.
+- Pendent: un sol registre de la IA (el del portal), després de #290.
+
 ### Un sol motor del mapa de valor (demanat 20/10/2026)
 
 L'editor (`vna-suport.html`) i el mapa de l'app jutgen i guarden el mapa amb un
@@ -5181,6 +5230,24 @@ Mapa de valor a `SOS/knowledge/vision/fons-ment-xarxa.md`. Pendent: obrir al SOS
 un node MATRIU per a l'obra i que el marge dels tallers hi entri signat (sense
 codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
 «fons d'inversió» de cara enfora.
+
+---
+
+**El cervell de cada repo, amb GitHub i amb l'estructura estàndard** — demanat per l'Àlvar el 22/10/2026
+
+- **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,
+  també els privats. La pàgina llegeix el `cervell.json` de cada repo i ensenya
+  quines peces té. L'estàndard està explicat a `SOS/knowledge/cervell/README.md`.
+- **Fet, a falta de l'App:** l'entrada és una GitHub App només de lectura
+  (Contents: read), instal·lada als repos que triï cadascú
+  (`netlify/functions/cervell-github.mjs`). No és l'scope `repo` d'una OAuth
+  App, que també dona escriptura. Mentre no hi hagi les variables de l'App,
+  el botó no surt.
+- **Pendent:** integrar tots els models de TeamTowers Humà com a peces del
+  manifest (mapes tipus, mapa de valor, taxonomia universal) perquè cada vista
+  els trobi igual.
+- **Pendent:** el SOS com a producte de desenvolupament comunitari, amb tot el
+  que ja hi ha (fons cooperatiu, banc de temps, pinya, MATRIU).
 
 ---
 

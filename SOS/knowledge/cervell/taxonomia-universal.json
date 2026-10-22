@@ -1,0 +1,673 @@
+{
+  "versio": "1",
+  "diu": "El tronc comú dels documents estratègics: les mateixes preguntes a tots els ecosistemes, privats i públics. El rol són les àrees crítiques que l'arquitectura d'un pla de negoci marca a qualsevol sistema per la seva activitat. Les fulles (les etiquetes de cada ecosistema, amb les seves paraules) viuen a la folksonomia de cada cervell i pengen d'un rol d'aquí. Els identificadors són en anglès; s'accepten també el nom en català i en castellà i els àlies. Es llegeix amb cervell.js; no se'n fa còpia a mà.",
+  "facetes": [
+    {
+      "id": "type",
+      "claus": [
+        "tipo",
+        "mena",
+        "type"
+      ],
+      "obligatoria": true,
+      "una": true,
+      "ca": "Què és",
+      "es": "Qué es",
+      "en": "What it is",
+      "valors": [
+        {
+          "id": "vision",
+          "ca": "visió",
+          "es": "visión",
+          "en": "vision",
+          "diu_es": "Hacia dónde vamos y por qué. Cambia poco.",
+          "memoria": "semantic"
+        },
+        {
+          "id": "plan",
+          "ca": "pla",
+          "es": "plan",
+          "en": "plan",
+          "alias": [
+            "hoja-de-ruta",
+            "full-de-ruta",
+            "sprint"
+          ],
+          "diu_es": "Qué se hará, en qué orden y con qué hitos.",
+          "memoria": "prospective"
+        },
+        {
+          "id": "decision",
+          "ca": "decisió",
+          "es": "decisión",
+          "en": "decision",
+          "diu_es": "Lo que se decidió, quién y cuándo. No se reescribe: se supera con otra.",
+          "memoria": "episodic"
+        },
+        {
+          "id": "model",
+          "ca": "model",
+          "es": "modelo",
+          "en": "model",
+          "alias": [
+            "numeros",
+            "nombres",
+            "costes",
+            "tarifas"
+          ],
+          "diu_es": "Números y supuestos: costes, precios, previsiones.",
+          "memoria": "semantic"
+        },
+        {
+          "id": "proposal",
+          "ca": "proposta",
+          "es": "propuesta",
+          "en": "proposal",
+          "alias": [
+            "oferta"
+          ],
+          "diu_es": "Lo que se ofrece a alguien antes de que diga sí.",
+          "memoria": "prospective"
+        },
+        {
+          "id": "agreement",
+          "ca": "acord",
+          "es": "acuerdo",
+          "en": "agreement",
+          "alias": [
+            "contrato",
+            "contracte"
+          ],
+          "diu_es": "Lo que dos partes han aceptado: contrato, encargo, condiciones.",
+          "memoria": "prospective"
+        },
+        {
+          "id": "report",
+          "ca": "informe",
+          "es": "informe",
+          "en": "report",
+          "alias": [
+            "auditoria",
+            "diagnostico",
+            "diagnostic"
+          ],
+          "diu_es": "Lo que se ha visto: auditoría, diagnóstico, cierre de mes.",
+          "memoria": "episodic"
+        },
+        {
+          "id": "process",
+          "ca": "procés",
+          "es": "proceso",
+          "en": "process",
+          "alias": [
+            "sop",
+            "flujo",
+            "flux",
+            "guia"
+          ],
+          "diu_es": "Cómo se hace algo, paso a paso, cada vez.",
+          "memoria": "procedural"
+        },
+        {
+          "id": "lesson",
+          "ca": "aprenentatge",
+          "es": "aprendizaje",
+          "en": "lesson",
+          "alias": [
+            "veda",
+            "post",
+            "nota"
+          ],
+          "diu_es": "Lo que se aprendió y vale para la próxima vez.",
+          "memoria": "semantic"
+        }
+      ]
+    },
+    {
+      "id": "ecosystem",
+      "claus": [
+        "de",
+        "ecosistema",
+        "ecosystem"
+      ],
+      "obligatoria": true,
+      "una": true,
+      "obert": true,
+      "ca": "De qui",
+      "es": "De quién",
+      "en": "Whose",
+      "diu": "Els noms els posa cada cervell a la seva folksonomia (`ecosistemas`), perquè els noms dels clients són dades seves. Aquí només hi ha les menes.",
+      "valors": [
+        {
+          "id": "home",
+          "ca": "la casa",
+          "es": "la casa",
+          "en": "home",
+          "diu_es": "El negocio entero: lo que es de todas las marcas a la vez."
+        },
+        {
+          "id": "brand",
+          "ca": "marca",
+          "es": "marca",
+          "en": "brand",
+          "diu_es": "Una marca de la casa."
+        },
+        {
+          "id": "client",
+          "ca": "client",
+          "es": "cliente",
+          "en": "client",
+          "diu_es": "Un cliente y su ecosistema."
+        },
+        {
+          "id": "network",
+          "ca": "xarxa",
+          "es": "red",
+          "en": "network",
+          "diu_es": "Una red de socios o partners que no es de nadie en concreto."
+        }
+      ]
+    },
+    {
+      "id": "role",
+      "claus": [
+        "rol",
+        "roles",
+        "rols",
+        "area",
+        "role"
+      ],
+      "obligatoria": true,
+      "una": false,
+      "ca": "Rol crític",
+      "es": "Rol crítico",
+      "en": "Critical role",
+      "diu": "Les àrees que l'arquitectura d'un pla de negoci marca a qualsevol sistema per la seva activitat, sigui una empresa, una entitat o una administració. Cada document diu a quina àrea serveix; el mapa de valor diu qui l'ocupa.",
+      "valors": [
+        {
+          "id": "strategy",
+          "ca": "direcció i estratègia",
+          "es": "dirección y estrategia",
+          "en": "strategy",
+          "alias": [
+            "direccion",
+            "direccio",
+            "estrategia",
+            "govern",
+            "gobierno",
+            "gobernanza",
+            "vision",
+            "visio",
+            "mapa-de-valor",
+            "vna",
+            "valor"
+          ],
+          "diu_es": "Hacia dónde y quién decide: visión, gobierno, el mapa de valor.",
+          "kosha": "vijnana"
+        },
+        {
+          "id": "communication",
+          "ca": "comunicació",
+          "es": "comunicación",
+          "en": "communication",
+          "alias": [
+            "comunicacion",
+            "comunicacio",
+            "marca",
+            "relato",
+            "prensa",
+            "premsa",
+            "blog",
+            "xarxes",
+            "redes"
+          ],
+          "diu_es": "Qué se cuenta y cómo: marca, relato, prensa, blog, redes.",
+          "kosha": "ananda"
+        },
+        {
+          "id": "marketing",
+          "ca": "màrqueting",
+          "es": "marketing",
+          "en": "marketing",
+          "alias": [
+            "mercado",
+            "mercat",
+            "posicionamiento",
+            "posicionament",
+            "web",
+            "campanas",
+            "campanyes",
+            "publicos",
+            "publics",
+            "segmentos"
+          ],
+          "diu_es": "A quién y dónde: mercado, públicos, posicionamiento, web, campañas.",
+          "kosha": "ananda"
+        },
+        {
+          "id": "sales",
+          "ca": "vendes",
+          "es": "ventas",
+          "en": "sales",
+          "alias": [
+            "ventas",
+            "vendes",
+            "comercial",
+            "clientes",
+            "clients",
+            "ciudadania",
+            "ciutadania",
+            "crm",
+            "embudo",
+            "embut",
+            "oferta",
+            "producto",
+            "producte",
+            "servicio",
+            "servei",
+            "pack",
+            "catalogo",
+            "cataleg"
+          ],
+          "diu_es": "Cómo se llega al sí: oferta, catálogo, CRM, embudo, clientes o ciudadanía.",
+          "kosha": "prana"
+        },
+        {
+          "id": "finance",
+          "ca": "finances",
+          "es": "finanzas",
+          "en": "finance",
+          "alias": [
+            "finanzas",
+            "economia",
+            "cobro",
+            "cobrament",
+            "costes",
+            "costos",
+            "precio",
+            "preu",
+            "presupuesto",
+            "pressupost",
+            "subvencion",
+            "subvencio",
+            "tesoreria"
+          ],
+          "diu_es": "Lo que entra y lo que sale: precios, costes, cobro, presupuesto, subvenciones.",
+          "kosha": "prana"
+        },
+        {
+          "id": "logistics",
+          "ca": "logística",
+          "es": "logística",
+          "en": "logistics",
+          "alias": [
+            "logistica",
+            "proveedores",
+            "proveidors",
+            "compras",
+            "compres",
+            "transporte",
+            "espacios",
+            "espais",
+            "stock"
+          ],
+          "diu_es": "Lo que hay que tener en su sitio: proveedores, compras, espacios, transporte.",
+          "kosha": "anna"
+        },
+        {
+          "id": "production",
+          "ca": "producció",
+          "es": "producción",
+          "en": "production",
+          "alias": [
+            "produccion",
+            "produccio",
+            "fabricacion",
+            "elaboracion",
+            "desarrollo",
+            "desenvolupament",
+            "contenido",
+            "contingut"
+          ],
+          "diu_es": "Hacer la cosa: elaboración, desarrollo, contenido.",
+          "kosha": "anna"
+        },
+        {
+          "id": "operations",
+          "ca": "operacions",
+          "es": "operaciones",
+          "en": "operations",
+          "alias": [
+            "operacion",
+            "operacio",
+            "entrega",
+            "servicio-diario",
+            "eventos",
+            "esdeveniments",
+            "procesos",
+            "calidad",
+            "qualitat",
+            "soporte",
+            "suport"
+          ],
+          "diu_es": "Que funcione cada día: entrega, eventos, calidad, soporte.",
+          "kosha": "anna"
+        },
+        {
+          "id": "people",
+          "ca": "persones",
+          "es": "personas",
+          "en": "people",
+          "alias": [
+            "equipo",
+            "equip",
+            "formacion",
+            "formacio",
+            "cuidados",
+            "cures",
+            "horas",
+            "hores",
+            "rrhh"
+          ],
+          "diu_es": "Quién lo hace: equipo, formación, cuidados, horas.",
+          "kosha": "ananda"
+        },
+        {
+          "id": "network",
+          "ca": "xarxa i aliances",
+          "es": "red y alianzas",
+          "en": "network",
+          "alias": [
+            "red",
+            "xarxa",
+            "socios",
+            "socis",
+            "partners",
+            "alianzas",
+            "aliances",
+            "consorcio",
+            "partenariado",
+            "comunidad",
+            "comunitat"
+          ],
+          "diu_es": "Con quién: socios, alianzas, consorcios, comunidad.",
+          "kosha": "prana"
+        },
+        {
+          "id": "systems",
+          "ca": "sistemes i dades",
+          "es": "sistemas y datos",
+          "en": "systems",
+          "alias": [
+            "sistema",
+            "sistemas",
+            "sistemes",
+            "sos",
+            "cervell",
+            "cerebro",
+            "eines",
+            "herramientas",
+            "automatizacion",
+            "automatitzacio",
+            "tecnologia",
+            "ia",
+            "datos",
+            "dades"
+          ],
+          "diu_es": "Con qué: SOS, el cerebro, las herramientas, los datos y lo automatizado.",
+          "kosha": "mano"
+        },
+        {
+          "id": "legal",
+          "ca": "legal i compliment",
+          "es": "legal y cumplimiento",
+          "en": "legal",
+          "alias": [
+            "rgpd",
+            "contratos",
+            "contractes",
+            "licitacion",
+            "licitacio",
+            "contratacion-publica",
+            "contractacio-publica",
+            "normativa",
+            "cumplimiento",
+            "compliment"
+          ],
+          "diu_es": "Lo que obliga: forma jurídica, contratos, protección de datos, contratación pública.",
+          "kosha": "vijnana"
+        }
+      ]
+    },
+    {
+      "id": "phase",
+      "claus": [
+        "fase",
+        "phase"
+      ],
+      "obligatoria": false,
+      "una": false,
+      "ca": "Fase",
+      "es": "Fase",
+      "en": "Phase",
+      "diu": "Les tres opcions de l'oferta, que també són els tres moments de qualsevol cosa viva.",
+      "valors": [
+        {
+          "id": "create",
+          "ca": "crea",
+          "es": "crea",
+          "en": "create",
+          "diu_es": "Hacer que exista: mapa, web, cerebro."
+        },
+        {
+          "id": "sustain",
+          "ca": "sosté",
+          "es": "sostiene",
+          "en": "sustain",
+          "alias": [
+            "soste",
+            "viu",
+            "vivo"
+          ],
+          "diu_es": "Que siga vivo cada mes: guardas, informe, soporte."
+        },
+        {
+          "id": "transform",
+          "ca": "transforma",
+          "es": "transforma",
+          "en": "transform",
+          "alias": [
+            "xarxa",
+            "red"
+          ],
+          "diu_es": "Que cambie y crezca: mentoría, red, formación-acción."
+        }
+      ]
+    },
+    {
+      "id": "sector",
+      "claus": [
+        "sector"
+      ],
+      "obligatoria": false,
+      "una": false,
+      "ca": "Sector",
+      "es": "Sector",
+      "en": "Sector",
+      "diu": "El mateix document pot servir per a més d'un sector; si no es diu, val per a tots.",
+      "valors": [
+        {
+          "id": "private",
+          "ca": "privat",
+          "es": "privado",
+          "en": "private",
+          "alias": [
+            "empresa",
+            "pyme",
+            "pime"
+          ],
+          "diu_es": "Empresas y autónomos."
+        },
+        {
+          "id": "public",
+          "ca": "públic",
+          "es": "público",
+          "en": "public",
+          "alias": [
+            "administracion",
+            "administracio",
+            "ayuntamiento",
+            "ajuntament",
+            "publico",
+            "public"
+          ],
+          "diu_es": "Administraciones y organismos públicos."
+        },
+        {
+          "id": "social",
+          "ca": "social",
+          "es": "social",
+          "en": "social",
+          "alias": [
+            "tercer-sector",
+            "cooperativa",
+            "entidad",
+            "entitat",
+            "asociacion",
+            "associacio"
+          ],
+          "diu_es": "Cooperativas, entidades y tercer sector."
+        }
+      ]
+    },
+    {
+      "id": "visibility",
+      "claus": [
+        "visible",
+        "ve",
+        "visibilidad",
+        "visibilitat",
+        "visibility"
+      ],
+      "obligatoria": true,
+      "una": true,
+      "ca": "Qui ho veu",
+      "es": "Quién lo ve",
+      "en": "Who sees it",
+      "diu": "Un document que no és privat passa pel sedàs: si porta un import o un nom que no pot sortir, el CI peta.",
+      "valors": [
+        {
+          "id": "public",
+          "ca": "pública",
+          "es": "pública",
+          "en": "public",
+          "alias": [
+            "publica",
+            "public"
+          ],
+          "diu_es": "Cualquiera: web, blog, repositorio público."
+        },
+        {
+          "id": "client",
+          "ca": "client",
+          "es": "cliente",
+          "en": "client",
+          "diu_es": "El cliente del ecosistema y nosotros."
+        },
+        {
+          "id": "private",
+          "ca": "privada",
+          "es": "privada",
+          "en": "private",
+          "alias": [
+            "privat",
+            "privado"
+          ],
+          "diu_es": "Solo la casa. Todo lo que lleva importes."
+        }
+      ]
+    },
+    {
+      "id": "status",
+      "claus": [
+        "estado",
+        "estat",
+        "status"
+      ],
+      "obligatoria": true,
+      "una": true,
+      "ca": "Estat",
+      "es": "Estado",
+      "en": "Status",
+      "valors": [
+        {
+          "id": "draft",
+          "ca": "esborrany",
+          "es": "borrador",
+          "en": "draft",
+          "diu_es": "Se está escribiendo o espera una decisión."
+        },
+        {
+          "id": "current",
+          "ca": "vigent",
+          "es": "vigente",
+          "en": "current",
+          "alias": [
+            "viu",
+            "vivo"
+          ],
+          "diu_es": "Lo que vale hoy."
+        },
+        {
+          "id": "superseded",
+          "ca": "superat",
+          "es": "superado",
+          "en": "superseded",
+          "alias": [
+            "arxiu",
+            "archivo"
+          ],
+          "diu_es": "Ya no vale; se conserva para saber de dónde venimos."
+        }
+      ]
+    }
+  ],
+  "etiquetes": {
+    "claus": [
+      "etiquetas",
+      "etiquetes",
+      "tags"
+    ],
+    "diu": "Les fulles: lliures, amb les paraules de cada ecosistema. Mai fan petar el CI. La folksonomia del cervell diu de quin rol penja cadascuna; la que es repeteix sense penjar de res surt al mapa com a candidata."
+  },
+  "sedas": [
+    "\\d[\\d.,]*\\s?€",
+    "IKEA",
+    "[Pp]ilots? "
+  ],
+  "cervell": {
+    "diu": "Com encaixa amb el cervell que ja fem servir. Cada rol cau en una de les cinc koshas de SOS/cervell/codex-parse.js (cos, energia, ment, discerniment, propòsit), i un document es dibuixa a la mateixa capa que les vedes del seu rol. Cada mena de document és una mena de memòria humana: el que va passar, el que se sap, el que se sap fer i el que s'ha de fer.",
+    "memories": {
+      "episodic": {
+        "ca": "episòdica",
+        "es": "episódica",
+        "diu_es": "Lo que pasó: decisiones e informes, con fecha. No se reescribe."
+      },
+      "semantic": {
+        "ca": "semàntica",
+        "es": "semántica",
+        "diu_es": "Lo que se sabe: visión, modelos y aprendizajes. Se mantiene al día."
+      },
+      "procedural": {
+        "ca": "procedimental",
+        "es": "procedimental",
+        "diu_es": "Lo que se sabe hacer: procesos. Se mejora con cada uso."
+      },
+      "prospective": {
+        "ca": "prospectiva",
+        "es": "prospectiva",
+        "diu_es": "Lo que se va a hacer: planes, propuestas y acuerdos. Caduca o se cumple."
+      }
+    }
+  }
+}

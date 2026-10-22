@@ -12,7 +12,7 @@
  * és `cervell.json` a l'arrel del projecte (vegeu
  * `SOS/knowledge/cervell/README.md`).
  *
- * Fa dues coses:
+ * Fa tres coses:
  *
  * 1. **El mapa, generat.** Recorre l'arbre de debò, el creua amb les cares
  *    declarades a la taxonomia i escriu el mapa. `--check` peta si hi ha una
@@ -23,6 +23,10 @@
  *    no hi ha de ser. El contracte de la IA ja va ser un mapa fals una vegada
  *    (els 18 vedes quan n'hi havia 116); el que ho va arreglar va ser una
  *    revisió a mà, i una revisió a mà no corre al CI.
+ * 3. **Els documents, classificats.** Si el projecte declara `documents`, cada
+ *    document estratègic porta el tronc comú (`taxonomia-universal.json`) a la
+ *    capçalera i les etiquetes de la folksonomia del cervell; `--check` peta si
+ *    el tronc s'escriu malament o si un document públic no passa el sedàs.
  *
  * Sense dependències i amb `require`, perquè ha de córrer igual en un
  * repositori que no té `package.json`.
@@ -48,8 +52,14 @@ const opcio = nom => { const i = args.indexOf(nom); return i >= 0 ? args[i + 1] 
    silenci (veda 71). Les rutes de SOS es reescriuen: a la còpia si s'hereta, a
    l'origen públic si no. I tot passa pel sedàs abans de sortir (veda 159). */
 const HERETAT = join(__dirname, '..', 'knowledge', 'cervell', 'heretat.json');
+/* El tronc comú dels documents viu al costat de l'herència i baixa amb ella. El
+   sedàs també hi és: dir què no pot sortir a fora és part de dir qui veu un
+   document, i dues llistes de sedàs divergirien (veda 71). */
+const UNIVERSAL = join(__dirname, '..', 'knowledge', 'cervell', 'taxonomia-universal.json');
+const sedasDe = () => JSON.parse(readFileSync(UNIVERSAL, 'utf8')).sedas;
 function herencia(conf) {
   const H = JSON.parse(readFileSync(HERETAT, 'utf8'));
+  H.sedas = sedasDe();
   const TT = join(__dirname, '..', '..');
   const errors = [], out = new Map();
   const es = (conf.idioma || 'ca') === 'es';
@@ -120,9 +130,30 @@ function herencia(conf) {
         + `- **${nom('gestionat')}:** ${t.gestionat}\n- **${nom('propi')}:** ${t.propi}\n`
         + ((s.via || []).length && peces ? `- **${es ? 'Conecta con' : 'Connecta amb'}:** ${s.via.map(p => peces.get(p) || p).join(', ')}\n` : '');
     }
+    /* El camí de cada client és un de sol per a totes les marques: cada pas
+       és un esglaó de l'escala del partner i, quan toca, un mode dels
+       serveis. Si un pas cita un esglaó, un mode o una pàgina que no hi és,
+       l'herència s'atura: un camí que porta enlloc no s'hereta. */
+    if (H.camiClient) {
+      const esc = (() => { try { return require(join(TT, 'SOS', 'lib', 'mapa-valor.js')).ESCALA.map(e => e.id); } catch (e) { return null; } })();
+      if (!esc) errors.push('no puc llegir l\'escala de SOS/lib/mapa-valor.js');
+      sm += es
+        ? `\n# El camino de cada cliente\n\nEl mismo para todas las marcas. Cada paso es un peldaño de la escalera del partner.\n`
+        : `\n# El camí de cada client\n\nEl mateix per a totes les marques. Cada pas és un esglaó de l'escala del partner.\n`;
+      H.camiClient.passos.forEach((p, i) => {
+        if (esc && !esc.includes(p.escala)) errors.push(`el pas «${p.id}» del camí cita l'esglaó «${p.escala}» i l'escala no el té`);
+        if (p.mode && !S.modes[p.mode]) errors.push(`el pas «${p.id}» del camí cita el mode «${p.mode}» i els serveis no el tenen`);
+        (p.paths || []).filter(x => !existsSync(join(TT, x))).forEach(x => errors.push(`el pas «${p.id}» del camí enllaça ${x} i no existeix`));
+        const t = p[lg], on = (p.paths || []).map(x => /\.html$/.test(x) ? S.web + x.replace(/index\.html$/, '') : H.font + x);
+        sm += `\n${i + 1}. **${t.nom}.** ${t.diu}` + (p.mode ? ` (${nom(p.mode)})` : '') + (on.length ? ' ' + on.map(u => `[${es ? 'Ábrelo' : 'Obre\'l'}](${u})`).join(' · ') : '');
+      });
+      sm += '\n';
+    }
     out.set(conf.serveisMd || (es ? 'saber/servicios.md' : 'saber/serveis.md'), sm);
   }
-  for (const [dest, t] of out) H.sedas.forEach(re => {
+  /* La taxonomia universal porta el sedàs a dins: és l'únic fitxer que pot
+     dir «IKEA» perquè ho diu per aturar-ho. */
+  for (const [dest, t] of out) if (!dest.endsWith('taxonomia-universal.json')) H.sedas.forEach(re => {
     const m = t.match(new RegExp(re));
     if (m) errors.push(`el sedàs atura ${dest}: «${m[0]}» (patró ${re})`);
   });
@@ -212,6 +243,7 @@ if (opcio('--recull')) {
   const conf = JSON.parse(readFileSync(join(font, 'cervell.json'), 'utf8'));
   const DIRC = join(__dirname, '..', 'knowledge', 'cervell');
   const H = JSON.parse(readFileSync(HERETAT, 'utf8'));
+  H.sedas = sedasDe();
   const REG = join(DIRC, 'pujades.json');
   const reg = existsSync(REG) ? JSON.parse(readFileSync(REG, 'utf8')) : {};
   const seccions = (fitxer, re) => {
@@ -438,6 +470,106 @@ if (C.solts) {
   md += `${solts.length} ${C.solts.titol} ${L.alArrel} (\`${solts.slice(0, 4).join('`, `')}\`…).\n`;
   md += C.solts.diu.join('\n') + '\n\n';
 }
+/* ── Els documents: el tronc comú i les fulles de cada ecosistema ─────────────
+   Un document estratègic diu sis coses a la capçalera: què és, de qui, de
+   quin tema, de quina fase, qui el veu i en quin estat està. Les sis són les
+   mateixes a tots els cervells (`taxonomia-universal.json`, heretada): una IA
+   que ha après a llegir-ne un els llegeix tots. A sota, les etiquetes lliures
+   de cada ecosistema, amb les seves paraules, i la folksonomia del cervell
+   diu de quin tema penja cadascuna. El tronc peta si s'escriu malament; una
+   fulla no peta mai: si es repeteix sense penjar de res, surt com a candidata
+   perquè algú decideixi. Només s'hi mira si el projecte declara `documents`. */
+const LG = C.idioma || 'ca';
+const DT = {
+  ca: { titol: 'documents', diu: 'Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i les etiquetes de la folksonomia d\'aquest cervell.',
+    taula: '| document | què és | rol | de | estat | qui ho veu | etiquetes |', etiq: 'Etiquetes i el rol d\'on pengen', lliure: 'lliure', sense: 'sense rol',
+    cand: 'Candidates: es repeteixen i no pengen de cap rol. Decideix a la folksonomia si pugen a un rol o queden lliures', cap: 'cap' },
+  es: { titol: 'documentos', diu: 'Los documentos estratégicos, con el tronco común de `taxonomia-universal.json` y las etiquetas de la folksonomía de este cerebro.',
+    taula: '| documento | qué es | rol | de | estado | quién lo ve | etiquetas |', etiq: 'Etiquetas y el rol del que cuelgan', lliure: 'libre', sense: 'sin rol',
+    cand: 'Candidatas: se repiten y no cuelgan de ningún rol. Decide en la folksonomía si suben a un rol o quedan libres', cap: 'ninguna' }
+}[LG] || {};
+const docProbs = [], DOCS = [];
+if (C.documents) {
+  const fUni = [UNIVERSAL, join(ARREL, C.universal || 'saber/heredado/taxonomia-universal.json')].find(f => existsSync(f));
+  const UNI = fUni ? JSON.parse(readFileSync(fUni, 'utf8')) : null;
+  if (!UNI) docProbs.push('cervell.json declara documents i no hi ha la taxonomia universal: porta-la amb  cervell.js --actualitza');
+  else {
+    const slug = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const fFolk = join(ARREL, C.folksonomia || 'saber/folksonomia.json');
+    const FOLK = existsSync(fFolk) ? JSON.parse(readFileSync(fFolk, 'utf8')) : {};
+    const ecos = FOLK.ecosistemas || {}, folk = FOLK.etiquetas || {};
+    const FAC = new Map(UNI.facetes.map(f => [f.id, f]));
+    const valor = (fa, v) => (fa.valors.find(x => [x.id, x.ca, x.es, x.en, ...(x.alias || [])].some(a => slug(a) === slug(v))) || {}).id;
+    const nom = (fa, id) => { const x = fa.valors.find(v => v.id === id); return x ? x[LG] || x.id : id; };
+    const TEMA = FAC.get('role'), ECO = FAC.get('ecosystem');
+    Object.entries(ecos).forEach(([k, e]) => { if (!valor(ECO, e.mena || '')) docProbs.push(`${rel(fFolk)}: l'ecosistema «${k}» és de mena «${e.mena}», i les menes són ${ECO.valors.map(v => v.id).join(', ')}`); });
+    Object.entries(folk).forEach(([t, tema]) => { if (tema !== null && !valor(TEMA, tema)) docProbs.push(`${rel(fFolk)}: l'etiqueta «${t}» penja de «${tema}», que no és cap rol`); });
+    if (C.ecosistema && !ecos[C.ecosistema]) docProbs.push(`cervell.json diu que l'ecosistema és «${C.ecosistema}» i la folksonomia no el té`);
+    const fitxers = [];
+    const anar = p => {
+      const abs = join(ARREL, p);
+      if (!existsSync(abs)) { docProbs.push(`cervell.json declara el document ${p} i no hi és`); return; }
+      if (!statSync(abs).isDirectory()) { fitxers.push(p); return; }
+      readdirSync(abs).sort().forEach(n => {
+        const r = p.replace(/\/$/, '') + '/' + n;
+        if (n.startsWith('.')) return;
+        if (statSync(join(ARREL, r)).isDirectory()) anar(r); else if (n.endsWith('.md') && join(ARREL, r) !== MAPA) fitxers.push(r);
+      });
+    };
+    C.documents.forEach(anar);
+    const llista = v => v.replace(/^\[|\]$/g, '').split(',').map(x => x.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+    const usades = new Map();
+    fitxers.forEach(f => {
+      const text = readFileSync(join(ARREL, f), 'utf8');
+      const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
+      if (!m) { docProbs.push(`${f} no porta capçalera (---): li falten ${UNI.facetes.filter(x => x.obligatoria).map(x => x.claus[0]).join(', ')}`); return; }
+      const cap = {};
+      m[1].split(/\r?\n/).forEach(l => { const k = l.match(/^([\w-]+):\s*(.*)$/); if (k) cap[slug(k[1])] = k[2].trim(); });
+      const d = { f, v: {}, etiquetes: [] };
+      UNI.facetes.forEach(fa => {
+        const k = fa.claus.find(c => cap[c] !== undefined);
+        let vals = k ? llista(cap[k]) : [];
+        if (!vals.length && fa.id === 'ecosystem' && C.ecosistema) vals = [C.ecosistema];
+        if (!vals.length) { if (fa.obligatoria) docProbs.push(`${f}: falta «${fa.claus[0]}» (${fa[LG] || fa.ca})`); return; }
+        if (fa.una && vals.length > 1) docProbs.push(`${f}: «${k}» només admet un valor i en porta ${vals.length}`);
+        d.v[fa.id] = vals.map(v => {
+          if (fa.obert) {
+            if (!ecos[slug(v)]) docProbs.push(`${f}: l'ecosistema «${v}» no és a ${rel(fFolk)}`);
+            return slug(v);
+          }
+          const id = valor(fa, v);
+          if (!id) docProbs.push(`${f}: «${v}» no és un valor de «${fa.claus[0]}». N'hi ha: ${fa.valors.map(x => x[LG] || x.id).join(', ')}`);
+          return id || v;
+        });
+      });
+      const ke = UNI.etiquetes.claus.find(c => cap[c] !== undefined);
+      d.etiquetes = ke ? llista(cap[ke]).map(slug).filter(Boolean) : [];
+      d.etiquetes.forEach(e => usades.set(e, (usades.get(e) || 0) + 1));
+      /* El que és públic passa pel sedàs. El que veu el client pot portar el
+         seu preu; el que és privat, tot. */
+      if ((d.v.visibility || [])[0] === 'public') {
+        const re = UNI.sedas.find(r => new RegExp(r).test(text.slice(m[0].length)));
+        if (re) docProbs.push(`${f} és públic i el sedàs l'atura (patró ${re}): treu-ho o fes-lo privat`);
+      }
+      DOCS.push(d);
+    });
+    if (DOCS.length) {
+      const cel = (fa, d) => (d.v[fa] || []).map(id => fa === 'ecosystem' ? ((ecos[id] || {}).nom || id) : nom(FAC.get(fa), id)).join(', ');
+      md += `## ${DT.titol}\n\n${DT.diu}\n\n${DT.taula}\n|---|---|---|---|---|---|---|\n`;
+      DOCS.forEach(d => {
+        md += `| [\`${d.f}\`](${relative(dirname(MAPA), join(ARREL, d.f))}) | ${cel('type', d)} | ${cel('role', d)} | ${cel('ecosystem', d)} | ${cel('status', d)} | ${cel('visibility', d)} | ${d.etiquetes.join(', ')} |\n`;
+      });
+      const penja = e => folk[e] !== undefined ? folk[e] : valor(TEMA, e);
+      const totes = [...usades.keys()].sort();
+      md += `\n**${DT.etiq}:** ` + (totes.length ? totes.map(e => {
+        const t = penja(e);
+        return `${e} → ${t ? nom(TEMA, valor(TEMA, t)) : folk[e] === null ? DT.lliure : DT.sense} (${usades.get(e)})`;
+      }).join(' · ') : DT.cap) + '\n';
+      const cand = totes.filter(e => folk[e] === undefined && !valor(TEMA, e) && usades.get(e) > 1);
+      md += `\n**${DT.cand}:** ${cand.length ? cand.join(', ') : DT.cap}\n\n`;
+    }
+  }
+}
 md += `---\n\n*${arbre.length} ${L.peu}*\n`;
 
 /* ── La pàgina del cervell ───────────────────────────────────────────────────
@@ -527,6 +659,7 @@ details{border-bottom:1px solid var(--line);padding:.45rem 0}summary{cursor:poin
 }
 
 if (!CHECK) {
+  docProbs.forEach(p => console.log('  ✗ ' + p));
   writeFileSync(MAPA, md);
   /* Després del mapa: la pàgina diu si el mapa hi és. */
   if (PAGINA) { writeFileSync(PAGINA, pagina()); console.log(`✅ ${rel(PAGINA)}`); }
@@ -640,6 +773,13 @@ if (existsSync(HERETAT) && resolve(join(__dirname, '..', '..')) === ARREL) {
   const { errors, vedes, out } = herencia({ idioma: 'es' });
   errors.forEach(bad);
   if (!errors.length) ok(`${vedes} vedes i ${out.size - 1} fitxers heretables, i cap passa del sedàs`);
+}
+
+/* ── 5 · Els documents parlen el tronc comú ─────────────────────────────── */
+if (C.documents) {
+  console.log('\nEls documents: el tronc comú i les etiquetes');
+  docProbs.forEach(bad);
+  if (!docProbs.length) ok(`${DOCS.length} documents amb el tronc comú ben respostes, i cap de públic passa del sedàs`);
 }
 
 console.log(fails ? `\n❌ ${fails} problema${fails === 1 ? '' : 's'} al cervell.`

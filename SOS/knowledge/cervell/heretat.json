@@ -1,10 +1,5 @@
 {
   "font": "https://github.com/asolache/teamtowershuma/blob/main/",
-  "sedas": [
-    "\\d[\\d.,]*\\s?€",
-    "IKEA",
-    "[Pp]ilots? "
-  ],
   "vedes": {
     "La veritat del que es diu": [
       61,
@@ -101,11 +96,13 @@
     "herramientas/tools/revisa-mapa.js": "SOS/tools/revisa-mapa.js",
     "herramientas/tools/web-del-mapa.js": "SOS/tools/web-del-mapa.js",
     "herramientas/lib/motor-web.js": "SOS/lib/motor-web.js",
+    "herramientas/lib/editor-idioma.js": "SOS/lib/editor-idioma.js",
     "herramientas/tools/analitza-contingut.js": "SOS/tools/analitza-contingut.js",
     "herramientas/tools/proposta.js": "SOS/tools/proposta.js",
     "herramientas/tools/automatitza.js": "SOS/tools/automatitza.js",
     "herramientas/tools/proces-web.js": "SOS/tools/proces-web.js",
-    "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json"
+    "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json",
+    "saber/heredado/taxonomia-universal.json": "SOS/knowledge/cervell/taxonomia-universal.json"
   },
   "serveis": {
     "web": "https://teamtowershuma.com/",
@@ -262,6 +259,84 @@
           "fa": "Qué se puede conectar en cada flujo y cuánto cuesta la IA de cada tarea, con la fuente.",
           "gestionat": "Elegimos nosotros y te lo explicamos.",
           "propi": "Eliges tú, siempre con una opción libre."
+        }
+      }
+    ]
+  },
+  "camiClient": {
+    "_": "El camí de cada client, el mateix per a totes les marques (Álvaro, 22/10/2026): primer donem valor, després una pàgina al nostre entorn amb ús limitat segons quota, després la seva web. Cada pas és un esglaó de l'escala del partner (MapaValor.ESCALA) i un mode dels serveis. Sense imports: els preus viuen al repositori d'estratègia. El portal de partners d'Events Penedès ja ho fa servir en producció: partners.plan = ficha, pagina o web (columna `portal`). La porta del pas 1 a les pàgines públiques és el bloc «Per on començar» de build-embut.js.",
+    "passos": [
+      {
+        "id": "valor",
+        "escala": "fitxa",
+        "portal": "ficha",
+        "oferta": "gratis",
+        "mode": null,
+        "paths": [
+          "mapa-web/index.html",
+          "SOS/diagnostic.html"
+        ],
+        "ca": {
+          "nom": "Primer, valor",
+          "diu": "El seu mapa de valor i un primer esbós de la web, sense pagar i sense demanar dades al principi."
+        },
+        "es": {
+          "nom": "Primero, valor",
+          "diu": "Su mapa de valor y un primer boceto de la web, sin pagar y sin pedir datos al principio."
+        }
+      },
+      {
+        "id": "pagina",
+        "escala": "pagina",
+        "portal": "pagina",
+        "oferta": "viu",
+        "mode": "gestionat",
+        "paths": [
+          "SOS/plantilla-web/README.md"
+        ],
+        "ca": {
+          "nom": "La seva pàgina al nostre entorn",
+          "diu": "La pàgina viu amb nosaltres i es paga per ús, amb un límit segons la quota."
+        },
+        "es": {
+          "nom": "Su página en nuestro entorno",
+          "diu": "La página vive con nosotros y se paga por uso, con un límite según la cuota."
+        }
+      },
+      {
+        "id": "web",
+        "escala": "web",
+        "portal": "web",
+        "oferta": "viu",
+        "mode": "propi",
+        "paths": [
+          "SOS/plantilla-web/README.md"
+        ],
+        "ca": {
+          "nom": "La seva web pròpia",
+          "diu": "La web passa al seu repositori i al seu Netlify, amb el mateix motor i el mateix cervell."
+        },
+        "es": {
+          "nom": "Su web propia",
+          "diu": "La web pasa a su repositorio y a su Netlify, con el mismo motor y el mismo cerebro."
+        }
+      },
+      {
+        "id": "xarxa",
+        "escala": "node",
+        "portal": null,
+        "oferta": "xarxa",
+        "mode": null,
+        "paths": [
+          "SOS/matriu.html"
+        ],
+        "ca": {
+          "nom": "I després, la xarxa",
+          "diu": "El seu cervell i el seu mapa entren a la xarxa: el que aprèn hi puja i el que aprèn la xarxa li arriba."
+        },
+        "es": {
+          "nom": "Y después, la red",
+          "diu": "Su cerebro y su mapa entran en la red: lo que aprende sube y lo que aprende la red le llega."
         }
       }
     ]
