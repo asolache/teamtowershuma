@@ -34,7 +34,10 @@ export const FORMULARIS = {
      (SOS/tools/pagina-lead.js) porten a /visita/. `ref` és la referència
      aleatòria de la seva pàgina, i és l'únic «obert» que sabem: no hi ha píxel.
      Fins al pas 9 del backlog crea un lead nou; no marca el que ja hi és. */
-  'visita': 'Visita des de la pàgina del lead (web)'
+  'visita': 'Visita des de la pàgina del lead (web)',
+  /* L'espai de client (/cliente/): el primer diagnòstic d'un client web, amb
+     les seves respostes, el mapa en JSON i el nivell de web que tria. */
+  'cliente-web': 'Espai de client · primer diagnòstic (web)'
 };
 const RESPOSTA = { si: 'Vol la visita', no: 'Diu que el mapa no és així' };
 
@@ -69,6 +72,7 @@ export function aLead(formName, d, opts = {}) {
       d.quan && 'Quan: ' + net(d.quan),
       d.notes && 'Notes: ' + net(d.notes),
       d.objectiu && 'Objectiu: ' + net(d.objectiu),
+      d.nivel && 'Nivell de web: ' + net(d.nivel),
       d.termini && 'Termini: ' + net(d.termini),
       d.decideix && 'Qui decideix: ' + net(d.decideix),
       d.ampliacio && 'Ho amplien així: ' + net(d.ampliacio),

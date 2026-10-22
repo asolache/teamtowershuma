@@ -182,8 +182,8 @@ const SOS_GRUPS = [
     L.formacio, L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
       T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
-    ['cervell.html', T('El teu cervell', 'Tu cerebro'),
-      T('El teu codex en 3D, per a les IA i el LMS', 'Tu codex en 3D, para las IA y el LMS')],
+    ['cervell.html', T('Crea el teu cervell', 'Crea tu cerebro'),
+      T('Cinc vistes, per a les IA i el LMS', 'Cinco vistas, para las IA y el LMS')],
     L.blog
   ] },
   /* ══ 3 · I L'ALTRE MÓN ════════════════════════════════════════════════
@@ -322,6 +322,7 @@ const FORA_DEL_MENU_ARREL = {
   'index.html': 'És la portada: té la seva pròpia barra i el desplegable sencer.',
   'avis-legal.html': 'L\'avís legal i la privacitat: s\'enllaça des del peu de totes les pàgines, que és on es busca, i no des de la barra.',
   'home-nova.html': 'Esborrany de redisseny de portada, amb `noindex`. El genera `build-vitrina.js`.',
+  'seguiment.html': 'El seguiment privat d\'una proposta, amb `noindex`: s\'hi arriba només per l\'enllaç amb clau que rep el client per correu (/seguiment/<id>/<clau>).',
   /* ── Eines internes ─────────────────────────────────────────────────── */
   'finances.html': 'Eina interna de comptes. No és una pàgina per passejar-hi.',
   'ia.html': 'Prova d\'assistent. La pàgina pública dels fluxos amb IA és `/SOS/ia.html`.'
@@ -521,7 +522,9 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
 
    La clau és l'adreça i no el fitxer: és com les nomena `LLOC`, i així la
    pàgina actual es reconeix sense cap cas a part. */
-const CARPETES = { '/mapa-web/': 'mapa-web/index.html', '/conecta/': 'conecta/index.html' };
+/* `/cliente/` (21/10/2026) és l'espai de client: hi té barra i peu, però no
+   surt al menú; s'hi entra des de «Empezar por el paso 1» de /mapa-web/. */
+const CARPETES = { '/mapa-web/': 'mapa-web/index.html', '/conecta/': 'conecta/index.html', '/cliente/': 'cliente/index.html' };
 const llenguaDe = p => (CARPETES[p] ? 'es' : 'ca');
 
 const esLloc = p => PORTADES.indexOf(p) >= 0 || PAGINES_LLOC.indexOf(p) >= 0 || !!CARPETES[p];

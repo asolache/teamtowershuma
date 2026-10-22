@@ -22,7 +22,7 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html cliente/index.html
 
       # La portada de l'arrel és per on entra tothom i no la comprovava res.
       # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
@@ -52,6 +52,11 @@ jobs:
       # cregui que hi ha dos personatges.
       - name: Guarda del relat (un sol roster d'herois)
         run: node SOS/tools/check-comando.js
+
+      # Des del 30/10/2026 Supabase no dona permisos per defecte a les taules
+      # noves: una taula sense GRANT queda muda a l'API i no avisa ningú.
+      - name: Cap taula de public sense permisos explícits
+        run: node SOS/tools/check-permisos.js
 
       # El programa d'escola diu que és el SOS a mida d'aula. Si un superpoder
       # deixa de ser una categoria del banc de temps, o apareix un camp on
@@ -94,6 +99,12 @@ jobs:
       # silenci — que és exactament el que va passar amb els herois.
       - name: Guarda del mapa de valor
         run: node SOS/tools/check-vna.js
+
+      # Els passos del client web es declaren un cop (proces-web.js) i surten a
+      # /mapa-web/#contratar i al backoffice de cada client. Escrits a mà a la
+      # pàgina, el client llegiria un camí a la web i un altre al seu backoffice.
+      - name: Guarda del procés del client (/mapa-web/ diu els passos d'una sola font)
+        run: node SOS/tools/build-proces.js --check
 
       # Les caselles de bonus de la plaça porten el nom d'un projecte del SOS i
       # plantar-hi hi registra una aportació. Si a l'app se'n canvia el nom, la
@@ -363,6 +374,12 @@ jobs:
       # que el lead porti el que toca i que el registre no porti cap dada personal.
       - name: Flux de nivell 2 · formulari → Zoho CRM
         run: node SOS/tests/test-zoho-nivell2.mjs
+
+      # L'espai de cada agència: llegeix de Zoho amb un enllaç privat. Sense
+      # xarxa: que una clau només obri la seva agència, que no surti res del
+      # compte fora de la llista i que el registre no porti la clau.
+      - name: L'espai de les agències · Zoho CRM
+        run: node SOS/tests/test-espai-partner.mjs
 
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció
