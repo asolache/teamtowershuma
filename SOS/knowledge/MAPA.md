@@ -27,7 +27,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 1 · 83 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 83 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 204 KB |
-| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) | 8 · 56 KB |
+| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) | 8 · 57 KB |
 | `visita/` | On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així | 1 · 6 KB |
 
 ## prova
@@ -37,7 +37,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 34 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 126 · 1642 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 126 · 1643 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 72 · 1486 KB |
 
 ## saber
