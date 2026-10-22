@@ -132,6 +132,10 @@
         .preguntes .camp { counter-increment: pq; }
         .preguntes label::before { content: counter(pq) ". "; color: var(--indigo); font-family: var(--mono); }
 
+        .models { margin-top: 1.2rem; max-width: 70ch; }
+        .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+        .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
+        .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
         .files { display: grid; gap: .8rem; margin-top: 1rem; }
         .fila { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem .9rem; display: grid; gap: .5rem; }
         @media (min-width: 900px) { .fila { grid-template-columns: 1.1fr 1.4fr 8rem 1.4fr 8rem auto; align-items: end; } }
@@ -148,6 +152,8 @@
         .nivell:has(input:checked) { border: 2px solid var(--indigo); }
         .nivell input { width: 1.2rem; height: 1.2rem; accent-color: var(--indigo); }
         .nivell ul { list-style: disc; padding-left: 1.1rem; font-size: var(--t0); color: var(--light); }
+        .cl-priv { display: flex; gap: .6rem; align-items: flex-start; margin: 1rem 0 0; max-width: 60ch; }
+        .cl-priv input { width: 1.2rem; height: 1.2rem; flex: none; margin-top: .15rem; accent-color: var(--indigo); }
         .nivell .k { font-family: var(--mono); font-size: var(--t0); color: var(--indigo); }
         .boceto { margin-top: 1.5rem; border: 1px solid var(--border-strong); border-radius: var(--radius); overflow: hidden; background: var(--card); }
         .boceto[hidden] { display: none; }
@@ -378,11 +384,16 @@
             <p>Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.</p>
         </div>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
+        <div class="models">
+            <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
+            <div class="model-xips" id="cl-models" role="group" aria-label="Modelos para empezar"></div>
+        </div>
         <div class="files" id="cl-files"></div>
         <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
         <div class="boceto editor" id="cl-ed" hidden>
             <div class="barra"><span>Tu dibujo, con el mismo editor que usamos en la sesión. Mueve, añade a alguien o una flecha, y guárdalo en tu ficha.</span>
                 <button type="button" class="btn btn-sm btn-primary" id="cl-ed-desa">Guardar en mi ficha</button>
+                <button type="button" class="btn btn-sm btn-ghost" id="cl-ed-avz" aria-pressed="false">Vista avanzada</button>
                 <button type="button" class="btn btn-sm btn-ghost" id="cl-ed-tanca">Cerrar</button></div>
             <iframe id="cl-ed-marc" title="El editor de tu dibujo"></iframe>
         </div>
@@ -425,8 +436,9 @@
             <h2 id="t-enviar">Cuando quieras, nos lo mandas y te contesta una persona.</h2>
             <p>Nos llega lo que has escrito, tu dibujo y el nivel de web que has elegido. Con eso preparamos tu borrador y el presupuesto, y te escribimos a tu correo.</p>
         </div>
-        <div class="accions"><button type="button" class="btn btn-primary" id="cl-envia">Enviar a TeamTowers</button></div>
         <p class="nota">Al enviarlo nos llega lo que has escrito y tu dibujo, por nuestro alojamiento (Netlify) a nuestro CRM (Zoho). Solo lo usamos para contestarte y preparar tu proyecto. <a href="/avis-legal.html?lang=es">Aviso legal y privacidad</a>.</p>
+        <label class="cl-priv" for="cl-priv"><input type="checkbox" id="cl-priv" required> <span>He leído cómo tratáis mis datos y quiero que me contestéis.</span></label>
+        <div class="accions"><button type="button" class="btn btn-primary" id="cl-envia">Enviar a TeamTowers</button></div>
         <p class="resposta" id="cl-envia-r" role="status"></p>
         <h3 style="margin-top:2rem">Lo que viene después</h3>
 <!--TT-PROCES-->
@@ -488,11 +500,12 @@
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
   <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
-  <input name="objectiu"><input name="nivel"><textarea name="resum"></textarea>
+  <input name="objectiu"><input name="nivel"><input name="privacidad"><textarea name="resum"></textarea>
 </form>
 
 <script src="/SOS/lib/mapa-valor.js"></script>
 <script src="/SOS/lib/diagnosi-client.js"></script>
+<script src="/SOS/lib/models-mapa.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
 <script>
 (function () {
@@ -540,8 +553,9 @@
         try {
             var j = D.llegeix($('#cl-retorn').value);
             Object.keys(j.respuestas).forEach(function (k) { if (!String(S.respuestas[k] || '').trim()) S.respuestas[k] = j.respuestas[k]; });
-            if (j.alrededor.length) S.alrededor = j.alrededor;
-            desa(); pintaPreguntes(); pintaFiles();
+            /* Lo de su IA sustituye lo de antes, también lo que pasaba entre los demás. */
+            if (j.alrededor.length) { S.alrededor = j.alrededor; S.extra = null; S.modelo = null; }
+            desa(); pintaPreguntes(); pintaFiles(); pintaModels();
             r.textContent = 'Hecho: ' + Object.keys(j.respuestas).length + ' respuestas y ' + j.alrededor.length + ' personas o grupos. Revísalo abajo.';
         } catch (e) { r.textContent = e.message; }
     });
@@ -631,6 +645,28 @@
             r.textContent = 'Este es tu boceto: una puerta para cada uno. Pasa de una a otra con los botones.';
         }).catch(function () { r.textContent = 'No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'; });
     });
+    /* Los modelos del SOS (models-mapa.js, los mismos de la app): rellenan
+       quién está alrededor y lo que se da, con «tú» en el centro. */
+    var MM = window.ModelsMapa;
+    function pintaModels() {
+        var c = $('#cl-models'); c.textContent = '';
+        MM.MODELS.forEach(function (x) {
+            var b = el('button', { type: 'button', title: x.es.diu, 'aria-pressed': String(S.modelo === x.id) }, x.icona + ' ' + x.es.nom);
+            b.addEventListener('click', function () {
+                var hiHa = S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; });
+                if (hiHa && !confirm('Esto cambia quién está a tu alrededor por lo del modelo «' + x.es.nom + '». ¿Seguimos?')) return;
+                var m = MM.mapa(x.id, 'es', S.casa.trim() || null);
+                if (!S.casa.trim()) S.casa = m.centre;
+                var d = D.desDe(m, S.casa);
+                S.alrededor = d.alrededor; S.extra = d.extra; S.modelo = x.id; desa();
+                pintaCamps(); pintaFiles(); pintaModels();
+                aviso('Modelo «' + x.es.nom + '»: ahora cámbialo con tus palabras');
+            });
+            c.appendChild(b);
+        });
+    }
+    pintaModels();
+
     /* El dibujo, dentro de la página: el editor del mapa (vna-suport.html) en un
        marco, abierto debajo del botón que se ha pulsado. Entra con el mapa de la
        ficha por el mismo camino que «✎ Obre'l a l'editor» de la app, y
@@ -641,9 +677,22 @@
             try { localStorage.setItem('sos-mapa-cap-editor', JSON.stringify(D.mapa(S))); } catch (e) { /* el editor se abrirá con lo último que tenía */ }
             b.closest('.accions').after(ED);
             ED.hidden = false;
-            MARC.src = '/SOS/vna-suport.html?app&t=' + Date.now();
+            obreEditor(false);
             ED.scrollIntoView({ block: 'start' });
         });
+    });
+    /* Sencilla: solo el dibujo y la ficha de lo que eliges. Avanzada: el editor
+       entero, con lo que explica el método. Al cambiar, el mapa sigue: el editor
+       lo guarda en este navegador a cada cambio. */
+    function obreEditor(avanzada) {
+        $('#cl-ed-avz').setAttribute('aria-pressed', String(avanzada));
+        $('#cl-ed-avz').textContent = avanzada ? 'Vista sencilla' : 'Vista avanzada';
+        ED.classList.toggle('avanzada', avanzada);
+        MARC.src = '/SOS/vna-suport.html?app&lang=es' + (avanzada ? '' : '&incrustat') + '&t=' + Date.now();
+    }
+    $('#cl-ed-avz').addEventListener('click', function () {
+        try { localStorage.removeItem('sos-mapa-cap-editor'); } catch (e) { /* nada que quitar */ }
+        obreEditor(this.getAttribute('aria-pressed') !== 'true');
     });
     $('#cl-ed-desa').addEventListener('click', function () {
         var w = MARC.contentWindow && MARC.contentWindow.__VS_ED;
@@ -658,8 +707,12 @@
     $('#cl-envia').addEventListener('click', function () {
         var r = $('#cl-envia-r'), b = this;
         if (!S.cuenta) { r.className = 'resposta ko'; r.textContent = 'Primero crea tu cuenta (paso 1): así sabemos a quién contestar.'; location.hash = 'cuenta'; return; }
+        /* La casilla deja constancia de que se ha informado (registro de
+           tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
+        if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = 'Marca la casilla de privacidad para poder enviarlo.'; $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, resum: D.resum(S) };
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, resum: D.resum(S),
+            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' };
         b.disabled = true; r.className = 'resposta'; r.textContent = 'Enviando…';
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: Object.keys(dades).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(dades[k] || ''); }).join('&') })

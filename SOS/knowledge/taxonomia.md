@@ -112,6 +112,7 @@ aquesta llista i res més.
 - `SOS/knowledge/cervell` · saber · El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la
 - `SOS/knowledge/for-ai` · saber · El contracte de treball per a una IA que hi contribueix
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
+- `SOS/knowledge/legal` · saber · Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js)
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
 - `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
 - `SOS/prompts` · saber · Un fitxer per intent d'IA: el que se li demana, versionat

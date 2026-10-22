@@ -79,14 +79,37 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.waitForFunction(() => { const w = document.getElementById('cl-ed-marc').contentWindow; return w && w.__VS_ED && w.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
   const fr = p.frames().find(f => /vna-suport/.test(f.url()));
   ok(p.url().split('#')[0] === URL_ && await p.isVisible('#cl-ed'), 'el dibujo se abre dentro de la página, sin salir de ella');
+  await fr.waitForFunction(() => document.documentElement.lang === 'es', null, { timeout: 10000 });
+  await fr.waitForTimeout(300);
+  const vist = await fr.evaluate(() => {
+    const ed = document.getElementById('editor'), fora = ['header.cap', '#pre', '#escrit', '.tt-peu'].filter(q => (document.querySelector(q) || {}).offsetParent);
+    return { fora: fora.length, nav: !!(document.querySelector('body > nav') || {}).offsetParent, txt: ed.innerText };
+  });
+  ok(!vist.fora && !vist.nav, 'solo el mapa: sin la web ni el texto que explica el método');
+  const ca = vist.txt.match(/\b(rols|lliurament|lliuraments|Afegeix|Seleccionat|Clica|Desfés|Pantalla completa|tornades|Res triat|Llista)\b/);
+  ok(!ca, 'el editor sale en castellano' + (ca ? ': queda «' + ca[0] + '»' : ''));
   ok((await fr.evaluate(() => window.__VS_ED.exporta().roles.length)) === 7, 'el editor tiene el dibujo de la ficha (el centro y seis más)');
   await fr.evaluate(() => window.__VS_ED.flux('Quien me recomienda', 'Quien quiere ser profesor', 'intangible', 'confianza'));
   await p.click('#cl-ed-desa');
   const fitxa = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
   ok(fitxa.alrededor.length === 6 && fitxa.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'), 'lo que cambia en el editor vuelve a la ficha, también lo que pasa entre los demás');
   ok(await p.locator('#cl-files .fila').count() === 6, 'y las filas siguen ahí');
+  await p.click('#cl-ed-avz');
+  await p.waitForFunction(() => { const f = document.getElementById('cl-ed-marc'); return !/incrustat/.test(f.contentWindow.location.search) && f.contentWindow.document.readyState === 'complete' && f.contentWindow.__VS_ED && f.contentWindow.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
+  const fr2 = p.frames().find(f => /vna-suport/.test(f.url()));
+  ok(await fr2.evaluate(() => window.__VS_ED.exporta().pairs.some(x => x[3] === 'confianza' || x[5] === 'confianza')) && await fr2.evaluate(() => !!document.querySelector('header.cap').offsetParent && !!document.querySelector('#pre').offsetParent),
+    'la vista avanzada abre el editor entero con el mismo dibujo');
   await p.click('#cl-ed-tanca');
   ok(!(await p.isVisible('#cl-ed')), 'el editor se cierra y sigues donde estabas');
+
+  await p.fill('#cl-casa', '');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-models button:has-text("Educación")');
+  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 4,
+    'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano');
+  ok(await p.getAttribute('#cl-models button:has-text("Educación")', 'aria-pressed') === 'true', 'y queda marcado el modelo elegido');
+  await p.fill('#cl-casa', 'Equipo de formación');
+  await p.fill('#cl-retorn', RESPOSTA); await p.click('#cl-omple');
 
   await p.check('#cl-n-conectada', { force: true });
   await p.click('#cl-boceto');
@@ -101,9 +124,12 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(ample[0] <= ample[1], 'sin desplazamiento horizontal (' + ample[0] + ' ≤ ' + ample[1] + ')');
 
   await p.click('#cl-envia');
+  ok(enviat === null && /privacidad/.test(await p.textContent('#cl-envia-r')), 'sin la casilla de privacidad no se envía nada');
+  await p.check('#cl-priv');
+  await p.click('#cl-envia');
   await p.waitForFunction(() => /Enviado/.test(document.getElementById('cl-envia-r').textContent), null, { timeout: 5000 });
   const q = new URLSearchParams(enviat || '');
-  ok(q.get('form-name') === 'cliente-web' && q.get('mail') === 'maria@example.test' && /Mapa \(JSON\)/.test(q.get('resum')) && q.get('nivel') === 'La web conectada', 'un solo POST al formulario cliente-web, con el mapa y el nivel');
+  ok(q.get('form-name') === 'cliente-web' && q.get('mail') === 'maria@example.test' && /Mapa \(JSON\)/.test(q.get('resum')) && q.get('nivel') === 'La web conectada' && /^Aceptada el \d{4}-/.test(q.get('privacidad')), 'un solo POST al formulario cliente-web, con el mapa, el nivel y la fecha de la casilla de privacidad');
   ok(await p.getAttribute('#pas-leemos', 'aria-current') === 'step', 'después de enviar, el paso 2 queda marcado');
   await p.reload();
   ok(await p.inputValue('#cl-p-objetivo') === j.respuestas.objetivo && await p.getAttribute('#pas-leemos', 'aria-current') === 'step', 'al volver, todo sigue ahí');

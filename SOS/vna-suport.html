@@ -793,8 +793,32 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
   .ed-minipols{max-width:none}
   .ed-resum{margin-left:0;flex-basis:100%}
 }
+/* Incrustat (?incrustat): l'editor dins d'una altra pàgina, com a /cliente/.
+   Només el dibuix i l'inspector: ni la web al voltant ni el que és de taller
+   (el pols, el flux, real i ideal, el diagnòstic i la web). */
+html.incrustat body>nav,html.incrustat header.cap,html.incrustat .peu,html.incrustat .tt-peu,
+html.incrustat main>:not(#editor),html.incrustat .ed-ple-b,html.incrustat .ed-modes,html.incrustat .ed-vistes,
+html.incrustat .ed-baix,html.incrustat #edTabDia,html.incrustat #edTabWeb,html.incrustat .salta,
+html.incrustat .ed-tit .s,html.incrustat .ed-idioma,html.incrustat #edRegles{display:none !important}
+html.incrustat main{padding:0;max-width:none}
+html.incrustat #editor{margin:0;border:0;border-radius:0}
+.ed-idioma{display:flex;gap:2px}
+.ed-idioma button{font:inherit;font-size:var(--t0);font-family:var(--mono);padding:.2rem .45rem;border:1px solid var(--border);
+  background:transparent;color:var(--muted);border-radius:6px;cursor:pointer}
+.ed-idioma button[aria-pressed="true"]{background:var(--indigo);color:var(--on-accent);border-color:var(--indigo)}
 /*/ED-CSS*/
 </style>
+<script>
+/* Abans de pintar: incrustat i la llengua de l'editor (?lang=es|en|ca, o
+   ?es / ?en; si no, la del lloc). El diccionari (lib/editor-idioma.js) només
+   es carrega si no és català: l'editor està escrit en català. */
+(function () {
+  var q = location.search, h = document.documentElement, l = (q.match(/[?&]lang=(ca|es|en)\b/) || q.match(/[?&](es|en)\b/) || [])[1];
+  if (/[?&]incrustat\b/.test(q)) h.classList.add('incrustat');
+  if (!l) try { l = localStorage.getItem('tt_lang'); } catch (e) {}
+  window.ED_LLENGUA = /^(es|en)$/.test(l) ? l : 'ca';
+})();
+</script>
 </head>
 <body>
 
@@ -965,6 +989,7 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
         <label><input type="radio" name="edVista" value="ideal"><span>Ideal</span></label>
         <label><input type="radio" name="edVista" value="desviacio"><span>Desviació</span></label>
       </fieldset>
+      <div class="ed-idioma" role="group" aria-label="Llengua" id="edIdioma" translate="no"><button type="button" data-l="ca" aria-pressed="true">CA</button><button type="button" data-l="es" aria-pressed="false">ES</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
       <div class="ed-seg ed-hist" role="group" aria-label="Historial">
         <button type="button" id="edDesfes" aria-label="Desfés" title="Desfés (Ctrl+Z)">↶</button>
         <button type="button" id="edRefes" aria-label="Refés" title="Refés (Ctrl+Maj+Z)">↷</button>
@@ -6098,6 +6123,24 @@ function edBuidaPendents() {
 }
 
 /* ── Les proves i qualsevol formulari entren pel mateix camí que el dibuix ── */
+/* La llengua de l'editor. Està escrit en català; en castellà i en anglès el
+   tradueix lib/editor-idioma.js mentre es pinta (també el que surt després).
+   Canviar-la recarrega: el mapa ja és a ED_DESAT. */
+function edLlengua() {
+  const l = window.ED_LLENGUA || 'ca', ed = $('#editor');
+  document.querySelectorAll('#edIdioma button').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.l === l));
+    b.addEventListener('click', () => {
+      try { localStorage.setItem('tt_lang', b.dataset.l); } catch (e) {}
+      const u = new URL(location.href); u.searchParams.set('lang', b.dataset.l); location.replace(u);
+    });
+  });
+  if (l === 'ca' || !ed) return;
+  const s = document.createElement('script');
+  s.src = 'lib/editor-idioma.js';
+  s.onload = () => { if (window.EditorIdioma) { document.documentElement.lang = l; EditorIdioma.vigila(ed, l); } };
+  document.head.appendChild(s);
+}
 function edGanxos() {
   const net = r => (r ? { ok: !r.error && !r.conflicte, error: r.error, avis: r.avis, conflicte: r.conflicte, nom: r.nom } : { ok: false });
   const H = (op, ...a) => { const r = aplica(op, ...a); edBuidaPendents(); return net(r); };
@@ -6150,6 +6193,7 @@ function edInicia() {
   ['btPrompt', 'btWeb'].forEach(id => { const b = $('#' + id); if (b) b.dataset.etiqueta = b.textContent; });
   window.__VS_ED = edGanxos();
   if (typeof creaLlenc === 'function' && $('#edSvg')) LLENC = creaLlenc();
+  edLlengua();
   edIniciat = true;
 }
 const CTRL = { campsDOM, escriuCamps, nivellActual, sincronitza, aplica, aplicaArbre, reanomenaRol, aseguraPosicions, vesA, entra, puja,
