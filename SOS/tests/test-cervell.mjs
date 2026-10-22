@@ -249,6 +249,33 @@ cas('un idioma sense textos peta', a => {
   rmSync(casa, { recursive: true, force: true });
 }
 
+/* El camí de cada client és un de sol (Álvaro, 22/10/2026): cada fill el rep
+   als seus serveis, i un pas que cita un esglaó que l'escala no té atura
+   l'herència. */
+{
+  const casa = mkdtempSync(join(tmpdir(), 'casa-'));
+  const r0 = spawnSync(process.execPath, [EINA, '--nou', join(casa, 'fill'), '--nom', 'Fill'], { encoding: 'utf8' });
+  const md = readFileSync(join(casa, 'fill', 'saber', 'servicios.md'), 'utf8');
+  const SOS = join(casa, 'SOS');
+  mkdirSync(join(SOS, 'tools'), { recursive: true });
+  cpSync(join(DIR, '..', 'knowledge', 'cervell'), join(SOS, 'knowledge', 'cervell'), { recursive: true });
+  cpSync(join(DIR, '..', 'knowledge', 'codex.md'), join(SOS, 'knowledge', 'codex.md'));
+  cpSync(join(DIR, '..', 'lib'), join(SOS, 'lib'), { recursive: true });
+  cpSync(join(DIR, '..', '..', 'conecta'), join(casa, 'conecta'), { recursive: true });
+  cpSync(EINA, join(SOS, 'tools', 'cervell.js'));
+  const H = JSON.parse(readFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), 'utf8'));
+  H.fitxers = {}; H.serveis.llista = [];
+  H.embut.passos = [{ ...H.embut.passos[0], escala: 'inventat', paths: [] }];
+  writeFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), JSON.stringify(H));
+  const r1 = spawnSync(process.execPath, [join(SOS, 'tools', 'cervell.js'), '--nou', join(casa, 'altre')], { encoding: 'utf8' });
+  const bo = r0.status === 0 && md.includes('# El camino de cada cliente') && md.includes('1. **Primero, valor.**')
+    && md.includes('4. **Y después, la red.**') && r1.status === 1 && r1.stdout.includes('«inventat»');
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} el camí de cada client arriba a cada fill, i un pas cap a un esglaó que no hi és atura l'herència`);
+  if (!bo) console.log(r1.stdout);
+  rmSync(casa, { recursive: true, force: true });
+}
+
 console.log(fails ? `\n❌ ${fails} cas${fails === 1 ? '' : 'os'} on la guarda no ha fet el que promet.`
   : '\n✅ La guarda peta quan toca, i només llavors.');
 process.exit(fails ? 1 : 0);
