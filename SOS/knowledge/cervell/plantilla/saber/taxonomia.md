@@ -15,6 +15,29 @@ eso cada carpeta se declara aquí, y `MAPA.md` se genera del árbol real.
 Nada de `misc/` ni `temp/`: un cajón sin criterio de entrada se llena solo y
 no se vacía nunca.
 
+## Documentos: el tronco común y las etiquetas de este proyecto
+
+Cada documento estratégico lleva arriba el tronco común, igual en todos los
+proyectos (`saber/heredado/taxonomia-universal.json`, heredado: no se edita):
+
+```
+---
+tipo: plan               # visión, plan, decisión, modelo, propuesta, acuerdo, informe, proceso, aprendizaje
+de: mi-proyecto          # el ecosistema, de los que declara la folksonomía
+rol: [ventas, finanzas]  # comunicación, marketing, ventas, finanzas, logística, producción, operaciones…
+fase: sostiene           # crea, sostiene, transforma (opcional)
+visible: privada         # pública, cliente, privada
+estado: borrador         # borrador, vigente, superado
+etiquetas: [cata]        # libres, con las palabras de este proyecto
+---
+```
+
+Las etiquetas libres son la folksonomía de este proyecto: `saber/folksonomia.json`
+dice de qué rol cuelga cada una. Nunca hacen fallar el CI; la que se repite sin
+colgar de nada sale en el mapa como candidata. Para que la guarda mire los
+documentos, `cervell.json` declara `documents` (carpetas o ficheros). Lo que es
+público pasa por el sedàs: un importe en un documento público hace fallar el CI.
+
 ## Declaración de caras
 
 Formato: `- ruta · cara · una línea de lo que entra`. El generador lee esta

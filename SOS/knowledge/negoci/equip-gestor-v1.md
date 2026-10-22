@@ -1,3 +1,14 @@
+---
+tipo: plan
+de: huma
+rol: [personas, red]
+fase: transforma
+sector: [social, público]
+visible: pública
+estado: borrador
+etiquetas: [territori, equip-gestor, formació]
+---
+
 # Equip gestor v1 · el primer equip que posa un territori en marxa
 
 > El pla concret per formar les **primeres cinc a set persones** que faran que el
