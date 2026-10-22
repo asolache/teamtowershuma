@@ -499,7 +499,7 @@
 
         .hero-evok { font-family:var(--mono); font-size:var(--t0); letter-spacing:.04em;
             text-transform:uppercase; color:var(--muted); margin:0 0 .6rem; }
-        .hero-evok a { color:var(--indigo); text-underline-offset:3px; }
+        .hero-evok a, .hero-note a { color:var(--indigo); text-underline-offset:3px; }
 
         /* ══ EL QUE DECIDEIXES ═════════════════════════════════════════════
            Dues columnes i prou: a l'esquerra la frase que es reconeix, a la
@@ -973,7 +973,7 @@
                     <a href="/cliente/" class="btn-primary" data-i18n="hero.cta1">Crea el teu mapa de valor, gratis →</a>
                     <a href="/SOS/diagnostic.html" class="btn-ghost" data-i18n="hero.cta2">Diagnòstic en 3 min</a>
                 </div>
-                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Sense pagar i sense compromís: no s'envia res fins que tu ho diguis.</p>
+                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n-html="hero.note">Sense pagar i sense compromís: no s'envia res fins que tu ho diguis. Ja saps què vols? <a href="/SOS/pressupost.html">Demana pressupost</a>.</p>
             </div>
             <div class="hero-cos">
                 <ul class="hero-proves fade-up" style="animation-delay:.38s">
@@ -2082,7 +2082,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'Sense pagar i sense compromís: no s\'envia res fins que tu ho diguis.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'Sense pagar i sense compromís: no s\'envia res fins que tu ho diguis. Ja saps què vols? <a href="/SOS/pressupost.html">Demana pressupost</a>.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
@@ -2500,7 +2500,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'Sin pagar y sin compromiso: no se envía nada hasta que tú lo digas.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'Sin pagar y sin compromiso: no se envía nada hasta que tú lo digas. ¿Ya sabes lo que quieres? <a href="/SOS/pressupost.html">Pide presupuesto</a>.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',
