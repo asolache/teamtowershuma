@@ -79,6 +79,8 @@ console.log('\n2c · La visita des de la pàgina del lead');
   ok(v && v.Email === 'julia@example.org' && /Origen: Visita des de la pàgina del lead/.test(v.Description), 'el formulari de /visita/ entra com a lead');
   ok(/Resposta: Diu que el mapa no és així/.test(v.Description) && /Pàgina del lead: AbCdEfGhIjKlMnOp/.test(v.Description) && /Notes: falta el distribuïdor/.test(v.Description),
     'amb la resposta, la referència de la pàgina i el que hi falta');
+  const cw = aLead('cliente-web', { nom: 'María Prueba', mail: 'maria@example.test', nivel: 'Una página', privacidad: 'Aceptada el 2026-10-22T12:00:00Z desde /cliente/' });
+  ok(cw && /Privacitat: Aceptada el 2026-10-22/.test(cw.Description), 'el lead de /cliente/ guarda quan va marcar la casella de privacitat');
   const html = readFileSync(new URL('../../visita/index.html', import.meta.url), 'utf8');
   const camps = [...html.matchAll(/<(?:input|textarea)[^>]*name="([^"]+)"/g)].map(m => m[1]);
   ok(/<form name="visita"[^>]*data-netlify="true"[^>]*netlify-honeypot="bot-field"/.test(html) && /name="form-name" value="visita"/.test(html)

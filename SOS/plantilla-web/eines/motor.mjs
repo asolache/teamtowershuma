@@ -2153,7 +2153,11 @@ function webDelMapa(m, opts) {
     titol: m.abast || '',
     casa, menu, portes, serveis, sempre,
     equip: { rols: casa, intern: enOrdre(fl.filter(f => esCasa(f.de) && esCasa(f.a))) },
-    alta: portes.filter(p => p.compte).map(p => p.rol)
+    alta: portes.filter(p => p.compte).map(p => p.rol),
+    /* Les tres capes (Àlvar, 22/10/2026): la pública és per a tothom; l'extranet,
+       per als rols de fora amb anada i tornada, que hi tenen compte; la
+       intranet, per a l'equip de la casa. */
+    capes: { publica: ['inici'].concat(portes.map(p => p.id)), extranet: portes.filter(p => p.compte).map(p => p.id), intranet: ['equip', 'registre'] }
   };
 }
 /*/VS-WEB*/
@@ -2552,6 +2556,12 @@ const SITE_TXT = {
     contReservat: 'cerebro/continguts/{id}.md: aquest nom no es pot fer servir (minúscules, xifres i guions; ni equip, registre, gracies, 404, estil, web o index).',
     donem: 'Què et donem', dones: 'Què ens dones', xarxa: 'Amb la resta de la xarxa', benvinguda: 'La benvinguda',
     connecta: 'Es connecta amb', perCadascu: 'Una porta per a cadascú', sempre: 'Tot el temps', dins: 'El que passa a dins',
+    acces: 'Accés', extranet: 'Espai de clients i aliats (extranet)', intranet: 'Intranet',
+    sos: 'La part interna es porta amb el SOS: primer per a tu (el tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb l\'equip.', sosObre: 'Obre el SOS',
+    perRol: 'Per a {rol}', trobes: 'El que hi trobes', demanem: 'El que et demanem', escriuCorreu: 'Escriu-nos un correu',
+    senseCorreu: 'El contacte s\'activa quan la web té el seu correu.', legal: 'Avís legal i privacitat',
+    legalTxt: ['Aquesta web és de {titular}{nif}{adreca}.', 'És una web informativa: no fa servir galetes ni formularis, i no guarda res de qui la visita. L\'allotjament, com tots, registra l\'adreça IP per poder servir les pàgines.',
+      'Si ens escrius un correu, fem servir les teves dades només per respondre\'t. Pots demanar veure-les, corregir-les o esborrar-les escrivint-nos, i reclamar a l\'Agència Espanyola de Protecció de Dades.'],
     escriu: 'Escriu-nos', nom: 'Nom', correu: 'Correu electrònic', missatge: 'Missatge', envia: 'Envia', alta: 'Demana el teu compte',
     tambe: 'També ens pots escriure a', gracies: 'Gràcies', rebut: 'Ho hem rebut. Et respondrem per correu.', torna: 'Torna a l\'inici',
     peu: 'Feta a partir del mapa de valor.', dades: 'Les dades d\'aquesta web', buida: 'Encara no hi ha res entre nosaltres i aquest rol.',
@@ -2611,6 +2621,12 @@ const SITE_TXT = {
     contReservat: 'cerebro/continguts/{id}.md: este nombre no se puede usar (minúsculas, cifras y guiones; ni equip, registre, gracies, 404, estil, web o index).',
     donem: 'Qué te damos', dones: 'Qué nos das', xarxa: 'Con el resto de la red', benvinguda: 'La bienvenida',
     connecta: 'Se conecta con', perCadascu: 'Una puerta para cada uno', sempre: 'Todo el tiempo', dins: 'Lo que pasa dentro',
+    acces: 'Acceso', extranet: 'Espacio de clientes y aliados (extranet)', intranet: 'Intranet',
+    sos: 'La parte interna se lleva con el SOS: primero para ti (el tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con el equipo.', sosObre: 'Abre el SOS',
+    perRol: 'Para {rol}', trobes: 'Lo que encuentras aquí', demanem: 'Lo que te pedimos', escriuCorreu: 'Escríbenos un correo',
+    senseCorreu: 'El contacto se activa cuando la web tiene su correo.', legal: 'Aviso legal y privacidad',
+    legalTxt: ['Esta web es de {titular}{nif}{adreca}.', 'Es una web informativa: no usa cookies ni formularios, y no guarda nada de quien la visita. El alojamiento, como todos, registra la dirección IP para poder servir las páginas.',
+      'Si nos escribes un correo, usamos tus datos solo para contestarte. Puedes pedir verlos, corregirlos o borrarlos escribiéndonos, y reclamar ante la Agencia Española de Protección de Datos.'],
     escriu: 'Escríbenos', nom: 'Nombre', correu: 'Correo electrónico', missatge: 'Mensaje', envia: 'Enviar', alta: 'Pide tu cuenta',
     tambe: 'También puedes escribirnos a', gracies: 'Gracias', rebut: 'Lo hemos recibido. Te responderemos por correo.', torna: 'Volver al inicio',
     peu: 'Hecha a partir del mapa de valor.', dades: 'Los datos de esta web', buida: 'Todavía no hay nada entre nosotros y este rol.',
@@ -2681,6 +2697,7 @@ const SITE_CSS = [
   'nav a{display:inline-flex;align-items:center;min-height:44px;min-width:44px;padding:0 .8rem;border:1px solid var(--lin);border-radius:999px;text-decoration:none;color:var(--fg)}',
   'nav a[aria-current=page]{background:var(--fg);color:var(--bg);border-color:var(--fg)}',
   'h1{font-size:1.7rem;line-height:1.2;margin:.5rem 0 1rem}h2{font-size:1.15rem;margin:1.6rem 0 .5rem}',
+  'section>.per{margin:2rem 0 0;color:var(--mut)}section>.per+h2{margin-top:.2rem}',
   'li{margin:.25rem 0}small{color:var(--mut)}',
   'form{display:grid;gap:.75rem;margin-top:.5rem}',
   'label{display:grid;gap:.25rem;font-weight:600}',
@@ -2764,7 +2781,8 @@ function marcaNeta(m) {
   });
   if (Object.keys(portes).length) out.portes = portes;
   const c = x.contacte && typeof x.contacte === 'object' ? x.contacte : {}, cc = {};
-  ['adreca', 'telefon', 'horari'].forEach(k => { if (t(c[k])) cc[k] = t(c[k]).slice(0, 200); });
+  /* titular i nif: el que demana l'avís legal (LSSI, art. 10) de qui fa la web. */
+  ['adreca', 'telefon', 'horari', 'titular', 'nif'].forEach(k => { if (t(c[k])) cc[k] = t(c[k]).slice(0, 200); });
   if (Object.keys(cc).length) out.contacte = cc;
   return out;
 }
@@ -3060,6 +3078,20 @@ function webASite(web, opts) {
   const etiqueta = p => (MP[p.rol] && MP[p.rol].nom) || p.rol;
   const descripcio = MC.presentacio ? MC.presentacio.slice(0, 160) : web.titol || nom;
   const ruta = id => (id === 'inici' ? 'index.html' : id + '.html');
+  /* La vista bàsica (demanada per l'Àlvar el 22/10/2026): la capa informativa
+     en una sola pàgina. Per a cada rol principal —els que més donen i reben de
+     la casa—, el que li aporta valor i el que li demanem, i un sol formulari.
+     Sense una pàgina per porta: el menú porta a cada secció. */
+  const basica = o.vista === 'basica';
+  /* Les capes que es fan (pública sempre; extranet i intranet si es trien). Sense
+     dir-ho, la completa porta l'extranet i la bàsica res. La intranet només
+     s'enllaça des de la web pública si es tria: si no, la pàgina de l'equip no
+     surt al menú ni als cercadors. */
+  const capes = Array.isArray(o.capes) ? o.capes : basica ? [] : ['extranet'];
+  const ambExtranet = capes.includes('extranet'), ambIntranet = capes.includes('intranet');
+  const principals = (web.portes || []).filter(p => !p.buida).map((p, i) => [p, i])
+    .sort((x, y) => (y[0].rep.length + y[0].dona.length) - (x[0].rep.length + x[0].dona.length) || x[1] - y[1]).map(x => x[0]);
+  const enllac = id => (basica && porta(id) ? 'index.html#' + id : ruta(id));
   /* Amb l'adreça definitiva, cada pàgina diu quina és la seva (canonical i
      Open Graph) i surt el sitemap. Sense, tot segueix sent relatiu. */
   const url = /^https:\/\/[^\s"<>]+$/.test(o.url || '') ? o.url.replace(/\/*$/, '/') : '';
@@ -3086,7 +3118,7 @@ function webASite(web, opts) {
   const noves = Object.keys(cont).sort().filter(id => !deMapa.includes(id));
   const titolNova = id => cont[id].meta.titol || (id === 'serveis' ? L.serveis : id.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase()));
   const text = id => (cont[id] && deMapa.includes(id) ? mdAHtml(cont[id].cos) + '\n' : '');
-  const menu = (web.menu || []).filter(x => x.id !== 'equip').concat(noves.filter(id => cont[id].meta.menu !== false).map(id => ({ id, t: titolNova(id) })));
+  const menu = (web.menu || []).filter(x => x.id !== 'equip' && (!basica || !porta(x.id) || principals.includes(porta(x.id)))).concat(noves.filter(id => cont[id].meta.menu !== false).map(id => ({ id, t: titolNova(id) })));
   const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
     + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
@@ -3097,9 +3129,9 @@ function webASite(web, opts) {
     + ld(dades) + '\n</head>\n<body>\n<a class="salta" href="#contingut">' + e(L.salta) + '</a>\n'
     + '<header>\n<p class="marca"><a href="index.html">' + (MC.logoSvg ? '<img src="logo.svg" alt="">' : '') + e(nom) + '</a></p>\n'
     + (MC.lema ? '<p class="lema">' + e(MC.lema) + '</p>\n' : '') + '<nav aria-label="' + e(L.menu) + '"><ul>'
-    + menu.map(x => '<li><a href="' + ruta(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
+    + menu.map(x => '<li><a href="' + enllac(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
     + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(titol) + '</h1>\n' + cos + '\n</main>\n'
-    + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (correu ? ' · <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>' : '') + '</p>\n</footer>\n</body>\n</html>\n';
+    + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (basica ? ' · <a href="avis-legal.html">' + e(L.legal) + '</a>' + (ambIntranet ? ' · <a href="equip.html">' + e(L.intranet) + '</a>' : '') : '') + (correu ? ' · ' + enllacCorreu(L.escriuCorreu) : '') + '</p>\n</footer>\n</body>\n</html>\n';
   const formulari = p => {
     const f = 'porta-' + p.id, demana = p.dona[0] ? p.dona[0].q : '';
     return '<h2 id="escriu">' + e(L.escriu) + '</h2>\n<form name="' + f + '" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">\n'
@@ -3108,25 +3140,46 @@ function webASite(web, opts) {
       + '<label for="' + f + '-nom">' + e(L.nom) + '</label><input id="' + f + '-nom" name="nom" type="text" autocomplete="name" required>\n'
       + '<label for="' + f + '-correu">' + e(L.correu) + '</label><input id="' + f + '-correu" name="correu" type="email" autocomplete="email" required>\n'
       + '<label for="' + f + '-msg">' + e(L.missatge) + (demana ? ' <small>' + e(demana) + '</small>' : '') + '</label><textarea id="' + f + '-msg" name="missatge" rows="4"></textarea>\n'
-      + '<button type="submit">' + e(p.compte ? L.alta : L.envia) + '</button>\n</form>'
+      + '<button type="submit">' + e(p.compte && ambExtranet ? L.alta : L.envia) + '</button>\n</form>'
       + (correu ? '\n<p>' + e(L.tambe) + ' <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>.</p>' : '');
   };
   const fitxers = [];
   const posa = (r, cos, tipus) => fitxers.push({ ruta: r, tipus: tipus || 'text/html', cos });
   const servei = sv => ({ '@type': 'Service', name: sv.nom, description: sv.d || undefined, provider: { '@type': 'Organization', name: nom } });
 
+  /* El correu, amagat als robots que en cullen: l'adreça va en entitats HTML
+     dins de l'enllaç i no surt escrita a la pàgina. Sense JavaScript, com la
+     resta de la web. És el contacte de les primeres fases, abans dels formularis. */
+  const amaga = x => [...x].map(c => '&#' + c.codePointAt(0) + ';').join('');
+  const enllacCorreu = t => (correu ? '<a href="' + amaga('mailto:' + correu) + '">' + e(t) + '</a>' : '');
+  const contacteBasic = () => '<section id="escriu" aria-labelledby="escriu-t">\n<h2 id="escriu-t">' + e(L.escriu) + '</h2>\n'
+    + '<p>' + (correu ? enllacCorreu(L.escriuCorreu) : e(L.senseCorreu)) + '</p>\n</section>';
+  /* Cada secció, dita per a qui arriba: el títol és el que ve a buscar (el
+     primer que rep de la casa) i a sobre, per a qui és. */
+  const majuscula = x => x.charAt(0).toUpperCase() + x.slice(1), minuscula = x => x.charAt(0).toLowerCase() + x.slice(1);
+  const seccioRol = p => '<section id="' + p.id + '" aria-labelledby="' + p.id + '-t">\n<p class="per">' + e(L.perRol.replace('{rol}', minuscula(etiqueta(p)))) + '</p>\n'
+    + '<h2 id="' + p.id + '-t">' + e(p.rep[0] ? majuscula(p.rep[0].q) : etiqueta(p)) + '</h2>\n'
+    + (MP[p.rol] && MP[p.rol].intro ? '<p>' + e(MP[p.rol].intro) + '</p>\n' : '') + text(p.id)
+    + (p.rep.length ? '<h3>' + e(L.trobes) + '</h3>\n' + llista(p.rep, f => lli(f)) + '\n' : '')
+    + (p.dona.length ? '<h3>' + e(L.demanem) + '</h3>\n' + llista(p.dona, f => lli(f)) + '\n' : '')
+    + '<p><a href="#escriu">' + e(L.escriu) + '</a></p>\n</section>';
   posa('index.html', pagina('inici', nom,
-    (MC.presentacio ? '<p>' + e(MC.presentacio) + '</p>\n' : web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici') + '<h2>' + e(L.perCadascu) + '</h2>\n'
-      + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(etiqueta(p)) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>')
+    (MC.presentacio ? '<p>' + e(MC.presentacio) + '</p>\n' : web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici')
+      + (basica ? principals.map(seccioRol).join('\n') + '\n'
+        : '<h2>' + e(L.perCadascu) + '</h2>\n' + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(etiqueta(p)) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>')
+          + (ambExtranet || ambIntranet ? '\n<h2>' + e(L.acces) + '</h2>\n<ul>'
+            + (ambExtranet ? (web.portes || []).filter(p => p.compte).map(p => '<li><a href="' + ruta(p.id) + '#escriu">' + e(etiqueta(p)) + '</a> <small>' + e(L.extranet) + '</small></li>').join('') : '')
+            + (ambIntranet ? '<li><a href="equip.html">' + e(L.intranet) + '</a></li>' : '') + '</ul>' : ''))
       + (CT.adreca || CT.telefon || CT.horari ? '\n<h2>' + e(L.contacte) + '</h2>\n<ul>'
         + (CT.adreca ? '<li>' + e(L.adreca) + ': ' + e(CT.adreca) + '</li>' : '')
         + (CT.telefon ? '<li>' + e(L.telefon) + ': <a href="tel:' + e(CT.telefon.replace(/[^\d+]/g, '')) + '">' + e(CT.telefon) + '</a></li>' : '')
-        + (CT.horari ? '<li>' + e(L.horari) + ': ' + e(CT.horari) + '</li>' : '') + '</ul>' : ''),
+        + (CT.horari ? '<li>' + e(L.horari) + ': ' + e(CT.horari) + '</li>' : '') + '</ul>' : '')
+      + (basica ? '\n' + contacteBasic() : ''),
     { '@type': 'Organization', name: nom, description: MC.presentacio || web.titol || undefined, slogan: MC.lema || undefined,
       logo: MC.logoSvg && url ? url + 'logo.svg' : undefined, telephone: CT.telefon || undefined,
       address: CT.adreca ? { '@type': 'PostalAddress', streetAddress: CT.adreca } : undefined,
       makesOffer: (web.serveis || []).map(sv => ({ '@type': 'Offer', itemOffered: servei(sv) })) }));
-  (web.portes || []).forEach(p => {
+  (basica ? [] : web.portes || []).forEach(p => {
     const con = p.connexions.map(c => L.cat[c.cat] || c.nom);
     const passos = p.benvinguda.map(b => {
       const t = L.pas[b.pas] || [b.t, b.d], d = b.pas === 'connecta' ? con.join(', ') + '.' : t[1] || b.d;
@@ -3152,10 +3205,14 @@ function webASite(web, opts) {
       { '@type': 'ItemList', name: L.serveis, itemListElement: web.serveis.map((sv, i) => ({ '@type': 'ListItem', position: i + 1, item: servei(sv) })) }));
   }
   noves.forEach(id => posa(ruta(id), pagina(id, titolNova(id), mdAHtml(cont[id].cos), { '@type': 'WebPage', name: titolNova(id) })));
+  /* El contenidor mínim de la vista bàsica: l'avís legal, amb el correu amagat. */
+  if (basica) posa('avis-legal.html', pagina('avis-legal', L.legal, L.legalTxt.map((x, i) => '<p>' + e(x.replace('{titular}', CT.titular || nom)
+    .replace('{nif}', CT.nif ? ', NIF ' + CT.nif : '').replace('{adreca}', CT.adreca ? ', ' + CT.adreca : '')) + (i === 2 && correu ? ' ' + enllacCorreu(L.escriuCorreu) + '.' : '') + '</p>').join('\n'),
+    { '@type': 'WebPage', name: L.legal }));
   /* L'equip no és per al públic: hi és perquè la web sencera surti del mapa,
      però els cercadors no la indexen i el menú no la mostra. */
-  posa('equip.html', pagina('equip', L.equip,
-    '<p>' + e((web.equip.rols || []).join(', ')) + '</p>\n<p><a href="registre.html">' + e(L.reg.titol) + '</a>. ' + e(L.reg.perque) + '</p>\n'
+  posa('equip.html', pagina('equip', L.intranet,
+    '<p>' + e((web.equip.rols || []).join(', ')) + '</p>\n<p>' + e(L.sos) + ' <a href="https://teamtowershuma.com/SOS/">' + e(L.sosObre) + '</a>.</p>\n<p><a href="registre.html">' + e(L.reg.titol) + '</a>. ' + e(L.reg.perque) + '</p>\n'
       + (web.equip.intern.length ? '<h2>' + e(L.dins) + '</h2>\n' + llista(web.equip.intern, x => lli(x, x.de + ' → ' + x.a)) : ''),
     { '@type': 'WebPage', name: L.equip }, '<meta name="robots" content="noindex">\n'));
   /* El registre viu (fase 2): un formulari per anotar cada lliurament entre
@@ -3187,7 +3244,7 @@ function webASite(web, opts) {
      la configuració de Netlify. */
   posa('404.html', pagina('404', L.noHi, '<p>' + e(L.noHiD) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.noHi }, '<meta name="robots" content="noindex">\n'));
-  const publiques = ['index.html'].concat((web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta));
+  const publiques = ['index.html'].concat(basica ? ['avis-legal.html'] : [], (basica ? [] : web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta));
   posa('robots.txt', 'User-agent: *\nAllow: /\nDisallow: /equip.html\nDisallow: /registre.html\n' + (url ? 'Sitemap: ' + url + 'sitemap.xml\n' : ''), 'text/plain');
   if (url) posa('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + publiques.map(r => '<url><loc>' + e(abs(r)) + '</loc></url>\n').join('') + '</urlset>\n', 'application/xml');
@@ -3219,6 +3276,8 @@ function webASite(web, opts) {
     if (casa.length) conf.casa = casa;
     if (correu) conf.correu = correu;
     if (url) conf.url = url;
+    if (basica) conf.vista = 'basica';
+    if (Array.isArray(o.capes)) conf.capes = capes.filter(x => x === 'extranet' || x === 'intranet');
     if (Object.keys(conf).length) posa('cerebro/configuracio.json', JSON.stringify(conf, null, 2) + '\n', 'application/json');
   }
   const md = a => a.join('\n').split('{nom}').join(nom) + '\n';
@@ -4121,7 +4180,7 @@ function codiRepositori(tros, exemple) {
     + '  if (hi(\'logo.svg\')) marca.logoSvg = readFileSync(new URL(\'logo.svg\', arrel), \'utf8\');\n'
     + '  if (!marcaSvg(marca.logoSvg)) console.warn(\'⚠️  cerebro/marca.json demana logo.svg, però \' + (hi(\'logo.svg\') ? \'no és un SVG que es pugui posar (porta scripts o enllaços, o passa de 100 kB)\' : \'no hi és\') + \': la web surt sense logo.\');\n}\n'
     + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }\n'
-    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
     + '/* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
     + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
     + 'const escrit = r => /^cerebro\\/(fonts|continguts|esborranys)\\//.test(r);\n'

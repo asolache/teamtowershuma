@@ -351,6 +351,18 @@ jobs:
       - name: Els formularis no envien res sols i venen el mateix catàleg
         run: node SOS/tools/check-formularis.js
 
+      # Protecció de dades. Un formulari nou, un proveïdor nou o la casella de
+      # /cliente/ que desapareix no peten res: el registre d'activitats queda
+      # fals en silenci. `rgpd.js` el genera de tratamientos.json i ho vigila.
+      - name: El registre de protecció de dades és al dia
+        run: node SOS/tools/rgpd.js --check
+
+      # Els mapes tipus de l'app (El meu negoci i els sis prototips) surten a
+      # /cliente/ per començar pels fluxos. Es llegeixen de l'app: si l'app en
+      # canvia un o n'afegeix un text sense traduir, això peta.
+      - name: Els mapes tipus de /cliente/ són els de l'app, en tres llengües
+        run: node SOS/tools/build-models-mapa.js --check
+
       # El pressupost era només en català i és on algú demana un preu. El
       # diccionari el genera `build-formularis.js`, que ja genera mitja pàgina:
       # tenir-lo en dos llocs voldria dir que un dia divergís una llengua
@@ -380,6 +392,11 @@ jobs:
       # compte fora de la llista i que el registre no porti la clau.
       - name: L'espai de les agències · Zoho CRM
         run: node SOS/tests/test-espai-partner.mjs
+
+      # La IA de /cliente/ (pule-mapa.mjs) i la identitat (identitat.mjs): sense
+      # identitat no hi ha IA, i el tope de 0,50 per persona no se supera mai.
+      - name: La IA de l'espai de client, identificada i amb tope
+        run: node SOS/tests/test-pule-mapa.mjs
 
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció

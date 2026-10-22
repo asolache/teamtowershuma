@@ -112,6 +112,7 @@ aquesta llista i res més.
 - `SOS/knowledge/cervell` · saber · El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la
 - `SOS/knowledge/for-ai` · saber · El contracte de treball per a una IA que hi contribueix
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
+- `SOS/knowledge/legal` · saber · Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js)
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
 - `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
 - `SOS/prompts` · saber · Un fitxer per intent d'IA: el que se li demana, versionat
@@ -132,7 +133,7 @@ aquesta llista i res més.
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
 - `cliente` · obra · Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany
 - `visita` · obra · On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així
-- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout) i l'espai de cada agència (espai-partner)
+- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat)
 - `data` · arxiu · Llavors de dades d'una versió anterior
 - `js` · arxiu · Codi solt d'abans que tot fos autocontingut
 - `ia` · arxiu · Prototip d'app amb IA (SOS V10) i el seu proxy d'IA; ja no se serveix
