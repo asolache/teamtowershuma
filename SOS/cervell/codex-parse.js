@@ -88,32 +88,74 @@
     });
   }
 
-  /* El codex públic d'un repositori, al navegador: el de la matriu, o el que
-     digui el `cervell.json` d'un fill. Un fill amb `"privat": true` no es llegeix
-     (llança { privat: true }); sense codex públic, torna null. El fan servir
-     `SOS/cervell.html` i la portada. raw.githubusercontent.com no gasta la quota
-     de l'API i respon a qualsevol origen. */
+  /* L'estructura estàndard d'un SOS: cada repositori porta a l'arrel un
+     `cervell.json` que diu on és cada peça (codex, taxonomia, mapa, backlog,
+     contracte de la IA, folksonomia, documents). Qui llegeix un cervell no
+     endevina carpetes: llegeix el manifest i, si no n'hi ha, prova on la matriu
+     té el codex. PECES és la llista de les claus que compten com a peces. */
+  var PECES = [
+    ['codex', 'El codex', 'la llei: els errors pagats, escrits com a vedes'],
+    ['taxonomia', 'La taxonomia', 'on va cada cosa'],
+    ['mapa', 'El mapa', 'què hi ha, generat'],
+    ['backlog', 'El backlog', 'què queda per fer'],
+    ['comunicacio', 'La comunicació', 'com es treballa amb la IA'],
+    ['folksonomia', 'La folksonomia', 'les etiquetes del seu ecosistema'],
+    ['documents', 'Els documents', 'els documents estratègics etiquetats']
+  ];
   var MATRIU = 'asolache/teamtowershuma';
-  function cru(repo, ruta) {
-    return fetch('https://raw.githubusercontent.com/' + repo + '/HEAD/' + ruta.replace(/^\.?\//, ''), { cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.text() : null; }).catch(function () { return null; });
+  /* Un lector és function (repo, ruta) → promesa del text o null. Sense testimoni,
+     raw.githubusercontent.com (només públics; no gasta la quota de l'API). Amb el
+     testimoni de GitHub de la pestanya, l'API: llegeix també els repos privats
+     als quals tens accés, i llança { sesion: true } si el testimoni ha caducat. */
+  function lector(token) {
+    if (!token) return function (repo, ruta) {
+      return fetch('https://raw.githubusercontent.com/' + repo + '/HEAD/' + ruta.replace(/^\.?\//, ''), { cache: 'no-store' })
+        .then(function (r) { return r.ok ? r.text() : null; }).catch(function () { return null; });
+    };
+    return function (repo, ruta) {
+      return fetch('https://api.github.com/repos/' + repo + '/contents/' + ruta.replace(/^\.?\//, ''), { headers: { authorization: 'Bearer ' + token, accept: 'application/vnd.github.raw' }, cache: 'no-store' })
+        .then(function (r) { if (r.status === 401) throw { sesion: true }; return r.ok ? r.text() : null; });
+    };
   }
-  function deRepo(repo) {
-    return cru(repo, RUTA_CODEX).then(function (codex) {
-      if (codex) return { codex: codex, fill: false };
-      return cru(repo, RUTA_HIJO).then(function (c) {
-        var conf = null; try { conf = c ? JSON.parse(c) : null; } catch (e) {}
-        if (conf && conf.privat === true) throw { privat: true };
-        return conf && conf.codex ? cru(repo, conf.codex).then(function (x) { return x ? { codex: x, fill: true, nom: conf.nom } : null; }) : null;
+  /* Els repos als quals tens accés amb el testimoni, públics i privats. */
+  function repos(token) {
+    var tots = [];
+    return (function pagina(p) {
+      return fetch('https://api.github.com/user/repos?per_page=100&sort=pushed&page=' + p + '&affiliation=owner,collaborator,organization_member',
+        { headers: { authorization: 'Bearer ' + token, accept: 'application/vnd.github+json' }, cache: 'no-store' })
+        .then(function (r) { if (r.status === 401) throw { sesion: true }; if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (rs) { tots = tots.concat(rs || []); return rs && rs.length === 100 && p < 10 ? pagina(p + 1) : tots; });
+    })(1).then(function (rs) { return rs.map(function (r) { return { repo: r.full_name, privat: !!r.private, diu: r.description || '' }; }); });
+  }
+
+  /* El codex d'un repositori: on digui el seu `cervell.json` o, sense manifest, a
+     SOS/knowledge/codex.md. op.token llegeix amb la teva sessió de GitHub: aleshores
+     un cervell `"privat": true` també es llegeix, perquè només el veus tu, a la
+     pestanya. Sense testimoni, un privat llança { privat: true } (veda 168).
+     Torna { codex, fill, nom, herencia, plantilla, conf, peces } o null; peces
+     diu, de cada peça estàndard, la ruta declarada o null. */
+  function deRepo(repo, op) {
+    op = op || {};
+    var cru = op.llegeix || lector(op.token), conf = null;
+    return cru(repo, RUTA_HIJO).then(function (c) {
+      try { conf = c ? JSON.parse(c) : null; } catch (e) { conf = null; }
+      if (conf && conf.privat === true && !op.token) throw { privat: true };
+      var ruta = conf && conf.codex ? String(conf.codex).replace(/^\.?\//, '') : RUTA_CODEX;
+      return cru(repo, ruta).then(function (x) {
+        if (!x && ruta !== RUTA_CODEX) return cru(repo, RUTA_CODEX).then(function (y) { return y ? { codex: y, ruta: RUTA_CODEX } : null; });
+        return x ? { codex: x, ruta: ruta } : null;
       });
     }).then(function (f) {
       if (!f) return null;
-      return Promise.all([cru(repo, RUTA_HERENCIA), f.fill ? cru(MATRIU, RUTA_PLANTILLA) : null]).then(function (v) {
+      var fill = f.ruta !== RUTA_CODEX;
+      return Promise.all([cru(repo, RUTA_HERENCIA), fill ? lector()(MATRIU, RUTA_PLANTILLA) : null]).then(function (v) {
         var her = null; try { her = v[0] ? JSON.parse(v[0]) : null; } catch (e) {}
-        f.herencia = her; f.plantilla = plantilla(v[1]); return f;
+        var peces = {};
+        PECES.forEach(function (p) { var r = conf && conf[p[0]]; peces[p[0]] = r ? (Array.isArray(r) ? r.length + ' fitxers' : String(r)) : (p[0] === 'codex' ? f.ruta : null); });
+        return { codex: f.codex, fill: fill, nom: conf && conf.nom, herencia: her, plantilla: plantilla(v[1]), conf: conf, peces: peces };
       });
     });
   }
 
-  return { CAPAS: CAPAS, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, plantilla: plantilla, lee: lee, limpia: limpia, deRepo: deRepo };
+  return { CAPAS: CAPAS, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
 });

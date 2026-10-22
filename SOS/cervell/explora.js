@@ -444,36 +444,15 @@
         pbtn.innerHTML = '<button type="button">' + esc(t.entrar) + '</button>';
         pbtn.firstChild.onclick = function () { location.href = op.privado.entrar; };
       };
-      var gh = function (ruta, raw) {
-        return fetch('https://api.github.com' + ruta, { headers: { authorization: 'Bearer ' + token(), accept: raw ? 'application/vnd.github.raw' : 'application/vnd.github+json' }, cache: 'no-store' })
-          .then(function (r) { if (r.status === 404) return null; if (r.status === 401) throw { sesion: true }; if (!r.ok) throw new Error(r.status); return raw ? r.text() : r.json(); });
-      };
       var cargaPrivado = function () {
         if (!token() || !CP) return sinSesion();
         ptxt.textContent = t.buscando; pbtn.innerHTML = '';
-        var repos = [];
-        (function pagina(p) {
-          return gh('/user/repos?per_page=100&page=' + p + '&affiliation=owner,collaborator,organization_member').then(function (rs) {
-            repos = repos.concat((rs || []).filter(function (r) { return r.private; }));
-            return rs && rs.length === 100 ? pagina(p + 1) : repos;
-          });
-        })(1).then(function (rs) {
-          /* Les vedes de la plantilla de la matriu (pública): un fill no les repeteix. */
-          var plantilla = gh('/repos/' + CP.MATRIU + '/contents/' + CP.RUTA_PLANTILLA, true).catch(function () { return null; }).then(CP.plantilla);
-          return Promise.all(rs.map(function (r) {
-            var base = '/repos/' + r.full_name + '/contents/';
-            return gh(base + CP.RUTA_CODEX, true).then(function (codex) {
-              if (codex) return { codex: codex, hijo: false };
-              return gh(base + CP.RUTA_HIJO, true).then(function (c) {
-                var ruta = null; try { ruta = c ? JSON.parse(c).codex : null; } catch (e) {}
-                return ruta ? gh(base + String(ruta).replace(/^\.?\//, ''), true).then(function (x) { return x ? { codex: x, hijo: true } : null; }) : null;
-              });
-            }).then(function (f) {
-              if (!f) return null;
-              return Promise.all([plantilla, gh(base + CP.RUTA_HERENCIA, true).catch(function () { return null; })]).then(function (v) {
-                var her = null; try { her = v[1] ? JSON.parse(v[1]) : null; } catch (e) {}
-                return CP.lee(f.codex, { nom: r.name, herencia: her, matriz: f.hijo ? PUB.fuentes[0] : null, plantilla: v[0] });
-              });
+        /* La lectura és la de codex-parse.js: el manifest cervell.json de cada repo, la mateixa per a tothom. */
+        CP.repos(token()).then(function (rs) {
+          return Promise.all(rs.filter(function (r) { return r.privat; }).map(function (r) {
+            var nom = r.repo.split('/')[1];
+            return CP.deRepo(r.repo, { token: token() }).then(function (f) {
+              return f ? CP.lee(f.codex, { nom: nom, herencia: f.herencia, matriz: f.fill ? PUB.fuentes[0] : null, plantilla: f.plantilla }) : null;
             }).catch(function (e) { if (e && e.sesion) throw e; return null; });
           }));
         }).then(function (ls) {

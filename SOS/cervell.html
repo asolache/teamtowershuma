@@ -85,6 +85,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 .font label input{position:absolute;left:-9999px}
 .font small{flex-basis:100%;color:var(--muted)}
 .estat{min-height:1.5em;color:var(--light)}
+.gh[hidden]{display:none}
+.gh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex-basis:100%}
+.gh select{flex:1 1 240px;min-width:0;font:inherit;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text)}
+.gh button.sec{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.peces{list-style:none;padding:0;margin:0 0 18px;display:flex;flex-wrap:wrap;gap:6px}
+.peces li{font-size:.95rem;padding:4px 12px;border-radius:999px;border:1px solid var(--border)}
+.peces li[data-hi=no]{color:var(--muted);border-style:dashed}
 .surt{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
 .surt article{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .surt h3{font-size:1rem;margin:0 0 4px}.surt p{font-size:.9rem;color:var(--muted);margin:0 0 10px}
@@ -234,13 +241,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   <p class="lead">Cada persona i cada projecte té el seu codex: els errors que ja ha pagat, escrits perquè no es tornin a pagar. Aquí es mira de cinc maneres, per capes i amb les forces que l'uneixen. I te l'emportes: com a context per a les teves IA i com a paquet per al teu LMS.</p>
 
   <form class="font" id="font">
-    <label for="repo" style="position:absolute;left:-9999px">Repositori públic</label>
+    <label for="repo" style="position:absolute;left:-9999px">Repositori</label>
     <input id="repo" type="text" placeholder="propietari/repositori" autocomplete="off" spellcheck="false">
     <button type="submit">Llegeix</button>
     <label>o puja el teu codex.md<input id="fitxer" type="file" accept=".md,text/markdown,text/plain"></label>
-    <small>Només repositoris públics: busca el codex a SOS/knowledge/codex.md o on digui el seu cervell.json. El fitxer que puges no surt del teu navegador. Un codex privat es mira amb la teva sessió de GitHub, mai aquí (veda 168).</small>
+    <div class="gh" id="gh" hidden></div>
+    <small>Cada SOS porta a l'arrel un <code>cervell.json</code> que diu on és el codex, la taxonomia, el mapa i la resta de peces; si no en té, el codex es busca a SOS/knowledge/codex.md. Amb GitHub tries entre els teus repos, també els privats: es llegeixen al teu navegador i no se'n publica res (veda 168). El fitxer que puges tampoc no surt del teu navegador.</small>
   </form>
   <p class="estat" id="estat" aria-live="polite"></p>
+  <ul class="peces" id="peces" aria-label="Les peces del cervell" hidden></ul>
   <!-- Les mateixes vedes de diverses maneres, per pensar-hi amb els ulls: el
        dibuix és de cervell/vista.js (3D) i cervell/pla.js (la resta), els
        mateixos que fan servir la portada i les webs filles. -->
@@ -337,16 +346,55 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   var MATRIU = CP.MATRIU, D = null, AN = null, meta = null, vista = null;
   var CODI = ['forces.js', '3d.js', 'vista.js'];
 
+  /* La sessió de GitHub viu en aquesta pestanya (sessionStorage) i s'esborra en
+     tancar-la o en sortir. L'entrada és la funció d'identitat del web, la mateixa
+     de /cliente/, amb el permís de llegir repos. */
+  var ENTRA = '/.netlify/functions/identitat?via=github&per=repos', gh = document.getElementById('gh'), MEUS = {};
+  function token() { try { return sessionStorage.getItem('gh_token'); } catch (e) { return null; } }
+  function surt(msg) {
+    try { sessionStorage.removeItem('gh_token'); } catch (e) {}
+    gh.innerHTML = '<button type="button" class="sec" id="ghEntra">Entra amb GitHub i tria el repo</button>';
+    if (msg) estat.textContent = msg;
+  }
+  function triaRepos() {
+    gh.innerHTML = '<span>Buscant els teus repos…</span>';
+    CP.repos(token()).then(function (rs) {
+      MEUS = {}; rs.forEach(function (r) { MEUS[r.repo] = r; });
+      var ops = rs.map(function (r) { return '<option value="' + r.repo.replace(/"/g, '') + '">' + (r.privat ? '🔒 ' : '') + r.repo.replace(/</g, '') + '</option>'; }).join('');
+      gh.innerHTML = '<label for="ghRepo" style="position:absolute;left:-9999px">Els teus repos</label><select id="ghRepo"><option value="">Tria un dels teus ' + rs.length + ' repos</option>' + ops + '</select><button type="button" class="sec" id="ghSurt">Surt</button>';
+    }).catch(function (e) { surt(e && e.sesion ? 'La teva sessió de GitHub ha caducat. Torna a entrar.' : 'No he pogut llegir els teus repos ara mateix.'); });
+  }
+  gh.addEventListener('click', function (e) {
+    if (e.target.id === 'ghEntra') location.href = ENTRA;
+    if (e.target.id === 'ghSurt') { surt('Has sortit de GitHub.'); if (D && D.privat) llegeix(MATRIU); }
+  });
+  gh.addEventListener('change', function (e) { if (e.target.id === 'ghRepo' && e.target.value) { document.getElementById('repo').value = e.target.value; llegeix(e.target.value); } });
+  /* Quines peces de l'estructura estàndard té el repo, segons el seu cervell.json. */
+  function peces(f) {
+    var ul = document.getElementById('peces');
+    ul.hidden = !f;
+    if (!f) return;
+    ul.innerHTML = CP.PECES.map(function (p) {
+      var r = f.peces[p[0]];
+      return '<li data-hi="' + (r ? 'si' : 'no') + '" title="' + p[2] + '">' + (r ? '✓ ' : '○ ') + p[1] + '</li>';
+    }).join('') + (f.conf ? '' : '<li data-hi="no">○ cervell.json</li>');
+  }
+
   function llegeix(repo) {
     repo = repo.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/+$/, '');
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { estat.textContent = 'Escriu-lo com a propietari/repositori.'; return; }
     estat.textContent = 'Llegint el codex de ' + repo + '…';
-    CP.deRepo(repo).then(function (f) {
-      if (!f) { estat.textContent = 'No he trobat cap codex públic a ' + repo + '. Puja el teu codex.md o crea\'l amb cervell.js --nou.'; return; }
-      dibuixa(f.codex, { nom: repo.split('/')[1], font: repo, herencia: f.herencia, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: f.plantilla });
-      try { history.replaceState(null, '', '?repo=' + encodeURIComponent(repo)); } catch (e) {}
+    var privat = !!(MEUS[repo] && MEUS[repo].privat);
+    CP.deRepo(repo, { token: token() }).then(function (f) {
+      peces(f);
+      if (!f) { estat.textContent = 'No he trobat cap codex a ' + repo + '. Crea\'l amb cervell.js --nou, o puja el teu codex.md.'; return; }
+      dibuixa(f.codex, { nom: f.nom || repo.split('/')[1], font: repo, herencia: f.herencia, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: f.plantilla });
+      D.privat = privat || !!(f.conf && f.conf.privat);
+      /* El nom d'un repo privat no va a la barra d'adreces. */
+      try { history.replaceState(null, '', D.privat ? location.pathname : '?repo=' + encodeURIComponent(repo)); } catch (e) {}
     }).catch(function (e) {
-      estat.textContent = e && e.privat ? 'Aquest cervell és privat: es mira a la seva web amb la teva sessió de GitHub, no aquí.' : 'No he pogut llegir GitHub ara mateix. Torna-ho a provar d\'aquí a una estona.';
+      if (e && e.sesion) return surt('La teva sessió de GitHub ha caducat. Torna a entrar.');
+      estat.textContent = e && e.privat ? 'Aquest cervell és privat: entra amb GitHub per veure\'l, només a la teva pestanya.' : 'No he pogut llegir GitHub ara mateix. Torna-ho a provar d\'aquí a una estona.';
     });
   }
   function dibuixa(codex, op) {
@@ -411,6 +459,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     }).catch(function () { estat.textContent = 'No he pogut preparar el fitxer. Torna-ho a provar.'; });
   });
 
+  /* El botó només surt si el web té l'entrada amb GitHub configurada. */
+  if (token()) { gh.hidden = false; triaRepos(); }
+  else fetch('/.netlify/functions/identitat', { cache: 'no-store' }).then(function (r) { return r.ok || r.status === 503 ? r.json() : null; })
+    .then(function (j) { if (j && (j.vies || []).indexOf('github') >= 0) { gh.hidden = false; surt(); } }).catch(function () {});
   var q = new URLSearchParams(location.search).get('repo') || MATRIU;
   document.getElementById('repo').value = q;
   llegeix(q);
