@@ -72,6 +72,20 @@ llegeix els sectors de l'app i els escriu a `SOS/lib/models-mapa.js` com a
 ofereix («O por sector») amb el mateix botó. Cap còpia: si la Matriu canvia,
 el `--check` del CI ho diu.
 
+**Fet també (22/10/2026, vespre):**
+
+- **Auditoria dels 21 models.** Cap no passava les regles que ensenya
+  `/cliente/` (tots tenien 5 rols, en calen de 6 a 12; cinc no arribaven a un
+  terç d'intangibles). `BONES` a `build-models-mapa.js` completa cadascun amb
+  qui el promou (`centre`), el rol que hi faltava, els fluxos que no es paguen
+  i la frase de la bona pràctica (`bona`), que `/cliente/` ensenya. El
+  `--check` peta si un model deixa de complir les regles 2 a 5.
+- **Suggeriment sense IA.** `ModelsMapa.suggereix(text, llengua)` compara el
+  que escriu la persona amb les paraules de cada model i sector (arrels i pes
+  invers); `/cliente/` li ofereix «Empezar con este modelo».
+- **`/cliente/` en català** (`?lang=ca` o `tt_lang`), i la IA hi respon en
+  català.
+
 **El que queda:**
 
 1. La IA de `/cliente/` (`pule-mapa.mjs`) identifica el sector i el tipus de
@@ -82,7 +96,7 @@ el `--check` del CI ho diu.
 3. Un paquet exportable (JSON) perquè un model local (Ollama) el faci servir
    sense connexió i s'actualitzi quan canvia la font. Mesurar qualitat i cost
    contra el model al núvol abans de canviar res.
-4. L'anglès dels sectors, quan l'app el demani.
+4. L'anglès dels sectors i de les bones pràctiques, quan l'app el demani.
 5. El que s'aprèn de cada projecte nou torna a la base del seu sector (el
    cervell col·lectiu), sense dades personals.
 

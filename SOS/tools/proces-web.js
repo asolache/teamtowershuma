@@ -105,7 +105,7 @@ function pasDe(proces) {
   return pas;
 }
 
-module.exports = { PASSOS, CSS, pinta, pasDe };
+module.exports = { PASSOS, TXT, CSS, pinta, pasDe };
 
 if (require.main === module) {
   PASSOS.forEach((p, i) => console.log((i + 1) + '. ' + p.es[0] + '  ·  Zoho: ' + p.zoho + (p.opcional ? '  ·  opcional' : '')));

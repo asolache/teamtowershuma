@@ -106,8 +106,8 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.fill('#cl-casa', '');
   p.once('dialog', d => d.accept());
   await p.click('#cl-models button:has-text("Educación")');
-  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 4,
-    'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano');
+  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 5,
+    'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano, con sus antiguos alumnos');
   ok(await p.getAttribute('#cl-models button:has-text("Educación")', 'aria-pressed') === 'true', 'y queda marcado el modelo elegido');
   /* Los catorce sectores de la Matriu (SECTORS de models-mapa.js), con el mismo botón. */
   ok(await p.locator('#cl-sectors button').count() === 14, 'y también los catorce sectores de la Matriu');
@@ -238,6 +238,38 @@ console.log('\n══ /cliente/ · la IA ══');
   const ample = await p.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   ok(ample[0] <= ample[1], 'sin desplazamiento horizontal');
   ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+/* En catalán (22/10/2026): la misma página, traducida al cargar, con las
+   preguntas, los modelos, los niveles y los pasos de sus propias fuentes. Y la
+   sugerencia de modelo a partir de lo que escribe. */
+console.log('\n══ /cliente/ · en català i la suggeriment de model ══');
+{
+  const prCa = D.prompt({ inicial: 'Vull omplir els cursos' }, 'ca');
+  ok(D.PREGUNTES.every(q => prCa.includes(q.ca.q)) && /Contesta en català/.test(prCa) && /"respuestas"/.test(prCa), 'el text per a la IA, en català, amb les mateixes claus del JSON');
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  await p.goto(URL_ + '?lang=ca');
+  ok(await p.evaluate(() => document.documentElement.lang) === 'ca' && /Comença el teu projecte/.test(await p.textContent('h1')), 'amb ?lang=ca, la pàgina és en català');
+  ok(/Què ha d'aconseguir/.test(await p.textContent('#cl-preguntes')) && /Nivell 1 · per fluxos/.test(await p.textContent('#cl-nivells')) && /Ens escrius/.test(await p.textContent('#enviar .pr')), 'preguntes, nivells i passos, en català');
+  ok(/Diagnòstic/.test(await p.textContent('.tt-nav')) && await p.locator('.tt-nav .lang-b.on[data-lang="ca"]').count() === 1, 'la barra, en català i amb el botó CA marcat');
+  ok(/Educació/.test(await p.textContent('#cl-models')) && await p.getAttribute('.tp-legal', 'href') === '/avis-legal.html?lang=ca', 'els models en català i l\'avís legal en català');
+  const resta = await p.evaluate(() => (document.querySelector('main').innerText.match(/\b(Quién|Cuéntanos|Elige|Empieza|Tu cuenta|Enviar a TeamTowers y)\b/g) || []));
+  ok(!resta.length, 'cap frase en castellà a la vista' + (resta.length ? ': ' + resta.join(', ') : ''));
+  ok(await p.isHidden('#cl-sug'), 'sense res escrit, cap suggeriment');
+  await p.fill('#cl-inicial', 'Som una cooperativa d\'habitatge i volem que els socis trobin pis assequible');
+  await p.waitForSelector('#cl-sug:not([hidden])', { timeout: 3000 });
+  ok(/Habitatge/i.test(await p.textContent('#cl-sug')), 'pel que escriu, li suggereix el sector d\'habitatge: ' + (await p.textContent('#cl-sug')).slice(0, 90));
+  await p.click('#cl-sug button');
+  const fc = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(fc.modelo === 'habitatge' && fc.alrededor.length >= 4 && fc.casa === 'Grup motor' && await p.isHidden('#cl-sug'), 'amb un clic s\'omple qui hi ha al voltant, amb qui promou al centre, i el suggeriment marxa');
+  ok(/Bona pràctica:.*veïnat/.test(await p.textContent('#cl-bona')), 'i explica la bona pràctica del model');
+  ok(D.revisa(D.mapa(Object.assign({ respuestas: { objetivo: 'Habitatge assequible per als socis' } }, fc)), MV, 'ca').llest, 'el mapa que surt del model ja està llest per dibuixar');
+  await p.click('.tt-nav .lang-b[data-lang="es"]');
+  await p.waitForFunction(() => document.documentElement.lang === 'es' && /Empieza tu proyecto/.test(document.querySelector('h1').textContent));
+  ok(/Vivienda/.test(await p.textContent('#cl-sectors button[aria-pressed="true"]')), 'en castellano con el botón ES, sin perder la ficha');
+  ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 await b.close(); srv.close();

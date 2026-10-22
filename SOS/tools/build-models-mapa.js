@@ -418,6 +418,162 @@ const TS = {
   'Recuperació d\'hàbitats': 'Recuperación de hábitats',
 };
 
+/* Les paraules amb què la gent descriu cada tipus de projecte, en català i
+   castellà: el que fa que «una escola d'idiomes» trobi «Educació / formació»
+   encara que el model no ho digui així. És coneixement de la base, no de l'app. */
+const PARAULES = {
+  negoci: 'negocio negoci empresa pyme pime tienda botiga clientes clients ventas vendes',
+  servei_proximitat: 'barrio barri vecinos veïns reparaciones reparacions atención atenció domicilio proximidad proximitat',
+  producte_artesa: 'artesano artesà taller cerámica ceràmica manufactura fabricamos fabriquem obrador elaboramos elaborem bodega celler vino vi',
+  servei_tecnic: 'consultoría consultoria consultor consultora asesoría assessoria estrategia estratègia ingeniería enginyeria despacho despatx proyectos projectes',
+  producte_digital: 'app aplicación aplicació software plataforma saas digital usuarios usuaris suscripción subscripció online',
+  cura_social: 'cuidado cures acompañamiento acompanyament mayores grans dependencia dependència familias famílies soledad soledat',
+  formacio: 'escuela escola academia acadèmia cursos curso curs formación formació profesores professors alumnos alumnes idiomas idiomes clases classes enseñar ensenyar',
+  dinamitzacio_comercial: 'comercio comerç tiendas botigues comerciantes comerciants mercado mercat compra local proximidad',
+  ocupacio: 'empleo ocupació trabajo feina inserción inserció parados aturats orientación orientació currículum',
+  habitatge: 'vivienda habitatge pisos alquiler lloguer cooperativa cesión cessió masovería masoveria',
+  energia: 'energía energia solar placas plaques renovable autoconsumo autoconsum tejados teulades',
+  alimentacio: 'alimentación alimentació comida menjar agricultura pagès payés campesinos cestas cistelles huerta horta ecológico ecològic consumo consum',
+  cures: 'salud salut comunitaria comunitària soledad soledat mayores grans voluntariado voluntariat',
+  cultura: 'cultura cultural festival fiesta festa conciertos concerts teatro teatre música patrimonio patrimoni museo museu arte art artistas artistes',
+  turisme: 'turismo turisme turistas turistes visitas visites alojamiento allotjament hotel enoturismo enoturisme rutas rutes catas tasts experiencias experiències',
+  economia_circular: 'reparar reparamos reutilizar reutilitzar segunda mà mano residuos residus reciclaje reciclatge compost circular muebles mobles',
+  digitalitzacio: 'digital digitalización digitalització informática informàtica software libre lliure ordenadores ordinadors brecha bretxa tecnología tecnologia',
+  joventut: 'jóvenes joves juventud joventut esplai ocio lleure adolescentes adolescents casal monitores monitors',
+  mobilitat: 'movilidad mobilitat bici bicicleta transporte transport coche cotxe camino escolar escolar peatones vianants',
+  acollida: 'acogida acollida migrantes migrants refugiados refugiats recién nouvinguts idioma llengua inclusión inclusió',
+  territori: 'territorio territori naturaleza natura bosque bosc campo camp custodia custòdia medio ambiente medi ambient fincas finques',
+};
+
+/* ══ LES BONES PRÀCTIQUES (22/10/2026) ═══════════════════════════════════
+   L'auditoria dels 21 models (demanada per l'Àlvar el 22/10/2026) va donar que
+   **cap** passava les regles que /cliente/ ensenya: tots tenien 5 rols (en
+   calen de 6 a 12) i cinc no arribaven a un terç d'intangibles. Un model que
+   suspèn les seves pròpies regles ensenya el contrari del mètode.
+
+   Aquí, per a cada model, el que el completa: qui fa de «tu» (`centre`, el que
+   promou el projecte, no qui el rep), el rol que hi faltava i els fluxos que
+   no es paguen i sostenen la xarxa, amb la frase que explica per què (`bona`).
+   L'app conserva els seus prototips tal com són; la guarda peta si un model
+   publicat deixa de complir les regles 2 a 5. */
+const BONES = {
+  negoci: {
+    ca: { centre: 'El negoci', rol: 'Qui et recomana', pairs: [['Qui et recomana', 'El negoci', 'intangible', 'clients nous i confiança', 'intangible', 'reconeixement i novetats abans que ningú'], ['Equip', 'Clients', 'intangible', 'tracte i consell', 'intangible', 'idees de millora']],
+      bona: 'El que no es paga (recomanacions, confiança, idees) és el que fa créixer un negoci. Posa-ho al mapa.' },
+    es: { centre: 'El negocio', rol: 'Quien te recomienda', pairs: [['Quien te recomienda', 'El negocio', 'intangible', 'clientes nuevos y confianza', 'intangible', 'reconocimiento y novedades antes que nadie'], ['Equipo', 'Clientes', 'intangible', 'trato y consejo', 'intangible', 'ideas de mejora']],
+      bona: 'Lo que no se paga (recomendaciones, confianza, ideas) es lo que hace crecer un negocio. Ponlo en el mapa.' } },
+  servei_proximitat: {
+    ca: { centre: 'Nucli gestor', rol: 'Qui ho recomana al barri', pairs: [['Qui ho recomana al barri', 'Nucli gestor', 'intangible', 'persones noves que confien', 'intangible', 'visibilitat i agraïment']],
+      bona: 'Un servei de proximitat creix de boca-orella: qui el recomana és part de la xarxa.' },
+    es: { centre: 'Núcleo gestor', rol: 'Quien lo recomienda en el barrio', pairs: [['Quien lo recomienda en el barrio', 'Núcleo gestor', 'intangible', 'personas nuevas que confían', 'intangible', 'visibilidad y agradecimiento']],
+      bona: 'Un servicio de proximidad crece por el boca a boca: quien lo recomienda es parte de la red.' } },
+  producte_artesa: {
+    ca: { centre: 'Artesans/es', rol: 'Qui ho explica (premsa, xarxes)', pairs: [['Qui ho explica (premsa, xarxes)', 'Artesans/es', 'intangible', 'relat i visibilitat', 'intangible', 'històries i accés al taller']],
+      bona: 'L\'ofici es ven pel relat: qui l\'explica fora del taller hi aporta tant com el punt de venda.' },
+    es: { centre: 'Artesanos/as', rol: 'Quien lo cuenta (prensa, redes)', pairs: [['Quien lo cuenta (prensa, redes)', 'Artesanos/as', 'intangible', 'relato y visibilidad', 'intangible', 'historias y acceso al taller']],
+      bona: 'El oficio se vende por el relato: quien lo cuenta fuera del taller aporta tanto como el punto de venta.' } },
+  servei_tecnic: {
+    ca: { centre: 'Consultors/es', rol: 'Antics clients', pairs: [['Antics clients', 'Consultors/es', 'intangible', 'referències i casos', 'intangible', 'seguiment i novetats']],
+      bona: 'Al servei tècnic, el següent client arriba per un cas que ja ha funcionat: cuida qui ja hi ha passat.' },
+    es: { centre: 'Consultores/as', rol: 'Antiguos clientes', pairs: [['Antiguos clientes', 'Consultores/as', 'intangible', 'referencias y casos', 'intangible', 'seguimiento y novedades']],
+      bona: 'En el servicio técnico, el siguiente cliente llega por un caso que ya ha funcionado: cuida a quien ya ha pasado por ahí.' } },
+  producte_digital: {
+    ca: { centre: 'Equip producte', rol: 'Qui ho recomana', pairs: [['Qui ho recomana', 'Equip producte', 'intangible', 'usuaris nous i ressenyes', 'intangible', 'accés anticipat i reconeixement']],
+      bona: 'Un producte digital viu de les ressenyes i de qui el recomana: dona-li accés abans que a ningú.' },
+    es: { centre: 'Equipo de producto', rol: 'Quien lo recomienda', pairs: [['Quien lo recomienda', 'Equipo de producto', 'intangible', 'usuarios nuevos y reseñas', 'intangible', 'acceso anticipado y reconocimiento']],
+      bona: 'Un producto digital vive de las reseñas y de quien lo recomienda: dale acceso antes que a nadie.' } },
+  cura_social: {
+    ca: { centre: 'Persones cuidadores', rol: 'Xarxa veïnal', pairs: [['Xarxa veïnal', 'Persones cuidadores', 'intangible', 'avisos i suport puntual', 'intangible', 'confiança i acompanyament']],
+      bona: 'La cura no s\'aguanta només amb professionals: la xarxa veïnal avisa abans que ningú.' },
+    es: { centre: 'Personas cuidadoras', rol: 'Red vecinal', pairs: [['Red vecinal', 'Personas cuidadoras', 'intangible', 'avisos y apoyo puntual', 'intangible', 'confianza y acompañamiento']],
+      bona: 'El cuidado no se sostiene solo con profesionales: la red vecinal avisa antes que nadie.' } },
+  formacio: {
+    ca: { centre: 'Formadors/es', rol: 'Antics alumnes', pairs: [['Antics alumnes', 'Formadors/es', 'intangible', 'recomanacions i testimonis', 'intangible', 'comunitat i ofertes de feina']],
+      bona: 'Els antics alumnes són la millor porta d\'entrada: si la comunitat continua viva, recomanen.' },
+    es: { centre: 'Formadores/as', rol: 'Antiguos alumnos', pairs: [['Antiguos alumnos', 'Formadores/as', 'intangible', 'recomendaciones y testimonios', 'intangible', 'comunidad y ofertas de trabajo']],
+      bona: 'Los antiguos alumnos son la mejor puerta de entrada: si la comunidad sigue viva, recomiendan.' } },
+  dinamitzacio_comercial: {
+    ca: { centre: 'Associació de comerciants', rol: 'Entitats del barri', pairs: [['Entitats del barri', 'Associació de comerciants', 'intangible', 'activitats i públic', 'intangible', 'espai a les campanyes'], ['Consumidors', 'Comerços de proximitat', 'intangible', 'fidelitat i boca-orella', 'intangible', 'tracte proper']],
+      bona: 'El comerç de proximitat guanya quan el barri hi és: les entitats porten públic i el tracte fa fidelitat.' },
+    es: { centre: 'Asociación de comerciantes', rol: 'Entidades del barrio', pairs: [['Entidades del barrio', 'Asociación de comerciantes', 'intangible', 'actividades y público', 'intangible', 'espacio en las campañas'], ['Consumidores', 'Comercios de proximidad', 'intangible', 'fidelidad y boca a boca', 'intangible', 'trato cercano']],
+      bona: 'El comercio de proximidad gana cuando el barrio está: las entidades traen público y el trato crea fidelidad.' } },
+  ocupacio: {
+    ca: { centre: 'Servei d\'ocupació', rol: 'Persones ja contractades', pairs: [['Persones ja contractades', 'Persones en cerca de feina', 'intangible', 'referents i consells', 'intangible', 'reconeixement'], ['Persones ja contractades', 'Servei d\'ocupació', 'intangible', 'retorn de com ha anat', 'intangible', 'acompanyament posterior'], ['Empreses locals', 'Servei d\'ocupació', 'intangible', 'perfils que necessiten', 'intangible', 'candidatures ajustades']],
+      bona: 'La inserció no acaba amb el contracte: qui ja treballa fa de referent i diu què ha funcionat.' },
+    es: { centre: 'Servicio de empleo', rol: 'Personas ya contratadas', pairs: [['Personas ya contratadas', 'Personas que buscan trabajo', 'intangible', 'referentes y consejos', 'intangible', 'reconocimiento'], ['Personas ya contratadas', 'Servicio de empleo', 'intangible', 'retorno de cómo ha ido', 'intangible', 'acompañamiento posterior'], ['Empresas locales', 'Servicio de empleo', 'intangible', 'perfiles que necesitan', 'intangible', 'candidaturas ajustadas']],
+      bona: 'La inserción no acaba con el contrato: quien ya trabaja hace de referente y dice qué ha funcionado.' } },
+  habitatge: {
+    ca: { centre: 'Grup motor', rol: 'Veïnat de l\'entorn', pairs: [['Veïnat de l\'entorn', 'Grup motor', 'intangible', 'acollida i suport', 'intangible', 'espais comuns oberts']],
+      bona: 'Un projecte d\'habitatge s\'arrela si obre els seus espais al veïnat: el suport de l\'entorn també és valor.' },
+    es: { centre: 'Grupo motor', rol: 'Vecindario del entorno', pairs: [['Vecindario del entorno', 'Grupo motor', 'intangible', 'acogida y apoyo', 'intangible', 'espacios comunes abiertos']],
+      bona: 'Un proyecto de vivienda arraiga si abre sus espacios al vecindario: el apoyo del entorno también es valor.' } },
+  energia: {
+    ca: { centre: 'Nucli promotor', rol: 'Altres comunitats energètiques', pairs: [['Altres comunitats energètiques', 'Nucli promotor', 'intangible', 'experiència i errors a evitar', 'intangible', 'dades i aprenentatges']],
+      bona: 'Cap comunitat energètica comença de zero: compartir errors i dades amb les altres estalvia mesos.' },
+    es: { centre: 'Núcleo promotor', rol: 'Otras comunidades energéticas', pairs: [['Otras comunidades energéticas', 'Núcleo promotor', 'intangible', 'experiencia y errores a evitar', 'intangible', 'datos y aprendizajes']],
+      bona: 'Ninguna comunidad energética empieza de cero: compartir errores y datos con las demás ahorra meses.' } },
+  alimentacio: {
+    ca: { centre: 'Pagesia local', rol: 'Escoles i menjadors', pairs: [['Escoles i menjadors', 'Pagesia local', 'tangible', 'comandes regulars', 'intangible', 'visites i aprenentatge'], ['Consumidors', 'Pagesia local', 'intangible', 'fidelitat i suggeriments', 'intangible', 'confiança i transparència'], ['Pagesia local', 'Grup de consum', 'intangible', 'saber de temporada i de cultiu', 'intangible', 'compromís de compra']],
+      bona: 'La pagesia aguanta amb compra estable i confiança: els menjadors donen volum i les visites, vincle.' },
+    es: { centre: 'Campesinado local', rol: 'Escuelas y comedores', pairs: [['Escuelas y comedores', 'Campesinado local', 'tangible', 'pedidos regulares', 'intangible', 'visitas y aprendizaje'], ['Consumidores', 'Campesinado local', 'intangible', 'fidelidad y sugerencias', 'intangible', 'confianza y transparencia'], ['Campesinado local', 'Grupo de consumo', 'intangible', 'saber de temporada y de cultivo', 'intangible', 'compromiso de compra']],
+      bona: 'El campesinado aguanta con compra estable y confianza: los comedores dan volumen y las visitas, vínculo.' } },
+  cures: {
+    ca: { centre: 'Nucli de cura', rol: 'Comerços del barri', pairs: [['Comerços del barri', 'Nucli de cura', 'intangible', 'avisos de qui necessita ajuda', 'intangible', 'xarxa i reconeixement']],
+      bona: 'Qui veu cada dia la gent gran (la farmàcia, el forn) és qui avisa primer: compta-hi.' },
+    es: { centre: 'Núcleo de cuidado', rol: 'Comercios del barrio', pairs: [['Comercios del barrio', 'Núcleo de cuidado', 'intangible', 'avisos de quien necesita ayuda', 'intangible', 'red y reconocimiento']],
+      bona: 'Quien ve cada día a las personas mayores (la farmacia, el horno) es quien avisa primero: cuenta con ello.' } },
+  cultura: {
+    ca: { centre: 'Entitats culturals', rol: 'Públic fidel', pairs: [['Públic fidel', 'Entitats culturals', 'intangible', 'assistència i difusió', 'intangible', 'pertinença i programació propera']],
+      bona: 'El públic fidel és el que omple i difon: fes-lo sentir part de la programació.' },
+    es: { centre: 'Entidades culturales', rol: 'Público fiel', pairs: [['Público fiel', 'Entidades culturales', 'intangible', 'asistencia y difusión', 'intangible', 'pertenencia y programación cercana']],
+      bona: 'El público fiel es el que llena y difunde: hazlo sentir parte de la programación.' } },
+  turisme: {
+    ca: { centre: 'Ens de destinació', rol: 'Ens de destinació', pairs: [['Ens de destinació', 'Allotjaments', 'intangible', 'relat comú i coordinació', 'intangible', 'dades de visitants'], ['Ens de destinació', 'Productors', 'intangible', 'visibilitat del producte local', 'intangible', 'autenticitat del relat'], ['Ajuntament', 'Ens de destinació', 'tangible', 'suport i recursos', 'intangible', 'reputació del territori']],
+      bona: 'Una destinació és una xarxa, no una suma d\'empreses: algú ha de cosir el relat comú i compartir-ne les dades.' },
+    es: { centre: 'Ente de destino', rol: 'Ente de destino', pairs: [['Ente de destino', 'Alojamientos', 'intangible', 'relato común y coordinación', 'intangible', 'datos de visitantes'], ['Ente de destino', 'Productores', 'intangible', 'visibilidad del producto local', 'intangible', 'autenticidad del relato'], ['Ayuntamiento', 'Ente de destino', 'tangible', 'apoyo y recursos', 'intangible', 'reputación del territorio']],
+      bona: 'Un destino es una red, no una suma de empresas: alguien tiene que coser el relato común y compartir sus datos.' } },
+  economia_circular: {
+    ca: { centre: 'Nucli gestor', rol: 'Persones reparadores voluntàries', pairs: [['Persones reparadores voluntàries', 'Nucli gestor', 'intangible', 'saber reparar', 'intangible', 'comunitat i reconeixement'], ['Persones reparadores voluntàries', 'Veïnat', 'intangible', 'aprendre a reparar', 'intangible', 'confiança i objectes per salvar'], ['Veïnat', 'Comerços', 'intangible', 'boca-orella', 'intangible', 'consell de consum']],
+      bona: 'L\'economia circular és sobretot saber compartit: qui ensenya a reparar multiplica el que es salva.' },
+    es: { centre: 'Núcleo gestor', rol: 'Personas reparadoras voluntarias', pairs: [['Personas reparadoras voluntarias', 'Núcleo gestor', 'intangible', 'saber reparar', 'intangible', 'comunidad y reconocimiento'], ['Personas reparadoras voluntarias', 'Vecindario', 'intangible', 'aprender a reparar', 'intangible', 'confianza y objetos por salvar'], ['Vecindario', 'Comercios', 'intangible', 'boca a boca', 'intangible', 'consejo de consumo']],
+      bona: 'La economía circular es sobre todo saber compartido: quien enseña a reparar multiplica lo que se salva.' } },
+  digitalitzacio: {
+    ca: { centre: 'Nucli tècnic', rol: 'Persones mentores', pairs: [['Persones mentores', 'Veïnat', 'intangible', 'acompanyament pas a pas', 'intangible', 'agraïment i confiança'], ['Persones mentores', 'Nucli tècnic', 'intangible', 'temps i coneixement', 'intangible', 'comunitat i formació']],
+      bona: 'La bretxa digital es tanca de persona a persona: les mentores fan el que cap curs fa.' },
+    es: { centre: 'Núcleo técnico', rol: 'Personas mentoras', pairs: [['Personas mentoras', 'Vecindario', 'intangible', 'acompañamiento paso a paso', 'intangible', 'agradecimiento y confianza'], ['Personas mentoras', 'Núcleo técnico', 'intangible', 'tiempo y conocimiento', 'intangible', 'comunidad y formación']],
+      bona: 'La brecha digital se cierra de persona a persona: las mentoras hacen lo que ningún curso hace.' } },
+  joventut: {
+    ca: { centre: 'Esplai / entitats', rol: 'Famílies', pairs: [['Famílies', 'Esplai / entitats', 'tangible', 'quotes i autoritzacions', 'intangible', 'confiança i col·laboració'], ['Famílies', 'Jovent', 'intangible', 'suport i permís', 'intangible', 'autonomia i ganes']],
+      bona: 'Amb el jovent, les famílies decideixen molt: si confien, el projecte creix.' },
+    es: { centre: 'Esplai / entidades', rol: 'Familias', pairs: [['Familias', 'Esplai / entidades', 'tangible', 'cuotas y autorizaciones', 'intangible', 'confianza y colaboración'], ['Familias', 'Juventud', 'intangible', 'apoyo y permiso', 'intangible', 'autonomía y ganas']],
+      bona: 'Con la juventud, las familias deciden mucho: si confían, el proyecto crece.' } },
+  mobilitat: {
+    ca: { centre: 'Plataforma de mobilitat', rol: 'Plataforma de mobilitat', pairs: [['Plataforma de mobilitat', 'Veïnat', 'intangible', 'propostes i camins segurs', 'intangible', 'participació i dades d\'ús'], ['Plataforma de mobilitat', 'Ajuntament', 'intangible', 'diagnosi ciutadana', 'tangible', 'suport i obres'], ['Escoles', 'Plataforma de mobilitat', 'intangible', 'camins escolars', 'intangible', 'acompanyament']],
+      bona: 'La mobilitat canvia quan el veïnat aporta dades del dia a dia: algú ha de recollir-les i portar-les a qui decideix.' },
+    es: { centre: 'Plataforma de movilidad', rol: 'Plataforma de movilidad', pairs: [['Plataforma de movilidad', 'Vecindario', 'intangible', 'propuestas y caminos seguros', 'intangible', 'participación y datos de uso'], ['Plataforma de movilidad', 'Ayuntamiento', 'intangible', 'diagnóstico ciudadano', 'tangible', 'apoyo y obras'], ['Escuelas', 'Plataforma de movilidad', 'intangible', 'caminos escolares', 'intangible', 'acompañamiento']],
+      bona: 'La movilidad cambia cuando el vecindario aporta datos del día a día: alguien tiene que recogerlos y llevarlos a quien decide.' } },
+  acollida: {
+    ca: { centre: 'Entitats d\'acollida', rol: 'Persones mentores del veïnat', pairs: [['Persones mentores del veïnat', 'Nouvinguts', 'intangible', 'llengua i xarxa', 'intangible', 'cultura i amistat'], ['Persones mentores del veïnat', 'Entitats d\'acollida', 'intangible', 'temps voluntari', 'intangible', 'formació i suport']],
+      bona: 'Acollir és fer xarxa: una persona del veïnat que acompanya obre més portes que cap tràmit.' },
+    es: { centre: 'Entidades de acogida', rol: 'Personas mentoras del vecindario', pairs: [['Personas mentoras del vecindario', 'Recién llegados', 'intangible', 'idioma y red', 'intangible', 'cultura y amistad'], ['Personas mentoras del vecindario', 'Entidades de acogida', 'intangible', 'tiempo voluntario', 'intangible', 'formación y apoyo']],
+      bona: 'Acoger es hacer red: una persona del vecindario que acompaña abre más puertas que ningún trámite.' } },
+  territori: {
+    ca: { centre: 'Custòdia / entitat', rol: 'Escoles i famílies', pairs: [['Escoles i famílies', 'Custòdia / entitat', 'intangible', 'participació i voluntariat de demà', 'intangible', 'educació ambiental']],
+      bona: 'Custodiar el territori és cosa de generacions: les escoles d\'avui són el voluntariat de demà.' },
+    es: { centre: 'Custodia / entidad', rol: 'Escuelas y familias', pairs: [['Escuelas y familias', 'Custodia / entidad', 'intangible', 'participación y voluntariado de mañana', 'intangible', 'educación ambiental']],
+      bona: 'Custodiar el territorio es cosa de generaciones: las escuelas de hoy son el voluntariado de mañana.' } }
+};
+/* El model complet en una llengua: el de l'app (o de la Matriu) amb el que el
+   completa. Un rol o un centre que no hi és es diu, no es dibuixa a cegues. */
+function completa(id, m, ll, falten) {
+  const b = BONES[id] && BONES[id][ll];
+  if (!b) { falten.add('BONES.' + id + '.' + ll); return m; }
+  const roles = m.roles.indexOf(b.rol) < 0 ? m.roles.concat([b.rol]) : m.roles.slice();
+  b.pairs.forEach(p => [p[0], p[1]].forEach(r => { if (roles.indexOf(r) < 0) falten.add('BONES.' + id + '.' + ll + ': rol desconegut «' + r + '»'); }));
+  if (roles.indexOf(b.centre) < 0) falten.add('BONES.' + id + '.' + ll + ': centre desconegut «' + b.centre + '»');
+  return Object.assign({}, m, { roles, pairs: m.pairs.concat(b.pairs), centre: b.centre, bona: b.bona });
+}
+
 function llegeixSectors() {
   const h = readFileSync(join(ARREL, 'index.html'), 'utf8');
   const c = h.indexOf('const CRITICAL_ACTIVITIES=['), d = h.indexOf('\n];', c);
@@ -441,7 +597,8 @@ function models() {
     roles: m.roles.map(r => (i < 0 ? r : tr(r, i))),
     pairs: m.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || i < 0 ? p[k] : tr(p[k], i))))
   });
-  const out = llegeixApp().map(m => ({ id: m.id, icona: m.icon, ca: llengua(m, -1), es: llengua(m, 0), en: llengua(m, 1) }));
+  /* L'anglès queda com a l'app: les bones pràctiques, de moment, en català i castellà. */
+  const out = llegeixApp().map(m => ({ id: m.id, icona: m.icon, paraules: PARAULES[m.id] || '', ca: completa(m.id, llengua(m, -1), 'ca', falten), es: completa(m.id, llengua(m, 0), 'es', falten), en: llengua(m, 1) }));
   const es = x => TS[x] || (T[x] ? T[x][0] : (falten.add(x), x));
   const sector = (a, cat) => ({
     nom: cat ? a.name : es(a.name), diu: cat ? a.one : es(a.one),
@@ -449,7 +606,8 @@ function models() {
     pairs: a.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || cat ? p[k] : es(p[k])))),
     passos: (a.kanban || []).map(k => (cat ? k : es(k)))
   });
-  const sectors = llegeixSectors().map(a => ({ id: a.id, icona: a.icon, ca: sector(a, true), es: sector(a, false) }));
+  const sectors = llegeixSectors().map(a => ({ id: a.id, icona: a.icon, paraules: PARAULES[a.id] || '', ca: completa(a.id, sector(a, true), 'ca', falten), es: completa(a.id, sector(a, false), 'es', falten) }));
+  out.concat(sectors).filter(m => !PARAULES[m.id]).forEach(m => falten.add('PARAULES.' + m.id));
   return { out, sectors, falten: [...falten] };
 }
 
@@ -467,16 +625,39 @@ function genera() {
     + '  var MODELS = ' + JSON.stringify(out, null, 1).replace(/\n/g, '\n  ') + ';\n'
     + '  /* Els sectors de la Matriu: rols, fluxos i els passos per posar-ho en marxa. */\n'
     + '  var SECTORS = ' + JSON.stringify(sectors, null, 1).replace(/\n/g, '\n  ') + ';\n'
-    + '  /* El rol que més dona i rep: el que fa de «tu» quan algú comença per aquest model. */\n'
-    + '  function centre(m) { var n = {}; m.pairs.forEach(function (p) { n[p[0]] = (n[p[0]] || 0) + 1; n[p[1]] = (n[p[1]] || 0) + 1; });\n'
+    + '  /* Qui fa de «tu» quan algú comença per aquest model: el que el promou (`centre`) o, si no el diu, el rol que més dona i rep. */\n'
+    + '  function centre(m) { if (m.centre) return m.centre; var n = {}; m.pairs.forEach(function (p) { n[p[0]] = (n[p[0]] || 0) + 1; n[p[1]] = (n[p[1]] || 0) + 1; });\n'
     + '    return m.roles.slice().sort(function (a, b) { return (n[b] || 0) - (n[a] || 0); })[0]; }\n'
     + '  /* El model en una llengua, amb el centre canviat pel nom de qui el fa servir. */\n'
     + '  function mapa(id, llengua, casa) {\n'
     + '    var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
     + '    var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };\n'
-    + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom };\n'
+    + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || \'\' };\n'
     + '  }\n'
-    + '  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa };\n'
+    + '  /* Quin model o sector s\'assembla més al que algú explica amb les seves paraules.\n'
+    + '     Sense IA: arrels curtes (sense accents ni plural); el nom i el «diu» compten doble i\n'
+    + '     una arrel comuna a molts models pesa menys. Torna null si no n\'hi ha prou per dir-ho. */\n'
+    + '  var BUIDES = /^(quie|teng|tene|vole|nues|nost|porq|perq|sobr|tamb|todo|tots|dond|cuan|quan|hace|desd|entr|much|molt|pued|pode|esta|somo|siem|semp|ahor|aque|esto|otro|altr|pers|para|como|cosa|bien|vull|vols|fins|hast|dels|unes|unos|haci|ques|aixo|pero|vida|grup|gent|bonit|quer|volem|nece)/;\n'
+    + '  function arrels(t) { return String(t || \'\').toLowerCase().normalize(\'NFD\').replace(/[\\u0300-\\u036f]/g, \'\')\n'
+    + '    .split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 4; }).map(function (w) { w = w.length > 4 ? w.replace(/s$/, \'\') : w; return w.length > 5 ? w.slice(0, 5) : w; })\n'
+    + '    .filter(function (w) { return !BUIDES.test(w); }); }\n'
+    + '  function textDe(m) { return [m.nom, m.nom, m.diu, m.diu, m.roles.join(\' \'), m.pairs.map(function (p) { return p[3] + \' \' + p[5]; }).join(\' \')].join(\' \'); }\n'
+    + '  function suggereix(text, llengua) {\n'
+    + '    var meves = {}; arrels(text).forEach(function (w) { meves[w] = 1; });\n'
+    + '    var tots = MODELS.concat(SECTORS), df = {}, bosses = tots.map(function (M) {\n'
+    + '      var b = {}; arrels(textDe(M[llengua] || M.es || M.ca) + \' \' + M.paraules + \' \' + M.paraules).forEach(function (w) { b[w] = (b[w] || 0) + 1; });\n'
+    + '      Object.keys(b).forEach(function (w) { df[w] = (df[w] || 0) + 1; }); return b; });\n'
+    + '    /* Una arrel que surt a molts models diu poc: pesa menys (1 / quants la tenen). */\n'
+    + '    var millor = null;\n'
+    + '    tots.forEach(function (M, i) {\n'
+    + '      var punts = 0, n = 0;\n'
+    + '      Object.keys(meves).forEach(function (w) { if (bosses[i][w]) { n++; punts += Math.min(bosses[i][w], 2) / df[w]; } });\n'
+    + '      var m = M[llengua] || M.es || M.ca;\n'
+    + '      if (punts >= 1 && (!millor || punts > millor.punts)) millor = { id: M.id, icona: M.icona, nom: m.nom, punts: Math.round(punts * 100) / 100, sector: SECTORS.indexOf(M) >= 0 };\n'
+    + '    });\n'
+    + '    return millor;\n'
+    + '  }\n'
+    + '  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix };\n'
     + '});\n';
   return { cos, falten };
 }
@@ -484,6 +665,20 @@ function genera() {
 if (require.main === module) {
   const { cos, falten } = genera();
   if (falten.length) { console.error('✗ Textos de l\'app sense traduir a build-models-mapa.js:\n  ' + falten.join('\n  ')); process.exit(1); }
+  /* La qualitat: cada model publicat, en cada llengua, compleix les regles 2 a 5
+     del mètode (de 6 a 12 rols, un terç d'intangibles, tot recíproc, cap rol
+     solt) tal com les compta mapa-valor.js. L'abast el posa qui el fa servir. */
+  {
+    const MV = require('../lib/mapa-valor.js'), MM = Function('module', cos + ';return module.exports')({ exports: {} });
+    const REGLES = ['rols', 'menes', 'reciprocitat', 'solts'], mals = [];
+    MM.MODELS.concat(MM.SECTORS).forEach(M => ['ca', 'es'].forEach(ll => {
+      const m = MM.mapa(M.id, ll, null), r = MV.revisa({ abast: '-', roles: m.roles, pairs: m.pairs });
+      const ko = r.regles.filter(x => REGLES.indexOf(x.id) >= 0 && !x.ok).map(x => x.id);
+      if (ko.length) mals.push(M.id + ' (' + ll + '): ' + ko.join(', '));
+    }));
+    if (mals.length) { console.error('✗ Models que no compleixen les regles del mapa (BONES):\n  ' + mals.join('\n  ')); process.exit(1); }
+    console.log('✓ Els ' + (MM.MODELS.length + MM.SECTORS.length) + ' models compleixen les regles 2 a 5 en català i castellà');
+  }
   if (process.argv.includes('--check')) {
     const ara = existsSync(SORTIDA) ? readFileSync(SORTIDA, 'utf8') : '';
     if (ara !== cos) { console.error('✗ SOS/lib/models-mapa.js no és el que sortiria ara: node SOS/tools/build-models-mapa.js'); process.exit(1); }

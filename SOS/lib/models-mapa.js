@@ -10,6 +10,7 @@
    {
     "id": "negoci",
     "icona": "🏪",
+    "paraules": "negocio negoci empresa pyme pime tienda botiga clientes clients ventas vendes",
     "ca": {
      "nom": "El meu negoci",
      "diu": "El mapa de valor del teu negoci: qui hi dona què, i què torna.",
@@ -18,7 +19,8 @@
       "Clients",
       "Equip",
       "Proveïdors",
-      "Aliats"
+      "Aliats",
+      "Qui et recomana"
      ],
      "pairs": [
       [
@@ -60,8 +62,26 @@
        "recomanació",
        "intangible",
        "reconeixement"
+      ],
+      [
+       "Qui et recomana",
+       "El negoci",
+       "intangible",
+       "clients nous i confiança",
+       "intangible",
+       "reconeixement i novetats abans que ningú"
+      ],
+      [
+       "Equip",
+       "Clients",
+       "intangible",
+       "tracte i consell",
+       "intangible",
+       "idees de millora"
       ]
-     ]
+     ],
+     "centre": "El negoci",
+     "bona": "El que no es paga (recomanacions, confiança, idees) és el que fa créixer un negoci. Posa-ho al mapa."
     },
     "es": {
      "nom": "Mi negocio",
@@ -71,7 +91,8 @@
       "Clientes",
       "Equipo",
       "Proveedores",
-      "Aliados"
+      "Aliados",
+      "Quien te recomienda"
      ],
      "pairs": [
       [
@@ -113,8 +134,26 @@
        "recomendación",
        "intangible",
        "reconocimiento"
+      ],
+      [
+       "Quien te recomienda",
+       "El negocio",
+       "intangible",
+       "clientes nuevos y confianza",
+       "intangible",
+       "reconocimiento y novedades antes que nadie"
+      ],
+      [
+       "Equipo",
+       "Clientes",
+       "intangible",
+       "trato y consejo",
+       "intangible",
+       "ideas de mejora"
       ]
-     ]
+     ],
+     "centre": "El negocio",
+     "bona": "Lo que no se paga (recomendaciones, confianza, ideas) es lo que hace crecer un negocio. Ponlo en el mapa."
     },
     "en": {
      "nom": "My business",
@@ -173,6 +212,7 @@
    {
     "id": "servei_proximitat",
     "icona": "🛎",
+    "paraules": "barrio barri vecinos veïns reparaciones reparacions atención atenció domicilio proximidad proximitat",
     "ca": {
      "nom": "Servei de proximitat",
      "diu": "Servei que s'ofereix directament a la comunitat local (educació, cures, reparacions, atenció).",
@@ -181,7 +221,8 @@
       "Persones usuàries",
       "Nucli gestor",
       "Referent territorial",
-      "Ecosistema aliat"
+      "Ecosistema aliat",
+      "Qui ho recomana al barri"
      ],
      "pairs": [
       [
@@ -247,8 +288,18 @@
        "pràctica reflexiva compartida",
        "intangible",
        "criteris i bones pràctiques"
+      ],
+      [
+       "Qui ho recomana al barri",
+       "Nucli gestor",
+       "intangible",
+       "persones noves que confien",
+       "intangible",
+       "visibilitat i agraïment"
       ]
-     ]
+     ],
+     "centre": "Nucli gestor",
+     "bona": "Un servei de proximitat creix de boca-orella: qui el recomana és part de la xarxa."
     },
     "es": {
      "nom": "Servicio de proximidad",
@@ -258,7 +309,8 @@
       "Personas usuarias",
       "Núcleo gestor",
       "Referente territorial",
-      "Ecosistema aliado"
+      "Ecosistema aliado",
+      "Quien lo recomienda en el barrio"
      ],
      "pairs": [
       [
@@ -324,8 +376,18 @@
        "práctica reflexiva compartida",
        "intangible",
        "criterios y buenas prácticas"
+      ],
+      [
+       "Quien lo recomienda en el barrio",
+       "Núcleo gestor",
+       "intangible",
+       "personas nuevas que confían",
+       "intangible",
+       "visibilidad y agradecimiento"
       ]
-     ]
+     ],
+     "centre": "Núcleo gestor",
+     "bona": "Un servicio de proximidad crece por el boca a boca: quien lo recomienda es parte de la red."
     },
     "en": {
      "nom": "Local service",
@@ -408,6 +470,7 @@
    {
     "id": "producte_artesa",
     "icona": "🧶",
+    "paraules": "artesano artesà taller cerámica ceràmica manufactura fabricamos fabriquem obrador elaboramos elaborem bodega celler vino vi",
     "ca": {
      "nom": "Producte artesà / manufactura",
      "diu": "Producció física en petit format, taller propi o compartit.",
@@ -416,7 +479,8 @@
       "Proveïdors locals",
       "Punt de venda",
       "Clientes",
-      "Comunitat i formació"
+      "Comunitat i formació",
+      "Qui ho explica (premsa, xarxes)"
      ],
      "pairs": [
       [
@@ -482,8 +546,18 @@
        "coneixement del material",
        "tangible",
        "restes i materials per practicar"
+      ],
+      [
+       "Qui ho explica (premsa, xarxes)",
+       "Artesans/es",
+       "intangible",
+       "relat i visibilitat",
+       "intangible",
+       "històries i accés al taller"
       ]
-     ]
+     ],
+     "centre": "Artesans/es",
+     "bona": "L'ofici es ven pel relat: qui l'explica fora del taller hi aporta tant com el punt de venda."
     },
     "es": {
      "nom": "Producto artesano / manufactura",
@@ -493,7 +567,8 @@
       "Proveedores locales",
       "Punto de venta",
       "Clientes",
-      "Comunidad y formación"
+      "Comunidad y formación",
+      "Quien lo cuenta (prensa, redes)"
      ],
      "pairs": [
       [
@@ -559,8 +634,18 @@
        "conocimiento del material",
        "tangible",
        "restos y materiales para practicar"
+      ],
+      [
+       "Quien lo cuenta (prensa, redes)",
+       "Artesanos/as",
+       "intangible",
+       "relato y visibilidad",
+       "intangible",
+       "historias y acceso al taller"
       ]
-     ]
+     ],
+     "centre": "Artesanos/as",
+     "bona": "El oficio se vende por el relato: quien lo cuenta fuera del taller aporta tanto como el punto de venta."
     },
     "en": {
      "nom": "Craft product / manufacturing",
@@ -643,6 +728,7 @@
    {
     "id": "servei_tecnic",
     "icona": "💼",
+    "paraules": "consultoría consultoria consultor consultora asesoría assessoria estrategia estratègia ingeniería enginyeria despacho despatx proyectos projectes",
     "ca": {
      "nom": "Consultoria / servei tècnic",
      "diu": "Consultoria, disseny, IT, arquitectura, assessoria — projecte per projecte.",
@@ -651,7 +737,8 @@
       "Clients institucionals",
       "Clients privats",
       "Xarxa de partners",
-      "Nucli operatiu"
+      "Nucli operatiu",
+      "Antics clients"
      ],
      "pairs": [
       [
@@ -717,8 +804,18 @@
        "cas d'ús públic replicable",
        "intangible",
        "validació de mercat"
+      ],
+      [
+       "Antics clients",
+       "Consultors/es",
+       "intangible",
+       "referències i casos",
+       "intangible",
+       "seguiment i novetats"
       ]
-     ]
+     ],
+     "centre": "Consultors/es",
+     "bona": "Al servei tècnic, el següent client arriba per un cas que ja ha funcionat: cuida qui ja hi ha passat."
     },
     "es": {
      "nom": "Consultoría / servicio técnico",
@@ -728,7 +825,8 @@
       "Clientes institucionales",
       "Clientes privados",
       "Red de partners",
-      "Núcleo operativo"
+      "Núcleo operativo",
+      "Antiguos clientes"
      ],
      "pairs": [
       [
@@ -794,8 +892,18 @@
        "caso de uso público replicable",
        "intangible",
        "validación de mercado"
+      ],
+      [
+       "Antiguos clientes",
+       "Consultores/as",
+       "intangible",
+       "referencias y casos",
+       "intangible",
+       "seguimiento y novedades"
       ]
-     ]
+     ],
+     "centre": "Consultores/as",
+     "bona": "En el servicio técnico, el siguiente cliente llega por un caso que ya ha funcionado: cuida a quien ya ha pasado por ahí."
     },
     "en": {
      "nom": "Consulting / technical service",
@@ -878,6 +986,7 @@
    {
     "id": "producte_digital",
     "icona": "📱",
+    "paraules": "app aplicación aplicació software plataforma saas digital usuarios usuaris suscripción subscripció online",
     "ca": {
      "nom": "Producte digital / SaaS",
      "diu": "App, plataforma, servei online — usuaris massius o de nínxol.",
@@ -886,7 +995,8 @@
       "Usuaris/es",
       "Comunitat contributora",
       "Patrocini i inversió",
-      "Infraestructura"
+      "Infraestructura",
+      "Qui ho recomana"
      ],
      "pairs": [
       [
@@ -952,8 +1062,18 @@
        "full de ruta obert",
        "intangible",
        "prioritats de la base"
+      ],
+      [
+       "Qui ho recomana",
+       "Equip producte",
+       "intangible",
+       "usuaris nous i ressenyes",
+       "intangible",
+       "accés anticipat i reconeixement"
       ]
-     ]
+     ],
+     "centre": "Equip producte",
+     "bona": "Un producte digital viu de les ressenyes i de qui el recomana: dona-li accés abans que a ningú."
     },
     "es": {
      "nom": "Producto digital / SaaS",
@@ -963,7 +1083,8 @@
       "Usuarios/as",
       "Comunidad que contribuye",
       "Patrocinio e inversión",
-      "Infraestructura"
+      "Infraestructura",
+      "Quien lo recomienda"
      ],
      "pairs": [
       [
@@ -1029,8 +1150,18 @@
        "hoja de ruta abierta",
        "intangible",
        "prioridades de la base"
+      ],
+      [
+       "Quien lo recomienda",
+       "Equipo de producto",
+       "intangible",
+       "usuarios nuevos y reseñas",
+       "intangible",
+       "acceso anticipado y reconocimiento"
       ]
-     ]
+     ],
+     "centre": "Equipo de producto",
+     "bona": "Un producto digital vive de las reseñas y de quien lo recomienda: dale acceso antes que a nadie."
     },
     "en": {
      "nom": "Digital product / SaaS",
@@ -1113,6 +1244,7 @@
    {
     "id": "cura_social",
     "icona": "💗",
+    "paraules": "cuidado cures acompañamiento acompanyament mayores grans dependencia dependència familias famílies soledad soledat",
     "ca": {
      "nom": "Cura i acompanyament social",
      "diu": "Xarxa de cures, salut comunitària, acompanyament a persones vulnerables.",
@@ -1121,7 +1253,8 @@
       "Persones cuidades",
       "Famílies",
       "Serveis socials/CAP",
-      "Voluntariat"
+      "Voluntariat",
+      "Xarxa veïnal"
      ],
      "pairs": [
       [
@@ -1187,8 +1320,18 @@
        "acollida a casa",
        "intangible",
        "relleu i respir"
+      ],
+      [
+       "Xarxa veïnal",
+       "Persones cuidadores",
+       "intangible",
+       "avisos i suport puntual",
+       "intangible",
+       "confiança i acompanyament"
       ]
-     ]
+     ],
+     "centre": "Persones cuidadores",
+     "bona": "La cura no s'aguanta només amb professionals: la xarxa veïnal avisa abans que ningú."
     },
     "es": {
      "nom": "Cuidados y acompañamiento social",
@@ -1198,7 +1341,8 @@
       "Personas cuidadas",
       "Familias",
       "Servicios sociales / centro de salud",
-      "Voluntariado"
+      "Voluntariado",
+      "Red vecinal"
      ],
      "pairs": [
       [
@@ -1264,8 +1408,18 @@
        "acogida en casa",
        "intangible",
        "relevo y respiro"
+      ],
+      [
+       "Red vecinal",
+       "Personas cuidadoras",
+       "intangible",
+       "avisos y apoyo puntual",
+       "intangible",
+       "confianza y acompañamiento"
       ]
-     ]
+     ],
+     "centre": "Personas cuidadoras",
+     "bona": "El cuidado no se sostiene solo con profesionales: la red vecinal avisa antes que nadie."
     },
     "en": {
      "nom": "Care and social support",
@@ -1348,6 +1502,7 @@
    {
     "id": "formacio",
     "icona": "📚",
+    "paraules": "escuela escola academia acadèmia cursos curso curs formación formació profesores professors alumnos alumnes idiomas idiomes clases classes enseñar ensenyar",
     "ca": {
      "nom": "Educació / formació",
      "diu": "Formació reglada o lliure, mentoria, escola comunitària.",
@@ -1356,7 +1511,8 @@
       "Aprenents",
       "Coordinació pedagògica",
       "Espai formatiu",
-      "Comunitat de pràctica"
+      "Comunitat de pràctica",
+      "Antics alumnes"
      ],
      "pairs": [
       [
@@ -1422,8 +1578,18 @@
        "què demana el sector",
        "intangible",
        "formació que s'hi ajusta"
+      ],
+      [
+       "Antics alumnes",
+       "Formadors/es",
+       "intangible",
+       "recomanacions i testimonis",
+       "intangible",
+       "comunitat i ofertes de feina"
       ]
-     ]
+     ],
+     "centre": "Formadors/es",
+     "bona": "Els antics alumnes són la millor porta d'entrada: si la comunitat continua viva, recomanen."
     },
     "es": {
      "nom": "Educación / formación",
@@ -1433,7 +1599,8 @@
       "Alumnos",
       "Coordinación pedagógica",
       "Espacio de formación",
-      "Comunidad de práctica"
+      "Comunidad de práctica",
+      "Antiguos alumnos"
      ],
      "pairs": [
       [
@@ -1499,8 +1666,18 @@
        "qué pide el sector",
        "intangible",
        "formación que se ajusta"
+      ],
+      [
+       "Antiguos alumnos",
+       "Formadores/as",
+       "intangible",
+       "recomendaciones y testimonios",
+       "intangible",
+       "comunidad y ofertas de trabajo"
       ]
-     ]
+     ],
+     "centre": "Formadores/as",
+     "bona": "Los antiguos alumnos son la mejor puerta de entrada: si la comunidad sigue viva, recomiendan."
     },
     "en": {
      "nom": "Education / training",
@@ -1586,6 +1763,7 @@
    {
     "id": "dinamitzacio_comercial",
     "icona": "🏪",
+    "paraules": "comercio comerç tiendas botigues comerciantes comerciants mercado mercat compra local proximidad",
     "ca": {
      "nom": "Dinamització comercial",
      "diu": "Revitalitzar el comerç i l'economia de proximitat.",
@@ -1594,7 +1772,8 @@
       "Ajuntament",
       "Associació de comerciants",
       "Veïnat",
-      "Consumidors"
+      "Consumidors",
+      "Entitats del barri"
      ],
      "pairs": [
       [
@@ -1644,6 +1823,22 @@
        "moneda local i promocions",
        "tangible",
        "despesa que es queda al poble"
+      ],
+      [
+       "Entitats del barri",
+       "Associació de comerciants",
+       "intangible",
+       "activitats i públic",
+       "intangible",
+       "espai a les campanyes"
+      ],
+      [
+       "Consumidors",
+       "Comerços de proximitat",
+       "intangible",
+       "fidelitat i boca-orella",
+       "intangible",
+       "tracte proper"
       ]
      ],
      "passos": [
@@ -1652,7 +1847,9 @@
       "Campanya de proximitat",
       "Fires i mercats",
       "Fidelització i moneda local"
-     ]
+     ],
+     "centre": "Associació de comerciants",
+     "bona": "El comerç de proximitat guanya quan el barri hi és: les entitats porten públic i el tracte fa fidelitat."
     },
     "es": {
      "nom": "Dinamización comercial",
@@ -1662,7 +1859,8 @@
       "Ayuntamiento",
       "Asociación de comerciantes",
       "Vecindario",
-      "Consumidores"
+      "Consumidores",
+      "Entidades del barrio"
      ],
      "pairs": [
       [
@@ -1712,6 +1910,22 @@
        "moneda local y promociones",
        "tangible",
        "gasto que se queda en el pueblo"
+      ],
+      [
+       "Entidades del barrio",
+       "Asociación de comerciantes",
+       "intangible",
+       "actividades y público",
+       "intangible",
+       "espacio en las campañas"
+      ],
+      [
+       "Consumidores",
+       "Comercios de proximidad",
+       "intangible",
+       "fidelidad y boca a boca",
+       "intangible",
+       "trato cercano"
       ]
      ],
      "passos": [
@@ -1720,12 +1934,15 @@
       "Campaña de proximidad",
       "Ferias y mercados",
       "Fidelización y moneda local"
-     ]
+     ],
+     "centre": "Asociación de comerciantes",
+     "bona": "El comercio de proximidad gana cuando el barrio está: las entidades traen público y el trato crea fidelidad."
     }
    },
    {
     "id": "ocupacio",
     "icona": "💼",
+    "paraules": "empleo ocupació trabajo feina inserción inserció parados aturats orientación orientació currículum",
     "ca": {
      "nom": "Ocupació i inserció laboral",
      "diu": "Crear ocupació digna i itineraris d'inserció.",
@@ -1734,7 +1951,8 @@
       "Empreses locals",
       "Ajuntament",
       "Entitats formatives",
-      "Servei d'ocupació"
+      "Servei d'ocupació",
+      "Persones ja contractades"
      ],
      "pairs": [
       [
@@ -1784,6 +2002,30 @@
        "sòl, incentius i contractació",
        "tangible",
        "ocupació arrelada al municipi"
+      ],
+      [
+       "Persones ja contractades",
+       "Persones en cerca de feina",
+       "intangible",
+       "referents i consells",
+       "intangible",
+       "reconeixement"
+      ],
+      [
+       "Persones ja contractades",
+       "Servei d'ocupació",
+       "intangible",
+       "retorn de com ha anat",
+       "intangible",
+       "acompanyament posterior"
+      ],
+      [
+       "Empreses locals",
+       "Servei d'ocupació",
+       "intangible",
+       "perfils que necessiten",
+       "intangible",
+       "candidatures ajustades"
       ]
      ],
      "passos": [
@@ -1792,7 +2034,9 @@
       "Formació a mida",
       "Pràctiques i inserció",
       "Seguiment"
-     ]
+     ],
+     "centre": "Servei d'ocupació",
+     "bona": "La inserció no acaba amb el contracte: qui ja treballa fa de referent i diu què ha funcionat."
     },
     "es": {
      "nom": "Empleo e inserción laboral",
@@ -1802,7 +2046,8 @@
       "Empresas locales",
       "Ayuntamiento",
       "Entidades formativas",
-      "Servicio de empleo"
+      "Servicio de empleo",
+      "Personas ya contratadas"
      ],
      "pairs": [
       [
@@ -1852,6 +2097,30 @@
        "suelo, incentivos y contratación",
        "tangible",
        "empleo arraigado en el municipio"
+      ],
+      [
+       "Personas ya contratadas",
+       "Personas que buscan trabajo",
+       "intangible",
+       "referentes y consejos",
+       "intangible",
+       "reconocimiento"
+      ],
+      [
+       "Personas ya contratadas",
+       "Servicio de empleo",
+       "intangible",
+       "retorno de cómo ha ido",
+       "intangible",
+       "acompañamiento posterior"
+      ],
+      [
+       "Empresas locales",
+       "Servicio de empleo",
+       "intangible",
+       "perfiles que necesitan",
+       "intangible",
+       "candidaturas ajustadas"
       ]
      ],
      "passos": [
@@ -1860,12 +2129,15 @@
       "Formación a medida",
       "Prácticas e inserción",
       "Seguimiento"
-     ]
+     ],
+     "centre": "Servicio de empleo",
+     "bona": "La inserción no acaba con el contrato: quien ya trabaja hace de referente y dice qué ha funcionado."
     }
    },
    {
     "id": "habitatge",
     "icona": "🏘️",
+    "paraules": "vivienda habitatge pisos alquiler lloguer cooperativa cesión cessió masovería masoveria",
     "ca": {
      "nom": "Habitatge assequible",
      "diu": "Accés a habitatge digne sense especulació.",
@@ -1874,7 +2146,8 @@
       "Administració",
       "Finançament ètic",
       "Cooperativa",
-      "Unitats de convivència"
+      "Unitats de convivència",
+      "Veïnat de l'entorn"
      ],
      "pairs": [
       [
@@ -1924,6 +2197,14 @@
        "pla econòmic",
        "intangible",
        "criteris i acompanyament"
+      ],
+      [
+       "Veïnat de l'entorn",
+       "Grup motor",
+       "intangible",
+       "acollida i suport",
+       "intangible",
+       "espais comuns oberts"
       ]
      ],
      "passos": [
@@ -1934,7 +2215,9 @@
       "Finançament",
       "Obra",
       "Convivència"
-     ]
+     ],
+     "centre": "Grup motor",
+     "bona": "Un projecte d'habitatge s'arrela si obre els seus espais al veïnat: el suport de l'entorn també és valor."
     },
     "es": {
      "nom": "Vivienda asequible",
@@ -1944,7 +2227,8 @@
       "Administración",
       "Financiación ética",
       "Cooperativa",
-      "Unidades de convivencia"
+      "Unidades de convivencia",
+      "Vecindario del entorno"
      ],
      "pairs": [
       [
@@ -1994,6 +2278,14 @@
        "plan económico",
        "intangible",
        "criterios y acompañamiento"
+      ],
+      [
+       "Vecindario del entorno",
+       "Grupo motor",
+       "intangible",
+       "acogida y apoyo",
+       "intangible",
+       "espacios comunes abiertos"
       ]
      ],
      "passos": [
@@ -2004,12 +2296,15 @@
       "Financiación",
       "Obra",
       "Convivencia"
-     ]
+     ],
+     "centre": "Grupo motor",
+     "bona": "Un proyecto de vivienda arraiga si abre sus espacios al vecindario: el apoyo del entorno también es valor."
     }
    },
    {
     "id": "energia",
     "icona": "⚡",
+    "paraules": "energía energia solar placas plaques renovable autoconsumo autoconsum tejados teulades",
     "ca": {
      "nom": "Comunitat energètica",
      "diu": "Produir i compartir energia renovable localment.",
@@ -2018,7 +2313,8 @@
       "Sòcies consumidores",
       "Ajuntament",
       "Instal·ladora",
-      "Assessoria"
+      "Assessoria",
+      "Altres comunitats energètiques"
      ],
      "pairs": [
       [
@@ -2068,6 +2364,14 @@
        "difusió i tràmits",
        "intangible",
        "mandat ciutadà"
+      ],
+      [
+       "Altres comunitats energètiques",
+       "Nucli promotor",
+       "intangible",
+       "experiència i errors a evitar",
+       "intangible",
+       "dades i aprenentatges"
       ]
      ],
      "passos": [
@@ -2078,7 +2382,9 @@
       "Constitució",
       "Instal·lació",
       "Posada en marxa"
-     ]
+     ],
+     "centre": "Nucli promotor",
+     "bona": "Cap comunitat energètica comença de zero: compartir errors i dades amb les altres estalvia mesos."
     },
     "es": {
      "nom": "Comunidad energética",
@@ -2088,7 +2394,8 @@
       "Socias consumidoras",
       "Ayuntamiento",
       "Instaladora",
-      "Asesoría"
+      "Asesoría",
+      "Otras comunidades energéticas"
      ],
      "pairs": [
       [
@@ -2138,6 +2445,14 @@
        "difusión y trámites",
        "intangible",
        "mandato ciudadano"
+      ],
+      [
+       "Otras comunidades energéticas",
+       "Núcleo promotor",
+       "intangible",
+       "experiencia y errores a evitar",
+       "intangible",
+       "datos y aprendizajes"
       ]
      ],
      "passos": [
@@ -2148,12 +2463,15 @@
       "Constitución",
       "Instalación",
       "Puesta en marcha"
-     ]
+     ],
+     "centre": "Núcleo promotor",
+     "bona": "Ninguna comunidad energética empieza de cero: compartir errores y datos con las demás ahorra meses."
     }
    },
    {
     "id": "alimentacio",
     "icona": "🥬",
+    "paraules": "alimentación alimentació comida menjar agricultura pagès payés campesinos cestas cistelles huerta horta ecológico ecològic consumo consum",
     "ca": {
      "nom": "Alimentació sostenible",
      "diu": "Aliments sans i de proximitat, de la terra al plat.",
@@ -2162,7 +2480,8 @@
       "Grup de consum",
       "Obrador",
       "Punt de repartiment",
-      "Consumidors"
+      "Consumidors",
+      "Escoles i menjadors"
      ],
      "pairs": [
       [
@@ -2212,6 +2531,30 @@
        "producte elaborat",
        "tangible",
        "demanda que sosté l'obrador"
+      ],
+      [
+       "Escoles i menjadors",
+       "Pagesia local",
+       "tangible",
+       "comandes regulars",
+       "intangible",
+       "visites i aprenentatge"
+      ],
+      [
+       "Consumidors",
+       "Pagesia local",
+       "intangible",
+       "fidelitat i suggeriments",
+       "intangible",
+       "confiança i transparència"
+      ],
+      [
+       "Pagesia local",
+       "Grup de consum",
+       "intangible",
+       "saber de temporada i de cultiu",
+       "intangible",
+       "compromís de compra"
       ]
      ],
      "passos": [
@@ -2221,7 +2564,9 @@
       "Sistema de comandes",
       "Primera cistella",
       "Obrador"
-     ]
+     ],
+     "centre": "Pagesia local",
+     "bona": "La pagesia aguanta amb compra estable i confiança: els menjadors donen volum i les visites, vincle."
     },
     "es": {
      "nom": "Alimentación sostenible",
@@ -2231,7 +2576,8 @@
       "Grupo de consumo",
       "Obrador",
       "Punto de reparto",
-      "Consumidores"
+      "Consumidores",
+      "Escuelas y comedores"
      ],
      "pairs": [
       [
@@ -2281,6 +2627,30 @@
        "producto elaborado",
        "tangible",
        "demanda que sostiene el obrador"
+      ],
+      [
+       "Escuelas y comedores",
+       "Campesinado local",
+       "tangible",
+       "pedidos regulares",
+       "intangible",
+       "visitas y aprendizaje"
+      ],
+      [
+       "Consumidores",
+       "Campesinado local",
+       "intangible",
+       "fidelidad y sugerencias",
+       "intangible",
+       "confianza y transparencia"
+      ],
+      [
+       "Campesinado local",
+       "Grupo de consumo",
+       "intangible",
+       "saber de temporada y de cultivo",
+       "intangible",
+       "compromiso de compra"
       ]
      ],
      "passos": [
@@ -2290,12 +2660,15 @@
       "Sistema de pedidos",
       "Primera cesta",
       "Obrador"
-     ]
+     ],
+     "centre": "Campesinado local",
+     "bona": "El campesinado aguanta con compra estable y confianza: los comedores dan volumen y las visitas, vínculo."
     }
    },
    {
     "id": "cures",
     "icona": "💗",
+    "paraules": "salud salut comunitaria comunitària soledad soledat mayores grans voluntariado voluntariat",
     "ca": {
      "nom": "Cures i salut comunitària",
      "diu": "Xarxa de cures i benestar contra la soledat.",
@@ -2304,7 +2677,8 @@
       "Veïnat",
       "Gent gran",
       "CAP / serveis socials",
-      "Voluntariat"
+      "Voluntariat",
+      "Comerços del barri"
      ],
      "pairs": [
       [
@@ -2354,6 +2728,14 @@
        "salut comunitària",
        "intangible",
        "coneixement del carrer"
+      ],
+      [
+       "Comerços del barri",
+       "Nucli de cura",
+       "intangible",
+       "avisos de qui necessita ajuda",
+       "intangible",
+       "xarxa i reconeixement"
       ]
      ],
      "passos": [
@@ -2362,7 +2744,9 @@
       "Protocol",
       "Primers acompanyaments",
       "Coordinació amb serveis"
-     ]
+     ],
+     "centre": "Nucli de cura",
+     "bona": "Qui veu cada dia la gent gran (la farmàcia, el forn) és qui avisa primer: compta-hi."
     },
     "es": {
      "nom": "Cuidados y salud comunitaria",
@@ -2372,7 +2756,8 @@
       "Vecindario",
       "Personas mayores",
       "CAP / servicios sociales",
-      "Voluntariado"
+      "Voluntariado",
+      "Comercios del barrio"
      ],
      "pairs": [
       [
@@ -2422,6 +2807,14 @@
        "salud comunitaria",
        "intangible",
        "conocimiento de la calle"
+      ],
+      [
+       "Comercios del barrio",
+       "Núcleo de cuidado",
+       "intangible",
+       "avisos de quien necesita ayuda",
+       "intangible",
+       "red y reconocimiento"
       ]
      ],
      "passos": [
@@ -2430,12 +2823,15 @@
       "Protocolo",
       "Primeros acompañamientos",
       "Coordinación con servicios"
-     ]
+     ],
+     "centre": "Núcleo de cuidado",
+     "bona": "Quien ve cada día a las personas mayores (la farmacia, el horno) es quien avisa primero: cuenta con ello."
     }
    },
    {
     "id": "cultura",
     "icona": "🎭",
+    "paraules": "cultura cultural festival fiesta festa conciertos concerts teatro teatre música patrimonio patrimoni museo museu arte art artistas artistes",
     "ca": {
      "nom": "Cultura i patrimoni",
      "diu": "Activar la cultura, la festa i el patrimoni local.",
@@ -2444,7 +2840,8 @@
       "Ajuntament",
       "Artistes",
       "Veïnat",
-      "Escoles"
+      "Escoles",
+      "Públic fidel"
      ],
      "pairs": [
       [
@@ -2494,6 +2891,14 @@
        "festa major i espai públic",
        "intangible",
        "participació i memòria"
+      ],
+      [
+       "Públic fidel",
+       "Entitats culturals",
+       "intangible",
+       "assistència i difusió",
+       "intangible",
+       "pertinença i programació propera"
       ]
      ],
      "passos": [
@@ -2502,7 +2907,9 @@
       "Recuperar patrimoni",
       "Festa major participativa",
       "Avaluació"
-     ]
+     ],
+     "centre": "Entitats culturals",
+     "bona": "El públic fidel és el que omple i difon: fes-lo sentir part de la programació."
     },
     "es": {
      "nom": "Cultura y patrimonio",
@@ -2512,7 +2919,8 @@
       "Ayuntamiento",
       "Artistas",
       "Vecindario",
-      "Escuelas"
+      "Escuelas",
+      "Público fiel"
      ],
      "pairs": [
       [
@@ -2562,6 +2970,14 @@
        "fiesta mayor y espacio público",
        "intangible",
        "participación y memoria"
+      ],
+      [
+       "Público fiel",
+       "Entidades culturales",
+       "intangible",
+       "asistencia y difusión",
+       "intangible",
+       "pertenencia y programación cercana"
       ]
      ],
      "passos": [
@@ -2570,12 +2986,15 @@
       "Recuperar patrimonio",
       "Fiesta mayor participativa",
       "Evaluación"
-     ]
+     ],
+     "centre": "Entidades culturales",
+     "bona": "El público fiel es el que llena y difunde: hazlo sentir parte de la programación."
     }
    },
    {
     "id": "turisme",
     "icona": "🧭",
+    "paraules": "turismo turisme turistas turistes visitas visites alojamiento allotjament hotel enoturismo enoturisme rutas rutes catas tasts experiencias experiències",
     "ca": {
      "nom": "Turisme de poble sostenible",
      "diu": "Turisme responsable que reverteix al territori.",
@@ -2584,7 +3003,8 @@
       "Ajuntament",
       "Restauració",
       "Guies locals",
-      "Productors"
+      "Productors",
+      "Ens de destinació"
      ],
      "pairs": [
       [
@@ -2634,6 +3054,30 @@
        "àpats i rutes",
        "tangible",
        "reserves i grups"
+      ],
+      [
+       "Ens de destinació",
+       "Allotjaments",
+       "intangible",
+       "relat comú i coordinació",
+       "intangible",
+       "dades de visitants"
+      ],
+      [
+       "Ens de destinació",
+       "Productors",
+       "intangible",
+       "visibilitat del producte local",
+       "intangible",
+       "autenticitat del relat"
+      ],
+      [
+       "Ajuntament",
+       "Ens de destinació",
+       "tangible",
+       "suport i recursos",
+       "intangible",
+       "reputació del territori"
       ]
      ],
      "passos": [
@@ -2642,7 +3086,9 @@
       "Aliances locals",
       "Promoció responsable",
       "Gestió de fluxos"
-     ]
+     ],
+     "centre": "Ens de destinació",
+     "bona": "Una destinació és una xarxa, no una suma d'empreses: algú ha de cosir el relat comú i compartir-ne les dades."
     },
     "es": {
      "nom": "Turismo de pueblo sostenible",
@@ -2652,7 +3098,8 @@
       "Ayuntamiento",
       "Restauración",
       "Guías locales",
-      "Productores"
+      "Productores",
+      "Ente de destino"
      ],
      "pairs": [
       [
@@ -2702,6 +3149,30 @@
        "comidas y rutas",
        "tangible",
        "reservas y grupos"
+      ],
+      [
+       "Ente de destino",
+       "Alojamientos",
+       "intangible",
+       "relato común y coordinación",
+       "intangible",
+       "datos de visitantes"
+      ],
+      [
+       "Ente de destino",
+       "Productores",
+       "intangible",
+       "visibilidad del producto local",
+       "intangible",
+       "autenticidad del relato"
+      ],
+      [
+       "Ayuntamiento",
+       "Ente de destino",
+       "tangible",
+       "apoyo y recursos",
+       "intangible",
+       "reputación del territorio"
       ]
      ],
      "passos": [
@@ -2710,12 +3181,15 @@
       "Alianzas locales",
       "Promoción responsable",
       "Gestión de flujos"
-     ]
+     ],
+     "centre": "Ente de destino",
+     "bona": "Un destino es una red, no una suma de empresas: alguien tiene que coser el relato común y compartir sus datos."
     }
    },
    {
     "id": "economia_circular",
     "icona": "♻️",
+    "paraules": "reparar reparamos reutilizar reutilitzar segunda mà mano residuos residus reciclaje reciclatge compost circular muebles mobles",
     "ca": {
      "nom": "Economia circular",
      "diu": "Reduir, reparar i reutilitzar en clau local.",
@@ -2724,7 +3198,8 @@
       "Veïnat",
       "Comerços",
       "Ajuntament",
-      "Recicladors"
+      "Recicladors",
+      "Persones reparadores voluntàries"
      ],
      "pairs": [
       [
@@ -2774,6 +3249,30 @@
        "valorització i informe",
        "tangible",
        "contracte i taxa"
+      ],
+      [
+       "Persones reparadores voluntàries",
+       "Nucli gestor",
+       "intangible",
+       "saber reparar",
+       "intangible",
+       "comunitat i reconeixement"
+      ],
+      [
+       "Persones reparadores voluntàries",
+       "Veïnat",
+       "intangible",
+       "aprendre a reparar",
+       "intangible",
+       "confiança i objectes per salvar"
+      ],
+      [
+       "Veïnat",
+       "Comerços",
+       "intangible",
+       "boca-orella",
+       "intangible",
+       "consell de consum"
       ]
      ],
      "passos": [
@@ -2782,7 +3281,9 @@
       "Mercat de segona mà",
       "Compostatge",
       "Sensibilització"
-     ]
+     ],
+     "centre": "Nucli gestor",
+     "bona": "L'economia circular és sobretot saber compartit: qui ensenya a reparar multiplica el que es salva."
     },
     "es": {
      "nom": "Economía circular",
@@ -2792,7 +3293,8 @@
       "Vecindario",
       "Comercios",
       "Ayuntamiento",
-      "Recicladores"
+      "Recicladores",
+      "Personas reparadoras voluntarias"
      ],
      "pairs": [
       [
@@ -2842,6 +3344,30 @@
        "valorización e informe",
        "tangible",
        "contrato y tasa"
+      ],
+      [
+       "Personas reparadoras voluntarias",
+       "Núcleo gestor",
+       "intangible",
+       "saber reparar",
+       "intangible",
+       "comunidad y reconocimiento"
+      ],
+      [
+       "Personas reparadoras voluntarias",
+       "Vecindario",
+       "intangible",
+       "aprender a reparar",
+       "intangible",
+       "confianza y objetos por salvar"
+      ],
+      [
+       "Vecindario",
+       "Comercios",
+       "intangible",
+       "boca a boca",
+       "intangible",
+       "consejo de consumo"
       ]
      ],
      "passos": [
@@ -2850,12 +3376,15 @@
       "Mercado de segunda mano",
       "Compostaje",
       "Sensibilización"
-     ]
+     ],
+     "centre": "Núcleo gestor",
+     "bona": "La economía circular es sobre todo saber compartido: quien enseña a reparar multiplica lo que se salva."
     }
    },
    {
     "id": "digitalitzacio",
     "icona": "🖥️",
+    "paraules": "digital digitalización digitalització informática informàtica software libre lliure ordenadores ordinadors brecha bretxa tecnología tecnologia",
     "ca": {
      "nom": "Digitalització i sobirania tecnològica",
      "diu": "Autonomia digital del teixit local.",
@@ -2864,7 +3393,8 @@
       "Entitats",
       "Ajuntament",
       "Veïnat",
-      "Formadors"
+      "Formadors",
+      "Persones mentores"
      ],
      "pairs": [
       [
@@ -2914,6 +3444,22 @@
        "connectivitat i espais",
        "intangible",
        "diagnòstic de bretxa"
+      ],
+      [
+       "Persones mentores",
+       "Veïnat",
+       "intangible",
+       "acompanyament pas a pas",
+       "intangible",
+       "agraïment i confiança"
+      ],
+      [
+       "Persones mentores",
+       "Nucli tècnic",
+       "intangible",
+       "temps i coneixement",
+       "intangible",
+       "comunitat i formació"
       ]
      ],
      "passos": [
@@ -2922,7 +3468,9 @@
       "Eines sobiranes",
       "Presència digital",
       "Manteniment comunitari"
-     ]
+     ],
+     "centre": "Nucli tècnic",
+     "bona": "La bretxa digital es tanca de persona a persona: les mentores fan el que cap curs fa."
     },
     "es": {
      "nom": "Digitalización y soberanía tecnológica",
@@ -2932,7 +3480,8 @@
       "Entidades",
       "Ayuntamiento",
       "Vecindario",
-      "Formadores"
+      "Formadores",
+      "Personas mentoras"
      ],
      "pairs": [
       [
@@ -2982,6 +3531,22 @@
        "conectividad y espacios",
        "intangible",
        "diagnóstico de brecha"
+      ],
+      [
+       "Personas mentoras",
+       "Vecindario",
+       "intangible",
+       "acompañamiento paso a paso",
+       "intangible",
+       "agradecimiento y confianza"
+      ],
+      [
+       "Personas mentoras",
+       "Núcleo técnico",
+       "intangible",
+       "tiempo y conocimiento",
+       "intangible",
+       "comunidad y formación"
       ]
      ],
      "passos": [
@@ -2990,12 +3555,15 @@
       "Herramientas soberanas",
       "Presencia digital",
       "Mantenimiento comunitario"
-     ]
+     ],
+     "centre": "Núcleo técnico",
+     "bona": "La brecha digital se cierra de persona a persona: las mentoras hacen lo que ningún curso hace."
     }
    },
    {
     "id": "joventut",
     "icona": "🛹",
+    "paraules": "jóvenes joves juventud joventut esplai ocio lleure adolescentes adolescents casal monitores monitors",
     "ca": {
      "nom": "Joventut i lleure",
      "diu": "Espais i oportunitats per al jovent.",
@@ -3004,7 +3572,8 @@
       "Esplai / entitats",
       "Ajuntament",
       "Escoles",
-      "Monitoratge"
+      "Monitoratge",
+      "Famílies"
      ],
      "pairs": [
       [
@@ -3054,6 +3623,22 @@
        "pressupost i espai jove",
        "intangible",
        "mandat i prioritats reals"
+      ],
+      [
+       "Famílies",
+       "Esplai / entitats",
+       "tangible",
+       "quotes i autoritzacions",
+       "intangible",
+       "confiança i col·laboració"
+      ],
+      [
+       "Famílies",
+       "Jovent",
+       "intangible",
+       "suport i permís",
+       "intangible",
+       "autonomia i ganes"
       ]
      ],
      "passos": [
@@ -3062,7 +3647,9 @@
       "Programació",
       "Projectes liderats per joves",
       "Relleu"
-     ]
+     ],
+     "centre": "Esplai / entitats",
+     "bona": "Amb el jovent, les famílies decideixen molt: si confien, el projecte creix."
     },
     "es": {
      "nom": "Juventud y ocio",
@@ -3072,7 +3659,8 @@
       "Esplai / entidades",
       "Ayuntamiento",
       "Escuelas",
-      "Monitores"
+      "Monitores",
+      "Familias"
      ],
      "pairs": [
       [
@@ -3122,6 +3710,22 @@
        "presupuesto y espacio joven",
        "intangible",
        "mandato y prioridades reales"
+      ],
+      [
+       "Familias",
+       "Esplai / entidades",
+       "tangible",
+       "cuotas y autorizaciones",
+       "intangible",
+       "confianza y colaboración"
+      ],
+      [
+       "Familias",
+       "Juventud",
+       "intangible",
+       "apoyo y permiso",
+       "intangible",
+       "autonomía y ganas"
       ]
      ],
      "passos": [
@@ -3130,12 +3734,15 @@
       "Programación",
       "Proyectos liderados por jóvenes",
       "Relevo"
-     ]
+     ],
+     "centre": "Esplai / entidades",
+     "bona": "Con la juventud, las familias deciden mucho: si confían, el proyecto crece."
     }
    },
    {
     "id": "mobilitat",
     "icona": "🚲",
+    "paraules": "movilidad mobilitat bici bicicleta transporte transport coche cotxe camino escolar escolar peatones vianants",
     "ca": {
      "nom": "Mobilitat sostenible",
      "diu": "Moure's millor amb menys cotxe.",
@@ -3144,7 +3751,8 @@
       "Ajuntament",
       "Transport públic",
       "Grups ciclistes",
-      "Escoles"
+      "Escoles",
+      "Plataforma de mobilitat"
      ],
      "pairs": [
       [
@@ -3194,6 +3802,30 @@
        "formació en bici segura",
        "intangible",
        "nova generació ciclista"
+      ],
+      [
+       "Plataforma de mobilitat",
+       "Veïnat",
+       "intangible",
+       "propostes i camins segurs",
+       "intangible",
+       "participació i dades d'ús"
+      ],
+      [
+       "Plataforma de mobilitat",
+       "Ajuntament",
+       "intangible",
+       "diagnosi ciutadana",
+       "tangible",
+       "suport i obres"
+      ],
+      [
+       "Escoles",
+       "Plataforma de mobilitat",
+       "intangible",
+       "camins escolars",
+       "intangible",
+       "acompanyament"
       ]
      ],
      "passos": [
@@ -3202,7 +3834,9 @@
       "Cotxe compartit",
       "Carril bici",
       "Avaluació"
-     ]
+     ],
+     "centre": "Plataforma de mobilitat",
+     "bona": "La mobilitat canvia quan el veïnat aporta dades del dia a dia: algú ha de recollir-les i portar-les a qui decideix."
     },
     "es": {
      "nom": "Movilidad sostenible",
@@ -3212,7 +3846,8 @@
       "Ayuntamiento",
       "Transporte público",
       "Grupos ciclistas",
-      "Escuelas"
+      "Escuelas",
+      "Plataforma de movilidad"
      ],
      "pairs": [
       [
@@ -3262,6 +3897,30 @@
        "formación en bici segura",
        "intangible",
        "nueva generación ciclista"
+      ],
+      [
+       "Plataforma de movilidad",
+       "Vecindario",
+       "intangible",
+       "propuestas y caminos seguros",
+       "intangible",
+       "participación y datos de uso"
+      ],
+      [
+       "Plataforma de movilidad",
+       "Ayuntamiento",
+       "intangible",
+       "diagnóstico ciudadano",
+       "tangible",
+       "apoyo y obras"
+      ],
+      [
+       "Escuelas",
+       "Plataforma de movilidad",
+       "intangible",
+       "caminos escolares",
+       "intangible",
+       "acompañamiento"
       ]
      ],
      "passos": [
@@ -3270,12 +3929,15 @@
       "Coche compartido",
       "Carril bici",
       "Evaluación"
-     ]
+     ],
+     "centre": "Plataforma de movilidad",
+     "bona": "La movilidad cambia cuando el vecindario aporta datos del día a día: alguien tiene que recogerlos y llevarlos a quien decide."
     }
    },
    {
     "id": "acollida",
     "icona": "🫂",
+    "paraules": "acogida acollida migrantes migrants refugiados refugiats recién nouvinguts idioma llengua inclusión inclusió",
     "ca": {
      "nom": "Acollida i inclusió",
      "diu": "Integrar i cohesionar amb qui arriba.",
@@ -3284,7 +3946,8 @@
       "Entitats d'acollida",
       "Ajuntament",
       "Veïnat",
-      "Escoles"
+      "Escoles",
+      "Persones mentores del veïnat"
      ],
      "pairs": [
       [
@@ -3334,6 +3997,22 @@
        "empadronament i drets",
        "intangible",
        "coneixement de les necessitats reals"
+      ],
+      [
+       "Persones mentores del veïnat",
+       "Nouvinguts",
+       "intangible",
+       "llengua i xarxa",
+       "intangible",
+       "cultura i amistat"
+      ],
+      [
+       "Persones mentores del veïnat",
+       "Entitats d'acollida",
+       "intangible",
+       "temps voluntari",
+       "intangible",
+       "formació i suport"
       ]
      ],
      "passos": [
@@ -3342,7 +4021,9 @@
       "Aprenentatge de la llengua",
       "Mentories veïnals",
       "Participació"
-     ]
+     ],
+     "centre": "Entitats d'acollida",
+     "bona": "Acollir és fer xarxa: una persona del veïnat que acompanya obre més portes que cap tràmit."
     },
     "es": {
      "nom": "Acogida e inclusión",
@@ -3352,7 +4033,8 @@
       "Entidades de acogida",
       "Ayuntamiento",
       "Vecindario",
-      "Escuelas"
+      "Escuelas",
+      "Personas mentoras del vecindario"
      ],
      "pairs": [
       [
@@ -3402,6 +4084,22 @@
        "empadronamiento y derechos",
        "intangible",
        "conocimiento de las necesidades reales"
+      ],
+      [
+       "Personas mentoras del vecindario",
+       "Recién llegados",
+       "intangible",
+       "idioma y red",
+       "intangible",
+       "cultura y amistad"
+      ],
+      [
+       "Personas mentoras del vecindario",
+       "Entidades de acogida",
+       "intangible",
+       "tiempo voluntario",
+       "intangible",
+       "formación y apoyo"
       ]
      ],
      "passos": [
@@ -3410,12 +4108,15 @@
       "Aprendizaje de la lengua",
       "Mentorías vecinales",
       "Participación"
-     ]
+     ],
+     "centre": "Entidades de acogida",
+     "bona": "Acoger es hacer red: una persona del vecindario que acompaña abre más puertas que ningún trámite."
     }
    },
    {
     "id": "territori",
     "icona": "🌳",
+    "paraules": "territorio territori naturaleza natura bosque bosc campo camp custodia custòdia medio ambiente medi ambient fincas finques",
     "ca": {
      "nom": "Custòdia del territori",
      "diu": "Tenir cura del medi natural i agrari.",
@@ -3424,7 +4125,8 @@
       "Propietaris",
       "Ajuntament",
       "Voluntariat",
-      "Pagesia"
+      "Pagesia",
+      "Escoles i famílies"
      ],
      "pairs": [
       [
@@ -3474,6 +4176,14 @@
        "jornades i materials",
        "intangible",
        "implicació ciutadana"
+      ],
+      [
+       "Escoles i famílies",
+       "Custòdia / entitat",
+       "intangible",
+       "participació i voluntariat de demà",
+       "intangible",
+       "educació ambiental"
       ]
      ],
      "passos": [
@@ -3482,7 +4192,9 @@
       "Jornades de voluntariat",
       "Recuperació d'hàbitats",
       "Seguiment"
-     ]
+     ],
+     "centre": "Custòdia / entitat",
+     "bona": "Custodiar el territori és cosa de generacions: les escoles d'avui són el voluntariat de demà."
     },
     "es": {
      "nom": "Custodia del territorio",
@@ -3492,7 +4204,8 @@
       "Propietarios",
       "Ayuntamiento",
       "Voluntariado",
-      "Campesinado"
+      "Campesinado",
+      "Escuelas y familias"
      ],
      "pairs": [
       [
@@ -3542,6 +4255,14 @@
        "jornadas y materiales",
        "intangible",
        "implicación ciudadana"
+      ],
+      [
+       "Escuelas y familias",
+       "Custodia / entidad",
+       "intangible",
+       "participación y voluntariado de mañana",
+       "intangible",
+       "educación ambiental"
       ]
      ],
      "passos": [
@@ -3550,18 +4271,43 @@
       "Jornadas de voluntariado",
       "Recuperación de hábitats",
       "Seguimiento"
-     ]
+     ],
+     "centre": "Custodia / entidad",
+     "bona": "Custodiar el territorio es cosa de generaciones: las escuelas de hoy son el voluntariado de mañana."
     }
    }
   ];
-  /* El rol que més dona i rep: el que fa de «tu» quan algú comença per aquest model. */
-  function centre(m) { var n = {}; m.pairs.forEach(function (p) { n[p[0]] = (n[p[0]] || 0) + 1; n[p[1]] = (n[p[1]] || 0) + 1; });
+  /* Qui fa de «tu» quan algú comença per aquest model: el que el promou (`centre`) o, si no el diu, el rol que més dona i rep. */
+  function centre(m) { if (m.centre) return m.centre; var n = {}; m.pairs.forEach(function (p) { n[p[0]] = (n[p[0]] || 0) + 1; n[p[1]] = (n[p[1]] || 0) + 1; });
     return m.roles.slice().sort(function (a, b) { return (n[b] || 0) - (n[a] || 0); })[0]; }
   /* El model en una llengua, amb el centre canviat pel nom de qui el fa servir. */
   function mapa(id, llengua, casa) {
     var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;
     var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };
-    return { abast: '', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom };
+    return { abast: '', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || '' };
   }
-  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa };
+  /* Quin model o sector s'assembla més al que algú explica amb les seves paraules.
+     Sense IA: arrels curtes (sense accents ni plural); el nom i el «diu» compten doble i
+     una arrel comuna a molts models pesa menys. Torna null si no n'hi ha prou per dir-ho. */
+  var BUIDES = /^(quie|teng|tene|vole|nues|nost|porq|perq|sobr|tamb|todo|tots|dond|cuan|quan|hace|desd|entr|much|molt|pued|pode|esta|somo|siem|semp|ahor|aque|esto|otro|altr|pers|para|como|cosa|bien|vull|vols|fins|hast|dels|unes|unos|haci|ques|aixo|pero|vida|grup|gent|bonit|quer|volem|nece)/;
+  function arrels(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .split(/[^a-z0-9]+/).filter(function (w) { return w.length >= 4; }).map(function (w) { w = w.length > 4 ? w.replace(/s$/, '') : w; return w.length > 5 ? w.slice(0, 5) : w; })
+    .filter(function (w) { return !BUIDES.test(w); }); }
+  function textDe(m) { return [m.nom, m.nom, m.diu, m.diu, m.roles.join(' '), m.pairs.map(function (p) { return p[3] + ' ' + p[5]; }).join(' ')].join(' '); }
+  function suggereix(text, llengua) {
+    var meves = {}; arrels(text).forEach(function (w) { meves[w] = 1; });
+    var tots = MODELS.concat(SECTORS), df = {}, bosses = tots.map(function (M) {
+      var b = {}; arrels(textDe(M[llengua] || M.es || M.ca) + ' ' + M.paraules + ' ' + M.paraules).forEach(function (w) { b[w] = (b[w] || 0) + 1; });
+      Object.keys(b).forEach(function (w) { df[w] = (df[w] || 0) + 1; }); return b; });
+    /* Una arrel que surt a molts models diu poc: pesa menys (1 / quants la tenen). */
+    var millor = null;
+    tots.forEach(function (M, i) {
+      var punts = 0, n = 0;
+      Object.keys(meves).forEach(function (w) { if (bosses[i][w]) { n++; punts += Math.min(bosses[i][w], 2) / df[w]; } });
+      var m = M[llengua] || M.es || M.ca;
+      if (punts >= 1 && (!millor || punts > millor.punts)) millor = { id: M.id, icona: M.icona, nom: m.nom, punts: Math.round(punts * 100) / 100, sector: SECTORS.indexOf(M) >= 0 };
+    });
+    return millor;
+  }
+  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix };
 });
