@@ -72,7 +72,18 @@ formulari `cliente-web`, que entra a Zoho. L'Àlvar demana el pas següent:
 
 Per decidir abans de construir-lo: on viuen els comptes (Supabase, Netlify
 Identity o una funció pròpia), qui custodia les dades fiscals i el RGPD
-(encàrrec de tractament), i que cap client vegi res d'un altre. Cap import a la
+(encàrrec de tractament), i que cap client vegi res d'un altre.
+
+**Protecció de dades (l'Àlvar, 22/10):** les dades sensibles, en mans de
+tercers que ja en gestionen la seguretat. Les targetes, a Stripe, sense que
+passin mai per nosaltres. Els comptes, a un proveïdor d'identitat. Les dades
+dels clients, a Zoho. Cap contrasenya ni dada fiscal en un repositori. Això
+redueix el risc, però no la responsabilitat: l'Àlvar segueix sent el
+responsable del tractament. Per això cal:
+- el contracte d'encàrrec (DPA) de cada proveïdor;
+- el registre d'activitats de tratament, fet amb l'eina Facilita RGPD de l'AEPD;
+- la casella de privacitat als formularis de `/cliente/`;
+- un contracte d'encàrrec amb cada client per a les dades de la seva web. Cap import a la
 web pública: els preus només dins del seu espai.
 
 ### Un sol motor del mapa de valor (demanat 20/10/2026)
