@@ -86,6 +86,21 @@ responsable del tractament. Per això cal:
 - un contracte d'encàrrec amb cada client per a les dades de la seva web. Cap import a la
 web pública: els preus només dins del seu espai.
 
+### Un sol camí del client per a totes les marques (demanat 22/10/2026)
+
+**Demanat per l'Àlvar** (22/10/2026): primer aportem valor, després una pàgina
+al nostre entorn pagada per ús limitat segons quota, després la seva web; i que
+tots els actors de l'ecosistema operin integrats, amb SOS com a model
+d'organització.
+
+- ~~Una sola definició~~: `camiClient` a (no és «El meu camí» de `SOS/lib/cami.js`, que és el de formació de cada persona) `SOS/knowledge/cervell/heretat.json`, cada
+  pas lligat a un esglaó de `MapaValor.ESCALA`, al pla del portal de partners
+  (`ficha`, `pagina`, `web`) i a un mode dels serveis. Cada fill el rep a
+  `saber/servicios.md`; un pas cap a res atura l'herència (`test-cervell.mjs`).
+- Pendent (amb el sí de l'Àlvar): el pas 2 de qualsevol marca al portal que ja
+  funciona a producció, amb la marca de cada client; `/cliente/` hi porta.
+- Pendent: un sol registre de la IA (el del portal), després de #290.
+
 ### Un sol motor del mapa de valor (demanat 20/10/2026)
 
 L'editor (`vna-suport.html`) i el mapa de l'app jutgen i guarden el mapa amb un

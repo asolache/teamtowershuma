@@ -130,6 +130,25 @@ function herencia(conf) {
         + `- **${nom('gestionat')}:** ${t.gestionat}\n- **${nom('propi')}:** ${t.propi}\n`
         + ((s.via || []).length && peces ? `- **${es ? 'Conecta con' : 'Connecta amb'}:** ${s.via.map(p => peces.get(p) || p).join(', ')}\n` : '');
     }
+    /* El camí de cada client és un de sol per a totes les marques: cada pas
+       és un esglaó de l'escala del partner i, quan toca, un mode dels
+       serveis. Si un pas cita un esglaó, un mode o una pàgina que no hi és,
+       l'herència s'atura: un camí que porta enlloc no s'hereta. */
+    if (H.camiClient) {
+      const esc = (() => { try { return require(join(TT, 'SOS', 'lib', 'mapa-valor.js')).ESCALA.map(e => e.id); } catch (e) { return null; } })();
+      if (!esc) errors.push('no puc llegir l\'escala de SOS/lib/mapa-valor.js');
+      sm += es
+        ? `\n# El camino de cada cliente\n\nEl mismo para todas las marcas. Cada paso es un peldaño de la escalera del partner.\n`
+        : `\n# El camí de cada client\n\nEl mateix per a totes les marques. Cada pas és un esglaó de l'escala del partner.\n`;
+      H.camiClient.passos.forEach((p, i) => {
+        if (esc && !esc.includes(p.escala)) errors.push(`el pas «${p.id}» del camí cita l'esglaó «${p.escala}» i l'escala no el té`);
+        if (p.mode && !S.modes[p.mode]) errors.push(`el pas «${p.id}» del camí cita el mode «${p.mode}» i els serveis no el tenen`);
+        (p.paths || []).filter(x => !existsSync(join(TT, x))).forEach(x => errors.push(`el pas «${p.id}» del camí enllaça ${x} i no existeix`));
+        const t = p[lg], on = (p.paths || []).map(x => /\.html$/.test(x) ? S.web + x.replace(/index\.html$/, '') : H.font + x);
+        sm += `\n${i + 1}. **${t.nom}.** ${t.diu}` + (p.mode ? ` (${nom(p.mode)})` : '') + (on.length ? ' ' + on.map(u => `[${es ? 'Ábrelo' : 'Obre\'l'}](${u})`).join(' · ') : '');
+      });
+      sm += '\n';
+    }
     out.set(conf.serveisMd || (es ? 'saber/servicios.md' : 'saber/serveis.md'), sm);
   }
   /* La taxonomia universal porta el sedàs a dins: és l'únic fitxer que pot
