@@ -322,6 +322,7 @@ const FORA_DEL_MENU_ARREL = {
   'index.html': 'És la portada: té la seva pròpia barra i el desplegable sencer.',
   'avis-legal.html': 'L\'avís legal i la privacitat: s\'enllaça des del peu de totes les pàgines, que és on es busca, i no des de la barra.',
   'home-nova.html': 'Esborrany de redisseny de portada, amb `noindex`. El genera `build-vitrina.js`.',
+  'seguiment.html': 'El seguiment privat d\'una proposta, amb `noindex`: s\'hi arriba només per l\'enllaç amb clau que rep el client per correu (/seguiment/<id>/<clau>).',
   /* ── Eines internes ─────────────────────────────────────────────────── */
   'finances.html': 'Eina interna de comptes. No és una pàgina per passejar-hi.',
   'ia.html': 'Prova d\'assistent. La pàgina pública dels fluxos amb IA és `/SOS/ia.html`.'
