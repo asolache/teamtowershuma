@@ -42,18 +42,20 @@ const port = await p1.evaluate(() => {
        disseny, #216): el diagnòstic i el mapa de valor, la web i el SOS com a
        formació. El repte i el mapa venen després, però **junts i en aquest
        ordre**, que és el que aquesta prova vigila. */
-    primer: ids.indexOf('dues-vistes') >= 0 && ids.indexOf('dues-vistes') < ids.length / 2,
+    /* ⚠ 22/10/2026 · la portada l'obre el que t'emportes, i el mapa d'exemple
+       queda a un clic des de l'índex «Si vols entrar-hi a fons». */
+    primer: ids.indexOf('dues-vistes') >= 0 && !!document.querySelector('.apf a[href="#dues-vistes"]'),
     desDelRepte: ids.indexOf('enfoc') >= 0 && ids.indexOf('dues-vistes') === ids.indexOf('enfoc') + 1,
-    serveis: ids[0] === 'serveis',
+    serveis: ids[0] === 'avantatges' && ids.indexOf('serveis') > 0,
     capCastell: ids.indexOf('fentpinya') < 0 && ids.indexOf('rengles') < 0,
     nodes: mv ? mv.querySelectorAll('.mv-n').length : 0,
     fletxes: mv ? mv.querySelectorAll('.mv-svg path[marker-end]').length : 0,
     text: mv ? mv.innerText : ''
   };
 });
-ok(port.serveis, 'els tres serveis obren la portada (' + port.ids.slice(0, 4).join(' · ') + ')');
+ok(port.serveis, 'el que t\'emportes obre la portada i els tres serveis hi són (' + port.ids.slice(0, 5).join(' · ') + ')');
 ok(port.desDelRepte, 'el mapa ve just després del repte: primer el problema, després la resposta');
-ok(port.primer, 'i el producte és a la primera meitat, no a la quarta pantalla');
+ok(port.primer, 'i el mapa d\'exemple és a un clic des de l\'índex de dalt');
 ok(port.capCastell, 'i els castells ja no són a la portada: viuen a /vna, que és on viu el mètode');
 ok(port.nodes === 7, `el mapa del celler porta ${port.nodes} nodes`);
 ok(port.fletxes === 16, `i ${port.fletxes} transaccions dibuixades, una per lliurament`);
