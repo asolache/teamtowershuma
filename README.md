@@ -132,13 +132,13 @@ sin llamar.
 4. **Cada rol tiene el precio de su nivel** — Tres niveles, y lo que los separa es evidencia verificable en el registro. La propuesta dice qué persona hace qué horas.
 5. **Los gastos directos, a su precio de factura** — Desplazamientos, materiales, alquileres, músicos, monitores y terceros. Sin margen escondido encima: si se revenden, se dice.
 
-| Nivel | Qué hace | Cómo se acredita | Precio hora |
-|---|---|---|---|
-| **N1 · Practicante** | Ejecuta el trabajo acompañado: recoge, registra, prepara sesiones y sostiene el día a día. | Perfil activo y aportaciones firmadas en el registro. | 35 €/h |
-| **N2 · Gestor/a** | Sostiene un nodo entero solo: facilita, mapa, gobernanza, cuentas y seguimiento. | Más de 20 h registradas y tres comunidades acompañadas, o una iniciativa liderada. | 55 €/h |
-| **N3 · Mentor/a** | Diseña el encargo, pone el criterio, decide ante el cliente y forma a los demás. | Más de 50 h, tres comunidades, dos iniciativas o una graduada, y gestores formados. | 80 €/h |
+| Nivel | Qué hace | Cómo se acredita |
+|---|---|---|
+| **N1 · Practicante** | Ejecuta el trabajo acompañado: recoge, registra, prepara sesiones y sostiene el día a día. | Perfil activo y aportaciones firmadas en el registro. |
+| **N2 · Gestor/a** | Sostiene un nodo entero solo: facilita, mapa, gobernanza, cuentas y seguimiento. | Más de 20 h registradas y tres comunidades acompañadas, o una iniciativa liderada. |
+| **N3 · Mentor/a** | Diseña el encargo, pone el criterio, decide ante el cliente y forma a los demás. | Más de 50 h, tres comunidades, dos iniciativas o una graduada, y gestores formados. |
 
-Ningún paquete lleva **precio cerrado publicado**: todos se presupuestan así, desglosados por flujos. La escala es **sin IVA**, es tarifa propuesta para 2026 y se revisa cada año.
+Ningún paquete lleva **precio cerrado publicado**: todos se presupuestan así, desglosados por flujos. El precio hora de cada nivel va en la propuesta de cada cliente.
 
 <!--/TT-COST-MD-->
 

@@ -67,15 +67,15 @@ Tres nivells, i el que els separa **no és l'antiguitat**. És evidència
 registrada al SOS —la mateixa que acredita un gestor o un mentor a la formació—
 i qualsevol la pot verificar sense confiar en nosaltres.
 
-| Nivell | Què fa | Com s'acredita | €/h |
-|---|---|---|---|
-| **N1 · Practicant** | Executa la feina acompanyada: recull, registra, prepara sessions, sosté el dia a dia | Perfil actiu i aportacions signades al registre | 35 |
-| **N2 · Gestor/a** | Sosté un node sencer sol: facilita, mapa, governança, comptes i seguiment | > 20 h registrades i 3 comunitats acompanyades, o una iniciativa liderada | 55 |
-| **N3 · Mentor/a** | Dissenya l'encàrrec, hi posa el criteri, decideix davant del client i forma els altres | > 50 h, 3 comunitats, 2 iniciatives o una graduada, i gestors formats | 80 |
+| Nivell | Què fa | Com s'acredita |
+|---|---|---|
+| **N1 · Practicant** | Executa la feina acompanyada: recull, registra, prepara sessions, sosté el dia a dia | Perfil actiu i aportacions signades al registre |
+| **N2 · Gestor/a** | Sosté un node sencer sol: facilita, mapa, governança, comptes i seguiment | > 20 h registrades i 3 comunitats acompanyades, o una iniciativa liderada |
+| **N3 · Mentor/a** | Dissenya l'encàrrec, hi posa el criteri, decideix davant del client i forma els altres | > 50 h, 3 comunitats, 2 iniciatives o una graduada, i gestors formats |
 
-**Sense IVA.** És tarifa **proposada** per al 2026: encara no s'ha facturat prou
-vegades per dir-ne una altra cosa, i dir-ho val més que la venda que es perdi.
-Es revisa cada any.
+**El preu hora de cada nivell no es publica.** Va a la proposta de cada client,
+que el veu al seu espai, i la tarifa viu al repositori privat d'estratègia
+(l'Àlvar, 22/10/2026). Es revisa cada any.
 
 La proposta diu sempre **quina persona fa quines hores i a quin nivell**. Un
 pressupost que diu «40 h de consultoria» amaga precisament la pregunta que
