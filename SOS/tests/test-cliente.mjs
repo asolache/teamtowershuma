@@ -6,7 +6,8 @@
    · **El dibuix s'obre dins de la pàgina** amb l'editor del mapa, i el que
      s'hi canvia torna a la fitxa (`desDe`).
    · **El boceto** surt del mateix motor que l'editor (motor-web.js), en
-     castellà i amb una porta per a cadascú.
+     castellà: la vista bàsica (una pàgina, una secció per rol principal) i la
+     completa (una porta per a cadascú).
    · **L'enviament** és un sol POST al formulari `cliente-web`, i després el
      pas 2 queda marcat.
    · **Al mòbil** la pàgina no es desplaça de costat. */
@@ -115,9 +116,20 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.click('#cl-boceto');
   await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
   await p.waitForTimeout(300);
+  const bas = await p.getAttribute('#cl-marc', 'srcdoc');
+  ok(await p.locator('#cl-pags button').count() === 2 && (bas.match(/<section id=/g) || []).length === 7 && /Para quien quiere ser profesor/.test(bas) && /<h2[^>]*>La matrícula/.test(bas) === false && /Lo que encuentras aquí/.test(bas),
+    'de entrada, la web pública: una landing con una sección para cada uno de los principales, dicha para quien llega');
+  ok(!/<form /.test(bas) && !/maria@example\.test/.test(bas) && /href="&#109;&#97;&#105;&#108;/.test(bas) && /href="index.html#quien-quiere-ser-profesor"/.test(bas),
+    'sin formularios: el contacto es el correo, oculto a los robots, y el menú lleva a cada sección');
+  ok(await p.locator('#cl-pags button:has-text("Aviso legal")').count() === 1, 'y con su aviso legal');
+  await p.check('#cl-capes [data-capa="extranet"]', { force: true });
+  await p.check('#cl-capes [data-capa="intranet"]', { force: true });
+  await p.waitForFunction(() => document.querySelectorAll('#cl-pags button').length > 3, null, { timeout: 15000 });
+  ok(await p.locator('#cl-pags button:has-text("Intranet")').count() === 1, 'con la extranet y la intranet: una puerta para cada uno y la intranet');
+  await p.waitForTimeout(300);
   const portes = await p.locator('#cl-pags button').count();
   const txt = await p.frameLocator('#cl-marc').locator('body').textContent();
-  ok(portes >= 7, 'el boceto tiene inicio y una puerta para cada uno (' + portes + ' páginas)');
+  ok(portes >= 8, 'el boceto tiene inicio y una puerta para cada uno (' + portes + ' páginas)');
   ok(/Quien quiere ser profesor/.test(txt) && /Una puerta para cada uno/.test(txt), 'el boceto sale en castellano, del mismo motor que el editor');
 
   const ample = await p.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
@@ -129,7 +141,7 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.click('#cl-envia');
   await p.waitForFunction(() => /Enviado/.test(document.getElementById('cl-envia-r').textContent), null, { timeout: 5000 });
   const q = new URLSearchParams(enviat || '');
-  ok(q.get('form-name') === 'cliente-web' && q.get('mail') === 'maria@example.test' && /Mapa \(JSON\)/.test(q.get('resum')) && q.get('nivel') === 'La web conectada' && /^Aceptada el \d{4}-/.test(q.get('privacidad')), 'un solo POST al formulario cliente-web, con el mapa, el nivel y la fecha de la casilla de privacidad');
+  ok(q.get('form-name') === 'cliente-web' && q.get('mail') === 'maria@example.test' && /Mapa \(JSON\)/.test(q.get('resum')) && q.get('nivel') === 'La web conectada' && q.get('capas') === 'web pública, extranet, intranet' && /^Aceptada el \d{4}-/.test(q.get('privacidad')), 'un solo POST al formulario cliente-web, con el mapa, el nivel y la fecha de la casilla de privacidad');
   ok(await p.getAttribute('#pas-leemos', 'aria-current') === 'step', 'después de enviar, el paso 2 queda marcado');
   await p.reload();
   ok(await p.inputValue('#cl-p-objetivo') === j.respuestas.objetivo && await p.getAttribute('#pas-leemos', 'aria-current') === 'step', 'al volver, todo sigue ahí');

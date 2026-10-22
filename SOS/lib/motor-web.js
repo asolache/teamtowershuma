@@ -24,11 +24,13 @@ function motor(html) {
 }
 
 /* La web d'un mapa en una sola crida, com la vista prèvia de l'editor:
-   [{ruta, cos}] de cada fitxer. `opts`: nom, correu, llengua, url, casa. */
+   [{ruta, cos}] de cada fitxer. `opts`: nom, correu, llengua, url, casa i
+   vista ('basica': la capa informativa en una sola pàgina) i capes
+   (['extranet', 'intranet']: el que es fa a més de la web pública). */
 function site(m, html, opts) {
   var o = opts || {}, M = motor(html), casa = o.casa || [];
   return M.webASite(M.webDelMapa(m, { casa: casa }), { nom: o.nom || '', correu: o.correu || '', llengua: o.llengua || 'es',
-    url: o.url || '', casa: casa, mapa: m }).fitxers;
+    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, mapa: m }).fitxers;
 }
 
 var MotorWeb = { BLOCS: BLOCS, bloc: bloc, motor: motor, site: site };

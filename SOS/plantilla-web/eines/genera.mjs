@@ -28,7 +28,7 @@ if (marca && marca.logo === '../logo.svg') {
 }
 let casa;
 try { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }
-const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn('⚠️  ' + m) });
+const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn('⚠️  ' + m) });
 /* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s'escriu (dossier, fonts, continguts, esborranys). */
 const propis = ['netlify.toml', 'cerebro/mapa-real.json', 'cerebro/marca.json', 'cerebro/mapa-ideal.json', 'cerebro/decisiones.md', 'cerebro/dossier.md'];
 const escrit = r => /^cerebro\/(fonts|continguts|esborranys)\//.test(r);

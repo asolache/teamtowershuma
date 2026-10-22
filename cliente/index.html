@@ -132,6 +132,13 @@
         .preguntes .camp { counter-increment: pq; }
         .preguntes label::before { content: counter(pq) ". "; color: var(--indigo); font-family: var(--mono); }
 
+        .vistes { display: grid; gap: .6rem; margin-top: 1.2rem; }
+        @media (min-width: 700px) { .vistes { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 900px) { .vistes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .vistes label { display: grid; grid-template-columns: auto 1fr; gap: .2rem .5rem; align-content: start; padding: .8rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); cursor: pointer; }
+        .vistes label span { grid-column: 1 / -1; font-size: var(--t0); color: var(--light); }
+        .vistes label:has(input:checked) { border: 2px solid var(--indigo); }
+        .vistes input { width: 1.2rem; height: 1.2rem; accent-color: var(--indigo); }
         .models { margin-top: 1.2rem; max-width: 70ch; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
         .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
@@ -407,7 +414,7 @@
         <div class="cabeza">
             <p class="eyebrow">5 · Qué web quieres</p>
             <h2 id="t-web">Elige hasta dónde, y mira el boceto.</h2>
-            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: una puerta para cada persona que llega a tu web. Es un borrador para hablarlo, no la web final.</p>
+            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública es una landing con lo que aporta valor a cada uno de los principales, y puedes sumar la extranet para clientes y aliados y la intranet del equipo. Es un borrador para hablarlo, no la web final.</p>
         </div>
         <div class="nivells" id="cl-nivells" role="radiogroup" aria-label="Nivel de web">
 <!--TT-NIVELLS-->
@@ -416,6 +423,12 @@
             <label class="nivell" for="cl-n-conectada"><span class="k">Nivel 3 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-conectada" value="La web conectada"> <b>La web conectada</b></span><span>Para dejar de copiar y pegar</span><ul><li>Todo lo anterior</li><li>Tu CRM, tus reservas o tus matrículas</li><li>La web avisa a tu IA, con MCP o con una función</li><li>Más idiomas o más puertas, como flujos</li></ul></label>
             <label class="nivell" for="cl-n-viva"><span class="k">Nivel 4 · cuota mensual</span><span><input type="radio" name="nivel" id="cl-n-viva" value="La web viva"> <b>La web viva</b></span><span>Para que el sistema mejore cada mes</span><ul><li>Todo lo anterior</li><li>Tus procesos repetitivos, definidos y gestionados</li><li>El tablero del día y el informe del mes</li><li>Comprobaciones automáticas y cambios pequeños</li></ul></label>
 <!--/TT-NIVELLS-->
+        </div>
+        <h3 style="margin-top:1.6rem">Qué hacemos</h3>
+        <div class="vistes" id="cl-capes" role="group" aria-label="Qué partes de la web hacemos">
+            <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
+            <label><input type="checkbox" data-capa="extranet"> <b>La extranet</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
+            <label><input type="checkbox" data-capa="intranet"> <b>La intranet</b><span>Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
         </div>
         <div class="accions">
             <button type="button" class="btn btn-primary" id="cl-boceto">Ver el boceto de mi web</button>
@@ -500,7 +513,7 @@
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
   <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
-  <input name="objectiu"><input name="nivel"><input name="privacidad"><textarea name="resum"></textarea>
+  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><textarea name="resum"></textarea>
 </form>
 
 <script src="/SOS/lib/mapa-valor.js"></script>
@@ -624,9 +637,22 @@
             var a = ev.target.closest('a[href]'), s = ev.target.closest('button[type=submit]');
             if (s) { ev.preventDefault(); aviso('En tu web de verdad, esto te llega por correo'); return; }
             if (!a) return;
-            var h = a.getAttribute('href').split('#')[0];
+            var hr = a.getAttribute('href'), h = hr.split('#')[0], ancla = hr.split('#')[1];
             ev.preventDefault();
+            /* La vista básica enlaza secciones de la misma página. */
+            if (ancla && (!h || $('#cl-pags [aria-pressed="true"]').dataset.r === h)) { var t = d.getElementById(ancla); if (t) t.scrollIntoView(); return; }
             if (PAGS[h]) mostra(h);
+        });
+    });
+    /* Lo que hacemos: la web pública va siempre (la vista básica, la capa
+       informativa); la extranet y la intranet se suman. Sin extranet, el boceto
+       es la landing; con ella, una puerta para cada uno. */
+    function capes() { return (S.capes || []).filter(function (x) { return x === 'extranet' || x === 'intranet'; }); }
+    document.querySelectorAll('#cl-capes [data-capa]').forEach(function (i) {
+        i.checked = capes().indexOf(i.dataset.capa) >= 0;
+        i.addEventListener('change', function () {
+            S.capes = [].slice.call(document.querySelectorAll('#cl-capes [data-capa]:checked')).map(function (x) { return x.dataset.capa; }); desa();
+            if (!$('#cl-marc-caixa').hidden) $('#cl-boceto').click();
         });
     });
     $('#cl-boceto').addEventListener('click', function () {
@@ -634,15 +660,17 @@
         if (m.roles.length < 2) { r.textContent = 'Primero di al menos quién está a tu alrededor (paso 4).'; return; }
         r.textContent = 'Preparando el boceto…';
         motor().then(function (html) {
-            var casa = [m.roles[0]], f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: 'es', url: S.web, casa: casa });
+            var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
+                f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: 'es', url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes() });
             PAGS = {}; f.forEach(function (x) { PAGS[x.ruta] = x.cos; });
             var bar = $('#cl-pags'); bar.textContent = '';
-            f.filter(function (x) { return /^[^/]+\.html$/.test(x.ruta) && !/^(404|gracies|registre|equip)\.html$/.test(x.ruta); }).forEach(function (x) {
-                var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'data-r': x.ruta }, x.ruta === 'index.html' ? 'Inicio' : (x.cos.match(/<title>([^<|]+)/) || [0, x.ruta])[1].trim());
+            f.filter(function (x) { return /^[^/]+\.html$/.test(x.ruta) && !/^(404|gracies|registre)\.html$/.test(x.ruta) && (x.ruta !== 'equip.html' || capes().indexOf('intranet') >= 0); }).forEach(function (x) {
+                var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'data-r': x.ruta }, x.ruta === 'index.html' ? 'Inicio' : x.ruta === 'equip.html' ? 'Intranet' : (x.cos.match(/<title>([^<|]+)/) || [0, x.ruta])[1].trim());
                 b.addEventListener('click', function () { mostra(x.ruta); }); bar.appendChild(b);
             });
             $('#cl-marc-caixa').hidden = false; mostra('index.html');
-            r.textContent = 'Este es tu boceto: una puerta para cada uno. Pasa de una a otra con los botones.';
+            r.textContent = (basica ? 'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.'
+                : 'Este es tu boceto: una puerta para cada uno, con el acceso de clientes y aliados (extranet).') + (capes().indexOf('intranet') >= 0 ? ' La intranet del equipo está en «Intranet».' : '');
         }).catch(function () { r.textContent = 'No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'; });
     });
     /* Los modelos del SOS (models-mapa.js, los mismos de la app): rellenan
@@ -711,7 +739,7 @@
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = 'Marca la casilla de privacidad para poder enviarlo.'; $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, resum: D.resum(S),
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' };
         b.disabled = true; r.className = 'resposta'; r.textContent = 'Enviando…';
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
