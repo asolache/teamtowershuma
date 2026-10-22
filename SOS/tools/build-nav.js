@@ -182,8 +182,8 @@ const SOS_GRUPS = [
     L.formacio, L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
       T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
-    ['cervell.html', T('El teu cervell', 'Tu cerebro'),
-      T('El teu codex en 3D, per a les IA i el LMS', 'Tu codex en 3D, para las IA y el LMS')],
+    ['cervell.html', T('Crea el teu cervell', 'Crea tu cerebro'),
+      T('Cinc vistes, per a les IA i el LMS', 'Cinco vistas, para las IA y el LMS')],
     L.blog
   ] },
   /* ══ 3 · I L'ALTRE MÓN ════════════════════════════════════════════════
