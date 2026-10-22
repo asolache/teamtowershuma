@@ -51,5 +51,12 @@
   "bases": [
     "SOS"
   ],
-  "codex": "SOS/knowledge/codex.md"
+  "codex": "SOS/knowledge/codex.md",
+  "documents": [
+    "SOS/knowledge/negoci/arquitectura-portades.md",
+    "SOS/knowledge/negoci/equip-gestor-v1.md",
+    "SOS/knowledge/negoci/frontera-molekulon.md",
+    "SOS/knowledge/negoci/mapa-kanban-ia.md"
+  ],
+  "folksonomia": "SOS/knowledge/folksonomia.json"
 }

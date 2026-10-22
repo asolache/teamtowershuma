@@ -1,3 +1,13 @@
+---
+tipo: informe
+de: huma
+rol: [marketing, comunicación]
+fase: crea
+visible: pública
+estado: vigente
+etiquetas: [portada, embut, mesura]
+---
+
 # Dues portades, dues feines
 
 > Anàlisi feta el 2026-09-24 **mesurant les pàgines amb un navegador**, no

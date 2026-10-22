@@ -27,6 +27,10 @@ ve d'un error que ja vam cometre a SOS:
 | **El contracte de la IA** | `saber/para-la-ia.md` | `SOS/knowledge/for-ai/README.md` | Regles que no arriben a qui les ha de complir |
 | **El backlog** | `saber/backlog.md` | `SOS/knowledge/dev/backlog.md` | Una petició que es queda en una conversa i la sessió següent no sap que existeix (veda 160) |
 
+I una de més per als documents estratègics, opcional: **el tronc comú**
+(`taxonomia-universal.json`, heretat) i **la folksonomia** de cada projecte
+(`plantilla/saber/folksonomia.json`). Ho explica la taxonomia (`SOS/knowledge/taxonomia.md`).
+
 I una setena que les fa aguantar: **la guarda** (`SOS/tools/cervell.js`). Sense
 ella, les sis peces són documentació, i la documentació es podreix. Amb ella, el
 CI peta si:

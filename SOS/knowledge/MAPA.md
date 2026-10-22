@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 335 · 19025 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 338 · 19060 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 127 KB |
@@ -37,8 +37,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 33 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 122 · 1594 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 70 · 1444 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 122 · 1597 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 70 · 1452 KB |
 
 ## saber
 
@@ -46,13 +46,13 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 57 · 1086 KB |
-| `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 12 · 43 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 60 · 1110 KB |
+| `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 14 · 63 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 361 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
-| `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 121 KB |
+| `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 3 · 32 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 14 · 140 KB |
 | `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 3 · 7 KB |
@@ -82,6 +82,21 @@ El que va ser. Es conserva; **no es llegeix com a present**.
 9 pàgines HTML a l'arrel del repositori (`avis-legal.html`, `cataleg.html`, `finances.html`, `home-nova.html`…).
 Són **arxiu**: el web anterior a `SOS/`, encara servit per `_redirects`.
 No són referència de com es fan les coses ara.
+
+## documents
+
+Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i les etiquetes de la folksonomia d'aquest cervell.
+
+| document | què és | rol | de | estat | qui ho veu | etiquetes |
+|---|---|---|---|---|---|---|
+| [`SOS/knowledge/negoci/arquitectura-portades.md`](negoci/arquitectura-portades.md) | informe | màrqueting, comunicació | TeamTowers Huma i SOS | vigent | pública | portada, embut, mesura |
+| [`SOS/knowledge/negoci/equip-gestor-v1.md`](negoci/equip-gestor-v1.md) | pla | persones, xarxa i aliances | TeamTowers Huma i SOS | esborrany | pública | territori, equip-gestor, formacio |
+| [`SOS/knowledge/negoci/frontera-molekulon.md`](negoci/frontera-molekulon.md) | decisió | sistemes i dades, màrqueting | La casa | vigent | pública | molekulon, redireccions, menu |
+| [`SOS/knowledge/negoci/mapa-kanban-ia.md`](negoci/mapa-kanban-ia.md) | pla | sistemes i dades, operacions | TeamTowers Huma i SOS | esborrany | pública | kanban, mapa-viu, automatitzacio |
+
+**Etiquetes i el rol d'on pengen:** automatitzacio → sistemes i dades (1) · embut → vendes (1) · equip-gestor → persones (1) · formacio → persones (1) · kanban → operacions (1) · mapa-viu → sistemes i dades (1) · menu → màrqueting (1) · mesura → lliure (1) · molekulon → xarxa i aliances (1) · portada → màrqueting (1) · redireccions → sistemes i dades (1) · territori → xarxa i aliances (1)
+
+**Candidates: es repeteixen i no pengen de cap rol. Decideix a la folksonomia si pugen a un rol o queden lliures:** cap
 
 ---
 

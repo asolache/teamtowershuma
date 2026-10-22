@@ -152,7 +152,7 @@ cas('un idioma sense textos peta', a => {
   cpSync(join(DIR, '..', 'knowledge', 'cervell'), join(SOS, 'knowledge', 'cervell'), { recursive: true });
   cpSync(EINA, join(SOS, 'tools', 'cervell.js'));
   writeFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), JSON.stringify({
-    font: 'https://exemple.org/', sedas: ['\\d[\\d.,]*\\s?€'], vedes: { Prova: [1] }, fitxers: {}
+    font: 'https://exemple.org/', vedes: { Prova: [1] }, fitxers: {}
   }));
   const instal = text => {
     writeFileSync(join(SOS, 'knowledge', 'codex.md'), `## Veda 1 — Una\n\n${text}\n`);
@@ -247,6 +247,45 @@ cas('un idioma sense textos peta', a => {
   console.log(`  ${bo ? '✓' : '✗'} els serveis arriben com a enllaços, el fill tria els seus, i un servei que no hi és atura l'herència`);
   if (!bo) console.log(r3.stdout);
   rmSync(casa, { recursive: true, force: true });
+}
+
+/* Els documents: el tronc comú peta si s'escriu malament, les etiquetes lliures
+   no peten mai, i el que és públic passa pel sedàs. Un cervell fill amb la
+   taxonomia heretada i una folksonomia pròpia, en castellà. */
+{
+  const arrel = mkdtempSync(join(tmpdir(), 'cervell-'));
+  rmSync(arrel, { recursive: true });
+  spawnSync(process.execPath, [EINA, '--nou', arrel, '--nom', 'prova'], { encoding: 'utf8' });
+  const conf = JSON.parse(readFileSync(join(arrel, 'cervell.json'), 'utf8'));
+  conf.documents = ['estrategia'];
+  conf.ecosistema = 'tienda';
+  writeFileSync(join(arrel, 'cervell.json'), JSON.stringify(conf, null, 2));
+  writeFileSync(join(arrel, 'saber', 'folksonomia.json'), JSON.stringify({
+    ecosistemas: { tienda: { mena: 'cliente', nom: 'La tienda' } }, etiquetas: { cata: 'ventas', vermut: null } }));
+  mkdirSync(join(arrel, 'estrategia'));
+  appendFileSync(join(arrel, 'saber', 'taxonomia.md'), '- `estrategia` · saber · Los documentos estratégicos\n');
+  const doc = (cap, cos = 'Texto.') => writeFileSync(join(arrel, 'estrategia', 'plan.md'), `---\n${cap}\n---\n\n# Plan\n\n${cos}\n`);
+  const prova = (cap, cos) => { doc(cap, cos); spawnSync(process.execPath, [INSTAL(arrel), '--arrel', arrel], { encoding: 'utf8' }); return comprova(arrel); };
+  const BO = 'tipo: plan\nrol: [ventas, marketing]\nfase: sostiene\nvisible: pública\nestado: borrador\netiquetas: [cata, vermut, cata-de-otoño]';
+  const r = {
+    bo: prova(BO).status,
+    valor: prova(BO.replace('tipo: plan', 'tipo: plano')).status,
+    falta: prova(BO.replace('estado: borrador\n', '')).status,
+    sense: (writeFileSync(join(arrel, 'estrategia', 'plan.md'), '# Plan\n'), spawnSync(process.execPath, [INSTAL(arrel), '--arrel', arrel]), comprova(arrel).status),
+    eco: prova(BO + '\nde: otra').status,
+    import: prova(BO, 'Cuesta 950 € al mes.').status,
+    privat: prova(BO.replace('pública', 'privada'), 'Cuesta 950 € al mes.').status
+  };
+  doc(BO); {
+    writeFileSync(join(arrel, 'estrategia', 'otro.md'), '---\n' + BO.replace('plan', 'decisión') + '\n---\n');
+    spawnSync(process.execPath, [INSTAL(arrel), '--arrel', arrel], { encoding: 'utf8' });
+  }
+  const mapa = readFileSync(join(arrel, 'saber', 'MAPA.md'), 'utf8');
+  r.candidata = /Candidatas[^\n]*\*\* cata-de-otono\n/.test(mapa) && /cata-de-otono → sin rol \(2\)/.test(mapa) && /vermut → libre \(2\)/.test(mapa) && /cata → ventas \(2\)/.test(mapa);
+  rmSync(arrel, { recursive: true, force: true });
+  const bo = r.bo === 0 && r.valor === 1 && r.falta === 1 && r.sense === 1 && r.eco === 1 && r.import === 1 && r.privat === 0 && r.candidata;
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} els documents: un valor inventat, una pregunta sense resposta, un ecosistema que no hi és o un import en públic peten; les etiquetes lliures no, i la que es repeteix surt com a candidata` + (bo ? '' : '  ' + JSON.stringify(r)));
 }
 
 console.log(fails ? `\n❌ ${fails} cas${fails === 1 ? '' : 'os'} on la guarda no ha fet el que promet.`

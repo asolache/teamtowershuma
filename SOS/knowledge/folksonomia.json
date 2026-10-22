@@ -1,0 +1,22 @@
+{
+  "diu": "La folksonomia d'aquest cervell: els ecosistemes que hi surten i de quin rol de la taxonomia universal (SOS/knowledge/cervell/taxonomia-universal.json) penja cada etiqueta lliure. null = lliure a posta. Repositori públic: cap client hi té nom.",
+  "ecosistemas": {
+    "casa": { "mena": "home", "nom": "La casa" },
+    "teamtowers": { "mena": "brand", "nom": "TeamTowers" },
+    "huma": { "mena": "brand", "nom": "TeamTowers Huma i SOS" }
+  },
+  "etiquetas": {
+    "portada": "marketing",
+    "embut": "sales",
+    "mesura": null,
+    "territori": "network",
+    "equip-gestor": "people",
+    "formacio": "people",
+    "molekulon": "network",
+    "redireccions": "systems",
+    "menu": "marketing",
+    "kanban": "operations",
+    "mapa-viu": "systems",
+    "automatitzacio": "systems"
+  }
+}

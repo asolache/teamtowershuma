@@ -1,10 +1,5 @@
 {
   "font": "https://github.com/asolache/teamtowershuma/blob/main/",
-  "sedas": [
-    "\\d[\\d.,]*\\s?€",
-    "IKEA",
-    "[Pp]ilots? "
-  ],
   "vedes": {
     "La veritat del que es diu": [
       61,
@@ -105,7 +100,8 @@
     "herramientas/tools/proposta.js": "SOS/tools/proposta.js",
     "herramientas/tools/automatitza.js": "SOS/tools/automatitza.js",
     "herramientas/tools/proces-web.js": "SOS/tools/proces-web.js",
-    "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json"
+    "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json",
+    "saber/heredado/taxonomia-universal.json": "SOS/knowledge/cervell/taxonomia-universal.json"
   },
   "serveis": {
     "web": "https://teamtowershuma.com/",
