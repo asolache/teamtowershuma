@@ -209,6 +209,7 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForSelector('#cl-ia .ia-prop', { timeout: 5000 });
   const c1 = pets[1][1];
   ok(c1.pas === 'mapa' && c1.sessio === SES && c1.dades.alrededor.length === 6 && c1.dades.casa === 'Equipo de formación', 'manda su dibujo con la sesión');
+  ok(c1.dades.model && c1.dades.model.pairs.length > 5 && c1.dades.model.pairs.some(p => p[1] === 'Equipo de formación' || p[0] === 'Equipo de formación') && /Educación|formación/i.test(c1.dades.model.nom), 'y el modelo que encaja (' + (c1.dades.model && c1.dades.model.nom) + '), con su centro: la IA arranca de ahí');
   ok(await p.locator('#cl-ia .ia-prop').count() === 3 && /confianza/.test(await p.textContent('#cl-ia .ia-resum')), 'tres propuestas y lo que ve de su red');
   ok(await p.locator('#cl-ia .ia-prop[data-tipo="cambia"] del').count() > 0 && await p.locator('#cl-ia .ia-prop[data-tipo="cambia"] ins').count() > 0, 'cada cambio, con el antes tachado y el después');
   ok(/Te quedan unas 11 vueltas/.test(await p.textContent('#cl-ia [data-ia="sessio"]')), 'la energía que le queda, en vueltas');

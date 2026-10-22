@@ -1261,7 +1261,11 @@
             return function () { clearInterval(iv); cx.classList.remove('ia-pensa'); };
         }
         function dades(nota) {
+            /* La IA arranca del modelo que ha elegido o que le sugerimos (models-mapa.js)
+               y lo adapta a lo que cuenta: es la referencia de buenas prácticas. */
+            var mi = S.modelo || ((MM.suggereix && MM.suggereix([S.inicial, S.respuestas.objetivo].join(' '), LL)) || {}).id, mr = mi && MM.mapa(mi, LL, S.casa.trim() || null);
             return { casa: S.casa, org: S.org, inicial: S.inicial, nota: nota || '', nivel: S.nivel, capes: capes(),
+                model: mr ? { nom: mr.nom, bona: mr.bona, pairs: mr.pairs } : null,
                 llengua: LL, respuestas: D.PREGUNTES.map(function (p) { return { q: D.pregunta(p, LL).q, a: S.respuestas[p.id] || '' }; }),
                 alrededor: S.alrededor.map(function (f) { return { quien: f.quien, meDa: f.meDa, meDaEs: f.meDaEs, leDoy: f.leDoy, leDoyEs: f.leDoyEs }; }) };
         }
