@@ -36,6 +36,7 @@ const sense = await page.evaluate(() => {
     mods: m.querySelectorAll('.cm-m').length,
     links: [...m.querySelectorAll('.cm-m a')].map(a => a.getAttribute('href')),
     primari: (m.querySelector('.btn-primary') || {}).textContent || '',
+    eines: [...m.querySelectorAll('#cmEines a')].map(a => a.getAttribute('href')),
     overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth } : null;
 });
 ok(sense && /El meu camí/.test(sense.h), 'el modal s\'obre: «' + (sense && sense.h) + '»');
@@ -46,6 +47,7 @@ ok(sense && sense.mods > 0, 'amb els mòduls del rol: ' + (sense && sense.mods))
 ok(sense && sense.links.every(h => /^formacio\.html#m\d+$/.test(h)), 'cada mòdul obre la seva lliçó a formacio.html');
 const anc = readFileSync(join(DIR, '..', 'formacio.html'), 'utf8');
 ok(sense && sense.links.every(h => anc.includes('id="' + h.split('#')[1] + '"')), 'i l\'àncora existeix de debò');
+ok(sense && ['banc-temps.html','biblioteca.html','compra.html','energia.html','habitatge.html'].every(h => sense.eines.includes(h)), 'i on es practica: les eines psicosocials del SOS');
 ok(sense && /Crea el teu perfil/.test(sense.primari), 'sense perfil, el pas és crear-lo: «' + (sense && sense.primari) + '»');
 ok(sense && sense.overflow === 0, 'a 390 px no desborda');
 await page.evaluate(() => document.querySelector('#modalRoot').innerHTML = '');

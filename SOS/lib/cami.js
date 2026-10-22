@@ -98,6 +98,10 @@
           (x.estat === 'fet' ? 'El teu nivell ja ho demostra' : x.estat === 'ara' ? 'Ara · ' + m.hours + ' h fent-ho al teu projecte' : 'Després · ' + m.hours + ' h') +
           '</span></span><a class="btn btn-ghost btn-sm" href="formacio.html#' + esc(m.id) + '" target="_blank" rel="noopener">Obre</a></div>';
       }).join('') + '</div>' +
+      '<p class="m-sub" id="cmEines">On es practica: ' + [['banc-temps.html', 'el Banc de Temps'], ['biblioteca.html', 'la Biblioteca de les Coses'],
+        ['compra.html', 'la Compra'], ['energia.html', 'l\'Energia i la minigrid'], ['habitatge.html', 'l\'Habitatge']].map(function (e) {
+        return '<a href="' + e[0] + '" target="_blank" rel="noopener">' + e[1] + '</a>';
+      }).join(' · ') + '. Cada eina és una dinàmica real, i el que hi fas compta com a evidència.</p>' +
       '<p class="m-sub">Per a un equip que vol aprendre IA construint el seu cervell: ' +
       '<a href="cervell.html" target="_blank" rel="noopener">Crea el teu cervell</a> (M1 · M3 · M8 · M14).</p>' +
       '<div class="cm-k">4 · El pas d\'avui</div>';
