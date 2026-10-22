@@ -52,14 +52,16 @@
 
   /* Les franges: els tres pisos del castell, cadascun amb les seves koshas, o
      les cinc koshas soles. El propòsit dalt i l'obra a baix. */
-  function franges(D, vista) {
-    var capaDe = {}; D.capas.forEach(function (c) { capaDe[c.id] = c; });
+  /* `paraules`: les paraules universals per a cada capa ({ anna: 'Cos', … }),
+     per a qui no coneix les koshas; sense, el nom sànscrit. */
+  function franges(D, vista, paraules) {
+    var capaDe = {}; D.capas.forEach(function (c) { capaDe[c.id] = paraules && paraules[c.id] ? { n: c.n, s: paraules[c.id] } : c; });
     if (vista === 'castellera' && raiz.CerebroFuerzas) {
       return raiz.CerebroFuerzas.CASTELLERA.map(function (p) {
         return { n: p.n, s: p.capas.map(function (k) { return capaDe[k].s; }).join(' · '), capas: p.capas, pis: true };
       });
     }
-    return D.capas.slice().reverse().map(function (c) { return { n: c.n, s: c.s, capas: [c.id] }; });
+    return D.capas.slice().reverse().map(function (c) { return { n: c.n, s: capaDe[c.id].s, capas: [c.id] }; });
   }
 
   /* On va cada veda: x per l'ordre en què es va escriure, y per la franja (i,
@@ -129,7 +131,7 @@
     /* En una pantalla estreta, mitja amplada: els punts i els noms dels pisos
        es dibuixen el doble de grans, i les koshas de cada pis no hi caben. */
     var pin = op.vista === 'pinya', mapa = op.vista === 'mapa' || pin, estret = caixa.clientWidth < 600, W = pin ? 820 : mapa ? 640 : estret ? 500 : 1000;
-    var H = mapa ? 640 : (op.alt || 300) * (estret ? .8 : 1), dalt = 10, x0 = estret ? 120 : 170, x1 = W - 16, bs = franges(D, mapa ? 'capes' : op.vista || 'castellera'), alt = (H - dalt - 10) / bs.length;
+    var H = mapa ? 640 : (op.alt || 300) * (estret ? .8 : 1), dalt = 10, x0 = estret ? 120 : 170, x1 = W - 16, bs = franges(D, mapa ? 'capes' : op.vista || 'castellera', op.paraules), alt = (H - dalt - 10) / bs.length;
     var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': op.etiqueta || '' }); if (mapa) svg.setAttribute('class', pin ? 'cp-mapa cp-pinya' : 'cp-mapa');
     caixa.innerHTML = ''; caixa.appendChild(svg);
     var gB = el('g', {}, svg), gE = el('g', {}, svg), gN = el('g', {}, svg);

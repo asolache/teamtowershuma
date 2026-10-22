@@ -63,17 +63,27 @@ reconeix de quin tipus de projecte es tracta (escola, celler, ajuntament,
 cooperativa, comerç…) i li proposa els rols, els fluxos i les preguntes típics
 del seu sector, en comptes de començar de zero.
 
-**Per on començar:**
+**Fet (22/10/2026, «seamos DRY»):** la base ja existia a la Matriu de l'app:
+les catorze activitats crítiques del territori (`CRITICAL_ACTIVITIES`: rols,
+fluxos i passos de cada sector), els sis prototips (`PROTOTYPE_MAPS`) i els
+quatre tipus de projecte (`PROJECT_TYPES`). `build-models-mapa.js` ara també
+llegeix els sectors de l'app i els escriu a `SOS/lib/models-mapa.js` com a
+`SECTORS` (català i castellà), al costat dels set `MODELS`. `/cliente/` ja els
+ofereix («O por sector») amb el mateix botó. Cap còpia: si la Matriu canvia,
+el `--check` del CI ho diu.
 
-1. Una sola font: un fitxer per sector a `SOS/knowledge/` (rols, lliuraments
-   tangibles i intangibles, preguntes, errors típics), escrit a partir dels
-   set mapes model (`build-models-mapa.js`) i dels casos reals amb font.
-2. La guia i la IA de `/cliente/` (`pule-mapa.mjs`) el llegeixen: primer
-   identificar el sector, després proposar. Cap còpia per eina (veda 71).
-3. Empaquetat perquè un model local (Ollama) el pugui fer servir sense
-   connexió, i que s'actualitzi quan canvia la font. Mesurar qualitat i cost
+**El que queda:**
+
+1. La IA de `/cliente/` (`pule-mapa.mjs`) identifica el sector i el tipus de
+   projecte del que escriu la persona i proposa el model que toca, llegint
+   `models-mapa.js` (avui la Via C de la Matriu ho fa per paraules).
+2. Els casos reals (`SOS/knowledge/vna/casos/`, avui el celler del Penedès) i
+   els patrons (`vna/patrons.md`) entren a la mateixa base, per sector.
+3. Un paquet exportable (JSON) perquè un model local (Ollama) el faci servir
+   sense connexió i s'actualitzi quan canvia la font. Mesurar qualitat i cost
    contra el model al núvol abans de canviar res.
-4. El que s'aprèn de cada projecte nou torna a la base del seu sector (el
+4. L'anglès dels sectors, quan l'app el demani.
+5. El que s'aprèn de cada projecte nou torna a la base del seu sector (el
    cervell col·lectiu), sense dades personals.
 
 **I el que hi afegeix (Àlvar, 22/10/2026 21:34):** aprofitar la feina ja

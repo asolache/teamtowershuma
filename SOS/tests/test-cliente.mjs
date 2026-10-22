@@ -109,6 +109,16 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 4,
     'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano');
   ok(await p.getAttribute('#cl-models button:has-text("Educación")', 'aria-pressed') === 'true', 'y queda marcado el modelo elegido');
+  /* Los catorce sectores de la Matriu (SECTORS de models-mapa.js), con el mismo botón. */
+  ok(await p.locator('#cl-sectors button').count() === 14, 'y también los catorce sectores de la Matriu');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-sectors button:has-text("Vivienda asequible")');
+  const vals = await p.$$eval('#cl-files input', xs => xs.map(x => x.value).join(' · '));
+  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() >= 3
+    && /Financiación ética|Unidades de convivencia/.test(vals) && !/Educación|Alumnado/.test(vals),
+    'un sector (vivienda) cambia quién está alrededor, en castellano, y respeta tu centro');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-models button:has-text("Educación")');
   await p.fill('#cl-casa', 'Equipo de formación');
   await p.fill('#cl-retorn', RESPOSTA); await p.click('#cl-omple');
 

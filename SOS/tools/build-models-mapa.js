@@ -103,6 +103,327 @@ const T = {
   'què demana el sector': ['qué pide el sector', 'what the sector asks for'], 'formació que s\'hi ajusta': ['formación que se ajusta', 'training that fits']
 };
 
+/* ══ ELS SECTORS DE LA MATRIU (22/10/2026) ═══════════════════════════════════
+   L'Àlvaro: «a la Matriu hi ha força informació de tipologies de projectes i
+   els seus mapes de valor: integrem-la a la base de coneixement de fluxos de
+   valor, DRY». Són les catorze activitats crítiques del territori
+   (CRITICAL_ACTIVITIES de l'app): rols, fluxos i passos de cada sector. Es
+   llegeixen de l'app com els models i surten com a `SECTORS`, en català i
+   castellà; l'anglès, el dia que l'app el demani (fins llavors, el castellà).
+   Els textos que ja són a `T` no es repeteixen aquí. */
+const TS = {
+  'acompanyament': 'acompañamiento',
+  'salut comunitària': 'salud comunitaria',
+  'Formadors': 'Formadores',
+  'Dinamització comercial': 'Dinamización comercial',
+  'Revitalitzar el comerç i l\'economia de proximitat.': 'Revitalizar el comercio y la economía de proximidad.',
+  'Comerços de proximitat': 'Comercios de proximidad',
+  'Ajuntament': 'Ayuntamiento',
+  'Associació de comerciants': 'Asociación de comerciantes',
+  'Veïnat': 'Vecindario',
+  'Consumidors': 'Consumidores',
+  'producte i servei de proximitat': 'producto y servicio de proximidad',
+  'compra local': 'compra local',
+  'campanyes i formació': 'campañas y formación',
+  'quotes i participació': 'cuotas y participación',
+  'fires i finançament': 'ferias y financiación',
+  'diagnòstic del carrer': 'diagnóstico de la calle',
+  'fidelitat i boca-orella': 'fidelidad y boca a boca',
+  'vida i seguretat al carrer': 'vida y seguridad en la calle',
+  'espai públic i mercats': 'espacio público y mercados',
+  'legitimitat de les mesures': 'legitimidad de las medidas',
+  'moneda local i promocions': 'moneda local y promociones',
+  'despesa que es queda al poble': 'gasto que se queda en el pueblo',
+  'Diagnòstic del teixit comercial': 'Diagnóstico del tejido comercial',
+  'Constituir l\'associació': 'Constituir la asociación',
+  'Campanya de proximitat': 'Campaña de proximidad',
+  'Fires i mercats': 'Ferias y mercados',
+  'Fidelització i moneda local': 'Fidelización y moneda local',
+  'Ocupació i inserció laboral': 'Empleo e inserción laboral',
+  'Crear ocupació digna i itineraris d\'inserció.': 'Crear empleo digno e itinerarios de inserción.',
+  'Persones en cerca de feina': 'Personas que buscan trabajo',
+  'Empreses locals': 'Empresas locales',
+  'Entitats formatives': 'Entidades formativas',
+  'Servei d\'ocupació': 'Servicio de empleo',
+  'treball i talent': 'trabajo y talento',
+  'contracte i salari': 'contrato y salario',
+  'formació i acreditació': 'formación y acreditación',
+  'motivació i assistència': 'motivación y asistencia',
+  'orientació i intermediació': 'orientación e intermediación',
+  'perfil i disponibilitat': 'perfil y disponibilidad',
+  'què necessita el sector': 'qué necesita el sector',
+  'pràctiques i formació dual': 'prácticas y formación dual',
+  'plans i recursos': 'planes y recursos',
+  'dades d\'inserció': 'datos de inserción',
+  'sòl, incentius i contractació': 'suelo, incentivos y contratación',
+  'ocupació arrelada al municipi': 'empleo arraigado en el municipio',
+  'Mapar necessitats i perfils': 'Mapear necesidades y perfiles',
+  'Aliances amb empreses': 'Alianzas con empresas',
+  'Formació a mida': 'Formación a medida',
+  'Pràctiques i inserció': 'Prácticas e inserción',
+  'Seguiment': 'Seguimiento',
+  'Habitatge assequible': 'Vivienda asequible',
+  'Accés a habitatge digne sense especulació.': 'Acceso a una vivienda digna sin especulación.',
+  'Grup motor': 'Grupo motor',
+  'Administració': 'Administración',
+  'Finançament ètic': 'Financiación ética',
+  'Cooperativa': 'Cooperativa',
+  'Unitats de convivència': 'Unidades de convivencia',
+  'cessió de sòl o dret de superfície': 'cesión de suelo o derecho de superficie',
+  'retorn social i mixtura': 'retorno social y mezcla',
+  'aportació i quota d\'ús': 'aportación y cuota de uso',
+  'dret d\'ús indefinit': 'derecho de uso indefinido',
+  'préstec': 'préstamo',
+  'projecte solvent i valors': 'proyecto solvente y valores',
+  'convivència i confiança': 'convivencia y confianza',
+  'implicació i cura': 'implicación y cuidado',
+  'interlocució i pressió': 'interlocución y presión',
+  'informació de sòl i terminis': 'información de suelo y plazos',
+  'pla econòmic': 'plan económico',
+  'criteris i acompanyament': 'criterios y acompañamiento',
+  'Cerca de sòl': 'Búsqueda de suelo',
+  'Viabilitat': 'Viabilidad',
+  'Constitució': 'Constitución',
+  'Finançament': 'Financiación',
+  'Obra': 'Obra',
+  'Convivència': 'Convivencia',
+  'Comunitat energètica': 'Comunidad energética',
+  'Produir i compartir energia renovable localment.': 'Producir y compartir energía renovable localmente.',
+  'Nucli promotor': 'Núcleo promotor',
+  'Sòcies consumidores': 'Socias consumidoras',
+  'Instal·ladora': 'Instaladora',
+  'Assessoria': 'Asesoría',
+  'inversió i quotes': 'inversión y cuotas',
+  'energia i estalvi': 'energía y ahorro',
+  'cessió de teulades': 'cesión de tejados',
+  'transició energètica amb dades': 'transición energética con datos',
+  'instal·lació i manteniment': 'instalación y mantenimiento',
+  'contracte i pagament': 'contrato y pago',
+  'viabilitat i seguretat jurídica': 'viabilidad y seguridad jurídica',
+  'encàrrec i cas replicable': 'encargo y caso replicable',
+  'posada en marxa a casa': 'puesta en marcha en casa',
+  'recomanacions': 'recomendaciones',
+  'difusió i tràmits': 'difusión y trámites',
+  'mandat ciutadà': 'mandato ciudadano',
+  'Captació de sòcies': 'Captación de socias',
+  'Teulada': 'Tejado',
+  'Instal·lació': 'Instalación',
+  'Posada en marxa': 'Puesta en marcha',
+  'Alimentació sostenible': 'Alimentación sostenible',
+  'Aliments sans i de proximitat, de la terra al plat.': 'Alimentos sanos y de proximidad, de la tierra al plato.',
+  'Pagesia local': 'Campesinado local',
+  'Grup de consum': 'Grupo de consumo',
+  'Obrador': 'Obrador',
+  'Punt de repartiment': 'Punto de reparto',
+  'cistelles i producte': 'cestas y producto',
+  'comandes i preu just': 'pedidos y precio justo',
+  'transformació del producte': 'transformación del producto',
+  'lloc i horari': 'lugar y horario',
+  'vida al local': 'vida en el local',
+  'accés a producte de proximitat': 'acceso a producto de proximidad',
+  'quotes i rotació de tasques': 'cuotas y rotación de tareas',
+  'confiança i traçabilitat': 'confianza y trazabilidad',
+  'mercat estable': 'mercado estable',
+  'producte elaborat': 'producto elaborado',
+  'demanda que sosté l\'obrador': 'demanda que sostiene el obrador',
+  'Formar el grup': 'Formar el grupo',
+  'Contactar pagesia': 'Contactar con el campesinado',
+  'Logística': 'Logística',
+  'Sistema de comandes': 'Sistema de pedidos',
+  'Primera cistella': 'Primera cesta',
+  'Cures i salut comunitària': 'Cuidados y salud comunitaria',
+  'Xarxa de cures i benestar contra la soledat.': 'Red de cuidados y bienestar contra la soledad.',
+  'Nucli de cura': 'Núcleo de cuidado',
+  'Gent gran': 'Personas mayores',
+  'CAP / serveis socials': 'CAP / servicios sociales',
+  'saber i memòria viva': 'saber y memoria viva',
+  'detecció i alerta': 'detección y alerta',
+  'formació per detectar': 'formación para detectar',
+  'derivació i suport': 'derivación y apoyo',
+  'detecció precoç i dades': 'detección precoz y datos',
+  'hores de cura': 'horas de cuidado',
+  'sentit i pertinença': 'sentido y pertenencia',
+  'coneixement del carrer': 'conocimiento de la calle',
+  'Detectar necessitats': 'Detectar necesidades',
+  'Protocol': 'Protocolo',
+  'Primers acompanyaments': 'Primeros acompañamientos',
+  'Coordinació amb serveis': 'Coordinación con servicios',
+  'Cultura i patrimoni': 'Cultura y patrimonio',
+  'Activar la cultura, la festa i el patrimoni local.': 'Activar la cultura, la fiesta y el patrimonio local.',
+  'Entitats culturals': 'Entidades culturales',
+  'Artistes': 'Artistas',
+  'Escoles': 'Escuelas',
+  'equipaments i subvenció': 'equipamientos y subvención',
+  'programació i vida cultural': 'programación y vida cultural',
+  'experiència cultural': 'experiencia cultural',
+  'públic i taquilla': 'público y taquilla',
+  'patrimoni viu': 'patrimonio vivo',
+  'implicació de les famílies': 'implicación de las familias',
+  'espai i caixet': 'espacio y caché',
+  'obra i assaig': 'obra y ensayo',
+  'cantera i espais': 'cantera y espacios',
+  'arrelament de l\'alumnat': 'arraigo del alumnado',
+  'festa major i espai públic': 'fiesta mayor y espacio público',
+  'participació i memòria': 'participación y memoria',
+  'Mapa d\'agents culturals': 'Mapa de agentes culturales',
+  'Programació compartida': 'Programación compartida',
+  'Recuperar patrimoni': 'Recuperar patrimonio',
+  'Festa major participativa': 'Fiesta mayor participativa',
+  'Avaluació': 'Evaluación',
+  'Turisme de poble sostenible': 'Turismo de pueblo sostenible',
+  'Turisme responsable que reverteix al territori.': 'Turismo responsable que revierte en el territorio.',
+  'Allotjaments': 'Alojamientos',
+  'Restauració': 'Restauración',
+  'Guies locals': 'Guías locales',
+  'Productors': 'Productores',
+  'experiències': 'experiencias',
+  'clientela i comissió': 'clientela y comisión',
+  'promoció i fires': 'promoción y ferias',
+  'taxes i activitat': 'tasas y actividad',
+  'producte km0': 'producto km0',
+  'compra estable': 'compra estable',
+  'esmorzars i botiga': 'desayunos y tienda',
+  'visibilitat del producte': 'visibilidad del producto',
+  'relat del territori': 'relato del territorio',
+  'àpats i rutes': 'comidas y rutas',
+  'reserves i grups': 'reservas y grupos',
+  'Inventari d\'atractius': 'Inventario de atractivos',
+  'Producte turístic': 'Producto turístico',
+  'Aliances locals': 'Alianzas locales',
+  'Promoció responsable': 'Promoción responsable',
+  'Gestió de fluxos': 'Gestión de flujos',
+  'Economia circular': 'Economía circular',
+  'Reduir, reparar i reutilitzar en clau local.': 'Reducir, reparar y reutilizar en clave local.',
+  'Comerços': 'Comercios',
+  'Recicladors': 'Recicladores',
+  'objectes i residus': 'objetos y residuos',
+  'productes reparats': 'productos reparados',
+  'espai i suport': 'espacio y apoyo',
+  'residus evitats amb dades': 'residuos evitados con datos',
+  'tractament del que no es repara': 'tratamiento de lo que no se repara',
+  'material separat i net': 'material separado y limpio',
+  'excedents i estocs': 'excedentes y stocks',
+  'imatge i clientela conscient': 'imagen y clientela consciente',
+  'reparació i segona mà': 'reparación y segunda mano',
+  'compra reparada': 'compra reparada',
+  'valorització i informe': 'valorización e informe',
+  'contracte i taxa': 'contrato y tasa',
+  'Punt de reparació': 'Punto de reparación',
+  'Biblioteca de les coses': 'Biblioteca de las cosas',
+  'Mercat de segona mà': 'Mercado de segunda mano',
+  'Compostatge': 'Compostaje',
+  'Sensibilització': 'Sensibilización',
+  'Digitalització i sobirania tecnològica': 'Digitalización y soberanía tecnológica',
+  'Autonomia digital del teixit local.': 'Autonomía digital del tejido local.',
+  'Nucli tècnic': 'Núcleo técnico',
+  'Entitats': 'Entidades',
+  'capacitació': 'capacitación',
+  'eines digitals sobiranes': 'herramientas digitales soberanas',
+  'usos i incidències detectades': 'usos e incidencias detectadas',
+  'recursos i infraestructura': 'recursos e infraestructura',
+  'serveis mantinguts': 'servicios mantenidos',
+  'migració i suport': 'migración y apoyo',
+  'contribucions i documentació': 'contribuciones y documentación',
+  'alfabetització digital': 'alfabetización digital',
+  'confiança per demanar ajuda': 'confianza para pedir ayuda',
+  'connectivitat i espais': 'conectividad y espacios',
+  'diagnòstic de bretxa': 'diagnóstico de brecha',
+  'Diagnòstic digital': 'Diagnóstico digital',
+  'Formació bàsica': 'Formación básica',
+  'Eines sobiranes': 'Herramientas soberanas',
+  'Presència digital': 'Presencia digital',
+  'Manteniment comunitari': 'Mantenimiento comunitario',
+  'Joventut i lleure': 'Juventud y ocio',
+  'Espais i oportunitats per al jovent.': 'Espacios y oportunidades para la juventud.',
+  'Jovent': 'Juventud',
+  'Esplai / entitats': 'Esplai / entidades',
+  'Monitoratge': 'Monitores',
+  'espais i beca': 'espacios y beca',
+  'activitat i cohesió juvenil': 'actividad y cohesión juvenil',
+  'confiança i referència': 'confianza y referencia',
+  'participació i propostes': 'participación y propuestas',
+  'espai i recursos per fer-les': 'espacio y recursos para hacerlas',
+  'formació i orientació': 'formación y orientación',
+  'clima i implicació': 'clima e implicación',
+  'formació i condicions dignes': 'formación y condiciones dignas',
+  'hores i projecte educatiu': 'horas y proyecto educativo',
+  'pressupost i espai jove': 'presupuesto y espacio joven',
+  'mandat i prioritats reals': 'mandato y prioridades reales',
+  'Escoltar el jovent': 'Escuchar a la juventud',
+  'Espai jove': 'Espacio joven',
+  'Programació': 'Programación',
+  'Projectes liderats per joves': 'Proyectos liderados por jóvenes',
+  'Relleu': 'Relevo',
+  'Mobilitat sostenible': 'Movilidad sostenible',
+  'Moure\'s millor amb menys cotxe.': 'Moverse mejor con menos coche.',
+  'Transport públic': 'Transporte público',
+  'Grups ciclistes': 'Grupos ciclistas',
+  'carrils, aparcaments i transport': 'carriles, aparcamientos y transporte',
+  'ús i legitimitat': 'uso y legitimidad',
+  'camins escolars': 'caminos escolares',
+  'famílies acompanyants': 'familias acompañantes',
+  'propostes i diagnòstic': 'propuestas y diagnóstico',
+  'infraestructura i seguretat': 'infraestructura y seguridad',
+  'freqüència i cobertura': 'frecuencia y cobertura',
+  'demanda i validacions': 'demanda y validaciones',
+  'concessió i finançament': 'concesión y financiación',
+  'servei i dades d\'ús': 'servicio y datos de uso',
+  'formació en bici segura': 'formación en bici segura',
+  'nova generació ciclista': 'nueva generación ciclista',
+  'Diagnòstic de mobilitat': 'Diagnóstico de movilidad',
+  'Camins escolars': 'Caminos escolares',
+  'Cotxe compartit': 'Coche compartido',
+  'Carril bici': 'Carril bici',
+  'Acollida i inclusió': 'Acogida e inclusión',
+  'Integrar i cohesionar amb qui arriba.': 'Integrar y cohesionar con quien llega.',
+  'Nouvinguts': 'Recién llegados',
+  'Entitats d\'acollida': 'Entidades de acogida',
+  'acompanyament i orientació': 'acompañamiento y orientación',
+  'confiança i xarxa pròpia': 'confianza y red propia',
+  'recursos i espai': 'recursos y espacio',
+  'itineraris i seguiment': 'itinerarios y seguimiento',
+  'xarxa i pertinença': 'red y pertenencia',
+  'nova mirada i barreja': 'nueva mirada y mezcla',
+  'llengua i escolarització': 'lengua y escolarización',
+  'diversitat a l\'aula': 'diversidad en el aula',
+  'trobada entre famílies': 'encuentro entre familias',
+  'mans per a les activitats': 'manos para las actividades',
+  'empadronament i drets': 'empadronamiento y derechos',
+  'coneixement de les necessitats reals': 'conocimiento de las necesidades reales',
+  'Mapa de necessitats': 'Mapa de necesidades',
+  'Punt d\'acollida': 'Punto de acogida',
+  'Aprenentatge de la llengua': 'Aprendizaje de la lengua',
+  'Mentories veïnals': 'Mentorías vecinales',
+  'Participació': 'Participación',
+  'Custòdia del territori': 'Custodia del territorio',
+  'Tenir cura del medi natural i agrari.': 'Cuidar el medio natural y agrario.',
+  'Custòdia / entitat': 'Custodia / entidad',
+  'Propietaris': 'Propietarios',
+  'Pagesia': 'Campesinado',
+  'acord de custòdia': 'acuerdo de custodia',
+  'assessorament i manteniment': 'asesoramiento y mantenimiento',
+  'hores de conservació': 'horas de conservación',
+  'formació i natura viscuda': 'formación y naturaleza vivida',
+  'suport i finançament': 'apoyo y financiación',
+  'indicadors ambientals': 'indicadores ambientales',
+  'gestió agrària compatible': 'gestión agraria compatible',
+  'reconeixement i assessorament': 'reconocimiento y asesoramiento',
+  'ús productiu de la terra': 'uso productivo de la tierra',
+  'arrendament i cura': 'arrendamiento y cuidado',
+  'jornades i materials': 'jornadas y materiales',
+  'implicació ciutadana': 'implicación ciudadana',
+  'Diagnòstic ambiental': 'Diagnóstico ambiental',
+  'Acords de custòdia': 'Acuerdos de custodia',
+  'Jornades de voluntariat': 'Jornadas de voluntariado',
+  'Recuperació d\'hàbitats': 'Recuperación de hábitats',
+};
+
+function llegeixSectors() {
+  const h = readFileSync(join(ARREL, 'index.html'), 'utf8');
+  const c = h.indexOf('const CRITICAL_ACTIVITIES=['), d = h.indexOf('\n];', c);
+  return Function('return [' + h.slice(c + 'const CRITICAL_ACTIVITIES=['.length, d) + ']')();
+}
+
 function llegeixApp() {
   const h = readFileSync(join(ARREL, 'index.html'), 'utf8');
   const a = h.indexOf('const DYNAMICS=['), b = h.indexOf("\n {id:'", a + 20);
@@ -121,30 +442,41 @@ function models() {
     pairs: m.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || i < 0 ? p[k] : tr(p[k], i))))
   });
   const out = llegeixApp().map(m => ({ id: m.id, icona: m.icon, ca: llengua(m, -1), es: llengua(m, 0), en: llengua(m, 1) }));
-  return { out, falten: [...falten] };
+  const es = x => TS[x] || (T[x] ? T[x][0] : (falten.add(x), x));
+  const sector = (a, cat) => ({
+    nom: cat ? a.name : es(a.name), diu: cat ? a.one : es(a.one),
+    roles: a.roles.map(r => (cat ? r : es(r))),
+    pairs: a.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || cat ? p[k] : es(p[k])))),
+    passos: (a.kanban || []).map(k => (cat ? k : es(k)))
+  });
+  const sectors = llegeixSectors().map(a => ({ id: a.id, icona: a.icon, ca: sector(a, true), es: sector(a, false) }));
+  return { out, sectors, falten: [...falten] };
 }
 
 /* El rol on passa més: el centre del mapa, el que a /cliente/ passa a ser «tu». */
 function genera() {
-  const { out, falten } = models();
-  const cos = '/* GENERAT per SOS/tools/build-models-mapa.js des de SOS/index.html (DYNAMICS «negoci»\n'
-    + '   i PROTOTYPE_MAPS) · no s\'edita a mà. Els mapes tipus del SOS en tres llengües. */\n'
+  const { out, sectors, falten } = models();
+  const cos = '/* GENERAT per SOS/tools/build-models-mapa.js des de SOS/index.html (DYNAMICS «negoci»,\n'
+    + '   PROTOTYPE_MAPS i CRITICAL_ACTIVITIES de la Matriu) · no s\'edita a mà. Els mapes tipus del SOS en\n'
+    + '   tres llengües i els catorze sectors en català i castellà: la base de coneixement de fluxos de valor. */\n'
     + '(function (arrel, fabrica) {\n'
     + '  if (typeof module === \'object\' && module.exports) module.exports = fabrica();\n'
     + '  else arrel.ModelsMapa = fabrica();\n'
     + '})(typeof self !== \'undefined\' ? self : this, function () {\n'
     + '  \'use strict\';\n'
     + '  var MODELS = ' + JSON.stringify(out, null, 1).replace(/\n/g, '\n  ') + ';\n'
+    + '  /* Els sectors de la Matriu: rols, fluxos i els passos per posar-ho en marxa. */\n'
+    + '  var SECTORS = ' + JSON.stringify(sectors, null, 1).replace(/\n/g, '\n  ') + ';\n'
     + '  /* El rol que més dona i rep: el que fa de «tu» quan algú comença per aquest model. */\n'
     + '  function centre(m) { var n = {}; m.pairs.forEach(function (p) { n[p[0]] = (n[p[0]] || 0) + 1; n[p[1]] = (n[p[1]] || 0) + 1; });\n'
     + '    return m.roles.slice().sort(function (a, b) { return (n[b] || 0) - (n[a] || 0); })[0]; }\n'
     + '  /* El model en una llengua, amb el centre canviat pel nom de qui el fa servir. */\n'
     + '  function mapa(id, llengua, casa) {\n'
-    + '    var M = MODELS.filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
-    + '    var m = M[llengua] || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };\n'
+    + '    var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
+    + '    var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };\n'
     + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom };\n'
     + '  }\n'
-    + '  return { MODELS: MODELS, centre: centre, mapa: mapa };\n'
+    + '  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa };\n'
     + '});\n';
   return { cos, falten };
 }
@@ -155,7 +487,7 @@ if (require.main === module) {
   if (process.argv.includes('--check')) {
     const ara = existsSync(SORTIDA) ? readFileSync(SORTIDA, 'utf8') : '';
     if (ara !== cos) { console.error('✗ SOS/lib/models-mapa.js no és el que sortiria ara: node SOS/tools/build-models-mapa.js'); process.exit(1); }
-    console.log('✓ Els mapes tipus de l\'app, al dia i en tres llengües');
+    console.log('✓ Els mapes tipus de l\'app i els sectors de la Matriu, al dia i traduïts');
   } else { writeFileSync(SORTIDA, cos); console.log('Escrit ' + SORTIDA); }
 }
 module.exports = { genera, models };

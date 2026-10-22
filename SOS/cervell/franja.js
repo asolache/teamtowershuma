@@ -12,9 +12,21 @@
   var c = document.getElementById('cvTop'), DIR = document.currentScript.src.replace(/[^/]*$/, '');
   if (!c || !window.CervellPla || !window.fetch) return;
   var base = null, vista = null, a3 = document.getElementById('cvTop3d');
+  /* `data-universal`: les capes amb paraules de tothom i no amb el nom de la
+     kosha (portada, 22/10/2026). La llengua és la de la pàgina en pintar. */
+  var UNI = { ca: { anna: 'Cos', prana: 'Energia', mano: 'Ment', vijnana: 'Criteri', ananda: 'Propòsit' },
+    es: { anna: 'Cuerpo', prana: 'Energía', mano: 'Mente', vijnana: 'Criterio', ananda: 'Propósito' } };
+  if (c.hasAttribute('data-universal') && window.MutationObserver)
+    new MutationObserver(function () { if (darrer) pinta(darrer[0], darrer[1]); }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  function universals() {
+    if (!c.hasAttribute('data-universal')) return null;
+    return UNI[(document.documentElement.lang || 'ca').slice(0, 2)] || UNI.es;
+  }
+  var darrer = null;
   function pinta(D, des) {
+    darrer = [D, des];
     if (vista) vista.treu();
-    vista = CervellPla.munta(c, D, { vista: 'castellera', alt: +c.getAttribute('data-alt') || 170, des: des,
+    vista = CervellPla.munta(c, D, { vista: 'castellera', alt: +c.getAttribute('data-alt') || 170, des: des, paraules: universals(),
       etiqueta: D.nodos.length + ' vedes, de la primera a l\'última, en tres pisos: pinya, tronc i pom de dalt.' });
   }
   function lector() {

@@ -140,6 +140,7 @@
         .vistes label:has(input:checked) { border: 2px solid var(--indigo); }
         .vistes input { width: 1.2rem; height: 1.2rem; accent-color: var(--indigo); }
         .models { margin-top: 1.2rem; max-width: 70ch; }
+        .models-sec { margin: .9rem 0 0; font-size: var(--t0); color: var(--muted); }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
         .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
         .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
@@ -443,6 +444,8 @@
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
             <div class="model-xips" id="cl-models" role="group" aria-label="Modelos para empezar"></div>
+            <p class="models-sec">O por sector, si tu proyecto mira al territorio:</p>
+            <div class="model-xips" id="cl-sectors" role="group" aria-label="Modelos por sector"></div>
         </div>
         <div class="files" id="cl-files"></div>
         <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
@@ -741,9 +744,13 @@
     /* Los modelos del SOS (models-mapa.js, los mismos de la app): rellenan
        quién está alrededor y lo que se da, con «tú» en el centro. */
     var MM = window.ModelsMapa;
+    /* Y los catorce sectores de la Matriu (SECTORS), con el mismo botón. */
     function pintaModels() {
-        var c = $('#cl-models'); c.textContent = '';
-        MM.MODELS.forEach(function (x) {
+        pintaGrup($('#cl-models'), MM.MODELS); pintaGrup($('#cl-sectors'), MM.SECTORS || []);
+    }
+    function pintaGrup(c, llista) {
+        c.textContent = '';
+        llista.forEach(function (x) {
             var b = el('button', { type: 'button', title: x.es.diu, 'aria-pressed': String(S.modelo === x.id) }, x.icona + ' ' + x.es.nom);
             b.addEventListener('click', function () {
                 var hiHa = S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; });
