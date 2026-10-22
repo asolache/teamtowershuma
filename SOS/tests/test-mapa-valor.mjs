@@ -80,6 +80,10 @@ console.log('\nT5 · Un rol no és una organització');
   ok(MV.mapaOrg(m, 'Celler A').abast === 'Des que arriba el grup fins que marxa', 'el seu mapa és el de dins del seu rol');
   const r = MV.fusiona({}, m, (() => { let k = 0; return () => 'o' + (++k); })()), t = MV.exporta(r.vna, { abast: m.abast, resta: r.resta });
   ok(r.orgs === 2 && JSON.stringify(t.orgs) === JSON.stringify(m.orgs), 'les organitzacions van i tornen de l\'app sense perdre res');
+  const lA = MV.llocOrg(m, 'Celler A');
+  ok(lA.rol === R.slice(0, 3).join(', ') && lA.aporta.join() === 'el vi,la sala' && lA.recibe.join() === 'el que en pensa,la reserva' && lA.para.join() === R[3],
+    'el seu lloc a la xarxa: el rol, el que aporta, el que rep i a qui, en la forma de la pàgina del partner');
+  ok(MV.llocOrg(m, 'Ningú') === null, 'i d\'una organització que no hi és, res');
   ok(JSON.stringify(MV.orgsDe({ ocupa: { A: { nodo: 'x' }, B: { nodo: 'x' }, C: { datos: 'y' } } })) === '[{"nom":"x","rols":["A","B"]}]',
     'un mapa amb `ocupa` en surt agrupant pel node');
 }

@@ -362,6 +362,15 @@ function mapaOrg(m, nom) {
   if (!base) return null;
   return Object.assign({}, base, { abast: base.abast || o.posicionament || '' });
 }
+/* El seu lloc a la xarxa: el rol, el que lliura fora dels seus rols, el que
+   en rep i a qui. La pàgina del partner i la seva web propia diuen el mateix,
+   perquè surt d'aquí. */
+function llocOrg(m, nom) {
+  const o = orgsDe(m).find(x => x.nom === nom); if (!o) return null;
+  const f = fluxos(m), meu = r => o.rols.includes(r), un = l => [...new Set(l)];
+  const surt = f.filter(x => meu(x.de) && !meu(x.a)), entra = f.filter(x => meu(x.a) && !meu(x.de));
+  return { rol: o.rols.join(', '), aporta: un(surt.map(x => x.q)), recibe: un(entra.map(x => x.q)), para: un(surt.map(x => x.a)) };
+}
 /* L'escala d'un partner, amb les portes de la MATRIU: cada esglaó es guanya
    amb el que es pot comprovar al mapa, i el que falta es diu amb paraules. */
 const ESCALA = [
@@ -405,7 +414,7 @@ function salut(m, op) {
    `require('./SOS/tools/build-vna-suport.js').revisa(mapa)`, i una lectura que
    reescrivís quatre fitxers de passada seria una sorpresa. A sota hi comencen
    els destins, que només corren quan s'executa el fitxer. */
-module.exports = { PASSES, REGLES, ANALISIS, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut, fusiona, exporta, orgsDe, lecturaOrgs, mapaOrg, ESCALA, escalaOrg };
+module.exports = { PASSES, REGLES, ANALISIS, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut, fusiona, exporta, orgsDe, lecturaOrgs, mapaOrg, llocOrg, ESCALA, escalaOrg };
 if (require.main !== module) return;
 
 /* ══ 6 · ELS DESTINS ══════════════════════════════════════════════════════ */
@@ -498,10 +507,10 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', MOTOR, 'js');
     '(function (g) {', '\'use strict\';', MOTOR,
     'const deApp=' + deApp.toString() + ';', 'const aApp=' + aApp.toString() + ';', 'const salut=' + salut.toString() + ';',
     'const fusiona=' + fusiona.toString() + ';', 'const exporta=' + exporta.toString() + ';',
-    'const orgsDe=' + orgsDe.toString() + ';', 'const lecturaOrgs=' + lecturaOrgs.toString() + ';', 'const mapaOrg=' + mapaOrg.toString() + ';',
+    'const orgsDe=' + orgsDe.toString() + ';', 'const lecturaOrgs=' + lecturaOrgs.toString() + ';', 'const mapaOrg=' + mapaOrg.toString() + ';', 'const llocOrg=' + llocOrg.toString() + ';',
     'const ESCALA=[' + ESCALA.map(e => `{id:${JSON.stringify(e.id)},t:${JSON.stringify(e.t)},porta:${e.porta.toString()}}`).join(',\n') + '];',
     'const escalaOrg=' + escalaOrg.toString() + ';',
-    'const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};',
+    'const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};',
     'if (typeof module !== \'undefined\' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;',
     '})(typeof globalThis !== \'undefined\' ? globalThis : this);', ''].join('\n');
   const ara = existsSync(f) ? readFileSync(f, 'utf8') : '';

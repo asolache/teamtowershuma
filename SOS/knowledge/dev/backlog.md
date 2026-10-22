@@ -59,7 +59,7 @@ al nostre entorn pagada per ús limitat segons quota, després la seva web; i qu
 tots els actors de l'ecosistema operin integrats, amb SOS com a model
 d'organització.
 
-- ~~Una sola definició~~: `embut` a `SOS/knowledge/cervell/heretat.json`, cada
+- ~~Una sola definició~~: `cami` a `SOS/knowledge/cervell/heretat.json`, cada
   pas lligat a un esglaó de `MapaValor.ESCALA`, al pla del portal de partners
   (`ficha`, `pagina`, `web`) i a un mode dels serveis. Cada fill el rep a
   `saber/servicios.md`; un pas cap a res atura l'herència (`test-cervell.mjs`).

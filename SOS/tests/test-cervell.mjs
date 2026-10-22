@@ -265,7 +265,7 @@ cas('un idioma sense textos peta', a => {
   cpSync(EINA, join(SOS, 'tools', 'cervell.js'));
   const H = JSON.parse(readFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), 'utf8'));
   H.fitxers = {}; H.serveis.llista = [];
-  H.embut.passos = [{ ...H.embut.passos[0], escala: 'inventat', paths: [] }];
+  H.cami.passos = [{ ...H.cami.passos[0], escala: 'inventat', paths: [] }];
   writeFileSync(join(SOS, 'knowledge', 'cervell', 'heretat.json'), JSON.stringify(H));
   const r1 = spawnSync(process.execPath, [join(SOS, 'tools', 'cervell.js'), '--nou', join(casa, 'altre')], { encoding: 'utf8' });
   const bo = r0.status === 0 && md.includes('# El camino de cada cliente') && md.includes('1. **Primero, valor.**')
