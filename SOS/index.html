@@ -10813,7 +10813,7 @@ function renderResum(body,node,ru){
     'Llegeix la <strong>Guia formativa</strong> (8 mòduls)',
     'Recorre les <strong>Dinàmiques</strong> del territori (chips)',
     'Entra al <strong>Comando Molekulon</strong> · veu els cromos',
-    'Segueix les <strong>Novetats</strong> al Blog SOS',
+    'Segueix les <strong>Novetats</strong> al blog',
     'Prova a crear el teu perfil quan et sentis preparat/da'
   ],{label:'🎬 Comando Molekulon',onclick:()=>openComandoView()},SOS_ROLES.simpatitzant.color));
   body.appendChild(flow);
@@ -10846,7 +10846,7 @@ function renderResum(body,node,ru){
   // Novetats · link a blog intern
   body.appendChild(el('div','wz-sec-lbl','📰 Novetats del desenvolupament'));
   const news=el('div','ent-card');news.style.background='linear-gradient(180deg,rgba(224,64,251,.06),rgba(99,102,241,.03))';
-  news.innerHTML='<div class="ent-nm">Blog SOS · històries de desenvolupament</div><div class="ent-desc" style="margin-top:.3rem">Cada nova capacitat que arriba al SOS (Guardians, Molekulon, Slicing Pie, Fons cooperatiu…) surt narrada aquí per als seus destinataris: ajuntaments, cooperatives, veïnes.</div><a class="btn btn-ghost btn-sm" href="blog.html" target="_blank" rel="noopener" style="margin-top:.4rem;display:inline-block">📖 Llegeix el blog</a>';
+  news.innerHTML='<div class="ent-nm">Blog de TeamTowers Humà</div><div class="ent-desc" style="margin-top:.3rem">Cada nova capacitat que arriba al SOS (Guardians, Molekulon, Slicing Pie, Fons cooperatiu…) surt narrada aquí per als seus destinataris: ajuntaments, cooperatives, veïnes.</div><a class="btn btn-ghost btn-sm" href="blog.html" target="_blank" rel="noopener" style="margin-top:.4rem;display:inline-block">📖 Llegeix el blog</a>';
   body.appendChild(news);
   if(empty){body.appendChild(el('div','empty-hint','Aquest '+meta.label.toLowerCase()+' encara no té projectes ni sub-territoris. Fes servir "+ '+(meta.childLabel||'projecte')+'" o "+ projecte" per començar.'));return;}
   // dinàmiques (breakdown by dynamic)
