@@ -380,6 +380,10 @@ jobs:
       # compte fora de la llista i que el registre no porti la clau.
       - name: L'espai de les agències · Zoho CRM
         run: node SOS/tests/test-espai-partner.mjs
+      # L'entrada amb GitHub del cervell: només de lectura (GitHub App), amb el
+      # state comprovat i el testimoni a la pestanya, mai a la URL.
+      - name: El cervell · entrada amb GitHub de només lectura
+        run: node SOS/tests/test-cervell-github.mjs
 
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció

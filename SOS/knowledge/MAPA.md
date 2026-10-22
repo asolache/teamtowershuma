@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 335 · 19032 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 336 · 19036 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 129 KB |
@@ -27,7 +27,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 1 · 51 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 83 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 204 KB |
-| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout) i l'espai de cada agència (espai-partner) | 4 · 26 KB |
+| `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout) i l'espai de cada agència (espai-partner) | 5 · 31 KB |
 | `visita/` | On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així | 1 · 6 KB |
 
 ## prova
@@ -37,7 +37,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 33 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 122 · 1594 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 123 · 1598 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 70 · 1444 KB |
 
 ## saber
@@ -47,7 +47,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 57 · 1088 KB |
-| `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 12 · 44 KB |
+| `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 12 · 45 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 362 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |

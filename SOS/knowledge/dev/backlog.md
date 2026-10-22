@@ -5189,10 +5189,11 @@ codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
 - **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,
   també els privats. La pàgina llegeix el `cervell.json` de cada repo i ensenya
   quines peces té. L'estàndard està explicat a `SOS/knowledge/cervell/README.md`.
-- **Pendent:** l'entrada que llegeix repos. Ha de ser només de lectura: una
-  GitHub App amb el permís Contents de lectura, instal·lada als repos que
-  triï cadascú, i no l'scope `repo` d'una OAuth App, que també dona escriptura.
-  Mentre la funció `identitat` no anunciï `repos`, el botó no surt.
+- **Fet, a falta de l'App:** l'entrada és una GitHub App només de lectura
+  (Contents: read), instal·lada als repos que triï cadascú
+  (`netlify/functions/cervell-github.mjs`). No és l'scope `repo` d'una OAuth
+  App, que també dona escriptura. Mentre no hi hagi les variables de l'App,
+  el botó no surt.
 - **Pendent:** integrar tots els models de TeamTowers Humà com a peces del
   manifest (mapes tipus, mapa de valor, taxonomia universal) perquè cada vista
   els trobi igual.

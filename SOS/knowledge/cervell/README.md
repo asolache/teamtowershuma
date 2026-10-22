@@ -64,7 +64,9 @@ Al navegador hi ha una sola lectura, `CodexParse.deRepo` (`SOS/cervell/codex-par
 i les claus que compten com a peces són a `CodexParse.PECES`. La fan servir la
 pàgina del cervell, la franja de la portada i la capa privada de
 l'explorador. Amb la sessió de GitHub de la pestanya llegeix també els repos
-privats, sense publicar-ne res (veda 168).
+privats, sense publicar-ne res (veda 168). Aquesta sessió és d'una GitHub App
+només de lectura, instal·lada als repos que cadascú tria
+(`netlify/functions/cervell-github.mjs`).
 
 ## L'herència: el que ja sap un cervell nou
 

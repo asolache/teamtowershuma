@@ -117,15 +117,31 @@
         .then(function (r) { if (r.status === 401) throw { sesion: true }; return r.ok ? r.text() : null; });
     };
   }
-  /* Els repos als quals tens accés amb el testimoni, públics i privats. */
+  /* Els repos que pots llegir amb el testimoni: els de les instal·lacions de la
+     GitHub App del cervell (només lectura) a les quals tens accés. */
   function repos(token) {
-    var tots = [];
-    return (function pagina(p) {
-      return fetch('https://api.github.com/user/repos?per_page=100&sort=pushed&page=' + p + '&affiliation=owner,collaborator,organization_member',
-        { headers: { authorization: 'Bearer ' + token, accept: 'application/vnd.github+json' }, cache: 'no-store' })
-        .then(function (r) { if (r.status === 401) throw { sesion: true }; if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (rs) { tots = tots.concat(rs || []); return rs && rs.length === 100 && p < 10 ? pagina(p + 1) : tots; });
-    })(1).then(function (rs) { return rs.map(function (r) { return { repo: r.full_name, privat: !!r.private, diu: r.description || '' }; }); });
+    var cap = { authorization: 'Bearer ' + token, accept: 'application/vnd.github+json' };
+    var vol = function (ruta) {
+      return fetch('https://api.github.com' + ruta, { headers: cap, cache: 'no-store' })
+        .then(function (r) { if (r.status === 401) throw { sesion: true }; if (!r.ok) throw new Error(r.status); return r.json(); });
+    };
+    var tots = function (ruta, clau) {
+      var acc = [];
+      return (function pagina(p) {
+        return vol(ruta + (ruta.indexOf('?') < 0 ? '?' : '&') + 'per_page=100&page=' + p).then(function (j) {
+          var rs = (j && j[clau]) || []; acc = acc.concat(rs);
+          return rs.length === 100 && p < 10 ? pagina(p + 1) : acc;
+        });
+      })(1);
+    };
+    return tots('/user/installations', 'installations').then(function (ins) {
+      return Promise.all(ins.map(function (i) { return tots('/user/installations/' + i.id + '/repositories', 'repositories'); }));
+    }).then(function (ll) {
+      var vist = {};
+      return [].concat.apply([], ll).filter(function (r) { return vist[r.full_name] ? false : (vist[r.full_name] = 1); })
+        .map(function (r) { return { repo: r.full_name, privat: !!r.private, diu: r.description || '' }; })
+        .sort(function (x, y) { return x.repo < y.repo ? -1 : 1; });
+    });
   }
 
   /* El codex d'un repositori: on digui el seu `cervell.json` o, sense manifest, a
