@@ -7,7 +7,7 @@
 <meta name="description" content="El sistema que hi ha darrere del teu negoci operatiu: cada rol apunta el que lliura, el mapa real es compara amb l'ideal que vau acordar i avisa d'on s'encalla el valor. Per a pimes, cooperatives i xarxes veïnals. S'obre al navegador i les dades són vostres.">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
-<script>try{if(localStorage.getItem('sos-tema')==='fosc')document.documentElement.dataset.tema='fosc'}catch(e){}</script>
+<script>try{if(localStorage.getItem('sos-tema')==='fosc')document.documentElement.dataset.tema='fosc';const c=localStorage.getItem('sos-marca-css');if(c)document.write('<style id=sosMarca>'+c.replace(/</g,'')+'</style>')}catch(e){}</script>
 <style>
 /* Les fonts viuen al repositori (`fonts/`, OFL 1.1). Abans venien d'un
    <link> a Google, que bloquejava el render: amb Google lent l'app trigava
@@ -21793,6 +21793,9 @@ function openSettingsModal(){
     <div class="field"><label>Aparença</label>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap" id="stTema"><button class="btn btn-ghost btn-sm" data-t="">☀ Clar</button><button class="btn btn-ghost btn-sm" data-t="fosc">☾ Fosc</button></div>
     </div>
+    <div class="field"><label>La marca de l'organització</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap"><label class="btn btn-ghost btn-sm" id="stMarca">⇪ Carrega marca.json<input type="file" accept=".json,application/json" hidden></label><button class="btn btn-ghost btn-sm" id="stMarcaTreu">Treu-la</button></div>
+    </div>
     <div class="field"><label>Territori</label>
       <button class="btn btn-ghost btn-sm" id="stGeo">🗺 Carrega l'esquelet de Catalunya</button>
     </div>
@@ -21876,6 +21879,9 @@ function openSettingsModal(){
       try{v?localStorage.setItem('sos-tema',v):localStorage.removeItem('sos-tema');}catch(e){}marca();};
     marca();
   });
+  bg.querySelector('#stMarca input').onchange=async e=>{const f=e.target.files[0];if(!f)return;
+    try{await carregaLib('marca');const m=Marca.desa(await f.text());toast(Object.keys(m).length?'Marca aplicada':'El fitxer no porta color, lletra ni forma');}catch(x){toast('No s\'ha pogut llegir la marca');}};
+  bg.querySelector('#stMarcaTreu').onclick=async()=>{await carregaLib('marca');Marca.desa(null);toast('Torna la pell de sempre');};
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
   bg.querySelector('#stExport').onclick=exportData;
   bg.querySelector('#stImport').onclick=importData;

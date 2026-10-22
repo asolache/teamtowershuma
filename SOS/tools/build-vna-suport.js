@@ -524,6 +524,52 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', MOTOR, 'js');
   if (!APP.includes('<script src="lib/mapa-valor.js"></script>')) bad('SOS/index.html no carrega lib/mapa-valor.js');
 }
 
+/* ── La marca de cada organització: SOS/lib/marca.js ──────────────────────
+   Estàndard amb marge per personalitzar: la pell és una (build-pell.js) i una
+   organització només hi posa el seu color, la seva lletra, la forma i el logo,
+   amb el mateix `marca.json` que ja porta la web del client (bloc VS-SITE).
+   Les regles —el color sempre a 4,5:1, lletres del sistema, logo SVG net— són
+   les d'allà, copiades tal com hi són: aquest fitxer no en té cap de pròpia.
+   `pell(m)` torna el CSS que l'app posa damunt de la pell. */
+{
+  const VS = readFileSync(join(SOS, 'vna-suport.html'), 'utf8');
+  const a = VS.indexOf('const MARCA_LLETRES = {'), b = VS.indexOf('function siteCss(m) {');
+  if (a < 0 || b < a) bad('no es troben les regles de marca (MARCA_LLETRES … siteCss) a SOS/vna-suport.html');
+  else {
+    const pell = function (m) {
+      m = m || {};
+      let css = '';
+      /* `html` davant: guanya la pell, que s'escriu després a la capçalera. */
+      if (m.color) css += 'html:root{--indigo:' + marcaAjusta(m.color, '#fbfaf7', 'negre') + '}html:root[data-tema=fosc]{--indigo:' + marcaAjusta(m.color, '#050507', 'blanc') + '}';
+      if (m.lletra) css += 'html body{font-family:' + MARCA_LLETRES[m.lletra] + '}';
+      if (m.forma === 'recta') css += 'html .btn,html .targeta,html .card,html input,html select,html textarea{border-radius:3px}';
+      return css;
+    };
+    /* L'app la desa al navegador i la posa abans de pintar (index.html, línia
+       del tema). `json` buit la treu. Torna la marca neta. */
+    const desa = function (json) {
+      const m = json ? marcaNeta(typeof json === 'string' ? JSON.parse(json) : json) : {}, css = pell(m);
+      try { if (css) localStorage.setItem('sos-marca-css', css); else localStorage.removeItem('sos-marca-css'); } catch (e) {}
+      let st = document.getElementById('sosMarca');
+      if (!st) { st = document.createElement('style'); st.id = 'sosMarca'; document.head.appendChild(st); }
+      st.textContent = css;
+      return m;
+    };
+    const f = join(SOS, 'lib', 'marca.js');
+    const cos = ['/* La marca d\'una organització · GENERAT per SOS/tools/build-vna-suport.js',
+      '   Les regles surten del bloc VS-SITE de SOS/vna-suport.html (la web del client).',
+      '   Navegador: window.Marca. Node: require(). */',
+      '(function (g) {', '\'use strict\';', VS.slice(a, b).trim(),
+      'const pell=' + pell.toString() + ';', 'const desa=' + desa.toString() + ';',
+      'const Marca={LLETRES:MARCA_LLETRES,neta:marcaNeta,pell,desa,contrast:marcaContrast};',
+      'if (typeof module !== \'undefined\' && module.exports) module.exports = Marca; else g.Marca = Marca;',
+      '})(typeof globalThis !== \'undefined\' ? globalThis : this);', ''].join('\n');
+    const ara = existsSync(f) ? readFileSync(f, 'utf8') : '';
+    if (ara !== cos) { if (CHECK) vells.push('SOS/lib/marca.js'); else { writeFileSync(f, cos); escrits++; } }
+    ok('SOS/lib/marca.js surt de les regles de marca de la web del client');
+  }
+}
+
 /* ── Qui fa cada lliurament: la màquina o una persona ─────────────────────
    La regla de la casa (`SOS/knowledge/negoci/mapa-kanban-ia.md`) viu a l'app:
    la taxonomia tancada `ENTREGABLES` i `fluxAutomatitzable`, que mira
