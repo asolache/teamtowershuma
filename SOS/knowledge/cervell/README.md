@@ -49,6 +49,29 @@ deia «els 18 vedes» quan n'hi havia 116. La guarda llegeix el contracte i el
 creua amb l'arbre de debò. En aquest repositori va trobar, el primer dia, la
 cita del mateix fitxer que esteu llegint abans que existís.
 
+## L'estructura estàndard: el `cervell.json`
+
+**Demanat per l'Àlvar el 22/10/2026:** entrar amb GitHub a la pàgina del cervell,
+triar el repo i que la pàgina sàpiga on buscar, perquè «hem d'estandarditzar
+l'estructura de dades del SOS».
+
+L'estàndard no és una carpeta, és un manifest. Cada repositori que fa servir
+el SOS porta a l'arrel un `cervell.json`, que diu on és cada peça: `codex`,
+`taxonomia`, `mapa`, `backlog`, `comunicacio`, `lectura` i, si en té,
+`folksonomia` i `documents`. Les carpetes poden ser `SOS/knowledge/` (la
+matriu), `saber/` (la plantilla) o les que triï cada projecte. Qui llegeix un
+cervell llegeix primer el manifest i no endevina rutes. Sense manifest, el codex
+es busca a `SOS/knowledge/codex.md`.
+
+La guarda (`cervell.js --check`) comprova que cada ruta del manifest existeix.
+Al navegador hi ha una sola lectura, `CodexParse.deRepo` (`SOS/cervell/codex-parse.js`),
+i les claus que compten com a peces són a `CodexParse.PECES`. La fan servir la
+pàgina del cervell, la franja de la portada i la capa privada de
+l'explorador. Amb la sessió de GitHub de la pestanya llegeix també els repos
+privats, sense publicar-ne res (veda 168). Aquesta sessió és d'una GitHub App
+només de lectura, instal·lada als repos que cadascú tria
+(`netlify/functions/cervell-github.mjs`).
+
 ## L'herència: el que ja sap un cervell nou
 
 **Demanat per l'Àlvar el 09/10/2026:** «segur que hi ha més contingut ja al
