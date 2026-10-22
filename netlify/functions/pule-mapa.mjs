@@ -19,7 +19,8 @@
      (entrada estimada + `max_tokens` al preu més car que pot respondre) i si
      no hi cap, no es crida. Després es compta el cost real de `usage`.
      Per persona: IA_TOPE_USD (0,50 $, menys que 0,50 €). Per dia, per a tot
-     el web: IA_TOPE_DIA_USD (5 $). El registre és a Netlify Blobs, amb
+     el web: IA_TOPE_DIA_USD (5 $). Els convidats de l'Àlvar (IA_INVITATS,
+     correus o gh:<id>): IA_TOPE_INVITAT_USD (2 $). El registre és a Netlify Blobs, amb
      l'empremta de la persona, no el correu.
    · **Cap clau al client ni al repositori.** ANTHROPIC_API_KEY a Netlify,
      millor d'un espai de treball amb límit de despesa mensual a la consola.
@@ -40,7 +41,17 @@ export function config(env) {
   if (!/^sk-ant-[A-Za-z0-9_-]{20,}$/.test(clau)) return { ok: false, motiu: 'falta ANTHROPIC_API_KEY' };
   if (net(env.IA_CLIENTE) === '0') return { ok: false, motiu: 'apagada (IA_CLIENTE=0)' };
   const num = (v, d, max) => { const x = parseFloat(v); return x > 0 ? Math.min(x, max) : d; };
-  return { ok: true, clau, tope: num(env.IA_TOPE_USD, 0.5, 0.5), topeDia: num(env.IA_TOPE_DIA_USD, 5, 50), secret: secret(env) };
+  const invitats = net(env.IA_INVITATS).toLowerCase().split(/[\s,;]+/).filter(Boolean);
+  return { ok: true, clau, tope: num(env.IA_TOPE_USD, 0.5, 0.5), topeDia: num(env.IA_TOPE_DIA_USD, 5, 50), secret: secret(env),
+    invitats, topeInvitat: num(env.IA_TOPE_INVITAT_USD, 2, 10) };
+}
+
+/* La versió gratuïta que decideix l'Àlvar (22/10/2026): els primers proveïdors
+   que ell tria, pel correu o per `gh:<id>`, tenen un tope més alt. La llista és
+   una variable de Netlify, no el repositori. */
+export function topeDe(qui, c) {
+  const claus = [net(qui.mail).toLowerCase(), net(qui.id).toLowerCase()].filter(Boolean);
+  return claus.some(k => c.invitats.includes(k)) ? c.topeInvitat : c.tope;
 }
 
 /* ─── Les dades que arriben, netes i curtes ─── */
@@ -156,8 +167,8 @@ export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new 
 
   const kp = 'persona/' + empremta(qui.id), kd = 'dia/' + ara.toISOString().slice(0, 10);
   const p = (await reg.get(kp)) || { gastat: 0, voltes: 0 }, dia = (await reg.get(kd)) || { gastat: 0 };
-  const res = reserva(pas, entrada), estat = () => ({ voltes: p.voltes, usd: +p.gastat.toFixed(4), queda: Math.max(0, Math.round(100 * (1 - p.gastat / c.tope))) });
-  if (p.gastat + res > c.tope) return Object.assign({ estat: 'topall' }, estat());
+  const tope = topeDe(qui, c), res = reserva(pas, entrada), estat = () => ({ voltes: p.voltes, usd: +p.gastat.toFixed(4), queda: Math.max(0, Math.round(100 * (1 - p.gastat / tope))) });
+  if (p.gastat + res > tope) return Object.assign({ estat: 'topall' }, estat());
   if (dia.gastat + res > c.topeDia) return Object.assign({ estat: 'ocupat' }, estat());
   /* La reserva, abans de cridar: dues pestanyes a la vegada no passen del tope. */
   await reg.set(kp, Object.assign({}, p, { gastat: p.gastat + res, reservat: res }));
