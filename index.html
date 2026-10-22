@@ -792,6 +792,24 @@
         .apf-l a:hover, .apf-l a:focus-visible { border-color:var(--indigo); color:var(--text); }
         @media (max-width:1080px) { .av-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
         @media (max-width:620px) { .av-grid { grid-template-columns:1fr; } .avantatges { padding:4rem 0 3rem; } .hero-actions .btn-primary { width:100%; justify-content:center; } }
+        .intel { padding:5rem 0 4rem; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .intel .section-header, .automat .section-header { margin-bottom:3rem; }
+        .cervell-ex { display:grid; grid-template-columns:1fr; gap:.4rem 1.5rem; align-items:center; margin-top:2.5rem; border:1px solid var(--border); border-radius:12px; background:var(--card); padding:.6rem 1.2rem; }
+        .cervell-ex-n { font-size:var(--t0); color:var(--muted); line-height:1.55; margin:0 0 .6rem; }
+        a.int { display:flex; flex-direction:column; gap:.4rem; color:inherit; text-decoration:none; }
+        a.int:hover, a.int:focus-visible { border-color:var(--indigo); }
+        .int-a { margin-top:auto; padding-top:.4rem; font-size:var(--t0); font-weight:600; color:var(--indigo); }
+        .automat { padding:5rem 0 4rem; }
+        .aut-l { list-style:none; padding:0; margin:0 0 2rem; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem 1.5rem; }
+        .aut { display:flex; flex-direction:column; gap:.3rem; border-top:2px solid var(--border); padding-top:.7rem; font-size:var(--t0); color:var(--light); line-height:1.55; }
+        .aut b { font-size:var(--t1); color:var(--text); }
+        .aut-st { font-family:var(--mono); font-size:var(--t0); letter-spacing:.04em; text-transform:uppercase; }
+        .aut-avui { border-top-color:var(--green); } .aut-avui .aut-st { color:var(--green); }
+        .aut-pilot { border-top-color:var(--indigo); } .aut-pilot .aut-st { color:var(--indigo); }
+        .aut-acc { display:flex; flex-wrap:wrap; gap:.8rem 1.4rem; align-items:center; margin:0; }
+        .aut-acc a:not(.btn-ghost) { color:var(--indigo); font-weight:600; }
+        @media (max-width:1080px) { .aut-l { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width:620px) { .aut-l { grid-template-columns:1fr; } }
         .cervell-top { border-bottom:1px solid var(--border); font-size:var(--t0); }
         .cervell-top .container { display:grid; grid-template-columns:19rem minmax(0,1fr); gap:.4rem 1.5rem; align-items:center; }
         .cervell-top p { display:flex; flex-wrap:wrap; gap:.3rem .9rem; align-items:center; color:var(--light); line-height:1.35; padding:.5rem 0; }
@@ -800,7 +818,7 @@
         .cervell-top-tria { display:flex; flex-wrap:wrap; gap:.3rem; }
         .cervell-top-tria button { font:inherit; font-weight:600; padding:.15rem .7rem; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--light); cursor:pointer; }
         .cervell-top-tria [aria-pressed="true"] { background:var(--text); color:var(--card); border-color:var(--text); }
-        @media (max-width:700px) { .cervell-top .container { grid-template-columns:1fr; } }
+        @media (max-width:700px) { .cervell-top .container, .cervell-ex { grid-template-columns:1fr; } }
     /*TT-CAMI-CSS*/
 /* GENERAT per SOS/tools/build-embut.js · «El teu camí» de la portada */
 .cami{padding:4rem 0;border-top:1px solid var(--border)}
@@ -931,7 +949,7 @@
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
-  <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
+  <a class="tn-cta" href="/cliente/"><span data-i18n="nv.cta">Crea el teu mapa</span> →</a>
 </nav>
 <script>
 (function () {
@@ -1119,6 +1137,76 @@
   </div>
 </section>
 <!--/TT-CAMI-->
+
+<!-- LA INTEL·LIGÈNCIA DARRERE I EL QUE JA AUTOMATITZEM (22/10/2026). Àlvaro:
+     ensenyar el potencial amb el que ja fem i està provat. Cada peça diu si
+     funciona avui o si està provada i arrenca amb els pilots: cap promesa
+     sense la seva prova, i cap nom d'eina que el client no conegui. -->
+<section class="intel" id="intelligencia">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="int.k">La intel·ligència que hi ha darrere</div>
+            <h2 data-i18n-html="int.h2">Mètode, memòria i IA, <em>treballant junts</em></h2>
+            <p data-i18n="int.intro">El mapa no és un dibuix bonic: està fet amb un mètode provat, recorda el que aprèn i fa servir la IA amb mesura.</p>
+        </div>
+        <div class="av-grid fade-up">
+            <a class="int targeta" href="/SOS/vna.html">
+                <span class="av-i" aria-hidden="true">🗺</span>
+                <h3 class="targeta-t" data-i18n="int.1t">El mètode: el mapa de valor</h3>
+                <p class="targeta-d" data-i18n="int.1d">Qui dona què a qui, també el que no es compra: la confiança, els favors, el que se sap. És el mètode de Verna Allee, fet servir vint anys amb equips de debò.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+            <a class="int targeta" href="/SOS/cervell.html">
+                <span class="av-i" aria-hidden="true">🧠</span>
+                <h3 class="targeta-t" data-i18n="int.2t">El cervell de cada projecte</h3>
+                <p class="targeta-d" data-i18n="int.2d">El que es decideix queda escrit en un sol lloc, i la IA el llegeix abans de fer res. Ningú no comença de zero, ni les persones ni les màquines.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+            <a class="int targeta" href="/SOS/vedes.html">
+                <span class="av-i" aria-hidden="true">📜</span>
+                <h3 class="targeta-t" data-i18n="int.3t">El codex: les regles apreses</h3>
+                <p class="targeta-d" data-i18n="int.3d">Més de cent seixanta regles apreses fent, i cadascuna amb la seva prova automàtica. Un error que ja hem comès no torna.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+            <a class="int targeta" href="/SOS/ia.html">
+                <span class="av-i" aria-hidden="true">✦</span>
+                <h3 class="targeta-t" data-i18n="int.4t">La IA, amb frens i a la vista</h3>
+                <p class="targeta-d" data-i18n="int.4d">El model més petit que fa bé cada tasca, un límit de despesa per persona i el cost sempre visible. La IA proposa; el criteri el posen persones.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+        </div>
+        <!-- Un cervell de debò, el de la casa, construint-se com un castell
+             (Àlvaro, 22/10/2026: «que es mostri un exemple de cervell»). Tot és
+             de `SOS/cervell/`: aquí no se'n copia res. -->
+        <div class="cervell-top cervell-ex fade-up">
+        <p><b id="cvTopT" data-i18n="cvt.t">El cervell de cada projecte, construint-se com un castell</b><span class="cervell-top-tria" role="group" aria-labelledby="cvTopT"><button type="button" data-repo="" aria-pressed="true">SOS</button><button type="button" data-repo="asolache/alvarosolache" aria-pressed="false">Álvaro Solache</button></span><a id="cvTop3d" href="/SOS/cervell.html" data-i18n="cvt.a">Totes les vistes</a><a href="#cervell-xarxa" data-i18n="cvt.b">Crea el teu cervell de xarxa</a></p>
+        <div class="cervell-top-g" id="cvTop" data-alt="280"></div>
+        <p class="cervell-ex-n" data-i18n="int.cv">És el cervell de debò d'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.</p>
+        </div>
+<script src="/SOS/cervell/forces.js" defer></script>
+<script src="/SOS/cervell/pla.js" defer></script>
+<script src="/SOS/cervell/franja.js" defer></script>
+    </div>
+</section>
+
+<section class="automat" id="automatitza">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="aut.k">El que ja automatitzem</div>
+            <h2 data-i18n-html="aut.h2">La feina que es repeteix, <em>que es faci sola</em></h2>
+            <p data-i18n="aut.intro">Són els fluxos amb què portem el nostre propi negoci. Abans d'oferir-te'ls, els fem servir nosaltres.</p>
+        </div>
+        <ul class="aut-l fade-up">
+            <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.1t">Del mapa a l'esbós de la web</b><span data-i18n="aut.1d">Dibuixes el mapa i en surt una web amb una porta per a cada persona que t'importa, en minuts.</span></li>
+            <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.2t">El mapa que avisa</b><span data-i18n="aut.2d">Cada lliurament entre persones queda registrat, i el mapa marca el que circula i el que s'ha aturat.</span></li>
+            <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.3t">La teva IA, amb dades teves</b><span data-i18n="aut.3d">Descarregues el mapa i les teves eines en un fitxer, i la IA que ja fas servir treballa amb el teu negoci i no amb suposicions.</span></li>
+            <li class="aut aut-pilot"><span class="aut-st" data-i18n="aut.st.pilot">Provat · arrenca amb els pilots</span><b data-i18n="aut.4t">Del formulari al teu CRM, sol</b><span data-i18n="aut.4d">Quan algú demana informació a la web, entra a la teva llista de clients sense copiar res, i sense cap clau a la vista.</span></li>
+            <li class="aut aut-pilot"><span class="aut-st" data-i18n="aut.st.pilot">Provat · arrenca amb els pilots</span><b data-i18n="aut.5t">La IA que poleix el teu mapa</b><span data-i18n="aut.5d">Mentre fas el mapa, la IA t'ajuda a afinar-lo i a escriure els textos de la web, amb un límit de despesa per persona.</span></li>
+            <li class="aut aut-pilot"><span class="aut-st" data-i18n="aut.st.pilot">Provat · arrenca amb els pilots</span><b data-i18n="aut.6t">Cobrar en un toc</b><span data-i18n="aut.6d">Targeta, Apple Pay o Google Pay, i el mes es tanca sol: el que s'ha cobrat queda apuntat sense fulls de càlcul.</span></li>
+        </ul>
+        <p class="aut-acc"><a class="btn-ghost" href="/conecta/" data-i18n="aut.a">Totes les peces i el cost real de la IA →</a> <a href="/SOS/ia.html" data-i18n="aut.b">Com treballem amb IA</a></p>
+    </div>
+</section>
 
 <!-- PER QUÈ NOSALTRES · el que abans omplia el hero: d'on ve la casa, com es
      finança i qui ho ha fet servir. Prova al costat de la decisió, no a dalt. -->
@@ -1652,18 +1740,6 @@
 
 
 <!-- CTA FINAL -->
-<!-- EL CERVELL DE LA CASA, construint-se com un castell. Va a baix des del
-     22/10/2026: la primera pantalla és per vendre. Tot és de `SOS/cervell/`. -->
-<section class="cervell-top" aria-labelledby="cvTopT">
-    <div class="container">
-        <p><b id="cvTopT" data-i18n="cvt.t">El cervell de cada projecte, construint-se com un castell</b><span class="cervell-top-tria" role="group" aria-labelledby="cvTopT"><button type="button" data-repo="" aria-pressed="true">SOS</button><button type="button" data-repo="asolache/alvarosolache" aria-pressed="false">Álvaro Solache</button></span><a id="cvTop3d" href="/SOS/cervell.html" data-i18n="cvt.a">Totes les vistes</a><a href="#cervell-xarxa" data-i18n="cvt.b">Crea el teu cervell de xarxa</a></p>
-        <div class="cervell-top-g" id="cvTop"></div>
-    </div>
-</section>
-<script src="/SOS/cervell/forces.js" defer></script>
-<script src="/SOS/cervell/pla.js" defer></script>
-<script src="/SOS/cervell/franja.js" defer></script>
-
 <section class="cta-final">
     <div class="container">
         <!-- El titular deia «el teu poble». Parlava a una sola de les dues cases i
@@ -1741,6 +1817,38 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
+  'int.cv':'És el cervell de debò d\'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.',
+  'int.k':'La intel·ligència que hi ha darrere',
+  'int.h2':'Mètode, memòria i IA, <em>treballant junts</em>',
+  'int.intro':'El mapa no és un dibuix bonic: està fet amb un mètode provat, recorda el que aprèn i fa servir la IA amb mesura.',
+  'int.a':'Mira com funciona →',
+  'aut.k':'El que ja automatitzem',
+  'aut.h2':'La feina que es repeteix, <em>que es faci sola</em>',
+  'aut.intro':'Són els fluxos amb què portem el nostre propi negoci. Abans d\'oferir-te\'ls, els fem servir nosaltres.',
+  'aut.st.avui':'Funciona avui',
+  'aut.st.pilot':'Provat · arrenca amb els pilots',
+  'aut.a':'Totes les peces i el cost real de la IA →',
+  'aut.b':'Com treballem amb IA',
+  'int.1t':'El mètode: el mapa de valor',
+  'int.1d':'Qui dona què a qui, també el que no es compra: la confiança, els favors, el que se sap. És el mètode de Verna Allee, fet servir vint anys amb equips de debò.',
+  'int.2t':'El cervell de cada projecte',
+  'int.2d':'El que es decideix queda escrit en un sol lloc, i la IA el llegeix abans de fer res. Ningú no comença de zero, ni les persones ni les màquines.',
+  'int.3t':'El codex: les regles apreses',
+  'int.3d':'Més de cent seixanta regles apreses fent, i cadascuna amb la seva prova automàtica. Un error que ja hem comès no torna.',
+  'int.4t':'La IA, amb frens i a la vista',
+  'int.4d':'El model més petit que fa bé cada tasca, un límit de despesa per persona i el cost sempre visible. La IA proposa; el criteri el posen persones.',
+  'aut.1t':'Del mapa a l\'esbós de la web',
+  'aut.1d':'Dibuixes el mapa i en surt una web amb una porta per a cada persona que t\'importa, en minuts.',
+  'aut.2t':'El mapa que avisa',
+  'aut.2d':'Cada lliurament entre persones queda registrat, i el mapa marca el que circula i el que s\'ha aturat.',
+  'aut.3t':'La teva IA, amb dades teves',
+  'aut.3d':'Descarregues el mapa i les teves eines en un fitxer, i la IA que ja fas servir treballa amb el teu negoci i no amb suposicions.',
+  'aut.4t':'Del formulari al teu CRM, sol',
+  'aut.4d':'Quan algú demana informació a la web, entra a la teva llista de clients sense copiar res, i sense cap clau a la vista.',
+  'aut.5t':'La IA que poleix el teu mapa',
+  'aut.5d':'Mentre fas el mapa, la IA t\'ajuda a afinar-lo i a escriure els textos de la web, amb un límit de despesa per persona.',
+  'aut.6t':'Cobrar en un toc',
+  'aut.6d':'Targeta, Apple Pay o Google Pay, i el mes es tanca sol: el que s\'ha cobrat queda apuntat sense fulls de càlcul.',
   'av.4d':'Cada lliurament queda registrat i el mapa et diu com va, mes a mes. No has de tornar a començar cada any.',
   'av.4t':'I es manté viu',
   'av.3d':'Cada persona que t\'importa hi troba la seva porta: qui compra, qui col·labora, qui t\'ajuda. L\'esbós surt en minuts i l\'afinem junts.',
@@ -1908,7 +2016,7 @@ ca: {
   'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacitat, explicada',
-  'nv.cta':'Fes el diagnòstic',
+  'nv.cta':'Crea el teu mapa',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escriu-nos',
   'nv.peu.legal':'Avís legal i privacitat',
@@ -2160,6 +2268,38 @@ ca: {
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.',
 },
 es: {
+  'int.cv':'Es el cerebro de verdad de este proyecto: cada punto es una regla aprendida, y suben como un castell, de la base a lo más alto. Elige otro proyecto y mira cómo hereda las reglas de la casa.',
+  'int.k':'La inteligencia que hay detrás',
+  'int.h2':'Método, memoria e IA, <em>trabajando juntos</em>',
+  'int.intro':'El mapa no es un dibujo bonito: está hecho con un método probado, recuerda lo que aprende y usa la IA con medida.',
+  'int.a':'Mira cómo funciona →',
+  'aut.k':'Lo que ya automatizamos',
+  'aut.h2':'El trabajo que se repite, <em>que se haga solo</em>',
+  'aut.intro':'Son los flujos con los que llevamos nuestro propio negocio. Antes de ofrecértelos, los usamos nosotros.',
+  'aut.st.avui':'Funciona hoy',
+  'aut.st.pilot':'Probado · arranca con los pilotos',
+  'aut.a':'Todas las piezas y el coste real de la IA →',
+  'aut.b':'Cómo trabajamos con IA',
+  'int.1t':'El método: el mapa de valor',
+  'int.1d':'Quién da qué a quién, también lo que no se compra: la confianza, los favores, lo que se sabe. Es el método de Verna Allee, usado veinte años con equipos de verdad.',
+  'int.2t':'El cerebro de cada proyecto',
+  'int.2d':'Lo que se decide queda escrito en un solo sitio, y la IA lo lee antes de hacer nada. Nadie empieza de cero, ni las personas ni las máquinas.',
+  'int.3t':'El códex: las reglas aprendidas',
+  'int.3d':'Más de ciento sesenta reglas aprendidas haciendo, y cada una con su prueba automática. Un error que ya cometimos no vuelve.',
+  'int.4t':'La IA, con frenos y a la vista',
+  'int.4d':'El modelo más pequeño que hace bien cada tarea, un límite de gasto por persona y el coste siempre visible. La IA propone; el criterio lo ponen personas.',
+  'aut.1t':'Del mapa al boceto de la web',
+  'aut.1d':'Dibujas el mapa y sale una web con una puerta para cada persona que te importa, en minutos.',
+  'aut.2t':'El mapa que avisa',
+  'aut.2d':'Cada entrega entre personas queda registrada, y el mapa marca lo que circula y lo que se ha parado.',
+  'aut.3t':'Tu IA, con tus datos',
+  'aut.3d':'Descargas el mapa y tus herramientas en un archivo, y la IA que ya usas trabaja con tu negocio y no con suposiciones.',
+  'aut.4t':'Del formulario a tu CRM, solo',
+  'aut.4d':'Cuando alguien pide información en la web, entra en tu lista de clientes sin copiar nada, y sin ninguna clave a la vista.',
+  'aut.5t':'La IA que pule tu mapa',
+  'aut.5d':'Mientras haces el mapa, la IA te ayuda a afinarlo y a escribir los textos de la web, con un límite de gasto por persona.',
+  'aut.6t':'Cobrar en un toque',
+  'aut.6d':'Tarjeta, Apple Pay o Google Pay, y el mes se cierra solo: lo cobrado queda apuntado sin hojas de cálculo.',
   'av.4d':'Cada entrega queda registrada y el mapa te dice cómo va, mes a mes. No tienes que volver a empezar cada año.',
   'av.4t':'Y se mantiene vivo',
   'av.3d':'Cada persona que te importa encuentra su puerta: quien compra, quien colabora, quien te ayuda. El boceto sale en minutos y lo afinamos juntos.',
@@ -2326,7 +2466,7 @@ es: {
   'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacidad, explicada',
-  'nv.cta':'Haz el diagnóstico',
+  'nv.cta':'Crea tu mapa',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escríbenos',
   'nv.peu.legal':'Aviso legal y privacidad',

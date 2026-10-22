@@ -211,10 +211,15 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
 
    I de 67 a 69 KB (22/10/2026): la portada passa a vendre directament —què
    t'emportes, «El teu camí» (generat de camiClient) i «Per què nosaltres»—, i
-   per pagar-ho s'han tret els comentaris d'història que ja eren a git. */
+   per pagar-ho s'han tret els comentaris d'història que ja eren a git.
+
+   I a 73 KB el mateix dia, a petició de l'Àlvaro: «La intel·ligència que hi
+   ha darrere» (mètode, cervell amb l'exemple viu, codex, IA) i «El que ja
+   automatitzem», cada flux amb el seu estat. El dibuix del cervell no pesa
+   aquí: és de `SOS/cervell/`, que ja es carregava. */
 const SOSTRES = [
   ['SOS/vna.html', 95, 'el mètode sencer: el llenç, les vuit lectures, les construccions i el mapa de la casa'],
-  ['index.html', 69, 'la portada ven el mapa de valor, el que t\'emportes i el teu camí, i porta a les altres tres pàgines'],
+  ['index.html', 73, 'la portada ven el mapa de valor, el que t\'emportes, el teu camí, la intel·ligència i el que ja automatitzem, i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
   ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
   ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut'],

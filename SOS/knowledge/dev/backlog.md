@@ -52,6 +52,38 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### La base de coneixement per sector · identificar el tipus de projecte (demanat 22/10/2026)
+
+**Demanat per l'Àlvar:** «a la guia crearia una base de coneixement més
+detallada per sector, per poder identificar el tipus de projecte i tenir ja una
+base que després pugui estar en local, a Ollama, i anar-la actualitzant».
+
+**La idea:** quan algú comença el mapa (a `/cliente/` o a l'editor), la guia
+reconeix de quin tipus de projecte es tracta (escola, celler, ajuntament,
+cooperativa, comerç…) i li proposa els rols, els fluxos i les preguntes típics
+del seu sector, en comptes de començar de zero.
+
+**Per on començar:**
+
+1. Una sola font: un fitxer per sector a `SOS/knowledge/` (rols, lliuraments
+   tangibles i intangibles, preguntes, errors típics), escrit a partir dels
+   set mapes model (`build-models-mapa.js`) i dels casos reals amb font.
+2. La guia i la IA de `/cliente/` (`pule-mapa.mjs`) el llegeixen: primer
+   identificar el sector, després proposar. Cap còpia per eina (veda 71).
+3. Empaquetat perquè un model local (Ollama) el pugui fer servir sense
+   connexió, i que s'actualitzi quan canvia la font. Mesurar qualitat i cost
+   contra el model al núvol abans de canviar res.
+4. El que s'aprèn de cada projecte nou torna a la base del seu sector (el
+   cervell col·lectiu), sense dades personals.
+
+**I el que hi afegeix (Àlvar, 22/10/2026 21:34):** aprofitar la feina ja
+invertida en els fluxos de valor de projectes reals per fer **bones pràctiques
+per tipus de projecte**, que siguin educatives: qui comença veu com flueix el
+valor en un projecte com el seu abans de dibuixar el seu. I l'eina, molt àgil:
+crear el mapa, veure el flux, corregir i parlar amb la IA i el cervell **amb el
+dit, en tauleta i en pantalles tàctils grans de taller**, i arrossegar els
+objectes fins a cert punt. La UX de l'editor és del fil «Revisió UX del SOS».
+
 ### L'espai de client amb login · projecte, facturació i contrasenya (demanat 22/10/2026)
 
 Avui `/cliente/` (#282) té un compte lleuger: nom i correu desats al navegador,

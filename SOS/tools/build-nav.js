@@ -235,7 +235,11 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    principal perquè és l'única que torna alguna cosa sense demanar res, i és
    el primer pas del camí de client a `/sos/`, a la portada i a l'embut
    (`build-embut.js`). L'aplicació no es perd: és al grup «El SOS» del menú. */
-const CTA = ['/SOS/diagnostic.html', T('Fes el diagnòstic', 'Haz el diagnóstico')];
+/* ── L'acció és crear el mapa (22/10/2026) ──────────────────────────────────
+   Àlvaro: «la primera acció, fer el teu mapa de valor». És el pas 1 del camí
+   de client (`camiClient`), torna valor abans de demanar res i és la mateixa
+   crida principal de la portada. El diagnòstic segueix al grup «Mapa de valor». */
+const CTA = ['/cliente/', T('Crea el teu mapa', 'Crea tu mapa')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 /* ── A dins del SOS ──────────────────────────────────────────────────────────
    L'acció és obrir-lo i la marca porta a la seva portada, que és l'embut de

@@ -6,7 +6,7 @@
  * pugen damunt de les del SOS, que és d'on les hereta. Un fill privat no es
  * llegeix mai. Cap dada viu aquí: el SOS surt de `teamtowers.json`.
  *
- *   <div id="cvTop"></div>  i, si n'hi ha, <button data-repo="propietari/repo">  i  <a id="cvTop3d">
+ *   <div id="cvTop" data-alt="170"></div>  (alçada opcional) i, si n'hi ha, <button data-repo="propietari/repo">  i  <a id="cvTop3d">
  */
 (function () {
   var c = document.getElementById('cvTop'), DIR = document.currentScript.src.replace(/[^/]*$/, '');
@@ -14,7 +14,7 @@
   var base = null, vista = null, a3 = document.getElementById('cvTop3d');
   function pinta(D, des) {
     if (vista) vista.treu();
-    vista = CervellPla.munta(c, D, { vista: 'castellera', alt: 170, des: des,
+    vista = CervellPla.munta(c, D, { vista: 'castellera', alt: +c.getAttribute('data-alt') || 170, des: des,
       etiqueta: D.nodos.length + ' vedes, de la primera a l\'última, en tres pisos: pinya, tronc i pom de dalt.' });
   }
   function lector() {
