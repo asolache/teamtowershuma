@@ -3,6 +3,8 @@
    · **El compte** demana nom i correu i es queda al navegador.
    · **La resposta de la seva IA** omple les preguntes i qui hi ha al voltant,
      i el diagnòstic diu en paraules seves si el dibuix ja es pot fer.
+   · **El dibuix s'obre dins de la pàgina** amb l'editor del mapa, i el que
+     s'hi canvia torna a la fitxa (`desDe`).
    · **El boceto** surt del mateix motor que l'editor (motor-web.js), en
      castellà i amb una porta per a cadascú.
    · **L'enviament** és un sol POST al formulari `cliente-web`, i després el
@@ -72,6 +74,19 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(await p.locator('#cl-files .fila').count() === 6, 'y las seis personas de alrededor');
   await p.fill('#cl-casa', 'Equipo de formación');
   ok(await p.locator('#cl-salut li:not(.ok)').count() === 0, 'el diagnóstico dice que ya se puede dibujar');
+
+  await p.click('#alrededor .js-dibuix');
+  await p.waitForFunction(() => { const w = document.getElementById('cl-ed-marc').contentWindow; return w && w.__VS_ED && w.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
+  const fr = p.frames().find(f => /vna-suport/.test(f.url()));
+  ok(p.url().split('#')[0] === URL_ && await p.isVisible('#cl-ed'), 'el dibujo se abre dentro de la página, sin salir de ella');
+  ok((await fr.evaluate(() => window.__VS_ED.exporta().roles.length)) === 7, 'el editor tiene el dibujo de la ficha (el centro y seis más)');
+  await fr.evaluate(() => window.__VS_ED.flux('Quien me recomienda', 'Quien quiere ser profesor', 'intangible', 'confianza'));
+  await p.click('#cl-ed-desa');
+  const fitxa = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(fitxa.alrededor.length === 6 && fitxa.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'), 'lo que cambia en el editor vuelve a la ficha, también lo que pasa entre los demás');
+  ok(await p.locator('#cl-files .fila').count() === 6, 'y las filas siguen ahí');
+  await p.click('#cl-ed-tanca');
+  ok(!(await p.isVisible('#cl-ed')), 'el editor se cierra y sigues donde estabas');
 
   await p.check('#cl-n-conectada', { force: true });
   await p.click('#cl-boceto');

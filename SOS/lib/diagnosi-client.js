@@ -14,6 +14,7 @@
      · llegeix()  el JSON de tornada, net, o un error que s'entén.
      · mapa()     el mapa canònic ({abast, roles, pairs}) de les respostes:
                   el mateix format de SOS/lib/mapa-valor.js i de l'editor.
+     · desDe()    el camí de tornada: el mapa que surt de l'editor, a la fitxa.
      · revisa()   les regles dures del mapa, dites com les diria el client.
      · resum()    el text que arriba a la casa amb el formulari.
 
@@ -104,13 +105,31 @@ function mapa(c) {
     if (!k || k === casa.toLowerCase() || vist[k]) return false;
     vist[k] = 1; return true;
   });
+  var ex = o.extra || {}, roles = [casa].concat(al.map(function (x) { return net(x.quien); }));
+  (ex.roles || []).forEach(function (r) { if (roles.indexOf(r) < 0) roles.push(r); });
   return {
     abast: net((o.respuestas || {}).objetivo) || net(o.inicial),
-    roles: [casa].concat(al.map(function (x) { return net(x.quien); })),
+    roles: roles,
     pairs: al.map(function (x) {
       return [net(x.quien), casa, x.meDa ? (x.meDaEs || 'tangible') : '', net(x.meDa), x.leDoy ? (x.leDoyEs || 'tangible') : '', net(x.leDoy)];
-    })
+    }).concat((ex.pairs || []).filter(function (p) { return roles.indexOf(p[0]) >= 0 && roles.indexOf(p[1]) >= 0; }))
   };
+}
+
+/* A la inversa: el que torna de l'editor del mapa (MODEL.exporta) cap a la
+   fitxa. El que toca el centre torna a ser una fila de «qui hi ha al voltant»;
+   la resta (el que passa entre els altres, els rols que encara no hi
+   intercanvien) es guarda a `extra` perquè `mapa()` no ho perdi. */
+function desDe(m, casa) {
+  var c = net(casa) || 'Tu equipo', files = {}, ordre = [], extra = { roles: [], pairs: [] };
+  var fila = function (q) { if (!files[q]) { files[q] = { quien: q, meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'tangible' }; ordre.push(q); } return files[q]; };
+  (m && m.pairs || []).forEach(function (p) {
+    if (p[1] === c && p[0] !== c) { var f = fila(p[0]); if (!f.meDa) { f.meDa = p[3] || ''; f.meDaEs = p[2] || 'tangible'; f.leDoy = p[5] || ''; f.leDoyEs = p[4] || 'tangible'; } }
+    else if (p[0] === c && p[1] !== c) { var g = fila(p[1]); if (!g.leDoy) { g.leDoy = p[3] || ''; g.leDoyEs = p[2] || 'tangible'; g.meDa = p[5] || ''; g.meDaEs = p[4] || 'tangible'; } }
+    else extra.pairs.push(p.slice());
+  });
+  (m && m.roles || []).forEach(function (r) { if (r !== c && !files[r]) extra.roles.push(r); });
+  return { alrededor: ordre.map(function (q) { return files[q]; }), extra: extra };
 }
 
 /* Les regles dures de mapa-valor.js, amb les paraules del client. `MV` és
@@ -143,6 +162,6 @@ function resum(c) {
   return l.join('\n');
 }
 
-var DiagnosiClient = { PREGUNTES: PREGUNTES, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, revisa: revisa, resum: resum };
+var DiagnosiClient = { PREGUNTES: PREGUNTES, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, resum: resum };
 if (typeof module !== 'undefined' && module.exports) module.exports = DiagnosiClient; else g.DiagnosiClient = DiagnosiClient;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

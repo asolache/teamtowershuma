@@ -153,6 +153,7 @@
         .boceto[hidden] { display: none; }
         .boceto .barra { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; padding: .5rem .7rem; border-bottom: 1px solid var(--border); background: var(--panel); font-size: var(--t0); }
         .boceto iframe { display: block; width: 100%; height: 34rem; border: 0; background: #fff; }
+        .boceto.editor iframe { height: min(44rem, 82vh); }
 
         .resposta { margin-top: 1rem; font-weight: 600; }
         .resposta.ko { color: var(--red); }
@@ -365,6 +366,7 @@
             <p>Revisa lo que haya puesto tu IA: tú sabes mejor que nadie cómo es tu día a día.</p>
         </div>
         <div class="preguntes" id="cl-preguntes"></div>
+        <div class="accions"><button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button></div>
     </div>
 </section>
 
@@ -377,7 +379,13 @@
         </div>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
         <div class="files" id="cl-files"></div>
-        <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button></div>
+        <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
+        <div class="boceto editor" id="cl-ed" hidden>
+            <div class="barra"><span>Tu dibujo, con el mismo editor que usamos en la sesión. Mueve, añade a alguien o una flecha, y guárdalo en tu ficha.</span>
+                <button type="button" class="btn btn-sm btn-primary" id="cl-ed-desa">Guardar en mi ficha</button>
+                <button type="button" class="btn btn-sm btn-ghost" id="cl-ed-tanca">Cerrar</button></div>
+            <iframe id="cl-ed-marc" title="El editor de tu dibujo"></iframe>
+        </div>
         <h3 style="margin-top:1.6rem">¿Está listo para dibujarlo?</h3>
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
     </div>
@@ -400,7 +408,7 @@
         </div>
         <div class="accions">
             <button type="button" class="btn btn-primary" id="cl-boceto">Ver el boceto de mi web</button>
-            <a class="btn btn-ghost" id="cl-editor" href="/SOS/vna-suport.html?app">Abrir el dibujo en el editor</a>
+            <button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button>
         </div>
         <p class="nota" id="cl-boceto-r" role="status"></p>
         <div class="boceto" id="cl-marc-caixa" hidden>
@@ -622,9 +630,28 @@
             r.textContent = 'Este es tu boceto: una puerta para cada uno. Pasa de una a otra con los botones.';
         }).catch(function () { r.textContent = 'No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'; });
     });
-    $('#cl-editor').addEventListener('click', function () {
-        try { localStorage.setItem('sos-mapa-cap-editor', JSON.stringify(D.mapa(S))); } catch (e) { /* el editor se abrirá vacío */ }
+    /* El dibujo, dentro de la página: el editor del mapa (vna-suport.html) en un
+       marco, abierto debajo del botón que se ha pulsado. Entra con el mapa de la
+       ficha por el mismo camino que «✎ Obre'l a l'editor» de la app, y
+       «Guardar en mi ficha» lo devuelve con D.desDe. */
+    var ED = $('#cl-ed'), MARC = $('#cl-ed-marc');
+    document.querySelectorAll('.js-dibuix').forEach(function (b) {
+        b.addEventListener('click', function () {
+            try { localStorage.setItem('sos-mapa-cap-editor', JSON.stringify(D.mapa(S))); } catch (e) { /* el editor se abrirá con lo último que tenía */ }
+            b.closest('.accions').after(ED);
+            ED.hidden = false;
+            MARC.src = '/SOS/vna-suport.html?app&t=' + Date.now();
+            ED.scrollIntoView({ block: 'start' });
+        });
     });
+    $('#cl-ed-desa').addEventListener('click', function () {
+        var w = MARC.contentWindow && MARC.contentWindow.__VS_ED;
+        if (!w) { aviso('El editor todavía se está abriendo'); return; }
+        var d = D.desDe(w.exporta(), S.casa);
+        S.alrededor = d.alrededor; S.extra = d.extra; desa(); pintaFiles();
+        aviso('Guardado en tu ficha: ' + d.alrededor.length + ' personas o grupos');
+    });
+    $('#cl-ed-tanca').addEventListener('click', function () { ED.hidden = true; MARC.src = 'about:blank'; });
 
     /* 6 · El envío. Es la única llamada que saca datos de este navegador. */
     $('#cl-envia').addEventListener('click', function () {
