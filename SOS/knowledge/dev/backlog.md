@@ -4608,8 +4608,8 @@ tancada allà on no es podia tancar.
 - **En lloc del preu hi ha el mètode**, sencer i a la pàgina (`#cost`): quatre
   passos —mapa, hores per rol, preu del nivell, despeses directes al seu preu de
   factura— perquè qui llegeix pugui refer el càlcul sense trucar. Veda 140.
-- **Escala de tres nivells per hores**, per al sector públic: N1 35 €/h, N2
-  55 €/h, N3 80 €/h, sense IVA. El que els separa **no és l'antiguitat**, és
+- **Escala de tres nivells per hores**, per al sector públic: N1, N2 i N3, amb
+  el preu hora a la proposta de cada client (des del 22/10/2026 no es publica). El que els separa **no és l'antiguitat**, és
   evidència registrada al SOS — la mateixa que acredita un gestor o un mentor.
 - **Itineraris per rol directiu** a `formacio.html`: direcció general, persones,
   innovació, organització, direcció pública i direcció cooperativa. Fins ara els

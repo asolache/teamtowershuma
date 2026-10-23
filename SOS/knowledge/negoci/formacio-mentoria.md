@@ -168,8 +168,9 @@ xifra. El tarifari de 2026 segueix buidat a
 [`cataleg-teamtowers-2026.md`](cataleg-teamtowers-2026.md) com a registre intern
 i referència de partida; el mètode és a
 [`cost-mapa-valor.md`](cost-mapa-valor.md), que és també d'on surt **l'escala de
-tres nivells** (N1 35 €/h · N2 55 €/h · N3 80 €/h, sense IVA) amb què es
-contracta per hores al sector públic.
+tres nivells** (N1, N2, N3) amb què es contracta per hores al sector públic. El
+preu hora de cada nivell no es publica: va a la proposta de cada client i viu al
+repositori privat d'estratègia (l'Àlvar, 22/10/2026).
 
 **La font única és `SOS/tools/build-oferta.js`**: allà es declaren els dinou
 paquets amb la seva forquilla, el que la mou, l'aportació de valor, el punt

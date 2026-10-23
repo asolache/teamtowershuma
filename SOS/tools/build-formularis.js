@@ -271,7 +271,7 @@ function blocPaquets() {
 function blocEscala() {
   const q = s => String(s == null ? '' : s).replace(/'/g, "\\'");
   const niv = NIVELLS.map(n =>
-    `{id:'${n.id}',nom:'${q(n.nom)}',nomEs:'${q(n.nomEs || n.nom)}',hora:${n.hora}}`).join(',');
+    `{id:'${n.id}',nom:'${q(n.nom)}',nomEs:'${q(n.nomEs || n.nom)}'}`).join(',');
   const noms = PAQUETS.concat(SOS_PAQUETS)
     .map(p => `'${p.id}':{nom:'${q(p.nom)}',nomEs:'${q(p.nomEs || p.nom)}'}`).join(',');
   return `// Generat per SOS/tools/build-formularis.js des del catàleg — no ho editis a mà.
@@ -426,8 +426,8 @@ const PRESSU = {
   'pv.cta': { ca: 'Contracta', es: 'Contrata' },
   'pv.iva': { ca: '+ IVA', es: '+ IVA' },
   'pv.flux': {
-    ca: '<strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell (35, 55 o 80 €/h) més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.',
-    es: '<strong>A medida, por flujos.</strong> Todo lo que no está aquí se presupuesta por flujos: las horas de cada nivel (35, 55 u 80 €/h) más el coste real de la IA, que te factura el proveedor a tu nombre. <a href="#amida">Hazte el presupuesto</a> · <a href="/conecta/">el coste de la IA, tarea por tarea</a>.'
+    ca: '<strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell, al preu que diu la proposta, més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.',
+    es: '<strong>A medida, por flujos.</strong> Todo lo que no está aquí se presupuesta por flujos: las horas de cada nivel, al precio que dice la propuesta, más el coste real de la IA, que te factura el proveedor a tu nombre. <a href="#amida">Hazte el presupuesto</a> · <a href="/conecta/">el coste de la IA, tarea por tarea</a>.'
   },
   'pv.amida.h': { ca: 'A mida, per fluxos', es: 'A medida, por flujos' },
   'pv.amida.sub': {
@@ -477,8 +477,8 @@ const PRESSU = {
   },
   'pr.s3.err': { ca: 'Marca com a mínim un paquet.', es: 'Marca como mínimo un paquete.' },
   'pr.hores.sub': {
-    ca: 'Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.',
-    es: 'Opcional, y pensado para contratación pública de servicios profesionales. Escribe las horas de cada nivel y el total se calcula solo. Lo que separa un nivel del siguiente es evidencia registrada, no antigüedad — la <a href="../index.html#cost">portada lo explica entero</a>.'
+    ca: 'Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell; el preu hora de cada nivell va a la proposta que et tornem. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.',
+    es: 'Opcional, y pensado para contratación pública de servicios profesionales. Escribe las horas de cada nivel; el precio hora de cada nivel va en la propuesta que te devolvemos. Lo que separa un nivel del siguiente es evidencia registrada, no antigüedad — la <a href="../index.html#cost">portada lo explica entero</a>.'
   },
   'pr.s4.h': { ca: '4 · Com i quan', es: '4 · Cómo y cuándo' },
   'pr.s4.sub': {
@@ -504,9 +504,7 @@ const PRESSU = {
   'pr.diners.perveure': { ca: 'Encara per veure', es: 'Todavía por ver' },
   'pr.hores.h': { ca: 'Si ho contracteu per hores', es: 'Si lo contratáis por horas' },
   'pr.esc.niv': { ca: 'Nivell', es: 'Nivel' },
-  'pr.esc.preu': { ca: 'Preu hora', es: 'Precio hora' },
   'pr.esc.hores': { ca: 'Hores', es: 'Horas' },
-  'pr.esc.sub': { ca: 'Subtotal', es: 'Subtotal' },
   'pr.prop.h': { ca: 'Proposta esborrany', es: 'Propuesta borrador' },
   'pr.prop.total': { ca: 'Total orientatiu · sense IVA', es: 'Total orientativo · sin IVA' },
   'pr.prop.triat': { ca: 'El que has triat', es: 'Lo que has elegido' },

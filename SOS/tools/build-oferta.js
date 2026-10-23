@@ -179,21 +179,22 @@ const PER_FLUXOS_LBL = { ca: 'Per fluxos · hores i IA, desglossat', es: 'Por fl
    dues de semblants: si algú puja de nivell és perquè té les evidències, i la
    proposta diu quina persona fa quines hores i a quin nivell.
 
-   Les xifres són **sense IVA** i són tarifa proposada per al 2026: encara no
-   s'han facturat prou vegades per dir-ne una altra cosa, i dir-ho val més que
-   la venda que es perdi. */
+   El preu hora de cada nivell no es publica (l'Àlvar, 22/10/2026: cada client
+   veu el seu preu al seu espai i les tarifes viuen al repositori privat
+   d'estratègia). La taula diu qui fa què i com s'acredita; el preu va a la
+   proposta. */
 const NIVELLS = [
-  { id: 'N1', nom: 'Practicant', nomEs: 'Practicante', hora: 35,
+  { id: 'N1', nom: 'Practicant', nomEs: 'Practicante',
     fa: 'Executa la feina acompanyada: recull, registra, prepara sessions i sosté el dia a dia.',
     faEs: 'Ejecuta el trabajo acompañado: recoge, registra, prepara sesiones y sostiene el día a día.',
     ev: 'Perfil actiu i aportacions signades al registre.',
     evEs: 'Perfil activo y aportaciones firmadas en el registro.' },
-  { id: 'N2', nom: 'Gestor/a', nomEs: 'Gestor/a', hora: 55,
+  { id: 'N2', nom: 'Gestor/a', nomEs: 'Gestor/a',
     fa: 'Sosté un node sencer sol: facilita, mapa, governança, comptes i seguiment.',
     faEs: 'Sostiene un nodo entero solo: facilita, mapa, gobernanza, cuentas y seguimiento.',
     ev: 'Més de 20 h registrades i tres comunitats acompanyades, o una iniciativa liderada.',
     evEs: 'Más de 20 h registradas y tres comunidades acompañadas, o una iniciativa liderada.' },
-  { id: 'N3', nom: 'Mentor/a', nomEs: 'Mentor/a', hora: 80,
+  { id: 'N3', nom: 'Mentor/a', nomEs: 'Mentor/a',
     fa: 'Dissenya l\'encàrrec, hi posa el criteri, decideix davant del client i forma els altres.',
     faEs: 'Diseña el encargo, pone el criterio, decide ante el cliente y forma a los demás.',
     ev: 'Més de 50 h, tres comunitats, dues iniciatives o una graduada, i gestors formats.',
@@ -801,20 +802,18 @@ function blocCost() {
             <th><span class="cm-niv">${n.id}</span> <span data-i18n="cm.${n.id}.n">${esc(n.nom)}</span></th>
             <td data-i18n="cm.${n.id}.f">${esc(n.fa)}</td>
             <td data-i18n="cm.${n.id}.e">${esc(n.ev)}</td>
-            <td class="cm-h">${n.hora} €/h</td>
           </tr>`).join('\n');
   return `      <ol class="cm-passos">
 ${passos}
       </ol>
       <h3 class="cm-h3" data-i18n="cm.esc.h">L'escala, i què separa un nivell del següent</h3>
-      <p class="cm-int" data-i18n="cm.esc.i">Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell.</p>
+      <p class="cm-int" data-i18n="cm.esc.i">Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell. I hi va el preu hora de cada nivell, que no publiquem.</p>
       <div class="cm-taula-scroll">
         <table class="cm-taula">
           <thead><tr>
             <th data-i18n="cm.th.niv">Nivell</th>
             <th data-i18n="cm.th.fa">Què fa</th>
             <th data-i18n="cm.th.ev">Com s'acredita</th>
-            <th data-i18n="cm.th.h">Preu hora</th>
           </tr></thead>
           <tbody>
 ${files}
@@ -865,12 +864,11 @@ function diccionari(llengua) {
   });
   files.push(`  ${q('cm.th.niv')}:${q(es ? 'Nivel' : 'Nivell')},` +
              `${q('cm.th.fa')}:${q(es ? 'Qué hace' : 'Què fa')},` +
-             `${q('cm.th.ev')}:${q(es ? 'Cómo se acredita' : "Com s'acredita")},` +
-             `${q('cm.th.h')}:${q(es ? 'Precio hora' : 'Preu hora')},`);
+             `${q('cm.th.ev')}:${q(es ? 'Cómo se acredita' : "Com s'acredita")},`);
   files.push(`  ${q('cm.esc.h')}:${q(es ? 'La escala, y qué separa un nivel del siguiente' : "L'escala, i què separa un nivell del següent")},`);
   files.push(`  ${q('cm.esc.i')}:${q(es
-    ? 'Para contrataciones por horas —que es como contrata el sector público cuando contrata servicios profesionales— esta es la tabla que presentamos. Lo que separa un nivel del siguiente no es la antigüedad: es evidencia registrada y verificable, la misma que acredita a un gestor o a un mentor en la formación. La propuesta dice siempre qué persona hace qué horas y a qué nivel.'
-    : "Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell.")},`);
+    ? 'Para contrataciones por horas —que es como contrata el sector público cuando contrata servicios profesionales— esta es la tabla que presentamos. Lo que separa un nivel del siguiente no es la antigüedad: es evidencia registrada y verificable, la misma que acredita a un gestor o a un mentor en la formación. La propuesta dice siempre qué persona hace qué horas y a qué nivel. Y en ella va el precio hora de cada nivel, que no publicamos.'
+    : "Per a contractacions per hores —que és com contracta el sector públic quan contracta serveis professionals— aquesta és la taula que presentem. El que separa un nivell del següent no és l'antiguitat: és evidència registrada i verificable, la mateixa que acredita un gestor o un mentor a la formació. La proposta diu sempre quina persona fa quines hores i a quin nivell. I hi va el preu hora de cada nivell, que no publiquem.")},`);
   /* El sostre de 5.000 € és una regla de l'administració, no una tarifa. Sense
      dir-ho, una empresa que llegia aquesta secció es pensava que era el nostre
      preu màxim —i el sector públic es pensava que era una xifra arbitrària. */
@@ -927,10 +925,10 @@ function taulaMd() {
 function costMd() {
   const passos = PASSOS_COST.map((p, i) => `${i + 1}. **${p.tEs}** — ${p.dEs}`).join('\n');
   const files = NIVELLS.map(n =>
-    `| **${n.id} · ${n.nomEs}** | ${n.faEs} | ${n.evEs} | ${n.hora} €/h |`).join('\n');
-  return passos + '\n\n| Nivel | Qué hace | Cómo se acredita | Precio hora |\n|---|---|---|---|\n' + files +
+    `| **${n.id} · ${n.nomEs}** | ${n.faEs} | ${n.evEs} |`).join('\n');
+  return passos + '\n\n| Nivel | Qué hace | Cómo se acredita |\n|---|---|---|\n' + files +
     '\n\nNingún paquete lleva **precio cerrado publicado**: todos se presupuestan así, desglosados por flujos. ' +
-    'La escala es **sin IVA**, es tarifa propuesta para 2026 y se revisa cada año.';
+    'El precio hora de cada nivel va en la propuesta de cada cliente.';
 }
 
 /* ══ Escriure ═════════════════════════════════════════════════════════════ */
