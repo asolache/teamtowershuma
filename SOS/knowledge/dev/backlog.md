@@ -118,8 +118,7 @@ privat i viu al repositori d'estratègia.
 10. **Adaptar el mapa amb el temps**: el mapa es desa al servidor sota la
     identitat (el mateix hash que el registre de `pule-mapa`, Netlify Blobs) i
     el client hi torna des de qualsevol aparell. Al pas 2 passa al portal; mai
-    dos llocs alhora. Substitueix la «contrasenya» de «L'espai de client amb
-    login» si l'Àlvar ho decideix (vegeu més avall). · *Piloto ELE* i
+    dos llocs alhora. Sense contrasenya: decidit per l'Àlvar el 23/10 (vegeu més avall). · *Piloto ELE* i
     *Ecosistema integrado*
 11. **L'editor del mapa amb el dit**, al mòbil: un sol llenç per a `/cliente/`,
     l'editor i l'app (el «Pendent: un sol llenç» d'«Un sol motor»). · *UX de SOS*
@@ -177,10 +176,10 @@ viu» → 19; «L'arrencada amb IA», llegir PDF i Word → 20; el backlog de la
 portada (sector amb IA, mapa → textos, fluxos automatitzables) → 8, 9 i el que
 ja fa `pule-mapa` amb `marca`.
 
-**Una decisió de l'Àlvar** abans del punt 10: el compte del client amb
-contrasenya, com es va demanar el 22/10, o amb l'accés per correu o GitHub que
-ja fa `identitat.mjs` (recomanat: cap contrasenya a custodiar, un sol camí
-d'identitat amb el cervell).
+**Decidit per l'Àlvar el 23/10/2026:** el compte del client és l'accés per
+correu o GitHub que ja fa `identitat.mjs`, sense contrasenya pròpia: cap
+contrasenya a custodiar i un sol camí d'identitat amb el cervell. Substitueix
+la «contrasenya» de «L'espai de client amb login».
 
 **Es tanca** quan ELE Barcelona veu a `/cliente/` la seva web d'avui replicada
 amb les portes del seu mapa, i el seu panell al portal.
