@@ -17,7 +17,7 @@
       k: ['valor', 'diner', 'comptab', 'fons', 'pagament', 'cobr', 'token', 'slicing', 'pie', 'ledger', 'registre', 'intercanvi', 'comissió', 'preu', 'euro', 'quota', 'aportació', 'transacció', 'flux'] },
     { id: 'mano', n: 'Mente', s: 'Manomaya', d: 'Lo que se recuerda y se ordena: datos, mapas, el cerebro, la taxonomía y el backlog.',
       k: ['dada', 'dades', 'mapa', 'memòria', 'cervell', 'coneixement', 'backlog', 'taxonomia', 'font', 'índex', 'json', 'llista', 'catàleg', 'document', 'llengua', 'traducció', 'perfil'] },
-    { id: 'vijnana', n: 'Discernimiento', s: 'Vijnanamaya', d: 'El criterio: decir solo lo que se puede sostener, medir antes de estimar, el sedàs.',
+    { id: 'vijnana', n: 'Criterio', s: 'Vijnanamaya', d: 'El criterio: decir solo lo que se puede sostener, medir antes de estimar, el sedàs.',
       k: ['veritat', 'estimació', 'null', 'sedàs', 'decid', 'criteri', 'verific', 'afirma', 'mesura', 'comprova', 'honest', 'invent', 'fals', 'evidència', 'regla', 'llei'] },
     { id: 'ananda', n: 'Propósito', s: 'Anandamaya', d: 'Para qué: la misión, la comunidad, las personas, el cuidado y el relato que lo une.',
       k: ['missió', 'comunitat', 'persona', 'cura', 'mitolog', 'shiva', 'shakti', 'molekulon', 'superheroi', 'identitat', 'territori', 'colla', 'castell', 'confiança', 'reconeixement', 'visió', 'propòsit'] }
