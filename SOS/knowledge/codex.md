@@ -5466,3 +5466,29 @@ gasta crèdits; uns nou al dia del SOS esgoten el cicle en dues setmanes.
   perquè els posts es puguin compilar com a manual del sistema.
 
 **Guarda:** cap automàtica; la regla és a `CLAUDE.md`.
+
+## Veda 180 — Web 3 per principi: semàntic, amb IA i de triple entrada, amb el registre segellat
+
+**Adoptada el 22/10/2026** per l'Álvaro: «integra esta tecnologia en todo lo que
+hagamos por principio para ser web 3 full developers siendo semánticos, usando
+IA y contabilidad de triple entrada».
+
+L'error que evita: fer webs i eines que diuen coses que ningú pot comprovar. El
+SOS ja signa i encadena cada lliurament (did:key, vedes 33, 34, 64 i 126), però
+el que no surt del navegador no té data ni integritat davant de tercers.
+
+- **Tot el que fem és web 3 per defecte:** identitat pròpia de cada persona
+  (did:key), dades semàntiques (schema.org i JSON-LD a les webs, la taxonomia
+  universal al cervell), IA que es declara i comptabilitat de **triple entrada**
+  (l'apunt de qui dona, el vistiplau de qui rep i el registre com a tercer lloc).
+- **El registre es segella:** cada tancament (el hash del dia o del mes) es
+  segella amb un **segell de temps qualificat** (eIDAS), i quan n'hi hagi, en un
+  **llibre major electrònic qualificat** (eIDAS 2, Reglament (UE) 2024/1183).
+  Així la comptabilitat de valor i el kanban d'una comunitat tenen data i
+  integritat amb valor de prova. Fora es diu «prova amb data i signatura», no
+  «validesa notarial», que no és automàtica.
+- **Els contractes intel·ligents automatitzen, no decideixen:** el diner i el
+  que és intangible són sempre d'una persona (veda del vistiplau).
+
+**Guarda:** pendent (backlog, «El registre amb valor de prova»).
+

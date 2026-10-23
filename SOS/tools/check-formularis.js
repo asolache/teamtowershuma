@@ -218,11 +218,15 @@ const absents = tots.filter(p => !pr.includes('value="' + p.id + '"'));
 if (!absents.length) ok(`els ${tots.length} paquets del catàleg es poden demanar al formulari`);
 else bad(`${pl(absents.length, 'paquet no es pot demanar', 'paquets no es poden demanar')} (${absents.map(p => p.id).join(', ')}) — es venen i no es poden comprar`);
 
-/* ── 6 · L'escala és la mateixa que la de la portada ──────────────────────
-   Dos preus hora en dues pantalles és un preu hora fals. */
-const dolents = NIVELLS.filter(n => !new RegExp("hora:" + n.hora + "\\b").test(pr));
-if (!dolents.length) ok(`els ${NIVELLS.length} nivells de l'escala hi són amb el seu preu hora`);
+/* ── 6 · L'escala és la mateixa que la de la portada, i sense preu ────────
+   El preu hora de cada nivell va a la proposta de cada client, no a la
+   pàgina (l'Àlvar, 22/10/2026). */
+const dolents = NIVELLS.filter(n => !new RegExp("id:'" + n.id + "'").test(pr));
+if (!dolents.length) ok(`els ${NIVELLS.length} nivells de l'escala hi són`);
 else bad(`l'escala del formulari no quadra amb la del catàleg (${dolents.map(n => n.id).join(', ')})`);
+const preuHora = pr.match(/\d[\d.,]*\s?€\/h/);
+if (!preuHora) ok('i cap preu hora publicat');
+else bad(`el formulari publica un preu hora («${preuHora[0]}»): va a la proposta`);
 
 /* ── 7 · Les quatre pantalles es llegeixen en dues llengües ───────────────
    Els dos diagnòstics **ja portaven les claus** `data-i18n` dels blocs

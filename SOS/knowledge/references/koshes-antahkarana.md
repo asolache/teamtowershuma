@@ -17,13 +17,13 @@ ordenar les vedes: cada veda va a la capa de la qual parla.
 | Paraula de cada dia | Al castell | Al Vedanta | Què hi va | La pregunta |
 | --- | --- | --- | --- | --- |
 | **Propòsit** | Pom de dalt | Anandamaya, la capa de la plenitud | La missió, la comunitat, les persones i el relat que ho uneix | Per a què ho fem? |
-| **Discerniment** | Tronc | Vijnanamaya, la capa del discerniment | El criteri: dir només el que es pot sostenir, mesurar abans d'estimar, el sedàs | Com sabem que és cert? |
+| **Criteri** | Tronc | Vijnanamaya, la capa del discerniment | El criteri: dir només el que es pot sostenir, mesurar abans d'estimar, el sedàs | Com sabem que és cert? |
 | **Ment** | Tronc | Manomaya, la capa de la ment | Dades, mapes, el cervell, la taxonomia i el backlog | On és i com ho pensem? |
 | **Energia** | Pinya | Pranamaya, la capa de l'alè | El valor, els diners, els intercanvis i qui aporta què | D'on surt la força i on es perd? |
 | **Cos** | Pinya | Annamaya, la capa de l'aliment | L'obra: el codi, les pàgines, les eines i el que es lliura | Què fem i què toquem? |
 
 La regla del castell hi afegeix el que el Vedanta no diu: **la pinya (cos i
-energia) ha de ser més ampla que el tronc (ment i discerniment)**. Un projecte
+energia) ha de ser més ampla que el tronc (ment i criteri)**. Un projecte
 que pensa més del que fa i del que fa circular cau per baix (`forces.js`).
 
 ## 2 · L'antahkarana: les quatre funcions de la ment, i on viuen al SOS

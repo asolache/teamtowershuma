@@ -199,6 +199,16 @@
         .ia-pensant p { font-size: var(--t0); color: var(--indigo); font-weight: 600; min-height: 1.5em; }
         .ia-esq { height: 4.2rem; border-radius: 12px; background: linear-gradient(90deg, #eceafd 25%, #f8f7ff 50%, #eceafd 75%); background-size: 200% 100%; animation: ia-brilla 1.3s ease-in-out infinite; }
         @keyframes ia-brilla { to { background-position: -200% 0; } }
+        .nivells-f { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: 1.2rem; }
+        .nivells-f > div { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+        .nivells-f .k { font-family: var(--mono); font-size: var(--t0); color: var(--indigo); }
+        .nivells-f p { font-size: var(--t0); color: var(--light); margin-top: .3rem; }
+        .prop-t { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: var(--t0); }
+        .prop-t th, .prop-t td { text-align: left; padding: .5rem .4rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        .prop-t td.n, .prop-t th.n { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .prop-t tfoot td { font-weight: 700; border-bottom: 0; }
+        .prop-t td:nth-child(2) { white-space: nowrap; }
+        #cl-prop-res h3 { margin-top: 1.4rem; }
         .ia-resum { margin-top: 1.1rem; padding: .8rem 1rem; border-left: 3px solid var(--purple); background: rgba(255, 255, 255, .7); border-radius: 0 10px 10px 0; font-style: italic; color: var(--text); max-width: 70ch; }
         .ia-props { display: grid; gap: .7rem; margin-top: 1rem; }
         .ia-prop { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: .85rem 1rem; display: grid; gap: .35rem; animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; transition: opacity .3s, transform .3s; }
@@ -542,6 +552,29 @@
     </div>
 </section>
 
+<section id="propuesta" class="alt" aria-labelledby="t-propuesta">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">7 · Tu propuesta</p>
+            <h2 id="t-propuesta">Quién trabaja en tu proyecto, y lo que te cuesta a ti.</h2>
+            <p>Tu proyecto lo llevan personas de tres niveles, con formación y mentoría entre ellas. Tu precio sale de las horas de cada nivel que necesita tu proyecto, más la IA y las herramientas. No lo publicamos: lo ves solo tú, aquí, cuando entras.</p>
+        </div>
+        <div class="nivells-f" aria-label="Los tres niveles">
+            <div><span class="k">Nivel 1</span><h3>Practicante</h3><p>Hace el trabajo acompañado: recoge lo que le cuentas, lo registra y prepara las sesiones.</p></div>
+            <div><span class="k">Nivel 2</span><h3>Gestor o gestora</h3><p>Sostiene tu proyecto entero: facilita, dibuja el mapa, lleva las cuentas y el seguimiento.</p></div>
+            <div><span class="k">Nivel 3</span><h3>Mentor o mentora</h3><p>Diseña el encargo contigo, pone el criterio, decide a tu lado y forma a los demás.</p></div>
+        </div>
+        <div class="ia" id="cl-prop" hidden data-per="Para ver tu propuesta, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
+            <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
+                <div><h3>Tu propuesta, solo para ti</h3><p>Cuando hablemos, aquí verás lo que incluye tu proyecto, las horas de cada nivel y tu precio. Entra con la misma cuenta que nos diste.</p></div></div>
+            <div class="ia-qui" data-ia="qui"></div>
+            <div class="ia-sessio" data-ia="sessio" hidden></div>
+            <button type="button" class="btn btn-primary ia-boto" id="cl-prop-veu" hidden>Ver mi propuesta</button>
+            <div id="cl-prop-res" aria-live="polite"></div>
+        </div>
+    </div>
+</section>
+
 </main>
 
 <!--TT-PEU-->
@@ -725,6 +758,29 @@
         'Por lo que cuentas, tu proyecto se parece a': "Pel que expliques, el teu projecte s'assembla a",
         'Empezar con este modelo': 'Començar amb aquest model',
         'Buena práctica:': 'Bona pràctica:',
+        /* Tu propuesta (#299) */
+        'La extranet': "L'extranet", 'La intranet': 'La intranet',
+        '7 · Tu propuesta': '7 · La teva proposta',
+        'Quién trabaja en tu proyecto, y lo que te cuesta a ti.': 'Qui treballa al teu projecte, i el que et costa a tu.',
+        'Tu proyecto lo llevan personas de tres niveles, con formación y mentoría entre ellas. Tu precio sale de las horas de cada nivel que necesita tu proyecto, más la IA y las herramientas. No lo publicamos: lo ves solo tú, aquí, cuando entras.': "El teu projecte el porten persones de tres nivells, amb formació i mentoria entre elles. El teu preu surt de les hores de cada nivell que necessita el teu projecte, més la IA i les eines. No el publiquem: el veus només tu, aquí, quan hi entres.",
+        'Nivel 1': 'Nivell 1', 'Nivel 2': 'Nivell 2', 'Nivel 3': 'Nivell 3', 'Nivel {0}': 'Nivell {0}',
+        'Practicante': 'Practicant', 'Gestor o gestora': 'Gestor o gestora', 'Mentor o mentora': 'Mentor o mentora',
+        'Hace el trabajo acompañado: recoge lo que le cuentas, lo registra y prepara las sesiones.': "Fa la feina acompanyat: recull el que li expliques, ho registra i prepara les sessions.",
+        'Sostiene tu proyecto entero: facilita, dibuja el mapa, lleva las cuentas y el seguimiento.': 'Sosté el teu projecte sencer: facilita, dibuixa el mapa, porta els comptes i el seguiment.',
+        'Diseña el encargo contigo, pone el criterio, decide a tu lado y forma a los demás.': "Dissenya l'encàrrec amb tu, hi posa el criteri, decideix al teu costat i forma els altres.",
+        'Tu propuesta, solo para ti': 'La teva proposta, només per a tu',
+        'Cuando hablemos, aquí verás lo que incluye tu proyecto, las horas de cada nivel y tu precio. Entra con la misma cuenta que nos diste.': "Quan parlem, aquí veuràs el que inclou el teu projecte, les hores de cada nivell i el teu preu. Entra amb el mateix compte que ens vas donar.",
+        'Ver mi propuesta': 'Veure la meva proposta', 'Los tres niveles': 'Els tres nivells',
+        'Para ver tu propuesta, dinos quién eres. Elige cómo:': 'Per veure la teva proposta, digues-nos qui ets. Tria com:',
+        'He leído cómo tratáis mis datos.': 'He llegit com tracteu les meves dades.',
+        'Hola, {0}: ya puedes ver tu propuesta': 'Hola, {0}: ja pots veure la teva proposta',
+        'Tu sesión ha caducado: vuelve a entrar': "La teva sessió ha caducat: torna a entrar",
+        'Todavía no tienes propuesta. Cuando hablemos, la verás aquí.': 'Encara no tens proposta. Quan parlem, la veuràs aquí.',
+        'Ahora no llego a tu propuesta. Prueba en un rato.': "Ara no arribo a la teva proposta. Prova-ho d'aquí a una estona.",
+        'Ahora no llego a tu propuesta': 'Ara no arribo a la teva proposta',
+        'Qué incluye': 'Què inclou', 'Nivel': 'Nivell', 'Horas': 'Hores', 'Importe': 'Import',
+        'Total (IVA incluido)': 'Total (IVA inclòs)', 'Total (sin IVA)': 'Total (sense IVA)',
+        'Actualizada el {0}': 'Actualitzada el {0}', 'válida hasta el {0}': 'vàlida fins al {0}', 'Solo la ves tú.': 'Només la veus tu.',
         'El editor todavía se está abriendo': "L'editor encara s'està obrint",
         'Guardado en tu ficha: {0} personas o grupos': 'Desat a la teva fitxa: {0} persones o grups',
         'Primero crea tu cuenta (paso 1): así sabemos a quién contestar.': 'Primer crea el teu compte (pas 1): així sabem a qui contestar.',
@@ -1193,7 +1249,7 @@
         var CI = 'tt.cliente.ia', I = {};
         try { I = JSON.parse(localStorage.getItem(CI) || 'null') || {}; } catch (e) { I = {}; }
         function desaI() { try { localStorage.setItem(CI, JSON.stringify(I)); } catch (e) { /* sin memoria */ } }
-        var VIES = [], caixes = [$('#cl-ia'), $('#cl-ia-web')];
+        var VIES = [], ACTIVA = false, caixes = [$('#cl-ia'), $('#cl-ia-web'), $('#cl-prop')];
         /* Al volver de GitHub, la sesión llega en el fragmento: se guarda y se borra de la barra. */
         var h = /^#sessio=([\w-]+\.[\w-]+)$/.exec(location.hash);
         if (h) {
@@ -1213,18 +1269,19 @@
         function pinta() {
             caixes.forEach(function (cx) {
                 if (!cx) return;
-                cx.hidden = !VIES.length && !I.sessio;
+                var esIA = cx.id !== 'cl-prop';
+                cx.hidden = (esIA && !ACTIVA) || (!VIES.length && !I.sessio);
                 var qui = cx.querySelector('[data-ia="qui"]'), ses = cx.querySelector('[data-ia="sessio"]'), boto = cx.querySelector('.ia-boto');
                 qui.textContent = ''; ses.textContent = '';
                 if (I.sessio) {
                     qui.hidden = true; ses.hidden = false; boto.hidden = false;
                     ses.appendChild(el('span', {}, t('Hola, {0}', I.nom || t('tú')) + ' · ' + t(I.via === 'github' ? 'con GitHub' : 'con tu correo')));
-                    energia(ses);
+                    if (esIA) energia(ses);
                     var sb = el('button', { type: 'button' }, t('Salir')); sb.addEventListener('click', function () { I = {}; desaI(); pinta(); }); ses.appendChild(sb);
                     return;
                 }
                 qui.hidden = false; ses.hidden = true; boto.hidden = true;
-                qui.appendChild(el('p', {}, t('Para usar la IA, dinos quién eres. Elige cómo:')));
+                qui.appendChild(el('p', {}, t(cx.getAttribute('data-per') || 'Para usar la IA, dinos quién eres. Elige cómo:')));
                 var acc = el('div', { class: 'accions' }); acc.style.marginTop = '0';
                 if (VIES.indexOf('github') >= 0) { var g = el('a', { class: 'btn btn-ghost', href: '/.netlify/functions/identitat?via=github' }, t('Con GitHub')); acc.appendChild(g); }
                 if (VIES.indexOf('correu') >= 0) {
@@ -1233,7 +1290,7 @@
                 }
                 qui.appendChild(acc);
                 var lp = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox', 'data-ia': 'priv' });
-                lp.appendChild(ck); lp.appendChild(el('span', {}, ' ' + t('He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.')));
+                lp.appendChild(ck); lp.appendChild(el('span', {}, ' ' + t((cx.getAttribute('data-priv') || 'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.').trim())));
                 qui.appendChild(lp);
                 var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode(t('Más en el') + ' ')); nl.appendChild(el('a', { href: '/avis-legal.html?lang=' + LL }, t('aviso legal'))); nl.appendChild(document.createTextNode('. ' + t('Con el correo usamos el de tu cuenta (paso 1).')));
                 qui.appendChild(nl);
@@ -1246,7 +1303,7 @@
             b.disabled = true;
             fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true }) })
                 .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || t('No se ha podido')); return j; }); })
-                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); aviso(t('Hola, {0}: ya puedes usar la IA', j.nom)); })
+                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); aviso(t(cx.id === 'cl-prop' ? 'Hola, {0}: ya puedes ver tu propuesta' : 'Hola, {0}: ya puedes usar la IA', j.nom)); })
                 .catch(function (e) { b.disabled = false; aviso(e.message); });
         }
 
@@ -1373,8 +1430,38 @@
         }
         $('#cl-ia-escriu').addEventListener('click', escriu);
 
-        fetch('/.netlify/functions/pule-mapa').then(function (r) { if (!r.ok) throw 0; return fetch('/.netlify/functions/identitat'); })
-            .then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
+        /* Tu propuesta (proposta.mjs): el precio no está en la página ni en el repositorio; llega solo a quien ha entrado. */
+        var EUR = function (n) { return Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; };
+        function proposta() {
+            var res = $('#cl-prop-res'), b = $('#cl-prop-veu'); b.disabled = true; res.textContent = '';
+            fetch('/.netlify/functions/proposta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessio: I.sessio }) })
+                .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); })
+                .then(function (r) {
+                    b.disabled = false;
+                    if (r.estat === 'identifica') { I = {}; desaI(); pinta(); aviso(t('Tu sesión ha caducado: vuelve a entrar')); return; }
+                    if (r.estat !== 'fet') { res.appendChild(el('p', { class: 'nota' }, t(r.estat === 'cap' ? 'Todavía no tienes propuesta. Cuando hablemos, la verás aquí.' : 'Ahora no llego a tu propuesta. Prueba en un rato.'))); return; }
+                    var p = r.proposta, taula = el('table', { class: 'prop-t' }), th = el('thead'), tr = el('tr'), tb = el('tbody'), tf = el('tfoot'), ft = el('tr');
+                    res.appendChild(el('h3', {}, p.titol));
+                    ['Qué incluye', 'Nivel', 'Horas', 'Importe'].map(function (x) { return t(x); }).forEach(function (x, k) { tr.appendChild(el('th', k > 1 ? { class: 'n' } : {}, x)); });
+                    th.appendChild(tr); taula.appendChild(th);
+                    p.linies.forEach(function (l) {
+                        var f = el('tr');
+                        f.appendChild(el('td', {}, l.que)); f.appendChild(el('td', {}, l.nivell ? t('Nivel {0}', l.nivell) : ''));
+                        f.appendChild(el('td', { class: 'n' }, l.hores != null ? String(l.hores).replace('.', ',') + ' h' : ''));
+                        f.appendChild(el('td', { class: 'n' }, l.import != null ? EUR(l.import) : '')); tb.appendChild(f);
+                    });
+                    taula.appendChild(tb);
+                    ft.appendChild(el('td', { colspan: '3' }, t(p.iva ? 'Total (IVA incluido)' : 'Total (sin IVA)'))); ft.appendChild(el('td', { class: 'n' }, EUR(p.total)));
+                    tf.appendChild(ft); taula.appendChild(tf); res.appendChild(taula);
+                    if (p.nota) res.appendChild(el('p', { class: 'ia-resum' }, p.nota));
+                    res.appendChild(el('p', { class: 'nota' }, t('Actualizada el {0}', p.actualitzada) + (p.valida ? ' · ' + t('válida hasta el {0}', p.valida) : '') + '. ' + t('Solo la ves tú.')));
+                })
+                .catch(function () { b.disabled = false; aviso(t('Ahora no llego a tu propuesta')); });
+        }
+        $('#cl-prop-veu').addEventListener('click', proposta);
+
+        fetch('/.netlify/functions/identitat').then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
+        fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
         pinta();
         return { resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();

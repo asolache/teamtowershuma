@@ -15,8 +15,10 @@
 
    El que no es negocia:
    · **Cap clau al client ni al repositori.** Netlify › Environment variables:
-       GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET · l'OAuth App de GitHub, amb
-         «Authorization callback URL» = https://<web>/.netlify/functions/identitat
+       CERVELL_GH_CLIENT_ID, CERVELL_GH_CLIENT_SECRET · la GitHub App del
+         cervell, amb una segona «Callback URL» = https://<web>/.netlify/functions/identitat
+         i «Email addresses: read» als permisos de compte. Si hi ha
+         GITHUB_CLIENT_ID/SECRET (una OAuth App a part), passen davant.
        IDENTITAT_SECRET · opcional (signatura.mjs)
    · **No guardem res aquí.** La sessió és del navegador; el que es compta
      (pule-mapa.mjs) va a Netlify Blobs amb l'empremta, no amb el correu. */
@@ -28,9 +30,17 @@ const json = (statusCode, o, extra) => ({ statusCode, headers: Object.assign({ '
 const ves = (on, galeta) => ({ statusCode: 302, headers: Object.assign({ Location: on, 'Cache-Control': 'no-store' }, galeta ? { 'Set-Cookie': galeta } : {}), body: '' });
 const CORREU = /^[^\s@<>"]{1,64}@[^\s@<>"]{1,190}\.[^\s@<>"]{2,24}$/;
 
+/* Una sola app de GitHub per a tot (DRY): la GitHub App del cervell
+   (cervell-github.mjs) amb una segona «Callback URL» cap a aquesta funció.
+   Aquí només llegim qui és i llencem el testimoni. */
+const gh = env => net(env.GITHUB_CLIENT_ID) && net(env.GITHUB_CLIENT_SECRET)
+  ? { id: net(env.GITHUB_CLIENT_ID), secret: net(env.GITHUB_CLIENT_SECRET) }
+  : { id: net(env.CERVELL_GH_CLIENT_ID), secret: net(env.CERVELL_GH_CLIENT_SECRET) };
+
 export function vies(env) {
   if (!secret(env)) return [];
-  return ['correu'].concat(net(env.GITHUB_CLIENT_ID) && net(env.GITHUB_CLIENT_SECRET) ? ['github'] : []);
+  const g = gh(env);
+  return ['correu'].concat(g.id && g.secret ? ['github'] : []);
 }
 const base = env => net(env.URL).replace(/\/+$/, '');
 const tornada = env => base(env) + '/.netlify/functions/identitat';
@@ -53,7 +63,7 @@ export function perCorreu(b, env) {
 export function aGithub(env, n = nonce(), ara = Date.now()) {
   if (!vies(env).includes('github') || !base(env)) return { estat: 'sense-config' };
   const state = signa({ n, exp: ara + 10 * 60 * 1000 }, secret(env));
-  const q = new URLSearchParams({ client_id: net(env.GITHUB_CLIENT_ID), redirect_uri: tornada(env), scope: 'read:user user:email', state, allow_signup: 'true' });
+  const q = new URLSearchParams({ client_id: gh(env).id, redirect_uri: tornada(env), scope: 'read:user user:email', state, allow_signup: 'true' });
   return { estat: 'ves', on: 'https://github.com/login/oauth/authorize?' + q, galeta: 'tt_oauth=' + n + '; Path=/.netlify/functions/identitat; Max-Age=600; HttpOnly; Secure; SameSite=Lax' };
 }
 
@@ -63,7 +73,7 @@ export async function deGithub(q, galetes, env, fetchFn = globalThis.fetch) {
   const st = llegeix(q.state, secret(env)), n = (/(?:^|;\s*)tt_oauth=([^;]+)/.exec(galetes || '') || [])[1];
   if (!st || !n || st.n !== n) return { estat: 'error', motiu: 'state' };
   const r = await fetchFn('https://github.com/login/oauth/access_token', { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ client_id: net(env.GITHUB_CLIENT_ID), client_secret: net(env.GITHUB_CLIENT_SECRET), code: net(q.code), redirect_uri: tornada(env) }) });
+    body: JSON.stringify({ client_id: gh(env).id, client_secret: gh(env).secret, code: net(q.code), redirect_uri: tornada(env) }) });
   const t = await r.json().catch(() => ({}));
   if (!t.access_token) return { estat: 'error', motiu: 'github: ' + (t.error || r.status) };
   const cap = { Authorization: 'Bearer ' + t.access_token, Accept: 'application/vnd.github+json', 'User-Agent': 'teamtowershuma-cliente' };

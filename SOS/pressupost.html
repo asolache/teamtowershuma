@@ -352,7 +352,7 @@ textarea{min-height:88px;resize:vertical}
 <p><strong data-i18n="pv.viu.n">Després · Sistema viu, cada mes</strong> · <span data-i18n="pv.viu.d">Mantenim les connexions i les millorem amb el que mesura el SOS. La quota es decideix amb els pilots.</span></p>
 <button type="button" class="btn" data-contracta="viu" data-i18n="pv.viu.cta">Avisa'm</button>
 </div>
-<p class="pv-flux" data-i18n-html="pv.flux"><strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell (35, 55 o 80 €/h) més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.</p>
+<p class="pv-flux" data-i18n-html="pv.flux"><strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell, al preu que diu la proposta, més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.</p>
 </section>
 
 <dialog class="cm" id="cm" aria-labelledby="cmH">
@@ -529,10 +529,10 @@ textarea{min-height:88px;resize:vertical}
 </div>
 
 <h3 style="font-size:.98rem;margin:1.6rem 0 .4rem" data-i18n="pr.hores.h">Si ho contracteu per hores</h3>
-<p class="sub" style="margin-bottom:.6rem" data-i18n-html="pr.hores.sub">Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.</p>
+<p class="sub" style="margin-bottom:.6rem" data-i18n-html="pr.hores.sub">Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell; el preu hora de cada nivell va a la proposta que et tornem. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.</p>
 <div class="taula-scroll">
 <table class="esc" id="escala">
-<thead><tr><th data-i18n="pr.esc.niv">Nivell</th><th data-i18n="pr.esc.preu">Preu hora</th><th data-i18n="pr.esc.hores">Hores</th><th style="text-align:right" data-i18n="pr.esc.sub">Subtotal</th></tr></thead>
+<thead><tr><th data-i18n="pr.esc.niv">Nivell</th><th data-i18n="pr.esc.hores">Hores</th></tr></thead>
 <tbody id="escBody"></tbody>
 </table>
 </div>
@@ -656,7 +656,7 @@ const ROL_NOM={'direccio':'Direcció general o gerència','persones':'Direcció 
 
 /*FORM-ESCALA*/
 // Generat per SOS/tools/build-formularis.js des del catàleg — no ho editis a mà.
-const NIVELLS=[{id:'N1',nom:'Practicant',nomEs:'Practicante',hora:35},{id:'N2',nom:'Gestor/a',nomEs:'Gestor/a',hora:55},{id:'N3',nom:'Mentor/a',nomEs:'Mentor/a',hora:80}];
+const NIVELLS=[{id:'N1',nom:'Practicant',nomEs:'Practicante'},{id:'N2',nom:'Gestor/a',nomEs:'Gestor/a'},{id:'N3',nom:'Mentor/a',nomEs:'Mentor/a'}];
 const PAQ_NOM={'diagnostic-teixit':{nom:'Diagnòstic del teixit local',nomEs:'Diagnóstico del tejido local'},'mapa-organitzacio':{nom:'Mapa de valor d\'una organització',nomEs:'Mapa de valor de una organización'},'fent-pinya-vna':{nom:'Fent pinya amb el mapa de valor',nomEs:'Haciendo piña con el mapa de valor'},'mapa-comarcal':{nom:'Mapa comarcal i assemblea federativa',nomEs:'Mapa comarcal y asamblea federativa'},'impacte':{nom:'Mesura d\'impacte i justificació',nomEs:'Medida de impacto y justificación'},'persones-cultura':{nom:'Diagnòstic de persones i cultura',nomEs:'Diagnóstico de personas y cultura'},'gestor':{nom:'Programa de Gestor/a',nomEs:'Programa de Gestor/a'},'equip-gestor':{nom:'Programa d\'equip gestor',nomEs:'Programa de equipo gestor'},'comunitats-practica':{nom:'Comunitats de pràctica',nomEs:'Comunidades de práctica'},'formacio-equips':{nom:'Formació d\'equips',nomEs:'Formación de equipos'},'escola':{nom:'La Fàbrica de Superherois',nomEs:'La Fábrica de Superhéroes'},'formar-formadors':{nom:'Formació de formadors',nomEs:'Formación de formadores'},'mentoria-directiva':{nom:'Mentoria per a equips directius',nomEs:'Mentoría para equipos directivos'},'comu-diada':{nom:'Comú-diada',nomEs:'Comú-diada'},'fent-pinya':{nom:'Taller de castells «Fent Pinya»',nomEs:'Taller de castells «Fent Pinya»'},'demos':{nom:'Demostració castellera',nomEs:'Demostración castellera'},'produccio':{nom:'Producció d\'esdeveniments',nomEs:'Producción de eventos'},'posar-en-marxa':{nom:'Posada en marxa d\'una dinàmica',nomEs:'Puesta en marcha de una dinámica'},'fluxos-ia':{nom:'Fluxos amb IA · consultoria i formació',nomEs:'Flujos con IA · consultoría y formación'},'web-ia':{nom:'Web o eina feta amb IA',nomEs:'Web o herramienta hecha con IA'},'transmedia':{nom:'Projecte transmèdia',nomEs:'Proyecto transmedia'},'implantacio':{nom:'Implantació i suport',nomEs:'Implantación y soporte'},'ia-amb-frens':{nom:'IA amb frens · sessió de viabilitat',nomEs:'IA con frenos · sesión de viabilidad'},'contractes':{nom:'Contractes intel·ligents · estudi de viabilitat',nomEs:'Contratos inteligentes · estudio de viabilidad'}};
 /*/FORM-ESCALA*/
 
@@ -750,18 +750,14 @@ $$('.pq-f').forEach(b=>b.onclick=()=>filtraPaquets(b.dataset.sec));
 NIVELLS.forEach(n=>{
   const tr=document.createElement('tr');
   tr.innerHTML='<td><strong>'+n.id+'</strong> · <span data-i18n-niv="'+n.id+'">'+n.nom+'</span></td>'+
-    '<td class="e-h">'+n.hora+' €/h</td>'+
-    '<td><input type="number" min="0" step="1" value="0" data-niv="'+n.id+'" data-hora="'+n.hora+'"></td>'+
-    '<td class="e-s" data-sub="'+n.id+'">0 €</td>';
+    '<td><input type="number" min="0" step="1" value="0" data-niv="'+n.id+'"></td>';
   $('#escBody').appendChild(tr);
 });
+/* Hores, no euros: el preu hora de cada nivell va a la proposta (l'Àlvar,
+   22/10/2026), i un total aquí seria publicar-lo. */
 function totalHores(){
   let t=0;
-  $$('#escBody input').forEach(i=>{
-    const h=Math.max(0,Number(i.value)||0), s=h*Number(i.dataset.hora);
-    t+=s;
-    $('[data-sub="'+i.dataset.niv+'"]').textContent=eur(s);
-  });
+  $$('#escBody input').forEach(i=>{ t+=Math.max(0,Number(i.value)||0); });
   return t;
 }
 $('#escBody').addEventListener('input',totalHores);
@@ -829,8 +825,8 @@ const tries=()=>$$('input[name="paquet"]:checked').map(c=>({
    dues. */
 function proposta(){
   const sel=tries(), horesT=totalHores();
-  const min=sel.filter(p=>!p.mida).reduce((a,p)=>a+p.min,0)+horesT;
-  const max=sel.filter(p=>!p.mida).reduce((a,p)=>a+p.max,0)+horesT;
+  const min=sel.filter(p=>!p.mida).reduce((a,p)=>a+p.min,0);
+  const max=sel.filter(p=>!p.mida).reduce((a,p)=>a+p.max,0);
   const mides=sel.filter(p=>p.mida);
   return {sel,mides,min,max,horesT};
 }
@@ -850,7 +846,7 @@ const cita=n=>/[«»]/.test(n)?n:'«'+n+'»';
 function pinta(P){
   /* Sense res amb xifra (tot per fluxos i cap hora), un «0 €» seria un preu
      inventat: es diu com es calcula. */
-  const senseXifra = P.horesT<=0 && P.sel.every(p=>p.mida);
+  const senseXifra = P.sel.every(p=>p.mida);
   $('#rTotal').textContent = senseXifra ? T('pr.r.total.fluxos') : P.min===P.max ? eur(P.min) : T('pr.r.de',{a:num(P.min),b:eur(P.max)});
   $('#rTotalD').textContent = P.mides.length
     ? T('pr.r.fora',{p:P.mides.map(p=>cita(p.nom)).join(' · ')})
@@ -872,7 +868,7 @@ function pinta(P){
       const h=Math.max(0,Number(i.value)||0); if(!h)return;
       const n=NIVELLS.find(x=>x.id===i.dataset.niv);
       const li=document.createElement('li');
-      li.innerHTML='<span>'+n.id+' · '+L(n)+' — '+h+' h × '+n.hora+' €/h</span><span>'+eur(h*n.hora)+'</span>';
+      li.innerHTML='<span>'+n.id+' · '+L(n)+'</span><span>'+h+' h</span>';
       $('#rHores').appendChild(li);
     });
   }
@@ -932,7 +928,7 @@ function resum(P){
     $$('#escBody input').forEach(i=>{
       const h=Math.max(0,Number(i.value)||0); if(!h)return;
       const n=NIVELLS.find(x=>x.id===i.dataset.niv);
-      L.push('· '+n.id+' '+n.nom+': '+h+' h × '+n.hora+' €/h = '+eurCa(h*n.hora));
+      L.push('· '+n.id+' '+n.nom+': '+h+' h');
     });
   }
   L.push('');
@@ -1046,7 +1042,7 @@ $('#bJson').onclick=()=>{
     persona:{nom:v('nom'),rol:v('rol'),carrec:v('carrec'),email:v('mail'),telefon:v('tel')},
     organitzacio:{tipus:st.org,sector:ORG_SECTOR[st.org]||'',nom:v('orgNom'),municipi:v('municipi'),comarca:v('comarca'),poblacio:v('poblacio')?Number(v('poblacio')):null},
     paquets:actual.sel.map(p=>({id:p.id,nom:p.nomCa,mida:p.mida,min:p.min||null,max:p.max||null})),
-    hores:$$('#escBody input').map(i=>({nivell:i.dataset.niv,hores:Number(i.value)||0,preuHora:Number(i.dataset.hora)})).filter(x=>x.hores>0),
+    hores:$$('#escBody input').map(i=>({nivell:i.dataset.niv,hores:Number(i.value)||0,preuHora:null})).filter(x=>x.hores>0),
     total:{min:actual.min,max:actual.max,iva:false},
     context:{repte:v('repte'),termini:$('#termini').value,diners:$('#diners').value,
       participants:v('participants')?Number(v('participants')):null,alcada:$('#alcada').value||null,lloc:v('lloc')}
@@ -1110,7 +1106,7 @@ ca: {
   'pv.viu.cta':'Avisa\'m',
   'pv.cta':'Contracta',
   'pv.iva':'+ IVA',
-  'pv.flux':'<strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell (35, 55 o 80 €/h) més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.',
+  'pv.flux':'<strong>A mida, per fluxos.</strong> Tot el que no és aquí es pressuposta per fluxos: les hores de cada nivell, al preu que diu la proposta, més el cost real de la IA, que et factura el proveïdor a nom teu. <a href="#amida">Fes-te el pressupost</a> · <a href="/conecta/">el cost de la IA, tasca per tasca</a>.',
   'pv.amida.h':'A mida, per fluxos',
   'pv.amida.sub':'Tria els paquets i en surt una proposta esborrany amb el desglossament a la vista. Te la pots endur encara que no ens l\'enviïs.',
   'pv.m.h':'Contracta',
@@ -1135,7 +1131,7 @@ ca: {
   'pr.s3.h':'3 · Què vols',
   'pr.s3.sub':'Marca\'n els que t\'interessin. Es poden combinar, i sovint el que en surt és millor que un de sol: el mateix mètode —mirar qui sosté què amb el <a href="vna.html">mapa de valor</a>, i després fer-ho passar— serveix per a un equip d\'empresa, per a un poble o per a una xarxa d\'entitats. El que canvia és la forma, no el fons.',
   'pr.s3.err':'Marca com a mínim un paquet.',
-  'pr.hores.sub':'Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell i el total es calcula sol. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.',
+  'pr.hores.sub':'Opcional, i pensat per a contractació pública de serveis professionals. Escriu les hores de cada nivell; el preu hora de cada nivell va a la proposta que et tornem. El que separa un nivell del següent és evidència registrada, no antiguitat — la <a href="../index.html#cost">portada ho explica sencer</a>.',
   'pr.s4.h':'4 · Com i quan',
   'pr.s4.sub':'Les tres coses que acaben de determinar el pressupost, i que una pàgina no pot endevinar.',
   'pr.seg':'Següent →',
@@ -1154,9 +1150,7 @@ ca: {
   'pr.diners.perveure':'Encara per veure',
   'pr.hores.h':'Si ho contracteu per hores',
   'pr.esc.niv':'Nivell',
-  'pr.esc.preu':'Preu hora',
   'pr.esc.hores':'Hores',
-  'pr.esc.sub':'Subtotal',
   'pr.prop.h':'Proposta esborrany',
   'pr.prop.total':'Total orientatiu · sense IVA',
   'pr.prop.triat':'El que has triat',
@@ -1354,7 +1348,7 @@ es: {
   'pv.viu.cta':'Avísame',
   'pv.cta':'Contrata',
   'pv.iva':'+ IVA',
-  'pv.flux':'<strong>A medida, por flujos.</strong> Todo lo que no está aquí se presupuesta por flujos: las horas de cada nivel (35, 55 u 80 €/h) más el coste real de la IA, que te factura el proveedor a tu nombre. <a href="#amida">Hazte el presupuesto</a> · <a href="/conecta/">el coste de la IA, tarea por tarea</a>.',
+  'pv.flux':'<strong>A medida, por flujos.</strong> Todo lo que no está aquí se presupuesta por flujos: las horas de cada nivel, al precio que dice la propuesta, más el coste real de la IA, que te factura el proveedor a tu nombre. <a href="#amida">Hazte el presupuesto</a> · <a href="/conecta/">el coste de la IA, tarea por tarea</a>.',
   'pv.amida.h':'A medida, por flujos',
   'pv.amida.sub':'Elige los paquetes y sale una propuesta borrador con el desglose a la vista. Te la puedes llevar aunque no nos la envíes.',
   'pv.m.h':'Contrata',
@@ -1379,7 +1373,7 @@ es: {
   'pr.s3.h':'3 · Qué quieres',
   'pr.s3.sub':'Marca los que te interesen. Se pueden combinar, y a menudo lo que sale es mejor que uno solo: el mismo método —mirar quién sostiene qué con el <a href="vna.html">mapa de valor</a>, y después hacerlo circular— sirve para un equipo de empresa, para un pueblo o para una red de entidades. Lo que cambia es la forma, no el fondo.',
   'pr.s3.err':'Marca como mínimo un paquete.',
-  'pr.hores.sub':'Opcional, y pensado para contratación pública de servicios profesionales. Escribe las horas de cada nivel y el total se calcula solo. Lo que separa un nivel del siguiente es evidencia registrada, no antigüedad — la <a href="../index.html#cost">portada lo explica entero</a>.',
+  'pr.hores.sub':'Opcional, y pensado para contratación pública de servicios profesionales. Escribe las horas de cada nivel; el precio hora de cada nivel va en la propuesta que te devolvemos. Lo que separa un nivel del siguiente es evidencia registrada, no antigüedad — la <a href="../index.html#cost">portada lo explica entero</a>.',
   'pr.s4.h':'4 · Cómo y cuándo',
   'pr.s4.sub':'Las tres cosas que acaban de determinar el presupuesto, y que una página no puede adivinar.',
   'pr.seg':'Siguiente →',
@@ -1398,9 +1392,7 @@ es: {
   'pr.diners.perveure':'Todavía por ver',
   'pr.hores.h':'Si lo contratáis por horas',
   'pr.esc.niv':'Nivel',
-  'pr.esc.preu':'Precio hora',
   'pr.esc.hores':'Horas',
-  'pr.esc.sub':'Subtotal',
   'pr.prop.h':'Propuesta borrador',
   'pr.prop.total':'Total orientativo · sin IVA',
   'pr.prop.triat':'Lo que has elegido',

@@ -185,6 +185,9 @@ console.log('\n══ /cliente/ · la IA ══');
             { tipo: 'quita', fila: 5, quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'tangible', porque: 'Es parte de tu equipo.' }] };
     r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ estat: 'fet', pas: c.pas, resultat: res, voltes: volta, queda: 100 - 8 * volta, usd: 0.04 * volta }) });
   });
+  let prop = 'cap';
+  await p.route('**/.netlify/functions/proposta', r => { pets.push(['prop', JSON.parse(r.request().postData())]);
+    r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(prop === 'cap' ? { estat: 'cap' } : { estat: 'fet', proposta: { titol: 'Mapa de valor + web', linies: [{ que: 'Sesión de mapa', nivell: 3, hores: 1.5, import: 120 }], total: 950, iva: false, nota: '', valida: '', actualitzada: '2026-10-22' } }) }); });
   await p.route('**/', r => { if (r.request().method() === 'POST') { enviat = r.request().postData(); r.fulfill({ status: 200, body: 'ok' }); } else r.continue(); });
   await p.goto(URL_);
   await p.waitForSelector('#cl-ia:not([hidden])', { timeout: 5000 });
@@ -236,6 +239,18 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.check('#cl-priv'); await p.click('#cl-envia');
   await p.waitForFunction(() => /Enviado/.test(document.getElementById('cl-envia-r').textContent), null, { timeout: 5000 });
   const iaL = new URLSearchParams(enviat).get("ia"); ok(/^3 vueltas · 0\.120 USD · correu$/.test(iaL), 'el lead lleva cuánto ha usado la IA (para la cuenta de valor, no para ella)');
+
+  /* Tu propuesta: los niveles sin cifras para todos; el precio, solo con su sesión (proposta.mjs). */
+  ok(!/\d\s*€|€\s*\d|€\/h/.test(await p.textContent('#propuesta')), 'la sección de niveles no lleva precios');
+  ok(!(await p.isVisible('#cl-prop [data-ia="qui"]')) && await p.isVisible('#cl-prop-veu'), 'con la sesión, «Ver mi propuesta» sin volver a identificarse');
+  await p.click('#cl-prop-veu');
+  await p.waitForSelector('#cl-prop-res .nota', { timeout: 5000 });
+  const pp = pets.filter(x => x[0] === 'prop');
+  ok(pp.length === 1 && pp[0][1].sessio === SES && /Todavía no tienes propuesta/.test(await p.textContent('#cl-prop-res')), 'sin propuesta, se lo dice; la pide con su sesión');
+  prop = 'fet'; await p.click('#cl-prop-veu');
+  await p.waitForSelector('#cl-prop-res .prop-t', { timeout: 5000 });
+  const tx = await p.textContent('#cl-prop-res');
+  ok(/Mapa de valor \+ web/.test(tx) && /Nivel 3/.test(tx) && /1,5 h/.test(tx) && /950,00 €/.test(tx) && /sin IVA/.test(tx) && /Solo la ves tú/.test(tx), 'con propuesta: lo que incluye, el nivel, las horas y su precio');
   const ample = await p.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   ok(ample[0] <= ample[1], 'sin desplazamiento horizontal');
   ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));

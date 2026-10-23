@@ -149,25 +149,23 @@ console.log('\n4 · El taller i les demos no publiquen preu, i diuen com es calc
   await ctx.close();
 }
 
-console.log('\n5 · L\'escala hi és amb els seus tres preus hora, i en castellà també');
+console.log('\n5 · L\'escala hi és amb els seus tres nivells, sense preu hora, i en castellà també');
 {
   const { ctx, p, errs } = await nova();
   const r = await p.evaluate(async () => {
-    const hores = () => [...document.querySelectorAll('.cm-taula .cm-h')].map(t => t.textContent.trim());
-    const ca = hores();
+    const nivells = () => [...document.querySelectorAll('.cm-taula tbody tr')].map(t => t.textContent.trim());
+    const ca = nivells();
     const acred = [...document.querySelectorAll('.cm-taula tbody td')].map(t => t.textContent.trim());
     const bes = document.querySelector('.lang-b[data-lang="es"]') ||
       [...document.querySelectorAll('.lang-b')].find(b => /es/i.test(b.textContent));
     if (bes) bes.click();
     await new Promise(r2 => setTimeout(r2, 60));
-    return { ca, es: hores(), acred, capcalera: document.querySelector('#cost h2').textContent };
+    return { ca, es: nivells(), acred, taula: document.querySelector('.cm-taula').textContent, capcalera: document.querySelector('#cost h2').textContent };
   });
-  ok(r.ca.length === 3 && r.ca.every(h => /\d+ €\/h/.test(h)),
-    'tres nivells, tots amb el seu preu hora');
-  ok(new Set(r.ca).size === 3, 'i els tres són diferents: una escala amb dos preus iguals no és una escala');
+  ok(r.ca.length === 3 && !/€/.test(r.taula), 'tres nivells, i cap preu hora: va a la proposta de cada client');
   ok(r.acred.some(t => /registr|evid[èe]nci/i.test(t)),
     'l\'acreditació de cada nivell es diu, i és evidència registrada');
-  ok(r.es.join() === r.ca.join(), 'el preu hora no canvia amb l\'idioma');
+  ok(r.es.length === r.ca.length, 'els mateixos nivells en les dues llengües');
   ok(!/D'on surt/.test(r.capcalera), 'i la capçalera sí que es tradueix');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
