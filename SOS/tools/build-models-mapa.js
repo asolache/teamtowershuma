@@ -646,8 +646,56 @@ function automatitza(que, mena, llengua) {
 }
 
 /* El rol on passa més: el centre del mapa, el que a /cliente/ passa a ser «tu». */
+/* ══ LES VEDES DE SECTOR (23/10/2026) ════════════════════════════════════
+   «Veda» vol dir veritat. Les del codex són les que hem après dels errors (per
+   aquí no és); aquestes són les veritats de cada àmbit: com flueix el valor en
+   un projecte d'aquest tipus quan funciona. Una per model, a
+   `knowledge/vna/sectors/<id>.md`, demanades per l'Àlvar perquè el sistema
+   comenci amb una base excel·lent i ensenyi el camí al client.
+
+   El text el escriu una persona; el mapa de referència de cada veda el genera
+   aquí, entre `<!--TT-MAPA-->` i `<!--/TT-MAPA-->`, des del mateix model que
+   fa servir /cliente/: cap còpia. I de la veda tornen a la llibreria «com es
+   pregunta» i «el que sol faltar», que la IA de /cliente/ fa servir. */
+const VEDES = join(ARREL, 'knowledge', 'vna', 'sectors');
+const SECCIONS = ['Els intangibles que ja se saben', 'El que sol faltar', 'Com es pregunta a la sessió', 'Senyals que la xarxa està sana'];
+const vinyetes = (t, titol) => {
+  const i = t.indexOf('## ' + titol + '\n'); if (i < 0) return null;
+  const tros = t.slice(i + titol.length + 4).split(/\n## /)[0];
+  return tros.split('\n').filter(l => /^- /.test(l)).map(l => l.slice(2).trim());
+};
+function llegeixVeda(id, falten) {
+  const f = join(VEDES, id + '.md');
+  if (!existsSync(f)) { falten.add('la veda knowledge/vna/sectors/' + id + '.md'); return null; }
+  const t = readFileSync(f, 'utf8');
+  if (t.indexOf('<!--TT-MAPA-->') < 0 || t.indexOf('<!--/TT-MAPA-->') < 0) falten.add(id + '.md: les marques <!--TT-MAPA--> … <!--/TT-MAPA-->');
+  SECCIONS.forEach(s => { const v = vinyetes(t, s); if (!v || !v.length) falten.add(id + '.md: la secció «' + s + '» amb una llista'); });
+  return { clau: vinyetes(t, 'Els intangibles que ja se saben') || [], preguntes: vinyetes(t, 'Com es pregunta a la sessió') || [], falta: vinyetes(t, 'El que sol faltar') || [] };
+}
+const MENA_CA = { tangible: 'es paga', intangible: 'no es paga' };
+const QUI_CA = { maquina: '⚙ la prepara la màquina, la revisa una persona', persona: 'una persona', visita: 'es decideix a la sessió' };
+function blocVeda(MM, M) {
+  const m = M.ca, c = MM.centre(m), l = ['', '## El mapa de referència', '',
+    `**Qui fa de «tu».** ${c}: qui promou el projecte. ${m.roles.length} rols i ${m.pairs.length} relacions.`, '',
+    '| Qui dona | A qui | Què | | Qui ho fa |', '|---|---|---|---|---|'];
+  const fila = (de, a, que, mena) => l.push(`| ${de} | ${a} | ${que} | ${MENA_CA[mena] || mena} | ${QUI_CA[MM.automatitza(que, mena, 'ca').qui]} |`);
+  m.pairs.forEach(p => { if (p[3]) fila(p[0], p[1], p[3], p[2]); if (p[5]) fila(p[1], p[0], p[5], p[4]); });
+  l.push('', `**La bona pràctica.** ${m.bona}`);
+  if ((m.passos || []).length) l.push('', `**Per posar-ho en marxa.** ${m.passos.join(' → ')}.`);
+  l.push('', '_Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l\'app. No s\'edita a mà._', '');
+  return l.join('\n');
+}
+function vedesAra(MM) {
+  return MM.MODELS.concat(MM.SECTORS).map(M => {
+    const f = join(VEDES, M.id + '.md'), t = readFileSync(f, 'utf8');
+    const a = t.indexOf('<!--TT-MAPA-->') + '<!--TT-MAPA-->'.length, b = t.indexOf('<!--/TT-MAPA-->');
+    return { f, abans: t, ara: t.slice(0, a) + blocVeda(MM, M) + t.slice(b) };
+  });
+}
+
 function genera() {
   const { out, sectors, falten } = models();
+  out.concat(sectors).forEach(M => { const v = llegeixVeda(M.id, falten); if (v) M.veda = v; });
   const R = regla();
   const cos = '/* GENERAT per SOS/tools/build-models-mapa.js des de SOS/index.html (DYNAMICS «negoci»,\n'
     + '   PROTOTYPE_MAPS i CRITICAL_ACTIVITIES de la Matriu) · no s\'edita a mà. Els mapes tipus del SOS en\n'
@@ -667,7 +715,7 @@ function genera() {
     + '  function mapa(id, llengua, casa) {\n'
     + '    var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
     + '    var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };\n'
-    + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || \'\' };\n'
+    + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || \'\', veda: M.veda || null };\n'
     + '  }\n'
     + '  /* Quin model o sector s\'assembla més al que algú explica amb les seves paraules.\n'
     + '     Sense IA: arrels curtes (sense accents ni plural); el nom i el «diu» compten doble i\n'
@@ -726,5 +774,13 @@ if (require.main === module) {
     if (ara !== cos) { console.error('✗ SOS/lib/models-mapa.js no és el que sortiria ara: node SOS/tools/build-models-mapa.js'); process.exit(1); }
     console.log('✓ Els mapes tipus de l\'app i els sectors de la Matriu, al dia i traduïts');
   } else { writeFileSync(SORTIDA, cos); console.log('Escrit ' + SORTIDA); }
+  {
+    const MM = Function('module', cos + ';return module.exports')({ exports: {} }), vs = vedesAra(MM);
+    if (process.argv.includes('--check')) {
+      const velles = vs.filter(v => v.abans !== v.ara).map(v => v.f.replace(ARREL + '/', ''));
+      if (velles.length) { console.error('✗ Vedes amb el mapa de referència desfasat: ' + velles.join(', ') + ' · node SOS/tools/build-models-mapa.js'); process.exit(1); }
+      console.log('✓ Les ' + vs.length + ' vedes de sector porten el mapa del seu model');
+    } else vs.forEach(v => { if (v.abans !== v.ara) writeFileSync(v.f, v.ara); });
+  }
 }
 module.exports = { genera, models };

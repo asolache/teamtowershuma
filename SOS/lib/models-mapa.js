@@ -207,6 +207,22 @@
        "recognition"
       ]
      ]
+    },
+    "veda": {
+     "clau": [
+      "**Qui et recomana → el negoci: clients nous i confiança.** És el canal més barat i el que més dura; si no és al mapa, ningú el cuida.",
+      "**Equip → clients: tracte i consell.** El que fa tornar un client és com se l'ha tractat, no el producte sol.",
+      "**Clients → el negoci: opinió.** Sense aquest retorn, el negoci decideix a cegues."
+     ],
+     "preguntes": [
+      "D'on va venir el teu últim client bo? Qui te'l va enviar?",
+      "Què et diuen els clients quan alguna cosa no els agrada, i a qui li ho diuen?",
+      "Què rep el teu equip, a més del sou, que el fa quedar-se?"
+     ],
+     "falta": [
+      "Qui recomana: gairebé mai es dibuixa i és qui porta la meitat dels clients nous.",
+      "El que torna a l'equip a més del sou: reconeixement, aprenentatge, veu en les decisions."
+     ]
     }
    },
    {
@@ -464,6 +480,22 @@
        "intangible",
        "criteria and good practice"
       ]
+     ]
+    },
+    "veda": {
+     "clau": [
+      "**Qui ho recomana al barri → nucli gestor: persones noves que confien.** Un servei de proximitat viu del boca-orella.",
+      "**Persones usuàries ↔ persones oferents: confiança.** Sense confiança, la relació no es repeteix.",
+      "**Referent territorial → nucli gestor: legitimitat.** Obre portes que el servei sol no obre."
+     ],
+     "preguntes": [
+      "Com t'ha trobat la darrera persona que ha fet servir el servei?",
+      "Qui al barri parla bé de vosaltres sense que li ho demaneu?",
+      "Què fa que una persona torni a fer servir el servei?"
+     ],
+     "falta": [
+      "El retorn a qui ofereix el servei: reconeixement i continuïtat, no només pagament.",
+      "Qui fa de pont amb el barri (l'escola, la farmàcia, l'associació)."
      ]
     }
    },
@@ -723,6 +755,22 @@
        "offcuts and practice materials"
       ]
      ]
+    },
+    "veda": {
+     "clau": [
+      "**Qui ho explica → artesans: relat i visibilitat.** L'ofici es ven pel relat de com es fa.",
+      "**Proveïdors locals ↔ artesans: matèria i compromís.** La qualitat comença abans del taller.",
+      "**Comunitat i formació → artesans: relleu.** Sense aprenents, l'ofici s'acaba amb qui el fa."
+     ],
+     "preguntes": [
+      "Qui explica la teva feina quan tu no hi ets?",
+      "Què et donen els teus proveïdors a més del material?",
+      "Qui aprèn de tu, i què et torna?"
+     ],
+     "falta": [
+      "Qui explica l'ofici fora del taller (premsa, xarxes, botigues que en parlen).",
+      "El retorn a la comunitat que t'ha format o et forma."
+     ]
     }
    },
    {
@@ -980,6 +1028,22 @@
        "intangible",
        "market validation"
       ]
+     ]
+    },
+    "veda": {
+     "clau": [
+      "**Antics clients → consultors: referències i casos.** El següent encàrrec arriba per un cas que ha funcionat.",
+      "**Xarxa de partners ↔ consultors: encàrrecs i coneixement.** Ningú cobreix tot sol tots els fronts.",
+      "**Clients → consultors: el problema ben explicat.** Un encàrrec mal dit és un projecte que es torça."
+     ],
+     "preguntes": [
+      "Quin client antic et recomanaria avui sense dubtar? Quan hi vas parlar per última vegada?",
+      "Amb qui comparteixes encàrrecs, i què et dona a part dels diners?",
+      "Què aprèn l'equip de cada projecte, i on queda escrit?"
+     ],
+     "falta": [
+      "El seguiment de qui ja ha estat client: és qui més recomana i qui menys es cuida.",
+      "El coneixement que torna de cada projecte a l'equip."
      ]
     }
    },
@@ -1239,6 +1303,22 @@
        "grassroots priorities"
       ]
      ]
+    },
+    "veda": {
+     "clau": [
+      "**Qui ho recomana → equip de producte: usuaris nous i ressenyes.** El creixement orgànic és el que dura.",
+      "**Comunitat contributora → equip: millores i suport entre usuaris.** Fa el producte millor que l'equip sol.",
+      "**Usuaris → equip: ús i opinions.** Sense això, es construeix el que ningú demana."
+     ],
+     "preguntes": [
+      "Per què el recomana qui el recomana?",
+      "Qui respon les preguntes dels usuaris a part de vosaltres?",
+      "Què reben a canvi les persones que contribueixen?"
+     ],
+     "falta": [
+      "El reconeixement a qui contribueix: accés anticipat, nom als crèdits, veu en el que es fa.",
+      "Qui ho recomana i per què."
+     ]
     }
    },
    {
@@ -1496,6 +1576,22 @@
        "intangible",
        "cover and respite"
       ]
+     ]
+    },
+    "veda": {
+     "clau": [
+      "**Xarxa veïnal → persones cuidadores: avisos i suport.** Arriba abans que cap servei.",
+      "**Famílies ↔ persones cuidadores: informació i confiança.** Sense, la cura es fa a mitges.",
+      "**Serveis socials / CAP ↔ cuidadores: derivació i criteri.** Cadascú fa el que li toca."
+     ],
+     "preguntes": [
+      "Qui s'adona primer que una persona necessita ajuda?",
+      "Qui cuida les persones cuidadores?",
+      "Com us passeu la informació amb el CAP o els serveis socials?"
+     ],
+     "falta": [
+      "La cura de qui cuida: descans, formació, reconeixement.",
+      "El veïnat com a part de la xarxa, no com a espectador."
      ]
     }
    },
@@ -1755,6 +1851,22 @@
        "training that fits"
       ]
      ]
+    },
+    "veda": {
+     "clau": [
+      "**Antics alumnes → formadors: recomanacions i testimonis.** La millor porta d'entrada.",
+      "**Comunitat de pràctica ↔ formadors: casos i actualització.** Manté viu el que s'ensenya.",
+      "**Aprenents → formadors: el que no s'ha entès.** Sense, el curs no millora."
+     ],
+     "preguntes": [
+      "Què passa amb els alumnes quan acaben? Hi seguiu en contacte?",
+      "Qui contracta o acull els que acaben, i què us diu d'ells?",
+      "On recolliu el que els alumnes no han entès?"
+     ],
+     "falta": [
+      "La comunitat d'antics alumnes: ofertes de feina, trobades, el contacte després del curs.",
+      "Qui contracta els que acaben: el sentit del curs per a molts."
+     ]
     }
    }
   ];
@@ -1937,6 +2049,22 @@
      ],
      "centre": "Asociación de comerciantes",
      "bona": "El comercio de proximidad gana cuando el barrio está: las entidades traen público y el trato crea fidelidad."
+    },
+    "veda": {
+     "clau": [
+      "**Consumidors → comerços: fidelitat i boca-orella.** És el que el comerç gran no pot comprar.",
+      "**Entitats del barri → associació: activitats i públic.** Les campanyes que funcionen són del barri.",
+      "**Ajuntament ↔ associació: suport i interlocució.** Un sol interlocutor fa més fàcil tot."
+     ],
+     "preguntes": [
+      "Què fa que un veí compri aquí i no fora?",
+      "Quines entitats del barri podrien fer una activitat amb els comerços?",
+      "Qui parla amb l'ajuntament en nom de tots?"
+     ],
+     "falta": [
+      "Les entitats del barri a les campanyes, no només els comerços.",
+      "El retorn al consumidor fidel: tracte, avantatges, sentir-se part."
+     ]
     }
    },
    {
@@ -2132,6 +2260,22 @@
      ],
      "centre": "Servicio de empleo",
      "bona": "La inserción no acaba con el contrato: quien ya trabaja hace de referente y dice qué ha funcionado."
+    },
+    "veda": {
+     "clau": [
+      "**Persones ja contractades → persones en cerca: referents i consells.** Fa més creïble l'itinerari que cap fullet.",
+      "**Empreses locals → servei d'ocupació: perfils que necessiten.** Sense, es forma per a feines que no hi són.",
+      "**Servei d'ocupació → persones contractades: acompanyament posterior.** La inserció no acaba amb el contracte."
+     ],
+     "preguntes": [
+      "Què ha passat amb les persones que van trobar feina l'any passat?",
+      "Què necessiten de debò les empreses del territori, dit per elles?",
+      "Qui pot fer de referent per a qui comença?"
+     ],
+     "falta": [
+      "El seguiment després del contracte i el retorn de com ha anat.",
+      "Les empreses com a part que també rep: candidatures ajustades, no només subvenció."
+     ]
     }
    },
    {
@@ -2299,6 +2443,22 @@
      ],
      "centre": "Grupo motor",
      "bona": "Un proyecto de vivienda arraiga si abre sus espacios al vecindario: el apoyo del entorno también es valor."
+    },
+    "veda": {
+     "clau": [
+      "**Veïnat de l'entorn → grup motor: acollida i suport.** Un projecte que no s'arrela es queda en un edifici.",
+      "**Finançament ètic ↔ cooperativa: crèdit i confiança.** Sense, el projecte no arrenca.",
+      "**Unitats de convivència ↔ cooperativa: cura dels espais i normes.** La convivència és el producte."
+     ],
+     "preguntes": [
+      "Què ofereix el projecte al barri on s'instal·la?",
+      "Com es prenen les decisions de convivència, i qui les cuida?",
+      "Qui us dona confiança davant del finançament?"
+     ],
+     "falta": [
+      "L'obertura al veïnat: espais comuns oberts, activitats.",
+      "La cura de la convivència després de l'obra."
+     ]
     }
    },
    {
@@ -2466,6 +2626,22 @@
      ],
      "centre": "Núcleo promotor",
      "bona": "Ninguna comunidad energética empieza de cero: compartir errores y datos con las demás ahorra meses."
+    },
+    "veda": {
+     "clau": [
+      "**Altres comunitats energètiques → nucli promotor: experiència.** Estalvia mesos i errors.",
+      "**Sòcies consumidores ↔ nucli: compromís i informació clara.** Sense, la comunitat és només una factura.",
+      "**Ajuntament → nucli: teulades i tràmits.** L'espai i el permís són el coll d'ampolla."
+     ],
+     "preguntes": [
+      "Quina altra comunitat energètica coneixeu, i què us ha explicat?",
+      "Què saben les sòcies del que passa a la instal·lació?",
+      "Qui té la teulada, i què hi guanya?"
+     ],
+     "falta": [
+      "L'intercanvi amb altres comunitats.",
+      "La informació a les sòcies: què produeix, què estalvia, què decideixen."
+     ]
     }
    },
    {
@@ -2663,6 +2839,22 @@
      ],
      "centre": "Campesinado local",
      "bona": "El campesinado aguanta con compra estable y confianza: los comedores dan volumen y las visitas, vínculo."
+    },
+    "veda": {
+     "clau": [
+      "**Escoles i menjadors → pagesia: comandes regulars.** Donen volum estable.",
+      "**Pagesia → grup de consum: saber de temporada.** Educa el consum.",
+      "**Consumidors → pagesia: fidelitat i suggeriments.** Sense, el projecte depèn de l'entusiasme."
+     ],
+     "preguntes": [
+      "Quina compra és prou estable perquè la pagesia planifiqui?",
+      "Què sap el grup de consum de com es cultiva el que menja?",
+      "Què passa quan una setmana falta producte?"
+     ],
+     "falta": [
+      "La compra estable (menjadors, restauració) que fa viable la pagesia.",
+      "El coneixement de la pagesia cap a qui menja."
+     ]
     }
    },
    {
@@ -2826,6 +3018,22 @@
      ],
      "centre": "Núcleo de cuidado",
      "bona": "Quien ve cada día a las personas mayores (la farmacia, el horno) es quien avisa primero: cuenta con ello."
+    },
+    "veda": {
+     "clau": [
+      "**Comerços del barri → nucli de cura: avisos.** Qui veu cada dia la gent gran avisa primer.",
+      "**Voluntariat ↔ nucli: temps i formació.** La qualitat de la cura ve de la formació.",
+      "**CAP / serveis socials ↔ nucli: coordinació.** Evita duplicar i deixar forats."
+     ],
+     "preguntes": [
+      "Qui veu cada dia les persones grans que viuen soles?",
+      "Com es forma i es cuida el voluntariat?",
+      "Com us coordineu amb el CAP?"
+     ],
+     "falta": [
+      "Els comerços i els veïns com a detectors.",
+      "La cura del voluntariat."
+     ]
     }
    },
    {
@@ -2989,6 +3197,22 @@
      ],
      "centre": "Entidades culturales",
      "bona": "El público fiel es el que llena y difunde: hazlo sentir parte de la programación."
+    },
+    "veda": {
+     "clau": [
+      "**Públic fidel → entitats: assistència i difusió.** Omple i porta gent nova.",
+      "**Artistes ↔ entitats: programació i espai.** Sense, la cultura és importada.",
+      "**Escoles ↔ entitats: relleu i públic de demà.** Assegura la continuïtat."
+     ],
+     "preguntes": [
+      "Qui ve sempre, i què li agradaria proposar?",
+      "Quins artistes locals no han tingut mai espai?",
+      "Què fan les escoles amb la festa i el patrimoni?"
+     ],
+     "falta": [
+      "El públic com a part que decideix.",
+      "Les escoles com a pedrera de públic i d'entitats."
+     ]
     }
    },
    {
@@ -3184,6 +3408,22 @@
      ],
      "centre": "Ente de destino",
      "bona": "Un destino es una red, no una suma de empresas: alguien tiene que coser el relato común y compartir sus datos."
+    },
+    "veda": {
+     "clau": [
+      "**Ens de destinació → allotjaments i productors: relat comú.** Una destinació és una xarxa.",
+      "**Productors → restauració: producte km0.** Fa la diferència que el visitant recorda.",
+      "**Allotjaments → ens de destinació: dades de visitants.** Sense, la promoció és a cegues."
+     ],
+     "preguntes": [
+      "Qui explica el territori de la mateixa manera a tots els visitants?",
+      "Què compra el visitant que s'ha fet aquí?",
+      "Què en treu el veïnat que no viu del turisme?"
+     ],
+     "falta": [
+      "Qui cus el relat comú i comparteix dades.",
+      "El retorn al territori: veïnat, productors, paisatge."
+     ]
     }
    },
    {
@@ -3379,6 +3619,22 @@
      ],
      "centre": "Núcleo gestor",
      "bona": "La economía circular es sobre todo saber compartido: quien enseña a reparar multiplica lo que se salva."
+    },
+    "veda": {
+     "clau": [
+      "**Persones reparadores → veïnat: saber reparar.** Multiplica el que se salva.",
+      "**Comerços → nucli: excedents i estocs.** Evita residus abans que n'hi hagi.",
+      "**Ajuntament ↔ nucli: espai i dades de residus evitats.** Legitima el projecte."
+     ],
+     "preguntes": [
+      "Qui sap reparar al barri, i ho ensenyaria?",
+      "Què llencen els comerços que algú podria fer servir?",
+      "Com expliqueu el que heu evitat llençar?"
+     ],
+     "falta": [
+      "L'aprenentatge: no només reparar, sinó ensenyar a reparar.",
+      "El boca-orella entre veïns i comerços."
+     ]
     }
    },
    {
@@ -3558,6 +3814,22 @@
      ],
      "centre": "Núcleo técnico",
      "bona": "La brecha digital se cierra de persona a persona: las mentoras hacen lo que ningún curso hace."
+    },
+    "veda": {
+     "clau": [
+      "**Persones mentores → veïnat: acompanyament pas a pas.** La bretxa es tanca de persona a persona.",
+      "**Nucli tècnic → entitats: eines sobiranes.** Autonomia, no dependència.",
+      "**Formadors ↔ nucli: continguts i casos.** El que s'ensenya serveix."
+     ],
+     "preguntes": [
+      "Qui ajuda avui els veïns amb el mòbil i els tràmits?",
+      "Què passa amb una eina quan el curs s'acaba?",
+      "Qui manté les eines de les entitats?"
+     ],
+     "falta": [
+      "Les mentores i el seu reconeixement.",
+      "El manteniment comunitari després del curs."
+     ]
     }
    },
    {
@@ -3737,6 +4009,22 @@
      ],
      "centre": "Esplai / entidades",
      "bona": "Con la juventud, las familias deciden mucho: si confían, el proyecto crece."
+    },
+    "veda": {
+     "clau": [
+      "**Famílies → esplai: confiança i permís.** Sense, el jovent no hi va.",
+      "**Jovent → esplai: idees i lideratge.** El projecte és seu o no és.",
+      "**Escoles ↔ esplai: difusió i continuïtat.** Arriba a qui no ve sol."
+     ],
+     "preguntes": [
+      "Quines decisions pren el jovent?",
+      "Qui era participant i ara és monitor?",
+      "Què necessiten les famílies per confiar?"
+     ],
+     "falta": [
+      "La veu del jovent en les decisions.",
+      "El relleu: qui passa de participant a monitor."
+     ]
     }
    },
    {
@@ -3932,6 +4220,22 @@
      ],
      "centre": "Plataforma de movilidad",
      "bona": "La movilidad cambia cuando el vecindario aporta datos del día a día: alguien tiene que recogerlos y llevarlos a quien decide."
+    },
+    "veda": {
+     "clau": [
+      "**Plataforma → ajuntament: diagnosi ciutadana.** Decidir amb dades del dia a dia.",
+      "**Veïnat → plataforma: participació i dades d'ús.** Sense, els canvis no s'entenen.",
+      "**Escoles ↔ plataforma: camins escolars.** El primer canvi visible."
+     ],
+     "preguntes": [
+      "On us sentiu insegurs anant a peu o en bici?",
+      "Qui recull el que diu el veïnat i ho porta a l'ajuntament?",
+      "Per on van les criatures a l'escola?"
+     ],
+     "falta": [
+      "Qui recull les dades i les porta a qui decideix.",
+      "Les escoles com a motor del canvi."
+     ]
     }
    },
    {
@@ -4111,6 +4415,22 @@
      ],
      "centre": "Entidades de acogida",
      "bona": "Acoger es hacer red: una persona del vecindario que acompaña abre más puertas que ningún trámite."
+    },
+    "veda": {
+     "clau": [
+      "**Persones mentores del veïnat → nouvinguts: llengua i xarxa.** Obre més portes que cap tràmit.",
+      "**Entitats d'acollida ↔ ajuntament: recursos i coordinació.** Ningú queda entre dues finestretes.",
+      "**Nouvinguts → veïnat: cultura i amistat.** La integració va en dos sentits."
+     ],
+     "preguntes": [
+      "Qui acompanya una persona el primer mes?",
+      "Què aporten els nouvinguts al barri?",
+      "On es troben veïns i nouvinguts sense un tràmit pel mig?"
+     ],
+     "falta": [
+      "El que aporten els nouvinguts, no només el que reben.",
+      "Les mentories veïnals."
+     ]
     }
    },
    {
@@ -4274,6 +4594,22 @@
      ],
      "centre": "Custodia / entidad",
      "bona": "Custodiar el territorio es cosa de generaciones: las escuelas de hoy son el voluntariado de mañana."
+    },
+    "veda": {
+     "clau": [
+      "**Escoles i famílies → custòdia: el voluntariat de demà.** Custodiar és cosa de generacions.",
+      "**Propietaris ↔ custòdia: acords i confiança.** Sense, no hi ha terreny on actuar.",
+      "**Pagesia ↔ custòdia: gestió del paisatge.** La pagesia és qui el manté cada dia."
+     ],
+     "preguntes": [
+      "Què guanya el propietari amb l'acord de custòdia?",
+      "Com hi participa la pagesia?",
+      "Quines escoles hi vénen, i tornen?"
+     ],
+     "falta": [
+      "La pagesia com a aliada, no com a obstacle.",
+      "L'educació ambiental amb escoles."
+     ]
     }
    }
   ];
@@ -4284,7 +4620,7 @@
   function mapa(id, llengua, casa) {
     var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;
     var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };
-    return { abast: '', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || '' };
+    return { abast: '', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || '', veda: M.veda || null };
   }
   /* Quin model o sector s'assembla més al que algú explica amb les seves paraules.
      Sense IA: arrels curtes (sense accents ni plural); el nom i el «diu» compten doble i

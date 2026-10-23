@@ -72,6 +72,17 @@ llegeix els sectors de l'app i els escriu a `SOS/lib/models-mapa.js` com a
 ofereix («O por sector») amb el mateix botó. Cap còpia: si la Matriu canvia,
 el `--check` del CI ho diu.
 
+**Fet també (23/10/2026):**
+
+- **Vedes de sector** a `SOS/knowledge/vna/sectors/` (21, una per model): el que
+  ja se sap del flux de valor de cada sector. El mapa de referència el genera
+  `build-models-mapa.js` (cap còpia) i marca qui ho fa segons la regla del
+  tauler; la resta s'escriu a mà. Viatgen amb el model a /cliente/ i la IA les
+  fa servir de base, i busca a part els intangibles propis de cada marca (el
+  que la diferencia). Amb capçalera de la taxonomia universal, en esborrany fins
+  que una persona les revisi. Pendent: ensenyar-les també a la pantalla en
+  castellà (avui el text és en català).
+
 **Fet també (22/10/2026, vespre):**
 
 - **Auditoria dels 21 models.** Cap no passava les regles que ensenya

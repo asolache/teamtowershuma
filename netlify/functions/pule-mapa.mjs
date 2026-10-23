@@ -57,6 +57,7 @@ export function topeDe(qui, c) {
 
 /* ─── Les dades que arriben, netes i curtes ─── */
 const t = (v, n) => net(v).replace(/\s+/g, ' ').slice(0, n || 400);
+const llista = (v, k) => (v && typeof v === 'object' && Array.isArray(v[k]) ? v[k] : []).slice(0, 6).map(s => t(String(s).replace(/\*\*/g, ''), 240)).filter(Boolean);
 const mena = v => (v === 'intangible' ? 'intangible' : 'tangible');
 export function neteja(d) {
   const x = d && typeof d === 'object' ? d : {};
@@ -68,7 +69,9 @@ export function neteja(d) {
     llengua: x.llengua === 'ca' ? 'ca' : 'es',
     /* El model del SOS que hi encaixa (models-mapa.js): la referència de bones pràctiques. */
     model: x.model && typeof x.model === 'object' && Array.isArray(x.model.pairs) ? { nom: t(x.model.nom, 80), bona: t(x.model.bona, 300),
-      pairs: x.model.pairs.slice(0, 20).filter(Array.isArray).map(p => [t(p[0], 80), t(p[1], 80), mena(p[2]), t(p[3], 120), mena(p[4]), t(p[5], 120)]).filter(p => p[0] && p[1]) } : null,
+      pairs: x.model.pairs.slice(0, 20).filter(Array.isArray).map(p => [t(p[0], 80), t(p[1], 80), mena(p[2]), t(p[3], 120), mena(p[4]), t(p[5], 120)]).filter(p => p[0] && p[1]),
+      /* La veda del sector (knowledge/vna/sectors/): el que ja se sap, el que sol faltar i com es pregunta. */
+      veda: llista(x.model.veda, 'clau'), falta: llista(x.model.veda, 'falta'), preguntes: llista(x.model.veda, 'preguntes') } : null,
     nivel: t(x.nivel, 60), capes: (Array.isArray(x.capes) ? x.capes : []).filter(c => c === 'extranet' || c === 'intranet')
   };
 }
@@ -85,6 +88,9 @@ export function text(d) {
     l.push('', 'Proyectos como el suyo (modelo «' + d.model.nom + '»; buenas prácticas, no son sus datos):');
     d.model.pairs.forEach(p => l.push('· ' + p[0] + ' → ' + p[1] + ': ' + (p[3] || '—') + ' (' + MENA[p[2]] + ') · vuelve: ' + (p[5] || '—') + ' (' + MENA[p[4]] + ')'));
     if (d.model.bona) l.push('Buena práctica: ' + d.model.bona);
+    if (d.model.veda.length) l.push('Lo que no se paga y ya se sabe que el sector necesita (la base, no lo que la diferencia):', ...d.model.veda.map(s => '· ' + s));
+    if (d.model.falta.length) l.push('Lo que suele faltar en proyectos así:', ...d.model.falta.map(s => '· ' + s));
+    if (d.model.preguntes.length) l.push('Preguntas que suelen ayudar:', ...d.model.preguntes.map(s => '· ' + s));
   }
   if (d.nivel || d.capes.length) l.push('', 'Web que pide: ' + [d.nivel, d.capes.length ? 'con ' + d.capes.join(' y ') : 'solo la parte pública'].filter(Boolean).join(', '));
   if (d.nota) l.push('', 'Lo que ha contestado a tu última pregunta: ' + d.nota);
@@ -102,12 +108,13 @@ const SISTEMA = [
 /* /cliente/ també és en català (22/10/2026): la mateixa casa, i la resposta en la llengua de la pàgina. */
 export const sistema = ll => SISTEMA + (ll === 'ca' ? '\nEsta persona usa la página en catalán: escribe todo lo que devuelves (resumen, pregunta, propuestas, textos de la web) en catalán, natural y de tú.' : '');
 
-const PAS = {
+export const PAS = {
   mapa: ['Mira su dibujo y propón hasta seis mejoras, las que más le ayuden ahora, de mayor a menor:',
     '· «nuevo»: alguien que falta y suele estar en proyectos como el suyo (fila = -1).',
     '· «cambia»: una fila existente (su número en fila) dicha más clara, o con lo que no se paga que falta.',
     '· «quita»: solo si una fila está repetida o no es de su proyecto.',
     'Si viene un modelo de proyectos como el suyo, úsalo para ver quién suele faltar y qué se da sin pagarse; propón solo lo que encaje con lo que ella cuenta, dicho con sus palabras y no con las del modelo. Si todavía no tiene a nadie, empieza por ahí.',
+    'Lo que ya se sabe del sector es la base; lo que diferencia a su marca son sus intangibles propios, lo que solo ella da o genera. Búscalos en lo que cuenta y nómbralos con sus palabras; si no aparecen, que tu pregunta vaya a por ellos. Nunca los copies del modelo.',
     'En «porque», una frase corta que le explique por qué le ayuda. En «resumen», una o dos frases sobre cómo ves su red hoy, en positivo y concreto. En «pregunta», la pregunta que más te ayudaría a afinar en la siguiente vuelta.'].join('\n'),
   web: ['Escribe los textos de su web: una página con una sección para cada uno de los que más dan y reciben.',
     '· «lema»: lo que hace, en una frase de hasta doce palabras.',
