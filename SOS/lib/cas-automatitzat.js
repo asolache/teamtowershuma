@@ -100,9 +100,9 @@
       "ca": "La producció"
      },
      "compte": {
-      "automatizado": 3,
+      "automatizado": 2,
       "definido": 1,
-      "presencial": 2,
+      "presencial": 3,
       "por_montar": 1,
       "sin_definir": 0
      }
@@ -475,8 +475,8 @@
       "es": "la vivencia de construir algo juntos",
       "ca": "la vivència de construir alguna cosa junts"
      },
-     "qui": "ia",
-     "escalo": "automatizado",
+     "qui": "persona",
+     "escalo": "presencial",
      "proces": "produccion"
     },
     {
