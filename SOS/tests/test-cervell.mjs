@@ -74,6 +74,29 @@ cas('un idioma sense textos peta', a => {
   writeFileSync(p, JSON.stringify({ ...c, idioma: 'xx' }));
 });
 
+/* L'estructura estàndard (estructura.md): les àrees són els dotze rols de
+   sempre. Una carpeta inventada peta; desfer-la torna a verd. */
+cas('una àrea que no és cap rol peta', a => mkdirSync(join(a, 'areas', 'cosas-varias')), a => rmSync(join(a, 'areas', 'cosas-varias'), { recursive: true }));
+{
+  const arrel = mkdtempSync(join(tmpdir(), 'cervell-'));
+  rmSync(arrel, { recursive: true });
+  spawnSync(process.execPath, [EINA, '--nou', arrel, '--nom', 'El celler'], { encoding: 'utf8' });
+  const arbre = ['areas', 'proyectos', 'recursos', 'mapa'].every(d => existsSync(join(arrel, d, 'README.md')));
+  mkdirSync(join(arrel, 'areas', 'ventas'));
+  mkdirSync(join(arrel, 'areas', 'persones'));
+  writeFileSync(join(arrel, 'areas', 'ventas', 'catalogo.md'), '---\ntipo: plan\nrol: ventas\nvisible: privada\nestado: borrador\n---\n\n# Catálogo\n');
+  writeFileSync(join(arrel, 'areas', 'persones', 'equip.md'), '---\ntipo: proceso\nrol: personas\nvisible: privada\nestado: vigente\n---\n\n# Equipo\n');
+  spawnSync(process.execPath, [INSTAL(arrel), '--arrel', arrel], { encoding: 'utf8' });
+  const r = comprova(arrel);
+  writeFileSync(join(arrel, 'areas', 'ventas', 'sin-cabecera.md'), '# Sin cabecera\n');
+  spawnSync(process.execPath, [INSTAL(arrel), '--arrel', arrel], { encoding: 'utf8' });
+  const mal = comprova(arrel);
+  const bo = arbre && r.status === 0 && /2 àrees de areas\/ són rols/.test(r.stdout) && mal.status === 1 && /sin-cabecera\.md no porta capçalera/.test(mal.stdout);
+  if (!bo) fails++;
+  console.log(`  ${bo ? '✓' : '✗'} --nou porta l'arbre estàndard (areas, proyectos, recursos, mapa); una àrea es diu en castellà o en català, i el que hi entra porta capçalera` + (bo ? '' : `\n${r.stdout}${mal.stdout}`));
+  rmSync(arrel, { recursive: true, force: true });
+}
+
 /* El seguiment: --actualitza torna l'herència a com és avui i no toca el que
    és del projecte. */
 {

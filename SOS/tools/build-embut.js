@@ -229,6 +229,78 @@ PAGINES.forEach(({ f, dic, abans }) => {
   else { writeFileSync(fit, nou); tocades++; }
 });
 
+/* ══ EL TEU CAMÍ, A LA PORTADA (22/10/2026) ══════════════════════════════════
+   La portada ven el primer pas —crear el mapa a `/cliente/`— i diu, just
+   sota, què ve després. El camí no s'escriu aquí: és `camiClient` de
+   `heretat.json`, el mateix per a totes les marques, i la portada en llegeix
+   el camp `tu` (segona persona, sense noms d'eines). Si el camí canvia, la
+   portada canvia amb ell. */
+const CAMI = JSON.parse(readFileSync(join(ARREL, 'SOS', 'knowledge', 'cervell', 'heretat.json'), 'utf8')).camiClient;
+const TC = {
+  'cami.k': T('El teu camí', 'Tu camino'),
+  'cami.h': T('Comences amb un dibuix. <em>Creixes quan tu vulguis.</em>', 'Empiezas con un dibujo. <em>Creces cuando tú quieras.</em>'),
+  'cami.a': T('Crea el teu mapa de valor →', 'Crea tu mapa de valor →'),
+  'cami.n': T('Cada pas és opcional: et quedes on et va bé. Cap preu fins que tu ho demanis.', 'Cada paso es opcional: te quedas donde te va bien. Ningún precio hasta que tú lo pidas.')
+};
+CAMI.passos.forEach((p, i) => {
+  if (!p.tu || !p.tu.ca || !p.tu.es) { bad(`el pas «${p.id}» del camí no porta la veu de la portada (\`tu\`)`); return; }
+  TC[`cami.${i + 1}t`] = T(p.tu.ca.nom, p.tu.es.nom);
+  TC[`cami.${i + 1}d`] = T(p.tu.ca.diu, p.tu.es.diu);
+});
+const CO = '<!--TT-CAMI-->', CT = '<!--/TT-CAMI-->', CC_O = '/*TT-CAMI-CSS*/', CC_T = '/*/TT-CAMI-CSS*/';
+const blocCami = () => {
+  const a = k => ` ${k === 'cami.h' ? 'data-i18n-html' : 'data-i18n'}="${k}"`;
+  const t = k => TC[k].ca;
+  return [CO,
+    '<!-- GENERAT per SOS/tools/build-embut.js des de camiClient (heretat.json) · no s\'edita a mà. -->',
+    '<section class="cami" id="cami" aria-labelledby="cami-t">',
+    '  <div class="container">',
+    `    <p class="cami-k"${a('cami.k')}>${t('cami.k')}</p>`,
+    `    <h2 id="cami-t"${a('cami.h')}>${t('cami.h')}</h2>`,
+    '    <ol class="cami-r">',
+    CAMI.passos.map((p, i) => `      <li><b${a(`cami.${i + 1}t`)}>${t(`cami.${i + 1}t`)}</b> <span${a(`cami.${i + 1}d`)}>${t(`cami.${i + 1}d`)}</span></li>`).join('\n'),
+    '    </ol>',
+    `    <p class="cami-acc"><a class="btn-primary" href="/cliente/"${a('cami.a')}>${t('cami.a')}</a> <span class="cami-n"${a('cami.n')}>${t('cami.n')}</span></p>`,
+    '  </div>',
+    '</section>', CT].join('\n');
+};
+const CSS_CAMI = [CC_O,
+  '/* GENERAT per SOS/tools/build-embut.js · «El teu camí» de la portada */',
+  '.cami{padding:4rem 0;border-top:1px solid var(--border)}',
+  '.cami-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin:0 0 .6rem}',
+  '.cami h2{font-size:var(--t4);line-height:1.15;margin:0 0 1.6rem;color:var(--text)}',
+  '.cami h2 em{font-style:normal;color:var(--green)}',
+  '.cami-r{list-style:none;counter-reset:cami;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:0 0 1.6rem;padding:0}',
+  '.cami-r li{counter-increment:cami;font-size:var(--t0);line-height:1.55;color:var(--light);border-top:2px solid var(--border);padding-top:.7rem}',
+  '.cami-r li:first-child{border-top-color:var(--green)}',
+  '.cami-r li b{display:block;font-size:var(--t1);color:var(--text);margin-bottom:.3rem}',
+  '.cami-r li b::before{content:counter(cami) " · ";font-family:var(--mono);font-weight:400;color:var(--green)}',
+  '.cami-acc{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin:0}',
+  '.cami-n{font-size:var(--t0);color:var(--muted)}',
+  '@media(max-width:860px){.cami-r{grid-template-columns:1fr 1fr}}',
+  '@media(max-width:560px){.cami-r{grid-template-columns:1fr}.cami-acc .btn-primary{width:100%;justify-content:center}}',
+  CC_T].join('\n');
+{
+  const f = 'index.html', fit = join(ARREL, f), html = readFileSync(fit, 'utf8');
+  let nou = entre(html, CO, CT, blocCami(), () => -1);
+  if (nou === null) bad(`${f}: no hi ha les marques ${CO} on va «El teu camí»`);
+  else {
+    nou = entre(nou, CC_O, CC_T, CSS_CAMI, h => h.indexOf('</style>'));
+    const dc = l => Object.keys(TC).map(k => `  ${q(k)}:${q(TC[k][l])},`).join('\n');
+    for (const [M, l] of [['CA', 'ca'], ['ES', 'es']]) {
+      const a = `/*TT-CAMI-I18N-${M}*/`, b = `/*/TT-CAMI-I18N-${M}*/`, ancora = `/*/TT-NAV-I18N-${M}*/`;
+      nou = nou && entre(nou, a, b, a + '\n' + dc(l) + '\n' + b, h => { const x = h.indexOf(ancora); return x < 0 ? -1 : x + ancora.length + 1; });
+    }
+    if (!nou) bad(`${f}: no es troben les claus de la barra per escriure-hi les del camí`);
+    else if (/\d\s*€/.test(blocCami())) bad(`${f}: «El teu camí» ensenya un preu en euros`);
+    else if (nou !== html) {
+      if (CHECK) bad(`${f}: «El teu camí» no correspon a camiClient — torna a executar build-embut.js`);
+      else { writeFileSync(fit, nou); tocades++; }
+    }
+  }
+  if (!existsSync(join(ARREL, 'cliente', 'index.html'))) bad('«El teu camí» porta a /cliente/, que no existeix');
+}
+
 /* Els destins del bloc han d'existir: un enllaç mort aquí és el pas següent
    del recorregut que no porta enlloc. */
 ['SOS/diagnostic.html', 'SOS/pressupost.html', 'SOS/index.html', 'cataleg.html'].forEach(p => {

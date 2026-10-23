@@ -21,13 +21,17 @@
 
 const NIVELLS = [
   { id: 'pagina', nom: 'Una página', per: 'Para estar y que te encuentren',
-    te: ['Portada y contacto, en un idioma', 'Sale del borrador de tu mapa', 'Tuya: en tu GitHub y tu Netlify'] },
+    te: ['Portada y contacto, en un idioma', 'Sale del borrador de tu mapa', 'Tuya: en tu GitHub y tu Netlify'],
+    ca: { nom: 'Una pàgina', per: 'Per ser-hi i que et trobin', te: ['Portada i contacte, en un idioma', "Surt de l'esborrany del teu mapa", 'Teva: al teu GitHub i el teu Netlify'] } },
   { id: 'mapa', nom: 'La web de tu mapa', per: 'Para que cada rol encuentre su puerta',
-    te: ['Todo lo anterior', 'Hasta tres puertas del flujo que importa ahora', 'Formularios que te llegan por correo', 'Datos para buscadores e IA en cada página'] },
+    te: ['Todo lo anterior', 'Hasta tres puertas del flujo que importa ahora', 'Formularios que te llegan por correo', 'Datos para buscadores e IA en cada página'],
+    ca: { nom: 'La web del teu mapa', per: 'Perquè cada rol trobi la seva porta', te: ["Tot l'anterior", 'Fins a tres portes del flux que importa ara', 'Formularis que et arriben per correu', 'Dades per a cercadors i IA a cada pàgina'] } },
   { id: 'conectada', nom: 'La web conectada', per: 'Para dejar de copiar y pegar',
-    te: ['Todo lo anterior', 'Tu CRM, tus reservas o tus matrículas', 'La web avisa a tu IA, con MCP o con una función', 'Más idiomas o más puertas, como flujos'] },
+    te: ['Todo lo anterior', 'Tu CRM, tus reservas o tus matrículas', 'La web avisa a tu IA, con MCP o con una función', 'Más idiomas o más puertas, como flujos'],
+    ca: { nom: 'La web connectada', per: 'Per deixar de copiar i enganxar', te: ["Tot l'anterior", 'El teu CRM, les teves reserves o les teves matrícules', 'La web avisa la teva IA, amb MCP o amb una funció', 'Més idiomes o més portes, com a fluxos'] } },
   { id: 'viva', nom: 'La web viva', per: 'Para que el sistema mejore cada mes', cuota: true,
-    te: ['Todo lo anterior', 'Tus procesos repetitivos, definidos y gestionados', 'El tablero del día y el informe del mes', 'Comprobaciones automáticas y cambios pequeños'] }
+    te: ['Todo lo anterior', 'Tus procesos repetitivos, definidos y gestionados', 'El tablero del día y el informe del mes', 'Comprobaciones automáticas y cambios pequeños'],
+    ca: { nom: 'La web viva', per: 'Perquè el sistema millori cada mes', te: ["Tot l'anterior", 'Els teus processos repetitius, definits i gestionats', 'El tauler del dia i l\'informe del mes', 'Comprovacions automàtiques i canvis petits'] } }
 ];
 
 const GARANTIA = 'Con la cuota de la web viva, cada automatización que necesites se define contigo, tiene quien la lleva (una persona o un agente con tu IA), se ve en tu mapa y se mide cada mes. Si un proceso deja de funcionar, te llega el aviso y se arregla dentro de la cuota.';
@@ -82,14 +86,16 @@ function pinta(sagnat) {
 }
 
 /* Els nivells com a tria, per a l'espai de client (/cliente/): una targeta
-   amb el seu botó de ràdio, i el que porta cadascun. */
-function pintaTria(sagnat) {
-  const ind = sagnat || '';
-  return NIVELLS.map((n, i) => ind + '<label class="nivell" for="cl-n-' + n.id + '"><span class="k">Nivel ' + (i + 1) + (n.cuota ? ' · cuota mensual' : ' · por flujos') + '</span>'
-    + '<span><input type="radio" name="nivel" id="cl-n-' + n.id + '" value="' + esc(n.nom) + '"> <b>' + esc(n.nom) + '</b></span><span>' + esc(n.per) + '</span>'
-    + '<ul>' + n.te.map(t => '<li>' + esc(t) + '</li>').join('') + '</ul></label>').join('\n');
+   amb el seu botó de ràdio, i el que porta cadascun. El valor del botó és el
+   nom en castellà a totes dues llengües: és el que arriba a la casa. */
+const TRIA = { es: { n: 'Nivel ', q: ' · cuota mensual', f: ' · por flujos' }, ca: { n: 'Nivell ', q: ' · quota mensual', f: ' · per fluxos' } };
+function pintaTria(sagnat, llengua) {
+  const ind = sagnat || '', ll = TRIA[llengua] ? llengua : 'es', K = TRIA[ll];
+  return NIVELLS.map((n, i) => { const t = ll === 'ca' ? n.ca : n;
+    return ind + '<label class="nivell" for="cl-n-' + n.id + '"><span class="k">' + K.n + (i + 1) + (n.cuota ? K.q : K.f) + '</span>'
+    + '<span><input type="radio" name="nivel" id="cl-n-' + n.id + '" value="' + esc(n.nom) + '"> <b>' + esc(t.nom) + '</b></span><span>' + esc(t.per) + '</span>'
+    + '<ul>' + t.te.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul></label>'; }).join('\n');
 }
-
 /* Per a la guarda: què ha de complir cada peça. */
 function revisa() {
   const err = [];

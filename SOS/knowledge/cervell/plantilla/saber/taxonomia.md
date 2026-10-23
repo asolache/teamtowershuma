@@ -38,6 +38,14 @@ colgar de nada sale en el mapa como candidata. Para que la guarda mire los
 documentos, `cervell.json` declara `documents` (carpetas o ficheros). Lo que es
 público pasa por el sedàs: un importe en un documento público hace fallar el CI.
 
+## La estructura estándar
+
+El árbol es el mismo en todos los cerebros y no se inventa: sale de
+taxonomías que ya existen (`saber/heredado/estructura.md`, heredado). `areas/` lleva
+una carpeta por área en uso, `proyectos/` lo que acaba, `recursos/` lo que se
+consulta y `mapa/` el mapa de valor. Lo viejo no se archiva: se marca
+`estado: superado`.
+
 ## Declaración de caras
 
 Formato: `- ruta · cara · una línea de lo que entra`. El generador lee esta
@@ -46,3 +54,7 @@ lista y nada más. Crear una carpeta sin declararla rompe el CI.
 - `saber` · saber · El cerebro: mapa, codex, contrato de la IA, taxonomía y backlog
 - `herramientas` · obra · Lo que el proyecto hereda para trabajar: el editor del mapa, revisarlo y sacar la web. No se edita aquí
 - `guardas` · prova · Las comprobaciones que fallan en CI cuando una promesa deja de ser cierta
+- `areas` · saber · Lo que se mantiene siempre, una carpeta por área (los doce roles: ventas, finanzas, personas…)
+- `proyectos` · saber · Lo que tiene principio y fin, una carpeta por proyecto
+- `recursos` · saber · Material de referencia que se consulta y no se decide
+- `mapa` · obra · El mapa de valor del proyecto, el JSON del editor
