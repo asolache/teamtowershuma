@@ -48,7 +48,7 @@ console.log('\n1 · Els preus, sense cap xifra inventada');
   ok(!r.preus.some(t => /\d/.test(t)), 'i cap targeta no treu una xifra que ningú ha donat');
   ok(r.contracta === 4, 'tres «Contracta» i un «Avisa\'m» per al sistema viu');
   ok(/Preus i contractació/.test(r.h1), 'el títol és el de la pàgina de preus');
-  ok(r.amida && /35, 55 o 80 €\/h/.test(r.flux), 'i a sota, el pressupost a mida per fluxos amb l\'escala pública');
+  ok(r.amida && /preu que diu la proposta/.test(r.flux) && !/€\/h/.test(r.flux), 'i a sota, el pressupost a mida per fluxos, sense preu hora publicat');
 }
 
 console.log('\n2 · Contracta: sense dades no surt res');

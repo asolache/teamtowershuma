@@ -108,7 +108,7 @@ console.log('\n3 · Sense forquilles: els paquets van per fluxos i fora del tota
   await ctx.close();
 }
 
-console.log('\n4 · Les hores per nivell sí que fan el total, amb el preu de l\'escala');
+console.log('\n4 · Les hores per nivell van a la proposta, sense preu hora ni total en euros');
 {
   const { ctx, p, errs } = await nova(PONT);
   const r = await p.evaluate(() => {
@@ -118,12 +118,11 @@ console.log('\n4 · Les hores per nivell sí que fan el total, amb el preu de l\
     const mig = camps[1];
     mig.value = '10';
     mig.dispatchEvent(new Event('input', { bubbles: true }));
-    const hora = Number(mig.dataset.hora);
     document.querySelector('#doProp').click();
     const nums = [...document.querySelector('#rTotal').textContent.matchAll(/([\d.]+)/g)]
       .map(m => Number(m[1].replace(/\./g, '')));
     return {
-      hora, nums,
+      nums, total: document.querySelector('#rTotal').textContent,
       niv: camps.length,
       obert: !document.querySelector('#rHoresBox').hidden,
       linia: document.querySelector('#rHores').textContent.replace(/\s+/g, ' ')
@@ -131,8 +130,8 @@ console.log('\n4 · Les hores per nivell sí que fan el total, amb el preu de l\
   });
   ok(r.niv === 3, 'l\'escala té tres nivells, com la de la portada');
   ok(r.obert, 'la secció d\'hores s\'obre quan se n\'hi posen');
-  ok(r.nums[0] === 10 * r.hora && r.nums.length === 1, 'el total són les hores al preu del nivell (' + r.nums.join('–') + ')');
-  ok(/10 h ×/.test(r.linia), 'i el desglossament diu les hores i el preu, no només el total');
+  ok(!/€/.test(r.linia) && /10 h/.test(r.linia), 'el desglossament diu les hores de cada nivell, sense preu hora');
+  ok(!/€/.test(r.total) || r.nums.every(n => n !== 0), 'les hores no sumen euros al total: ' + r.total);
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

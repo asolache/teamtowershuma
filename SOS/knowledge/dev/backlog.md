@@ -52,6 +52,138 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### Repàs del 23/10/2026 · la portada que ven, la IA que acompanya el mapa i la web que replica la que ja hi ha
+
+**Demanat per l'Àlvar** (23/10/2026): revisar el backlog per a l'enfocament de
+la portada nova (PR #300), el suport amb IA per acompanyar cada client a
+dissenyar i adaptar el seu mapa de valor (`/cliente/`), i, a la web, l'opció de
+**replicar continguts i estructura de la part informativa** de la web que ja té
+el client, i després hi afegim el nostre valor: les funcions per a cada
+stakeholder, el panell, etc.
+
+**Un sol embut, una sola peça per pas** (regla DRY, veda 71). Cap ítem d'aquí
+sota fa una segona versió d'una peça que ja existeix:
+
+| Pas del client | Peça única | Hi ha |
+|---|---|---|
+| Arriba | portada (`index.html`, #300) → `/cliente/` | a la tanda |
+| Dibuixa el mapa | `/cliente/` + `SOS/lib/mapa-valor.js` + `SOS/lib/models-mapa.js` | fet |
+| La IA el pule | `netlify/functions/pule-mapa.mjs` (tope per persona) | fet, sense clau |
+| S'identifica | `netlify/functions/identitat.mjs` (correu o GitHub) | fet, #299 a la tanda |
+| Llegim la seva web | `rastreja` de `SOS/tools/web-del-mapa.js` (el d'`importa.js` i `analitza-contingut.js`) | només Node |
+| Surt la web | `webDelMapa` + bloc `VS-SITE` (`build-vna-suport.js`) | fet, sense importar |
+| Pàgina al nostre entorn i panell | portal del pas 2 (`camiClient`, un sol portal) | a la tanda (EP #79) |
+
+Sense preus enlloc d'aquest bloc («todo sin precios»): el que costa cada pas és
+privat i viu al repositori d'estratègia.
+
+**Prioritzat**, amb el fil que en té cura:
+
+**P0 · No és codi: el que desbloqueja el que ja està fet** (l'Àlvar, a la tarda)
+
+1. Tanda de les 13:00 o les 20:00: #299 + #303, després #300 (ordre de
+   `tandas/pendientes.md`). · *Tanda diària*
+2. `ANTHROPIC_API_KEY` a Netlify: sense ella la IA de `/cliente/` no surt i la
+   portada promet una cosa que no es veu. · *Piloto ELE*
+3. Segona URL de retorn a la GitHub App (`/identitat`, «Email addresses: read»).
+   · *Piloto ELE*
+4. L'àlies `acceso.teamtowershuma.com` a Netlify. · *Ecosistema integrado*
+
+**P1 · La portada i `/cliente/` diuen el mateix**
+
+5. Revisar cada etiqueta «Funciona avui» / «Provat · arrenca amb els pilots»
+   de `#automatitza` el dia que entri la clau, i passar la de la IA que pule el
+   mapa a «Funciona avui». Una promesa de la portada que `/cliente/` no compleix
+   és el pitjor error d'una web que ven. · *Home venta*
+6. Saber d'on ve cada client **sense píxels** (l'avís legal diu que no en fem):
+   els botons de la portada porten `?des=<lloc>` i `/cliente/` el desa al
+   formulari `cliente-web` quan el client envia. Només compta qui envia.
+   · *Home venta* (enllaços) i *Piloto ELE* (camp)
+
+**P1 · La IA acompanya el mapa, no el fa d'un cop**
+
+7. **Cada volta diu on és el mapa i què falta**: `pule-mapa` torna, a més del
+   mapa polit, la salut abans i després (`MapaValor.salut`, la mateixa de l'app
+   i de l'editor, mai una de nova) i les dues o tres preguntes següents, tretes
+   de les regles que fallen. El client veu per què canvia. · *Piloto ELE*
+8. **La IA reconeix el sector** i proposa el model amb `SECTORS` i
+   `ModelsMapa.suggereix` (ja hi són), en lloc de demanar-lo. Era al backlog
+   del fil de la portada; un sol ítem. · *Piloto ELE* (crida) amb *Home venta*
+   (`models-mapa.js`)
+9. **El x % que es pot automatitzar, al mapa del client**: `/cliente/` marca els
+   lliuraments que prepara la màquina amb `automatitza.js` (la mateixa xifra que
+   la portada, el kit i la pàgina del lead, veda 164). És la versió
+   autoservei de «La pàgina per al lead», que segueix sent el camí per als
+   leads que no entren sols. · *Piloto ELE*
+10. **Adaptar el mapa amb el temps**: el mapa es desa al servidor sota la
+    identitat (el mateix hash que el registre de `pule-mapa`, Netlify Blobs) i
+    el client hi torna des de qualsevol aparell. Al pas 2 passa al portal; mai
+    dos llocs alhora. Sense contrasenya: decidit per l'Àlvar el 23/10 (vegeu més avall). · *Piloto ELE* i
+    *Ecosistema integrado*
+11. **L'editor del mapa amb el dit**, al mòbil: un sol llenç per a `/cliente/`,
+    l'editor i l'app (el «Pendent: un sol llenç» d'«Un sol motor»). · *UX de SOS*
+
+**P1 · La web: primer replica el que hi ha, després hi afegim valor**
+
+12. **«Llegim la teva web» a `/cliente/`**: el client escriu la seva adreça i
+    marca el sí per escrit; una funció de Netlify crida `rastreja` (mateix
+    domini, robots.txt, una pàgina per segon, un màxim de pàgines) i en treu
+    l'estructura informativa: el menú, l'arbre de pàgines, títols, textos i les
+    imatges com a referència. Res surt de la seva web sense el seu sí, i mai
+    d'una web que no és seva. La IA que classifica les pàgines va dins del
+    mateix tope de `pule-mapa`. És el pas «Leemos lo que ya tienes» del procés.
+    · *Piloto ELE*
+13. **El generador accepta el que ja hi ha**: `webDelMapa` / `VS-SITE` rep
+    `estructura` i `continguts` (el format de `cerebro/continguts/<id>.md` de
+    l'importador) i fa la part informativa amb el mateix menú i els mateixos
+    textos, nets, W3C i amb JSON-LD. Un sol generador: l'editor, `/cliente/`,
+    `web-del-mapa.js` i la plantilla de Netlify ho reben alhora. · *UX de SOS*
+    (motor) amb *Piloto ELE* (prova amb ELE Barcelona)
+14. **Cada pàgina vella, al seu rol**: la IA proposa a quina porta va cada
+    pàgina (o a «informació general») i el que la web no diu a cada rol; el
+    client ho valida. És l'entregable 2 d'avui fet amb eina. · *Piloto ELE*
+15. **No perdre el que ja troben els cercadors**: el generador escriu
+    `_redirects` 301 de les adreces velles a les noves. · *UX de SOS*
+16. **Avui i amb el teu mapa, costat a costat** a la vista prèvia de
+    `/cliente/` (`#cl-marc`). · *Piloto ELE*
+
+**P2 · El nostre valor afegit, damunt de la rèplica**
+
+17. **Les funcions per a cada stakeholder**: cada porta de rol tria del catàleg
+    únic `serveis` d'`heretat.json` (veda 171) el que li toca (consulta,
+    reserva, espai de proveïdor, intranet de l'equip), amb les tres capes de
+    #290 (pública, extranet, intranet). Cap llista nova de funcions.
+    · *Ecosistema integrado* (catàleg) amb *Cerebro* (herència als fills)
+18. **Un sol panell del client**: el del portal del pas 2. Hi van el mapa, els
+    avisos de cada flux (`FluxViu`), les hores i entregues de la traça (vista
+    sense imports), l'ús d'IA i les factures llegides de l'estratègia. Avui hi
+    ha tres esbossos de panell (`/cliente/`, `espai-partner.mjs` per enllaç i el
+    portal d'EP); s'ajunten al portal i els altres hi enllacen. Recull les
+    «dades del projecte» i la «facturació» de «L'espai de client amb login».
+    · *Ecosistema integrado* (el codi del portal el fa el fil d'Events Penedès)
+19. **El mapa viu del client** (el que circula i el que no), a partir del seu
+    `registre.html`: és «El mapa de valor viu», sprint 2. · *UX de SOS*
+
+**P3 · Després**
+
+20. `/cliente/` en anglès; casos reals per sector; el paquet d'Ollama; llegir
+    PDF i Word a l'importador. · *Home venta* (sectors) i *Piloto ELE*
+
+**Duplicats tancats per aquest repàs** (la secció original queda, l'ítem viu
+aquí): l'«Espai de client amb login» → 10 i 18; «Un sol motor», un sol llenç
+→ 11; «Els serveis del cervell col·lectiu», punt 1 → 17; «El mapa de valor
+viu» → 19; «L'arrencada amb IA», llegir PDF i Word → 20; el backlog de la
+portada (sector amb IA, mapa → textos, fluxos automatitzables) → 8, 9 i el que
+ja fa `pule-mapa` amb `marca`.
+
+**Decidit per l'Àlvar el 23/10/2026:** el compte del client és l'accés per
+correu o GitHub que ja fa `identitat.mjs`, sense contrasenya pròpia: cap
+contrasenya a custodiar i un sol camí d'identitat amb el cervell. Substitueix
+la «contrasenya» de «L'espai de client amb login».
+
+**Es tanca** quan ELE Barcelona veu a `/cliente/` la seva web d'avui replicada
+amb les portes del seu mapa, i el seu panell al portal.
+
 ### L'espai de client amb login · projecte, facturació i contrasenya (demanat 22/10/2026)
 
 Avui `/cliente/` (#282) té un compte lleuger: nom i correu desats al navegador,
@@ -85,6 +217,24 @@ responsable del tractament. Per això cal:
 - la casella de privacitat als formularis de `/cliente/`;
 - un contracte d'encàrrec amb cada client per a les dades de la seva web. Cap import a la
 web pública: els preus només dins del seu espai.
+
+### El registre amb valor de prova (demanat 22/10/2026)
+
+**Demanat per l'Àlvar** (22/10/2026): integrar per principi la web 3 a tot el
+que fem (semàntic, IA, triple entrada) i fer del registre públic un negoci
+propi, ser-ne pioners i popularitzar-lo. El principi és la veda 180.
+
+- Pendent · fase 1: el tancament del registre del SOS (el hash del dia o del
+  mes, que la cadena ja té) es segella amb un prestador de segells de temps
+  qualificat (eIDAS); el segell es desa al costat del tancament i una guarda
+  comprova que cada tancament en té.
+- Pendent · fase 2: la mateixa peça per a la comptabilitat de valor i el kanban
+  d'una comunitat (Events Penedès com a primer node, i cada cervell fill).
+- Pendent · fase 3: un llibre major electrònic qualificat (eIDAS 2) quan hi
+  hagi prestadors; contractes intel·ligents que automatitzen el que el vistiplau
+  ja decideix.
+- Abans de dir-ho fora: que un advocat confirmi el valor legal. El negoci (preu,
+  a qui es ven) el porta el pla de negoci únic.
 
 ### Un sol camí del client per a totes les marques (demanat 22/10/2026)
 
@@ -4590,8 +4740,8 @@ tancada allà on no es podia tancar.
 - **En lloc del preu hi ha el mètode**, sencer i a la pàgina (`#cost`): quatre
   passos —mapa, hores per rol, preu del nivell, despeses directes al seu preu de
   factura— perquè qui llegeix pugui refer el càlcul sense trucar. Veda 140.
-- **Escala de tres nivells per hores**, per al sector públic: N1 35 €/h, N2
-  55 €/h, N3 80 €/h, sense IVA. El que els separa **no és l'antiguitat**, és
+- **Escala de tres nivells per hores**, per al sector públic: N1, N2 i N3, amb
+  el preu hora a la proposta de cada client (des del 22/10/2026 no es publica). El que els separa **no és l'antiguitat**, és
   evidència registrada al SOS — la mateixa que acredita un gestor o un mentor.
 - **Itineraris per rol directiu** a `formacio.html`: direcció general, persones,
   innovació, organització, direcció pública i direcció cooperativa. Fins ara els
