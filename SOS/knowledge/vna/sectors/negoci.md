@@ -39,6 +39,8 @@ etiquetas: [veda, mapa-de-valor, negoci]
 
 **La bona pràctica.** El que no es paga (recomanacions, confiança, idees) és el que fa créixer un negoci. Posa-ho al mapa.
 
+**Per posar-ho en marxa.** Dibuixar el mapa ideal → Apuntar el que passa → Comparar real i ideal → Decidir el següent pas.
+
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
 

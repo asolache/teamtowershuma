@@ -43,6 +43,8 @@ etiquetas: [veda, mapa-de-valor, servei-proximitat]
 
 **La bona pràctica.** Un servei de proximitat creix de boca-orella: qui el recomana és part de la xarxa.
 
+**Per posar-ho en marxa.** Definir el servei mínim viable → Formar el primer equip d'oferents → Publicar al banc de temps → Primeres 10 prestacions → Retorn i ajust → Ampliació territorial.
+
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
 

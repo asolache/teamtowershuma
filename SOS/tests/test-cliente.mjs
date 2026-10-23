@@ -290,6 +290,10 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   const au = await p.textContent('#cl-auto');
   ok(/El que pot anar sol/.test(au) && /⚙ l'informe trimestral/.test(au) && /sempre una persona/.test(au), 'marca el que pot preparar la màquina (l\'informe), i diu que el que no es paga i els diners són de persona');
   ok(D.revisa(D.mapa(Object.assign({ respuestas: { objetivo: 'Habitatge assequible per als socis' } }, fc)), MV, 'ca').llest, 'el mapa que surt del model ja està llest per dibuixar');
+  /* El cas anònim d'un mapa que ja treballa (cas-automatitzat.js) */
+  const cas = await p.textContent('#cl-caso');
+  ok(await p.isVisible('#cl-caso summary') && /Mira un mapa que ja treballa: una productora/.test(cas) && /La venda/.test(cas) && /automatitzats/.test(cas), 'ensenya el cas d\'un mapa que ja treballa, en català, amb una barra per procés');
+  ok(/✦ /.test(cas) && /La IA ho prepara i una persona ho valida/.test(cas) && /On és el focus ara/.test(cas) && !/comissi|paisatge|paisaje|Pened/i.test(cas), 'diu el que fa la IA i valida una persona, on és el focus, i cap nom ni projecte intern');
   await p.click('.tt-nav .lang-b[data-lang="es"]');
   await p.waitForFunction(() => document.documentElement.lang === 'es' && /Empieza tu proyecto/.test(document.querySelector('h1').textContent));
   ok(/Vivienda/.test(await p.textContent('#cl-sectors button[aria-pressed="true"]')), 'en castellano con el botón ES, sin perder la ficha');

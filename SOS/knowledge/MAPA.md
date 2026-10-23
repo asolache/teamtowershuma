@@ -13,18 +13,18 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 382 · 20184 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 384 · 20224 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 134 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
-| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 14 · 318 KB |
+| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 15 · 341 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 8 · 9743 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 359 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
-| `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 1 · 128 KB |
+| `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 1 · 133 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 83 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 204 KB |
 | `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) i el preu de cada client, només per a ell (proposta) | 10 · 65 KB |
@@ -37,8 +37,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 35 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 127 · 1657 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 72 · 1544 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 127 · 1658 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 73 · 1559 KB |
 
 ## saber
 
@@ -46,7 +46,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 86 · 1235 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 86 · 1237 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 14 · 69 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 6 · 378 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
@@ -56,7 +56,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 3 · 32 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 15 · 143 KB |
-| `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 25 · 88 KB |
+| `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 25 · 89 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
 
 ## arxiu

@@ -154,6 +154,20 @@
         .fila .treu { min-height: 44px; }
         .auto { margin-top: 1.4rem; max-width: 70ch; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
         .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
+        /* El caso anónimo de un mapa que ya trabaja (cas-automatitzat.js) */
+        .caso summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+        .caso .esc { display: grid; gap: .5rem; margin: .8rem 0; }
+        .caso .esc div { display: grid; grid-template-columns: 7.5rem 1fr auto; gap: .6rem; align-items: center; font-size: var(--t0); }
+        @media (max-width: 520px) { .caso .esc div { grid-template-columns: 1fr auto; } .caso .esc div b { grid-column: 1 / -1; } }
+        .caso .barra { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--panel); border: 1px solid var(--border); }
+        .caso .barra i, .caso .ley i { display: block; height: 100%; }
+        .caso .ley { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: var(--t0); color: var(--muted); }
+        .caso .ley span { display: inline-flex; gap: .35rem; align-items: center; }
+        .caso .ley i { width: 12px; height: 12px; border-radius: 3px; }
+        .caso .e-automatizado { background: var(--indigo); } .caso .e-definido { background: var(--blue); opacity: .45; }
+        .caso .e-presencial { background: repeating-linear-gradient(45deg, var(--card), var(--card) 3px, var(--border-strong) 3px, var(--border-strong) 6px); }
+        .caso .e-por_montar { background: var(--orange); } .caso .e-sin_definir { background: var(--red); }
+        .caso h4 { margin: 1rem 0 .2rem; }
         .salut { display: grid; gap: .45rem; margin-top: 1.4rem; max-width: 60ch; }
         .salut li { display: flex; gap: .6rem; }
         .salut li::before { content: "○"; color: var(--orange); font-weight: 700; }
@@ -485,6 +499,7 @@
         <h3 style="margin-top:1.6rem">¿Está listo para dibujarlo?</h3>
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
         <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
+        <details class="auto caso" id="cl-caso" hidden></details>
     </div>
 </section>
 
@@ -629,6 +644,7 @@
 <script src="/SOS/lib/mapa-valor.js"></script>
 <script src="/SOS/lib/diagnosi-client.js"></script>
 <script src="/SOS/lib/models-mapa.js"></script>
+<script src="/SOS/lib/cas-automatitzat.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
 <script>
 (function () {
@@ -767,6 +783,12 @@
         'Lo que no se paga (confianza, recomendaciones, ideas) y el dinero los lleva siempre una persona.': 'El que no es paga (confiança, recomanacions, idees) i els diners els porta sempre una persona.',
         'Otras {0} las vemos juntos en la sesión.': 'Les altres {0} les mirem junts a la sessió.',
         '✦ Ahora, los textos de mi web': '✦ Ara, els textos de la meva web',
+        '✦ Mira un mapa que ya trabaja: {0}': '✦ Mira un mapa que ja treballa: {0}',
+        'Cuánto le falta a cada proceso para ir solo': 'Quant li falta a cada procés per anar sol',
+        '{0} de {1} automatizados': '{0} de {1} automatitzats',
+        'Lo que ya va automatizado': 'El que ja va automatitzat',
+        'Dónde está el foco ahora': 'On és el focus ara',
+        'Tu mapa puede ir por el mismo camino: primero se define cada intercambio (quién, qué, con qué); lo que está definido se puede automatizar, y lo que no se paga lo lleva siempre una persona.': "El teu mapa pot fer el mateix camí: primer es defineix cada intercanvi (qui, què, amb què); el que està definit es pot automatitzar, i el que no es paga ho porta sempre una persona.",
         /* Tu propuesta (#299) */
         'La extranet': "L'extranet", 'La intranet': 'La intranet',
         '7 · Tu propuesta': '7 · La teva proposta',
@@ -1102,6 +1124,45 @@
         }
         c.appendChild(el('p', { class: 'nota' }, t('Lo que no se paga (confianza, recomendaciones, ideas) y el dinero los lleva siempre una persona.') + (vis.length ? ' ' + t('Otras {0} las vemos juntos en la sesión.', vis.length) : '')));
     }
+    /* Un mapa real que ya trabaja (Álvaro, 23/10/2026): una productora de eventos,
+       sin nombres, generada del mapa privado de la red con la regla de su tablero
+       (SOS/tools/build-cas-automatitzat.js). Enseña el camino: definir cada
+       intercambio, automatizar lo definido y validar siempre con una persona. */
+    function pintaCaso() {
+        var C = window.CasAutomatitzat, c = $('#cl-caso'); if (!C) return;
+        var L = LL === 'ca' ? 'ca' : 'es', ks = Object.keys(C.escalons);
+        c.textContent = ''; c.hidden = false;
+        c.appendChild(el('summary', {}, t('✦ Mira un mapa que ya trabaja: {0}', C.nom[L].toLowerCase())));
+        c.appendChild(el('p', {}, C.diu[L]));
+        c.appendChild(el('h4', {}, t('Cuánto le falta a cada proceso para ir solo')));
+        var esc = el('div', { class: 'esc' });
+        C.processos.forEach(function (p) {
+            var tot = ks.reduce(function (s, k) { return s + p.compte[k]; }, 0), f = el('div'), b = el('span', { class: 'barra', role: 'img',
+                'aria-label': ks.filter(function (k) { return p.compte[k]; }).map(function (k) { return p.compte[k] + ' ' + C.escalons[k][L]; }).join(', ') });
+            ks.forEach(function (k) { if (p.compte[k]) { var i = el('i', { class: 'e-' + k, title: p.compte[k] + ' ' + C.escalons[k][L] }); i.style.width = (100 * p.compte[k] / tot).toFixed(1) + '%'; b.appendChild(i); } });
+            f.appendChild(el('b', {}, p.nom[L])); f.appendChild(b); f.appendChild(el('span', { class: 'nota' }, t('{0} de {1} automatizados', p.compte.automatizado, tot - p.compte.presencial)));
+            esc.appendChild(f);
+        });
+        c.appendChild(esc);
+        var ley = el('p', { class: 'ley' });
+        ks.forEach(function (k) { var s = el('span'); s.appendChild(el('i', { class: 'e-' + k })); s.appendChild(document.createTextNode(C.escalons[k][L])); ley.appendChild(s); });
+        c.appendChild(ley);
+        c.appendChild(el('h4', {}, t('Lo que ya va automatizado')));
+        ['solo', 'ia', 'maquina'].forEach(function (q) {
+            var xs = C.fluxos.filter(function (f) { return f.qui === q; }); if (!xs.length) return;
+            c.appendChild(el('p', {}, C.nivells[q].icona + ' ' + C.nivells[q][L] + ':'));
+            var u = el('ul'); xs.forEach(function (f) { u.appendChild(el('li', {}, f.que[L] + ' (' + f.de[L] + ' → ' + f.a[L] + ')')); });
+            c.appendChild(u);
+        });
+        var foco = C.fluxos.filter(function (f) { return f.escalo === 'por_montar' || f.escalo === 'sin_definir'; });
+        if (foco.length) {
+            c.appendChild(el('h4', {}, t('Dónde está el foco ahora')));
+            var v = el('ul'); foco.forEach(function (f) { v.appendChild(el('li', {}, f.que[L] + ' (' + f.de[L] + ' → ' + f.a[L] + ') · ' + C.escalons[f.escalo][L])); });
+            c.appendChild(v);
+        }
+        c.appendChild(el('p', { class: 'nota' }, t('Tu mapa puede ir por el mismo camino: primero se define cada intercambio (quién, qué, con qué); lo que está definido se puede automatizar, y lo que no se paga lo lleva siempre una persona.')));
+    }
+    pintaCaso();
 
     /* 5 · El nivel y el boceto (el mismo motor que el editor del mapa) */
     document.querySelectorAll('#cl-nivells input').forEach(function (i) {
@@ -1357,7 +1418,7 @@
                y lo adapta a lo que cuenta: es la referencia de buenas prácticas. */
             var mi = S.modelo || ((MM.suggereix && MM.suggereix([S.inicial, S.respuestas.objetivo].join(' '), LL)) || {}).id, mr = mi && MM.mapa(mi, LL, S.casa.trim() || null);
             return { casa: S.casa, org: S.org, inicial: S.inicial, nota: nota || '', nivel: S.nivel, capes: capes(),
-                model: mr ? { nom: mr.nom, bona: mr.bona, pairs: mr.pairs, veda: mr.veda } : null,
+                model: mr ? { nom: mr.nom, bona: mr.bona, pairs: mr.pairs, veda: mr.veda, passos: mr.passos } : null,
                 llengua: LL, respuestas: D.PREGUNTES.map(function (p) { return { q: D.pregunta(p, LL).q, a: S.respuestas[p.id] || '' }; }),
                 alrededor: S.alrededor.map(function (f) { return { quien: f.quien, meDa: f.meDa, meDaEs: f.meDaEs, leDoy: f.leDoy, leDoyEs: f.leDoyEs }; }) };
         }

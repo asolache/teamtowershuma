@@ -43,6 +43,8 @@ etiquetas: [veda, mapa-de-valor, cura-social]
 
 **La bona pràctica.** La cura no s'aguanta només amb professionals: la xarxa veïnal avisa abans que ningú.
 
+**Per posar-ho en marxa.** Diagnòstic de necessitats → Formar cuidadores → Protocol de casos → Primeres 5 famílies → Enllaç serveis públics → Prevenció del burnout.
+
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
 

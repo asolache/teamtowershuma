@@ -43,6 +43,8 @@ etiquetas: [veda, mapa-de-valor, producte-digital]
 
 **La bona pràctica.** Un producte digital viu de les ressenyes i de qui el recomana: dona-li accés abans que a ningú.
 
+**Per posar-ho en marxa.** Prototip de fum → Pàgina d'entrada i llista d'espera → Primer usuari real → Iterar amb el retorn de la gent → Model de monetització → Escalar amb la comunitat.
+
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
 

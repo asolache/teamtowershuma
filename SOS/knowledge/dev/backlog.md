@@ -82,6 +82,12 @@ el `--check` del CI ho diu.
   que la diferencia). Amb capçalera de la taxonomia universal, en esborrany fins
   que una persona les revisi. Pendent: ensenyar-les també a la pantalla en
   castellà (avui el text és en català).
+- **Cas anònim a /cliente/**: «una productora d'esdeveniments», el mapa real
+  d'una xarxa sense noms ni projectes interns, generat per
+  `build-cas-automatitzat.js` amb la regla del seu tauler: què fa la IA o un
+  programa i valida una persona, i quant li falta a cada procés per anar sol
+  (automatitzat, definit, cara a cara, per muntar, sense definir). Les fases de
+  la Matriu també als 7 models de negoci, i la IA les rep.
 
 **Fet també (22/10/2026, vespre):**
 

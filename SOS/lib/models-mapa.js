@@ -80,6 +80,12 @@
        "idees de millora"
       ]
      ],
+     "passos": [
+      "Dibuixar el mapa ideal",
+      "Apuntar el que passa",
+      "Comparar real i ideal",
+      "Decidir el següent pas"
+     ],
      "centre": "El negoci",
      "bona": "El que no es paga (recomanacions, confiança, idees) és el que fa créixer un negoci. Posa-ho al mapa."
     },
@@ -151,6 +157,12 @@
        "intangible",
        "ideas de mejora"
       ]
+     ],
+     "passos": [
+      "Dibujar el mapa ideal",
+      "Apuntar lo que pasa",
+      "Comparar real e ideal",
+      "Decidir el siguiente paso"
      ],
      "centre": "El negocio",
      "bona": "Lo que no se paga (recomendaciones, confianza, ideas) es lo que hace crecer un negocio. Ponlo en el mapa."
@@ -314,6 +326,14 @@
        "visibilitat i agraïment"
       ]
      ],
+     "passos": [
+      "Definir el servei mínim viable",
+      "Formar el primer equip d'oferents",
+      "Publicar al banc de temps",
+      "Primeres 10 prestacions",
+      "Retorn i ajust",
+      "Ampliació territorial"
+     ],
      "centre": "Nucli gestor",
      "bona": "Un servei de proximitat creix de boca-orella: qui el recomana és part de la xarxa."
     },
@@ -401,6 +421,14 @@
        "intangible",
        "visibilidad y agradecimiento"
       ]
+     ],
+     "passos": [
+      "Definir el servicio mínimo viable",
+      "Formar el primer equipo de oferentes",
+      "Publicar en el banco de tiempo",
+      "Primeras 10 prestaciones",
+      "Retorno y ajuste",
+      "Ampliación territorial"
      ],
      "centre": "Núcleo gestor",
      "bona": "Un servicio de proximidad crece por el boca a boca: quien lo recomienda es parte de la red."
@@ -588,6 +616,14 @@
        "històries i accés al taller"
       ]
      ],
+     "passos": [
+      "Prototipar 3 referències",
+      "Muntar el taller",
+      "Preus i marges",
+      "Canal de venda pilot",
+      "Iterar amb el retorn de la clientela",
+      "Escalar producció"
+     ],
      "centre": "Artesans/es",
      "bona": "L'ofici es ven pel relat: qui l'explica fora del taller hi aporta tant com el punt de venda."
     },
@@ -675,6 +711,14 @@
        "intangible",
        "historias y acceso al taller"
       ]
+     ],
+     "passos": [
+      "Prototipar 3 referencias",
+      "Montar el taller",
+      "Precios y márgenes",
+      "Canal de venta piloto",
+      "Iterar con lo que dice la clientela",
+      "Escalar la producción"
      ],
      "centre": "Artesanos/as",
      "bona": "El oficio se vende por el relato: quien lo cuenta fuera del taller aporta tanto como el punto de venta."
@@ -862,6 +906,14 @@
        "seguiment i novetats"
       ]
      ],
+     "passos": [
+      "Definir 2-3 verticals",
+      "Cas d'ús de referència",
+      "Portfoli i propostes tipus",
+      "Primer contracte",
+      "Bucle de recomanació",
+      "Estabilitzar cartera"
+     ],
      "centre": "Consultors/es",
      "bona": "Al servei tècnic, el següent client arriba per un cas que ja ha funcionat: cuida qui ja hi ha passat."
     },
@@ -949,6 +1001,14 @@
        "intangible",
        "seguimiento y novedades"
       ]
+     ],
+     "passos": [
+      "Definir 2-3 verticales",
+      "Caso de uso de referencia",
+      "Portfolio y propuestas tipo",
+      "Primer contrato",
+      "Bucle de recomendación",
+      "Estabilizar la cartera"
      ],
      "centre": "Consultores/as",
      "bona": "En el servicio técnico, el siguiente cliente llega por un caso que ya ha funcionado: cuida a quien ya ha pasado por ahí."
@@ -1136,6 +1196,14 @@
        "accés anticipat i reconeixement"
       ]
      ],
+     "passos": [
+      "Prototip de fum",
+      "Pàgina d'entrada i llista d'espera",
+      "Primer usuari real",
+      "Iterar amb el retorn de la gent",
+      "Model de monetització",
+      "Escalar amb la comunitat"
+     ],
      "centre": "Equip producte",
      "bona": "Un producte digital viu de les ressenyes i de qui el recomana: dona-li accés abans que a ningú."
     },
@@ -1223,6 +1291,14 @@
        "intangible",
        "acceso anticipado y reconocimiento"
       ]
+     ],
+     "passos": [
+      "Prototipo de humo",
+      "Página de entrada y lista de espera",
+      "Primer usuario real",
+      "Iterar con lo que dice la gente",
+      "Modelo de monetización",
+      "Escalar con la comunidad"
      ],
      "centre": "Equipo de producto",
      "bona": "Un producto digital vive de las reseñas y de quien lo recomienda: dale acceso antes que a nadie."
@@ -1410,6 +1486,14 @@
        "confiança i acompanyament"
       ]
      ],
+     "passos": [
+      "Diagnòstic de necessitats",
+      "Formar cuidadores",
+      "Protocol de casos",
+      "Primeres 5 famílies",
+      "Enllaç serveis públics",
+      "Prevenció del burnout"
+     ],
      "centre": "Persones cuidadores",
      "bona": "La cura no s'aguanta només amb professionals: la xarxa veïnal avisa abans que ningú."
     },
@@ -1497,6 +1581,14 @@
        "intangible",
        "confianza y acompañamiento"
       ]
+     ],
+     "passos": [
+      "Diagnóstico de necesidades",
+      "Formar cuidadoras",
+      "Protocolo de casos",
+      "Primeras 5 familias",
+      "Enlace con los servicios públicos",
+      "Prevención del agotamiento"
      ],
      "centre": "Personas cuidadoras",
      "bona": "El cuidado no se sostiene solo con profesionales: la red vecinal avisa antes que nadie."
@@ -1684,6 +1776,14 @@
        "comunitat i ofertes de feina"
       ]
      ],
+     "passos": [
+      "Currículum mínim",
+      "Reclutar formadors",
+      "Espai i horaris",
+      "Cohort pilot",
+      "Avaluació i certificació",
+      "Bucle amb ex-alumnes"
+     ],
      "centre": "Formadors/es",
      "bona": "Els antics alumnes són la millor porta d'entrada: si la comunitat continua viva, recomanen."
     },
@@ -1771,6 +1871,14 @@
        "intangible",
        "comunidad y ofertas de trabajo"
       ]
+     ],
+     "passos": [
+      "Currículum mínimo",
+      "Reclutar formadores",
+      "Espacio y horarios",
+      "Cohorte piloto",
+      "Evaluación y certificación",
+      "Bucle con antiguos alumnos"
      ],
      "centre": "Formadores/as",
      "bona": "Los antiguos alumnos son la mejor puerta de entrada: si la comunidad sigue viva, recomiendan."
@@ -4620,7 +4728,7 @@
   function mapa(id, llengua, casa) {
     var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;
     var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };
-    return { abast: '', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || '', veda: M.veda || null };
+    return { abast: '', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || '', veda: M.veda || null, passos: m.passos || [] };
   }
   /* Quin model o sector s'assembla més al que algú explica amb les seves paraules.
      Sense IA: arrels curtes (sense accents ni plural); el nom i el «diu» compten doble i

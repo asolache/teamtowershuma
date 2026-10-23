@@ -43,6 +43,8 @@ etiquetas: [veda, mapa-de-valor, producte-artesa]
 
 **La bona pràctica.** L'ofici es ven pel relat: qui l'explica fora del taller hi aporta tant com el punt de venda.
 
+**Per posar-ho en marxa.** Prototipar 3 referències → Muntar el taller → Preus i marges → Canal de venda pilot → Iterar amb el retorn de la clientela → Escalar producció.
+
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
 

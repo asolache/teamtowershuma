@@ -43,6 +43,8 @@ etiquetas: [veda, mapa-de-valor, servei-tecnic]
 
 **La bona pràctica.** Al servei tècnic, el següent client arriba per un cas que ja ha funcionat: cuida qui ja hi ha passat.
 
+**Per posar-ho en marxa.** Definir 2-3 verticals → Cas d'ús de referència → Portfoli i propostes tipus → Primer contracte → Bucle de recomanació → Estabilitzar cartera.
+
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
 

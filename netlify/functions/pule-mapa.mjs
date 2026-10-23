@@ -71,7 +71,8 @@ export function neteja(d) {
     model: x.model && typeof x.model === 'object' && Array.isArray(x.model.pairs) ? { nom: t(x.model.nom, 80), bona: t(x.model.bona, 300),
       pairs: x.model.pairs.slice(0, 20).filter(Array.isArray).map(p => [t(p[0], 80), t(p[1], 80), mena(p[2]), t(p[3], 120), mena(p[4]), t(p[5], 120)]).filter(p => p[0] && p[1]),
       /* La veda del sector (knowledge/vna/sectors/): el que ja se sap, el que sol faltar i com es pregunta. */
-      veda: llista(x.model.veda, 'clau'), falta: llista(x.model.veda, 'falta'), preguntes: llista(x.model.veda, 'preguntes') } : null,
+      veda: llista(x.model.veda, 'clau'), falta: llista(x.model.veda, 'falta'), preguntes: llista(x.model.veda, 'preguntes'),
+      passos: (Array.isArray(x.model.passos) ? x.model.passos : []).slice(0, 8).map(s => t(s, 120)).filter(Boolean) } : null,
     nivel: t(x.nivel, 60), capes: (Array.isArray(x.capes) ? x.capes : []).filter(c => c === 'extranet' || c === 'intranet')
   };
 }
@@ -90,6 +91,7 @@ export function text(d) {
     if (d.model.bona) l.push('Buena práctica: ' + d.model.bona);
     if (d.model.veda.length) l.push('Lo que no se paga y ya se sabe que el sector necesita (la base, no lo que la diferencia):', ...d.model.veda.map(s => '· ' + s));
     if (d.model.falta.length) l.push('Lo que suele faltar en proyectos así:', ...d.model.falta.map(s => '· ' + s));
+    if (d.model.passos.length) l.push('Las fases que suelen seguir para ponerlo en marcha: ' + d.model.passos.join(' → '));
     if (d.model.preguntes.length) l.push('Preguntas que suelen ayudar:', ...d.model.preguntes.map(s => '· ' + s));
   }
   if (d.nivel || d.capes.length) l.push('', 'Web que pide: ' + [d.nivel, d.capes.length ? 'con ' + d.capes.join(' y ') : 'solo la parte pública'].filter(Boolean).join(', '));

@@ -112,6 +112,47 @@ const T = {
    castellà; l'anglès, el dia que l'app el demani (fins llavors, el castellà).
    Els textos que ja són a `T` no es repeteixen aquí. */
 const TS = {
+  /* Les fases de la Matriu dels models de negoci (kanban de PROTOTYPE_MAPS i «negoci»). */
+  'Dibuixar el mapa ideal': 'Dibujar el mapa ideal',
+  'Apuntar el que passa': 'Apuntar lo que pasa',
+  'Comparar real i ideal': 'Comparar real e ideal',
+  'Decidir el següent pas': 'Decidir el siguiente paso',
+  'Definir el servei mínim viable': 'Definir el servicio mínimo viable',
+  'Formar el primer equip d\'oferents': 'Formar el primer equipo de oferentes',
+  'Publicar al banc de temps': 'Publicar en el banco de tiempo',
+  'Primeres 10 prestacions': 'Primeras 10 prestaciones',
+  'Retorn i ajust': 'Retorno y ajuste',
+  'Ampliació territorial': 'Ampliación territorial',
+  'Prototipar 3 referències': 'Prototipar 3 referencias',
+  'Muntar el taller': 'Montar el taller',
+  'Preus i marges': 'Precios y márgenes',
+  'Canal de venda pilot': 'Canal de venta piloto',
+  'Iterar amb el retorn de la clientela': 'Iterar con lo que dice la clientela',
+  'Escalar producció': 'Escalar la producción',
+  'Definir 2-3 verticals': 'Definir 2-3 verticales',
+  'Cas d\'ús de referència': 'Caso de uso de referencia',
+  'Portfoli i propostes tipus': 'Portfolio y propuestas tipo',
+  'Primer contracte': 'Primer contrato',
+  'Bucle de recomanació': 'Bucle de recomendación',
+  'Estabilitzar cartera': 'Estabilizar la cartera',
+  'Prototip de fum': 'Prototipo de humo',
+  'Pàgina d\'entrada i llista d\'espera': 'Página de entrada y lista de espera',
+  'Primer usuari real': 'Primer usuario real',
+  'Iterar amb el retorn de la gent': 'Iterar con lo que dice la gente',
+  'Model de monetització': 'Modelo de monetización',
+  'Escalar amb la comunitat': 'Escalar con la comunidad',
+  'Diagnòstic de necessitats': 'Diagnóstico de necesidades',
+  'Formar cuidadores': 'Formar cuidadoras',
+  'Protocol de casos': 'Protocolo de casos',
+  'Primeres 5 famílies': 'Primeras 5 familias',
+  'Enllaç serveis públics': 'Enlace con los servicios públicos',
+  'Prevenció del burnout': 'Prevención del agotamiento',
+  'Currículum mínim': 'Currículum mínimo',
+  'Reclutar formadors': 'Reclutar formadores',
+  'Espai i horaris': 'Espacio y horarios',
+  'Cohort pilot': 'Cohorte piloto',
+  'Avaluació i certificació': 'Evaluación y certificación',
+  'Bucle amb ex-alumnes': 'Bucle con antiguos alumnos',
   'acompanyament': 'acompañamiento',
   'salut comunitària': 'salud comunitaria',
   'Formadors': 'Formadores',
@@ -597,9 +638,14 @@ function models() {
     roles: m.roles.map(r => (i < 0 ? r : tr(r, i))),
     pairs: m.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || i < 0 ? p[k] : tr(p[k], i))))
   });
-  /* L'anglès queda com a l'app: les bones pràctiques, de moment, en català i castellà. */
-  const out = llegeixApp().map(m => ({ id: m.id, icona: m.icon, paraules: PARAULES[m.id] || '', ca: completa(m.id, llengua(m, -1), 'ca', falten), es: completa(m.id, llengua(m, 0), 'es', falten), en: llengua(m, 1) }));
   const es = x => TS[x] || (T[x] ? T[x][0] : (falten.add(x), x));
+  /* Les fases que la Matriu proposa en crear el projecte (el `kanban` de l'app): el camí per posar-ho en marxa. */
+  const ambPassos = (m, cat) => Object.assign(m, { passos: (m._k || []).map(k => (cat ? k : es(k))) });
+  /* L'anglès queda com a l'app: les bones pràctiques, de moment, en català i castellà. */
+  const out = llegeixApp().map(m => ({ id: m.id, icona: m.icon, paraules: PARAULES[m.id] || '',
+    ca: completa(m.id, ambPassos(Object.assign(llengua(m, -1), { _k: m.kanban }), true), 'ca', falten),
+    es: completa(m.id, ambPassos(Object.assign(llengua(m, 0), { _k: m.kanban }), false), 'es', falten), en: llengua(m, 1) }));
+  out.forEach(M => ['ca', 'es'].forEach(ll => { delete M[ll]._k; }));
   const sector = (a, cat) => ({
     nom: cat ? a.name : es(a.name), diu: cat ? a.one : es(a.one),
     roles: a.roles.map(r => (cat ? r : es(r))),
@@ -715,7 +761,7 @@ function genera() {
     + '  function mapa(id, llengua, casa) {\n'
     + '    var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
     + '    var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };\n'
-    + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || \'\', veda: M.veda || null };\n'
+    + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || \'\', veda: M.veda || null, passos: m.passos || [] };\n'
     + '  }\n'
     + '  /* Quin model o sector s\'assembla més al que algú explica amb les seves paraules.\n'
     + '     Sense IA: arrels curtes (sense accents ni plural); el nom i el «diu» compten doble i\n'
