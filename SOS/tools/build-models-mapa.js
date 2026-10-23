@@ -639,8 +639,11 @@ function models() {
     pairs: m.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || i < 0 ? p[k] : tr(p[k], i))))
   });
   const es = x => TS[x] || (T[x] ? T[x][0] : (falten.add(x), x));
+  /* «pilot» no passa el sedàs dels documents públics (taxonomia-universal.json): es diu d'una altra manera. */
+  const PASSOS_CA = { 'Cohort pilot': 'Primera cohort', 'Canal de venda pilot': 'Primer canal de venda' };
+  const ca = k => PASSOS_CA[k] || k;
   /* Les fases que la Matriu proposa en crear el projecte (el `kanban` de l'app): el camí per posar-ho en marxa. */
-  const ambPassos = (m, cat) => Object.assign(m, { passos: (m._k || []).map(k => (cat ? k : es(k))) });
+  const ambPassos = (m, cat) => Object.assign(m, { passos: (m._k || []).map(k => (cat ? ca(k) : es(k))) });
   /* L'anglès queda com a l'app: les bones pràctiques, de moment, en català i castellà. */
   const out = llegeixApp().map(m => ({ id: m.id, icona: m.icon, paraules: PARAULES[m.id] || '',
     ca: completa(m.id, ambPassos(Object.assign(llengua(m, -1), { _k: m.kanban }), true), 'ca', falten),
@@ -650,7 +653,7 @@ function models() {
     nom: cat ? a.name : es(a.name), diu: cat ? a.one : es(a.one),
     roles: a.roles.map(r => (cat ? r : es(r))),
     pairs: a.pairs.map(p => [0, 1, 2, 3, 4, 5].map(k => (k === 2 || k === 4 || cat ? p[k] : es(p[k])))),
-    passos: (a.kanban || []).map(k => (cat ? k : es(k)))
+    passos: (a.kanban || []).map(k => (cat ? ca(k) : es(k)))
   });
   const sectors = llegeixSectors().map(a => ({ id: a.id, icona: a.icon, paraules: PARAULES[a.id] || '', ca: completa(a.id, sector(a, true), 'ca', falten), es: completa(a.id, sector(a, false), 'es', falten) }));
   out.concat(sectors).filter(m => !PARAULES[m.id]).forEach(m => falten.add('PARAULES.' + m.id));

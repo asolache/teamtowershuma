@@ -620,7 +620,7 @@
       "Prototipar 3 referències",
       "Muntar el taller",
       "Preus i marges",
-      "Canal de venda pilot",
+      "Primer canal de venda",
       "Iterar amb el retorn de la clientela",
       "Escalar producció"
      ],
@@ -1780,7 +1780,7 @@
       "Currículum mínim",
       "Reclutar formadors",
       "Espai i horaris",
-      "Cohort pilot",
+      "Primera cohort",
       "Avaluació i certificació",
       "Bucle amb ex-alumnes"
      ],

@@ -43,7 +43,7 @@ etiquetas: [veda, mapa-de-valor, formacio]
 
 **La bona pràctica.** Els antics alumnes són la millor porta d'entrada: si la comunitat continua viva, recomanen.
 
-**Per posar-ho en marxa.** Currículum mínim → Reclutar formadors → Espai i horaris → Cohort pilot → Avaluació i certificació → Bucle amb ex-alumnes.
+**Per posar-ho en marxa.** Currículum mínim → Reclutar formadors → Espai i horaris → Primera cohort → Avaluació i certificació → Bucle amb ex-alumnes.
 
 _Generat per `SOS/tools/build-models-mapa.js` des de `SOS/lib/models-mapa.js`; «qui ho fa» és la regla del tauler de l'app. No s'edita a mà._
 <!--/TT-MAPA-->
