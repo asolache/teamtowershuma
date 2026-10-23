@@ -181,6 +181,16 @@ if (opcio('--nou')) {
   cpSync(join(__dirname, '..', 'knowledge', 'cervell', 'plantilla'), desti, { recursive: true, force: false, errorOnExist: false });
   const conf = JSON.parse(readFileSync(join(desti, 'cervell.json'), 'utf8'));
   if (opcio('--nom')) conf.nom = opcio('--nom');
+  /* El projecte és el seu primer ecosistema: així un document sense `de:` ja
+     sap de qui és, i la folksonomia no neix buida. */
+  const fFolk = join(desti, conf.folksonomia || 'saber/folksonomia.json');
+  if (opcio('--nom') && existsSync(fFolk)) {
+    const eco = String(conf.nom).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const F = JSON.parse(readFileSync(fFolk, 'utf8'));
+    F.ecosistemas = Object.assign({ [eco]: { nom: conf.nom, mena: 'home' } }, F.ecosistemas);
+    writeFileSync(fFolk, JSON.stringify(F, null, 2) + '\n');
+    conf.ecosistema = eco;
+  }
   writeFileSync(join(desti, 'cervell.json'), JSON.stringify(conf, null, 2) + '\n');
   /* El nom també al CLAUDE.md de la plantilla, si encara porta el de mostra. */
   const claude = join(desti, conf.comunicacio || 'CLAUDE.md');
@@ -489,17 +499,17 @@ const DT = {
     cand: 'Candidatas: se repiten y no cuelgan de ningún rol. Decide en la folksonomía si suben a un rol o quedan libres', cap: 'ninguna' }
 }[LG] || {};
 const docProbs = [], DOCS = [];
+const fUni = [UNIVERSAL, join(ARREL, C.universal || 'saber/heredado/taxonomia-universal.json')].find(f => existsSync(f));
+const UNI = (C.documents || C.arees) && fUni ? JSON.parse(readFileSync(fUni, 'utf8')) : null;
+const slug = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const valor = (fa, v) => (fa.valors.find(x => [x.id, x.ca, x.es, x.en, ...(x.alias || [])].some(a => slug(a) === slug(v))) || {}).id;
 if (C.documents) {
-  const fUni = [UNIVERSAL, join(ARREL, C.universal || 'saber/heredado/taxonomia-universal.json')].find(f => existsSync(f));
-  const UNI = fUni ? JSON.parse(readFileSync(fUni, 'utf8')) : null;
   if (!UNI) docProbs.push('cervell.json declara documents i no hi ha la taxonomia universal: porta-la amb  cervell.js --actualitza');
   else {
-    const slug = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const fFolk = join(ARREL, C.folksonomia || 'saber/folksonomia.json');
     const FOLK = existsSync(fFolk) ? JSON.parse(readFileSync(fFolk, 'utf8')) : {};
     const ecos = FOLK.ecosistemas || {}, folk = FOLK.etiquetas || {};
     const FAC = new Map(UNI.facetes.map(f => [f.id, f]));
-    const valor = (fa, v) => (fa.valors.find(x => [x.id, x.ca, x.es, x.en, ...(x.alias || [])].some(a => slug(a) === slug(v))) || {}).id;
     const nom = (fa, id) => { const x = fa.valors.find(v => v.id === id); return x ? x[LG] || x.id : id; };
     const TEMA = FAC.get('role'), ECO = FAC.get('ecosystem');
     Object.entries(ecos).forEach(([k, e]) => { if (!valor(ECO, e.mena || '')) docProbs.push(`${rel(fFolk)}: l'ecosistema «${k}» és de mena «${e.mena}», i les menes són ${ECO.valors.map(v => v.id).join(', ')}`); });
@@ -513,7 +523,7 @@ if (C.documents) {
       readdirSync(abs).sort().forEach(n => {
         const r = p.replace(/\/$/, '') + '/' + n;
         if (n.startsWith('.')) return;
-        if (statSync(join(ARREL, r)).isDirectory()) anar(r); else if (n.endsWith('.md') && join(ARREL, r) !== MAPA) fitxers.push(r);
+        if (statSync(join(ARREL, r)).isDirectory()) anar(r); else if (n.endsWith('.md') && n !== 'README.md' && join(ARREL, r) !== MAPA) fitxers.push(r);
       });
     };
     C.documents.forEach(anar);
@@ -696,6 +706,23 @@ if (PAGINA) {
   const velleta = existsSync(PAGINA) ? readFileSync(PAGINA, 'utf8') : '';
   if (velleta === pagina()) ok('la pàgina del cervell és la que sortiria ara');
   else bad(`la pàgina del cervell (${C.pagina}) és vella. Arregla-ho amb:  node ${C.eina}`);
+}
+
+/* ── 1b · Les àrees són les de sempre ───────────────────────────────────────
+   Recursos humans, màrqueting, vendes, logística… ja estan inventades
+   (APQC), i la taxonomia universal les resumeix en dotze rols. Si el cervell
+   declara `arees`, cada subcarpeta n'ha de ser una, amb el nom en la llengua
+   del cervell («ventas», «vendes» o «sales» valen igual). Una àrea inventada
+   és un calaix que ningú més sap llegir. Veure `estructura.md`. */
+if (C.arees && existsSync(join(ARREL, C.arees))) {
+  const ROL = UNI && UNI.facetes.find(f => f.id === 'role');
+  if (!ROL) bad(`cervell.json declara arees i no hi ha la taxonomia universal: porta-la amb  cervell.js --actualitza`);
+  else {
+    const subs = readdirSync(join(ARREL, C.arees)).filter(n => !n.startsWith('.') && statSync(join(ARREL, C.arees, n)).isDirectory());
+    const mal = subs.filter(n => !valor(ROL, n));
+    if (!mal.length) ok(`les ${subs.length} àrees de ${C.arees}/ són rols de la taxonomia universal`);
+    else bad(`${C.arees}/ té àrees que no són cap rol: ${mal.join(', ')}. Els rols són ${ROL.valors.map(v => v[LG] || v.id).join(', ')}`);
+  }
 }
 
 /* ── 2 · Les peces del cervell ───────────────────────────────────────────── */

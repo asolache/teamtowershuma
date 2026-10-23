@@ -5472,6 +5472,15 @@ codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
   (`netlify/functions/cervell-github.mjs`). No és l'scope `repo` d'una OAuth
   App, que també dona escriptura. Mentre no hi hagi les variables de l'App,
   el botó no surt.
+- **Fet (pas 1 de l'arbre estàndard, 23/10):** `SOS/knowledge/cervell/estructura.md`
+  i la plantilla amb `areas/`, `proyectos/`, `recursos/` i `mapa/`; la guarda
+  comprova que cada àrea és un dels dotze rols. No s'ha mogut res existent.
+- **Pendent (pas 2):** a la pàgina del cervell, la cobertura per àrees: quins
+  rols tenen documents i quins són buits.
+- **Pendent (pas 3):** portar-ho als cervells que ja hi són (pàgina de l'Àlvar,
+  Events Penedès) amb `--actualitza`, sense moure fitxers sense el seu sí.
+- **A explorar:** espais al núvol perquè un mentor creï i comparteixi un
+  cervell amb un client (repo plantilla «Crea el teu cervell» + l'App de lectura).
 - **Pendent:** integrar tots els models de TeamTowers Humà com a peces del
   manifest (mapes tipus, mapa de valor, taxonomia universal) perquè cada vista
   els trobi igual.
