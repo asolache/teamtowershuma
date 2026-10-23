@@ -86,6 +86,24 @@ responsable del tractament. Per això cal:
 - un contracte d'encàrrec amb cada client per a les dades de la seva web. Cap import a la
 web pública: els preus només dins del seu espai.
 
+### El registre amb valor de prova (demanat 22/10/2026)
+
+**Demanat per l'Àlvar** (22/10/2026): integrar per principi la web 3 a tot el
+que fem (semàntic, IA, triple entrada) i fer del registre públic un negoci
+propi, ser-ne pioners i popularitzar-lo. El principi és la veda 180.
+
+- Pendent · fase 1: el tancament del registre del SOS (el hash del dia o del
+  mes, que la cadena ja té) es segella amb un prestador de segells de temps
+  qualificat (eIDAS); el segell es desa al costat del tancament i una guarda
+  comprova que cada tancament en té.
+- Pendent · fase 2: la mateixa peça per a la comptabilitat de valor i el kanban
+  d'una comunitat (Events Penedès com a primer node, i cada cervell fill).
+- Pendent · fase 3: un llibre major electrònic qualificat (eIDAS 2) quan hi
+  hagi prestadors; contractes intel·ligents que automatitzen el que el vistiplau
+  ja decideix.
+- Abans de dir-ho fora: que un advocat confirmi el valor legal. El negoci (preu,
+  a qui es ven) el porta el pla de negoci únic.
+
 ### Un sol camí del client per a totes les marques (demanat 22/10/2026)
 
 **Demanat per l'Àlvar** (22/10/2026): primer aportem valor, després una pàgina
