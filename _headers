@@ -4,3 +4,8 @@
 # El motor del cervell el llegeixen les webs filles per fer-ne el fitxer sense connexió.
 /SOS/cervell/*
   Access-Control-Allow-Origin: *
+
+# L'espai del client al portal (acceso.teamtowershuma.com) llegeix el camí de
+# cada client del cervell comú (SOS/lib/espai-client.js).
+/SOS/knowledge/cervell/heretat.json
+  Access-Control-Allow-Origin: *
