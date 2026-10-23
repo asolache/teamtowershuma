@@ -611,9 +611,44 @@ function models() {
   return { out, sectors, falten: [...falten] };
 }
 
+/* Qui fa cada lliurament: la regla del Kanban de l'app (`fluxAutomatitzable`,
+   veda 164), llegida de SOS/index.html tal com és, igual que fa
+   `automatitza.js`, i els noms dels productes de
+   `knowledge/cervell/automatitzable.json`. A /cliente/ marca què pot preparar la
+   màquina al mapa de cada client (demanat per l'Àlvar el 22/10/2026). Un
+   intangible i els diners són sempre de persona perquè l'app ho diu. */
+function regla() {
+  const app = readFileSync(join(ARREL, 'index.html'), 'utf8');
+  const tros = (inici, fi) => {
+    const a = app.indexOf(inici), b = a < 0 ? -1 : app.indexOf(fi, a);
+    if (b < 0) throw new Error('La regla de l\'app no es troba a SOS/index.html: ' + inici);
+    return app.slice(a, b + fi.length);
+  };
+  const codi = tros('const normKind=', 'const isIntangible=k=>normKind(k)===\'intangible\';') + '\n'
+    + tros('const ENTREGABLES=[', '\n  return{pot:true,motiu:\'\',tipus:t};\n}');
+  const prods = JSON.parse(readFileSync(join(ARREL, 'knowledge', 'cervell', 'automatitzable.json'), 'utf8')).productes
+    .map(p => ({ nom: p.nom, ca: p.diu, es: p.diu_es || p.diu, patrons: p.patrons }));
+  return { codi, prods };
+}
+
+/* Les dues funcions que viatgen a la llibreria tal com s'escriuen aquí. */
+function pla(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+function automatitza(que, mena, llengua) {
+  var a = fluxAutomatitzable({ kind: mena, label: que });
+  var r = { qui: a.pot ? 'maquina' : (a.motiu === 'intangible' || a.tipus) ? 'persona' : 'visita', tipus: a.tipus || null };
+  if (r.qui === 'maquina') {
+    var t = pla(que), p = PRODUCTES.filter(function (x) {
+      return x.patrons.some(function (w) { return new RegExp('(^|[^a-z0-9])' + pla(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(t); });
+    })[0];
+    if (p) { r.producte = p.nom; r.diu = p[llengua] || p.es; }
+  }
+  return r;
+}
+
 /* El rol on passa més: el centre del mapa, el que a /cliente/ passa a ser «tu». */
 function genera() {
   const { out, sectors, falten } = models();
+  const R = regla();
   const cos = '/* GENERAT per SOS/tools/build-models-mapa.js des de SOS/index.html (DYNAMICS «negoci»,\n'
     + '   PROTOTYPE_MAPS i CRITICAL_ACTIVITIES de la Matriu) · no s\'edita a mà. Els mapes tipus del SOS en\n'
     + '   tres llengües i els catorze sectors en català i castellà: la base de coneixement de fluxos de valor. */\n'
@@ -657,7 +692,14 @@ function genera() {
     + '    });\n'
     + '    return millor;\n'
     + '  }\n'
-    + '  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix };\n'
+    + '  /* La regla de l\'app (SOS/index.html), tal com és: qui fa cada lliurament. */\n'
+    + '  ' + R.codi.replace(/\n/g, '\n  ') + '\n'
+    + '  var PRODUCTES = ' + JSON.stringify(R.prods) + ';\n'
+    + '  var pla = ' + pla.toString() + ';\n'
+    + '  /* maquina: la prepara la màquina (amb el producte que ja ho fa, si n\'hi ha); persona: la fa\n'
+    + '     una persona (el que no es paga i els diners, sempre); visita: es decideix a la sessió. */\n'
+    + '  ' + automatitza.toString().replace(/\n/g, '\n  ') + '\n'
+    + '  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix, automatitza: automatitza };\n'
     + '});\n';
   return { cos, falten };
 }

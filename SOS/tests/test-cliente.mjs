@@ -228,9 +228,10 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForFunction(() => document.querySelectorAll('#cl-ia .ia-prop').length === 3 && !document.querySelector('#cl-ia .ia-prop.fet'), null, { timeout: 5000 });
   ok(pets[2][1].dades.nota === 'Sobre todo antiguos alumnos' && pets[2][1].dades.alrededor.length === 7, 'otra vuelta lleva su respuesta y el dibujo ya cambiado');
 
-  await p.click('#cl-ia-escriu');
+  ok(await p.locator('#cl-ia-seguir').count() === 1, 'al acabar de pulir, el siguiente paso está ahí mismo: los textos de la web');
+  await p.click('#cl-ia-seguir');
   await p.waitForSelector('#cl-ia-web .ia-textos', { timeout: 5000 });
-  ok(pets[3][1].pas === 'web', 'los textos de la web, con la misma sesión');
+  ok(pets[3][1].pas === 'web', 'los textos de la web, con la misma sesión y sin buscar el botón');
   await p.fill('#cl-ia-web .ia-textos .fila:nth-child(2) textarea', 'Aquí empieza tu camino, a tu ritmo.');
   await p.click('#cl-ia-web button:has-text("Verlo en el boceto")');
   await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden && /Formamos a los profesores/.test(document.getElementById('cl-marc').getAttribute('srcdoc') || ''), null, { timeout: 15000 });
@@ -274,6 +275,7 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   const resta = await p.evaluate(() => (document.querySelector('main').innerText.match(/\b(Quién|Cuéntanos|Elige|Empieza|Tu cuenta|Enviar a TeamTowers y)\b/g) || []));
   ok(!resta.length, 'cap frase en castellà a la vista' + (resta.length ? ': ' + resta.join(', ') : ''));
   ok(await p.isHidden('#cl-sug'), 'sense res escrit, cap suggeriment');
+  ok(await p.isHidden('#cl-auto'), 'sense ningú al voltant, no parla d\'automatitzar');
   await p.fill('#cl-inicial', 'Som una cooperativa d\'habitatge i volem que els socis trobin pis assequible');
   await p.waitForSelector('#cl-sug:not([hidden])', { timeout: 3000 });
   ok(/Habitatge/i.test(await p.textContent('#cl-sug')), 'pel que escriu, li suggereix el sector d\'habitatge: ' + (await p.textContent('#cl-sug')).slice(0, 90));
@@ -281,6 +283,12 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   const fc = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
   ok(fc.modelo === 'habitatge' && fc.alrededor.length >= 4 && fc.casa === 'Grup motor' && await p.isHidden('#cl-sug'), 'amb un clic s\'omple qui hi ha al voltant, amb qui promou al centre, i el suggeriment marxa');
   ok(/Bona pràctica:.*veïnat/.test(await p.textContent('#cl-bona')), 'i explica la bona pràctica del model');
+  await p.click('#cl-afegeix');
+  const fil = p.locator('#cl-files .fila:last-child input');
+  await fil.nth(0).fill('Qui finança'); await fil.nth(1).fill('el préstec'); await fil.nth(2).fill('l\'informe trimestral');
+  await p.waitForFunction(() => /informe trimestral/.test(document.getElementById('cl-auto').textContent));
+  const au = await p.textContent('#cl-auto');
+  ok(/El que pot anar sol/.test(au) && /⚙ l'informe trimestral/.test(au) && /sempre una persona/.test(au), 'marca el que pot preparar la màquina (l\'informe), i diu que el que no es paga i els diners són de persona');
   ok(D.revisa(D.mapa(Object.assign({ respuestas: { objetivo: 'Habitatge assequible per als socis' } }, fc)), MV, 'ca').llest, 'el mapa que surt del model ja està llest per dibuixar');
   await p.click('.tt-nav .lang-b[data-lang="es"]');
   await p.waitForFunction(() => document.documentElement.lang === 'es' && /Empieza tu proyecto/.test(document.querySelector('h1').textContent));

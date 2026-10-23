@@ -4309,5 +4309,135 @@
     });
     return millor;
   }
-  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix };
+  /* La regla de l'app (SOS/index.html), tal com és: qui fa cada lliurament. */
+  const normKind=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+    return(m==='i'||m==='intangible')?'intangible':'tangible';};
+  const menaExplicita=k=>{const m=String(k==null?'':k).trim().toLowerCase();
+    return m==='t'||m==='tangible'||m==='i'||m==='intangible';};
+  const isIntangible=k=>normKind(k)==='intangible';
+  const ENTREGABLES=[
+    {id:'acta',nom:'Acta de reunió',ic:'📋',maquina:true,
+     que:'El que s\'ha decidit, qui hi era i què queda pendent, amb data.',
+     cal:['assistents','punts tractats','acords'],
+     surt:'Data, assistents, acords numerats i pendents amb responsable i termini.'},
+    {id:'informe',nom:'Informe periòdic',ic:'📊',maquina:true,
+     que:'El que s\'ha mogut en un període, amb les xifres que ja hi ha al registre.',
+     cal:['període','apunts del ledger','rols actius'],
+     surt:'Resum, taula d\'activitat, comparació amb el període anterior i avisos.'},
+    {id:'justificacio',nom:'Justificació de subvenció',ic:'🧾',maquina:true,
+     que:'El que demana la convocatòria, omplert amb el que consta al registre.',
+     cal:['convocatòria','despeses','activitat realitzada'],
+     surt:'Memòria d\'activitat i taula de despesa, en el format que demani la plantilla.'},
+    {id:'inventari',nom:'Inventari',ic:'📦',maquina:true,
+     que:'Què hi ha, de qui és, en quin estat i on para.',
+     cal:['objectes','estat','ubicació'],
+     surt:'Taula amb valor estimat, desgast acumulat i qui n\'és responsable.'},
+    {id:'convocatoria',nom:'Convocatòria',ic:'📣',maquina:true,
+     que:'Cridar la gent a una cosa concreta, amb tot el que cal saber per venir.',
+     cal:['què','quan','on','qui hi ha d\'anar'],
+     surt:'Text curt per als canals, amb data, lloc, ordre del dia i com confirmar.'},
+    {id:'comanda',nom:'Comanda o repartiment',ic:'🛒',maquina:true,
+     que:'Qui ha demanat què, quant costa i com es reparteix.',
+     cal:['peticions','preus','punt de repartiment'],
+     surt:'Full de comanda per llar, total per proveïdor i full de repartiment.'},
+    {id:'fitxa',nom:'Fitxa pública',ic:'🪪',maquina:true,
+     que:'Com s\'explica a fora el que fa un node o una dinàmica.',
+     cal:['què ofereix','a qui','com s\'hi arriba'],
+     surt:'Fitxa breu per al directori, sense cap dada personal.'},
+    /* Els de negoci (veda 163): sense eina a l'app encara; al kit, /tasca. */
+    {id:'pressupost',nom:'Pressupost',ic:'🧮',maquina:true,
+     que:'Què es lliurarà i en quina quantitat, perquè qui el rep ho valori abans de dir que sí.',
+     cal:['què demana qui el rep','conceptes i quantitats','tarifa publicada, si n\'hi ha'],
+     surt:'Línies amb concepte, quantitat, unitat i preu de la tarifa publicada o [a completar], què no hi entra i fins quan val. Sense total: la màquina no suma.'},
+    {id:'proposta',nom:'Proposta',ic:'📝',maquina:true,
+     que:'El que s\'ofereix a qui ho ha de decidir: per a què, com, per quins rols i en quins terminis.',
+     cal:['què necessita qui la rep','què s\'ofereix','fases i terminis'],
+     surt:'Necessitat, el que s\'ofereix, fases amb terminis, quin rol fa què i què queda fora. Sense imports: van al pressupost.'},
+    {id:'resposta',nom:'Resposta a una consulta',ic:'💬',maquina:true,
+     que:'La resposta escrita a una pregunta concreta, feta amb el que la casa ja té dit.',
+     cal:['la consulta, sense dades de qui la fa','el que ja consta (web, fitxa, condicions)'],
+     surt:'Text curt que respon punt per punt, marca amb [a completar] el que no se sap i diu com seguir. No promet res que no consti.'},
+    /* Els que no poden sortir d'una màquina, i el motiu escrit. Sense aquestes
+       entrades, la taxonomia semblaria dir que tot és automatitzable i que els
+       que falten és que encara no els hem fet. */
+    {id:'acord',nom:'Acord o decisió',ic:'⚖️',maquina:false,
+     que:'El que un grup ha decidit i per què. No és el document: és la decisió.',
+     cal:['debat','vots','qui ho sosté'],
+     surt:'No surt d\'una màquina. El redacta qui ha estat a la sala; la màquina, com a molt, en pren acta després.'},
+    /* Els diners (veda 163): redactar-los seria fer veure que s'ha cobrat. */
+    {id:'cobrament',nom:'Factura o cobrament',ic:'💶',maquina:false,
+     que:'Diners que es cobren o es paguen, i el document que en dona fe. No és el que es demana: és el que es cobra.',
+     cal:['import','document fiscal','qui ho cobra'],
+     surt:'No surt d\'una màquina. La factura la numera el programa de facturació o qui porta els comptes, i un cobrament només el dona per fet qui el rep.'}
+  ];
+  const entregableMeta=id=>ENTREGABLES.find(e=>e.id===id)||null;
+  
+  /* Quin entregable demana un flux, deduït de com està escrit. Mateix patró que
+     `RETURN_HINTS`: no s'inventa res, es proposa i es pot corregir a mà posant
+     `entregable` a l'intercanvi. Un flux sense tipus reconegut **no és
+     automatitzable**, i és la resposta correcta: vol dir que encara no sabem què
+     s'ha de produir.
+  
+     Guanya la primera. Les de negoci, estretes i amb PISTA_MAI (veda 163). Res
+     de lookbehind: Safari <16.4 no el compila. */
+  const PISTA_MAI='factur|pagament|cobrament|\\bpag(o|os)\\b|\\bcobros?\\b|rebut|recibo|acord|acuerdo|decisi|decidi|vot|aprova|aprob|accept|acept|signa|firma|resoluci|reclamaci|queix|queja|demanda|den[uú]nci|recurs|requeri|legaci|sanci|multa|inspecci|jur[ií]dic|legal|advoca|abogad|laboral|assetja|acoso|p[uú]blic|ciutad|ciudad|municip|ajuntament|ayuntamiento|govern|gobierno|diputaci|generalitat|ministeri|hisenda|hacienda|tribut|fiscal|participati|m[eèé]dic|metge|pacient|salu[td]|sanit|cl[ií]nic|diagn|terap|tractament|tratamiento|psic|veterin';
+  const pistaNegoci=(cap,mes)=>new RegExp('^((el|la|els|les|un|una|uns|unes|los|las|nou|nova|nous|noves|nuevo|nueva|nuevos|nuevas) )*'+cap+'(?!.*('+PISTA_MAI+(mes?'|'+mes:'')+'))','i');
+  const ENTREGABLE_HINTS=[
+    [/^((el|la|els|les|un|una|uns|unes|los|las) |l')*(factur|pagament|cobrament|pagos?\b|cobros?\b)/i,'cobrament'],
+    [/\bacta|reuni|assemblea/i,'acta'],
+    [/informe|memòria|memoria|indicador|seguiment|retiment/i,'informe'],
+    [/justific|subvenc|convocatòria de subvenc|fons/i,'justificacio'],
+    [pistaNegoci('(pressupost|presupuest)(?!o?s? [iy] )(os?)?','compte|cuenta|propi|partida|anual|general|despes|gastos|ingress|ingreso|tresorer|tesorer|\\bestat\\b|\\bestado\\b|consell|consejo'),'pressupost'],
+    [pistaNegoci('(respost(a|es)|respuestas?) (al|als|a l\'|a) ?((la|les|una|unes|un|uns|el|los|las) )?(consult|pregunt|dubt|dud|client|interessa|interesa)'),'resposta'],
+    [/inventari|estoc|material|objecte|\beina|préstec|prestec/i,'inventari'],
+    [/convoc|difusió|difusio|crida|comunicat|butlletí|butlleti/i,'convocatoria'],
+    [/comanda|comandes|compra|cistell|repartiment|liquidació|liquidacio/i,'comanda'],
+    [/factur|pagament|cobrament|\bpagos?\b|\bcobros?\b/i,'cobrament'],
+    [/fitxa|directori|alta pública|alta publica|publicació|publicacio/i,'fitxa'],
+    [/acord|acuerdo|decisió|decisio|vot|aprovació|aprovacio|aprobaci|resoluci/i,'acord'],
+    [pistaNegoci('(propost(a|es)|propuestas?)','econ|de valor|preu|precio|tarif|honorari|salari|\\bsou\\b|sueldo|retribuci|quota|cuota|pressupost|presupuest|licitaci'),'proposta']
+  ];
+  const entregableDe=x=>{
+    if(x&&x.entregable&&entregableMeta(x.entregable))return x.entregable;
+    const h=ENTREGABLE_HINTS.find(e=>e[0].test((x&&x.label)||''));
+    return h?h[1]:null;
+  };
+  
+  /* Qui ha de fer una carta: la màquina o una persona.
+     L'ordre de les comprovacions **és la regla**, i per això l'intangible va
+     primer: cap etiqueta, cap tipus i cap configuració el pot convertir en
+     candidat. Si algun dia aquesta condició es mou de lloc, el que es trencarà
+     no és una funció — és la promesa de la casa. */
+  function fluxAutomatitzable(x){
+    if(!x)return{pot:false,motiu:'sense flux'};
+    /* Doble pany, i els dos abans de mirar cap tipus. El primer és la regla: un
+       intangible no s'automatitza mai. El segon és el que la fa sòlida: no n'hi
+       ha prou de descartar el que sabem que és intangible, cal **exigir que sigui
+       explícitament tangible**. Una mena desconeguda o mal escrita cau del costat
+       segur, que és el de la persona, i ho diu amb el seu nom en comptes de
+       fer-la passar per intangible. */
+    if(isIntangible(x.kind))return{pot:false,motiu:'intangible',tipus:null};
+    if(!menaExplicita(x.kind))return{pot:false,motiu:'mena desconeguda',tipus:null};
+    const t=entregableDe(x);
+    if(!t)return{pot:false,motiu:'sense entregable declarat',tipus:null};
+    const m=entregableMeta(t);
+    if(!m.maquina)return{pot:false,motiu:'el tipus no surt d\'una màquina',tipus:t};
+    return{pot:true,motiu:'',tipus:t};
+  }
+  var PRODUCTES = [{"nom":"Del formulario a la propuesta","ca":"l'esborrany surt sol de la petició; una persona el revisa abans d'enviar-lo","es":"el borrador sale solo de la petición; una persona lo revisa antes de enviarlo","patrons":["propuesta","proposta","presupuesto","pressupost","cotizaci","cotitzaci","oferta"]},{"nom":"Tu día en una pantalla","ca":"el correu, el calendari i el CRM en una pantalla, sense picar res","es":"el correo, el calendario y el CRM en una pantalla, sin teclear nada","patrons":["agenda","calendari","seguimiento","seguiment","recordatori","aviso","avís","avis","informe de estado","informe d'estat"]},{"nom":"La red que se mantiene sola","ca":"cada partner manté la seva fitxa i autoritza la seva pàgina amb un clic","es":"cada partner mantiene su ficha y autoriza su página con un clic","patrons":["ficha","fitxa","disponibilidad","disponibilitat","datos de proveedor","dades de proveïdor","alta de proveedor","alta de proveïdor"]},{"nom":"Tu catálogo de partners","ca":"el catàleg i els dossiers es generen de les dades, no es maquetan","es":"el catálogo y los dossieres se generan de los datos, no se maquetan","patrons":["catálogo","catalogo","catàleg","cataleg","dossier","tarifa"]},{"nom":"Leads ordenados por potencial","ca":"la llista s'enriqueix i s'ordena sola; a qui es truca ho decideix una persona","es":"la lista se enriquece y se ordena sola; a quién se llama lo decide una persona","patrons":["lead","contactos","contactes","prospecci","base de datos de clientes","base de dades de clients"]},{"nom":"Tu red en el mapa","ca":"on és cada partner i què hi ha a prop, al mapa del territori","es":"dónde está cada partner y qué hay cerca, en el mapa del territorio","patrons":["ubicaci","localizaci","localitzaci","territori","comarca","ruta"]},{"nom":"El diagnòstic","ca":"el formulari del web arriba al CRM com a lead, amb les respostes","es":"el formulario de la web llega al CRM como lead, con las respuestas","patrons":["diagnóstico","diagnostico","diagnòstic","diagnostic","formulario","formulari","encuesta","enquesta","inscripci"]}];
+  var pla = function pla(t) { return String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+  /* maquina: la prepara la màquina (amb el producte que ja ho fa, si n'hi ha); persona: la fa
+     una persona (el que no es paga i els diners, sempre); visita: es decideix a la sessió. */
+  function automatitza(que, mena, llengua) {
+    var a = fluxAutomatitzable({ kind: mena, label: que });
+    var r = { qui: a.pot ? 'maquina' : (a.motiu === 'intangible' || a.tipus) ? 'persona' : 'visita', tipus: a.tipus || null };
+    if (r.qui === 'maquina') {
+      var t = pla(que), p = PRODUCTES.filter(function (x) {
+        return x.patrons.some(function (w) { return new RegExp('(^|[^a-z0-9])' + pla(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(t); });
+      })[0];
+      if (p) { r.producte = p.nom; r.diu = p[llengua] || p.es; }
+    }
+    return r;
+  }
+  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix, automatitza: automatitza };
 });

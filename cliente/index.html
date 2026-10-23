@@ -152,6 +152,8 @@
         @media (min-width: 900px) { .fila { grid-template-columns: 1.1fr 1.4fr 8rem 1.4fr 8rem auto; align-items: end; } }
         .fila label { font-size: var(--t0); color: var(--muted); display: grid; gap: .2rem; }
         .fila .treu { min-height: 44px; }
+        .auto { margin-top: 1.4rem; max-width: 70ch; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+        .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
         .salut { display: grid; gap: .45rem; margin-top: 1.4rem; max-width: 60ch; }
         .salut li { display: flex; gap: .6rem; }
         .salut li::before { content: "○"; color: var(--orange); font-weight: 700; }
@@ -482,6 +484,7 @@
         </div>
         <h3 style="margin-top:1.6rem">¿Está listo para dibujarlo?</h3>
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
+        <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
     </div>
 </section>
 
@@ -758,6 +761,12 @@
         'Por lo que cuentas, tu proyecto se parece a': "Pel que expliques, el teu projecte s'assembla a",
         'Empezar con este modelo': 'Començar amb aquest model',
         'Buena práctica:': 'Bona pràctica:',
+        'Lo que puede ir solo': 'El que pot anar sol',
+        'De {0} cosas que van y vienen en tu dibujo, {1} las puede preparar la máquina, y una persona las revisa.': 'De {0} coses que van i vénen al teu dibuix, {1} les pot preparar la màquina, i una persona les revisa.',
+        'De {0} cosas que van y vienen en tu dibujo, ninguna está dicha aún como algo que prepare una máquina (un informe, un presupuesto, un acta…).': 'De {0} coses que van i vénen al teu dibuix, cap no està dita encara com una cosa que prepari una màquina (un informe, un pressupost, una acta…).',
+        'Lo que no se paga (confianza, recomendaciones, ideas) y el dinero los lleva siempre una persona.': 'El que no es paga (confiança, recomanacions, idees) i els diners els porta sempre una persona.',
+        'Otras {0} las vemos juntos en la sesión.': 'Les altres {0} les mirem junts a la sessió.',
+        '✦ Ahora, los textos de mi web': '✦ Ara, els textos de la meva web',
         /* Tu propuesta (#299) */
         'La extranet': "L'extranet", 'La intranet': 'La intranet',
         '7 · Tu propuesta': '7 · La teva proposta',
@@ -1066,6 +1075,32 @@
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
         r.punts.forEach(function (p) { c.appendChild(el('li', { class: p.ok ? 'ok' : '' }, p.diu)); });
+        pintaAuto();
+    }
+    /* Lo que se puede automatizar de su mapa: la regla del tablero de la app
+       (fluxAutomatitzable, en models-mapa.js), la misma que da el x % de la
+       landing. Lo que no se paga y el dinero los lleva siempre una persona. */
+    function auto() {
+        var l = [];
+        D.mapa(S).pairs.forEach(function (p) {
+            if (p[3]) l.push({ de: p[0], a: p[1], que: p[3], r: MM.automatitza(p[3], p[2], LL) });
+            if (p[5]) l.push({ de: p[1], a: p[0], que: p[5], r: MM.automatitza(p[5], p[4], LL) });
+        });
+        return l;
+    }
+    function pintaAuto() {
+        var c = $('#cl-auto'), l = MM.automatitza ? auto() : [], maq = l.filter(function (x) { return x.r.qui === 'maquina'; }), vis = l.filter(function (x) { return x.r.qui === 'visita'; });
+        c.hidden = l.length < 3; c.textContent = '';
+        if (c.hidden) return;
+        c.appendChild(el('h3', {}, t('Lo que puede ir solo')));
+        c.appendChild(el('p', {}, maq.length ? t('De {0} cosas que van y vienen en tu dibujo, {1} las puede preparar la máquina, y una persona las revisa.', l.length, maq.length)
+            : t('De {0} cosas que van y vienen en tu dibujo, ninguna está dicha aún como algo que prepare una máquina (un informe, un presupuesto, un acta…).', l.length)));
+        if (maq.length) {
+            var u = el('ul');
+            maq.forEach(function (x) { u.appendChild(el('li', {}, '⚙ ' + x.que + ' (' + x.de + ' → ' + x.a + ')' + (x.r.diu ? ': ' + x.r.diu : ''))); });
+            c.appendChild(u);
+        }
+        c.appendChild(el('p', { class: 'nota' }, t('Lo que no se paga (confianza, recomendaciones, ideas) y el dinero los lleva siempre una persona.') + (vis.length ? ' ' + t('Otras {0} las vemos juntos en la sesión.', vis.length) : '')));
     }
 
     /* 5 · El nivel y el boceto (el mismo motor que el editor del mapa) */
@@ -1219,7 +1254,7 @@
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S),
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1397,6 +1432,10 @@
                     ot.addEventListener('click', function () { pule(tx.value); });
                     var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(ot); pg.appendChild(a2); res.appendChild(pg);
                 }
+                /* Del dibujo a la web sin buscar nada: el siguiente paso, aquí mismo. */
+                var sw = el('button', { type: 'button', class: 'btn btn-primary', id: 'cl-ia-seguir' }, t('✦ Ahora, los textos de mi web'));
+                sw.addEventListener('click', function () { $('#cl-ia-web').scrollIntoView({ block: 'start' }); escriu(); });
+                var a3 = el('div', { class: 'accions' }); a3.appendChild(sw); res.appendChild(a3);
             });
         }
         $('#cl-ia-pule').addEventListener('click', function () { pule(''); });

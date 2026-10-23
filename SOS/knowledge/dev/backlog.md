@@ -85,6 +85,12 @@ el `--check` del CI ho diu.
   invers); `/cliente/` li ofereix «Empezar con este modelo».
 - **`/cliente/` en català** (`?lang=ca` o `tt_lang`), i la IA hi respon en
   català.
+- **La IA arrenca del model** que encaixa (triat o suggerit) i l'adapta; en
+  acabar de polir, el botó «Ahora, los textos de mi web» porta al pas següent.
+- **«Lo que puede ir solo»** (23/10/2026): `/cliente/` marca al mapa de cada
+  client què pot preparar la màquina amb la regla del Kanban de l'app
+  (`fluxAutomatitzable`, llegida tal com és a `models-mapa.js`), la mateixa del
+  x % de la landing; ho rebem al lead.
 
 **El que queda:**
 
