@@ -363,6 +363,12 @@ jobs:
       - name: Els mapes tipus de /cliente/ són els de l'app, en tres llengües
         run: node SOS/tools/build-models-mapa.js --check
 
+      # El cas anònim de /cliente/ (una productora d'esdeveniments, el mapa que ja
+      # treballa) es genera del mapa privat de la xarxa. Aquí no hi és: el CI
+      # només comprova que el que es publica passa el sedàs i ensenya la IA.
+      - name: El cas anònim de /cliente/ no porta noms ni projectes interns
+        run: node SOS/tools/build-cas-automatitzat.js --check
+
       # El pressupost era només en català i és on algú demana un preu. El
       # diccionari el genera `build-formularis.js`, que ja genera mitja pàgina:
       # tenir-lo en dos llocs voldria dir que un dia divergís una llengua

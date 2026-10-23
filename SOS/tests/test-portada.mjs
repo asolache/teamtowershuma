@@ -141,7 +141,7 @@ for (const [w, h] of [[1280, 900], [1440, 900], [390, 844]]) {
     const cta = document.querySelector('.hero .btn-primary').getBoundingClientRect();
     return { dalt: Math.round(c.top), baix: Math.round(c.bottom), btn: Math.round(btn.bottom),
       cta: Math.round(cta.bottom), fold: innerHeight, ample: document.documentElement.scrollWidth,
-      cervell: Math.round(document.querySelector('.cervell-top').getBoundingClientRect().bottom) };
+      mapa: document.querySelector('.hero .btn-primary').getAttribute('href') };
   });
   /* Des del 17/10/2026 la pàgina obre amb el cervell de la casa (l'Àlvar el
      va demanar a dalt de tot). A l'escriptori els castells hi continuen cabent
@@ -150,11 +150,11 @@ for (const [w, h] of [[1280, 900], [1440, 900], [390, 844]]) {
   if (w >= 1280) {
     ok(r.baix <= r.fold, `${w}px · el dibuix sencer cap a la primera pantalla (acaba a ${r.baix} de ${r.fold})`);
     ok(r.btn <= r.fold, `${w}px · i el botó per provar-ho també`);
-  } else {
-    ok(r.cervell <= r.fold && r.dalt < r.fold, `${w}px · el cervell sencer a la primera pantalla (acaba a ${r.cervell}) i els castells hi comencen (${r.dalt})`);
   }
   ok(r.ample <= w, `${w}px · la pàgina no se'n va de costat`);
-  if (w >= 1280) ok(r.cta <= r.fold, `${w}px · i el botó de diagnòstic no cau per sota del plec (${r.cta})`);
+  /* Des del 22/10/2026 la portada ven: el cervell baixa i la primera pantalla
+     és de la crida «Crea el teu mapa de valor», també a mòbil. */
+  ok(r.cta <= r.fold, `${w}px · i la crida «Crea el teu mapa» no cau per sota del plec (${r.cta})`);
   await ctx.close();
 }
 
@@ -196,7 +196,7 @@ console.log('\n5b · Els clients, sencers i amunt');
     const seccions = [...document.querySelectorAll('section[id]')].map(x => x.id);
     return { hi: !!s, fitxes: s ? s.querySelectorAll('.clm-c').length : 0,
       grups: s ? s.querySelectorAll('.clm-g').length : 0,
-      posicio: seccions.indexOf('clients'), seccions: seccions.length,
+      posicio: seccions.indexOf('clients'), seccions: seccions.length, ids: seccions,
       ikea: s ? /IKEA/.test(s.textContent) : false,
       agencies: s ? /Laeski|We Barcelona/.test(s.textContent) : false,
       font: s ? /TeamTowers/.test((s.querySelector('.clm-nota') || {}).textContent || '') : false };
@@ -207,7 +207,10 @@ console.log('\n5b · Els clients, sencers i amunt');
      una venda, i qui acaba de llegir què es compra és qui li treu profit; qui
      encara no sap de què va només hi veia trenta-dos logos. El que ha de
      seguir sent cert és que **hi és i és sencera**, i que no és al peu. */
-  ok(r.posicio === r.seccions - 1, `i tanca la pàgina (${r.posicio + 1} de ${r.seccions}): la prova tanca la venda, no l'obre`);
+  /* ⚠ 22/10/2026 · la paret puja al costat de «Per què nosaltres»: la prova va
+     on es decideix, just després del que t'emportes i del camí, i abans de
+     tot el detall. */
+  ok(r.posicio === r.ids.indexOf('confianca') + 1, `i va just després de «Per què nosaltres» (${r.posicio + 1} de ${r.seccions}): la prova al costat de la decisió`);
   ok(r.agencies, 'les agències i partners hi són, que és el segment que el diagnòstic sap atendre');
   ok(r.font, 'i es diu de quin recorregut vénen els noms');
   /* IKEA es queda a la llista; el seu cas no es publica (decidit per l'Àlvar
@@ -241,6 +244,7 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   const { ctx, p } = await nova();
   const r = await p.evaluate(() => {
     const hero = document.querySelector('.hero');
+    const conf = document.querySelector('#confianca') || hero;
     return {
       /* Les tres veus van passar del hero a «El repte», i el repte sencer ha
          passat a `/SOS/`, que és on viu l'eina que el resol. El que ha de ser
@@ -252,23 +256,27 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
          noms i el recorregut entre ells, «flux de valor» és una promesa com
          qualsevol altra i el motiu per triar aquesta consultoria no surt fins
          a la vuitena pantalla. */
-      evo: hero.querySelectorAll('.hero-evo li').length,
-      llinatge: /TeamTowers Humà/.test(hero.textContent) && /2005/.test(hero.textContent),
-      flux: /flux de valor/i.test(hero.textContent),
+      /* ⚠ 22/10/2026 · d'on ve la casa i qui ho paga baixen del hero a «Per
+         què nosaltres», just després del que t'emportes: el hero ven. */
+      evo: conf.querySelectorAll('.hero-evo li').length,
+      llinatge: /TeamTowers Humà/.test(conf.textContent) && /2005/.test(conf.textContent),
+      flux: /flu(x|eix) (de |el )?valor/i.test(hero.textContent),
       diag: !!hero.querySelector('a[href*="diagnostic"]'),
+      mapa: !!hero.querySelector('a.btn-primary[href="/cliente/"]'),
       /* La segona sortida era «veure el SOS en viu» i ara és demanar
          pressupost. Les dues tornen alguna cosa sense demanar res a canvi, que
          és el que la fa una sortida i no una crida a l'acció qualsevol; i el
          SOS segueix a un clic des de la barra de dalt, que és on el busca qui
          el vol veure. */
-      segona: !!hero.querySelector('a[href*="pressupost"]') || !!hero.querySelector('a[href="/SOS/"]'),
+      segona: !!hero.querySelector('a[href="/cliente/"]'),
       sosAlMenu: !!document.querySelector('.nav-links a[href="/SOS/"], nav a[href="/SOS/"]'),
-      finan: /subvencions/i.test(hero.textContent),
+      finan: /subvencions/i.test(conf.textContent),
       ordre: [...document.querySelectorAll('section[id]')].map(s => s.id)
     };
   });
   ok(r.dolor === 0, 'el repte ja no és a la portada: ha marxat a /SOS/, on és l\'eina que el resol');
-  ok(r.evo === 3, 'el hero explica d\'on ve la casa en tres passos');
+  ok(r.mapa, 'la crida principal del hero és crear el mapa de valor a /cliente/');
+  ok(r.evo === 3, '«Per què nosaltres» explica d\'on ve la casa en tres passos');
   ok(r.llinatge, 'i nomena les dues cases i l\'any: TeamTowers → TeamTowers Humà');
   ok(r.flux, 'i diu què es mesura, que és el que es contracta');
   ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla');
@@ -304,7 +312,10 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   /* ⚠ 10/10/2026 · «Tres camins» (catàleg, qui som, el SOS) repetia el menú i
      se'n va. Al seu lloc, just després del hero, «Tres serveis»: les tres
      ofertes de la barra del lloc. */
-  const ESPINA = ['serveis', 'enfoc', 'dues-vistes', 'decideix', 'com', 'clients'];
+  /* ⚠ 22/10/2026 · la portada ven: primer què t'emportes, el teu camí, per
+     què nosaltres i la prova; després, per a qui vol entrar-hi a fons, el que
+     ja hi havia i en el mateix ordre. */
+  const ESPINA = ['avantatges', 'cami', 'confianca', 'clients', 'serveis', 'enfoc', 'dues-vistes', 'decideix', 'com'];
   /* On ha anat cada un dels que hi havia:
        rengles, rols, fentpinya, xarxa  → /SOS/vna.html   (el mètode)
        glossari, aprenent, cataleg, cost → cataleg.html    (la compra)

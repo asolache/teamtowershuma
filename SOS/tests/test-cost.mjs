@@ -51,7 +51,7 @@ console.log('\n1 · El hero nomena les tres cases i obre tres portes');
       h1: h.querySelector('h1').textContent,
       portes: [...h.querySelectorAll('.hero-portes a')].map(a => a.dataset.sec),
       dest: [...h.querySelectorAll('.hero-portes a')].map(a => a.getAttribute('href')),
-      cta: [...h.querySelectorAll('.hero-actions a')].map(a => a.getAttribute('href'))
+      cta: [...h.querySelectorAll('.hero-actions a, .hero-note a')].map(a => a.getAttribute('href'))
     };
   });
   ok(/empres|cooperativ/i.test(r.eyebrow), 'la primera línia nomena l\'empresa');

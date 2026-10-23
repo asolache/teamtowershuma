@@ -30,5 +30,11 @@
     "temp/"
   ],
   "codex": "saber/codex.md",
-  "heretat": "saber/vedas-heredadas.md"
+  "arees": "areas",
+  "documents": [
+    "areas",
+    "proyectos"
+  ],
+  "heretat": "saber/vedas-heredadas.md",
+  "folksonomia": "saber/folksonomia.json"
 }

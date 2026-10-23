@@ -106,9 +106,19 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.fill('#cl-casa', '');
   p.once('dialog', d => d.accept());
   await p.click('#cl-models button:has-text("Educación")');
-  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 4,
-    'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano');
+  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 5,
+    'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano, con sus antiguos alumnos');
   ok(await p.getAttribute('#cl-models button:has-text("Educación")', 'aria-pressed') === 'true', 'y queda marcado el modelo elegido');
+  /* Los catorce sectores de la Matriu (SECTORS de models-mapa.js), con el mismo botón. */
+  ok(await p.locator('#cl-sectors button').count() === 14, 'y también los catorce sectores de la Matriu');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-sectors button:has-text("Vivienda asequible")');
+  const vals = await p.$$eval('#cl-files input', xs => xs.map(x => x.value).join(' · '));
+  ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() >= 3
+    && /Financiación ética|Unidades de convivencia/.test(vals) && !/Educación|Alumnado/.test(vals),
+    'un sector (vivienda) cambia quién está alrededor, en castellano, y respeta tu centro');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-models button:has-text("Educación")');
   await p.fill('#cl-casa', 'Equipo de formación');
   await p.fill('#cl-retorn', RESPOSTA); await p.click('#cl-omple');
 
@@ -202,6 +212,7 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForSelector('#cl-ia .ia-prop', { timeout: 5000 });
   const c1 = pets[1][1];
   ok(c1.pas === 'mapa' && c1.sessio === SES && c1.dades.alrededor.length === 6 && c1.dades.casa === 'Equipo de formación', 'manda su dibujo con la sesión');
+  ok(c1.dades.model && c1.dades.model.pairs.length > 5 && c1.dades.model.pairs.some(p => p[1] === 'Equipo de formación' || p[0] === 'Equipo de formación') && /Educación|formación/i.test(c1.dades.model.nom), 'y el modelo que encaja (' + (c1.dades.model && c1.dades.model.nom) + '), con su centro: la IA arranca de ahí');
   ok(await p.locator('#cl-ia .ia-prop').count() === 3 && /confianza/.test(await p.textContent('#cl-ia .ia-resum')), 'tres propuestas y lo que ve de su red');
   ok(await p.locator('#cl-ia .ia-prop[data-tipo="cambia"] del').count() > 0 && await p.locator('#cl-ia .ia-prop[data-tipo="cambia"] ins').count() > 0, 'cada cambio, con el antes tachado y el después');
   ok(/Te quedan unas 11 vueltas/.test(await p.textContent('#cl-ia [data-ia="sessio"]')), 'la energía que le queda, en vueltas');
@@ -217,9 +228,10 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForFunction(() => document.querySelectorAll('#cl-ia .ia-prop').length === 3 && !document.querySelector('#cl-ia .ia-prop.fet'), null, { timeout: 5000 });
   ok(pets[2][1].dades.nota === 'Sobre todo antiguos alumnos' && pets[2][1].dades.alrededor.length === 7, 'otra vuelta lleva su respuesta y el dibujo ya cambiado');
 
-  await p.click('#cl-ia-escriu');
+  ok(await p.locator('#cl-ia-seguir').count() === 1, 'al acabar de pulir, el siguiente paso está ahí mismo: los textos de la web');
+  await p.click('#cl-ia-seguir');
   await p.waitForSelector('#cl-ia-web .ia-textos', { timeout: 5000 });
-  ok(pets[3][1].pas === 'web', 'los textos de la web, con la misma sesión');
+  ok(pets[3][1].pas === 'web', 'los textos de la web, con la misma sesión y sin buscar el botón');
   await p.fill('#cl-ia-web .ia-textos .fila:nth-child(2) textarea', 'Aquí empieza tu camino, a tu ritmo.');
   await p.click('#cl-ia-web button:has-text("Verlo en el boceto")');
   await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden && /Formamos a los profesores/.test(document.getElementById('cl-marc').getAttribute('srcdoc') || ''), null, { timeout: 15000 });
@@ -243,6 +255,49 @@ console.log('\n══ /cliente/ · la IA ══');
   const ample = await p.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   ok(ample[0] <= ample[1], 'sin desplazamiento horizontal');
   ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+/* En catalán (22/10/2026): la misma página, traducida al cargar, con las
+   preguntas, los modelos, los niveles y los pasos de sus propias fuentes. Y la
+   sugerencia de modelo a partir de lo que escribe. */
+console.log('\n══ /cliente/ · en català i la suggeriment de model ══');
+{
+  const prCa = D.prompt({ inicial: 'Vull omplir els cursos' }, 'ca');
+  ok(D.PREGUNTES.every(q => prCa.includes(q.ca.q)) && /Contesta en català/.test(prCa) && /"respuestas"/.test(prCa), 'el text per a la IA, en català, amb les mateixes claus del JSON');
+  const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
+  const p = await ctx.newPage();
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  await p.goto(URL_ + '?lang=ca');
+  ok(await p.evaluate(() => document.documentElement.lang) === 'ca' && /Comença el teu projecte/.test(await p.textContent('h1')), 'amb ?lang=ca, la pàgina és en català');
+  ok(/Què ha d'aconseguir/.test(await p.textContent('#cl-preguntes')) && /Nivell 1 · per fluxos/.test(await p.textContent('#cl-nivells')) && /Ens escrius/.test(await p.textContent('#enviar .pr')), 'preguntes, nivells i passos, en català');
+  ok(/Diagnòstic/.test(await p.textContent('.tt-nav')) && await p.locator('.tt-nav .lang-b.on[data-lang="ca"]').count() === 1, 'la barra, en català i amb el botó CA marcat');
+  ok(/Educació/.test(await p.textContent('#cl-models')) && await p.getAttribute('.tp-legal', 'href') === '/avis-legal.html?lang=ca', 'els models en català i l\'avís legal en català');
+  const resta = await p.evaluate(() => (document.querySelector('main').innerText.match(/\b(Quién|Cuéntanos|Elige|Empieza|Tu cuenta|Enviar a TeamTowers y)\b/g) || []));
+  ok(!resta.length, 'cap frase en castellà a la vista' + (resta.length ? ': ' + resta.join(', ') : ''));
+  ok(await p.isHidden('#cl-sug'), 'sense res escrit, cap suggeriment');
+  ok(await p.isHidden('#cl-auto'), 'sense ningú al voltant, no parla d\'automatitzar');
+  await p.fill('#cl-inicial', 'Som una cooperativa d\'habitatge i volem que els socis trobin pis assequible');
+  await p.waitForSelector('#cl-sug:not([hidden])', { timeout: 3000 });
+  ok(/Habitatge/i.test(await p.textContent('#cl-sug')), 'pel que escriu, li suggereix el sector d\'habitatge: ' + (await p.textContent('#cl-sug')).slice(0, 90));
+  await p.click('#cl-sug button');
+  const fc = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(fc.modelo === 'habitatge' && fc.alrededor.length >= 4 && fc.casa === 'Grup motor' && await p.isHidden('#cl-sug'), 'amb un clic s\'omple qui hi ha al voltant, amb qui promou al centre, i el suggeriment marxa');
+  ok(/Bona pràctica:.*veïnat/.test(await p.textContent('#cl-bona')), 'i explica la bona pràctica del model');
+  await p.click('#cl-afegeix');
+  const fil = p.locator('#cl-files .fila:last-child input');
+  await fil.nth(0).fill('Qui finança'); await fil.nth(1).fill('el préstec'); await fil.nth(2).fill('l\'informe trimestral');
+  await p.waitForFunction(() => /informe trimestral/.test(document.getElementById('cl-auto').textContent));
+  const au = await p.textContent('#cl-auto');
+  ok(/El que pot anar sol/.test(au) && /⚙ l'informe trimestral/.test(au) && /sempre una persona/.test(au), 'marca el que pot preparar la màquina (l\'informe), i diu que el que no es paga i els diners són de persona');
+  ok(D.revisa(D.mapa(Object.assign({ respuestas: { objetivo: 'Habitatge assequible per als socis' } }, fc)), MV, 'ca').llest, 'el mapa que surt del model ja està llest per dibuixar');
+  /* El cas anònim d'un mapa que ja treballa (cas-automatitzat.js) */
+  const cas = await p.textContent('#cl-caso');
+  ok(await p.isVisible('#cl-caso summary') && /Mira un mapa que ja treballa: una productora/.test(cas) && /La venda/.test(cas) && /automatitzats/.test(cas), 'ensenya el cas d\'un mapa que ja treballa, en català, amb una barra per procés');
+  ok(/✦ /.test(cas) && /La IA ho prepara i una persona ho valida/.test(cas) && /On és el focus ara/.test(cas) && !/comissi|paisatge|paisaje|Pened/i.test(cas), 'diu el que fa la IA i valida una persona, on és el focus, i cap nom ni projecte intern');
+  await p.click('.tt-nav .lang-b[data-lang="es"]');
+  await p.waitForFunction(() => document.documentElement.lang === 'es' && /Empieza tu proyecto/.test(document.querySelector('h1').textContent));
+  ok(/Vivienda/.test(await p.textContent('#cl-sectors button[aria-pressed="true"]')), 'en castellano con el botón ES, sin perder la ficha');
+  ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 await b.close(); srv.close();

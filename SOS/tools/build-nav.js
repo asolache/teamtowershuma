@@ -235,7 +235,11 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    principal perquè és l'única que torna alguna cosa sense demanar res, i és
    el primer pas del camí de client a `/sos/`, a la portada i a l'embut
    (`build-embut.js`). L'aplicació no es perd: és al grup «El SOS» del menú. */
-const CTA = ['/SOS/diagnostic.html', T('Fes el diagnòstic', 'Haz el diagnóstico')];
+/* ── L'acció és crear el mapa (22/10/2026) ──────────────────────────────────
+   Àlvaro: «la primera acció, fer el teu mapa de valor». És el pas 1 del camí
+   de client (`camiClient`), torna valor abans de demanar res i és la mateixa
+   crida principal de la portada. El diagnòstic segueix al grup «Mapa de valor». */
+const CTA = ['/cliente/', T('Crea el teu mapa', 'Crea tu mapa')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 /* ── A dins del SOS ──────────────────────────────────────────────────────────
    L'acció és obrir-lo i la marca porta a la seva portada, que és l'embut de
@@ -528,6 +532,12 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
    surt al menú; s'hi entra des de «Empezar por el paso 1» de /mapa-web/. */
 const CARPETES = { '/mapa-web/': 'mapa-web/index.html', '/conecta/': 'conecta/index.html', '/cliente/': 'cliente/index.html' };
 const llenguaDe = p => (CARPETES[p] ? 'es' : 'ca');
+/* I les carpetes que, escrites en castellà, també es llegeixen en català: la
+   barra i el peu hi van en castellà **amb les claus**, i el diccionari del menú
+   a les marques /*TT-NAV-I18N-CA*\/ de la pàgina. `/cliente/` des del
+   22/10/2026, demanat per l'Àlvar («también en catalán al menos»). */
+const CARPETES_BILINGUES = ['/cliente/'];
+const ambClaus = (p, ll) => ll === 'ca' || CARPETES_BILINGUES.indexOf(p) >= 0;
 
 const esLloc = p => PORTADES.indexOf(p) >= 0 || PAGINES_LLOC.indexOf(p) >= 0 || !!CARPETES[p];
 function nav(pagina) {
@@ -536,7 +546,7 @@ function nav(pagina) {
   /* La barra del SOS no porta claus de traducció: les seves pàgines no tenen
      diccionari, i una clau sense entrada només fa soroll a les guardes. Les
      carpetes tampoc: ja surten escrites en la seva llengua. */
-  const i18n = k => lloc && ll === 'ca' ? ` data-i18n="${k}"` : '';
+  const i18n = k => lloc && ambClaus(pagina, ll) ? ` data-i18n="${k}"` : '';
   const jo = hrefDe(pagina);
   const aqui = h => hrefDe(h) === jo;
   const grup = g => {
@@ -568,10 +578,10 @@ function nav(pagina) {
           + (f ? '<i class="tn-f" aria-hidden="true">molekulon.org ↗</i>' : '') + `</a>`;
       }).join('') + `</div></details>`;
   };
-  const llengua = AMB_LLENGUA.indexOf(pagina) < 0 ? '' :
+  const llengua = AMB_LLENGUA.indexOf(pagina) < 0 && CARPETES_BILINGUES.indexOf(pagina) < 0 ? '' :
     `  <div class="tn-lang">` +
-    `<button type="button" class="lang-b on" data-lang="ca">CA</button>` +
-    `<button type="button" class="lang-b" data-lang="es">ES</button></div>\n`;
+    `<button type="button" class="lang-b${ll === 'ca' ? ' on' : ''}" data-lang="ca">CA</button>` +
+    `<button type="button" class="lang-b${ll === 'es' ? ' on' : ''}" data-lang="es">ES</button></div>\n`;
   /* El CSS va DINS de les marques. A fora, el bloc de substitució el tornava a
      afegir a cada passada i el fitxer creixia amb una còpia més: el generador
      petava contra la seva pròpia sortida. */
@@ -816,7 +826,7 @@ function peu(pagina) {
   /* Les claus són **les de la barra** (`nv.g.*`, `nv.t.*`): el peu no porta cap
      text que la barra no tingui ja traduït, i per tant no hi ha cap clau nova
      que pugui quedar-se sense entrada. L'única és el correu. */
-  const i18n = k => lloc && ll === 'ca' ? ` data-i18n="${k}"` : '';
+  const i18n = k => lloc && ambClaus(pagina, ll) ? ` data-i18n="${k}"` : '';
   const jo = hrefDe(pagina);
   const col = g => {
     const primerFora = g.links.findIndex(l => esFora(l[0]));
@@ -1055,8 +1065,9 @@ Object.entries(CARPETES).forEach(([adr, rel]) => {
   const f = join(ARREL, rel);
   if (!existsSync(f)) { bad(`${adr} és a CARPETES i no existeix ${rel}`); return; }
   const html = readFileSync(f, 'utf8');
-  const nou = posa(html, adr);
-  if (nou === null) { bad(`${rel} no té <body> o les marques del peu ${P_OBRE} … ${P_TANCA}`); return; }
+  let nou = posa(html, adr);
+  if (nou !== null && CARPETES_BILINGUES.indexOf(adr) >= 0) nou = posaDicArrel(nou);
+  if (nou === null) { bad(`${rel} no té <body>, les marques del peu ${P_OBRE} … ${P_TANCA} o, si és bilingüe, les del diccionari`); return; }
   if (CHECK) { if (nou !== html) bad(`${rel} no porta la barra declarada, o l'ha canviada pel seu compte`); }
   else if (nou !== html) { writeFileSync(f, nou); tocades++; }
 });

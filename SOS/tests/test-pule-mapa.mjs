@@ -10,7 +10,7 @@
    · El cost real surt de `usage` (i de cada intent si hi ha hagut fallback).
    · Del que respon el model només passa el que es pot aplicar.
    · El text del client va dins de <dades> i no surt al registre. */
-import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament } from '../../netlify/functions/pule-mapa.mjs';
+import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament, sistema, PAS } from '../../netlify/functions/pule-mapa.mjs';
 import { perCorreu, aGithub, deGithub, vies, sessio } from '../../netlify/functions/identitat.mjs';
 import { signa, llegeix, secret } from '../../netlify/lib/signatura.mjs';
 
@@ -163,6 +163,24 @@ console.log('\n7 · El tancament del mes');
   const t = await tancament(mes, 'Bearer ' + TOK, E, reg);
   ok(Math.abs(t.usd - 3 * u) < 1e-4 && t.persones === 2 && Math.abs(t.maxim - 2 * u) < 1e-4, 'el total del mes, quantes persones i el màxim per persona');
   ok(!/mail|@|abc/.test(JSON.stringify(t)), 'sense dades personals');
+}
+
+/* El model de referència (22/10/2026): la IA arrenca del model que encaixa i l'adapta. */
+{
+  const MM = (await import('node:module')).createRequire(import.meta.url)('../lib/models-mapa.js');
+  const m = MM.mapa('formacio', 'es', 'Formadores');
+  const d = neteja(Object.assign({}, DADES, { model: { nom: m.nom, bona: m.bona, pairs: m.pairs.concat(Array(30).fill(['a', 'b', 'raro', 'x', 'intangible', 'y'])) }, llengua: 'ca' }));
+  const tx = text(d);
+  ok(d.model.pairs.length === 20 && d.model.pairs.every(p => p[2] === 'tangible' || p[2] === 'intangible'), 'el model arriba net i curt (20 fluxos, només dos tipus)');
+  ok(/Proyectos como el suyo \(modelo «Educación/.test(tx) && /Antiguos alumnos → Formadores/.test(tx) && /Buena práctica: Los antiguos alumnos/.test(tx) && tx.indexOf('</dades>') > tx.indexOf('Buena práctica'), 'i entra dins de <dades> com a referència, amb la bona pràctica');
+  ok(neteja({ model: 'hack' }).model === null && neteja({}).model === null, 'sense model, o amb un de mal format, no se n\'envia cap');
+  const v = neteja(Object.assign({}, DADES, { model: { nom: m.nom, bona: m.bona, pairs: m.pairs, veda: m.veda, passos: m.passos } })), tv = text(v);
+  ok(m.veda && m.veda.clau.length && v.model.veda.length && v.model.falta.length && v.model.preguntes.length, 'la veda del sector arriba amb el model (el que ja se sap, el que falta, les preguntes)');
+  ok(/ya se sabe que el sector necesita/.test(tv) && /Preguntas que suelen ayudar:/.test(tv) && !/\*\*/.test(tv) && tv.indexOf('</dades>') > tv.indexOf('Preguntas que suelen'), 'i entra dins de <dades>, sense markdown');
+  ok(m.passos.length >= 4 && /fases que suelen seguir para ponerlo en marcha: .+ → /.test(tv), 'i les fases de la Matriu per posar-ho en marxa');
+  ok(neteja({ model: { pairs: [], veda: { clau: 'x', falta: [1, 2, 3, 4, 5, 6, 7, 8] } } }).model.falta.length === 6 && neteja({ model: { pairs: [], veda: 'x' } }).model.veda.length === 0, 'una veda mal formada no passa; com a molt sis línies');
+  ok(/intangibles propios/.test(PAS.mapa), 'la IA busca els intangibles propis de la marca, no els copia del model');
+  ok(/en catalán/.test(sistema('ca')) && !/en catalán/.test(sistema('es')), 'en català, la IA respon en català');
 }
 
 console.log('\n' + pass + ' bé, ' + fail + ' malament');

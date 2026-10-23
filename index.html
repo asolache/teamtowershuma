@@ -142,31 +142,13 @@
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
         .hero { min-height:calc(100vh - 4rem); display:flex; align-items:center; padding:1rem 0 4rem; }
         @media (max-width:860px) { .hero { padding:1rem 0 2.5rem; min-height:calc(100vh - 6rem); } }
-        /* Tres blocs i no dos, perquè al mòbil la imatge ha d'anar entremig.
-           Amb dues columnes, en una sola columna la imatge queda l'última i el
-           que explica el negoci d'un cop d'ull cau a la segona pantalla. */
-        /* El text s'emporta més amplada que el dibuix. Des que el cervell obre
-           la pàgina (17/10/2026) el hero comença uns 130 px més avall, i a la
-           meitat (516 px) els dos botons de la crida (552) i les tres portes
-           (586) es partien en dues línies que treien la crida del plec a 1280 i
-           a 1440. Els castells s'escalen sols; un botó partit, no. */
         .hero-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:0 4rem; align-items:center;
             grid-template-areas:'cap vis' 'cos vis'; }
         .hero-cap { grid-area:cap; } .hero-cos { grid-area:cos; } .hero-visual { grid-area:vis; }
         .hero-eyebrow { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; color:var(--indigo); text-transform:uppercase; margin-bottom:1rem; display:flex; align-items:center; gap:.75rem; }
         .hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--indigo); }
-        /* L'escala respon a la llargada del titular, no al revés. El titular va
-           passar de 54 a 76 caràcters i a 1440 px se n'anava a quatre línies,
-           que empenyien el botó principal per sota del plec —la cosa que la
-           prova de la primera pantalla vigila. Baixar el sostre i el mínim és
-           la resposta tipogràfica normal a un text més llarg; escurçar el que
-           s'ha de dir per encabir-hi una mida seria fer-ho al revés.
-           `balance`: amb la columna més ampla «funcionant» pujava a la primera
-           línia i partia el blau en dos; equilibrat, torna a tallar a la coma. */
         .hero h1 { font-family:var(--sans); font-size:clamp(1.85rem,3vw,3rem); font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:1rem; text-wrap:balance; }
         .hero h1 em { font-style:normal; color:var(--blue); }
-        /* Fins a 600 px, uns setanta caràcters, encara bons de llegir: a 540
-           feia cinc línies i ara quatre, una menys abans de la crida. */
         .hero-desc { font-size:1.05rem; color:var(--light); line-height:1.75; margin-bottom:1rem; max-width:37.5rem; }
 
         /* ── L'EVOLUCIÓ, EN TRES PASSOS ───────────────────────────────────────
@@ -192,12 +174,7 @@
         .hero-actions { display:flex; gap:.5rem 1rem; flex-wrap:wrap; }
         .hero-visual { position:relative; }
 
-        /* ── Els dos castells ─────────────────────────────────────────────────
-           La metàfora que explica el negoci era al nom de la casa i apareixia a
-           la vuitena pantalla, mentre a dalt de tot hi havia un graf de nodes
-           abstracte amb la paraula «VNA» al mig. Aquí es veu la tesi sencera
-           sense llegir res: el mateix projecte, dues bases. En treus una persona
-           i l'un cau i l'altre no. Veda 113. */
+        /* ── Els dos castells: el mateix projecte, dues bases. Veda 113. */
         .castells { width:100%; display:block; }
         .ct-torre { transition:transform .8s cubic-bezier(.55,-.2,.7,1.3), opacity .8s ease;
             transform-box:view-box; transform-origin:83px 288px; }
@@ -219,12 +196,6 @@
             .ct-torre, .ct-p { transition:none; }
         }
 
-        /* ── A qui parlem, i una línia de diners ────────────────────────────
-           Aquí hi havia quatre xips amb el que fem. Deien el mateix que les
-           dues portes de sota —consultoria, formació, producció, digital— però
-           sense poder-hi anar, i entre els uns i les altres el botó principal
-           queia per sota del plec. Una llista del que fas val menys que una
-           porta cap a on és. */
         .hero-finan { font-size:var(--t0); color:var(--light); line-height:1.6; margin:0 0 1.6rem;
             border-left:2px solid var(--green); padding:.15rem 0 .15rem .9rem; max-width:480px; }
         .hero-finan strong { color:var(--green); font-weight:600; }
@@ -325,21 +296,6 @@
            Els noms vivien a la novena i qui decideix si segueix llegint ho fa
            a la primera. És una tira estreta a posta: no ha de competir amb el
            titular, només ha de dir que això ja s'ha fet amb gent que es coneix. */
-        /* ── LA PARET DE CLIENTS · segona pantalla ────────────────────────
-           Abans era una línia de noms separats per espais, i una línia de text
-           no és una prova: es llegeix com una frase i se salta com una frase.
-
-           Ara és una graella de fitxes amb el nom i a què es dedica cadascun,
-           agrupades i amb el color del grup. El que ha de veure's d'un cop no
-           és que siguin molts: és que són móns molt diferents —una
-           multinacional, una universitat, una agència, una diputació— i que el
-           mètode és el mateix a tots. Aquesta és la frase que ven.
-
-           A sota de 560 px la línia de sector s'amaga. Amb ella, trenta-dues
-           fitxes a dues columnes són pantalla i mitja de paret abans que ningú
-           arribi al contingut; sense ella, els noms hi caben tots i es
-           llegeixen igual de bé. El que es perd al mòbil és el matís, no la
-           prova. */
         .cl-mur { border-top:1px solid var(--border); border-bottom:1px solid var(--border);
             background:var(--panel); padding:2.6rem 0 2.2rem; }
         .clm-lbl { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase;
@@ -368,7 +324,7 @@
         .clm-nota a { color:var(--muted); }
         .clm-nota strong { color:var(--text); font-weight:600; }
         @media (max-width:768px) {
-            .cl-mur { padding:1.9rem 0 1.6rem; }
+        .cl-mur { padding:1.9rem 0 1.6rem; }
             .clm-h2 { font-size:1.2rem; margin-bottom:1.3rem; }
             .clm-grid { grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:.4rem; }
             .clm-n { font-size:var(--t0); }
@@ -379,14 +335,7 @@
             .clm-c { padding:.45rem .55rem; }
             .clm-grid { grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); }
         }
-        .hero-disc { font-family:var(--font-mono,monospace); font-size:var(--t0); letter-spacing:.06em;
-            text-transform:uppercase; color:var(--green); margin:0 0 .5rem; font-weight:600; line-height:1.3; }
-        /* A mòbil aquesta línia costa 26 px i el dibuix del hero ja hi cabia
-           just: amb ella a la mida de sobretaula queia 15 px per sota del plec.
-           Es cenyeix en comptes de treure-la —dir de què vivim val aquells
-           píxels— i `test-portada` en mesura les dues amplades. */
         @media (max-width:768px) {
-            .hero-disc { font-size:var(--t0); letter-spacing:.06em; margin:0; }
             .hero-eyebrow.hero-portes { margin-bottom:1rem; }
             /* Amb la tercera porta, les tres queien en tres línies a 390 px i el
                botó del dibuix se n'anava 2 px per sota del plec. El que costa
@@ -550,6 +499,7 @@
 
         .hero-evok { font-family:var(--mono); font-size:var(--t0); letter-spacing:.04em;
             text-transform:uppercase; color:var(--muted); margin:0 0 .6rem; }
+        .hero-evok a, .hero-note a { color:var(--indigo); text-underline-offset:3px; }
 
         /* ══ EL QUE DECIDEIXES ═════════════════════════════════════════════
            Dues columnes i prou: a l'esquerra la frase que es reconeix, a la
@@ -758,7 +708,7 @@
            queia per sota del plec i la primera pantalla es feia el doble de
            llarga. Són dos problemes diferents i ara tenen dos llindars. */
         @media (max-width:1080px) {
-            .hero-grid { grid-template-columns:1fr; gap:1.6rem; grid-template-areas:'cap' 'vis' 'cos'; }
+        .hero-grid { grid-template-columns:1fr; gap:1.6rem; grid-template-areas:'cap' 'vis' 'cos'; }
             /* Tres columnes de 150px no caben en un mòbil i partirien cada
                frase en columnes d'una paraula. En vertical segueix llegint-se
                com un recorregut perquè cada casella porta el seu moment
@@ -767,7 +717,7 @@
             .hero-evo li + li::after { display:none; }
             .hero-evo .evo-k { min-height:0; }
             /* En una columna el marge de la descripció se sumava al `gap`. */
-            .hero-desc { margin-bottom:0; }
+        .hero-desc { margin-bottom:0; }
         }
         @media (max-width:1340px) {
         }
@@ -821,8 +771,45 @@
         /* El cervell de xarxa: el que queda de qualsevol dels tres serveis, a
            tot l'ample i sota les tres targetes. */
         .srv-cervell { margin-top:1.25rem; }
-        /* El cervell de la casa a dalt de tot: el dibuix és de `SOS/cervell/pla.js`.
-           L'aire va al text: el dibuix ja porta el seu, i sumats empenyien la crida del hero. */
+        /* El cervell de la casa: el dibuix és de `SOS/cervell/pla.js`. */
+        /* ── La home que ven (22/10/2026): avantatges al hero, què t'emportes,
+           per què nosaltres i l'índex per a qui vol entrar-hi a fons. */
+        .hero-av { list-style:none; padding:0; margin:0 0 1.4rem; display:grid; gap:.45rem; }
+        .hero-av li { position:relative; padding-left:1.6rem; color:var(--text); font-weight:500; line-height:1.45; }
+        .hero-av li::before { content:'✓'; position:absolute; left:0; top:0; color:var(--green); font-weight:700; }
+        .avantatges { padding:6rem 0 4rem; }
+        .avantatges .section-header { margin-bottom:3rem; }
+        .av-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1.25rem; }
+        .av-i { font-size:1.6rem; line-height:1; }
+        .confianca { padding:4rem 0; border-top:1px solid var(--border); }
+        .confianca .section-header { margin-bottom:2.5rem; }
+        .confianca .hero-evo { max-width:none; margin:0 0 1.6rem; }
+        .confianca .hero-finan { max-width:62ch; }
+        .apf { padding:2.2rem 0; background:var(--panel); border-bottom:1px solid var(--border); }
+        .apf-k { font-family:var(--mono); font-size:var(--t0); letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0 0 .8rem; }
+        .apf-l { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:.6rem; }
+        .apf-l a { display:inline-flex; align-items:center; min-height:44px; padding:0 1rem; border:1px solid var(--border); border-radius:999px; color:var(--light); text-decoration:none; font-weight:600; font-size:var(--t0); }
+        .apf-l a:hover, .apf-l a:focus-visible { border-color:var(--indigo); color:var(--text); }
+        @media (max-width:1080px) { .av-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width:620px) { .av-grid { grid-template-columns:1fr; } .avantatges { padding:4rem 0 3rem; } .hero-actions .btn-primary { width:100%; justify-content:center; } }
+        .intel { padding:5rem 0 4rem; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .intel .section-header, .automat .section-header { margin-bottom:3rem; }
+        .cervell-ex { display:grid; grid-template-columns:1fr; gap:.4rem 1.5rem; align-items:center; margin-top:2.5rem; border:1px solid var(--border); border-radius:12px; background:var(--card); padding:.6rem 1.2rem; }
+        .cervell-ex-n { font-size:var(--t0); color:var(--muted); line-height:1.55; margin:0 0 .6rem; }
+        a.int { display:flex; flex-direction:column; gap:.4rem; color:inherit; text-decoration:none; }
+        a.int:hover, a.int:focus-visible { border-color:var(--indigo); }
+        .int-a { margin-top:auto; padding-top:.4rem; font-size:var(--t0); font-weight:600; color:var(--indigo); }
+        .automat { padding:5rem 0 4rem; }
+        .aut-l { list-style:none; padding:0; margin:0 0 2rem; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem 1.5rem; }
+        .aut { display:flex; flex-direction:column; gap:.3rem; border-top:2px solid var(--border); padding-top:.7rem; font-size:var(--t0); color:var(--light); line-height:1.55; }
+        .aut b { font-size:var(--t1); color:var(--text); }
+        .aut-st { font-family:var(--mono); font-size:var(--t0); letter-spacing:.04em; text-transform:uppercase; }
+        .aut-avui { border-top-color:var(--green); } .aut-avui .aut-st { color:var(--green); }
+        .aut-pilot { border-top-color:var(--indigo); } .aut-pilot .aut-st { color:var(--indigo); }
+        .aut-acc { display:flex; flex-wrap:wrap; gap:.8rem 1.4rem; align-items:center; margin:0; }
+        .aut-acc a:not(.btn-ghost) { color:var(--indigo); font-weight:600; }
+        @media (max-width:1080px) { .aut-l { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width:620px) { .aut-l { grid-template-columns:1fr; } }
         .cervell-top { border-bottom:1px solid var(--border); font-size:var(--t0); }
         .cervell-top .container { display:grid; grid-template-columns:19rem minmax(0,1fr); gap:.4rem 1.5rem; align-items:center; }
         .cervell-top p { display:flex; flex-wrap:wrap; gap:.3rem .9rem; align-items:center; color:var(--light); line-height:1.35; padding:.5rem 0; }
@@ -831,8 +818,24 @@
         .cervell-top-tria { display:flex; flex-wrap:wrap; gap:.3rem; }
         .cervell-top-tria button { font:inherit; font-weight:600; padding:.15rem .7rem; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--light); cursor:pointer; }
         .cervell-top-tria [aria-pressed="true"] { background:var(--text); color:var(--card); border-color:var(--text); }
-        @media (max-width:700px) { .cervell-top .container { grid-template-columns:1fr; } }
-    </style>
+        @media (max-width:700px) { .cervell-top .container, .cervell-ex { grid-template-columns:1fr; } }
+    /*TT-CAMI-CSS*/
+/* GENERAT per SOS/tools/build-embut.js · «El teu camí» de la portada */
+.cami{padding:4rem 0;border-top:1px solid var(--border)}
+.cami-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin:0 0 .6rem}
+.cami h2{font-size:var(--t4);line-height:1.15;margin:0 0 1.6rem;color:var(--text)}
+.cami h2 em{font-style:normal;color:var(--green)}
+.cami-r{list-style:none;counter-reset:cami;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:0 0 1.6rem;padding:0}
+.cami-r li{counter-increment:cami;font-size:var(--t0);line-height:1.55;color:var(--light);border-top:2px solid var(--border);padding-top:.7rem}
+.cami-r li:first-child{border-top-color:var(--green)}
+.cami-r li b{display:block;font-size:var(--t1);color:var(--text);margin-bottom:.3rem}
+.cami-r li b::before{content:counter(cami) " · ";font-family:var(--mono);font-weight:400;color:var(--green)}
+.cami-acc{display:flex;flex-wrap:wrap;gap:.8rem 1.4rem;align-items:center;margin:0}
+.cami-n{font-size:var(--t0);color:var(--muted)}
+@media(max-width:860px){.cami-r{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.cami-r{grid-template-columns:1fr}.cami-acc .btn-primary{width:100%;justify-content:center}}
+/*/TT-CAMI-CSS*/
+</style>
 </head>
 <body>
 
@@ -946,7 +949,7 @@
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
-  <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Fes el diagnòstic</span> →</a>
+  <a class="tn-cta" href="/cliente/"><span data-i18n="nv.cta">Crea el teu mapa</span> →</a>
 </nav>
 <script>
 (function () {
@@ -959,46 +962,17 @@
 </script>
 <!--/TT-NAV-->
 
-<!-- EL CERVELL, A DALT DE TOT. Les vedes del codex de la casa en l'ordre en
-     què es van aprendre, pujant com un castell: pinya, tronc i pom de dalt.
-     Cada projecte públic de la xarxa hi té un botó i hi puja damunt del SOS.
-     Tot és de `SOS/cervell/` (franja.js, pla.js i teamtowers.json): cap còpia aquí. -->
-<section class="cervell-top" aria-labelledby="cvTopT">
-    <div class="container">
-        <p><b id="cvTopT" data-i18n="cvt.t">El cervell de cada projecte, construint-se com un castell</b><span class="cervell-top-tria" role="group" aria-labelledby="cvTopT"><button type="button" data-repo="" aria-pressed="true">SOS</button><button type="button" data-repo="asolache/alvarosolache" aria-pressed="false">Álvaro Solache</button></span><a id="cvTop3d" href="/SOS/cervell.html" data-i18n="cvt.a">Totes les vistes</a><a href="#cervell-xarxa" data-i18n="cvt.b">Crea el teu cervell de xarxa</a></p>
-        <div class="cervell-top-g" id="cvTop"></div>
-    </div>
-</section>
-<script src="/SOS/cervell/forces.js" defer></script>
-<script src="/SOS/cervell/pla.js" defer></script>
-<script src="/SOS/cervell/franja.js" defer></script>
-
 <!-- HERO -->
 <section class="hero">
     <div class="container">
         <div class="hero-grid">
             <div class="hero-cap">
-                <!-- L'eyebrow **és** les dues portes, i no una línia damunt
-                     d'elles. Deia «per a ajuntaments, consells comarcals i
-                     entitats» i deixava fora la meitat de l'oferta; ara nomena
-                     les dues cases i, de passada, hi porta.
-
-                     Fusionar-les no és estalvi d'espai per l'espai: posar una
-                     línia que diu a qui parlem i, a sota, dos botons que diuen
-                     el mateix era repetir-se, i entre les dues coses el botó
-                     principal queia per sota del plec a 1440 i a mòbil. -->
-                <!-- QUÈ FEM, abans que res. La pàgina obria amb les dues
-                     portes —a qui parlem— i amb el titular del recorregut, i
-                     enlloc no deia **l'ofici**. Qui arriba d'un enllaç no ha de
-                     deduir de quin sector som: dues paraules ho diuen, i el
-                     titular, a sota, diu d'on ve i què s'endú. -->
-                <p class="hero-disc fade-up" data-i18n="hero.disc">Anàlisi, disseny i desenvolupament de sistemes pels quals flueix el valor</p>
-                <!-- TRES PORTES I NO DUES. «Públic» ajuntava un ajuntament i una
-                     associació: no tenen el mateix pressupost, no decideixen
-                     igual i no compren el mateix, i qui venia d'una entitat
-                     havia de deduir en quin calaix queia. L'ordre és el del
-                     mercat: administració i tercer sector primer, empresa
-                     després —que segueix sent una porta i ja no és la primera. -->
+                <!-- LA HOME VEN (22/10/2026). Àlvaro: «enfocada directament a la venda
+                     i a la creació del teu mapa de valor, i totes les avantatges com
+                     a client». La primera pantalla diu què t'emportes i té una sola
+                     crida principal: crear el mapa a /cliente/, que dona valor abans
+                     de demanar res (camiClient, pas 1). La història de la casa i el
+                     finançament baixen a «Per què nosaltres»; el mètode, a sota. -->
                 <div class="hero-eyebrow hero-portes fade-up">
                     <a href="/cataleg?s=admin" data-sec="admin" data-i18n="hero.porta1">Administració pública</a>
                     <span aria-hidden="true">·</span>
@@ -1006,75 +980,25 @@
                     <span aria-hidden="true">·</span>
                     <a href="/cataleg?s=empresa" data-sec="empresa" data-i18n="hero.porta3">Empresa i cooperativa</a>
                 </div>
-                <!-- El titular deia què volem que passi («comunitats que aprenen,
-                     emprenen i estalvien») i no d'on surt ni què s'endú qui
-                     contracta. Dos problemes en una línia: nomenava una sola de
-                     les dues portes —«comunitats»— i era una aspiració, que és
-                     el que diu tothom.
-
-                     Ara diu el recorregut i l'objecte: **dels castells al flux
-                     de valor**. El recorregut és el que fa creïble el mètode i
-                     l'objecte és el que es compra. -->
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">El teu mapa de valor, <em>funcionant cada dia</em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">L'equip dibuixa junt el <em>flux de valor</em> —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l'ideal. Te'n vas amb el negoci funcionant, no amb un informe.</p>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Mira com flueix el valor al teu negoci <em>i fes-lo créixer</em></h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Crea el teu <strong>mapa de valor</strong> en uns minuts: amb qui treballes, què us doneu —també la confiança i els favors— i on s'encalla. És gratis, i en surt el primer esbós de la teva web.</p>
+                <ul class="hero-av fade-up" style="animation-delay:.25s">
+                    <li data-i18n="hero.av1">Veus el teu negoci sencer en un sol dibuix</li>
+                    <li data-i18n="hero.av2">Saps on es perd valor i per on començar</li>
+                    <li data-i18n="hero.av3">Tens l'esbós de la teva web, sortit del mapa</li>
+                </ul>
+                <div class="hero-actions fade-up" style="animation-delay:.3s">
+                    <a href="/cliente/" class="btn-primary" data-i18n="hero.cta1">Crea el teu mapa de valor, gratis →</a>
+                    <a href="/SOS/diagnostic.html" class="btn-ghost" data-i18n="hero.cta2">Diagnòstic en 3 min</a>
+                </div>
+                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n-html="hero.note">Sense pagar i sense compromís: no s'envia res fins que tu ho diguis. Ja saps què vols? <a href="/SOS/pressupost.html">Demana pressupost</a>.</p>
             </div>
             <div class="hero-cos">
-                <!-- Les dues portes. Existeixen perquè la pàgina venia a dues
-                     cases que compren de manera diferent i només en nomenava
-                     una: qui arribava des d'una empresa havia de deduir que
-                     també li parlàvem. Clicar-les filtra el catàleg; sense
-                     JavaScript porten a la secció sencera, que és correcte.
-
-                     **Ocupen el lloc dels quatre xips** que hi havia (mètode,
-                     sessions, eina…). Deien el mateix que aquestes dues portes
-                     —què fem— però sense poder-hi anar, i afegir-les a sobre
-                     empenyia el botó de diagnòstic per sota del plec. Una llista
-                     del que fas val menys que una porta cap a on és. -->
-                <!-- L'EVOLUCIÓ, EN TRES PASSOS ───────────────────────────────
-                     Aquí hi havia les tres frases de dolor. Eren bones i no
-                     s'han perdut: viuen a «El repte», que és la secció que
-                     parla del problema. El que faltava era això —**per què
-                     aquesta casa i no una altra**—, i no sortia fins a la
-                     vuitena pantalla, a «D'on ve això».
-
-                     Tres caselles i no quatre: l'experiència, el mètode que en
-                     va sortir, i el que és avui. La fletxa entre elles és el
-                     que fa que es llegeixin com una evolució i no com tres
-                     serveis posats de costat. -->
-                <!-- Les dues afirmacions del hero porten on es poden comprovar.
-                     Una xifra que no porta enlloc demana que te la creguis, i
-                     les dues pàgines que la sostenen existeixen des d'avui. -->
-                <p class="hero-evok fade-up" style="animation-delay:.22s"><a href="/qui-som" data-i18n="hero.evok">I la prova que funciona: vint anys entregant-ho</a></p>
-                <ol class="hero-evo fade-up" style="animation-delay:.25s">
-                    <li>
-                        <span class="evo-k" data-i18n="hero.evo1.k">2005 · TeamTowers</span>
-                        <span data-i18n="hero.evo1.d">Castells amb equips d'empresa: un grup viu que el pes o es reparteix o no s'aguanta.</span>
-                    </li>
-                    <li>
-                        <span class="evo-k" data-i18n="hero.evo2.k">Després · el mapa de valor</span>
-                        <span data-i18n="hero.evo2.d">El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.</span>
-                    </li>
-                    <li>
-                        <span class="evo-k" data-i18n="hero.evo3.k">Avui · TeamTowers Humà</span>
-                        <span data-i18n="hero.evo3.d">El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d'on s'encalla el valor.</span>
-                    </li>
-                </ol>
-                <div class="hero-actions fade-up" style="animation-delay:.3s">
-                    <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="hero.cta1">Diagnostica la teva organització · 3&nbsp;min</a>
-                    <a href="/SOS/pressupost.html" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero.cta2">Demana pressupost →</a>
-                </div>
-                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n="hero.note">Te'n vas amb el diagnòstic fet, l'enviïs o no. Sense registre ni compte.</p>
-                <!-- La prova, al costat de la primera crida i no al peu. Les tres
-                     xifres són les mateixes del final —una data, un recompte amb
-                     any d'inici i un percentatge que es pot comprovar—, i aquí
-                     hi són perquè qui decideix si clica ho fa en aquesta pantalla,
-                     no a l'última. -->
                 <ul class="hero-proves fade-up" style="animation-delay:.38s">
                     <li><b>2009</b><span data-i18n="hero.pr1">primer banc de temps de León</span></li>
                     <li><b>60.000+</b><span data-i18n="hero.pr2">persones formades des del 1996</span></li>
                     <li><b>100 %</b><a href="/SOS/intro.html" data-i18n="hero.pr3">de l'eina és oberta i gratuïta</a></li>
                 </ul>
-                <p class="hero-finan fade-up" style="animation-delay:.42s" data-i18n-html="hero.finan"><strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l'empresa amb el pressupost de formació o d'esdeveniments. En tots dos casos el pressupost s'ensenya desglossat.</p>
             </div>
             <div class="hero-visual fade-up" style="animation-delay:.4s">
                 <!-- Dos castells, el mateix de dalt i dues bases. La tesi del negoci sense
@@ -1164,24 +1088,235 @@
     </div>
 </section>
 
-<!-- L'ORDRE: EL PROBLEMA ABANS QUE EL PRODUCTE ─────────────────────────────
-     El repte va davant del mapa de valor i no darrere. Qui arriba no ve a
-     comprar un mapa: ve amb un problema, i el mapa és la resposta. Ensenyat
-     abans, el dibuix és bonic i no es demana. -->
-<!-- ⚠ AQUÍ HI HAVIA LES QUATRE SECCIONS DEL MÈTODE (04/10/2026) ───────────
-     `#rengles`, `#rols`, `#xarxa` i `#fentpinya`: 119 KB de les 575 que feia
-     aquesta pàgina, i totes quatre parlaven **del mètode**, no de la compra.
+<!-- QUÈ T'EMPORTES · el que guanya el client, abans que el mètode. -->
+<section class="avantatges" id="avantatges">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="av.k">Què t'emportes</div>
+            <h2 data-i18n-html="av.h2">Un mapa que treballa <em>per al teu negoci</em></h2>
+            <p data-i18n="av.intro">No és un informe que es queda al calaix: és el dibuix del teu negoci, i el fas servir per decidir.</p>
+        </div>
+        <div class="av-grid fade-up">
+            <article class="av targeta">
+                <span class="av-i" aria-hidden="true">🗺</span>
+                <h3 class="targeta-t" data-i18n="av.1t">Veus qui et dona què</h3>
+                <p class="targeta-d" data-i18n="av.1d">Clients, equip, proveïdors i aliats en un sol dibuix, amb el que us intercanvieu: també la confiança, els favors i el que ningú no apunta.</p>
+            </article>
+            <article class="av targeta">
+                <span class="av-i" aria-hidden="true">🔍</span>
+                <h3 class="targeta-t" data-i18n="av.2t">Saps on se t'escapa el valor</h3>
+                <p class="targeta-d" data-i18n="av.2d">El mapa marca on s'encalla la feina, qui carrega massa i què falta, perquè decideixis amb dades i no a ulls clucs.</p>
+            </article>
+            <article class="av targeta">
+                <span class="av-i" aria-hidden="true">🌐</span>
+                <h3 class="targeta-t" data-i18n="av.3t">La teva web surt del mapa</h3>
+                <p class="targeta-d" data-i18n="av.3d">Cada persona que t'importa hi troba la seva porta: qui compra, qui col·labora, qui t'ajuda. L'esbós surt en minuts i l'afinem junts.</p>
+            </article>
+            <article class="av targeta">
+                <span class="av-i" aria-hidden="true">🌱</span>
+                <h3 class="targeta-t" data-i18n="av.4t">I es manté viu</h3>
+                <p class="targeta-d" data-i18n="av.4d">Cada lliurament queda registrat i el mapa et diu com va, mes a mes. No has de tornar a començar cada any.</p>
+            </article>
+        </div>
+    </div>
+</section>
 
-     · Les construccions i el mapa de la casa s'han mudat a `/vna`, amb els
-       seus generadors: el mètode viu on es ven el mètode.
-     · Els rols hi eren **dues vegades** —aquí i a `/vna`— des del 03/10/2026.
-       Dues còpies del mateix text divergeixen i no peta res.
-     · El dibuix de la colla era la **quarta** vista dels mateixos dotze rols:
-       `/vna` ja en porta la planta, la taula i el guió de nou passos.
+<!--TT-CAMI-->
+<!-- GENERAT per SOS/tools/build-embut.js des de camiClient (heretat.json) · no s'edita a mà. -->
+<section class="cami" id="cami" aria-labelledby="cami-t">
+  <div class="container">
+    <p class="cami-k" data-i18n="cami.k">El teu camí</p>
+    <h2 id="cami-t" data-i18n-html="cami.h">Comences amb un dibuix. <em>Creixes quan tu vulguis.</em></h2>
+    <ol class="cami-r">
+      <li><b data-i18n="cami.1t">Primer, el teu mapa</b> <span data-i18n="cami.1d">Ens expliques el teu negoci amb les teves paraules i en surt el mapa de valor i un primer esbós de la web. Gratis i sense demanar-te res al principi.</span></li>
+      <li><b data-i18n="cami.2t">La teva pàgina, en marxa</b> <span data-i18n="cami.2d">La publiquem i la cuidem nosaltres. Pagues pel que fas servir, amb un límit que tu tries.</span></li>
+      <li><b data-i18n="cami.3t">La teva web, del tot teva</b> <span data-i18n="cami.3d">Quan vulguis, la web passa a ser teva, amb tot el que ha après pel camí.</span></li>
+      <li><b data-i18n="cami.4t">I una xarxa que aprèn</b> <span data-i18n="cami.4d">El que descobreixes ajuda altres negocis com el teu, i el que descobreixen ells t'arriba a tu.</span></li>
+    </ol>
+    <p class="cami-acc"><a class="btn-primary" href="/cliente/" data-i18n="cami.a">Crea el teu mapa de valor →</a> <span class="cami-n" data-i18n="cami.n">Cada pas és opcional: et quedes on et va bé. Cap preu fins que tu ho demanis.</span></p>
+  </div>
+</section>
+<!--/TT-CAMI-->
 
-     El que es queda és el pont: `#dues-vistes` ensenya el producte i hi porta.
-     L'historial de git guarda les quatre seccions senceres. -->
+<!-- LA INTEL·LIGÈNCIA DARRERE I EL QUE JA AUTOMATITZEM (22/10/2026). Àlvaro:
+     ensenyar el potencial amb el que ja fem i està provat. Cada peça diu si
+     funciona avui o si està provada i arrenca amb els pilots: cap promesa
+     sense la seva prova, i cap nom d'eina que el client no conegui. -->
+<section class="intel" id="intelligencia">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="int.k">La intel·ligència que hi ha darrere</div>
+            <h2 data-i18n-html="int.h2">Mètode, memòria i IA, <em>treballant junts</em></h2>
+            <p data-i18n="int.intro">El mapa no és un dibuix bonic: està fet amb un mètode provat, recorda el que aprèn i fa servir la IA amb mesura.</p>
+        </div>
+        <div class="av-grid fade-up">
+            <a class="int targeta" href="/SOS/vna.html">
+                <span class="av-i" aria-hidden="true">🗺</span>
+                <h3 class="targeta-t" data-i18n="int.1t">El mètode: el mapa de valor</h3>
+                <p class="targeta-d" data-i18n="int.1d">Qui dona què a qui, també el que no es compra: la confiança, els favors, el que se sap. És el mètode de Verna Allee, fet servir vint anys amb equips de debò.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+            <a class="int targeta" href="/SOS/cervell.html">
+                <span class="av-i" aria-hidden="true">🧠</span>
+                <h3 class="targeta-t" data-i18n="int.2t">El cervell de cada projecte</h3>
+                <p class="targeta-d" data-i18n="int.2d">El que es decideix queda escrit en un sol lloc, i la IA el llegeix abans de fer res. Ningú no comença de zero, ni les persones ni les màquines.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+            <a class="int targeta" href="/SOS/vedes.html">
+                <span class="av-i" aria-hidden="true">📜</span>
+                <h3 class="targeta-t" data-i18n="int.3t">El codex: les regles apreses</h3>
+                <p class="targeta-d" data-i18n="int.3d">Més de cent seixanta regles apreses fent, i cadascuna amb la seva prova automàtica. Un error que ja hem comès no torna.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+            <a class="int targeta" href="/SOS/ia.html">
+                <span class="av-i" aria-hidden="true">✦</span>
+                <h3 class="targeta-t" data-i18n="int.4t">La IA, amb frens i a la vista</h3>
+                <p class="targeta-d" data-i18n="int.4d">El model més petit que fa bé cada tasca, un límit de despesa per persona i el cost sempre visible. La IA proposa; el criteri el posen persones.</p>
+                <span class="int-a" data-i18n="int.a">Mira com funciona →</span>
+            </a>
+        </div>
+        <!-- Un cervell de debò, el de la casa, construint-se com un castell
+             (Àlvaro, 22/10/2026: «que es mostri un exemple de cervell»). Tot és
+             de `SOS/cervell/`: aquí no se'n copia res. -->
+        <div class="cervell-top cervell-ex fade-up">
+        <p><b id="cvTopT" data-i18n="cvt.t">El cervell de cada projecte, construint-se com un castell</b><span class="cervell-top-tria" role="group" aria-labelledby="cvTopT"><button type="button" data-repo="" aria-pressed="true">SOS</button><button type="button" data-repo="asolache/alvarosolache" aria-pressed="false">Álvaro Solache</button></span><a id="cvTop3d" href="/SOS/cervell.html" data-i18n="cvt.a">Totes les vistes</a><a href="#cervell-xarxa" data-i18n="cvt.b">Crea el teu cervell de xarxa</a></p>
+        <div class="cervell-top-g" id="cvTop" data-alt="280" data-universal></div>
+        <p class="cervell-ex-n" data-i18n="int.cv">És el cervell de debò d'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.</p>
+        </div>
+<script src="/SOS/cervell/forces.js" defer></script>
+<script src="/SOS/cervell/pla.js" defer></script>
+<script src="/SOS/cervell/franja.js" defer></script>
+    </div>
+</section>
 
+<section class="automat" id="automatitza">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="aut.k">El que ja automatitzem</div>
+            <h2 data-i18n-html="aut.h2">La feina que es repeteix, <em>que es faci sola</em></h2>
+            <p data-i18n="aut.intro">Són els fluxos amb què portem el nostre propi negoci. Abans d'oferir-te'ls, els fem servir nosaltres.</p>
+        </div>
+        <ul class="aut-l fade-up">
+            <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.1t">Del mapa a l'esbós de la web</b><span data-i18n="aut.1d">Dibuixes el mapa i en surt una web amb una porta per a cada persona que t'importa, en minuts.</span></li>
+            <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.2t">El mapa que avisa</b><span data-i18n="aut.2d">Cada lliurament entre persones queda registrat, i el mapa marca el que circula i el que s'ha aturat.</span></li>
+            <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.3t">La teva IA, amb dades teves</b><span data-i18n="aut.3d">Descarregues el mapa i les teves eines en un fitxer, i la IA que ja fas servir treballa amb el teu negoci i no amb suposicions.</span></li>
+            <li class="aut aut-pilot"><span class="aut-st" data-i18n="aut.st.pilot">Provat · arrenca amb els pilots</span><b data-i18n="aut.4t">Del formulari al teu CRM, sol</b><span data-i18n="aut.4d">Quan algú demana informació a la web, entra a la teva llista de clients sense copiar res, i sense cap clau a la vista.</span></li>
+            <li class="aut aut-pilot"><span class="aut-st" data-i18n="aut.st.pilot">Provat · arrenca amb els pilots</span><b data-i18n="aut.5t">La IA que poleix el teu mapa</b><span data-i18n="aut.5d">Mentre fas el mapa, la IA t'ajuda a afinar-lo i a escriure els textos de la web, amb un límit de despesa per persona.</span></li>
+            <li class="aut aut-pilot"><span class="aut-st" data-i18n="aut.st.pilot">Provat · arrenca amb els pilots</span><b data-i18n="aut.6t">Cobrar en un toc</b><span data-i18n="aut.6d">Targeta, Apple Pay o Google Pay, i el mes es tanca sol: el que s'ha cobrat queda apuntat sense fulls de càlcul.</span></li>
+        </ul>
+        <p class="aut-acc"><a class="btn-ghost" href="/conecta/" data-i18n="aut.a">Totes les peces i el cost real de la IA →</a> <a href="/SOS/ia.html" data-i18n="aut.b">Com treballem amb IA</a></p>
+    </div>
+</section>
+
+<!-- PER QUÈ NOSALTRES · el que abans omplia el hero: d'on ve la casa, com es
+     finança i qui ho ha fet servir. Prova al costat de la decisió, no a dalt. -->
+<section class="confianca" id="confianca">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="conf.k">Per què nosaltres</div>
+            <h2 data-i18n-html="conf.h2">Vint anys fent pinya <em>amb equips de tota mena</em></h2>
+        </div>
+        <ol class="hero-evo">
+                    <li>
+                        <span class="evo-k" data-i18n="hero.evo1.k">2005 · TeamTowers</span>
+                        <span data-i18n="hero.evo1.d">Castells amb equips d'empresa: un grup viu que el pes o es reparteix o no s'aguanta.</span>
+                    </li>
+                    <li>
+                        <span class="evo-k" data-i18n="hero.evo2.k">Després · el mapa de valor</span>
+                        <span data-i18n="hero.evo2.d">El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.</span>
+                    </li>
+                    <li>
+                        <span class="evo-k" data-i18n="hero.evo3.k">Avui · TeamTowers Humà</span>
+                        <span data-i18n="hero.evo3.d">El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d'on s'encalla el valor.</span>
+                    </li>
+                </ol>
+        <p class="hero-finan" data-i18n-html="hero.finan"><strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l'empresa amb el pressupost de formació o d'esdeveniments. En tots dos casos el pressupost s'ensenya desglossat.</p>
+        <p class="hero-evok"><a href="/qui-som" data-i18n="hero.evok">I la prova que funciona: vint anys entregant-ho</a></p>
+    </div>
+</section>
+
+<!--TT-CLIENTS-MUR-->
+<!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
+<section class="cl-mur" id="clients" aria-label="Clients">
+  <div class="container">
+    <p class="clm-lbl" data-i18n="clm.lbl">Han estat clients de TeamTowers</p>
+    <h2 class="clm-h2" data-i18n-html="clm.h2">Multinacionals, universitats i agències, <em>i el mateix mètode</em></h2>
+    <div class="clm-g" data-g="empreses">
+      <p class="clm-gl" data-i18n="cl.g.empreses">Empreses</p>
+      <div class="clm-grid">
+        <div class="clm-c dest"><span class="clm-n">IKEA</span><span class="clm-s" data-i18n="cl.s.ikea">Retail i sostenibilitat</span></div>
+        <div class="clm-c dest"><span class="clm-n">Telefónica</span><span class="clm-s" data-i18n="cl.s.telefonica">Comunicacions</span></div>
+        <div class="clm-c dest"><span class="clm-n">BBVA</span><span class="clm-s" data-i18n="cl.s.bbva">Banca digital</span></div>
+        <div class="clm-c dest"><span class="clm-n">Novartis</span><span class="clm-s" data-i18n="cl.s.novartis">Farmacèutica</span></div>
+        <div class="clm-c dest"><span class="clm-n">Porsche</span><span class="clm-s" data-i18n="cl.s.porsche">Automoció de luxe</span></div>
+        <div class="clm-c"><span class="clm-n">la Caixa</span><span class="clm-s" data-i18n="cl.s.la-caixa">Banca i finances</span></div>
+        <div class="clm-c"><span class="clm-n">Vodafone</span><span class="clm-s" data-i18n="cl.s.vodafone">Telecomunicacions</span></div>
+        <div class="clm-c"><span class="clm-n">Orange</span><span class="clm-s" data-i18n="cl.s.orange">Telecomunicacions</span></div>
+        <div class="clm-c"><span class="clm-n">Mercedes</span><span class="clm-s" data-i18n="cl.s.mercedes">Automoció premium</span></div>
+        <div class="clm-c"><span class="clm-n">Zurich</span><span class="clm-s" data-i18n="cl.s.zurich">Assegurances</span></div>
+        <div class="clm-c"><span class="clm-n">UPS</span><span class="clm-s" data-i18n="cl.s.ups">Logística</span></div>
+        <div class="clm-c"><span class="clm-n">InfoJobs</span><span class="clm-s" data-i18n="cl.s.infojobs">Tecnologia i ocupació</span></div>
+        <div class="clm-c"><span class="clm-n">John Deere</span><span class="clm-s" data-i18n="cl.s.john-deere">Maquinària agrícola</span></div>
+        <div class="clm-c"><span class="clm-n">Softonic</span><span class="clm-s" data-i18n="cl.s.softonic">Programari i internet</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="universitats">
+      <p class="clm-gl" data-i18n="cl.g.universitats">Universitats</p>
+      <div class="clm-grid">
+        <div class="clm-c"><span class="clm-n">UB</span><span class="clm-s" data-i18n="cl.s.ub">Universitat de Barcelona</span></div>
+        <div class="clm-c"><span class="clm-n">UAB</span><span class="clm-s" data-i18n="cl.s.uab">Universitat Autònoma de Barcelona</span></div>
+        <div class="clm-c"><span class="clm-n">La Salle</span><span class="clm-s" data-i18n="cl.s.la-salle">Universitat Ramon Llull · també escola de negocis</span></div>
+        <div class="clm-c"><span class="clm-n">UOC</span><span class="clm-s" data-i18n="cl.s.uoc">Universitat Oberta de Catalunya</span></div>
+        <div class="clm-c"><span class="clm-n">UPC</span><span class="clm-s" data-i18n="cl.s.upc">Universitat Politècnica de Catalunya</span></div>
+        <div class="clm-c"><span class="clm-n">Universidad de León</span><span class="clm-s" data-i18n="cl.s.universidad-de-leon">Castella i Lleó</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="escoles">
+      <p class="clm-gl" data-i18n="cl.g.escoles">Escoles de negoci</p>
+      <div class="clm-grid">
+        <div class="clm-c dest"><span class="clm-n">ESADE</span><span class="clm-s" data-i18n="cl.s.esade">Escola de negocis</span></div>
+        <div class="clm-c"><span class="clm-n">IESE</span><span class="clm-s" data-i18n="cl.s.iese">Escola de negocis</span></div>
+        <div class="clm-c"><span class="clm-n">EADA</span><span class="clm-s" data-i18n="cl.s.eada">Escola de negocis</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="agencies">
+      <p class="clm-gl" data-i18n="cl.g.agencies">Agències i partners</p>
+      <div class="clm-grid">
+        <div class="clm-c"><span class="clm-n">Laeski</span><span class="clm-s" data-i18n="cl.s.laeski">Producció integral</span></div>
+        <div class="clm-c"><span class="clm-n">We Barcelona</span><span class="clm-s" data-i18n="cl.s.we-barcelona">Esdeveniments internacionals</span></div>
+        <div class="clm-c"><span class="clm-n">Kivicom</span><span class="clm-s" data-i18n="cl.s.kivicom">Gimcanes interactives</span></div>
+        <div class="clm-c"><span class="clm-n">Box de Ideas</span><span class="clm-s" data-i18n="cl.s.box-de-ideas">Innovació corporativa</span></div>
+        <div class="clm-c"><span class="clm-n">Voxel</span><span class="clm-s" data-i18n="cl.s.voxel">Tecnologia 3D</span></div>
+        <div class="clm-c"><span class="clm-n">Unit Elements</span><span class="clm-s" data-i18n="cl.s.unit-elements">Disseny industrial</span></div>
+      </div>
+    </div>
+    <div class="clm-g" data-g="public">
+      <p class="clm-gl" data-i18n="cl.g.public">Sector públic</p>
+      <div class="clm-grid">
+        <div class="clm-c"><span class="clm-n">Diputació de Barcelona</span><span class="clm-s" data-i18n="cl.s.diputacio-de-barcelona">Administració supramunicipal</span></div>
+        <div class="clm-c"><span class="clm-n">Ajuntament de Vilafranca</span><span class="clm-s" data-i18n="cl.s.ajuntament-de-vilafranca">Administració local</span></div>
+        <div class="clm-c"><span class="clm-n">Junta de Castilla y León</span><span class="clm-s" data-i18n="cl.s.junta-de-castilla-y-leon">Administració autonòmica</span></div>
+      </div>
+    </div>
+    <p class="clm-nota" data-i18n-html="clm.nota">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió.</p>
+  </div>
+</section>
+<!--/TT-CLIENTS-MUR-->
+
+<!-- PER A QUI VOL ENTRAR-HI A FONS · tot el que hi havia segueix aquí sota. -->
+<nav class="apf" aria-labelledby="apf-t">
+    <div class="container">
+        <p class="apf-k" id="apf-t" data-i18n="apf.k">Si vols entrar-hi a fons</p>
+        <ul class="apf-l">
+            <li><a href="#serveis" data-i18n="apf.1">Els tres serveis</a></li>
+            <li><a href="#operatiu" data-i18n="apf.2">Com es manté viu</a></li>
+            <li><a href="#enfoc" data-i18n="apf.3">El repte, per sectors</a></li>
+            <li><a href="#dues-vistes" data-i18n="apf.4">Un mapa d'exemple</a></li>
+            <li><a href="#com" data-i18n="apf.5">Com treballem, pas a pas</a></li>
+            <li><a href="/qui-som" data-i18n="apf.6">Qui som</a></li>
+        </ul>
+    </div>
+</nav>
 
 
 <!-- EL NEGOCI OPERATIU ─────────────────────────────────────────────────
@@ -1227,7 +1362,7 @@
             <article class="srv targeta">
                 <span class="targeta-k" data-i18n="srv.3k">3 · Formació acció</span>
                 <h3 class="targeta-t" data-i18n="srv.3t">El SOS, après fent-lo servir</h3>
-                <p class="targeta-d" data-i18n="srv.3d">Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l'eina lliure on viu el que surt de cada sessió.</p>
+                <p class="targeta-d" data-i18n="srv.3d">Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l'eina lliure on viu el que surt de cada sessió, que pots fer servir encara que no ens contractis.</p>
                 <div class="srv-go">
                     <a href="/SOS/" class="btn-primary btn-sm" data-i18n="srv.3a">Entra al SOS →</a>
                     <a href="/SOS/formacio.html" data-i18n="srv.3b">Els mòduls</a>
@@ -1534,13 +1669,7 @@
 </section>
 
 
-
 <!-- BENEFICIS I ESTALVI -->
-
-
-
-
-
 
 
 <!-- COM FUNCIONA -->
@@ -1598,9 +1727,6 @@
 <!-- FENT PINYA EN DETALL -->
 
 
-
-
-
 <!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
      i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
      convençut a mig camí no té on clicar. La mateixa acció principal, ni més
@@ -1612,117 +1738,6 @@
     </div>
 </div>
 
-
-<!-- ELS TRES CAMINS ─────────────────────────────────────────────────────────
-     La portada ven el mapa de valor. Tot el que no ajuda a decidir aquesta
-     compra té la seva pàgina, i aquí hi porta. Un bloc i tres portes, i no un
-     enllaç al peu: *un enllaç al peu és una nota, no un pont.*
-
-     Cada camí diu **què s'hi troba**, i no com es diu. Tres targetes que
-     diguessin «catàleg», «qui som» i «el SOS» serien un índex, i un índex no
-     fa travessar res. -->
-<!-- LA PARET DE CLIENTS, AL FINAL ─────────────────────────────────────────
-     Era la segona pantalla de la pàgina. La prova no obre una venda: la tanca.
-     Qui acaba de llegir què es compra i com es fa és qui li treu profit, i qui
-     encara no sap de què va només hi veia trenta-dos logos.
-
-     Curta i amb sortida: la graella sencera, amb el recorregut de cada client
-     i la seva font, és a `/qui-som`. -->
-
-<!-- EL PROBLEMA / ENFOQUE -->
-<!-- ELS CASTELLS I UN MAPA DE DEBÒ ─────────────────────────────────────────
-     Aquesta secció era la vuitena i ara és la segona. El motiu és el que la
-     pàgina ven: el mapa de valor. Qui acaba de llegir al hero que això va dels
-     castells al flux de valor ha de poder veure, a la pantalla següent, què és
-     un flux de valor — i no llegir tres pantalles de problema abans.
-
-     Les dues van juntes i en aquest ordre. El castell ensenya QUÈ ÉS un mapa
-     de valor: tot passa alhora, es veu, i si falla es nota. El celler ensenya
-     QUÈ S'HI TROBA quan es fa sobre una casa que ven alguna cosa, que és el
-     que compra qui paga. Una sola de les dues no fa la feina: el castell tot
-     sol es llegeix com una metàfora bonica, i el celler tot sol es llegeix com
-     una consultoria més. -->
-<!--TT-CLIENTS-MUR-->
-<!-- GENERAT per SOS/tools/build-clients.js · no s'edita a mà -->
-<section class="cl-mur" id="clients" aria-label="Clients">
-  <div class="container">
-    <p class="clm-lbl" data-i18n="clm.lbl">Han estat clients de TeamTowers</p>
-    <h2 class="clm-h2" data-i18n-html="clm.h2">Multinacionals, universitats i agències, <em>i el mateix mètode</em></h2>
-    <div class="clm-g" data-g="empreses">
-      <p class="clm-gl" data-i18n="cl.g.empreses">Empreses</p>
-      <div class="clm-grid">
-        <div class="clm-c dest"><span class="clm-n">IKEA</span><span class="clm-s" data-i18n="cl.s.ikea">Retail i sostenibilitat</span></div>
-        <div class="clm-c dest"><span class="clm-n">Telefónica</span><span class="clm-s" data-i18n="cl.s.telefonica">Comunicacions</span></div>
-        <div class="clm-c dest"><span class="clm-n">BBVA</span><span class="clm-s" data-i18n="cl.s.bbva">Banca digital</span></div>
-        <div class="clm-c dest"><span class="clm-n">Novartis</span><span class="clm-s" data-i18n="cl.s.novartis">Farmacèutica</span></div>
-        <div class="clm-c dest"><span class="clm-n">Porsche</span><span class="clm-s" data-i18n="cl.s.porsche">Automoció de luxe</span></div>
-        <div class="clm-c"><span class="clm-n">la Caixa</span><span class="clm-s" data-i18n="cl.s.la-caixa">Banca i finances</span></div>
-        <div class="clm-c"><span class="clm-n">Vodafone</span><span class="clm-s" data-i18n="cl.s.vodafone">Telecomunicacions</span></div>
-        <div class="clm-c"><span class="clm-n">Orange</span><span class="clm-s" data-i18n="cl.s.orange">Telecomunicacions</span></div>
-        <div class="clm-c"><span class="clm-n">Mercedes</span><span class="clm-s" data-i18n="cl.s.mercedes">Automoció premium</span></div>
-        <div class="clm-c"><span class="clm-n">Zurich</span><span class="clm-s" data-i18n="cl.s.zurich">Assegurances</span></div>
-        <div class="clm-c"><span class="clm-n">UPS</span><span class="clm-s" data-i18n="cl.s.ups">Logística</span></div>
-        <div class="clm-c"><span class="clm-n">InfoJobs</span><span class="clm-s" data-i18n="cl.s.infojobs">Tecnologia i ocupació</span></div>
-        <div class="clm-c"><span class="clm-n">John Deere</span><span class="clm-s" data-i18n="cl.s.john-deere">Maquinària agrícola</span></div>
-        <div class="clm-c"><span class="clm-n">Softonic</span><span class="clm-s" data-i18n="cl.s.softonic">Programari i internet</span></div>
-      </div>
-    </div>
-    <div class="clm-g" data-g="universitats">
-      <p class="clm-gl" data-i18n="cl.g.universitats">Universitats</p>
-      <div class="clm-grid">
-        <div class="clm-c"><span class="clm-n">UB</span><span class="clm-s" data-i18n="cl.s.ub">Universitat de Barcelona</span></div>
-        <div class="clm-c"><span class="clm-n">UAB</span><span class="clm-s" data-i18n="cl.s.uab">Universitat Autònoma de Barcelona</span></div>
-        <div class="clm-c"><span class="clm-n">La Salle</span><span class="clm-s" data-i18n="cl.s.la-salle">Universitat Ramon Llull · també escola de negocis</span></div>
-        <div class="clm-c"><span class="clm-n">UOC</span><span class="clm-s" data-i18n="cl.s.uoc">Universitat Oberta de Catalunya</span></div>
-        <div class="clm-c"><span class="clm-n">UPC</span><span class="clm-s" data-i18n="cl.s.upc">Universitat Politècnica de Catalunya</span></div>
-        <div class="clm-c"><span class="clm-n">Universidad de León</span><span class="clm-s" data-i18n="cl.s.universidad-de-leon">Castella i Lleó</span></div>
-      </div>
-    </div>
-    <div class="clm-g" data-g="escoles">
-      <p class="clm-gl" data-i18n="cl.g.escoles">Escoles de negoci</p>
-      <div class="clm-grid">
-        <div class="clm-c dest"><span class="clm-n">ESADE</span><span class="clm-s" data-i18n="cl.s.esade">Escola de negocis</span></div>
-        <div class="clm-c"><span class="clm-n">IESE</span><span class="clm-s" data-i18n="cl.s.iese">Escola de negocis</span></div>
-        <div class="clm-c"><span class="clm-n">EADA</span><span class="clm-s" data-i18n="cl.s.eada">Escola de negocis</span></div>
-      </div>
-    </div>
-    <div class="clm-g" data-g="agencies">
-      <p class="clm-gl" data-i18n="cl.g.agencies">Agències i partners</p>
-      <div class="clm-grid">
-        <div class="clm-c"><span class="clm-n">Laeski</span><span class="clm-s" data-i18n="cl.s.laeski">Producció integral</span></div>
-        <div class="clm-c"><span class="clm-n">We Barcelona</span><span class="clm-s" data-i18n="cl.s.we-barcelona">Esdeveniments internacionals</span></div>
-        <div class="clm-c"><span class="clm-n">Kivicom</span><span class="clm-s" data-i18n="cl.s.kivicom">Gimcanes interactives</span></div>
-        <div class="clm-c"><span class="clm-n">Box de Ideas</span><span class="clm-s" data-i18n="cl.s.box-de-ideas">Innovació corporativa</span></div>
-        <div class="clm-c"><span class="clm-n">Voxel</span><span class="clm-s" data-i18n="cl.s.voxel">Tecnologia 3D</span></div>
-        <div class="clm-c"><span class="clm-n">Unit Elements</span><span class="clm-s" data-i18n="cl.s.unit-elements">Disseny industrial</span></div>
-      </div>
-    </div>
-    <div class="clm-g" data-g="public">
-      <p class="clm-gl" data-i18n="cl.g.public">Sector públic</p>
-      <div class="clm-grid">
-        <div class="clm-c"><span class="clm-n">Diputació de Barcelona</span><span class="clm-s" data-i18n="cl.s.diputacio-de-barcelona">Administració supramunicipal</span></div>
-        <div class="clm-c"><span class="clm-n">Ajuntament de Vilafranca</span><span class="clm-s" data-i18n="cl.s.ajuntament-de-vilafranca">Administració local</span></div>
-        <div class="clm-c"><span class="clm-n">Junta de Castilla y León</span><span class="clm-s" data-i18n="cl.s.junta-de-castilla-y-leon">Administració autonòmica</span></div>
-      </div>
-    </div>
-    <p class="clm-nota" data-i18n-html="clm.nota">Del recorregut de <a href="https://teamtowers.eu" target="_blank" rel="noopener">TeamTowers</a>: formació en valors d'equip i cohesió.</p>
-  </div>
-</section>
-<!--/TT-CLIENTS-MUR-->
-
-<!-- ⚠ LA BANDA DEL SOS SE'N VA A `SOS/intro.html` (04/10/2026) ───────────
-     Deia què és el SOS i què te n'endús sense contractar res. És bona i no
-     s'ha perdut: viu a la porta del SOS, que és on algú va a saber-ho. Aquí
-     queda **el pont**, a «els tres camins», que és el que el pla demanava:
-     *a la portada queda el pont, no la secció.* -->
-
-
-
-<!-- OBJECCIONS -->
-<!-- Últim bloc que faltava de l'estructura de la guia d'estil. Aquestes cinc
-     preguntes són les que decideixen de debò si algú truca, i no sortien
-     enlloc: quedaven per a la primera reunió, que és tard. Van en <details>
-     nadiu perquè funcionin sense JavaScript i el cercador les indexi. -->
 
 <!-- CTA FINAL -->
 <section class="cta-final">
@@ -1744,7 +1759,7 @@
         </div>
         <p class="proves-nota fade-up" style="animation-delay:.15s" data-i18n-html="cta.pr.nota">El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l'eina, el mètode i la trajectòria de qui hi ha darrere.</p>
         <div class="actions fade-up" style="animation-delay:.2s">
-            <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="cta.btn3">Fes el diagnòstic en 3 min →</a>
+            <a href="/cliente/" class="btn-primary" data-i18n="cta.btn3">Crea el teu mapa de valor →</a>
             <a href="/SOS/" target="_blank" rel="noopener" class="btn-ghost" data-i18n="cta.btn2">Explora el SOS en viu →</a>
         </div>
         <p class="cta-mail fade-up" style="animation-delay:.3s" data-i18n-html="cta.mail">O escriu directament a <a id="ctaMail" href="#">l'Álvaro</a> i ho valorem junts. Sense compromís.</p>
@@ -1756,7 +1771,7 @@
      final ja és a la vista: dues crides iguals a la mateixa pantalla és no
      tenir-ne cap. -->
 <div class="cta-sticky" id="ctaSticky" hidden>
-    <a href="/SOS/diagnostic.html" target="_blank" rel="noopener" class="btn-primary" data-i18n="sticky.btn">Diagnòstic · 3 min →</a>
+    <a href="/cliente/" class="btn-primary" data-i18n="sticky.btn">Crea el teu mapa →</a>
 </div>
 
 <!-- FOOTER -->
@@ -1802,9 +1817,64 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
+  'int.cv':'És el cervell de debò d\'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.',
+  'int.k':'La intel·ligència que hi ha darrere',
+  'int.h2':'Mètode, memòria i IA, <em>treballant junts</em>',
+  'int.intro':'El mapa no és un dibuix bonic: està fet amb un mètode provat, recorda el que aprèn i fa servir la IA amb mesura.',
+  'int.a':'Mira com funciona →',
+  'aut.k':'El que ja automatitzem',
+  'aut.h2':'La feina que es repeteix, <em>que es faci sola</em>',
+  'aut.intro':'Són els fluxos amb què portem el nostre propi negoci. Abans d\'oferir-te\'ls, els fem servir nosaltres.',
+  'aut.st.avui':'Funciona avui',
+  'aut.st.pilot':'Provat · arrenca amb els pilots',
+  'aut.a':'Totes les peces i el cost real de la IA →',
+  'aut.b':'Com treballem amb IA',
+  'int.1t':'El mètode: el mapa de valor',
+  'int.1d':'Qui dona què a qui, també el que no es compra: la confiança, els favors, el que se sap. És el mètode de Verna Allee, fet servir vint anys amb equips de debò.',
+  'int.2t':'El cervell de cada projecte',
+  'int.2d':'El que es decideix queda escrit en un sol lloc, i la IA el llegeix abans de fer res. Ningú no comença de zero, ni les persones ni les màquines.',
+  'int.3t':'El codex: les regles apreses',
+  'int.3d':'Més de cent seixanta regles apreses fent, i cadascuna amb la seva prova automàtica. Un error que ja hem comès no torna.',
+  'int.4t':'La IA, amb frens i a la vista',
+  'int.4d':'El model més petit que fa bé cada tasca, un límit de despesa per persona i el cost sempre visible. La IA proposa; el criteri el posen persones.',
+  'aut.1t':'Del mapa a l\'esbós de la web',
+  'aut.1d':'Dibuixes el mapa i en surt una web amb una porta per a cada persona que t\'importa, en minuts.',
+  'aut.2t':'El mapa que avisa',
+  'aut.2d':'Cada lliurament entre persones queda registrat, i el mapa marca el que circula i el que s\'ha aturat.',
+  'aut.3t':'La teva IA, amb dades teves',
+  'aut.3d':'Descarregues el mapa i les teves eines en un fitxer, i la IA que ja fas servir treballa amb el teu negoci i no amb suposicions.',
+  'aut.4t':'Del formulari al teu CRM, sol',
+  'aut.4d':'Quan algú demana informació a la web, entra a la teva llista de clients sense copiar res, i sense cap clau a la vista.',
+  'aut.5t':'La IA que poleix el teu mapa',
+  'aut.5d':'Mentre fas el mapa, la IA t\'ajuda a afinar-lo i a escriure els textos de la web, amb un límit de despesa per persona.',
+  'aut.6t':'Cobrar en un toc',
+  'aut.6d':'Targeta, Apple Pay o Google Pay, i el mes es tanca sol: el que s\'ha cobrat queda apuntat sense fulls de càlcul.',
+  'av.4d':'Cada lliurament queda registrat i el mapa et diu com va, mes a mes. No has de tornar a començar cada any.',
+  'av.4t':'I es manté viu',
+  'av.3d':'Cada persona que t\'importa hi troba la seva porta: qui compra, qui col·labora, qui t\'ajuda. L\'esbós surt en minuts i l\'afinem junts.',
+  'av.3t':'La teva web surt del mapa',
+  'av.2d':'El mapa marca on s\'encalla la feina, qui carrega massa i què falta, perquè decideixis amb dades i no a ulls clucs.',
+  'av.2t':'Saps on se t\'escapa el valor',
+  'av.1d':'Clients, equip, proveïdors i aliats en un sol dibuix, amb el que us intercanvieu: també la confiança, els favors i el que ningú no apunta.',
+  'av.1t':'Veus qui et dona què',
+  'apf.6':'Qui som',
+  'apf.5':'Com treballem, pas a pas',
+  'apf.4':'Un mapa d\'exemple',
+  'apf.3':'El repte, per sectors',
+  'apf.2':'Com es manté viu',
+  'apf.1':'Els tres serveis',
+  'apf.k':'Si vols entrar-hi a fons',
+  'conf.h2':'Vint anys fent pinya <em>amb equips de tota mena</em>',
+  'conf.k':'Per què nosaltres',
+  'av.intro':'No és un informe que es queda al calaix: és el dibuix del teu negoci, i el fas servir per decidir.',
+  'av.h2':'Un mapa que treballa <em>per al teu negoci</em>',
+  'av.k':'Què t\'emportes',
+  'hero.av3':'Tens l\'esbós de la teva web, sortit del mapa',
+  'hero.av2':'Saps on es perd valor i per on començar',
+  'hero.av1':'Veus el teu negoci sencer en un sol dibuix',
 /* El negoci operatiu (estratègia d'octubre del 2026) */
   'hero.evo3.d':'El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d\'on s\'encalla el valor.',
-  'hero.cta2':'Demana pressupost →',
+  'hero.cta2':'Diagnòstic en 3 min',
   'op.eyebrow':'La proposta',
   'op.h2':'Del taller al sistema viu: <em>el teu negoci operatiu</em>',
   'op.intro':'Una organització petita o mitjana surt amb el seu model de negoci funcionant, no amb un informe. La sala la seguim fent les persones; la feina que abans costava setmanes la fa el sistema.',
@@ -1903,7 +1973,7 @@ ca: {
   'srv.2b':'Serveis connectables',
   'srv.3k':'3 · Formació acció',
   'srv.3t':'El SOS, après fent-lo servir',
-  'srv.3d':'Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l\'eina lliure on viu el que surt de cada sessió.',
+  'srv.3d':'Formació sobre el teu projecte i no sobre un cas inventat: mòduls de N0 a N3 amb certificat, i l\'eina lliure on viu el que surt de cada sessió, que pots fer servir encara que no ens contractis.',
   'srv.3a':'Entra al SOS →',
   'srv.3b':'Els mòduls',
   'srv.4k':'I el que et quedes, sigui quin sigui el servei',
@@ -1946,11 +2016,25 @@ ca: {
   'nv.d.arrel-premsa':'El que se n\'ha dit a fora',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacitat, explicada',
-  'nv.cta':'Fes el diagnòstic',
+  'nv.cta':'Crea el teu mapa',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escriu-nos',
   'nv.peu.legal':'Avís legal i privacitat',
 /*/TT-NAV-I18N-CA*/
+/*TT-CAMI-I18N-CA*/
+  'cami.k':'El teu camí',
+  'cami.h':'Comences amb un dibuix. <em>Creixes quan tu vulguis.</em>',
+  'cami.a':'Crea el teu mapa de valor →',
+  'cami.n':'Cada pas és opcional: et quedes on et va bé. Cap preu fins que tu ho demanis.',
+  'cami.1t':'Primer, el teu mapa',
+  'cami.1d':'Ens expliques el teu negoci amb les teves paraules i en surt el mapa de valor i un primer esbós de la web. Gratis i sense demanar-te res al principi.',
+  'cami.2t':'La teva pàgina, en marxa',
+  'cami.2d':'La publiquem i la cuidem nosaltres. Pagues pel que fas servir, amb un límit que tu tries.',
+  'cami.3t':'La teva web, del tot teva',
+  'cami.3d':'Quan vulguis, la web passa a ser teva, amb tot el que ha après pel camí.',
+  'cami.4t':'I una xarxa que aprèn',
+  'cami.4d':'El que descobreixes ajuda altres negocis com el teu, i el que descobreixen ells t\'arriba a tu.',
+/*/TT-CAMI-I18N-CA*/
 /*TT-CT-I18N-CA*/
   'ct.plm.plCeller':'La mateixa casa vista des de dalt: 7 pilars —un per node del mapa— i 28 rengles obertes, de les quals 11 tenen algú. Cada rengla és un lliurament del mapa: les primeres mans, el que es factura; els laterals, el que no; i els vents, el que lliga dues àrees alhora.',
   'ct.r.plCeller.0':'Primera mà de Qui fa el vi: arribar on el celler no arriba',
@@ -2076,8 +2160,8 @@ ca: {
   'vd.p2.t':'A Pantheon Work, des del 2019',
   'vd.p2.d':'L\'Álvaro Solache hi dirigeix projectes de consultoria amb aquest mètode, i en va cocrear la pràctica: venda, planificació, producció i formació. <b>Les fases, el full i les preguntes d\'aquesta pàgina surten del guió d\'una sessió real amb un equip de direcció</b>, no d\'un manual.',
 /*/TT-VD-I18N-CA*/
-  'hero.h1':'El teu mapa de valor, <em>funcionant cada dia</em>',
-  'hero.desc':'L\'equip dibuixa junt el <em>flux de valor</em> —també els favors i la confiança— i ho mira <strong>com un sistema, no com la suma del que fa cadascú</strong>. L\'endemà, cada lliurament entre rols queda registrat i el <em>mapa real</em> es compara sol amb l\'ideal. Te\'n vas amb el negoci funcionant, no amb un informe.',
+  'hero.h1':'Mira com flueix el valor al teu negoci <em>i fes-lo créixer</em>',
+  'hero.desc':'Crea el teu <strong>mapa de valor</strong> en uns minuts: amb qui treballes, què us doneu —també la confiança i els favors— i on s\'encalla. És gratis, i en surt el primer esbós de la teva web.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
   'hero.evo3.k':'Avui · TeamTowers Humà',
@@ -2098,7 +2182,7 @@ ca: {
   'cl.s.ajuntament-de-vilafranca':'Administració local','cl.s.junta-de-castilla-y-leon':'Administració autonòmica',
 /*/TT-CL-I18N-CA*/
   'hero.evok':'I la prova que funciona: vint anys entregant-ho',
-  'hero.disc':'Anàlisi, disseny i desenvolupament de sistemes pels quals flueix el valor','hero.porta1':'Administració pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa i cooperativa',
+  'hero.porta1':'Administració pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa i cooperativa',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
   'ct.a11y.d':'A l\'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.',
@@ -2106,7 +2190,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Diagnostica la teva organització · 3\u00a0min','hero.note':'Te\'n vas amb el diagnòstic fet, l\'enviïs o no. Sense registre ni compte.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Diagnòstic · 3 min →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'Sense pagar i sense compromís: no s\'envia res fins que tu ho diguis. Ja saps què vols? <a href="/SOS/pressupost.html">Demana pressupost</a>.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és on és la teva organització: el diagnòstic t\'ho diu en tres minuts i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg i el preu a la vista, el següent pas no és trucar: és saber quin paquet et toca. El diagnòstic ho diu.','band.btn':'Fes el diagnòstic en 3 min →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
@@ -2150,7 +2234,7 @@ ca: {
   'mv.h2':'El mateix flux de valor, <em>mirat de dues maneres</em>',
   'mv.intro':'Un mapa de valor diu qui dona què a qui, també els favors i la confiança. Una pinya castellera, mirada des de dalt, diu una altra cosa que el mapa no pot dir: on es concentra el pes. Són les dues vistes d’un sol flux — els mateixos set rols i els mateixos setze lliuraments, comptats dues vegades.',
   'cta.h2':'Hi ha feina a la teva organització<br>que <em>s\'aguanta amb pinces?</em>',
-  'cta.btn2':'Explora el SOS en viu →','cta.btn3':'Fes el diagnòstic en 3 min →',
+  'cta.btn2':'Explora el SOS en viu →','cta.btn3':'Crea el teu mapa de valor →',
   'com.eyebrow':'Com funciona',
   'com.h2':'Quatre passos, i el quart <em>és que el mapa segueix viu</em>',
   'com.intro':'Del primer esborrany al sistema funcionant. Pots parar en qualsevol pas i quedar-te el que portis fet.',
@@ -2184,8 +2268,63 @@ ca: {
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.',
 },
 es: {
+  'int.cv':'Es el cerebro de verdad de este proyecto: cada punto es una regla aprendida, y suben como un castell, de la base a lo más alto. Elige otro proyecto y mira cómo hereda las reglas de la casa.',
+  'int.k':'La inteligencia que hay detrás',
+  'int.h2':'Método, memoria e IA, <em>trabajando juntos</em>',
+  'int.intro':'El mapa no es un dibujo bonito: está hecho con un método probado, recuerda lo que aprende y usa la IA con medida.',
+  'int.a':'Mira cómo funciona →',
+  'aut.k':'Lo que ya automatizamos',
+  'aut.h2':'El trabajo que se repite, <em>que se haga solo</em>',
+  'aut.intro':'Son los flujos con los que llevamos nuestro propio negocio. Antes de ofrecértelos, los usamos nosotros.',
+  'aut.st.avui':'Funciona hoy',
+  'aut.st.pilot':'Probado · arranca con los pilotos',
+  'aut.a':'Todas las piezas y el coste real de la IA →',
+  'aut.b':'Cómo trabajamos con IA',
+  'int.1t':'El método: el mapa de valor',
+  'int.1d':'Quién da qué a quién, también lo que no se compra: la confianza, los favores, lo que se sabe. Es el método de Verna Allee, usado veinte años con equipos de verdad.',
+  'int.2t':'El cerebro de cada proyecto',
+  'int.2d':'Lo que se decide queda escrito en un solo sitio, y la IA lo lee antes de hacer nada. Nadie empieza de cero, ni las personas ni las máquinas.',
+  'int.3t':'El códex: las reglas aprendidas',
+  'int.3d':'Más de ciento sesenta reglas aprendidas haciendo, y cada una con su prueba automática. Un error que ya cometimos no vuelve.',
+  'int.4t':'La IA, con frenos y a la vista',
+  'int.4d':'El modelo más pequeño que hace bien cada tarea, un límite de gasto por persona y el coste siempre visible. La IA propone; el criterio lo ponen personas.',
+  'aut.1t':'Del mapa al boceto de la web',
+  'aut.1d':'Dibujas el mapa y sale una web con una puerta para cada persona que te importa, en minutos.',
+  'aut.2t':'El mapa que avisa',
+  'aut.2d':'Cada entrega entre personas queda registrada, y el mapa marca lo que circula y lo que se ha parado.',
+  'aut.3t':'Tu IA, con tus datos',
+  'aut.3d':'Descargas el mapa y tus herramientas en un archivo, y la IA que ya usas trabaja con tu negocio y no con suposiciones.',
+  'aut.4t':'Del formulario a tu CRM, solo',
+  'aut.4d':'Cuando alguien pide información en la web, entra en tu lista de clientes sin copiar nada, y sin ninguna clave a la vista.',
+  'aut.5t':'La IA que pule tu mapa',
+  'aut.5d':'Mientras haces el mapa, la IA te ayuda a afinarlo y a escribir los textos de la web, con un límite de gasto por persona.',
+  'aut.6t':'Cobrar en un toque',
+  'aut.6d':'Tarjeta, Apple Pay o Google Pay, y el mes se cierra solo: lo cobrado queda apuntado sin hojas de cálculo.',
+  'av.4d':'Cada entrega queda registrada y el mapa te dice cómo va, mes a mes. No tienes que volver a empezar cada año.',
+  'av.4t':'Y se mantiene vivo',
+  'av.3d':'Cada persona que te importa encuentra su puerta: quien compra, quien colabora, quien te ayuda. El boceto sale en minutos y lo afinamos juntos.',
+  'av.3t':'Tu web sale del mapa',
+  'av.2d':'El mapa marca dónde se atasca el trabajo, quién carga demasiado y qué falta, para que decidas con datos y no a ciegas.',
+  'av.2t':'Sabes dónde se te escapa el valor',
+  'av.1d':'Clientes, equipo, proveedores y aliados en un solo dibujo, con lo que os intercambiáis: también la confianza, los favores y lo que nadie apunta.',
+  'av.1t':'Ves quién te da qué',
+  'apf.6':'Quiénes somos',
+  'apf.5':'Cómo trabajamos, paso a paso',
+  'apf.4':'Un mapa de ejemplo',
+  'apf.3':'El reto, por sectores',
+  'apf.2':'Cómo se mantiene vivo',
+  'apf.1':'Los tres servicios',
+  'apf.k':'Si quieres entrar a fondo',
+  'conf.h2':'Veinte años haciendo piña <em>con equipos de todo tipo</em>',
+  'conf.k':'Por qué nosotros',
+  'av.intro':'No es un informe que se queda en el cajón: es el dibujo de tu negocio, y lo usas para decidir.',
+  'av.h2':'Un mapa que trabaja <em>para tu negocio</em>',
+  'av.k':'Qué te llevas',
+  'hero.av3':'Tienes el boceto de tu web, salido del mapa',
+  'hero.av2':'Sabes dónde se pierde valor y por dónde empezar',
+  'hero.av1':'Ves tu negocio entero en un solo dibujo',
   'hero.evo3.d':'El mismo método convertido en un sistema vivo: cada rol registra lo que da y recibe, y el mapa avisa de dónde se atasca el valor.',
-  'hero.cta2':'Pide presupuesto →',
+  'hero.cta2':'Diagnóstico en 3 min',
   'op.eyebrow':'La propuesta',
   'op.h2':'Del taller al sistema vivo: <em>tu negocio operativo</em>',
   'op.intro':'Una organización pequeña o mediana sale con su modelo de negocio funcionando, no con un informe. La sala la seguimos haciendo las personas; el trabajo que antes costaba semanas lo hace el sistema.',
@@ -2284,7 +2423,7 @@ es: {
   'srv.2b':'Servicios conectables',
   'srv.3k':'3 · Formación acción',
   'srv.3t':'El SOS, aprendido usándolo',
-  'srv.3d':'Formación sobre tu proyecto y no sobre un caso inventado: módulos de N0 a N3 con certificado, y la herramienta libre donde vive lo que sale de cada sesión.',
+  'srv.3d':'Formación sobre tu proyecto y no sobre un caso inventado: módulos de N0 a N3 con certificado, y la herramienta libre donde vive lo que sale de cada sesión, que puedes usar aunque no nos contrates.',
   'srv.3a':'Entra al SOS →',
   'srv.3b':'Los módulos',
   'srv.4k':'Y lo que te quedas, sea cual sea el servicio',
@@ -2327,11 +2466,25 @@ es: {
   'nv.d.arrel-premsa':'Lo que se ha dicho fuera',
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacidad, explicada',
-  'nv.cta':'Haz el diagnóstico',
+  'nv.cta':'Crea tu mapa',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escríbenos',
   'nv.peu.legal':'Aviso legal y privacidad',
 /*/TT-NAV-I18N-ES*/
+/*TT-CAMI-I18N-ES*/
+  'cami.k':'Tu camino',
+  'cami.h':'Empiezas con un dibujo. <em>Creces cuando tú quieras.</em>',
+  'cami.a':'Crea tu mapa de valor →',
+  'cami.n':'Cada paso es opcional: te quedas donde te va bien. Ningún precio hasta que tú lo pidas.',
+  'cami.1t':'Primero, tu mapa',
+  'cami.1d':'Nos cuentas tu negocio con tus palabras y sale el mapa de valor y un primer boceto de la web. Gratis y sin pedirte nada al principio.',
+  'cami.2t':'Tu página, en marcha',
+  'cami.2d':'La publicamos y la cuidamos nosotros. Pagas por lo que usas, con un límite que eliges tú.',
+  'cami.3t':'Tu web, del todo tuya',
+  'cami.3d':'Cuando quieras, la web pasa a ser tuya, con todo lo que ha aprendido por el camino.',
+  'cami.4t':'Y una red que aprende',
+  'cami.4d':'Lo que descubres ayuda a otros negocios como el tuyo, y lo que descubren ellos te llega a ti.',
+/*/TT-CAMI-I18N-ES*/
 /*TT-CT-I18N-ES*/
   'ct.plm.plCeller':'La misma casa vista desde arriba: 7 pilares —uno por nodo del mapa— y 28 rengles abiertas, de las cuales 11 tienen a alguien. Cada rengla es una entrega del mapa: las primeras manos, lo que se factura; los laterales, lo que no; y los vents, lo que liga dos áreas a la vez.',
   'ct.r.plCeller.0':'Primera mano de Quién hace el vino: llegar donde la bodega no llega',
@@ -2457,8 +2610,8 @@ es: {
   'vd.p2.t':'En Pantheon Work, desde 2019',
   'vd.p2.d':'Álvaro Solache dirige allí proyectos de consultoría con este método, y cocreó su práctica: venta, planificación, producción y formación. <b>Las fases, la hoja y las preguntas de esta página salen del guion de una sesión real con un equipo de dirección</b>, no de un manual.',
 /*/TT-VD-I18N-ES*/
-  'hero.h1':'Tu mapa de valor, <em>funcionando cada día</em>',
-  'hero.desc':'El equipo dibuja junto el <em>flujo de valor</em> —también los favores y la confianza— y lo mira <strong>como un sistema, no como la suma de lo que hace cada uno</strong>. Al día siguiente, cada entrega entre roles queda registrada y el <em>mapa real</em> se compara solo con el ideal. Te vas con el negocio funcionando, no con un informe.',
+  'hero.h1':'Mira cómo fluye el valor en tu negocio <em>y hazlo crecer</em>',
+  'hero.desc':'Crea tu <strong>mapa de valor</strong> en unos minutos: con quién trabajas, qué os dais —también la confianza y los favores— y dónde se atasca. Es gratis, y sale el primer boceto de tu web.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vivo donde el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
   'hero.evo3.k':'Hoy · TeamTowers Humà',
@@ -2479,7 +2632,7 @@ es: {
   'cl.s.ajuntament-de-vilafranca':'Administración local','cl.s.junta-de-castilla-y-leon':'Administración autonómica',
 /*/TT-CL-I18N-ES*/
   'hero.evok':'Y la prueba de que funciona: veinte años entregándolo',
-  'hero.disc':'Análisis, diseño y desarrollo de sistemas por los que fluye el valor','hero.porta1':'Administración pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa y cooperativa',
+  'hero.porta1':'Administración pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa y cooperativa',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
   'ct.a11y.d':'A la izquierda, una torre sostenida por cuatro personas. A la derecha, la misma torre sostenida por catorce. Cuando se va una, la primera cae y la segunda aguanta.',
@@ -2487,7 +2640,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Diagnostica tu organización · 3\u00a0min','hero.note':'Te vas con el diagnóstico hecho, lo envíes o no. Sin registro ni cuenta.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Diagnóstico · 3 min →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'Sin pagar y sin compromiso: no se envía nada hasta que tú lo digas. ¿Ya sabes lo que quieres? <a href="/SOS/pressupost.html">Pide presupuesto</a>.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es dónde está tu organización: el diagnóstico te lo dice en tres minutos y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo y el precio a la vista, el siguiente paso no es llamar: es saber qué paquete te toca. El diagnóstico lo dice.','band.btn':'Haz el diagnóstico en 3 min →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',
@@ -2531,7 +2684,7 @@ es: {
   'mv.h2':'El mismo flujo de valor, <em>mirado de dos maneras</em>',
   'mv.intro':'Un mapa de valor dice quién da qué a quién, también los favores y la confianza. Una piña castellera, mirada desde arriba, dice otra cosa que el mapa no puede decir: dónde se concentra el peso. Son las dos vistas de un solo flujo — los mismos siete roles y las mismas dieciséis entregas, contadas dos veces.',
   'cta.h2':'¿Hay trabajo en tu organización<br>que <em>se aguanta con pinzas?</em>',
-  'cta.btn2':'Explora el SOS en vivo →','cta.btn3':'Haz el diagnóstico en 3 min →',
+  'cta.btn2':'Explora el SOS en vivo →','cta.btn3':'Crea tu mapa de valor →',
   'com.eyebrow':'Cómo funciona',
   'com.h2':'Cuatro pasos, y el cuarto <em>es que el mapa sigue vivo</em>',
   'com.intro':'Del primer borrador al sistema funcionando. Puedes parar en cualquier paso y quedarte con lo que lleves hecho.',

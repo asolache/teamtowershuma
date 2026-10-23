@@ -66,9 +66,22 @@ const entre = (s, a, b, nou) => {
 
 const abans = readFileSync(FITXER, 'utf8');
 const ara = entre(entre(abans, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', SECCIO), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS + V.CSS);
+/* /cliente/ és en castellà i es llegeix també en català (22/10/2026): la
+   pàgina tradueix el que diu amb una taula castellà → català. La part dels
+   passos i dels nivells surt d'aquí, de les dues versions de les mateixes
+   fonts, text a text: si un dia no coincideixen, peta. */
+const textos = h => [...h.matchAll(/>([^<]+)</g)].map(m => m[1].trim()).filter(Boolean);
+function taulaCa() {
+  const es = textos(P.pinta({ llengua: 'es' }) + V.pintaTria('', 'es')), ca = textos(P.pinta({ llengua: 'ca' }) + V.pintaTria('', 'ca'));
+  if (es.length !== ca.length) throw new Error('els passos o els nivells no tenen els mateixos textos en castellà i en català');
+  const t = new Map(es.map((x, i) => [x, ca[i]]));
+  t.set(P.TXT.es.titol, P.TXT.ca.titol); t.set('· ' + P.TXT.es.ara, '· ' + P.TXT.ca.ara);
+  return [...t].filter(([a, b]) => a !== b).map(([a, b]) => '        ' + JSON.stringify(a) + ': ' + JSON.stringify(b) + ',').join('\n');
+}
 const abansC = readFileSync(CLIENT, 'utf8');
-const araC = entre(entre(entre(abansC, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', P.pinta({ llengua: 'es', sagnat: '        ' })),
-  '<!--TT-NIVELLS-->', '<!--/TT-NIVELLS-->', V.pintaTria('            ')), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS);
+const araC = entre(entre(entre(entre(abansC, '<!--TT-PROCES-->', '<!--/TT-PROCES-->', P.pinta({ llengua: 'es', sagnat: '        ' })),
+  '<!--TT-NIVELLS-->', '<!--/TT-NIVELLS-->', V.pintaTria('            ')), '/*TT-PROCES*/', '/*/TT-PROCES*/', P.CSS),
+  '/*TT-PROCES-CA*/', '/*/TT-PROCES-CA*/', taulaCa());
 
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m), bad = m => { fails++; console.log('  ✗ ' + m); };

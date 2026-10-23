@@ -27,28 +27,36 @@
 var PREGUNTES = [
   { id: 'objetivo', passa: 1, per: 'abast',
     q: '¿Qué tiene que conseguir tu web nueva?',
-    ej: 'Llenar los cursos de 2027, que me encuentren desde fuera, dejar de contestar lo mismo…' },
+    ej: 'Llenar los cursos de 2027, que me encuentren desde fuera, dejar de contestar lo mismo…',
+    ca: { q: 'Què ha d\'aconseguir la teva web nova?', ej: 'Omplir els cursos del 2027, que et trobin des de fora, deixar de contestar el mateix…' } },
   { id: 'quien', passa: 2, per: 'rols',
     q: '¿Quién te compra, se apunta o te contrata? ¿De dónde viene y en qué momento está?',
-    ej: 'Gente que cambia de profesión, recién graduados, empresas…' },
+    ej: 'Gente que cambia de profesión, recién graduados, empresas…',
+    ca: { q: 'Qui et compra, s\'hi apunta o et contracta? D\'on ve i en quin moment està?', ej: 'Gent que canvia de professió, gent acabada de graduar, empreses…' } },
   { id: 'llegan', passa: 2, per: 'rols',
     q: '¿Cómo te encuentran hoy?',
-    ej: 'Google, Instagram, YouTube, antiguos clientes que te recomiendan, socios…' },
+    ej: 'Google, Instagram, YouTube, antiguos clientes que te recomiendan, socios…',
+    ca: { q: 'Com et troben avui?', ej: 'Google, Instagram, YouTube, antics clients que et recomanen, socis…' } },
   { id: 'aliados', passa: 2, per: 'rols',
     q: '¿Con quién trabajas para darlo? Tu equipo, socios, quien te avala o te certifica.',
-    ej: 'Formadores, una asociación, otra escuela, proveedores…' },
+    ej: 'Formadores, una asociación, otra escuela, proveedores…',
+    ca: { q: 'Amb qui treballes per donar-ho? El teu equip, socis, qui t\'avala o et certifica.', ej: 'Formadors, una associació, una altra escola, proveïdors…' } },
   { id: 'despues', passa: 4, per: 'intangibles',
     q: '¿Qué pasa con tus clientes después? ¿Vuelven, te recomiendan, encuentran trabajo?',
-    ej: 'Me mandan amigos, me graban un vídeo, trabajan con quien me conoce…' },
+    ej: 'Me mandan amigos, me graban un vídeo, trabajan con quien me conoce…',
+    ca: { q: 'Què passa amb els teus clients després? Tornen, et recomanen, troben feina?', ej: 'M\'envien amics, em graven un vídeo, treballen amb qui em coneix…' } },
   { id: 'preguntan', passa: 6, per: 'web',
     q: '¿Qué te preguntan siempre antes de decidirse?',
-    ej: 'Fechas, precio, si sirve fuera de España, alojamiento…' },
+    ej: 'Fechas, precio, si sirve fuera de España, alojamiento…',
+    ca: { q: 'Què et pregunten sempre abans de decidir-se?', ej: 'Dates, preu, si serveix fora d\'Espanya, allotjament…' } },
   { id: 'tiempo', passa: 5, per: 'procesos',
     q: '¿Qué te quita más tiempo cada semana?',
-    ej: 'Contestar correos, apuntar inscripciones, cobrar, publicar en redes…' },
+    ej: 'Contestar correos, apuntar inscripciones, cobrar, publicar en redes…',
+    ca: { q: 'Què et pren més temps cada setmana?', ej: 'Contestar correus, apuntar inscripcions, cobrar, publicar a les xarxes…' } },
   { id: 'webHoy', passa: 6, per: 'web',
     q: '¿Qué te gusta de tu web de ahora y qué cambiarías?',
-    ej: 'Las fotos de las clases sí; el menú y los textos largos, no.' }
+    ej: 'Las fotos de las clases sí; el menú y los textos largos, no.',
+    ca: { q: 'Què t\'agrada de la teva web d\'ara i què hi canviaries?', ej: 'Les fotos de les classes sí; el menú i els textos llargs, no.' } }
 ];
 
 /* Quantes persones o grups calen per a un primer mapa que ensenyi alguna
@@ -57,35 +65,56 @@ var MIN_ALTRES = 5, MAX_ALTRES = 11;
 
 var net = function (v) { return v == null ? '' : String(v).replace(/\s+/g, ' ').trim(); };
 
-/* El text per a la IA del client. Va en castellà, com la pàgina, i demana el
-   JSON exacte que `llegeix` sap llegir. */
-function prompt(c) {
-  var o = c || {}, l = [];
-  l.push('Ayúdame a preparar la web nueva de mi organización. Te cuento quién soy y lo que quiero, y te pido que contestes unas preguntas y que me digas quién está a mi alrededor.');
+/* La pregunta en la llengua de la pàgina (21/10 només en castellà; el català
+   des del 22/10/2026, demanat per l'Àlvar). El castellà és la font i el que
+   arriba a la casa (`resum`). */
+function pregunta(p, ll) { return ll === 'ca' && p.ca ? p.ca : { q: p.q, ej: p.ej }; }
+
+/* El text per a la IA del client, en la llengua de la pàgina. Demana el JSON
+   exacte que `llegeix` sap llegir: les claus no es tradueixen. */
+var PROMPT = {
+  es: { hola: 'Ayúdame a preparar la web nueva de mi organización. Te cuento quién soy y lo que quiero, y te pido que contestes unas preguntas y que me digas quién está a mi alrededor.',
+    org: 'Mi organización: ', web: 'Mi web de ahora: ', webN: ' (léela si puedes; si no, dímelo)', vol: 'Lo que quiero, con mis palabras: ', buit: '(todavía no lo he escrito)',
+    p1: '1. Contesta estas preguntas con lo que sepas de mí. Si no lo sabes, escribe «?» y no lo inventes:',
+    p2: function (a, b) { return '2. Dime entre ' + a + ' y ' + b + ' personas o grupos que están a mi alrededor (quien me compra, quien me recomienda, quien me ayuda, quien me avala…). Llámalos por lo que hacen, sin nombres propios ni de empresas. Para cada uno: qué me da y qué le doy yo, en pocas palabras. Marca «gratis» si eso no se paga (confianza, ideas, recomendaciones, reputación) y «se paga» si es dinero, un producto o un servicio. Sin cifras.'; },
+    p3: '3. Devuélvemelo solo así, en un bloque JSON, para que lo pegue en mi formulario:' },
+  ca: { hola: "Ajuda'm a preparar la web nova de la meva organització. T'explico qui soc i què vull, i et demano que contestis unes preguntes i que em diguis qui hi ha al meu voltant.",
+    org: 'La meva organització: ', web: "La meva web d'ara: ", webN: " (llegeix-la si pots; si no, digues-m'ho)", vol: 'El que vull, amb les meves paraules: ', buit: "(encara no ho he escrit)",
+    p1: "1. Contesta aquestes preguntes amb el que sàpigues de mi. Si no ho saps, escriu «?» i no t'ho inventis:",
+    p2: function (a, b) { return "2. Digues-me entre " + a + " i " + b + " persones o grups que hi ha al meu voltant (qui em compra, qui em recomana, qui m'ajuda, qui m'avala…). Anomena'ls pel que fan, sense noms propis ni d'empreses. Per a cadascun: què em dona i què li dono jo, en poques paraules. Marca «gratis» si això no es paga (confiança, idees, recomanacions, reputació) i «se paga» si són diners, un producte o un servei. Sense xifres. Contesta en català."; },
+    p3: "3. Torna-m'ho només així, en un bloc JSON, perquè l'enganxi al meu formulari:" }
+};
+function prompt(c, llengua) {
+  var o = c || {}, l = [], T = PROMPT[llengua] || PROMPT.es, ll = PROMPT[llengua] ? llengua : 'es';
+  l.push(T.hola);
   l.push('');
-  if (net(o.org)) l.push('Mi organización: ' + net(o.org));
-  if (net(o.web)) l.push('Mi web de ahora: ' + net(o.web) + ' (léela si puedes; si no, dímelo)');
-  l.push('Lo que quiero, con mis palabras: ' + (net(o.inicial) || '(todavía no lo he escrito)'));
+  if (net(o.org)) l.push(T.org + net(o.org));
+  if (net(o.web)) l.push(T.web + net(o.web) + T.webN);
+  l.push(T.vol + (net(o.inicial) || T.buit));
   l.push('');
-  l.push('1. Contesta estas preguntas con lo que sepas de mí. Si no lo sabes, escribe «?» y no lo inventes:');
-  PREGUNTES.forEach(function (p, i) { l.push('   ' + (i + 1) + '. ' + p.q); });
+  l.push(T.p1);
+  PREGUNTES.forEach(function (p, i) { l.push('   ' + (i + 1) + '. ' + pregunta(p, ll).q); });
   l.push('');
-  l.push('2. Dime entre ' + MIN_ALTRES + ' y ' + MAX_ALTRES + ' personas o grupos que están a mi alrededor (quien me compra, quien me recomienda, quien me ayuda, quien me avala…). Llámalos por lo que hacen, sin nombres propios ni de empresas. Para cada uno: qué me da y qué le doy yo, en pocas palabras. Marca «gratis» si eso no se paga (confianza, ideas, recomendaciones, reputación) y «se paga» si es dinero, un producto o un servicio. Sin cifras.');
+  l.push(T.p2(MIN_ALTRES, MAX_ALTRES));
   l.push('');
-  l.push('3. Devuélvemelo solo así, en un bloque JSON, para que lo pegue en mi formulario:');
+  l.push(T.p3);
   l.push('{"respuestas": {' + PREGUNTES.map(function (p) { return '"' + p.id + '": "…"'; }).join(', ') + '},');
   l.push(' "alrededor": [{"quien": "…", "me_da": "…", "me_da_es": "se paga|gratis", "le_doy": "…", "le_doy_es": "se paga|gratis"}]}');
   return l.join('\n');
 }
 
-var MENA = function (v) { return /gratis|no se paga|intangible/i.test(String(v || '')) ? 'intangible' : 'tangible'; };
+var MENA = function (v) { return /gratis|no se paga|no es paga|intangible/i.test(String(v || '')) ? 'intangible' : 'tangible'; };
 
 /* El primer objecte JSON del text que enganxa el client (amb o sense ```). */
-function llegeix(text) {
-  var t = String(text || ''), a = t.indexOf('{'), b = t.lastIndexOf('}');
-  if (a < 0 || b <= a) throw new Error('No encuentro el bloque entre llaves { }. Copia la respuesta entera de tu IA.');
+var ERR = {
+  es: ['No encuentro el bloque entre llaves { }. Copia la respuesta entera de tu IA.', 'El bloque no se puede leer. Pídele a tu IA que lo devuelva solo en JSON, sin nada más.'],
+  ca: ["No trobo el bloc entre claus { }. Copia la resposta sencera de la teva IA.", "El bloc no es pot llegir. Demana a la teva IA que el torni només en JSON, sense res més."]
+};
+function llegeix(text, llengua) {
+  var t = String(text || ''), a = t.indexOf('{'), b = t.lastIndexOf('}'), E = ERR[llengua] || ERR.es;
+  if (a < 0 || b <= a) throw new Error(E[0]);
   var j;
-  try { j = JSON.parse(t.slice(a, b + 1)); } catch (e) { throw new Error('El bloque no se puede leer. Pídele a tu IA que lo devuelva solo en JSON, sin nada más.'); }
+  try { j = JSON.parse(t.slice(a, b + 1)); } catch (e) { throw new Error(E[1]); }
   var r = {}, src = j.respuestas || j.respostes || {};
   PREGUNTES.forEach(function (p) { var v = net(src[p.id]); if (v && v !== '?') r[p.id] = v; });
   var al = (Array.isArray(j.alrededor) ? j.alrededor : []).map(function (x) {
@@ -143,11 +172,21 @@ var DIU = {
   xifres: ['Sin cifras', 'Quita las cifras: las pondremos juntos con las tuyas'],
   noms: ['Cada uno se llama por lo que hace', 'Parece que hay un nombre propio: llámalo por lo que hace']
 };
-function revisa(m, MV) {
+var DIU_CA = {
+  abast: ['Sabem què vols aconseguir', "Falta dir què ha d'aconseguir la web (la primera pregunta)"],
+  rols: ['Hi ha prou gent al voltant per veure un dibuix', 'En calen entre ' + (MIN_ALTRES + 1) + ' i ' + (MAX_ALTRES + 1) + ' comptant-te a tu'],
+  menes: ['Hi ha també el que no es paga', 'Falta el que no es paga: confiança, recomanacions, idees. Almenys un terç del que va i ve'],
+  reciprocitat: ['Amb cadascun, alguna cosa va i alguna cosa torna', "Hi ha algú amb qui només va alguna cosa en un sentit: digues també què torna"],
+  solts: ['Ningú es queda sense donar ni rebre', "Hi ha algú que ni dona ni rep res: digues-li què"],
+  xifres: ['Sense xifres', 'Treu les xifres: les posarem junts amb les teves'],
+  noms: ['Cadascú es diu pel que fa', 'Sembla que hi ha un nom propi: anomena-ho pel que fa']
+};
+function revisa(m, MV, llengua) {
+  var Q = llengua === 'ca' ? DIU_CA : DIU;
   var V = MV || g.MapaValor;
   var r = V.revisa(m);
   var punts = r.regles.filter(function (x) { return DIU[x.id]; }).map(function (x) {
-    return { id: x.id, ok: x.ok, diu: DIU[x.id][x.ok ? 0 : 1] };
+    return { id: x.id, ok: x.ok, diu: Q[x.id][x.ok ? 0 : 1] };
   });
   return { punts: punts, llest: punts.every(function (x) { return x.ok; }) };
 }
@@ -162,6 +201,6 @@ function resum(c) {
   return l.join('\n');
 }
 
-var DiagnosiClient = { PREGUNTES: PREGUNTES, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, resum: resum };
+var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, resum: resum };
 if (typeof module !== 'undefined' && module.exports) module.exports = DiagnosiClient; else g.DiagnosiClient = DiagnosiClient;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

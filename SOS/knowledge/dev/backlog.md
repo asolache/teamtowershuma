@@ -52,6 +52,85 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 > pàgines del servei web fora de la casa i `vedes.html` perdent la pell) i
 > quatre fases, cadascuna amb la seva guarda.
 
+### La base de coneixement per sector · identificar el tipus de projecte (demanat 22/10/2026)
+
+**Demanat per l'Àlvar:** «a la guia crearia una base de coneixement més
+detallada per sector, per poder identificar el tipus de projecte i tenir ja una
+base que després pugui estar en local, a Ollama, i anar-la actualitzant».
+
+**La idea:** quan algú comença el mapa (a `/cliente/` o a l'editor), la guia
+reconeix de quin tipus de projecte es tracta (escola, celler, ajuntament,
+cooperativa, comerç…) i li proposa els rols, els fluxos i les preguntes típics
+del seu sector, en comptes de començar de zero.
+
+**Fet (22/10/2026, «seamos DRY»):** la base ja existia a la Matriu de l'app:
+les catorze activitats crítiques del territori (`CRITICAL_ACTIVITIES`: rols,
+fluxos i passos de cada sector), els sis prototips (`PROTOTYPE_MAPS`) i els
+quatre tipus de projecte (`PROJECT_TYPES`). `build-models-mapa.js` ara també
+llegeix els sectors de l'app i els escriu a `SOS/lib/models-mapa.js` com a
+`SECTORS` (català i castellà), al costat dels set `MODELS`. `/cliente/` ja els
+ofereix («O por sector») amb el mateix botó. Cap còpia: si la Matriu canvia,
+el `--check` del CI ho diu.
+
+**Fet també (23/10/2026):**
+
+- **Vedes de sector** a `SOS/knowledge/vna/sectors/` (21, una per model): el que
+  ja se sap del flux de valor de cada sector. El mapa de referència el genera
+  `build-models-mapa.js` (cap còpia) i marca qui ho fa segons la regla del
+  tauler; la resta s'escriu a mà. Viatgen amb el model a /cliente/ i la IA les
+  fa servir de base, i busca a part els intangibles propis de cada marca (el
+  que la diferencia). Amb capçalera de la taxonomia universal, en esborrany fins
+  que una persona les revisi. Pendent: ensenyar-les també a la pantalla en
+  castellà (avui el text és en català).
+- **Cas anònim a /cliente/**: «una productora d'esdeveniments», el mapa real
+  d'una xarxa sense noms ni projectes interns, generat per
+  `build-cas-automatitzat.js` amb la regla del seu tauler: què fa la IA o un
+  programa i valida una persona, i quant li falta a cada procés per anar sol
+  (automatitzat, definit, cara a cara, per muntar, sense definir). Les fases de
+  la Matriu també als 7 models de negoci, i la IA les rep.
+
+**Fet també (22/10/2026, vespre):**
+
+- **Auditoria dels 21 models.** Cap no passava les regles que ensenya
+  `/cliente/` (tots tenien 5 rols, en calen de 6 a 12; cinc no arribaven a un
+  terç d'intangibles). `BONES` a `build-models-mapa.js` completa cadascun amb
+  qui el promou (`centre`), el rol que hi faltava, els fluxos que no es paguen
+  i la frase de la bona pràctica (`bona`), que `/cliente/` ensenya. El
+  `--check` peta si un model deixa de complir les regles 2 a 5.
+- **Suggeriment sense IA.** `ModelsMapa.suggereix(text, llengua)` compara el
+  que escriu la persona amb les paraules de cada model i sector (arrels i pes
+  invers); `/cliente/` li ofereix «Empezar con este modelo».
+- **`/cliente/` en català** (`?lang=ca` o `tt_lang`), i la IA hi respon en
+  català.
+- **La IA arrenca del model** que encaixa (triat o suggerit) i l'adapta; en
+  acabar de polir, el botó «Ahora, los textos de mi web» porta al pas següent.
+- **«Lo que puede ir solo»** (23/10/2026): `/cliente/` marca al mapa de cada
+  client què pot preparar la màquina amb la regla del Kanban de l'app
+  (`fluxAutomatitzable`, llegida tal com és a `models-mapa.js`), la mateixa del
+  x % de la landing; ho rebem al lead.
+
+**El que queda:**
+
+1. La IA de `/cliente/` (`pule-mapa.mjs`) identifica el sector i el tipus de
+   projecte del que escriu la persona i proposa el model que toca, llegint
+   `models-mapa.js` (avui la Via C de la Matriu ho fa per paraules).
+2. Els casos reals (`SOS/knowledge/vna/casos/`, avui el celler del Penedès) i
+   els patrons (`vna/patrons.md`) entren a la mateixa base, per sector.
+3. Un paquet exportable (JSON) perquè un model local (Ollama) el faci servir
+   sense connexió i s'actualitzi quan canvia la font. Mesurar qualitat i cost
+   contra el model al núvol abans de canviar res.
+4. L'anglès dels sectors i de les bones pràctiques, quan l'app el demani.
+5. El que s'aprèn de cada projecte nou torna a la base del seu sector (el
+   cervell col·lectiu), sense dades personals.
+
+**I el que hi afegeix (Àlvar, 22/10/2026 21:34):** aprofitar la feina ja
+invertida en els fluxos de valor de projectes reals per fer **bones pràctiques
+per tipus de projecte**, que siguin educatives: qui comença veu com flueix el
+valor en un projecte com el seu abans de dibuixar el seu. I l'eina, molt àgil:
+crear el mapa, veure el flux, corregir i parlar amb la IA i el cervell **amb el
+dit, en tauleta i en pantalles tàctils grans de taller**, i arrossegar els
+objectes fins a cert punt. La UX de l'editor és del fil «Revisió UX del SOS».
+
 ### Repàs del 23/10/2026 · la portada que ven, la IA que acompanya el mapa i la web que replica la que ja hi ha
 
 **Demanat per l'Àlvar** (23/10/2026): revisar el backlog per a l'enfocament de
@@ -5393,6 +5472,15 @@ codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
   (`netlify/functions/cervell-github.mjs`). No és l'scope `repo` d'una OAuth
   App, que també dona escriptura. Mentre no hi hagi les variables de l'App,
   el botó no surt.
+- **Fet (pas 1 de l'arbre estàndard, 23/10):** `SOS/knowledge/cervell/estructura.md`
+  i la plantilla amb `areas/`, `proyectos/`, `recursos/` i `mapa/`; la guarda
+  comprova que cada àrea és un dels dotze rols. No s'ha mogut res existent.
+- **Pendent (pas 2):** a la pàgina del cervell, la cobertura per àrees: quins
+  rols tenen documents i quins són buits.
+- **Pendent (pas 3):** portar-ho als cervells que ja hi són (pàgina de l'Àlvar,
+  Events Penedès) amb `--actualitza`, sense moure fitxers sense el seu sí.
+- **A explorar:** espais al núvol perquè un mentor creï i comparteixi un
+  cervell amb un client (repo plantilla «Crea el teu cervell» + l'App de lectura).
 - **Pendent:** integrar tots els models de TeamTowers Humà com a peces del
   manifest (mapes tipus, mapa de valor, taxonomia universal) perquè cada vista
   els trobi igual.

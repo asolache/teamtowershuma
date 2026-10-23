@@ -13,7 +13,8 @@ Aquí hi viu **el que les sessions han ensenyat**, i no el mètode: el mètode �
 vna/
 ├── README.md     això
 ├── patrons.md    el que s'ha vist dues vegades o més
-└── casos/        un fitxer per mapa real
+├── casos/        un fitxer per mapa real
+└── sectors/      una veda per sector: el que ja se sap (bones pràctiques, no casos)
 ```
 
 ## Com s'hi escriu
