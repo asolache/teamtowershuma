@@ -72,6 +72,13 @@ privats, sense publicar-ne res (veda 168). Aquesta sessió és d'una GitHub App
 només de lectura, instal·lada als repos que cadascú tria
 (`netlify/functions/cervell-github.mjs`).
 
+**I l'arbre, també estàndard (23/10/2026).** El manifest diu on és cada peça;
+`estructura.md` diu com s'ordena la resta, presa de taxonomies que ja
+existeixen (APQC, PARA, Diátaxis, Dublin Core, VNA): `areas/<rol>/` amb els
+dotze rols de la taxonomia universal, `proyectos/`, `recursos/` i `mapa/`. La
+plantilla ja neix així, cada cervell nou l'hereta a `saber/heredado/`, i si el
+manifest declara `arees` la guarda peta amb una àrea que no és cap rol.
+
 ## L'herència: el que ja sap un cervell nou
 
 **Demanat per l'Àlvar el 09/10/2026:** «segur que hi ha més contingut ja al
