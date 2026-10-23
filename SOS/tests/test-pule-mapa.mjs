@@ -10,7 +10,7 @@
    · El cost real surt de `usage` (i de cada intent si hi ha hagut fallback).
    · Del que respon el model només passa el que es pot aplicar.
    · El text del client va dins de <dades> i no surt al registre. */
-import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament, sistema, PAS } from '../../netlify/functions/pule-mapa.mjs';
+import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament, sistema, PAS, handler } from '../../netlify/functions/pule-mapa.mjs';
 import { perCorreu, aGithub, deGithub, vies, sessio } from '../../netlify/functions/identitat.mjs';
 import { signa, llegeix, secret } from '../../netlify/lib/signatura.mjs';
 
@@ -181,6 +181,18 @@ console.log('\n7 · El tancament del mes');
   ok(neteja({ model: { pairs: [], veda: { clau: 'x', falta: [1, 2, 3, 4, 5, 6, 7, 8] } } }).model.falta.length === 6 && neteja({ model: { pairs: [], veda: 'x' } }).model.veda.length === 0, 'una veda mal formada no passa; com a molt sis línies');
   ok(/intangibles propios/.test(PAS.mapa), 'la IA busca els intangibles propis de la marca, no els copia del model');
   ok(/en catalán/.test(sistema('ca')) && !/en catalán/.test(sistema('es')), 'en català, la IA respon en català');
+}
+
+console.log('\nSi no està activa, diu què li falta');
+{
+  const abans = process.env.ANTHROPIC_API_KEY;
+  delete process.env.ANTHROPIC_API_KEY;
+  const r1 = JSON.parse((await handler({ httpMethod: 'GET', headers: {} })).body);
+  ok(r1.actiu === false && r1.motiu === 'falta ANTHROPIC_API_KEY', 'sense clau, ho diu');
+  process.env.ANTHROPIC_API_KEY = ENV.ANTHROPIC_API_KEY;
+  const r2 = (await handler({ httpMethod: 'GET', headers: {} }));
+  ok(r2.statusCode === 503 && JSON.parse(r2.body).motiu === 'sense Netlify Blobs' && !r2.body.includes('sk-ant'), 'amb clau i sense Blobs, ho diu, sense ensenyar la clau');
+  if (abans == null) delete process.env.ANTHROPIC_API_KEY; else process.env.ANTHROPIC_API_KEY = abans;
 }
 
 console.log('\n' + pass + ' bé, ' + fail + ' malament');
