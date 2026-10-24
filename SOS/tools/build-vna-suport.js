@@ -7,7 +7,7 @@
  *
  *   · `SOS/vna-suport.html`            la consola, per a dins i per a clients
  *   · `.claude/skills/mapa-de-valor/`  el procés, per a una IA que hi treballa
- *   · `SOS/index.html`                 el `system` de l'intent `suggest_map`
+ *   · `SOS/lib/ia-intents.js`          el `system` de l'intent `suggest_map`
  *   · `SOS/knowledge/for-ai/`          el contracte, que ja hi era
  *
  * **Per què una declaració i no quatre documents.** El contracte
@@ -611,16 +611,16 @@ posa('.claude/skills/mapa-de-valor/SKILL.md', 'VS-PROMPT',
    un model que faci un VNA sense dir-li què és un VNA». El prompt que hi havia
    demanava «entre 5 i 8 rols i entre 6 i 12 intercanvis» i prou. */
 {
-  const f = join(SOS, 'index.html');
+  const f = join(SOS, 'lib', 'ia-intents.js');
   const src = readFileSync(f, 'utf8');
   const marca = /(\n\s*system:')((?:[^'\\]|\\.)*)(',\n\s*tool:\{name:'proposar_mapa_valor')/;
   const m = src.match(marca);
-  if (!m) bad('no es troba el `system` de l\'intent `suggest_map` a SOS/index.html');
+  if (!m) bad('no es troba el `system` de l\'intent `suggest_map` a SOS/lib/ia-intents.js');
   else {
     const cos = systemPrompt().replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
     const out = src.replace(marca, (_, a, __, c) => a + cos + c);
     if (out !== src) {
-      if (CHECK) vells.push('SOS/index.html → suggest_map.system');
+      if (CHECK) vells.push('SOS/lib/ia-intents.js → suggest_map.system');
       else { writeFileSync(f, out); escrits++; }
     }
     ok('l\'intent `suggest_map` porta el mètode i no només la forma');

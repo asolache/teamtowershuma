@@ -40,14 +40,14 @@ try { D = JSON.parse(m[1]); ok('el bloc de dades és JSON vàlid'); }
 catch (e) { console.log('  ✗ el bloc de dades no és JSON: ' + e.message); process.exit(1); }
 
 /* 1 · Les tasques, contra les del SOS. */
-const a = sos.indexOf('const AI_INTENTS={');
-const seg = sos.slice(a, sos.indexOf('\nconst AI={', a));
+/* Les intencions viuen a lib/ia-intents.js des del 24/10/2026. */
+const seg = readFileSync(join(__dirname, '..', 'lib', 'ia-intents.js'), 'utf8');
 const intents = {};
 const re = /\n {2}([a-z_]+):\{\n {4}model:'([^']+)',max_tokens:(\d+)/g;
 let x;
 while ((x = re.exec(seg))) intents[x[1]] = { model: x[2], max: +x[3] };
 const nI = Object.keys(intents).length;
-if (!nI) bad('no he sabut llegir AI_INTENTS de SOS/index.html');
+if (!nI) bad('no he sabut llegir les intencions de SOS/lib/ia-intents.js');
 const tareas = {};
 D.tareas.forEach(t => { tareas[t.id] = t; });
 Object.keys(intents).forEach(id => {
