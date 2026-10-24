@@ -23,6 +23,8 @@ const page = await b.newPage();
 page.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message); });
 await page.goto(APP);
 await page.waitForFunction(() => window.__SOS && window.__SOS.fluxAutomatitzable);
+// Les intencions de la IA es carreguen la primera vegada que calen (lib/ia-intents.js).
+await page.evaluate(() => window.__SOS.AI.carrega());
 
 console.log('\n1 · La taxonomia és tancada i es pot fer servir');
 const t = await page.evaluate(() => {

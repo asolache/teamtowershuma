@@ -28,6 +28,7 @@ const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 
 const APP = readFileSync(join(__dirname, '..', 'index.html'), 'utf8');
+const INTENTS = readFileSync(join(__dirname, '..', 'lib', 'ia-intents.js'), 'utf8');
 let fails = 0;
 const ok = m => console.log('  ✓ ' + m);
 const bad = m => { fails++; console.log('  ✗ ' + m); };
@@ -177,9 +178,9 @@ else ok(`${TIPUS.length} tipus d'entregable declarats`);
   else ok(`${intents.length} tipus tenen eina, i tots són dels que surten d'una màquina`);
 
   intents.forEach(({ intent }) => {
-    const j = APP.indexOf('  ' + intent + ':{');
-    if (j < 0) { bad(`l'intent \`${intent}\` no està declarat a AI_INTENTS`); return; }
-    const cos = APP.slice(j, APP.indexOf('\n  },', j));
+    const j = INTENTS.indexOf('  ' + intent + ':{');
+    if (j < 0) { bad(`l'intent \`${intent}\` no està declarat a lib/ia-intents.js`); return; }
+    const cos = INTENTS.slice(j, INTENTS.indexOf('\n  },', j));
     const sys = (cos.match(/system:'((?:[^'\\]|\\.)*)'/) || [])[1] || '';
     if (!/MAI te.{0,3}la inventis|no arrodoneixis|cap m\\?és/i.test(sys))
       bad(`\`${intent}\`: les instruccions no prohibeixen inventar-se el que falta`);
