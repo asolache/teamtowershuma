@@ -2557,6 +2557,7 @@ const SITE_TXT = {
     donem: 'Què et donem', dones: 'Què ens dones', xarxa: 'Amb la resta de la xarxa', benvinguda: 'La benvinguda',
     connecta: 'Es connecta amb', perCadascu: 'Una porta per a cadascú', sempre: 'Tot el temps', dins: 'El que passa a dins',
     acces: 'Accés', extranet: 'Espai de clients i aliats (extranet)', intranet: 'Intranet',
+    entra: 'Entra', entraEspai: 'Entra al teu espai, amb GitHub o amb correu i contrasenya',
     sos: 'La part interna es porta amb el SOS: primer per a tu (el tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb l\'equip.', sosObre: 'Obre el SOS',
     perRol: 'Per a {rol}', trobes: 'El que hi trobes', demanem: 'El que et demanem', escriuCorreu: 'Escriu-nos un correu',
     senseCorreu: 'El contacte s\'activa quan la web té el seu correu.', legal: 'Avís legal i privacitat',
@@ -2622,6 +2623,7 @@ const SITE_TXT = {
     donem: 'Qué te damos', dones: 'Qué nos das', xarxa: 'Con el resto de la red', benvinguda: 'La bienvenida',
     connecta: 'Se conecta con', perCadascu: 'Una puerta para cada uno', sempre: 'Todo el tiempo', dins: 'Lo que pasa dentro',
     acces: 'Acceso', extranet: 'Espacio de clientes y aliados (extranet)', intranet: 'Intranet',
+    entra: 'Entra', entraEspai: 'Entra en tu espacio, con GitHub o con correo y contraseña',
     sos: 'La parte interna se lleva con el SOS: primero para ti (el tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con el equipo.', sosObre: 'Abre el SOS',
     perRol: 'Para {rol}', trobes: 'Lo que encuentras aquí', demanem: 'Lo que te pedimos', escriuCorreu: 'Escríbenos un correo',
     senseCorreu: 'El contacto se activa cuando la web tiene su correo.', legal: 'Aviso legal y privacidad',
@@ -3089,6 +3091,11 @@ function webASite(web, opts) {
      surt al menú ni als cercadors. */
   const capes = Array.isArray(o.capes) ? o.capes : basica ? [] : ['extranet'];
   const ambExtranet = capes.includes('extranet'), ambIntranet = capes.includes('intranet');
+  /* Una sola entrada (Àlvaro, 24/10/2026, veda 181): la web que té extranet o
+     intranet porta «Entra» al portal del pas 2, amb GitHub o amb correu i
+     contrasenya. No es fa cap inici de sessió a la web: és un enllaç, i
+     `acces` el canvia per l'adreça del portal del client quan en té. */
+  const acces = /^https:\/\/[^\s"<>]+$/.test(o.acces || '') ? o.acces : ambExtranet || ambIntranet ? 'https://acceso.teamtowershuma.com/acceso' : '';
   const principals = (web.portes || []).filter(p => !p.buida).map((p, i) => [p, i])
     .sort((x, y) => (y[0].rep.length + y[0].dona.length) - (x[0].rep.length + x[0].dona.length) || x[1] - y[1]).map(x => x[0]);
   const enllac = id => (basica && porta(id) ? 'index.html#' + id : ruta(id));
@@ -3130,6 +3137,7 @@ function webASite(web, opts) {
     + '<header>\n<p class="marca"><a href="index.html">' + (MC.logoSvg ? '<img src="logo.svg" alt="">' : '') + e(nom) + '</a></p>\n'
     + (MC.lema ? '<p class="lema">' + e(MC.lema) + '</p>\n' : '') + '<nav aria-label="' + e(L.menu) + '"><ul>'
     + menu.map(x => '<li><a href="' + enllac(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
+    + (acces ? '<li><a class="entra" href="' + e(acces) + '">' + e(L.entra) + '</a></li>' : '')
     + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(titol) + '</h1>\n' + cos + '\n</main>\n'
     + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (basica ? ' · <a href="avis-legal.html">' + e(L.legal) + '</a>' + (ambIntranet ? ' · <a href="equip.html">' + e(L.intranet) + '</a>' : '') : '') + (correu ? ' · ' + enllacCorreu(L.escriuCorreu) : '') + '</p>\n</footer>\n</body>\n</html>\n';
   const formulari = p => {
@@ -3168,6 +3176,7 @@ function webASite(web, opts) {
       + (basica ? principals.map(seccioRol).join('\n') + '\n'
         : '<h2>' + e(L.perCadascu) + '</h2>\n' + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(etiqueta(p)) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>')
           + (ambExtranet || ambIntranet ? '\n<h2>' + e(L.acces) + '</h2>\n<ul>'
+            + (acces ? '<li><a href="' + e(acces) + '">' + e(L.entraEspai) + '</a></li>' : '')
             + (ambExtranet ? (web.portes || []).filter(p => p.compte).map(p => '<li><a href="' + ruta(p.id) + '#escriu">' + e(etiqueta(p)) + '</a> <small>' + e(L.extranet) + '</small></li>').join('') : '')
             + (ambIntranet ? '<li><a href="equip.html">' + e(L.intranet) + '</a></li>' : '') + '</ul>' : ''))
       + (CT.adreca || CT.telefon || CT.horari ? '\n<h2>' + e(L.contacte) + '</h2>\n<ul>'
@@ -3278,6 +3287,7 @@ function webASite(web, opts) {
     if (url) conf.url = url;
     if (basica) conf.vista = 'basica';
     if (Array.isArray(o.capes)) conf.capes = capes.filter(x => x === 'extranet' || x === 'intranet');
+    if (acces && acces === o.acces) conf.acces = acces;
     if (Object.keys(conf).length) posa('cerebro/configuracio.json', JSON.stringify(conf, null, 2) + '\n', 'application/json');
   }
   const md = a => a.join('\n').split('{nom}').join(nom) + '\n';

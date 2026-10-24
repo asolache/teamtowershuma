@@ -63,13 +63,13 @@ if (require.main === module) {
       const d = a[++i];
       opts.continguts = require('node:fs').readdirSync(d).filter(f => /\.md$/.test(f)).sort().map(f => ({ id: f.slice(0, -3), text: readFileSync(join(d, f), 'utf8') }));
     }
-    else if (/^--(nom|correu|llengua|url|vista)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
+    else if (/^--(nom|correu|llengua|url|vista|acces)$/.test(a[i])) opts[a[i].slice(2)] = a[++i];
     /* La pàgina o la web d'un partner: surt del seu mapa propi (lib/mapa-valor.js, `mapaOrg`). */
     else if (a[i] === '--org') opts.org = a[++i];
     else if (a[i] === '--capes') opts.capes = String(a[++i] || '').split(',').map(x => x.trim()).filter(Boolean);
     else pos.push(a[i]);
   }
-  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …] [--org nom] [--marca marca.json] [--continguts cerebro/continguts/] [--vista basica]'); process.exit(2); }
+  if (pos.length < 2) { console.error('Ús: node SOS/tools/web-del-mapa.js mapa.json carpeta/ [--nom …] [--correu …] [--llengua ca|es] [--url …] [--casa …] [--org nom] [--marca marca.json] [--continguts cerebro/continguts/] [--vista basica] [--acces https://…]'); process.exit(2); }
   opts.avisa = m => console.warn('⚠️  ' + m);
   let entrada = JSON.parse(readFileSync(pos[0], 'utf8'));
   if (opts.org) {

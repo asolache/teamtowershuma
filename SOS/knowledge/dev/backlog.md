@@ -40,6 +40,36 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 
 ## Bloc pendent (prioritzat)
 
+### Una sola entrada, amb el did del SOS (demanat 24/10/2026, veda 181)
+
+Es valida amb casos reals (l'Álvaro, 24/10): **el cas estrella és el proveïdor
+d'Events Penedès que contracta alguna cosa** (puja de fitxa a pàgina o a web);
+després, clients com la María, que no són de l'ecosistema d'Events Penedès.
+
+1. **Fet (PR #306):** «Entra» a la barra de totes les pàgines i a les webs que fa
+   el motor amb extranet o intranet; l'espai del client al portal amb el seu camí
+   i la seva proposta (`SOS/lib/espai-client.js`).
+2. **El compte porta el did:** al SOS, «Vincula el teu compte»: el navegador
+   signa un repte amb la clau del did:key i el portal desa el did (públic) al
+   membre. Demana una columna al portal (hilo d'EP, amb el sí de l'Álvaro).
+3. **El tauler del client és de teamtowershuma:** el tauler d'Events Penedès
+   (l'artefacte que passa a web privada a eventspenedes-tarifas) va néixer amb
+   el client 1, però és del SOS: passa a `SOS/lib/` com a peça comuna, amb el
+   «Avui» (`FluxViu.dia`), i Events Penedès el carrega com qualsevol altre
+   client, sense còpia. Així teamtowershuma aprèn a fer amb Claude Code la web
+   del client en totes les seves dimensions (pública, extranet, intranet,
+   tauler i automatitzacions). L'Álvaro, 24/10: «el tablero salió de Events
+   Penedès como cliente 1, pero es de teamtowershuma».
+4. **Les altres tres entrades s'hi apleguen:** la identitat de /cliente/
+   (`identitat.mjs`), l'enllaç privat de les agències (`espai-partner.mjs`) i el
+   GitHub del cervell passen a ser el mateix compte.
+5. **Les webs dels clients amb el seu portal:** el portal amb la marca de cada
+   client per a la seva extranet (avui només Events Penedès i TeamTowers).
+6. **teamtowers.eu** porta «Entra» com aquí (el portal ja reconeix el domini);
+   **molekulon.org**, més endavant.
+7. **El menú segons l'ús del projecte:** l'espai mostra les vistes que el
+   projecte fa servir (pla del portal, capes de la web, fluxos), no totes.
+
 > **Pla de millora del SOS, mesurat (10/09/2026):** `pla-millora-sos.md`. Deu
 > punts amb evidència, cost i com es comprova cadascun; els tres primers són
 > barats i van abans del playtest. El que hi ha aquí sota no el repeteix.
