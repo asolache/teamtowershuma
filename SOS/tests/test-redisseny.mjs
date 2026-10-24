@@ -59,6 +59,7 @@ await page.waitForFunction(() => window.__SOS);
 await page.waitForTimeout(1200);
 await page.evaluate(() => { const S = window.__SOS; S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
 await page.waitForSelector('#avui .av-qp');
+await page.waitForSelector('.tb-nav a');
 const av = await page.evaluate(() => ({
   xifra: document.querySelector('#avui .av-xf b').textContent,
   de: document.querySelector('#avui .av-xf span').textContent,
@@ -69,7 +70,7 @@ const av = await page.evaluate(() => ({
   avisos: (document.querySelector('#avAvisos') || {}).textContent || '',
   titol: document.title, campana: !!document.querySelector('#avui .av-qp #avNotif') === (window.Notification && Notification.permission === 'default'),
   mapa: !!document.querySelector('#avMapa svg path[data-ex]'),
-  mes: [...document.querySelectorAll('.av-mes-b')].map(x => x.textContent),
+  mes: [...document.querySelectorAll('.tb-nav a')].map(x => x.getAttribute('href')),
   plec: !!document.querySelector('details.av-plec') && !document.querySelector('details.av-plec').open,
   dalt: Math.round(document.querySelector('#avui').getBoundingClientRect().top + scrollY)
 }));
@@ -80,7 +81,7 @@ ok(/^\(1\) /.test(av.titol), 'el nombre d\'urgents, també al títol de la pesta
 ok(av.campana, '«Avisa\'m» surt només si el navegador encara no ha dit sí o no als avisos del sistema');
 ok(av.avisos === '1 urgent · 2 importants', 'el comptador d\'avisos, al costat del títol (' + av.avisos + ')');
 ok(av.mapa, 'i el mapa del projecte que més circula hi és, petit');
-ok(av.mes.length === 4, 'les altres quatre portades, a la fila «Més»');
+ok(['#/', '#/territoris', '#/fons', '#/gent'].every(h => av.mes.includes(h)), 'les altres quatre portades, al tauler de capes amb el seu enllaç');
 ok(av.plec, 'la resta del tauler, plegada a «Més del tauler»');
 ok(av.dalt < 844, 'Avui comença dins la primera pantalla del mòbil (' + av.dalt + ' px)');
 sota = await sotaTerra();
@@ -91,8 +92,9 @@ const anat = await page.evaluate(() => ({ id: window.__SOS.state.activeId, tab: 
   n: (window.__SOS.byId(window.__SOS.state.activeId) || {}).exempleViu }));
 ok(anat.n && anat.tab === 'map', 'tocar un flux parat porta al mapa del seu projecte');
 await page.evaluate(() => { const S = window.__SOS; S.closeModal(); S.state.activeId = null; S.state.homeView = 'tauler'; S.render(); });
-await page.click('.av-mes-b');
-ok(await page.evaluate(() => window.__SOS.state.homeView) === 'missions', 'la fila «Més» porta a les tasques');
+await page.click('.tb-nav a[data-id="tasques"]');
+await page.waitForTimeout(300);
+ok(await page.evaluate(() => window.__SOS.state.homeView) === 'missions', 'el tauler de capes porta a les tasques');
 
 console.log('\n3 · Sense cap flux, Avui no queda buit');
 const p2 = await (await b.newContext({ viewport: { width: 1280, height: 860 } })).newPage();

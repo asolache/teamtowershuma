@@ -71,6 +71,23 @@ for (const [ruta, txt] of [['#/fons', null], ['#/fons/impacte', 'Impacte'], ['#/
   ok(r.hash === ruta && (!txt || r.modal.includes(txt)), ruta + ' obre ' + (r.modal || 'el fons') + ' i l\'URL es queda: ' + r.hash);
 }
 
+console.log('\n8 · El tauler de capes: totes les portades al mateix lloc, amb enllaç');
+p = await obre('#/t/catalunya/alt-penedes');
+await p.evaluate(() => { location.hash = '#/territoris'; });
+await p.waitForSelector('.tb-nav a', { timeout: 5000 }).catch(() => {});
+let t = await p.evaluate(() => ({ hash: location.hash, vista: window.__SOS.state.homeView,
+  hrefs: [...document.querySelectorAll('.tb-nav a')].map(a => a.getAttribute('href')),
+  actual: (document.querySelector('.tb-nav a[aria-current=page]') || {}).textContent || '' }));
+ok(t.vista === 'mapa' && t.hash === '#/territoris', '#/territoris obre el mapa de Catalunya (abans #/mapa obria el pla fundador): ' + t.hash);
+ok(t.actual === 'Territoris', 'i el tauler la marca com a actual: ' + t.actual);
+const totes = ['#/tauler', '#/', '#/gent', '#/aprop', '#/directori', '#/territoris', '#/fons', '#/fons/impacte', '#/fons/pla'];
+ok(totes.every(h => t.hrefs.includes(h)), 'cap portada sense lloc: ' + t.hrefs.join(' '));
+await p.click('.tb-nav a[data-id="gent"]'); await p.waitForTimeout(500);
+t = await p.evaluate(() => ({ hash: location.hash, vista: window.__SOS.state.homeView, n: document.querySelectorAll('.tb-nav').length }));
+ok(t.hash === '#/gent' && t.vista === 'gent' && t.n === 1, 'un toc porta a Gent, i el tauler hi segueix, un sol cop: ' + t.hash);
+await p.goBack(); await p.waitForTimeout(500);
+ok(await p.evaluate(() => window.__SOS.state.homeView) === 'mapa', 'enrere torna als territoris');
+
 await b.close();
 console.log('\n' + pass + ' ✓ · ' + fail + ' ✗');
 process.exit(fail ? 1 : 0);
