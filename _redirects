@@ -25,6 +25,14 @@
 /v9 /SOS/    301!
 /v9/* /SOS/    301!
 
+# L'espai del client, pas 2 del camí de cada client (camiClient a
+# SOS/knowledge/cervell/heretat.json): un sol portal per a totes les marques,
+# el de producció, servit a acceso.teamtowershuma.com, que és un àlies de domini
+# del mateix lloc i es vesteix de TeamTowers pel domini. No se'n copia res
+# (decisió de l'Alvaro, 22/10/2026). Aquí només s'hi apunta.
+/acceso https://acceso.teamtowershuma.com/acceso    302
+/sos/acceso https://acceso.teamtowershuma.com/acceso    302
+
 # Els vedes del SOS tenen URL curta perquè s'enllacen des de fora: una regla es
 # cita com a /vedes#veda-83, i això ha de seguir funcionant encara que un dia el
 # fitxer canviï de lloc.

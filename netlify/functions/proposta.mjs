@@ -7,6 +7,9 @@
    Netlify Blobs (magatzem `propostes`), sota l'empremta de la persona.
 
    · `POST …/proposta` {sessio}         la proposta de qui ha entrat, o cap.
+   · `POST …/proposta` {portal}         el mateix des de l'espai del client al
+     portal (SOS/lib/espai-client.js), amb el testimoni de Supabase, que
+     comprova netlify/lib/portal.mjs. Només des de les webs del portal.
    · `PUT  …/proposta?per=<correu|gh:id>` amb `Authorization: Bearer
      IA_CIERRE_TOKEN` (el testimoni de gestió, el mateix del tancament) i la
      proposta al cos. La carrega el repositori d'estratègia o l'Àlvar:
@@ -19,9 +22,10 @@
    Al registre (console) només l'estat, mai el preu ni qui és. */
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 import { magatzem } from '../lib/magatzem.mjs';
+import { quiDelPortal, capsPortal } from '../lib/portal.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
-const json = (statusCode, o) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(o) });
+const json = (statusCode, o, caps = {}) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...caps }, body: JSON.stringify(o) });
 const xifra = v => { const n = Number(v); return isFinite(n) && n >= 0 && n < 1e6 ? Math.round(n * 100) / 100 : null; };
 
 /* La mateixa identitat que fa servir identitat.mjs: `mail:<empremta>` o `gh:<id>`. */
@@ -55,12 +59,16 @@ export function neteja(p, ara = new Date()) {
   };
 }
 
-export async function veure(cos, env, reg, ara = Date.now()) {
+export async function veure(cos, env, reg, ara = Date.now(), fetchFn) {
   const qui = llegeix(cos && cos.sessio, secret(env), ara);
-  if (!qui || !qui.id) return { estat: 'identifica' };
+  const ids = qui && qui.id ? [qui.id] : (cos && cos.portal ? await quiDelPortal(cos.portal, env, fetchFn) : []);
+  if (!ids.length) return { estat: 'identifica' };
   if (!reg) return { estat: 'sense-config' };
-  const p = await reg.get(clau(qui.id));
-  return p ? { estat: 'fet', proposta: p } : { estat: 'cap' };
+  for (const id of ids) {
+    const p = await reg.get(clau(id));
+    if (p) return { estat: 'fet', proposta: p };
+  }
+  return { estat: 'cap' };
 }
 
 export async function gestiona(metode, per, autoritzacio, cos, env, reg, ara = new Date()) {
@@ -84,8 +92,10 @@ export const handler = async (event) => {
     console.log('[proposta]', JSON.stringify({ metode: event.httpMethod, estat: r ? r.estat : 'no' }));
     return r ? json(r.estat === 'error' ? 400 : 200, r) : json(404, {});
   }
+  const caps = capsPortal((event.headers || {}).origin);
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: caps, body: '' };
   if (event.httpMethod !== 'POST') return json(405, { estat: 'error' });
   r = await veure(cos, env, reg).catch(() => ({ estat: 'error' }));
-  console.log('[proposta]', JSON.stringify({ metode: 'POST', estat: r.estat }));
-  return json({ identifica: 401, 'sense-config': 503, error: 500 }[r.estat] || 200, r);
+  console.log('[proposta]', JSON.stringify({ metode: 'POST', via: cos.portal ? 'portal' : 'sessio', estat: r.estat }));
+  return json({ identifica: 401, 'sense-config': 503, error: 500 }[r.estat] || 200, r, caps);
 };

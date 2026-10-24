@@ -5492,3 +5492,36 @@ el que no surt del navegador no té data ni integritat davant de tercers.
 
 **Guarda:** pendent (backlog, «El registre amb valor de prova»).
 
+
+## Veda 181 — Una sola entrada, que porta el did del SOS
+
+**Adoptada el 24/10/2026** per l'Álvaro: «el acceso en todas partes sería un
+estándar también en las webs que hacemos», «un login para teamtowershuma con
+tablero para clientes», «ser DRY con SOS y que ese username lleve el did y todo
+lo de SOS por defecto».
+
+L'error que evita: un inici de sessió per web. Ja n'hi havia quatre (el portal,
+la identitat de /cliente/, l'enllaç privat de les agències i el GitHub del
+cervell), cadascun amb els seus comptes.
+
+- **Una sola porta:** el portal del pas 2 (`camiClient`), amb GitHub o amb
+  correu i contrasenya. Totes les webs nostres porten «Entra» (`build-nav.js`,
+  `/acceso`) i totes les webs que fem amb extranet o intranet també (el motor,
+  opció `acces`). Cap web no en fa un de propi.
+- **Forma part del procés del projecte:** el mapa, els fluxos, l'automatització,
+  la web i les vistes, i en l'entrega, l'espai del client amb el seu accés
+  (`proces-web.js`).
+- **El compte porta el did:** la identitat de la persona és el seu did:key del
+  SOS (veda 180); el compte del portal només el vincula, signant amb la clau del
+  navegador. Així qui entra a la web opera amb el codex del SOS sense res més.
+- **El tauler del client és el del SOS:** l'espai del portal carrega les peces
+  del SOS (`SOS/lib/espai-client.js`), no en fa còpia.
+- **A totes les marques:** teamtowershuma.com, teamtowers.eu i Events Penedès
+  ara; molekulon.org més endavant. El portal es vesteix de la marca pel domini.
+- **El menú s'adapta a l'ús del projecte:** el mateix compte, però cada projecte
+  mostra les vistes que fa servir (una pàgina, una web amb extranet, un tauler
+  de fluxos, una comunitat), segons el seu esglaó i les seves capes.
+
+**Guarda:** `build-nav.js --check` (la barra porta «Entra») i
+`test-vna-motor.mjs` (el motor el posa amb extranet o intranet). La resta,
+pendent (backlog, «Una sola entrada»).

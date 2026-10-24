@@ -3,7 +3,7 @@
 ## Metaskill
 
 - **Missió** — Convertir la voluntat veïnal de l'Alt Penedès, Garraf, Baix Penedès i Catalunya sencera en xarxes de valor **antifràgils, comptables i verificables** a través de SOS + Comando Molekulon.
-- **Visió** — Al 2030, **150.000 superherois** actius al Comando Catalunya movent un fons cooperatiu local mesurable en €/any i benefici psicosocial. Les comunitats no depenen de 2-3 persones sobrecarregades: depenen d'un sistema operatiu compartit.
+- **Visió** — Al 2030, comunitats que no depenen de 2-3 persones sobrecarregades sinó d'un sistema operatiu compartit, amb un fons cooperatiu local mesurable en €/any i benefici psicosocial. Els objectius d'impacte no els fixa el SOS: els fixa cada projecte o finançador que l'adopta (una fundació, un ajuntament, una empresa), i el SOS els mesura. Els 150.000 superherois són del Comando Molekulon (la pel·lícula), no del SOS.
 - **Objectius operatius**
   1. Consolidar 3 pilots complets a l'Alt Penedès + Garraf + Baix Penedès (≥5 dinàmiques cadascun · MATRIU incubadora activa).
   2. Federar 12 municipis en Assemblea federativa Penrose (llei √població × activitat).
@@ -62,9 +62,10 @@ Aquest ledger fa que el projecte fundador es governi amb les **mateixes eines** 
 
 ## Indicadors d'èxit (mesurables al SOS)
 
+Orientatius del pla fundador. Quan un projecte o un finançador defineix els seus objectius d'impacte, manen els seus.
+
 | Indicador | Base | 2026 | 2027 | 2028 | 2030 |
 |---|---|---|---|---|---|
-| Superherois validats (roster Comando) | 8 canònics | 150 | 800 | 5.000 | **150.000** |
 | Municipis actius amb ≥1 dinàmica | 3 | 12 | 40 | 150 | 500 |
 | Fons cooperatius locals mobilitzats (€/any) | 0 | 50k | 400k | 3M | **30M** |
 | Guardians certificats (8 mòduls) | 0 | 20 | 120 | 500 | **2.500** |

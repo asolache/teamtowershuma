@@ -158,7 +158,13 @@ const src = readFileSync(APP, 'utf8');
    Les comarques (CAT_MAP, 11,7 KB gzip) i el codificador de QR (6,9 KB) passen
    a `lib/` i es carreguen quan s'obre el mapa o cal un QR; el service worker
    els guarda igual. El sostre es queda a 550: 20 KB de marge per a la beta. */
-const MAX_GZIP_KB = 550;   // baixat un cop i cachejat (sw.js), no a cada visita
+/* ── 550 → 552 KB (24/10/2026) · cada vista, un enllaç ────────────────────
+   Mesurat: 550,38 → 551,69 KB. Regla de l'Álvaro: «la màxima de tot és un
+   enllaç». Les rutes de node passen de l'id local (que no obria a cap altre
+   mòbil) al camí de noms #/t/catalunya/…/socis, amb historial i botó 🔗
+   (test-links). La propera peça gran ha de sortir d'una mudança a lib/
+   (candidat: AI_INTENTS, ~41 KB en cru). */
+const MAX_GZIP_KB = 552;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;

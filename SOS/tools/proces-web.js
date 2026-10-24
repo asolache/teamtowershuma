@@ -39,8 +39,8 @@ const PASSOS = [
     es: ['La sesión: mapa y web', 'Una hora para el mapa y otra para la web, que se publica delante de ti.', 'Tu mapa validado y tu web publicada, con tu primer cambio hecho por ti.'],
     ca: ['La sessió: mapa i web', 'Una hora per al mapa i una altra per a la web, que es publica davant teu.', 'El teu mapa validat i la teva web publicada, amb el primer canvi fet per tu.'] },
   { id: 'entrega', qui: ['ia', 'al'], zoho: 'Cerrado (ganado)',
-    es: ['Todo a tu nombre', 'Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.', 'El cerebro de tu negocio por escrito, tu backoffice y media hora de revisión a las dos semanas.'],
-    ca: ['Tot a nom teu', 'El teu repositori privat al teu GitHub, la web al teu Netlify i el teu domini.', 'El cervell del teu negoci per escrit, el teu backoffice i mitja hora de revisió a les dues setmanes.'] },
+    es: ['Todo a tu nombre', 'Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.', 'El cerebro de tu negocio por escrito, tu espacio con su acceso (con GitHub o con correo y contraseña) y media hora de revisión a las dos semanas.'],
+    ca: ['Tot a nom teu', 'El teu repositori privat al teu GitHub, la web al teu Netlify i el teu domini.', 'El cervell del teu negoci per escrit, el teu espai amb el seu accés (amb GitHub o amb correu i contrasenya) i mitja hora de revisió a les dues setmanes.'] },
   { id: 'viva', qui: ['ia', 'al'], zoho: 'Cerrado (ganado)', opcional: true,
     es: ['Tu web, viva', 'Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.', 'Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.'],
     ca: ['La teva web, viva', 'Si vols, una quota mensual sense permanència: les teves automatitzacions definides i gestionades, comprovacions i el mapa al dia.', 'Cada mes, l\'informe del teu mapa: què es mou, què s\'atura i què s\'ha automatitzat.'] }

@@ -246,6 +246,11 @@ const MARCA = ['/', 'Team', 'Towers', 'Humà'];
    client amb les tres entrades. La tornada a la casa és un enllaç discret al
    costat de la marca: qui és a dins no ha de perdre el camí de sortida. */
 const SOS_CTA = ['/SOS/', T('Obre el SOS', 'Abre el SOS')];
+/* ── Una sola entrada (Àlvaro, 24/10/2026, veda 181) ─────────────────────────
+   Totes les webs porten el mateix accés: el portal del pas 2, amb GitHub o amb
+   correu i contrasenya. Aquí no es fa cap inici de sessió: és un enllaç a
+   /acceso, que `_redirects` porta a acceso.teamtowershuma.com. */
+const ENTRA = ['/acceso', T('Entra', 'Entra')];
 const SOS_MARCA = ['/SOS/', 'El ', 'SOS', ''];
 
 /* Les pàgines de `SOS/` que **venen** una de les tres ofertes, i que per tant
@@ -468,6 +473,7 @@ function diccionari(l) {
      fan creure que aquell text està cobert. */
   const fix = {
     'nv.cta': { ca: txt(CTA[1], 'ca'), es: txt(CTA[1], 'es') },
+    'nv.entra': { ca: txt(ENTRA[1], 'ca'), es: txt(ENTRA[1], 'es') },
     /* El resum del desplegable de mòbil. A sobretaula no es veu. */
     'nv.menu': { ca: 'Menú', es: 'Menú' },
     /* L'enllaç de correu del peu, que és l'únic text del peu que la barra no
@@ -615,6 +621,7 @@ function nav(pagina) {
     + ` data-i18n="nv.menu">Menú</button>\n` +
     `  <div class="tn-gs" id="tt-gs">${grups.map(grup).join('')}</div>\n` +
     llengua +
+    `  <a class="tn-in" href="${ENTRA[0]}"><span${i18n('nv.entra')}>${esc(txt(ENTRA[1], ll))}</span></a>\n` +
     `  <a class="tn-cta" href="${cta[0]}"${jo === cta[0] ? ' aria-current="page"' : ''}>`
     + `<span${i18n('nv.cta')}>${esc(txt(cta[1], ll))}</span> →</a>\n` +
     `</nav>\n` + JS + '\n' + TANCA;
@@ -704,6 +711,10 @@ const CSS = `<style>
 .tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
 /* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
 .tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-in{margin-left:auto;color:var(--text);text-decoration:none;padding:.42rem .6rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-in:hover{background:var(--panel)}
+.tt-nav .tn-in+.tn-cta{margin-left:.25rem}
+.tt-nav .tn-lang~.tn-in{margin-left:.55rem}
 .tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
   text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
 .tt-nav .tn-cta:hover{filter:brightness(1.12)}

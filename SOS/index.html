@@ -7994,7 +7994,7 @@ const CORE_PROJECTS=[
 // Mapa de valor estratègic del projecte fundador: rols, intercanvis, KPIs, comptabilitat.
 const FOUNDER_MAP={
   mission:'Convertir la voluntat veïnal de l\'Alt Penedès, Garraf, Baix Penedès i Catalunya en xarxes de valor antifràgils, comptables i verificables.',
-  vision:'Al 2030, 150.000 superherois actius al Comando Catalunya movent un fons cooperatiu local mesurable en €/any i benefici psicosocial.',
+  vision:'Al 2030, comunitats que no depenen de 2-3 persones sobrecarregades: un fons cooperatiu local mesurable en €/any i benefici psicosocial, amb els objectius d\'impacte que fixa cada projecte o finançador.',
   roles:[
     {ic:'👤',name:'Àlvaro (fundador)',fn:'visió + arquitectura + facilitació de tallers'},
     {ic:'🏢',name:'Equip TeamTowers Humà',fn:'implementació tècnica + formació + acompanyament'},
@@ -8027,7 +8027,6 @@ const FOUNDER_MAP={
     ]
   },
   kpis:[
-    {name:'Superherois validats (Comando)',base:'8 canònics','2026':'150','2027':'800','2028':'5.000','2030':'150.000'},
     {name:'Municipis actius (≥1 dinàmica)',base:'3','2026':'12','2027':'40','2028':'150','2030':'500'},
     {name:'Fons cooperatius mobilitzats (€/any)',base:'0','2026':'50k','2027':'400k','2028':'3M','2030':'30M'},
     {name:'Guardians certificats (8 mòduls)',base:'0','2026':'20','2027':'120','2028':'500','2030':'2.500'},
@@ -10393,6 +10392,7 @@ function selectNode(id){
      tapar, i qui l'ha clavat obert se'l queda. No es desa la preferència: això
      és tancar-lo ara, no dir que el vols tancat sempre. */
   if(state.treeOpen&&window.innerWidth<821){state.treeOpen=false;paintTree();}
+  pushRoute();
   render();
 }
 
@@ -10468,6 +10468,7 @@ function _renderWorkspace(){
   const acts=el('div','nh-actions');
   if(isTerritory(node.nodeLevel)){const p=el('button','btn btn-primary btn-sm','+ projecte');p.onclick=()=>openProjectWizard(node.id);acts.appendChild(p);}
   if(meta.child){const b=el('button','btn btn-ghost btn-sm','+ '+meta.childLabel);b.onclick=()=>openCreateModal(node.id);acts.appendChild(b);}
+  const lk=el('button','btn-icon','🔗');lk.title='Copia l\'enllaç d\'aquesta vista';lk.setAttribute('aria-label',lk.title);lk.onclick=copiaEnllac;acts.appendChild(lk);
   const ren=el('button','btn-icon','✎');ren.title='Reanomena';ren.onclick=()=>renameNode(node);acts.appendChild(ren);
   const del=el('button','btn-icon','🗑');del.title='Elimina';del.onclick=()=>deleteNode(node);acts.appendChild(del);
   top.appendChild(acts);
@@ -10526,7 +10527,7 @@ function _renderWorkspace(){
   if(!vis.some(t=>t[0]===state.tab))state.tab=vis[0][0];
   vis.forEach(([id,lbl,cnt])=>{
     const b=el('button','tab'+(state.tab===id?' active':''));b.innerHTML=lbl+(cnt?' <span class="cnt">'+cnt+'</span>':'');
-    b.onclick=()=>{state.tab=id;renderWorkspace();};tabs.appendChild(b);
+    b.onclick=()=>{state.tab=id;pushRoute();renderWorkspace();};tabs.appendChild(b);
   });
   /* El que s'ha amagat es diu, i es desamaga aquí mateix. Una pestanya que
      desapareix sense dir-ho no és simplicitat: és que l'app t'ha pres una
@@ -14667,16 +14668,70 @@ async function obreExempleViu(){
 }
 let _routeLock=false;          // evita que aplicar una ruta en torni a escriure una altra
 let _routeModal=null;          // quin modal ha obert la ruta actual
+// Ruta = camí de noms (#/t/catalunya/…/socis): l'id és local i no obria a cap altre mòbil.
+const slugRuta=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function camiDe(nd){
+  const segs=[];let n=nd;
+  while(n){
+    const germans=state.nodes.filter(x=>(x.parentId||'')===(n.parentId||'')&&slugRuta(x.name)===slugRuta(n.name));
+    if(germans.length!==1||!slugRuta(n.name))return null;
+    segs.unshift(slugRuta(n.name));n=n.parentId?byId(n.parentId):null;
+  }
+  return segs;
+}
 function buildRoute(){
   if(_routeModal)return'#/'+_routeModal;
   const nd=byId(state.activeId);
   if(!nd)return state.homeView===HOME_VIEWS[0]?'#/':('#/'+state.homeView);
-  return'#/n/'+nd.id+(state.tab?'/'+state.tab:'');
+  const c=camiDe(nd);
+  return(c?'#/t/'+c.join('/'):'#/n/'+nd.id)+(state.tab?'/'+state.tab:'');
 }
+const RUTA_PESTANYES=['resum','map','kanban','ledger','xat','entitats','socis','biblioteca','banctemps','cures','llesca','cartera','cohort','ecosistema','equity'];
+async function resolCami(segs){
+  let pare=null,tab=null;
+  for(let i=0;i<segs.length;i++){
+    const sg=segs[i];
+    const fill=state.nodes.find(x=>(x.parentId||'')===(pare?pare.id:'')&&slugRuta(x.name)===sg);
+    if(fill){pare=fill;continue;}
+    if(i===segs.length-1&&pare&&RUTA_PESTANYES.includes(sg)){tab=sg;break;}
+    let nou=null;
+    if(pare){const cua=[pare];while(cua.length&&!nou){const x=cua.shift();for(const k of state.nodes)if(k.parentId===x.id){if(slugRuta(k.name)===sg){nou=k;break;}cua.push(k);}}}
+    if(!nou)try{
+      let a=pare;while(a&&a.parentId)a=byId(a.parentId);
+      const m=modelById(a&&a.modelId);const lv=levelsOf(m);
+      if(!pare){if(slugRuta(m.name)===sg)nou=await ensureNode(m.name,lv[0].id,null);}
+      else for(let ix=lv.findIndex(l=>l.id===pare.nodeLevel)+1;ix>0&&ix<lv.length&&!nou;ix++){
+        const g=geoFor(lv[ix].id,null,m).find(x=>slugRuta(x.n)===sg);if(!g)continue;
+        const cadena=[[g.n,lv[ix].id]];let pn=g.p,k=ix-1;
+        while(k>0&&pn&&pn!==pare.name){const up=geoFor(lv[k].id,null,m).find(x=>x.n===pn);if(!up)break;cadena.unshift([up.n,lv[k].id]);pn=up.p;k--;}
+        if(pn!==pare.name)continue;
+        let q=pare;for(const[nm,l]of cadena)q=await ensureNode(nm,l,q.id);nou=q;
+      }
+    }catch(e){}
+    if(!nou)return{node:pare,tab,falta:sg};
+    pare=nou;
+  }
+  return{node:pare,tab};
+}
+// Canviar de node o pestanya deixa rastre: «enrere» hi torna.
+function pushRoute(){
+  if(_routeModal)return;
+  const next=buildRoute();if(location.hash===next)return;
+  try{history.pushState(null,'',next);}catch(e){location.hash=next;}
+}
+async function copiaEnllac(){
+  const url=location.href;
+  try{if(navigator.share&&matchMedia('(pointer:coarse)').matches){await navigator.share({title:document.title,url});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+  try{await navigator.clipboard.writeText(url);toast('Enllaç copiat');}
+  catch(e){prompt('Copia l\'enllaç',url);}
+}
+// El simulador d'impacte i el pla fundador pengen del fons: enllaçables sense sumar rutes modals.
+const FONS_SUB={impacte:()=>openImpactSimulator(),pla:()=>openFounderMap()};
 function parseRoute(hash){
   const raw=(hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
   if(!raw.length)return{kind:'home'};
   if(raw[0]==='n'&&raw[1])return{kind:'node',id:decodeURIComponent(raw[1]),tab:raw[2]||null};
+  if(raw[0]==='t'&&raw[1])return{kind:'cami',segs:raw.slice(1).map(x=>slugRuta(decodeURIComponent(x)))};
   // Enllaç d'invitació: qui el rep no ha de copiar cap codi, només obrir-lo.
   if(raw[0]==='sync'&&raw[1])return{kind:'sync',code:decodeURIComponent(raw.slice(1).join('/'))};
   // Les missions són una portada, no un modal: han de ser enllaçables com a tal.
@@ -14686,7 +14741,7 @@ function parseRoute(hash){
      antics de `#/missions` segueixen obrint el mateix. */
   if(raw[0]==='tauler')return{kind:'tauler'};
   // El fons és la destinació del flux de valor: ha de ser enllaçable i compartible.
-  if(raw[0]==='fons')return{kind:'fons'};
+  if(raw[0]==='fons')return{kind:'fons',sub:FONS_SUB[raw[1]]?raw[1]:null};
   if(raw[0]==='gent')return{kind:'gent'};
   if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
   return{kind:'unknown',name:raw[0]};
@@ -14721,7 +14776,7 @@ function applyRoute(){
       if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
       if(r.kind==='missions'){state.activeId=null;state.homeView='missions';render();}
       else if(r.kind==='tauler'){state.activeId=null;state.homeView='tauler';render();}
-      else if(r.kind==='fons'){state.activeId=null;state.homeView='fons';render();}
+      else if(r.kind==='fons'){state.activeId=null;state.homeView='fons';render();if(r.sub){_routeModal='fons/'+r.sub;FONS_SUB[r.sub]();try{history.replaceState(null,'','#/fons/'+r.sub);}catch(e){}}}
       else if(r.kind==='gent'){state.activeId=null;state.homeView='gent';render();}
       else if(r.kind==='node'){
         const nd=byId(r.id);
@@ -14731,6 +14786,16 @@ function applyRoute(){
           if(r.tab)state.tab=r.tab;
           render();
         } else { okRoute=false; toast('Aquesta vista no existeix en aquest dispositiu'); }
+      }
+      else if(r.kind==='cami'){
+        resolCami(r.segs).then(res=>{
+          if(!res.node){toast('No trobo «'+r.segs.join(' › ')+'»');return;}
+          state.activeId=res.node.id;
+          let n=res.node;while(n&&n.parentId){state.expanded.add(n.parentId);n=byId(n.parentId);}
+          state.tab=res.tab||((isTerritory(res.node.nodeLevel))?'resum':'map');
+          if(res.falta)toast('No trobo «'+res.falta+'»: t\'obro el més proper');
+          render();
+        });
       }
     }
   }finally{setTimeout(()=>{_routeLock=false;},0);}
