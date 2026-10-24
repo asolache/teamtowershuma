@@ -31,7 +31,7 @@ const CSS = '.tb-nav{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;align-items:f
   + '.tb-g{display:flex;gap:.3rem;flex-wrap:wrap}'
   + '.tb-a{display:inline-flex;align-items:center;gap:.35rem;min-height:44px;padding:0 .85rem;border:1px solid var(--border);border-radius:999px;color:var(--light);text-decoration:none;font-size:var(--t0,.9375rem)}'
   + '.tb-a:hover,.tb-a:focus-visible{border-color:var(--indigo);color:var(--indigo)}'
-  + '.tb-a[aria-current=page]{border-color:var(--indigo);background:var(--indigo);color:var(--bg)}'
+  + '.tb-a[aria-current=page]{border-color:var(--indigo);background:var(--indigo);color:var(--bg,#fff)}'
   + '.tb-a b{font-weight:600;font-size:var(--t0,.9375rem);padding:0 .4rem;border-radius:999px;background:var(--border);color:var(--light)}'
   + '@media(max-width:620px){.tb-nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.tb-capa{flex:none}.tb-g{flex-wrap:nowrap}}';
 function estil(doc) {
