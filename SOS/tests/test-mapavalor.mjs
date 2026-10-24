@@ -46,14 +46,16 @@ const port = await p1.evaluate(() => {
        queda a un clic des de l'índex «Si vols entrar-hi a fons». */
     primer: ids.indexOf('dues-vistes') >= 0 && !!document.querySelector('.apf a[href="#dues-vistes"]'),
     desDelRepte: ids.indexOf('enfoc') >= 0 && ids.indexOf('dues-vistes') === ids.indexOf('enfoc') + 1,
-    serveis: ids[0] === 'avantatges' && ids.indexOf('serveis') > 0,
+    /* 24/10/2026 · Àlvaro: just després del títol, el mapa d'un cas real en
+       marxa (#mapa-viu); el que t'emportes ve tot seguit. */
+    serveis: ids[0] === 'mapa-viu' && ids[1] === 'avantatges' && ids.indexOf('serveis') > 0,
     capCastell: ids.indexOf('fentpinya') < 0 && ids.indexOf('rengles') < 0,
     nodes: mv ? mv.querySelectorAll('.mv-n').length : 0,
     fletxes: mv ? mv.querySelectorAll('.mv-svg path[marker-end]').length : 0,
     text: mv ? mv.innerText : ''
   };
 });
-ok(port.serveis, 'el que t\'emportes obre la portada i els tres serveis hi són (' + port.ids.slice(0, 5).join(' · ') + ')');
+ok(port.serveis, 'el mapa en marxa i el que t\'emportes obren la portada i els tres serveis hi són (' + port.ids.slice(0, 5).join(' · ') + ')');
 ok(port.desDelRepte, 'el mapa ve just després del repte: primer el problema, després la resposta');
 ok(port.primer, 'i el mapa d\'exemple és a un clic des de l\'índex de dalt');
 ok(port.capCastell, 'i els castells ja no són a la portada: viuen a /vna, que és on viu el mètode');
