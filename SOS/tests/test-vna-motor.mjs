@@ -744,6 +744,11 @@ console.log('\nM23 · La web de debò (VS-SITE) i la mateixa des de Node');
   const amb = S.webASite(web, { llengua: 'es', vista: 'basica', correu: 'hola@exemple.cat', capes: ['intranet'] }).fitxers.find(x => x.ruta === 'index.html').cos;
   ok(!amb.includes('hola@exemple.cat') && amb.includes('href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;') && /href="equip.html"/.test(amb),
     'el correu hi va amagat als robots (entitats, sense escriure\'l), i la intranet s\'enllaça només si es tria');
+  /* Una sola entrada (veda 181): amb extranet o intranet, «Entra» al portal; sense, res; i `acces` la canvia. */
+  ok(/<li><a class="entra" href="https:\/\/acceso\.teamtowershuma\.com\/acceso">Entra<\/a><\/li>/.test(amb) && !/class="entra"/.test(bi),
+    'amb intranet, «Entra» al portal del pas 2; la vista bàsica sense capes no en porta');
+  const propi = S.webASite(web, { llengua: 'es', acces: 'https://acceso.exemple.cat/acceso' }).fitxers.find(x => x.ruta === 'index.html').cos;
+  ok(/class="entra" href="https:\/\/acceso\.exemple\.cat\/acceso"/.test(propi) && /Entra en tu espacio, con GitHub o con correo y contraseña/.test(propi), 'amb el portal propi del client, el seu, i el bloc «Acceso» ho diu');
   ok(J(JSON.parse(f('web.json'))) === abans, 'web.json va dins, igual');
   ok(S.crc32(new TextEncoder().encode('123456789')) === 0xCBF43926, 'el CRC-32 del zip és el de l\'estàndard');
   const z = S.zipFitxers(site.fitxers), z2 = S.zipFitxers(S.webASite(S.webDelMapa(celler()), { nom: 'Celler <prova>', correu: 'hola@exemple.cat' }).fitxers);

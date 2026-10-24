@@ -303,6 +303,10 @@
 .tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
 /* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
 .tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-in{margin-left:auto;color:var(--text);text-decoration:none;padding:.42rem .6rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-in:hover{background:var(--panel)}
+.tt-nav .tn-in+.tn-cta{margin-left:.25rem}
+.tt-nav .tn-lang~.tn-in{margin-left:.55rem}
 .tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
   text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
 .tt-nav .tn-cta:hover{filter:brightness(1.12)}
@@ -368,6 +372,7 @@
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnóstico</b><span data-i18n="nv.d.diagnostic">Dónde estás y qué te falta, en 3 minutos</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El método</b><span data-i18n="nv.d.vna">Qué es un mapa de valor, sobre un caso</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Hacer uno</b><span data-i18n="nv.d.vna-suport">El editor visual: roles, entregables, real e ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catálogo</b><span data-i18n="nv.d.arrel-cataleg">Paquetes por flujos: horas e IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Precios y contratación</b><span data-i18n="nv.d.pressupost">Del borrador al negocio operativo, y el resto a medida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">Tu web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa de tu negocio y la web, en una sesión</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Servicios conectables</b><span data-i18n="nv.d.carpeta-conecta">Tu web con tu IA, el CRM y los cobros</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS y formación</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que mantiene vivo el mapa, sin cuenta</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formación acción</b><span data-i18n="nv.d.formacio">Los módulos, de N0 a N3, y el certificado es tuyo</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Flujos con IA</b><span data-i18n="nv.d.ia">Automatizar lo tangible, valorar lo intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Quiénes somos</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Quiénes somos</b><span data-i18n="nv.d.arrel-qui-som">Veinte años, los clientes y de dónde viene el método</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Prensa</b><span data-i18n="nv.d.arrel-premsa">Lo que se ha dicho fuera</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacidad, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b" data-lang="ca">CA</button><button type="button" class="lang-b on" data-lang="es">ES</button></div>
+  <a class="tn-in" href="/acceso"><span data-i18n="nv.entra">Entra</span></a>
   <a class="tn-cta" href="/cliente/" aria-current="page"><span data-i18n="nv.cta">Crea tu mapa</span> →</a>
 </nav>
 <script>
@@ -564,7 +569,7 @@
           <li class="pr-p" id="pas-borrador"><div><h3>El borrador de tu mapa</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Gratis, en tres días laborables. Lo prepara la IA y lo revisa una persona.</p><p class="pr-reps"><strong>Recibes: </strong>El borrador del mapa, las preguntas abiertas y una página privada con lo que ya está hecho.</p></div></li>
           <li class="pr-p" id="pas-presupuesto"><div><h3>El presupuesto, por flujos</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Álvaro</span><span>Tú</span></p><p>Cada flujo con sus horas y su coste de IA. Lo aceptas y ya no cambia.</p><p class="pr-reps"><strong>Recibes: </strong>El presupuesto desglosado y la fecha de la sesión.</p></div></li>
           <li class="pr-p" id="pas-sesion"><div><h3>La sesión: mapa y web</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Tú</span><span>Álvaro</span><span>IA</span></p><p>Una hora para el mapa y otra para la web, que se publica delante de ti.</p><p class="pr-reps"><strong>Recibes: </strong>Tu mapa validado y tu web publicada, con tu primer cambio hecho por ti.</p></div></li>
-          <li class="pr-p" id="pas-entrega"><div><h3>Todo a tu nombre</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.</p><p class="pr-reps"><strong>Recibes: </strong>El cerebro de tu negocio por escrito, tu backoffice y media hora de revisión a las dos semanas.</p></div></li>
+          <li class="pr-p" id="pas-entrega"><div><h3>Todo a tu nombre</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.</p><p class="pr-reps"><strong>Recibes: </strong>El cerebro de tu negocio por escrito, tu espacio con su acceso (con GitHub o con correo y contraseña) y media hora de revisión a las dos semanas.</p></div></li>
           <li class="pr-p opc" id="pas-viva"><div><h3>Tu web, viva</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span><span class="pr-e">Opcional</span></p><p>Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.</p><p class="pr-reps"><strong>Recibes: </strong>Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.</p></div></li>
         </ol>
 <!--/TT-PROCES-->
@@ -870,7 +875,7 @@
         "Tu mapa validado y tu web publicada, con tu primer cambio hecho por ti.": "El teu mapa validat i la teva web publicada, amb el primer canvi fet per tu.",
         "Todo a tu nombre": "Tot a nom teu",
         "Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.": "El teu repositori privat al teu GitHub, la web al teu Netlify i el teu domini.",
-        "El cerebro de tu negocio por escrito, tu backoffice y media hora de revisión a las dos semanas.": "El cervell del teu negoci per escrit, el teu backoffice i mitja hora de revisió a les dues setmanes.",
+        "El cerebro de tu negocio por escrito, tu espacio con su acceso (con GitHub o con correo y contraseña) y media hora de revisión a las dos semanas.": "El cervell del teu negoci per escrit, el teu espai amb el seu accés (amb GitHub o amb correu i contrasenya) i mitja hora de revisió a les dues setmanes.",
         "Tu web, viva": "La teva web, viva",
         "Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.": "Si vols, una quota mensual sense permanència: les teves automatitzacions definides i gestionades, comprovacions i el mapa al dia.",
         "Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.": "Cada mes, l'informe del teu mapa: què es mou, què s'atura i què s'ha automatitzat.",
@@ -935,6 +940,7 @@
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacitat, explicada',
   'nv.cta':'Crea el teu mapa',
+  'nv.entra':'Entra',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escriu-nos',
   'nv.peu.legal':'Avís legal i privacitat',
@@ -975,6 +981,7 @@
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacidad, explicada',
   'nv.cta':'Crea tu mapa',
+  'nv.entra':'Entra',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escríbenos',
   'nv.peu.legal':'Aviso legal y privacidad',
