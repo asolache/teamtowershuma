@@ -30,6 +30,9 @@ ok(D.PREGUNTES.every(p => pr.includes(p.q)), 'el texto para la IA lleva las ' + 
 ok(!/zoho|crm|repositor|rol\b|flujo/i.test(pr + D.PREGUNTES.map(p => p.q + p.ej).join(' ')), 'sin palabras de dentro (Zoho, CRM, repositorio, rol, flujo)');
 let err = ''; try { D.llegeix('hola'); } catch (e) { err = e.message; }
 ok(/llaves/.test(err), 'una respuesta sin JSON da un error que se entiende');
+const dib = D.dibuix(D.mapa({ casa: 'La <casa>', alrededor: [{ quien: 'Alumnos', meDa: 'la matrícula', meDaEs: 'tangible', leDoy: 'confianza', leDoyEs: 'intangible' }] }), { flux: f => f.mena === 'intangible' ? 'x-i' : '' });
+ok(/^<svg/.test(dib) && !/<casa>/.test(dib) && /La &lt;casa&gt;/.test(dib) && (dib.match(/<line /g) || []).length === 2 && / x-i"/.test(dib),
+  'el dibujo del mapa: un SVG escapado, una flecha por sentido y la mirada como clase');
 
 const RESPOSTA = 'Aquí lo tienes:\n```json\n' + JSON.stringify({
   respuestas: { objetivo: 'Llenar los cursos intensivos del año que viene', quien: 'Gente que quiere enseñar español', llegan: 'Google y antiguos alumnos', aliados: 'Formadores y una asociación', despues: 'Encuentran trabajo y nos recomiendan', preguntan: 'Fechas y si el título sirve fuera', tiempo: 'Contestar correos', webHoy: '?' },
@@ -144,6 +147,29 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
 
   const ample = await p.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   ok(ample[0] <= ample[1], 'sin desplazamiento horizontal (' + ample[0] + ' ≤ ' + ample[1] + ')');
+
+  /* Tu mapa y tu web, en vivo: el panel de al lado (a pantalla entera en el móvil). */
+  await p.click('#cl-viu-b');
+  ok(await p.isVisible('#cl-viu') && await p.locator('#cl-viu-svg svg .mv-n').count() >= 6 && await p.locator('#cl-viu-svg .mv-casa text').textContent() === 'Equipo de formación',
+    'el panel en vivo abre por tu mapa: tú en el centro y quién está alrededor');
+  ok(await p.locator('#cl-viu-mapa [data-l]').count() === 3 && !(await p.textContent('#cl-viu')).match(/sector|Vivienda|Matriu/i), 'tres miradas de tu propio mapa, sin sectores ni otros mapas');
+  await p.click('#cl-viu-mapa [data-l="vuelta"]');
+  ok(/relaciones tienen ida y vuelta/.test(await p.textContent('#cl-viu-diu')), 'la mirada «Ida y vuelta» dice cuántas relaciones aguantan');
+  await p.click('#cl-viu-mapa [data-l="solo"]');
+  ok(/las puede preparar una máquina/.test(await p.textContent('#cl-viu-diu')), 'y «Lo que puede ir solo», lo que prepara una máquina');
+  await p.fill('#cl-casa', 'Escuela de profes');
+  await p.waitForFunction(() => /Escuela de profes/.test(document.getElementById('cl-viu-svg').textContent), null, { timeout: 3000 });
+  ok(true, 'lo que escribes en la página se ve en el mapa al momento');
+  await p.click('#cl-viu-t-web');
+  await p.waitForFunction(() => document.getElementById('cl-viu-boceto').contains(document.getElementById('cl-marc')) && !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
+  await p.click('#cl-viu-estils button:has-text("Clásico")');
+  await p.waitForFunction(() => /Palatino|Georgia/.test(document.getElementById('cl-marc').getAttribute('srcdoc') || ''), null, { timeout: 5000 });
+  ok(await p.getAttribute('#cl-viu-estils button:has-text("Clásico")', 'aria-pressed') === 'true', 'en «Mi web», un estilo de serie cambia la letra del boceto al momento');
+  const mc = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).marca);
+  ok(mc.color === '#1e3a8a' && mc.forma === 'recta', 'y queda en tu marca');
+  await p.click('#cl-viu-tanca');
+  ok(await p.isHidden('#cl-viu') && await p.evaluate(() => document.getElementById('web').contains(document.getElementById('cl-marc'))), 'al cerrar, el boceto vuelve a su sitio (paso 5)');
+  await p.fill('#cl-casa', 'Equipo de formación');
 
   await p.click('#cl-envia');
   ok(enviat === null && /privacidad/.test(await p.textContent('#cl-envia-r')), 'sin la casilla de privacidad no se envía nada');

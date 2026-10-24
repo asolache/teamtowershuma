@@ -188,6 +188,49 @@
         .boceto iframe { display: block; width: 100%; height: 34rem; border: 0; background: #fff; }
         .boceto.editor iframe { height: min(44rem, 82vh); }
 
+        /* Tu mapa y tu web, en vivo (24/10/2026). Un panel que se abre al lado
+           (a pantalla entera en el móvil, el diseño estándar) y se repinta solo
+           con cada cosa que escribes en la página. */
+        .viu-b { position: fixed; right: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; padding: .6rem 1.1rem; border-radius: 999px; border: 0; background: var(--indigo); color: var(--on-accent, #fff); font: inherit; font-weight: 700; box-shadow: 0 10px 28px -12px rgba(0, 0, 0, .45); cursor: pointer; }
+        .viu-b[aria-expanded="true"] { display: none; }
+        .viu { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; gap: .6rem; padding: .8rem 1rem 1rem; background: var(--bg, #fbfaf7); overflow-y: auto; }
+        .viu[hidden] { display: none; }
+        @media (min-width: 1100px) {
+            .viu { inset: 0 0 0 auto; width: min(46vw, 760px); border-left: 1px solid var(--border-strong); box-shadow: -18px 0 40px -30px rgba(0, 0, 0, .5); }
+            body.viu-obert main { margin-right: min(46vw, 760px); }
+        }
+        .viu-cap { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
+        .viu-cap h2 { margin: 0; font-size: var(--t2, 1.2rem); }
+        .viu .nota { margin: 0; }
+        .viu-tabs, .viu-vistes, .viu-estils { display: flex; flex-wrap: wrap; gap: .4rem; }
+        .viu-tabs button { flex: 1; min-height: 44px; }
+        .viu-tabs button[aria-selected="true"], .viu-vistes button[aria-pressed="true"], .viu-estils button[aria-pressed="true"] { background: var(--indigo); border-color: var(--indigo); color: var(--on-accent, #fff); }
+        .viu-svg { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); padding: .4rem; }
+        .viu-svg svg { display: block; width: 100%; height: auto; }
+        .viu-svg .mv-f { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+        .viu-svg .mv-t { stroke: var(--blue); }
+        .viu-svg .mv-i { stroke: var(--purple); stroke-dasharray: 5 4; }
+        .viu-svg .mv-pt { fill: var(--muted); }
+        .viu-svg .mv-n ellipse { fill: var(--card); stroke: var(--border-strong); stroke-width: 1.4; }
+        .viu-svg .mv-casa ellipse { fill: var(--indigo); stroke: var(--indigo); }
+        .viu-svg .mv-n text { font: 600 13px system-ui, sans-serif; fill: var(--text, #1d1b18); }
+        .viu-svg .mv-casa text { fill: var(--on-accent, #fff); }
+        .viu-svg .mv-e { font: 13px system-ui, sans-serif; fill: var(--light); paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+        .viu-svg .mv-x { stroke-opacity: .35; }
+        @media (max-width: 600px) { .viu-svg .mv-e { font-size: 17px; } .viu-svg .mv-n text { font-size: 16px; } .viu-svg { margin: 0 -.6rem; } }
+        .viu-svg .mv-e.mv-fluix { fill-opacity: .45; }
+        .viu-svg .mv-e.mv-on { fill: var(--indigo); font-weight: 700; stroke: var(--card); stroke-width: 4px; }
+        .viu-svg .mv-on { stroke: var(--indigo); stroke-width: 3; }
+        .viu-svg .mv-fluix { stroke-opacity: .25; }
+        .viu-svg .mv-sol ellipse { stroke: var(--orange); stroke-width: 2.4; stroke-dasharray: 4 3; }
+        .viu .ley { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: var(--t0); color: var(--muted); margin: 0; }
+        .viu-dis { display: grid; gap: .6rem; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+        .viu-dis .fila2 { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: end; }
+        .viu-dis label { display: grid; gap: .2rem; font-size: var(--t0); color: var(--muted); }
+        .viu-dis input[type=color] { width: 3.2rem; min-height: 44px; padding: 2px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
+        .viu .boceto { margin-top: 0; }
+        .viu .boceto iframe { height: min(40rem, 70vh); }
+
         .resposta { margin-top: 1rem; font-weight: 600; }
         .resposta.ko { color: var(--red); }
         .resposta.ok { color: var(--green); }
@@ -600,6 +643,41 @@
 </section>
 
 </main>
+<!-- Tu mapa y tu web, en vivo: lo que escribes arriba se ve aquí al momento. -->
+<button type="button" class="viu-b" id="cl-viu-b" aria-controls="cl-viu" aria-expanded="false">✦ Ver mi mapa y mi web</button>
+<aside class="viu" id="cl-viu" aria-labelledby="t-viu" hidden>
+    <div class="viu-cap"><h2 id="t-viu">Tu mapa y tu web, en vivo</h2><button type="button" class="btn btn-sm btn-ghost" id="cl-viu-tanca">Cerrar</button></div>
+    <p class="nota">Lo que escribes en la página se ve aquí al momento. Primero tu mapa: con quién trabajas y qué os dais. De ahí sale tu web.</p>
+    <div class="viu-tabs" role="tablist" aria-label="Qué miras">
+        <button type="button" class="btn btn-ghost" role="tab" id="cl-viu-t-mapa" aria-controls="cl-viu-mapa" aria-selected="true">1 · Mi mapa</button>
+        <button type="button" class="btn btn-ghost" role="tab" id="cl-viu-t-web" aria-controls="cl-viu-web" aria-selected="false">2 · Mi web</button>
+    </div>
+    <div id="cl-viu-mapa" role="tabpanel" aria-labelledby="cl-viu-t-mapa">
+        <div class="viu-vistes" role="group" aria-label="Cómo lo miras">
+            <button type="button" class="btn btn-sm btn-ghost" data-l="valor" aria-pressed="true">Quién da qué</button>
+            <button type="button" class="btn btn-sm btn-ghost" data-l="vuelta" aria-pressed="false">Ida y vuelta</button>
+            <button type="button" class="btn btn-sm btn-ghost" data-l="solo" aria-pressed="false">Lo que puede ir solo</button>
+        </div>
+        <div class="viu-svg" id="cl-viu-svg"></div>
+        <p class="ley" id="cl-viu-ley"></p>
+        <p class="nota" id="cl-viu-diu" aria-live="polite"></p>
+    </div>
+    <div id="cl-viu-web" role="tabpanel" aria-labelledby="cl-viu-t-web" hidden>
+        <div class="viu-dis" role="group" aria-label="Tu estilo">
+            <b>Tu estilo</b>
+            <div class="viu-estils" id="cl-viu-estils"></div>
+            <div class="fila2">
+                <label>Tu color <input type="color" id="cl-viu-color" value="#4f46e5"></label>
+                <label>La letra <select id="cl-viu-lletra"><option value="sans">Moderna</option><option value="serif">Clásica</option><option value="rodona">Redondeada</option><option value="mono">De máquina</option></select></label>
+                <label>Las esquinas <select id="cl-viu-forma"><option value="rodona">Redondas</option><option value="recta">Rectas</option></select></label>
+            </div>
+            <p class="nota">Los colores se ajustan solos para que todo se lea bien. Tu logo y tus fotos los ponemos juntos en la sesión.</p>
+        </div>
+        <div id="cl-viu-boceto"></div>
+    </div>
+    <p class="nota">Gratis: un proyecto con su ficha. Cuando quieras, nos pides cualquiera de los pasos que vienen después.</p>
+</aside>
+
 
 <!--TT-PEU-->
 <style>
@@ -652,6 +730,7 @@
 <script src="/SOS/lib/models-mapa.js"></script>
 <script src="/SOS/lib/cas-automatitzat.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
+<script src="/SOS/lib/pinya.js"></script>
 <script>
 (function () {
     'use strict';
@@ -668,6 +747,39 @@
         return l === 'ca' ? 'ca' : 'es';
     })();
     var CA = {
+        /* Tu mapa y tu web, en vivo */
+        '✦ Ver mi mapa y mi web': '✦ Veure el meu mapa i la meva web',
+        'Tu mapa y tu web, en vivo': 'El teu mapa i la teva web, en viu',
+        'Cerrar': 'Tanca',
+        'Lo que escribes en la página se ve aquí al momento. Primero tu mapa: con quién trabajas y qué os dais. De ahí sale tu web.': 'El que escrius a la pàgina es veu aquí al moment. Primer el teu mapa: amb qui treballes i què us doneu. D\'aquí surt la teva web.',
+        '1 · Mi mapa': '1 · El meu mapa',
+        '2 · Mi web': '2 · La meva web',
+        'Quién da qué': 'Qui dona què',
+        'Ida y vuelta': 'Anada i tornada',
+        'Tu estilo': 'El teu estil',
+        'Tu color': 'El teu color',
+        'La letra': 'La lletra',
+        'Moderna': 'Moderna',
+        'Clásica': 'Clàssica',
+        'Redondeada': 'Arrodonida',
+        'De máquina': 'De màquina',
+        'Las esquinas': 'Les cantonades',
+        'Redondas': 'Rodones',
+        'Rectas': 'Rectes',
+        'Los colores se ajustan solos para que todo se lea bien. Tu logo y tus fotos los ponemos juntos en la sesión.': 'Els colors s\'ajusten sols perquè tot es llegeixi bé. El logo i les fotos els posem junts a la sessió.',
+        'Gratis: un proyecto con su ficha. Cuando quieras, nos pides cualquiera de los pasos que vienen después.': 'Gratis: un projecte amb la seva fitxa. Quan vulguis, ens demanes qualsevol dels passos que vénen després.',
+        'Sereno': 'Serè', 'Cálido': 'Càlid', 'Fresco': 'Fresc', 'Clásico': 'Clàssic',
+        'Escribe arriba con quién trabajas (paso 4) y aquí aparece tu mapa.': 'Escriu a dalt amb qui treballes (pas 4) i aquí apareix el teu mapa.',
+        '— Línea llena: lo que se paga o se entrega': '— Línia plena: el que es paga o s\'entrega',
+        '- - Discontinua: lo que no se paga (confianza, ideas, recomendaciones)': '- - Discontínua: el que no es paga (confiança, idees, recomanacions)',
+        'En el centro, tú. Alrededor, {0} personas o grupos, y {1} cosas que van y vienen.': 'Al centre, tu. Al voltant, {0} persones o grups, i {1} coses que van i vénen.',
+        'Resaltado: das una cosa y te devuelven otra distinta': 'Ressaltat: dones una cosa i te\'n tornen una altra de diferent',
+        'Borde a trazos: solo va en un sentido': 'Vora a traços: només va en un sentit',
+        '{0} de {1} relaciones tienen ida y vuelta: das una cosa y te devuelven otra distinta. Son las que aguantan.': '{0} de {1} relacions tenen anada i tornada: dones una cosa i te\'n tornen una altra de diferent. Són les que aguanten.',
+        'Con {0}, de momento solo va en un sentido: piensa qué os devolvéis, aunque no se pague.': 'Amb {0}, de moment només va en un sentit: pensa què us torneu, encara que no es pagui.',
+        'Resaltado: lo que puede preparar una máquina': 'Ressaltat: el que pot preparar una màquina',
+        'De {0} cosas que van y vienen, {1} las puede preparar una máquina, y una persona las revisa. Lo que no se paga y el dinero los lleva siempre una persona.': 'De {0} coses que van i vénen, {1} les pot preparar una màquina, i una persona les revisa. El que no es paga i els diners els porta sempre una persona.',
+        'Escribe arriba con quién trabajas (paso 4) y aquí aparece tu web.': 'Escriu a dalt amb qui treballes (pas 4) i aquí apareix la teva web.',
         'Empieza tu proyecto | TeamTowers': 'Comença el teu projecte | TeamTowers',
         'Tu espacio de cliente': 'El teu espai de client',
         'Empieza tu proyecto aquí, a tu ritmo.': 'Comença el teu projecte aquí, al teu ritme.',
@@ -1015,7 +1127,7 @@
     var CLAU = 'tt.cliente.v1';
     var S = { nom: '', mail: '', org: '', web: '', inicial: '', casa: '', nivel: '', respuestas: {}, alrededor: [], cuenta: false };
     try { Object.assign(S, JSON.parse(localStorage.getItem(CLAU) || 'null') || {}); } catch (e) { /* sin memoria: se empieza de cero */ }
-    function desa() { try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } }
+    function desa() { try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); }
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
@@ -1182,6 +1294,7 @@
     function mostra(ruta) {
         var cos = PAGS[ruta] || PAGS['index.html'], css = PAGS['estil.css'] || '';
         $('#cl-marc').srcdoc = cos.replace(/<link[^>]+href="estil\.css"[^>]*>/, '<style>' + css + '</style>');
+        ARA = PAGS[ruta] ? ruta : 'index.html';
         document.querySelectorAll('#cl-pags button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.r === ruta)); });
     }
     $('#cl-marc').addEventListener('load', function () {
@@ -1205,13 +1318,16 @@
         i.checked = capes().indexOf(i.dataset.capa) >= 0;
         i.addEventListener('change', function () {
             S.capes = [].slice.call(document.querySelectorAll('#cl-capes [data-capa]:checked')).map(function (x) { return x.dataset.capa; }); desa();
-            if (!$('#cl-marc-caixa').hidden) $('#cl-boceto').click();
+            if (!$('#cl-marc-caixa').hidden) pintaWeb(true);
         });
     });
-    $('#cl-boceto').addEventListener('click', function () {
+    /* El boceto: con el botón del paso 5, o en vivo (`enViu`) desde el panel
+       «Mi web» y cada vez que cambia algo, sin moverse de la página que miras. */
+    var ARA = 'index.html';
+    function pintaWeb(enViu) {
         var r = $('#cl-boceto-r'), m = D.mapa(S);
-        if (m.roles.length < 2) { r.textContent = t('Primero di al menos quién está a tu alrededor (paso 4).'); return; }
-        r.textContent = t('Preparando el boceto…');
+        if (m.roles.length < 2) { r.textContent = t(enViu ? 'Escribe arriba con quién trabajas (paso 4) y aquí aparece tu web.' : 'Primero di al menos quién está a tu alrededor (paso 4).'); $('#cl-marc-caixa').hidden = true; return; }
+        if (!enViu) r.textContent = t('Preparando el boceto…');
         motor().then(function (html) {
             var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
                 f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: LL, url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes(), marca: S.marca || null });
@@ -1221,11 +1337,112 @@
                 var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'data-r': x.ruta }, x.ruta === 'index.html' ? t('Inicio') : x.ruta === 'equip.html' ? 'Intranet' : (x.cos.match(/<title>([^<|]+)/) || [0, x.ruta])[1].trim());
                 b.addEventListener('click', function () { mostra(x.ruta); }); bar.appendChild(b);
             });
-            $('#cl-marc-caixa').hidden = false; mostra('index.html');
+            $('#cl-marc-caixa').hidden = false; mostra(enViu && PAGS[ARA] ? ARA : 'index.html');
             r.textContent = t(basica ? 'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.'
                 : 'Este es tu boceto: una puerta para cada uno, con el acceso de clientes y aliados (extranet).') + (capes().indexOf('intranet') >= 0 ? ' ' + t('La intranet del equipo está en «Intranet».') : '');
         }).catch(function () { r.textContent = t('No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'); });
+    }
+    $('#cl-boceto').addEventListener('click', function () { pintaWeb(false); });
+
+    /* Tu mapa y tu web, en vivo (Álvaro, 24/10/2026: «el usuario quiere ver 1 su
+       mapa, 2 su web», orientado a quien no sabe de lo que no conoce). Un panel
+       al lado, a pantalla entera en el móvil, que se repinta con cada cambio
+       (desa() llama a viu()). El mapa es el dibujo de DiagnosiClient.dibuix con
+       tres miradas sobre el mismo dibujo, solo del suyo: ni sectores ni otros
+       mapas. La web es el mismo boceto del paso 5, que se muda aquí mientras el
+       panel está abierto, con su estilo (la marca del motor: color, letra y
+       esquinas) sobre la piel del SOS. */
+    var VIU = $('#cl-viu'), VIU_T = null, LENT = 'valor', PESTANYA = 'mapa';
+    function viu() {
+        if (!VIU || (VIU.hidden && $('#cl-marc-caixa').hidden)) return;
+        clearTimeout(VIU_T);
+        VIU_T = setTimeout(function () {
+            if (!VIU.hidden && PESTANYA === 'mapa') pintaMapa();
+            else if (!$('#cl-marc-caixa').hidden || !VIU.hidden) pintaWeb(true);
+        }, 350);
+    }
+    function fluxos(m) {
+        var l = [];
+        m.pairs.forEach(function (p) {
+            if (p[3]) l.push({ de: p[0], a: p[1], mena: p[2] || 'tangible', que: p[3] });
+            if (p[5]) l.push({ de: p[1], a: p[0], mena: p[4] || 'tangible', que: p[5] });
+        });
+        return l;
+    }
+    function pintaMapa() {
+        var m = D.mapa(S), caixa = $('#cl-viu-svg'), ley = $('#cl-viu-ley'), diu = $('#cl-viu-diu'), fl = fluxos(m);
+        ley.textContent = ''; diu.textContent = '';
+        if (m.roles.length < 2) { caixa.textContent = ''; caixa.appendChild(el('p', { class: 'nota' }, t('Escribe arriba con quién trabajas (paso 4) y aquí aparece tu mapa.'))); return; }
+        var clau = function (f) { return f.de + '\u0000' + f.a + '\u0000' + f.que; }, on = {}, sols = [], op = {};
+        var posa = function (a) { a.forEach(function (x) { ley.appendChild(el('span', {}, x)); }); };
+        if (LENT === 'vuelta' && window.Pinya) {
+            fl.forEach(function (f) { if (Pinya.linia(f, fl) === 'vent') on[clau(f)] = 1; });
+            sols = m.roles.slice(1).filter(function (r) { return !fl.some(function (f) { return (f.de === r || f.a === r) && on[clau(f)]; }); });
+            op = { flux: function (f) { return on[clau(f)] ? 'mv-on' : 'mv-fluix'; }, rol: function (r) { return sols.indexOf(r) >= 0 ? 'mv-sol' : ''; } };
+            posa([t('Resaltado: das una cosa y te devuelven otra distinta'), t('Borde a trazos: solo va en un sentido')]);
+            var parells = m.pairs.filter(function (p) { return p[3] && p[5]; }).length || m.pairs.length;
+            diu.textContent = t('{0} de {1} relaciones tienen ida y vuelta: das una cosa y te devuelven otra distinta. Son las que aguantan.', Object.keys(on).length / 2 | 0, parells)
+                + (sols.length ? ' ' + t('Con {0}, de momento solo va en un sentido: piensa qué os devolvéis, aunque no se pague.', sols.slice(0, 3).join(', ')) : '');
+        } else if (LENT === 'solo' && MM.automatitza) {
+            fl.forEach(function (f) { if (MM.automatitza(f.que, f.mena, LL).qui === 'maquina') on[clau(f)] = 1; });
+            op = { flux: function (f) { return on[clau(f)] ? 'mv-on' : 'mv-fluix'; } };
+            posa([t('Resaltado: lo que puede preparar una máquina')]);
+            diu.textContent = t('De {0} cosas que van y vienen, {1} las puede preparar una máquina, y una persona las revisa. Lo que no se paga y el dinero los lleva siempre una persona.', fl.length, Object.keys(on).length);
+        } else {
+            posa([t('— Línea llena: lo que se paga o se entrega'), t('- - Discontinua: lo que no se paga (confianza, ideas, recomendaciones)')]);
+            diu.textContent = t('En el centro, tú. Alrededor, {0} personas o grupos, y {1} cosas que van y vienen.', m.roles.length - 1, fl.length);
+        }
+        caixa.innerHTML = D.dibuix(m, op);
+    }
+    function pestanya(v) {
+        PESTANYA = v;
+        ['mapa', 'web'].forEach(function (k) { $('#cl-viu-t-' + k).setAttribute('aria-selected', String(k === v)); $('#cl-viu-' + k).hidden = k !== v; });
+        if (v === 'web') { var dest = $('#cl-viu-boceto'); dest.appendChild($('#cl-boceto-r')); dest.appendChild($('#cl-marc-caixa')); pintaEstil(); pintaWeb(true); }
+        else pintaMapa();
+    }
+    function tornaBoceto() { var r = $('#cl-boceto-r'); $('#cl-boceto').closest('.accions').after(r); r.after($('#cl-marc-caixa')); }
+    function obre(si) {
+        VIU.hidden = !si; document.body.classList.toggle('viu-obert', si);
+        $('#cl-viu-b').setAttribute('aria-expanded', String(si));
+        if (si) { pestanya(PESTANYA); $('#t-viu').setAttribute('tabindex', '-1'); $('#t-viu').focus(); }
+        else { tornaBoceto(); $('#cl-viu-b').focus(); }
+    }
+    $('#cl-viu-b').addEventListener('click', function () { obre(true); });
+    $('#cl-viu-tanca').addEventListener('click', function () { obre(false); });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !VIU.hidden) obre(false); });
+    ['mapa', 'web'].forEach(function (k) { $('#cl-viu-t-' + k).addEventListener('click', function () { pestanya(k); }); });
+    document.querySelectorAll('#cl-viu-mapa [data-l]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            LENT = b.dataset.l;
+            document.querySelectorAll('#cl-viu-mapa [data-l]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+            pintaMapa();
+        });
     });
+    /* El estilo: cuatro de serie y, si quieres, cada cosa a tu gusto. Va a la
+       marca (Marca.neta en el motor): el contraste lo garantiza el motor. */
+    var ESTILS = [
+        { n: 'Sereno', color: '#4f46e5', lletra: 'sans', forma: 'rodona' },
+        { n: 'Cálido', color: '#b45309', lletra: 'serif', forma: 'rodona' },
+        { n: 'Fresco', color: '#0f766e', lletra: 'rodona', forma: 'rodona' },
+        { n: 'Clásico', color: '#1e3a8a', lletra: 'serif', forma: 'recta' }
+    ];
+    function estil(x) { S.marca = Object.assign({}, S.marca, x); desa(); pintaEstil(); }
+    function pintaEstil() {
+        var mc = S.marca || {}, c = $('#cl-viu-estils'); c.textContent = '';
+        ESTILS.forEach(function (x) {
+            var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'aria-pressed': String(mc.color === x.color && mc.lletra === x.lletra && mc.forma === x.forma) }, t(x.n));
+            b.style.borderLeft = '6px solid ' + x.color;
+            b.addEventListener('click', function () { estil({ color: x.color, lletra: x.lletra, forma: x.forma }); });
+            c.appendChild(b);
+        });
+        $('#cl-viu-color').value = mc.color || '#4f46e5';
+        $('#cl-viu-lletra').value = mc.lletra || 'sans';
+        $('#cl-viu-forma').value = mc.forma || 'rodona';
+    }
+    $('#cl-viu-color').addEventListener('input', function () { estil({ color: this.value }); });
+    $('#cl-viu-lletra').addEventListener('change', function () { estil({ lletra: this.value }); });
+    $('#cl-viu-forma').addEventListener('change', function () { estil({ forma: this.value }); });
+
     /* Los modelos del SOS (models-mapa.js, los mismos de la app): rellenan
        quién está alrededor y lo que se da, con «tú» en el centro. */
     var MM = window.ModelsMapa;
@@ -1530,7 +1747,7 @@
                 var acc = el('div', { class: 'accions' }), us = el('button', { type: 'button', class: 'btn btn-primary' }, t('Verlo en el boceto'));
                 us.addEventListener('click', function () {
                     var portes = {}; secs.forEach(function (s) { portes[s.quien] = { nom: s.nom.value, intro: s.intro.value }; });
-                    S.marca = { lema: lm[1].value, presentacio: pr[1].value, portes: portes }; desa();
+                    S.marca = Object.assign({}, S.marca, { lema: lm[1].value, presentacio: pr[1].value, portes: portes }); desa();
                     $('#cl-boceto').click(); $('#cl-marc-caixa').scrollIntoView({ block: 'start' });
                 });
                 acc.appendChild(us); res.appendChild(acc);
