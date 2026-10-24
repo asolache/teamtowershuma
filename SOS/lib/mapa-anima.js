@@ -24,6 +24,7 @@
       p3: 'Reparteix el pes', p1d: '{0} intercanvis ja definits, sobretot a {1}: amb {2}.', p2d: '{0}.',
       p3d: '{0} % del que circula passa per {1}. Si aquest rol falla, tot s\'atura: és un castell amb poca pinya.',
       p4: 'Cuida el que no es factura', p4d: '{0} lliuraments de confiança, com {1}. No s\'automatitzen: es registren, i el mapa avisa si s\'aturen.',
+      pinya: 'La xarxa de valor és la pinya del castell de dalt de tot: si aguanta, l\'enxaneta —el projecte— arriba a dalt. Cada lliurament que circula és algú més empenyent.',
       valor: 'Una persona i la seva xarxa porten el que abans demanava una oficina.', i: 'i',
       t1: 'Dibuixes el flux', t2: 'El defineixes', t3: 'El tauler l\'automatitza',
       c1: 'Sense definir', c2: 'Definit', c3: 'Va sol', fa: 'Ho fa una persona',
@@ -36,6 +37,7 @@
       p3: 'Reparte el peso', p1d: '{0} intercambios ya definidos, sobre todo en {1}: con {2}.', p2d: '{0}.',
       p3d: 'El {0} % de lo que circula pasa por {1}. Si ese rol falla, todo se para: es un castell con poca pinya.',
       p4: 'Cuida lo que no se factura', p4d: '{0} entregables de confianza, como {1}. No se automatizan: se registran, y el mapa avisa si se paran.',
+      pinya: 'La red de valor es la pinya del castell de arriba: si aguanta, la enxaneta —el proyecto— llega arriba. Cada entregable que circula es alguien más empujando.',
       valor: 'Una persona y su red llevan lo que antes pedía una oficina.', i: 'y',
       t1: 'Dibujas el flujo', t2: 'Lo defines', t3: 'El tablero lo automatiza',
       c1: 'Sin definir', c2: 'Definido', c3: 'Va solo', fa: 'Lo hace una persona',
@@ -84,7 +86,8 @@
       '.ma-ara{min-height:3.2em;margin:.8rem 0 0;padding:.6rem .9rem;border-left:3px solid var(--green);background:var(--panel);border-radius:0 8px 8px 0;font-size:.95rem;transition:border-color .3s}' +
       '.ma-ara small{display:block;color:var(--muted);font-family:var(--mono);font-size:.75rem}' +
       '.ma-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:2rem;align-items:start}' +
-      '.ma-valor{font-family:var(--sans);font-size:1.25rem;font-weight:700;line-height:1.3;margin:0 0 1rem}' +
+      '.ma-valor{font-family:var(--sans);font-size:1.25rem;font-weight:700;line-height:1.3;margin:0 0 .6rem}' +
+      '.ma-pinya{margin:0 0 1.2rem;padding-left:.8rem;border-left:3px solid var(--green);color:var(--light);font-size:.95rem;line-height:1.5}' +
       '.ma-pri h3{font-size:.8rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .6rem}' +
       '.ma-pri button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1.8rem 1fr;gap:.6rem;width:100%;padding:.7rem;margin:0 0 .5rem;border:1px solid var(--border);border-radius:10px;background:var(--card);cursor:pointer}' +
       '.ma-pri button[aria-pressed="true"]{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}' +
@@ -212,6 +215,7 @@
     var ara = el('p', { class: 'ma-ara', 'aria-live': 'polite' }); esq.appendChild(ara);
 
     dre.appendChild(el('p', { class: 'ma-valor' }, t.valor));
+    dre.appendChild(el('p', { class: 'ma-pinya' }, t.pinya));
     dre.appendChild(el('h3', {}, t.pri));
     var botons = PRI.map(function (pr) {
       var b = el('button', { type: 'button', 'aria-pressed': 'false' }), n = el('span', { class: 'ma-num' }, pr.n), tx = el('span');
