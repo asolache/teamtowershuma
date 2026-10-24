@@ -39,7 +39,9 @@ const MAX_ENTRADA = 14000;
 
 export function config(env) {
   const clau = net(env.ANTHROPIC_API_KEY);
-  if (!/^sk-ant-[A-Za-z0-9_-]{20,}$/.test(clau)) return { ok: false, motiu: 'falta ANTHROPIC_API_KEY' };
+  if (!clau) return { ok: false, motiu: 'falta ANTHROPIC_API_KEY' };
+  /* Sense dir mai el valor: només si no sembla una clau d'Anthropic (comença per sk-ant-). */
+  if (!/^sk-ant-\S{20,}$/.test(clau)) return { ok: false, motiu: 'ANTHROPIC_API_KEY no comença per sk-ant- (o és massa curta)' };
   if (net(env.IA_CLIENTE) === '0') return { ok: false, motiu: 'apagada (IA_CLIENTE=0)' };
   const num = (v, d, max) => { const x = parseFloat(v); return x > 0 ? Math.min(x, max) : d; };
   const invitats = net(env.IA_INVITATS).toLowerCase().split(/[\s,;]+/).filter(Boolean);
@@ -236,8 +238,9 @@ export const handler = async (event) => {
     return t ? json(t.estat === 'error' ? 400 : 200, t) : json(404, {});
   }
   if (event.httpMethod === 'GET') {
-    const c = config(env), ok = c.ok && !!magatzem(event);
-    return json(ok ? 200 : 503, ok ? { actiu: true } : { actiu: false });
+    /* Si no està activa, diu què li falta (mai cap valor), perquè es pugui arreglar des de Netlify. */
+    const c = config(env), reg = !!magatzem(event), ok = c.ok && reg;
+    return json(ok ? 200 : 503, ok ? { actiu: true } : { actiu: false, motiu: c.ok ? 'sense Netlify Blobs' : c.motiu });
   }
   if (event.httpMethod !== 'POST') return json(405, { estat: 'error' });
   let cos = {}; try { cos = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
