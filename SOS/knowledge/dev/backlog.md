@@ -42,6 +42,10 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 
 ### Una sola entrada, amb el did del SOS (demanat 24/10/2026, veda 181)
 
+Es valida amb casos reals (l'Álvaro, 24/10): **el cas estrella és el proveïdor
+d'Events Penedès que contracta alguna cosa** (puja de fitxa a pàgina o a web);
+després, clients com la María, que no són de l'ecosistema d'Events Penedès.
+
 1. **Fet (PR #306):** «Entra» a la barra de totes les pàgines i a les webs que fa
    el motor amb extranet o intranet; l'espai del client al portal amb el seu camí
    i la seva proposta (`SOS/lib/espai-client.js`).
