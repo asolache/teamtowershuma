@@ -5495,3 +5495,23 @@ codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
 - **Multi-idioma**: primer ES i EN sobre les entrades UI, després tot.
 - **Export PDF del kit narratiu** per lliurar a comunitats.
 - **Widget embeded** per posar la pinya del fons cooperatiu a webs municipals.
+
+### El mapa i la web, en viu a /cliente/ (24/10/2026)
+
+L'Àlvar: «el usuario quiere ver 1 su mapa, 2 su web», per a qui no sap res de
+castells ni de mapes de valor; estil del SOS amb colors, lletra i forma a triar;
+el disseny al mòbil, estàndard. Pla complet a
+`/mnt/project-files/producto/web-en-vivo-desde-el-mapa.md`.
+
+- **Fet:** el botó «✦ Ver mi mapa y mi web» obre un panell al costat (pantalla
+  sencera al mòbil) que es repinta sol amb cada canvi (`desa()` → `viu()`).
+  «1 · Mi mapa»: `DiagnosiClient.dibuix` (SVG lleuger) amb tres mirades del
+  mateix mapa (Quién da qué, Ida y vuelta amb `Pinya.linia`, Lo que puede ir
+  solo amb `ModelsMapa.automatitza`), sense sectors ni altres mapes. «2 · Mi
+  web»: el mateix boceto del pas 5, que s'hi muda, amb quatre estils de sèrie
+  i color, lletra i cantonades a la marca del motor (`Marca.neta`). Els textos
+  de la IA ja no esborren l'estil (`Object.assign` sobre `S.marca`).
+- **Pendent:** menús des de l'arbre d'etiquetes (taxonomia universal +
+  folksonomia, faceta visibilitat → web / extranet / intern), un arbre de sèrie
+  per tipus de projecte; vistes Negoci i Sistema; motor sense llegir els
+  560 KB de `vna-suport.html` al mòbil; logo i foto de portada al panell.

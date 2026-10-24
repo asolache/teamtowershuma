@@ -17,6 +17,9 @@
      · desDe()    el camí de tornada: el mapa que surt de l'editor, a la fitxa.
      · revisa()   les regles dures del mapa, dites com les diria el client.
      · resum()    el text que arriba a la casa amb el formulari.
+     · dibuix()   el mapa en SVG, lleuger, per veure'l en viu mentre s'escriu
+                  (la vista «Tu mapa» de /cliente/; l'editor segueix sent
+                  vna-suport.html, que és on es mou i es guarda).
 
    Cap paraula de dins al que llegeix el client: ni Zoho, ni rols, ni fluxos,
    ni repositori. Cap import en euros. Navegador: window.DiagnosiClient.
@@ -201,6 +204,56 @@ function resum(c) {
   return l.join('\n');
 }
 
-var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, resum: resum };
+/* El mapa en SVG (24/10/2026, l'Àlvar: «el usuario quiere ver 1 su mapa, 2 su
+   web»). La casa al centre i la resta al voltant en una el·lipse; cada parell,
+   dues fletxes, una per sentit. Tangible amb línia plena i intangible amb
+   ratlles, com a l'editor. Sense colors: el posa qui el pinta (classes mv-*).
+   `op.flux(f)` i `op.rol(r)` tornen una classe més per a cada fletxa
+   ({de, a, mena, que}) o cada rol: així cada vista del mapa és una lent sobre
+   el mateix dibuix, no un altre dibuix. */
+function dibuix(m, op) {
+  var o = m || {}, q = op || {}, cf = q.flux || function () { return ''; }, cr = q.rol || function () { return ''; }, roles = (o.roles || []).slice(0, 13), W = 640, H = 480, cx = W / 2, cy = H / 2;
+  var e = function (x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var curt = function (x, n) { x = net(x); return x.length > n ? x.slice(0, n - 1).trim() + '…' : x; };
+  var pos = {}, n = roles.length - 1;
+  roles.forEach(function (r, i) {
+    if (!i) { pos[r] = [cx, cy]; return; }
+    var a = -Math.PI / 2 + 2 * Math.PI * (i - 1) / Math.max(n, 1);
+    pos[r] = [cx + 250 * Math.cos(a), cy + 195 * Math.sin(a)];
+  });
+  /* Els textos, només als lliuraments amb la casa i a la meitat de fora (on
+     hi ha lloc), un a cada banda de la línia; els que passen entre els altres,
+     més suaus i sense text (el diuen en passar-hi per sobre). */
+  var fl = '', et = '', casa = roles[0];
+  (o.pairs || []).forEach(function (p) {
+    var A = pos[p[0]], B = pos[p[1]];
+    if (!A || !B || p[0] === p[1]) return;
+    var dx = B[0] - A[0], dy = B[1] - A[1], L = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / L, uy = dy / L, nx = -uy * 7, ny = ux * 7;
+    var ambCasa = p[0] === casa || p[1] === casa, fora = p[1] === casa ? A : B, dins = fora === A ? B : A;
+    [[A, B, p[2], p[3], 1], [B, A, p[4], p[5], -1]].forEach(function (f) {
+      if (!f[3]) return;
+      var s = f[4], P = f[0], Q = f[1], ox = nx * s, oy = ny * s, vx = ux * s, vy = uy * s;
+      var x1 = P[0] + vx * 52 + ox, y1 = P[1] + vy * 34 + oy, x2 = Q[0] - vx * 52 + ox, y2 = Q[1] - vy * 34 + oy;
+      var k = cf({ de: s > 0 ? p[0] : p[1], a: s > 0 ? p[1] : p[0], mena: f[2] || 'tangible', que: net(f[3]) }) || '';
+      fl += '<line class="mv-f mv-' + (f[2] === 'intangible' ? 'i' : 't') + (ambCasa ? '' : ' mv-x') + (k ? ' ' + k : '') + '" x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" marker-end="url(#mv-p)"><title>' + e(net(f[3])) + '</title></line>';
+      if (!ambCasa) return;
+      var tx = fora[0] + (dins[0] - fora[0]) * .45 + ox * 2.6, ty = fora[1] + (dins[1] - fora[1]) * .45 + oy * 2.6 + 4;
+      /* En una línia més aviat vertical, cada text a un costat; si no, a sobre i a sota. */
+      var an = Math.abs(ox) > Math.abs(oy) * 1.2 ? (ox > 0 ? 'start' : 'end') : 'middle';
+      et += '<text class="mv-e' + (k ? ' ' + k : '') + '" x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" text-anchor="' + an + '">' + e(curt(f[3], 20)) + '</text>';
+    });
+  });
+  var nodes = roles.map(function (r, i) {
+    var P = pos[r];
+    var k = cr(r) || '';
+    return '<g class="mv-n' + (i ? '' : ' mv-casa') + (k ? ' ' + k : '') + '"><ellipse cx="' + P[0].toFixed(1) + '" cy="' + P[1].toFixed(1) + '" rx="' + (i ? 58 : 82) + '" ry="' + (i ? 26 : 32) + '"/>'
+      + '<text x="' + P[0].toFixed(1) + '" y="' + (P[1] + 4).toFixed(1) + '" text-anchor="middle">' + e(curt(r, i ? 18 : 23)) + '</text><title>' + e(r) + '</title></g>';
+  }).join('');
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + e(roles.length + ' roles') + '">'
+    + '<defs><marker id="mv-p" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mv-pt"/></marker></defs>'
+    + fl + nodes + et + '</svg>';
+}
+
+var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, resum: resum, dibuix: dibuix };
 if (typeof module !== 'undefined' && module.exports) module.exports = DiagnosiClient; else g.DiagnosiClient = DiagnosiClient;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

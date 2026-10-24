@@ -68,6 +68,10 @@ const SVG = {
     '.ed-svg .ed-port text': 'Port d\'un node: <text> del SVG.',
     '.ed-svg .ed-fant-t': 'Rol fantasma proposat: <text> del SVG.'
   },
+  'cliente/index.html': {
+    '.viu-svg .mv-n text': 'Nom del rol dins del mapa en viu: <text> del SVG (unitats del viewBox, a 17 px al mòbil).',
+    '.viu-svg .mv-e': 'Etiqueta d\'un lliurament al mapa en viu: <text> del SVG (unitats del viewBox, a 17 px al mòbil).'
+  },
   'mapa-web/index.html': {
     '.n .s, .n .s-embudo': 'Subtítol de cada rol al mapa de la xarxa: <text> del SVG.',
     '.n-centro text': 'Nom del negoci al centre del mapa: <text> del SVG.',
