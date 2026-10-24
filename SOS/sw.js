@@ -43,7 +43,7 @@
 
    Escrit a mà no es va tocar mai, i el resultat era el defecte pitjor d'aquest
    fitxer: obrir una pàgina arreglada i seguir veient la trencada. */
-const CAU = 'sos-de1b12dba2';
+const CAU = 'sos-3bf7151d27';
 
 /* Només el que és nostre i és estàtic. Es demana de fons en instal·lar perquè
    la segona pàgina que obri algú ja hi sigui, i si alguna falla no es cancel·la
@@ -77,7 +77,8 @@ const PORTA = [
   './lib/mapa-orgs.js',
   './lib/mapa-valor.js',
   './lib/pinya.js',
-  './lib/qrcode.js'
+  './lib/qrcode.js',
+  './lib/tablero.js'
 ];
 /*/SW-PORTA*/
 

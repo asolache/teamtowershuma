@@ -10,7 +10,7 @@
    de l'app (#/…), així que cada pestanya s'obre en fred des de qualsevol mòbil. */
 const SOS = [
   { capa: 'Operativa', grups: [
-    { grup: 'Avui', items: [
+    { grup: 'Dia a dia', items: [
       { href: '#/tauler', label: 'El meu dia', id: 'avui' },
       { href: '#/', label: 'Tasques', id: 'tasques' }] }] },
   { capa: 'Tàctica', grups: [
@@ -25,15 +25,15 @@ const SOS = [
       { href: '#/fons/impacte', label: 'Impacte', id: 'impacte' },
       { href: '#/fons/pla', label: 'Pla', id: 'pla' }] }] }
 ];
-const CSS = '.tb-nav{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;align-items:flex-end;margin:0 0 1rem;padding:0 0 .6rem;border-bottom:1px solid var(--border)}'
+const CSS = '.tb-nav{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;align-items:flex-end;margin:0;padding:1rem 1.75rem .6rem;border-bottom:1px solid var(--border)}'
   + '.tb-capa{display:flex;flex-direction:column;gap:.2rem}'
   + '.tb-k{font-family:var(--mono,monospace);font-size:var(--t0,.9375rem);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}'
   + '.tb-g{display:flex;gap:.3rem;flex-wrap:wrap}'
   + '.tb-a{display:inline-flex;align-items:center;gap:.35rem;min-height:44px;padding:0 .85rem;border:1px solid var(--border);border-radius:999px;color:var(--light);text-decoration:none;font-size:var(--t0,.9375rem)}'
   + '.tb-a:hover,.tb-a:focus-visible{border-color:var(--indigo);color:var(--indigo)}'
-  + '.tb-a[aria-current=page]{border-color:var(--indigo);background:var(--indigo);color:#fff}'
+  + '.tb-a[aria-current=page]{border-color:var(--indigo);background:var(--indigo);color:var(--bg)}'
   + '.tb-a b{font-weight:600;font-size:var(--t0,.9375rem);padding:0 .4rem;border-radius:999px;background:var(--border);color:var(--light)}'
-  + '@media(max-width:620px){.tb-nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-1rem;padding-right:1rem}.tb-capa{flex:none}.tb-g{flex-wrap:nowrap}}';
+  + '@media(max-width:620px){.tb-nav{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.tb-capa{flex:none}.tb-g{flex-wrap:nowrap}}';
 function estil(doc) {
   if (!doc || doc.getElementById('tb-css')) return;
   const s = doc.createElement('style'); s.id = 'tb-css'; s.textContent = CSS; doc.head.appendChild(s);
