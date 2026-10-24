@@ -5,10 +5,16 @@
    · Sense sessió signada no es veu cap proposta; amb sessió, només la seva.
    · Carregar o esborrar demana el testimoni de gestió; sense, 404.
    · Del que es carrega només passa el que es pot ensenyar, i la clau és una
-     empremta: ni el correu ni el preu surten a la clau. */
+     empremta: ni el correu ni el preu surten a la clau.
+   · Des del portal (netlify/lib/portal.mjs), amb el testimoni de Supabase: només
+     el correu confirmat o el GitHub de qui és, i només des de les webs del
+     portal. L'espai del client (SOS/lib/espai-client.js) diu l'esglaó del pla. */
 import { veure, gestiona, neteja, idDe, clau, handler } from '../../netlify/functions/proposta.mjs';
 import { sessio } from '../../netlify/functions/identitat.mjs';
 import { empremta } from '../../netlify/lib/signatura.mjs';
+import { identitats, quiDelPortal, origenPortal, capsPortal } from '../../netlify/lib/portal.mjs';
+import { createRequire } from 'node:module';
+const req = createRequire(import.meta.url);
 
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log('  ✓ ' + m); } else { fail++; console.log('  ✗ ' + m); } };
@@ -55,6 +61,42 @@ console.log('\n4 · La funció');
   ok(r.statusCode === 404, 'sense testimoni, 404');
   ok((await handler({ httpMethod: 'GET', headers: {} })).statusCode === 405, 'GET no');
   ok((await handler({ httpMethod: 'POST', headers: {}, body: '{}' })).statusCode === 401, 'sense sessió, 401');
+}
+
+console.log('\n5 · Des del portal');
+{
+  const PENV = { ...ENV, PORTAL_SUPABASE_KEY: 'sb_publishable_x' };
+  const TOK = 'aaa.bbb.ccc';
+  const USUARI = { email: 'Maria@Exemple.cat', email_confirmed_at: '2026-10-23T10:00:00Z', identities: [{ provider: 'github', provider_id: '77' }, { provider: 'email', provider_id: 'x' }] };
+  let vist = null;
+  const fals = (u, ok = true) => async (url, o) => { vist = { url, o }; return { ok, json: async () => u }; };
+  ok(JSON.stringify(identitats(USUARI)) === JSON.stringify(['mail:' + empremta('maria@exemple.cat'), 'gh:77']), 'el correu confirmat i el GitHub, com a identitat.mjs');
+  ok(identitats({ ...USUARI, email_confirmed_at: null, identities: [] }).length === 0, 'un correu sense confirmar no obre res');
+  ok((await quiDelPortal(TOK, ENV, fals(USUARI))).length === 0, 'sense la clau del portal, ningú');
+  ok((await quiDelPortal('no-es-un-jwt', PENV, fals(USUARI))).length === 0, 'un testimoni que no ho sembla, ni es pregunta');
+  ok((await quiDelPortal(TOK, { ...PENV, PORTAL_SUPABASE_URL: 'https://dolent.example' }, fals(USUARI))).length === 0, 'només es pregunta a Supabase');
+  ok((await quiDelPortal(TOK, PENV, fals(USUARI, false))).length === 0, 'si Supabase diu que no, ningú');
+  const ids = await quiDelPortal(TOK, PENV, fals(USUARI));
+  ok(ids.length === 2 && /\/auth\/v1\/user$/.test(vist.url) && vist.o.headers.Authorization === 'Bearer ' + TOK, 'es pregunta a Supabase amb el testimoni');
+  const reg = memoria();
+  await gestiona('PUT', 'gh:77', BE, P, ENV, reg);
+  ok((await veure({ portal: TOK }, PENV, reg, Date.now(), fals(USUARI))).estat === 'fet', 'la proposta, amb la sessió del portal');
+  ok((await veure({ portal: TOK }, PENV, reg, Date.now(), fals({ email: 'altra@exemple.cat', email_confirmed_at: 'x' }))).estat === 'cap', 'una altra persona del portal no la veu');
+  ok((await veure({ portal: TOK }, PENV, reg, Date.now(), fals(null, false))).estat === 'identifica', 'amb un testimoni dolent, identifica\'t');
+  ok(origenPortal('https://acceso.teamtowershuma.com') && origenPortal('https://deploy-preview-85--eventspenedes.netlify.app') && !origenPortal('https://dolent.example'), 'les webs del portal i prou');
+  ok(capsPortal('https://acceso.teamtowershuma.com')['Access-Control-Allow-Origin'] === 'https://acceso.teamtowershuma.com' && !capsPortal('https://dolent.example')['Access-Control-Allow-Origin'], 'el CORS, només per a elles');
+  const r = await handler({ httpMethod: 'OPTIONS', headers: { origin: 'https://acceso.teamtowershuma.com' } });
+  ok(r.statusCode === 204 && r.headers['Access-Control-Allow-Origin'] === 'https://acceso.teamtowershuma.com', 'la pregunta prèvia del navegador');
+}
+
+console.log('\n6 · L\'espai del client');
+{
+  const E = req('../lib/espai-client.js'), H = req('../knowledge/cervell/heretat.json');
+  const passos = H.camiClient.passos;
+  ok(E.pas(passos, 'pagina').ara.id === 'pagina' && E.pas(passos, 'pagina').despres.id === 'web', 'el pla «pagina» és el pas 2 i el següent, la web pròpia');
+  ok(E.pas(passos, null).ara.id === 'valor' && E.pas(passos, 'inventat').ara.id === 'valor', 'sense pla, el primer pas');
+  ok(E.veu(passos[0], 'es').nom === passos[0].tu.es.nom, 'en la veu del client');
+  ok(!/€|\d+ ?eur/i.test(JSON.stringify(H.camiClient)), 'el camí no porta cap import');
 }
 
 console.log('\n' + pass + ' bé, ' + fail + ' malament');

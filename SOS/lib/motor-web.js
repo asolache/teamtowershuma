@@ -31,7 +31,7 @@ function motor(html) {
 function site(m, html, opts) {
   var o = opts || {}, M = motor(html), casa = o.casa || [];
   return M.webASite(M.webDelMapa(m, { casa: casa }), { nom: o.nom || '', correu: o.correu || '', llengua: o.llengua || 'es',
-    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, marca: o.marca, mapa: m }).fitxers;
+    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, acces: o.acces, marca: o.marca, mapa: m }).fitxers;
 }
 
 var MotorWeb = { BLOCS: BLOCS, bloc: bloc, motor: motor, site: site };

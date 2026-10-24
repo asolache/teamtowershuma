@@ -794,6 +794,7 @@
         @media (max-width:620px) { .av-grid { grid-template-columns:1fr; } .avantatges { padding:4rem 0 3rem; } .hero-actions .btn-primary { width:100%; justify-content:center; } }
         .intel { padding:5rem 0 4rem; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
         .intel .section-header, .automat .section-header { margin-bottom:3rem; }
+        .mapa-viu { padding:4rem 0; border-bottom:1px solid var(--border); } .mapa-viu .section-header { margin-bottom:1.5rem; }
         .cervell-ex { display:grid; grid-template-columns:1fr; gap:.4rem 1.5rem; align-items:center; margin-top:2.5rem; border:1px solid var(--border); border-radius:12px; background:var(--card); padding:.6rem 1.2rem; }
         .cervell-ex-n { font-size:var(--t0); color:var(--muted); line-height:1.55; margin:0 0 .6rem; }
         a.int { display:flex; flex-direction:column; gap:.4rem; color:inherit; text-decoration:none; }
@@ -884,6 +885,10 @@
 .tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
 /* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
 .tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-in{margin-left:auto;color:var(--text);text-decoration:none;padding:.42rem .6rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-in:hover{background:var(--panel)}
+.tt-nav .tn-in+.tn-cta{margin-left:.25rem}
+.tt-nav .tn-lang~.tn-in{margin-left:.55rem}
 .tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
   text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
 .tt-nav .tn-cta:hover{filter:brightness(1.12)}
@@ -949,6 +954,7 @@
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnòstic</b><span data-i18n="nv.d.diagnostic">On ets i què et falta, en 3 minuts</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El mètode</b><span data-i18n="nv.d.vna">Què és un mapa de valor, sobre un cas</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Fer-ne un</b><span data-i18n="nv.d.vna-suport">L'editor visual: rols, lliuraments, real i ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catàleg</b><span data-i18n="nv.d.arrel-cataleg">Paquets per fluxos: hores i IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Preus i contractació</b><span data-i18n="nv.d.pressupost">De l'esborrany al negoci operatiu, i la resta a mida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">La teva web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa del teu negoci i la web, en una sessió</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Serveis connectables</b><span data-i18n="nv.d.carpeta-conecta">La teva web amb la teva IA, el CRM i els cobraments</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS i formació</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que manté viu el mapa, sense compte</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formació acció</b><span data-i18n="nv.d.formacio">Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Fluxos amb IA</b><span data-i18n="nv.d.ia">Automatitzar el tangible, valorar l'intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Qui som</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Qui som</b><span data-i18n="nv.d.arrel-qui-som">Vint anys, els clients i d'on ve el mètode</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Premsa</b><span data-i18n="nv.d.arrel-premsa">El que se n'ha dit a fora</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacitat, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
+  <a class="tn-in" href="/acceso"><span data-i18n="nv.entra">Entra</span></a>
   <a class="tn-cta" href="/cliente/"><span data-i18n="nv.cta">Crea el teu mapa</span> →</a>
 </nav>
 <script>
@@ -981,7 +987,7 @@
                     <a href="/cataleg?s=empresa" data-sec="empresa" data-i18n="hero.porta3">Empresa i cooperativa</a>
                 </div>
                 <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Mira com flueix el valor al teu negoci <em>i fes-lo créixer</em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Crea el teu <strong>mapa de valor</strong> en uns minuts: amb qui treballes, què us doneu —també la confiança i els favors— i on s'encalla. És gratis, i en surt el primer esbós de la teva web.</p>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Consultoria estratègica i eina digital: veiem com flueix el valor al teu negoci i el convertim en la teva web i en processos que van sols, amb IA inclosa. Comença pel teu <strong>mapa de valor</strong>: és gratis i en surt el primer esbós de la web.</p>
                 <ul class="hero-av fade-up" style="animation-delay:.25s">
                     <li data-i18n="hero.av1">Veus el teu negoci sencer en un sol dibuix</li>
                     <li data-i18n="hero.av2">Saps on es perd valor i per on començar</li>
@@ -1088,6 +1094,16 @@
     </div>
 </section>
 
+<section class="mapa-viu" id="mapa-viu" aria-labelledby="mvv-t">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="mvv.k">Un cas real · el mapa en marxa</div>
+            <h2 id="mvv-t" data-i18n-html="mvv.h2">Així flueix el valor en una productora d'esdeveniments</h2>
+        </div>
+        <div data-anima="mapa" data-cta="/cliente/" data-cta-ca="Fes el teu mapa, gratis →" data-cta-es="Haz tu mapa, gratis →"></div>
+    </div>
+</section>
+
 <!-- QUÈ T'EMPORTES · el que guanya el client, abans que el mètode. -->
 <section class="avantatges" id="avantatges">
     <div class="container">
@@ -1184,6 +1200,9 @@
         <p class="cervell-ex-n" data-i18n="int.cv">És el cervell de debò d'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.</p>
         </div>
 <script src="/SOS/cervell/forces.js" defer></script>
+<script src="/SOS/lib/cas-automatitzat.js" defer></script>
+<script src="/SOS/lib/mapa-valor.js" defer></script>
+<script src="/SOS/lib/mapa-anima.js" defer></script>
 <script src="/SOS/cervell/pla.js" defer></script>
 <script src="/SOS/cervell/franja.js" defer></script>
     </div>
@@ -1196,6 +1215,7 @@
             <h2 data-i18n-html="aut.h2">La feina que es repeteix, <em>que es faci sola</em></h2>
             <p data-i18n="aut.intro">Són els fluxos amb què portem el nostre propi negoci. Abans d'oferir-te'ls, els fem servir nosaltres.</p>
         </div>
+        <div data-anima="tauler"></div>
         <ul class="aut-l fade-up">
             <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.1t">Del mapa a l'esbós de la web</b><span data-i18n="aut.1d">Dibuixes el mapa i en surt una web amb una porta per a cada persona que t'importa, en minuts.</span></li>
             <li class="aut aut-avui"><span class="aut-st" data-i18n="aut.st.avui">Funciona avui</span><b data-i18n="aut.2t">El mapa que avisa</b><span data-i18n="aut.2d">Cada lliurament entre persones queda registrat, i el mapa marca el que circula i el que s'ha aturat.</span></li>
@@ -1822,6 +1842,8 @@ ca: {
   'int.h2':'Mètode, memòria i IA, <em>treballant junts</em>',
   'int.intro':'El mapa no és un dibuix bonic: està fet amb un mètode provat, recorda el que aprèn i fa servir la IA amb mesura.',
   'int.a':'Mira com funciona →',
+  'mvv.k':'Un cas real · el mapa en marxa',
+  'mvv.h2':'Així flueix el valor en una productora d\'esdeveniments',
   'aut.k':'El que ja automatitzem',
   'aut.h2':'La feina que es repeteix, <em>que es faci sola</em>',
   'aut.intro':'Són els fluxos amb què portem el nostre propi negoci. Abans d\'oferir-te\'ls, els fem servir nosaltres.',
@@ -2017,6 +2039,7 @@ ca: {
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacitat, explicada',
   'nv.cta':'Crea el teu mapa',
+  'nv.entra':'Entra',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escriu-nos',
   'nv.peu.legal':'Avís legal i privacitat',
@@ -2161,7 +2184,7 @@ ca: {
   'vd.p2.d':'L\'Álvaro Solache hi dirigeix projectes de consultoria amb aquest mètode, i en va cocrear la pràctica: venda, planificació, producció i formació. <b>Les fases, el full i les preguntes d\'aquesta pàgina surten del guió d\'una sessió real amb un equip de direcció</b>, no d\'un manual.',
 /*/TT-VD-I18N-CA*/
   'hero.h1':'Mira com flueix el valor al teu negoci <em>i fes-lo créixer</em>',
-  'hero.desc':'Crea el teu <strong>mapa de valor</strong> en uns minuts: amb qui treballes, què us doneu —també la confiança i els favors— i on s\'encalla. És gratis, i en surt el primer esbós de la teva web.',
+  'hero.desc':'Consultoria estratègica i eina digital: veiem com flueix el valor al teu negoci i el convertim en la teva web i en processos que van sols, amb IA inclosa. Comença pel teu <strong>mapa de valor</strong>: és gratis i en surt el primer esbós de la web.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
   'hero.evo3.k':'Avui · TeamTowers Humà',
@@ -2273,6 +2296,8 @@ es: {
   'int.h2':'Método, memoria e IA, <em>trabajando juntos</em>',
   'int.intro':'El mapa no es un dibujo bonito: está hecho con un método probado, recuerda lo que aprende y usa la IA con medida.',
   'int.a':'Mira cómo funciona →',
+  'mvv.k':'Un caso real · el mapa en marcha',
+  'mvv.h2':'Así fluye el valor en una productora de eventos',
   'aut.k':'Lo que ya automatizamos',
   'aut.h2':'El trabajo que se repite, <em>que se haga solo</em>',
   'aut.intro':'Son los flujos con los que llevamos nuestro propio negocio. Antes de ofrecértelos, los usamos nosotros.',
@@ -2467,6 +2492,7 @@ es: {
   'nv.t.blog':'Blog',
   'nv.d.blog':'Cada capacidad, explicada',
   'nv.cta':'Crea tu mapa',
+  'nv.entra':'Entra',
   'nv.menu':'Menú',
   'nv.peu.mail':'Escríbenos',
   'nv.peu.legal':'Aviso legal y privacidad',
@@ -2611,7 +2637,7 @@ es: {
   'vd.p2.d':'Álvaro Solache dirige allí proyectos de consultoría con este método, y cocreó su práctica: venta, planificación, producción y formación. <b>Las fases, la hoja y las preguntas de esta página salen del guion de una sesión real con un equipo de dirección</b>, no de un manual.',
 /*/TT-VD-I18N-ES*/
   'hero.h1':'Mira cómo fluye el valor en tu negocio <em>y hazlo crecer</em>',
-  'hero.desc':'Crea tu <strong>mapa de valor</strong> en unos minutos: con quién trabajas, qué os dais —también la confianza y los favores— y dónde se atasca. Es gratis, y sale el primer boceto de tu web.',
+  'hero.desc':'Consultoría estratégica y herramienta digital: vemos cómo fluye el valor en tu negocio y lo convertimos en tu web y en procesos que van solos, con IA incluida. Empieza por tu <strong>mapa de valor</strong>: es gratis y sale el primer esbozo de tu web.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vivo donde el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
   'hero.evo3.k':'Hoy · TeamTowers Humà',

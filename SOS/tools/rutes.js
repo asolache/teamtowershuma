@@ -16,17 +16,26 @@
  *   ../index.html   relativa · un nivell amunt, des de `SOS/`
  *   vna.html        relativa · al costat del fitxer que l'escriu
  */
-const { existsSync } = require('node:fs');
+const { existsSync, readFileSync } = require('node:fs');
 const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
+
+/* Les adreces que `_redirects` porta fora del lloc (`/acceso` → el portal, veda
+   181) no són cap fitxer d'aquí: són externes, com un `https:`. */
+const FORA = (() => {
+  try {
+    return new Set(readFileSync(join(ARREL, '_redirects'), 'utf8').split('\n')
+      .map(l => l.trim().split(/\s+/)).filter(c => c.length >= 2 && c[0].startsWith('/') && /^https:\/\//.test(c[1])).map(c => c[0]));
+  } catch (e) { return new Set(); }
+})();
 
 /* El fitxer al disc que serveix una adreça, o `null` si no és interna.
    `base` és la carpeta del fitxer que porta l'enllaç. */
 function fitxerDe(href, base) {
   if (/^(https?:|mailto:|tel:|data:|#)/.test(href)) return null;
   const net = href.split('#')[0].split('?')[0];
-  if (!net) return null;
+  if (!net || FORA.has(net)) return null;
   /* Una adreça que acaba en `/` és l'`index.html` d'aquella carpeta. Sense
      això, `/SOS/` —que és el destí de l'acció de la barra a 27 pàgines— es
      comprova com un fitxer i surt mort. */
