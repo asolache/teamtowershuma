@@ -276,7 +276,8 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   });
   ok(r.dolor === 0, 'el repte ja no és a la portada: ha marxat a /SOS/, on és l\'eina que el resol');
   ok(r.mapa, 'la crida principal del hero és crear el mapa de valor a /cliente/');
-  ok(r.evo === 3, '«Per què nosaltres» explica d\'on ve la casa en tres passos');
+  /* 24/10/2026 · Àlvaro: hi falten els anys de direcció de persones (1996–2005). */
+  ok(r.evo === 4, '«Per què nosaltres» explica d\'on ve la casa en quatre passos, des de la direcció de persones');
   ok(r.llinatge, 'i nomena les dues cases i l\'any: TeamTowers → TeamTowers Humà');
   ok(r.flux, 'i diu què es mesura, que és el que es contracta');
   ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla');
