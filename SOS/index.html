@@ -412,11 +412,6 @@ a{color:var(--blue);text-decoration:none}
 .av-t{font-weight:600}
 .av-s{font-size:var(--t0);color:var(--muted)}
 .av-go{color:var(--muted)}
-.av-mes{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-top:.9rem}
-@media(max-width:620px){.av-mes{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-1rem;padding-right:1rem}.av-mes-b{flex:none}}
-.av-mes-k{font-family:var(--mono);font-size:var(--t0);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-right:.2rem}
-.av-mes-b{min-height:44px;padding:0 .9rem;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--light);font:inherit;font-size:var(--t0);cursor:pointer}
-.av-mes-b:hover,.av-mes-b:focus-visible{border-color:var(--indigo);color:var(--indigo)}
 .av-plec{margin-top:1.6rem;border-top:1px solid var(--border);padding-top:.6rem}
 .av-plec>summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center;color:var(--light)}
 .dash-step{display:flex;align-items:center;gap:.75rem;width:100%;min-height:56px;padding:.7rem .9rem;background:linear-gradient(90deg,rgba(99,102,241,.1),rgba(0,230,118,.04));border:1px solid var(--indigo);border-radius:11px;color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:transform .13s,background .13s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -10440,6 +10435,9 @@ function renderWorkspace(){
       :('la portada «'+(state.homeView||'tauler')+'»'));
   }
 }
+// Les portades comparteixen el tauler de capes (lib/tablero.js, el mateix disseny que Events Penedès).
+function posaTauler(w){carregaLib('tablero').then(()=>{if(!w.isConnected||w.querySelector('.tb-nav'))return;
+  w.insertBefore(Tablero.nav(Tablero.SOS,{actual:buildRoute(),compta:id=>id==='tasques'?lesMevesTasques().length:id==='avui'?pendingInbox().length:0}),w.firstChild);}).catch(()=>{});}
 function _renderWorkspace(){
   const w=$('#workspace');w.innerHTML='';
   const node=byId(state.activeId);
@@ -10454,6 +10452,7 @@ function _renderWorkspace(){
     if(vista==='mapa')renderCatMap(w);else if(vista==='missions')renderMissions(w);
     else if(vista==='fons')renderFons(w);else if(vista==='gent')renderGent(w);
     else renderDashboard(w);
+    posaTauler(w);
     return;
   }
   const meta=metaOf(node);
@@ -14682,7 +14681,7 @@ function camiDe(nd){
 function buildRoute(){
   if(_routeModal)return'#/'+_routeModal;
   const nd=byId(state.activeId);
-  if(!nd)return state.homeView===HOME_VIEWS[0]?'#/':('#/'+state.homeView);
+  if(!nd)return state.homeView===HOME_VIEWS[0]?'#/':state.homeView==='mapa'?'#/territoris':('#/'+state.homeView);
   const c=camiDe(nd);
   return(c?'#/t/'+c.join('/'):'#/n/'+nd.id)+(state.tab?'/'+state.tab:'');
 }
@@ -14743,6 +14742,7 @@ function parseRoute(hash){
   // El fons és la destinació del flux de valor: ha de ser enllaçable i compartible.
   if(raw[0]==='fons')return{kind:'fons',sub:FONS_SUB[raw[1]]?raw[1]:null};
   if(raw[0]==='gent')return{kind:'gent'};
+  if(raw[0]==='territoris')return{kind:'territoris'};
   if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
   return{kind:'unknown',name:raw[0]};
 }
@@ -14774,10 +14774,10 @@ function applyRoute(){
       openSyncModal({invite:r.code});
     } else {
       if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
-      if(r.kind==='missions'){state.activeId=null;state.homeView='missions';render();}
+      if(r.kind==='missions'||r.kind==='home'){state.activeId=null;state.homeView='missions';render();}
       else if(r.kind==='tauler'){state.activeId=null;state.homeView='tauler';render();}
       else if(r.kind==='fons'){state.activeId=null;state.homeView='fons';render();if(r.sub){_routeModal='fons/'+r.sub;FONS_SUB[r.sub]();try{history.replaceState(null,'','#/fons/'+r.sub);}catch(e){}}}
-      else if(r.kind==='gent'){state.activeId=null;state.homeView='gent';render();}
+      else if(r.kind==='gent'||r.kind==='territoris'){state.activeId=null;state.homeView=r.kind==='gent'?'gent':'mapa';render();}
       else if(r.kind==='node'){
         const nd=byId(r.id);
         if(nd){
@@ -21223,12 +21223,7 @@ function renderDashboard(w){
   regBtn.id='dashLog';regBtn.onclick=()=>openLogValue();
   acts.appendChild(regBtn);
   top.appendChild(acts);head.appendChild(top);
-  /* Les altres quatre portades, a la fila «Més»: hi són, i no competeixen. */
-  const mes=el('nav','av-mes');mes.setAttribute('aria-label','Més portades');
-  mes.appendChild(el('span','av-mes-k','Més'));
-  [['missions','▤ Les meves tasques'],['mapa','🗺 Mapa de Catalunya'],['fons','🏦 Fons'],['gent','🏅 Gent']].forEach(([v,l])=>{
-    const b=el('button','av-mes-b',l);b.onclick=()=>{state.homeView=v;renderWorkspace();};mes.appendChild(b);});
-  head.appendChild(mes);w.appendChild(head);
+  w.appendChild(head);
 
   const body=el('div','tab-body');
   renderAvui(body);
