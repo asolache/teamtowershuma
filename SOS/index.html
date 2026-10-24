@@ -14726,6 +14726,8 @@ async function copiaEnllac(){
   try{await navigator.clipboard.writeText(url);toast('Enllaç copiat');}
   catch(e){prompt('Copia l\'enllaç',url);}
 }
+// El simulador d'impacte i el pla fundador pengen del fons: enllaçables sense sumar rutes modals.
+const FONS_SUB={impacte:()=>openImpactSimulator(),pla:()=>openFounderMap()};
 function parseRoute(hash){
   const raw=(hash||'').replace(/^#\/?/,'').split('/').filter(Boolean);
   if(!raw.length)return{kind:'home'};
@@ -14740,7 +14742,7 @@ function parseRoute(hash){
      antics de `#/missions` segueixen obrint el mateix. */
   if(raw[0]==='tauler')return{kind:'tauler'};
   // El fons és la destinació del flux de valor: ha de ser enllaçable i compartible.
-  if(raw[0]==='fons')return{kind:'fons'};
+  if(raw[0]==='fons')return{kind:'fons',sub:FONS_SUB[raw[1]]?raw[1]:null};
   if(raw[0]==='gent')return{kind:'gent'};
   if(MODAL_ROUTES[raw[0]])return{kind:'modal',name:raw[0]};
   return{kind:'unknown',name:raw[0]};
@@ -14775,7 +14777,7 @@ function applyRoute(){
       if(_routeModal){_routeModal=null;$('#modalRoot').innerHTML='';}
       if(r.kind==='missions'){state.activeId=null;state.homeView='missions';render();}
       else if(r.kind==='tauler'){state.activeId=null;state.homeView='tauler';render();}
-      else if(r.kind==='fons'){state.activeId=null;state.homeView='fons';render();}
+      else if(r.kind==='fons'){state.activeId=null;state.homeView='fons';render();if(r.sub){_routeModal='fons/'+r.sub;FONS_SUB[r.sub]();try{history.replaceState(null,'','#/fons/'+r.sub);}catch(e){}}}
       else if(r.kind==='gent'){state.activeId=null;state.homeView='gent';render();}
       else if(r.kind==='node'){
         const nd=byId(r.id);

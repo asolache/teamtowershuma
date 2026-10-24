@@ -64,6 +64,13 @@ p = await obre('#/t/catalunya/alt-penedes/no-existeix');
 v = await vista(p);
 ok(v.h1 === 'Alt Penedès', 'queda a l\'Alt Penedès: ' + v.h1);
 
+console.log('\n7 · El fons, l\'impacte a Catalunya i el pla fundador tenen enllaç');
+for (const [ruta, txt] of [['#/fons', null], ['#/fons/impacte', 'Impacte'], ['#/fons/pla', 'Mapa de valor estratègic']]) {
+  p = await obre(ruta);
+  const r = await p.evaluate(() => ({ hash: location.hash, modal: (document.querySelector('#modalRoot h2') || {}).textContent || '' }));
+  ok(r.hash === ruta && (!txt || r.modal.includes(txt)), ruta + ' obre ' + (r.modal || 'el fons') + ' i l\'URL es queda: ' + r.hash);
+}
+
 await b.close();
 console.log('\n' + pass + ' ✓ · ' + fail + ' ✗');
 process.exit(fail ? 1 : 0);
