@@ -181,7 +181,7 @@ const SETUP = `
     /* La pantalla es diu «les meves tasques» d'ençà que les vuit safates són
        una de sola; abans es deia «missions». El que ha de ser cert és que hi
        hagi camí de tornada, no com es digui el botó. */
-    const toMis = [...document.querySelectorAll('#workspace button')].find(b => /tasques|missions/i.test(b.innerText));
+    const toMis = [...document.querySelectorAll('#workspace button, #workspace .tb-nav a')].find(b => /tasques|missions/i.test(b.innerText));
     return { view: S.state.homeView, isDashboard: /tauler/i.test(dash), backBtn: !!toMis };
   });
   ok('youCanSwitchToManagement', back.view === 'tauler' && back.isDashboard, 'la vista de gestió és a un clic');
