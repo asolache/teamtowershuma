@@ -37,6 +37,7 @@ const { join } = require('node:path');
 
 const ARREL = join(__dirname, '..', '..');
 const APP = readFileSync(join(ARREL, 'SOS', 'index.html'), 'utf8');
+const INTENTS = readFileSync(join(ARREL, 'SOS', 'lib', 'ia-intents.js'), 'utf8');
 const CHAR = readFileSync(join(ARREL, 'SOS', 'prompts', 'character_dossier.md'), 'utf8');
 const KIT = readFileSync(join(ARREL, 'SOS', 'prompts', 'narrative_kit.md'), 'utf8');
 const IDX = readFileSync(join(ARREL, 'SOS', 'registre', 'index.json'), 'utf8');
@@ -162,7 +163,7 @@ if (gratis && Number(gratis) === 102400)
 else bad(`el llindar gratuït diu ${gratis || '?'} i el de Turbo/ArDrive és 102400 (100 KiB)`);
 
 /* ── 7 · La IA no es pot inventar el número ──────────────────────────────── */
-const intent = APP.slice(APP.indexOf('character_dossier:{'), APP.indexOf('valuation:{'));
+const intent = INTENTS.slice(INTENTS.indexOf('character_dossier:{'), INTENTS.indexOf('valuation:{'));
 const regles = [
   [/Cap número, data ni fet que no et donin/, 'character_dossier prohibeix inventar-ne cap'],
   [/NO te\\'n pots inventar cap/, 'i li diu explícitament que no en té quan no en té'],
@@ -171,7 +172,7 @@ const regles = [
 if (!regles.length) ok('el prompt del personatge prohibeix inventar el número i el situa: no és un rànquing');
 else bad(`al prompt del personatge li falta: ${regles.map(r => r[1]).join('; ')}`);
 
-const kit = APP.slice(APP.indexOf('narrative_kit:{'), APP.indexOf('character_dossier:{'));
+const kit = INTENTS.slice(INTENTS.indexOf('narrative_kit:{'), INTENTS.indexOf('character_dossier:{'));
 if (/NOMÉS els números i les dates que et donin/.test(kit))
   ok('i el del kit narratiu, també: la sinopsi continua el reclutament amb números reals');
 else bad('el prompt del kit narratiu no prohibeix inventar números');
