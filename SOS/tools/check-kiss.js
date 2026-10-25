@@ -164,7 +164,11 @@ const src = readFileSync(APP, 'utf8');
    mòbil) al camí de noms #/t/catalunya/…/socis, amb historial i botó 🔗
    (test-links). La propera peça gran ha de sortir d'una mudança a lib/
    (candidat: AI_INTENTS, ~41 KB en cru). */
-const MAX_GZIP_KB = 552;   // baixat un cop i cachejat (sw.js), no a cada visita
+/* ── 552 → 550 KB (24/10/2026) · les intencions de la IA, a lib/ ──────────
+   AI_INTENTS (13 KB gzip) passa a `lib/ia-intents.js` i es carrega la primera
+   vegada que algú demana IA (AI.carrega). Mesurat: 551,7 → 539 KB. El sostre
+   torna a 550, amb 11 KB de marge. */
+const MAX_GZIP_KB = 550;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
 const MAX_MODAL_ROUTES = 20;
 const MAX_MENU_ITEMS = 12;

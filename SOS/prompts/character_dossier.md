@@ -5,7 +5,7 @@ l'incorpora al reclutament del Comando Molekulon.
 
 ## Per què hi ha aquest fitxer
 
-L'intent viu a `SOS/index.html` (`AI_INTENTS.character_dossier`) i aquí en queda
+L'intent viu a `SOS/lib/ia-intents.js` (`character_dossier`) i aquí en queda
 la còpia llegible i versionada. El que s'hi juga no és l'estil: és que una IA que
 escriu la història d'una persona té totes les facilitats del món per **inventar-se
 fets sobre ella**, i el que la frena són les regles dures, no el to.
