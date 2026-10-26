@@ -284,6 +284,14 @@
         .ia-prop.fet { opacity: .65; }
         .ia-prop.fet .accions { display: none; }
         .ia-prop .ok { font-size: var(--t0); font-weight: 700; color: var(--green); }
+        .ia-salut { margin-top: 1rem; display: grid; gap: .35rem; max-width: 64ch; }
+        .ia-salut .xifres { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; font-weight: 600; }
+        .ia-salut .n { font-size: var(--t2, 1.5rem); font-variant-numeric: tabular-nums; }
+        .ia-salut .n.despres { color: var(--green); }
+        .ia-salut ul { margin: 0; padding-left: 1.1rem; font-size: var(--t0); color: var(--light); }
+        .salut-n { margin-top: .4rem; font-weight: 600; }
+        .ia-desat { font-size: var(--t0); color: var(--muted); }
+        .ia-desat button { font: inherit; background: none; border: 0; padding: 0; color: var(--indigo); text-decoration: underline; cursor: pointer; }
         .ia-preg { margin-top: 1.1rem; display: grid; gap: .5rem; max-width: 64ch; }
         .ia-preg label { font-weight: 600; }
         .ia-preg textarea { min-height: 4.5rem; }
@@ -546,6 +554,7 @@
             <iframe id="cl-ed-marc" title="El editor de tu dibujo"></iframe>
         </div>
         <h3 style="margin-top:1.6rem">¿Está listo para dibujarlo?</h3>
+        <p class="salut-n" id="cl-salut-n" aria-live="polite"></p>
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
         <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
         <details class="auto caso" id="cl-caso" hidden></details>
@@ -944,7 +953,7 @@
         'Hola, {0}': 'Hola, {0}', 'tú': 'tu', 'con GitHub': 'amb GitHub', 'con tu correo': 'amb el teu correu', 'Salir': 'Sortir',
         'Para usar la IA, dinos quién eres. Elige cómo:': 'Per fer servir la IA, digues-nos qui ets. Tria com:',
         'Con GitHub': 'Amb GitHub', 'Con mi correo': 'Amb el meu correu',
-        'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.': "He llegit com tracteu les meves dades. El que escric passa per Claude, la IA d'Anthropic, només per preparar les propostes.",
+        'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas, y mi dibujo se guarda con mi cuenta.': "He llegit com tracteu les meves dades. El que escric passa per Claude, la IA d'Anthropic, només per preparar les propostes, i el meu dibuix es desa amb el meu compte.",
         'Más en el': "Més a l'", 'aviso legal': 'avís legal', 'Con el correo usamos el de tu cuenta (paso 1).': 'Amb el correu fem servir el del teu compte (pas 1).',
         'Marca la casilla de privacidad para usar la IA': 'Marca la casella de privacitat per fer servir la IA',
         'Primero crea tu cuenta con tu correo (paso 1)': 'Primer crea el teu compte amb el teu correu (pas 1)',
@@ -961,6 +970,12 @@
         '+ Alguien nuevo': '+ Algú nou', 'Mejor dicho': 'Més ben dit', 'Te da:': 'Et dona:', 'Le das:': 'Li dones:',
         'Aplicar': 'Aplicar', 'Descartar': 'Descartar', 'Esa fila ya no está': 'Aquesta fila ja no hi és', '✓ Aplicado': '✓ Aplicat', 'Descartado': 'Descartat',
         'Tu dibujo está muy completo: no veo nada que cambiar ahora.': 'El teu dibuix està molt complet: no hi veig res a canviar ara.',
+        'Tu dibujo, al {0} %': 'El teu dibuix, al {0} %', 'Tu dibujo:': 'El teu dibuix:', '→ si aplicas todo:': '→ si ho apliques tot:',
+        'Lo que le falta para estar listo:': 'El que li falta per estar llest:',
+        '☁ Tu dibujo se guarda con tu cuenta: ábrelo desde cualquier aparato.': "☁ El teu dibuix es desa amb el teu compte: obre'l des de qualsevol aparell.", 'Borrarlo de allí': "Esborrar-lo d'allà",
+        'Hemos recuperado tu dibujo guardado': 'Hem recuperat el teu dibuix desat',
+        '¿Borramos tu dibujo de tu cuenta? En este navegador se queda.': "Esborrem el teu dibuix del teu compte? En aquest navegador s'hi queda.",
+        'No se ha podido borrar. Prueba en un rato.': "No s'ha pogut esborrar. Prova-ho d'aquí a una estona.", 'Borrado de tu cuenta. En este navegador sigue.': 'Esborrat del teu compte. En aquest navegador continua.',
         'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta',
         'La frase de tu web': 'La frase de la teva web', 'La presentación': 'La presentació', 'Para {0}': 'Per a {0}',
         'Cómo le llamas en la web': "Com l'anomenes a la web", 'Lo que le dices': 'El que li dius', 'Verlo en el boceto': "Veure-ho a l'esbós",
@@ -1127,7 +1142,9 @@
     var CLAU = 'tt.cliente.v1';
     var S = { nom: '', mail: '', org: '', web: '', inicial: '', casa: '', nivel: '', respuestas: {}, alrededor: [], cuenta: false };
     try { Object.assign(S, JSON.parse(localStorage.getItem(CLAU) || 'null') || {}); } catch (e) { /* sin memoria: se empieza de cero */ }
-    function desa() { try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); }
+    /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
+    var PUJA = null;
+    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); if (PUJA) PUJA(); }
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
@@ -1216,6 +1233,7 @@
     });
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
+        $('#cl-salut-n').textContent = t('Tu dibujo, al {0} %', D.salut(D.mapa(S), null, LL).punts);
         r.punts.forEach(function (p) { c.appendChild(el('li', { class: p.ok ? 'ok' : '' }, p.diu)); });
         pintaAuto();
     }
@@ -1598,7 +1616,11 @@
                     qui.hidden = true; ses.hidden = false; boto.hidden = false;
                     ses.appendChild(el('span', {}, t('Hola, {0}', I.nom || t('tú')) + ' · ' + t(I.via === 'github' ? 'con GitHub' : 'con tu correo')));
                     if (esIA) energia(ses);
-                    var sb = el('button', { type: 'button' }, t('Salir')); sb.addEventListener('click', function () { I = {}; desaI(); pinta(); }); ses.appendChild(sb);
+                    var sb = el('button', { type: 'button' }, t('Salir')); sb.addEventListener('click', function () { I = {}; PUJA = null; desaI(); pinta(); }); ses.appendChild(sb);
+                    if (PUJA && cx.id === (ACTIVA ? 'cl-ia' : 'cl-prop')) {
+                        var dz = el('span', { class: 'ia-desat' }, t('☁ Tu dibujo se guarda con tu cuenta: ábrelo desde cualquier aparato.') + ' '), bb = el('button', { type: 'button' }, t('Borrarlo de allí'));
+                        bb.addEventListener('click', esborra); dz.appendChild(bb); ses.appendChild(dz);
+                    }
                     return;
                 }
                 qui.hidden = false; ses.hidden = true; boto.hidden = true;
@@ -1611,7 +1633,7 @@
                 }
                 qui.appendChild(acc);
                 var lp = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox', 'data-ia': 'priv' });
-                lp.appendChild(ck); lp.appendChild(el('span', {}, ' ' + t((cx.getAttribute('data-priv') || 'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas.').trim())));
+                lp.appendChild(ck); lp.appendChild(el('span', {}, ' ' + t((cx.getAttribute('data-priv') || 'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas, y mi dibujo se guarda con mi cuenta.').trim())));
                 qui.appendChild(lp);
                 var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode(t('Más en el') + ' ')); nl.appendChild(el('a', { href: '/avis-legal.html?lang=' + LL }, t('aviso legal'))); nl.appendChild(document.createTextNode('. ' + t('Con el correo usamos el de tu cuenta (paso 1).')));
                 qui.appendChild(nl);
@@ -1624,8 +1646,40 @@
             b.disabled = true;
             fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true }) })
                 .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || t('No se ha podido')); return j; }); })
-                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); aviso(t(cx.id === 'cl-prop' ? 'Hola, {0}: ya puedes ver tu propuesta' : 'Hola, {0}: ya puedes usar la IA', j.nom)); })
+                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); sincronitza(); aviso(t(cx.id === 'cl-prop' ? 'Hola, {0}: ya puedes ver tu propuesta' : 'Hola, {0}: ya puedes usar la IA', j.nom)); })
                 .catch(function (e) { b.disabled = false; aviso(e.message); });
+        }
+
+        /* 10 · Su ficha, con su cuenta (fitxa.mjs): al entrar se queda la más reciente
+           (la de este navegador o la que guardó en otro aparato, o la que le dejamos
+           preparada), y cada cambio se guarda. Sin contraseña: la misma sesión. */
+        var pujaT = null;
+        function fitxa(cos) {
+            return fetch('/.netlify/functions/fitxa', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ sessio: I.sessio }, cos)) })
+                .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); }, function () { return { estat: 'error' }; });
+        }
+        function buida(x) { return !x.inicial && !(x.alrededor || []).some(function (f) { return f.quien; }); }
+        function puja() { if (I.sessio && !I.sense) fitxa({ fitxa: S }); }
+        function sincronitza() {
+            PUJA = null;
+            if (!I.sessio || I.sense) return;
+            fitxa({}).then(function (r) {
+                if (r.estat !== 'fet' && r.estat !== 'cap') return;
+                if (r.estat === 'fet' && (buida(S) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
+                    Object.assign(S, r.fitxa); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
+                    if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
+                    pintaTot(); viu(); aviso(t('Hemos recuperado tu dibujo guardado'));
+                } else if (!buida(S)) puja();
+                PUJA = function () { clearTimeout(pujaT); pujaT = setTimeout(puja, 1500); };
+                pinta();
+            });
+        }
+        function esborra() {
+            if (!confirm(t('¿Borramos tu dibujo de tu cuenta? En este navegador se queda.'))) return;
+            fitxa({ esborra: true }).then(function (r) {
+                if (r.estat !== 'esborrada') { aviso(t('No se ha podido borrar. Prueba en un rato.')); return; }
+                I.sense = true; desaI(); PUJA = null; pinta(); aviso(t('Borrado de tu cuenta. En este navegador sigue.'));
+            });
         }
 
         var FRASES = { mapa: ['Leyendo quién está a tu alrededor…', 'Buscando lo que se da y no se paga…', 'Pensando en quién te falta…', 'Poniéndolo con tus palabras…'].map(t),
@@ -1644,7 +1698,7 @@
             var mi = S.modelo || ((MM.suggereix && MM.suggereix([S.inicial, S.respuestas.objetivo].join(' '), LL)) || {}).id, mr = mi && MM.mapa(mi, LL, S.casa.trim() || null);
             return { casa: S.casa, org: S.org, inicial: S.inicial, nota: nota || '', nivel: S.nivel, capes: capes(),
                 model: mr ? { nom: mr.nom, bona: mr.bona, pairs: mr.pairs, veda: mr.veda, passos: mr.passos } : null,
-                llengua: LL, respuestas: D.PREGUNTES.map(function (p) { return { q: D.pregunta(p, LL).q, a: S.respuestas[p.id] || '' }; }),
+                llengua: LL, extra: S.extra || null, respuestas: D.PREGUNTES.map(function (p) { return { id: p.id, q: D.pregunta(p, LL).q, a: S.respuestas[p.id] || '' }; }),
                 alrededor: S.alrededor.map(function (f) { return { quien: f.quien, meDa: f.meDa, meDaEs: f.meDaEs, leDoy: f.leDoy, leDoyEs: f.leDoyEs }; }) };
         }
         function crida(pas, nota, cx, res, boto) {
@@ -1678,6 +1732,21 @@
                 if (!r) return;
                 ultima = r;
                 if (r.resumen) res.appendChild(el('p', { class: 'ia-resum' }, r.resumen));
+                /* Cómo está su dibujo, antes y si lo aplica todo (la salud de mapa-valor.js), y
+                   «ahora» mientras aplica: así ve por qué cambia. */
+                var sa = r.salut, nAra = null;
+                function ara() { if (nAra) nAra.textContent = D.salut(D.mapa(S), null, LL).punts + ' %'; }
+                if (sa) {
+                    var bs = el('div', { class: 'ia-salut' }), xs = el('p', { class: 'xifres' });
+                    xs.appendChild(el('span', {}, t('Tu dibujo:'))); nAra = el('span', { class: 'n' }, sa.abans.punts + ' %'); xs.appendChild(nAra);
+                    if (sa.despres.punts > sa.abans.punts) { xs.appendChild(el('span', {}, t('→ si aplicas todo:'))); xs.appendChild(el('span', { class: 'n despres' }, sa.despres.punts + ' %')); }
+                    bs.appendChild(xs);
+                    if (sa.abans.falten.length) {
+                        bs.appendChild(el('p', { class: 'nota' }, t('Lo que le falta para estar listo:')));
+                        var ul = el('ul'); sa.abans.falten.forEach(function (x) { ul.appendChild(el('li', {}, x.diu)); }); bs.appendChild(ul);
+                    }
+                    res.appendChild(bs);
+                }
                 var props = el('div', { class: 'ia-props' }), pend = [];
                 r.sugerencias.forEach(function (s, n) {
                     var f = s.fila >= 0 ? files[s.fila] : null, c = el('div', { class: 'ia-prop', 'data-tipo': s.tipo });
@@ -1689,13 +1758,10 @@
                     var acc = el('div', { class: 'accions' }), si = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t('Aplicar')), no = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('Descartar'));
                     function fet(tx) { c.classList.add('fet'); c.appendChild(el('span', { class: 'ok' }, tx)); pend.splice(pend.indexOf(aplica), 1); if (!pend.length && tot) tot.remove(); }
                     function aplica() {
-                        var idx = f ? S.alrededor.indexOf(f) : -1, nova = null;
-                        if (s.tipo === 'nuevo') { nova = { quien: s.quien, meDa: s.meDa, meDaEs: s.meDaEs, leDoy: s.leDoy, leDoyEs: s.leDoyEs }; S.alrededor.push(nova); }
-                        else if (idx < 0) { fet(t('Esa fila ya no está')); return; }
-                        else if (s.tipo === 'quita') S.alrededor.splice(idx, 1);
-                        else { nova = f; Object.assign(f, { quien: s.quien || f.quien, meDa: s.meDa || f.meDa, meDaEs: s.meDaEs, leDoy: s.leDoy || f.leDoy, leDoyEs: s.leDoyEs }); }
-                        S.extra = null; desa(); pintaFiles();
-                        if (nova) { var fi = document.querySelectorAll('#cl-files .fila')[S.alrededor.indexOf(nova)]; if (fi) fi.classList.add('nou'); }
+                        var nova = D.aplica(S.alrededor, s, f);
+                        if (!nova) { fet(t('Esa fila ya no está')); return; }
+                        S.extra = null; desa(); pintaFiles(); ara();
+                        if (nova !== true) { var fi = document.querySelectorAll('#cl-files .fila')[S.alrededor.indexOf(nova)]; if (fi) fi.classList.add('nou'); }
                         fet(t('✓ Aplicado'));
                     }
                     pend.push(aplica);
@@ -1710,12 +1776,16 @@
                     tot.addEventListener('click', function () { pend.slice().forEach(function (a) { a(); }); });
                     var ta = el('div', { class: 'accions' }); ta.appendChild(tot); res.appendChild(ta);
                 }
-                if (r.pregunta) {
-                    var pg = el('div', { class: 'ia-preg' }), id = 'cl-ia-nota';
-                    pg.appendChild(el('label', { for: id }, r.pregunta));
-                    var tx = el('textarea', { id: id, placeholder: t('Tu respuesta, con tus palabras') }); pg.appendChild(tx);
+                /* Las dos o tres preguntas de la vuelta siguiente: contesta las que quiera. */
+                var pqs = r.preguntas && r.preguntas.length ? r.preguntas : r.pregunta ? [r.pregunta] : [];
+                if (pqs.length) {
+                    var pg = el('div', { class: 'ia-preg' }), txs = [];
+                    pqs.forEach(function (q, k) {
+                        var id = 'cl-ia-nota-' + k; pg.appendChild(el('label', { for: id }, q));
+                        var tx = el('textarea', { id: id, placeholder: t('Tu respuesta, con tus palabras') }); pg.appendChild(tx); txs.push([q, tx]);
+                    });
                     var ot = el('button', { type: 'button', class: 'btn btn-primary' }, t('✦ Otra vuelta'));
-                    ot.addEventListener('click', function () { pule(tx.value); });
+                    ot.addEventListener('click', function () { pule(txs.filter(function (x) { return x[1].value.trim(); }).map(function (x) { return x[0] + ' ' + x[1].value.trim(); }).join(' · ')); });
                     var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(ot); pg.appendChild(a2); res.appendChild(pg);
                 }
                 /* Del dibujo a la web sin buscar nada: el siguiente paso, aquí mismo. */
@@ -1787,7 +1857,7 @@
 
         fetch('/.netlify/functions/identitat').then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
         fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
-        pinta();
+        pinta(); sincronitza();
         return { resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
 

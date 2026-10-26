@@ -413,6 +413,11 @@ jobs:
       - name: La proposta de cada client, només per a ell
         run: node SOS/tests/test-preu-client.mjs
 
+      # El dibuix de cada client (fitxa.mjs): es desa amb el seu compte, només
+      # el llegeix ella, l'esborra d'un clic i deixar-lo preparat demana el testimoni.
+      - name: El dibuix de cada client, guardat amb el seu compte
+        run: node SOS/tests/test-fitxa.mjs
+
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció
       # no passi sense permís i que l'avís de Stripe sense signatura bona no compti.

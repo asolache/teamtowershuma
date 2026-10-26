@@ -16,6 +16,8 @@
                   el mateix format de SOS/lib/mapa-valor.js i de l'editor.
      · desDe()    el camí de tornada: el mapa que surt de l'editor, a la fitxa.
      · revisa()   les regles dures del mapa, dites com les diria el client.
+     · salut()    el mateix, en una xifra i amb el que falta.
+     · aplica()   una proposta de la IA (pule-mapa.mjs) a les files.
      · resum()    el text que arriba a la casa amb el formulari.
      · dibuix()   el mapa en SVG, lleuger, per veure'l en viu mentre s'escriu
                   (la vista «Tu mapa» de /cliente/; l'editor segueix sent
@@ -194,6 +196,30 @@ function revisa(m, MV, llengua) {
   return { punts: punts, llest: punts.every(function (x) { return x.ok; }) };
 }
 
+/* Com està el dibuix, en una xifra (backlog del 23/10, punt 7): la salut de
+   l'app i de l'editor (MapaValor.salut), mai una de nova, sense les regles que
+   una fitxa no pot complir (un dibuix en estrella sempre concentra al centre i
+   encara no té processos). `falten`: el que no passa, amb les paraules del
+   client. És el que la IA de /cliente/ diu abans i després de cada volta. */
+var FORA = ['densitat', 'concentracio', 'processos'];
+function salut(m, MV, llengua) {
+  var V = MV || g.MapaValor, r = revisa(m, V, llengua);
+  return { punts: V.salut(m, { treu: FORA }).punts, llest: r.llest,
+    falten: r.punts.filter(function (x) { return !x.ok; }).map(function (x) { return { id: x.id, diu: x.diu }; }) };
+}
+
+/* Una proposta de la IA ({tipo, quien, meDa, meDaEs, leDoy, leDoyEs}) a les
+   files de la fitxa. `f` és la fila a què es referia, encara que hagi canviat
+   de lloc. Torna la fila nova o tocada, true si l'ha treta, o null si ja no hi
+   és. La fan servir el botó «Aplicar» i el «si ho apliques tot» de pule-mapa. */
+function aplica(files, s, f) {
+  if (s.tipo === 'nuevo') { var n = { quien: s.quien, meDa: s.meDa, meDaEs: s.meDaEs, leDoy: s.leDoy, leDoyEs: s.leDoyEs }; files.push(n); return n; }
+  var i = f ? files.indexOf(f) : -1;
+  if (i < 0) return null;
+  if (s.tipo === 'quita') { files.splice(i, 1); return true; }
+  return Object.assign(f, { quien: s.quien || f.quien, meDa: s.meDa || f.meDa, meDaEs: s.meDaEs || f.meDaEs, leDoy: s.leDoy || f.leDoy, leDoyEs: s.leDoyEs || f.leDoyEs });
+}
+
 /* El que arriba a la casa: compte, frase inicial, respostes, nivell i mapa. */
 function resum(c) {
   var o = c || {}, l = [];
@@ -254,6 +280,6 @@ function dibuix(m, op) {
     + fl + nodes + et + '</svg>';
 }
 
-var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, resum: resum, dibuix: dibuix };
+var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, salut: salut, aplica: aplica, resum: resum, dibuix: dibuix };
 if (typeof module !== 'undefined' && module.exports) module.exports = DiagnosiClient; else g.DiagnosiClient = DiagnosiClient;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

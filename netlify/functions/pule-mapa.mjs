@@ -8,8 +8,9 @@
    · `GET  …/pule-mapa`  si la IA hi és (200) o no (503), i el tope.
    · `POST …/pule-mapa` {sessio, pas:'mapa'|'web', dades}
        pas 'mapa': propostes per a la gent del voltant i el que es donen
-                   (cada una s'accepta o es descarta al navegador) i una
-                   pregunta per a la volta següent;
+                   (cada una s'accepta o es descarta al navegador), dues o
+                   tres preguntes per a la volta següent i com està el dibuix
+                   abans i si s'aplica tot (`salut`, la de l'app i l'editor);
        pas 'web':  el lema, la presentació i el text per a cada rol principal
                    de la web bàsica (van a la `marca` del motor de la web).
 
@@ -27,6 +28,9 @@
    · **El text del client és dada, no instruccions** (va dins de <dades>). */
 import { magatzem as blobs } from '../lib/magatzem.mjs';
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
+/* Les regles del mapa i la fitxa del client: les mateixes peces que el navegador. */
+import MV from '../../SOS/lib/mapa-valor.js';
+import DC from '../../SOS/lib/diagnosi-client.js';
 
 const net = v => (v == null ? '' : String(v)).trim();
 const MODEL = 'claude-opus-5-5';
@@ -64,8 +68,11 @@ const mena = v => (v === 'intangible' ? 'intangible' : 'tangible');
 export function neteja(d) {
   const x = d && typeof d === 'object' ? d : {};
   return {
-    casa: t(x.casa, 80), org: t(x.org, 120), inicial: t(x.inicial, 1500), nota: t(x.nota, 600),
-    respuestas: (Array.isArray(x.respuestas) ? x.respuestas : []).slice(0, 12).map(r => ({ q: t(r && r.q, 200), a: t(r && r.a, 600) })).filter(r => r.a),
+    casa: t(x.casa, 80), org: t(x.org, 120), inicial: t(x.inicial, 1500), nota: t(x.nota, 1200),
+    respuestas: (Array.isArray(x.respuestas) ? x.respuestas : []).slice(0, 12).map(r => ({ id: t(r && r.id, 24), q: t(r && r.q, 200), a: t(r && r.a, 600) })).filter(r => r.a),
+    /* El que passa entre els altres (l'editor): només per a la salut, com al navegador. */
+    extra: { roles: (x.extra && Array.isArray(x.extra.roles) ? x.extra.roles : []).slice(0, 12).map(r => t(r, 80)).filter(Boolean),
+      pairs: (x.extra && Array.isArray(x.extra.pairs) ? x.extra.pairs : []).slice(0, 20).filter(Array.isArray).map(p => [t(p[0], 80), t(p[1], 80), p[2] ? mena(p[2]) : '', t(p[3], 120), p[4] ? mena(p[4]) : '', t(p[5], 120)]).filter(p => p[0] && p[1]) },
     alrededor: (Array.isArray(x.alrededor) ? x.alrededor : []).slice(0, 20).map(f => ({
       quien: t(f && f.quien, 80), meDa: t(f && f.meDa, 160), meDaEs: mena(f && f.meDaEs), leDoy: t(f && f.leDoy, 160), leDoyEs: mena(f && f.leDoyEs) })),
     llengua: x.llengua === 'ca' ? 'ca' : 'es',
@@ -77,6 +84,17 @@ export function neteja(d) {
       passos: (Array.isArray(x.model.passos) ? x.model.passos : []).slice(0, 8).map(s => t(s, 120)).filter(Boolean) } : null,
     nivel: t(x.nivel, 60), capes: (Array.isArray(x.capes) ? x.capes : []).filter(c => c === 'extranet' || c === 'intranet')
   };
+}
+
+/* La fitxa que entén DiagnosiClient.mapa, des de les dades netes; i la seva salut. */
+export const fitxa = d => ({ casa: d.casa, inicial: d.inicial, alrededor: d.alrededor, extra: d.extra,
+  respuestas: Object.fromEntries(d.respuestas.filter(r => r.id).map(r => [r.id, r.a])) });
+export const salut = d => DC.salut(DC.mapa(fitxa(d)), MV, d.llengua);
+/* Com quedaria si aplica totes les propostes, en ordre, com «Aplicar todas». */
+export function despres(d, sug) {
+  const files = d.alrededor.map(f => Object.assign({}, f)), orig = files.slice();
+  sug.forEach(s => DC.aplica(files, s, s.fila >= 0 ? orig[s.fila] : null));
+  return salut(Object.assign({}, d, { alrededor: files }));
 }
 
 const MENA = { tangible: 'se paga o se acuerda', intangible: 'no se paga' };
@@ -97,7 +115,10 @@ export function text(d) {
     if (d.model.preguntes.length) l.push('Preguntas que suelen ayudar:', ...d.model.preguntes.map(s => '· ' + s));
   }
   if (d.nivel || d.capes.length) l.push('', 'Web que pide: ' + [d.nivel, d.capes.length ? 'con ' + d.capes.join(' y ') : 'solo la parte pública'].filter(Boolean).join(', '));
-  if (d.nota) l.push('', 'Lo que ha contestado a tu última pregunta: ' + d.nota);
+  /* Lo que le falta para estar listo: las reglas del mapa, dichas como las lee ella. */
+  const s = salut(d);
+  l.push('', 'Cómo está su dibujo: ' + s.punts + ' de 100.' + (s.falten.length ? ' Lo que todavía le falta para estar listo:' : ' Cumple lo básico.'), ...s.falten.map(f => '· ' + f.diu));
+  if (d.nota) l.push('', 'Lo que ha contestado a tus últimas preguntas: ' + d.nota);
   l.push('</dades>');
   return l.join('\n');
 }
@@ -119,7 +140,8 @@ export const PAS = {
     '· «quita»: solo si una fila está repetida o no es de su proyecto.',
     'Si viene un modelo de proyectos como el suyo, úsalo para ver quién suele faltar y qué se da sin pagarse; propón solo lo que encaje con lo que ella cuenta, dicho con sus palabras y no con las del modelo. Si todavía no tiene a nadie, empieza por ahí.',
     'Lo que ya se sabe del sector es la base; lo que diferencia a su marca son sus intangibles propios, lo que solo ella da o genera. Búscalos en lo que cuenta y nómbralos con sus palabras; si no aparecen, que tu pregunta vaya a por ellos. Nunca los copies del modelo.',
-    'En «porque», una frase corta que le explique por qué le ayuda. En «resumen», una o dos frases sobre cómo ves su red hoy, en positivo y concreto. En «pregunta», la pregunta que más te ayudaría a afinar en la siguiente vuelta.'].join('\n'),
+    'Si le falta algo para estar listo, tus propuestas van primero a por eso.',
+    'En «porque», una frase corta que le explique por qué le ayuda. En «resumen», una o dos frases sobre cómo ves su red hoy, en positivo y concreto. En «preguntas», dos o tres preguntas para la siguiente vuelta, cortas y de una en una, de la que más te ayudaría a afinar a la que menos; si le falta algo de la lista, la primera va a por eso.'].join('\n'),
   web: ['Escribe los textos de su web: una página con una sección para cada uno de los que más dan y reciben.',
     '· «lema»: lo que hace, en una frase de hasta doce palabras.',
     '· «presentacion»: dos frases para quien llega por primera vez.',
@@ -129,7 +151,7 @@ export const PAS = {
 const S = (props, req) => ({ type: 'object', properties: props, required: req || Object.keys(props), additionalProperties: false });
 const STR = { type: 'string' }, MENA_S = { type: 'string', enum: ['tangible', 'intangible'] };
 export const ESQUEMA = {
-  mapa: S({ resumen: STR, pregunta: STR, sugerencias: { type: 'array', items: S({ tipo: { type: 'string', enum: ['nuevo', 'cambia', 'quita'] }, fila: { type: 'integer' },
+  mapa: S({ resumen: STR, preguntas: { type: 'array', items: STR }, sugerencias: { type: 'array', items: S({ tipo: { type: 'string', enum: ['nuevo', 'cambia', 'quita'] }, fila: { type: 'integer' },
     quien: STR, meDa: STR, meDaEs: MENA_S, leDoy: STR, leDoyEs: MENA_S, porque: STR }) } }),
   web: S({ lema: STR, presentacion: STR, secciones: { type: 'array', items: S({ quien: STR, nombre: STR, intro: STR }) } })
 };
@@ -142,7 +164,9 @@ export function valida(pas, j, d) {
       tipo: s.tipo, fila: Number.isInteger(s.fila) ? s.fila : -1, quien: t(s.quien, 80), meDa: t(s.meDa, 120), meDaEs: mena(s.meDaEs),
       leDoy: t(s.leDoy, 120), leDoyEs: mena(s.leDoyEs), porque: t(s.porque, 240) }))
       .filter(s => (s.tipo === 'nuevo' && s.quien) || ((s.tipo === 'cambia' || s.tipo === 'quita') && s.fila >= 0 && s.fila < n)).slice(0, 6);
-    return { resumen: t(j.resumen, 400), pregunta: t(j.pregunta, 240), sugerencias: sug };
+    const preg = (Array.isArray(j.preguntas) ? j.preguntas : []).map(p => t(p, 240)).filter(Boolean).slice(0, 3);
+    /* `pregunta`: la primera, per a la pàgina que encara no en llegeix més d'una. */
+    return { resumen: t(j.resumen, 400), preguntas: preg, pregunta: preg[0] || '', sugerencias: sug, salut: { abans: salut(d), despres: despres(d, sug) } };
   }
   const noms = new Map(d.alrededor.map(f => [f.quien.toLowerCase(), f.quien]).filter(x => x[0]));
   const vist = new Set();
