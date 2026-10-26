@@ -15,7 +15,7 @@
 - **Para qué:** Contestar a quien nos escribe, preparar el diagnóstico, la propuesta y el proyecto, y hacer el seguimiento comercial.
 - **Base legal:** Medidas precontractuales y contrato (art. 6.1.b RGPD); la casilla de privacidad del espacio de cliente deja constancia de que se ha informado.
 - **De quién:** Personas que piden un diagnóstico, una visita, un pedido o abren su espacio de cliente.
-- **Qué datos:** Nombre, correo, teléfono si lo dan, cargo, organización, web, lo que cuentan del proyecto y el dibujo de quién tienen alrededor (nombres de grupos, no de personas). Si usan la IA del espacio de cliente: cómo se han identificado (correo o usuario de GitHub) y cuánto la han usado, guardado con una huella del correo y no con el correo (Netlify Blobs); el texto no se guarda. Cuando hay propuesta: lo que incluye su proyecto, las horas y el precio, guardado también con la huella (Netlify Blobs) y visible solo para quien entra con esa cuenta.
+- **Qué datos:** Nombre, correo, teléfono si lo dan, cargo, organización, web, lo que cuentan del proyecto y el dibujo de quién tienen alrededor (nombres de grupos, no de personas). Si usan la IA del espacio de cliente: cómo se han identificado (correo o usuario de GitHub) y cuánto la han usado, guardado con una huella del correo y no con el correo (Netlify Blobs); el texto que pasa por la IA no se guarda. Si entran con su cuenta, su ficha del espacio (lo que cuentan, el dibujo y los textos de su web) se guarda con la misma huella (Netlify Blobs, almacén «fitxes») para abrirla desde cualquier aparato; la borran con un clic, y al pasar al portal se borra de allí. Cuando hay propuesta: lo que incluye su proyecto, las horas y el precio, guardado también con la huella (Netlify Blobs) y visible solo para quien entra con esa cuenta.
 - **Por dónde llegan:** los formularios `diagnostic-org`, `comanda`, `visita`, `cliente-web`, `incidencia`.
 - **Quién los trata por encargo:** Netlify, Zoho, GitHub, Anthropic.
 - **Cuánto tiempo:** Mientras dure la relación y, si no hay contrato, 2 años desde el último contacto.
@@ -56,7 +56,7 @@
 ## Medidas de seguridad
 
 - Los datos de tarjeta nunca pasan por nuestros sistemas (Stripe).
-- Las herramientas del SOS y el espacio de cliente guardan los datos en el navegador de cada uno.
+- Las herramientas del SOS y el espacio de cliente guardan los datos en el navegador de cada uno; la ficha del espacio de cliente, además, con la huella de su cuenta si entra con ella (Netlify Blobs), nunca con el correo como clave.
 - Las páginas de clientes potenciales viven en un repositorio privado y se borran después de la visita.
 - Ningún dato de cliente va al repositorio público.
 - Cuentas con contraseña única y verificación en dos pasos donde el servicio la ofrece.

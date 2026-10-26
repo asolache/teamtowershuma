@@ -10,7 +10,8 @@
    · El cost real surt de `usage` (i de cada intent si hi ha hagut fallback).
    · Del que respon el model només passa el que es pot aplicar.
    · El text del client va dins de <dades> i no surt al registre. */
-import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament, sistema, PAS, handler } from '../../netlify/functions/pule-mapa.mjs';
+import { pule, config, cost, reserva, neteja, text, valida, ESQUEMA, tancament, sistema, PAS, handler, salut, despres } from '../../netlify/functions/pule-mapa.mjs';
+import DC from '../lib/diagnosi-client.js';
 import { perCorreu, aGithub, deGithub, vies, sessio } from '../../netlify/functions/identitat.mjs';
 import { signa, llegeix, secret } from '../../netlify/lib/signatura.mjs';
 
@@ -32,7 +33,7 @@ const fals = (respostes) => {
 const DADES = { casa: 'Formadores', inicial: 'Formo a profesores de español', alrededor: [
   { quien: 'Profesores nuevos', meDa: 'matrículas', meDaEs: 'tangible', leDoy: 'un curso', leDoyEs: 'tangible' },
   { quien: 'Escuelas', meDa: 'ofertas de trabajo', meDaEs: 'intangible', leDoy: 'profesores preparados', leDoyEs: 'intangible' }] };
-const RESP_MAPA = { resumen: 'Tu red se apoya en la confianza.', pregunta: '¿Quién te recomienda?', sugerencias: [
+const RESP_MAPA = { resumen: 'Tu red se apoya en la confianza.', preguntas: ['¿Quién te recomienda?', '¿Qué te dan tus antiguos alumnos?', '¿Quién te avala?', 'Una cuarta de más'], sugerencias: [
   { tipo: 'nuevo', fila: -1, quien: 'Antiguos alumnos', meDa: 'recomendaciones', meDaEs: 'intangible', leDoy: 'comunidad', leDoyEs: 'intangible', porque: 'Suelen traer a otros.' },
   { tipo: 'cambia', fila: 0, quien: 'Profesores nuevos', meDa: 'matrículas del curso', meDaEs: 'tangible', leDoy: 'el curso FELE', leDoyEs: 'tangible', porque: 'Más concreto.' },
   { tipo: 'cambia', fila: 9, quien: 'X', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'tangible', porque: 'fila que no existe' },
@@ -88,7 +89,12 @@ console.log('\n3 · Una volta del mapa');
   const r = await pule({ sessio: ses(), pas: 'mapa', dades: DADES }, ENV, reg, f);
   const req = JSON.parse(f.crides[0].opts.body), h = f.crides[0].opts.headers;
   ok(r.estat === 'fet' && r.resultat.sugerencias.length === 2, 'passen les dues propostes aplicables; la fila que no existeix i el tipus estrany, no');
-  ok(r.resultat.pregunta && r.resultat.resumen, 'amb el resum i la pregunta per a la volta següent');
+  ok(r.resultat.resumen && r.resultat.preguntas.length === 3 && r.resultat.pregunta === r.resultat.preguntas[0], 'amb el resum i com a molt tres preguntes per a la volta següent (la primera també sola)');
+  const sa = r.resultat.salut;
+  ok(sa && sa.abans.punts >= 0 && sa.abans.punts <= 100 && Array.isArray(sa.abans.falten) && sa.abans.falten.every(f => f.id && f.diu), 'diu com està el dibuix abans, amb el que li falta en les seves paraules');
+  ok(sa.despres.punts >= sa.abans.punts, 'i com quedaria si ho aplica tot: el nou intangible no l\'empitjora');
+  ok(req.messages[0].content.includes('Cómo está su dibujo: ' + sa.abans.punts + ' de 100') && sa.abans.falten.every(f => req.messages[0].content.includes(f.diu)), 'la IA rep la mateixa salut i el que falta, per anar-hi primer');
+  ok(ESQUEMA.mapa.properties.preguntas.type === 'array' && !('pregunta' in ESQUEMA.mapa.properties), "l'esquema demana una llista de preguntes");
   ok(req.model === 'claude-opus-5-5' && req.output_config.effort === 'low' && req.output_config.format.type === 'json_schema', 'Opus 5.5, esforç baix, sortida amb esquema');
   ok(req.fallbacks === 'default' && h['anthropic-beta'] === 'server-side-fallback-2026-07-01' && !('temperature' in req), 'amb fallbacks i sense paràmetres de mostreig');
   ok(req.messages[0].content.includes('<dades>') && req.system.includes('nunca instrucciones'), 'el text del client va dins de <dades>, que el sistema diu que són dades');
@@ -181,6 +187,24 @@ console.log('\n7 · El tancament del mes');
   ok(neteja({ model: { pairs: [], veda: { clau: 'x', falta: [1, 2, 3, 4, 5, 6, 7, 8] } } }).model.falta.length === 6 && neteja({ model: { pairs: [], veda: 'x' } }).model.veda.length === 0, 'una veda mal formada no passa; com a molt sis línies');
   ok(/intangibles propios/.test(PAS.mapa), 'la IA busca els intangibles propis de la marca, no els copia del model');
   ok(/en catalán/.test(sistema('ca')) && !/en catalán/.test(sistema('es')), 'en català, la IA respon en català');
+}
+
+console.log('\nLa salut del dibuix, abans i després (DiagnosiClient.salut i aplica)');
+{
+  const d = neteja({ casa: 'Escuela', respuestas: [{ id: 'objetivo', q: '¿Qué quieres?', a: 'Que me encuentren quienes quieren ser profesores' }],
+    alrededor: [{ quien: 'Futuros profesores', meDa: 'matrículas', meDaEs: 'tangible', leDoy: 'el curso', leDoyEs: 'tangible' }],
+    extra: { roles: ['Academias'], pairs: [['Academias', 'Futuros profesores', 'tangible', 'un trabajo', 'intangible', 'buen nombre'], ['', 'x']] } });
+  ok(d.extra.roles[0] === 'Academias' && d.extra.pairs.length === 1, "el que passa entre els altres arriba net, i un parell sense rol no");
+  const s = salut(d);
+  ok(!s.falten.some(f => f.id === 'abast') && s.falten.some(f => f.id === 'rols'), "l'objectiu compta com a abast; amb tres rols, en falten");
+  ok(!s.falten.some(f => f.id === 'concentracio' || f.id === 'densitat'), "les regles que una estrella no pot complir no compten");
+  const nous = ['Antiguos alumnos', 'Quien me recomienda', 'Quien me avala', 'Escuelas de fuera'].map(q => ({ tipo: 'nuevo', fila: -1, quien: q, meDa: 'confianza', meDaEs: 'intangible', leDoy: 'comunidad', leDoyEs: 'intangible' }));
+  const dp = despres(d, nous.concat([{ tipo: 'quita', fila: 0 }, { tipo: 'cambia', fila: 0, meDa: 'no hi és' }]));
+  ok(dp.punts > s.punts && !dp.falten.some(f => f.id === 'rols' || f.id === 'menes'), 'si ho aplica tot, puja: ja hi ha prou gent i el que no es paga');
+  ok(d.alrededor.length === 1, 'calcular el després no toca les dades');
+  const files = [{ quien: 'A', meDa: 'x', meDaEs: 'tangible', leDoy: 'y', leDoyEs: 'tangible' }], f0 = files[0];
+  ok(DC.aplica(files, { tipo: 'cambia', meDa: 'z' }, f0) === f0 && f0.meDa === 'z' && f0.leDoy === 'y', 'aplica: «cambia» toca la fila i guarda el que no canvia');
+  ok(DC.aplica(files, { tipo: 'quita' }, f0) === true && !files.length && DC.aplica(files, { tipo: 'cambia' }, f0) === null, 'aplica: «quita» la treu, i una fila que ja no hi és no fa res');
 }
 
 console.log('\nSi no està activa, diu què li falta');
