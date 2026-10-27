@@ -298,6 +298,16 @@
         .ia-final { margin-top: 1rem; font-size: var(--t0); color: var(--light); }
         .ia-textos { display: grid; gap: .8rem; margin-top: 1rem; }
         .ia-textos .fila { animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; }
+        .ia-llig { display: grid; gap: .6rem; max-width: 40rem; }
+        .ia-pags { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: .5rem; }
+        .ia-pags li { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .6rem .9rem; display: grid; gap: .15rem; animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; }
+        .ia-pags code { font-family: var(--mono); font-size: var(--t0); color: var(--indigo); overflow-wrap: anywhere; }
+        .ia-pags .h { font-size: var(--t0); color: var(--light); }
+        .ia-pags .porta { justify-self: start; font-size: var(--t0); font-weight: 700; padding: .1rem .55rem; border-radius: 99px; background: #e3f3ea; color: var(--green); }
+        .ia-pags .porta.cap { background: #eceafd; color: var(--muted); }
+        .ia-pags .per { font-size: var(--t0); color: var(--muted); font-style: italic; }
+        .ia-falta { margin-top: 1rem; display: grid; gap: .4rem; max-width: 64ch; }
+        .ia-falta ul { margin: 0; padding-left: 1.1rem; font-size: var(--t0); }
         .fila.nou { animation: ia-llum 1.6s ease-out; }
         @keyframes ia-llum { from { box-shadow: 0 0 0 3px var(--indigo); background: #f3f1ff; } }
         @media (prefers-reduced-motion: reduce) { .ia *, .ia, .fila.nou { animation: none !important; transition: none !important; } }
@@ -581,6 +591,18 @@
             <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
             <label><input type="checkbox" data-capa="extranet"> <b>La extranet</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
             <label><input type="checkbox" data-capa="intranet"> <b>La intranet</b><span>Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
+        </div>
+        <div class="ia" id="cl-ia-llig" hidden data-per="Para leer tu web, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
+            <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
+                <div><h3>¿Ya tienes web? La leemos</h3><p>Con tu permiso leemos las páginas públicas de tu web de ahora, para que la nueva no pierda lo que Google ya conoce de ti. Luego te decimos a quién va cada página y lo que tu web todavía no le dice a cada uno.</p></div></div>
+            <div class="ia-qui" data-ia="qui"></div>
+            <div class="ia-sessio" data-ia="sessio" hidden></div>
+            <div class="ia-boto ia-llig" hidden>
+                <div class="camp"><label for="cl-llig-web">La dirección de tu web</label><input id="cl-llig-web" type="url" inputmode="url" placeholder="https://"></div>
+                <label class="cl-priv" for="cl-llig-si"><input type="checkbox" id="cl-llig-si"> <span>Es mi web y os doy permiso para leer sus páginas públicas.</span></label>
+                <div class="accions" style="margin-top:0"><button type="button" class="btn btn-primary" id="cl-llig">Leer mi web</button></div>
+            </div>
+            <div id="cl-llig-res" aria-live="polite"></div>
         </div>
         <div class="ia" id="cl-ia-web" hidden>
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
@@ -979,6 +1001,24 @@
         'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta',
         'La frase de tu web': 'La frase de la teva web', 'La presentación': 'La presentació', 'Para {0}': 'Per a {0}',
         'Cómo le llamas en la web': "Com l'anomenes a la web", 'Lo que le dices': 'El que li dius', 'Verlo en el boceto': "Veure-ho a l'esbós",
+        '¿Ya tienes web? La leemos': 'Ja tens web? La llegim',
+        'Con tu permiso leemos las páginas públicas de tu web de ahora, para que la nueva no pierda lo que Google ya conoce de ti. Luego te decimos a quién va cada página y lo que tu web todavía no le dice a cada uno.': "Amb el teu permís llegim les pàgines públiques de la teva web d'ara, perquè la nova no perdi el que Google ja coneix de tu. Després et diem a qui va cada pàgina i el que la teva web encara no li diu a cadascú.",
+        'Para leer tu web, dinos quién eres. Elige cómo:': 'Per llegir la teva web, digues-nos qui ets. Tria com:',
+        'La dirección de tu web': "L'adreça de la teva web", 'Es mi web y os doy permiso para leer sus páginas públicas.': 'És la meva web i us dono permís per llegir-ne les pàgines públiques.',
+        'Leer mi web': 'Llegir la meva web', 'Leer otra vez': 'Llegir-la un altre cop', 'Marca que es tu web y que nos dejas leerla': 'Marca que és la teva web i que ens la deixes llegir',
+        'Escribe la dirección de tu web': "Escriu l'adreça de la teva web",
+        'Leyendo tu web con calma, una página cada vez…': 'Llegint la teva web amb calma, una pàgina cada cop…', 'Mirando qué páginas deja leer…': 'Mirant quines pàgines deixa llegir…',
+        'Apuntando títulos y encabezados…': 'Apuntant títols i encapçalaments…', 'Quitando correos y teléfonos…': 'Traient correus i telèfons…',
+        'Sigue leyendo. Vuelve en un rato y la verás aquí.': "Encara la llegeix. Torna d'aquí a una estona i la veuràs aquí.",
+        'No hemos podido leer tu web ahora.': "No hem pogut llegir la teva web ara.", 'Hoy ya hemos leído tu web varias veces. Mañana, otra.': 'Avui ja hem llegit la teva web unes quantes vegades. Demà, una altra.',
+        'Esa dirección no parece una web.': 'Aquesta adreça no sembla una web.', 'No hemos podido leer ninguna página de tu web.': 'No hem pogut llegir cap pàgina de la teva web.',
+        '{0} páginas leídas de {1}, el {2}': '{0} pàgines llegides de {1}, el {2}', 'En el menú': 'Al menú', 'Fuera del menú': 'Fora del menú',
+        'Correos y teléfonos no los guardamos. Lo borras con «Borrarlo de allí».': "Correus i telèfons no els desem. Ho esborres amb «Esborrar-ho d'allà».",
+        '✦ ¿A quién va cada página?': '✦ A qui va cada pàgina?', 'No va a nadie de tu mapa': 'No va a ningú del teu mapa',
+        'Lo que tu web todavía no le dice a…': 'El que la teva web encara no li diu a…',
+        'Lo guardamos en tu ficha: lo usamos en la sesión para que cada página vieja lleve a su puerta y Google no la pierda.': "Ho desem a la teva fitxa: ho fem servir a la sessió perquè cada pàgina vella porti a la seva porta i Google no la perdi.",
+        'Primero leemos tu web.': 'Primer llegim la teva web.',
+        'Leyendo tus páginas…': 'Llegint les teves pàgines…', 'Buscando a quién habla cada una…': 'Buscant a qui parla cadascuna…', 'Mirando a quién no le habla ninguna…': 'Mirant a qui no li parla cap…',
         /* Los pasos y los niveles: de proces-web.js y web-viva.js (build-proces.js) */
 /*TT-PROCES-CA*/
         "Nos escribes": "Ens escrius",
@@ -1588,7 +1628,7 @@
         var CI = 'tt.cliente.ia', I = {};
         try { I = JSON.parse(localStorage.getItem(CI) || 'null') || {}; } catch (e) { I = {}; }
         function desaI() { try { localStorage.setItem(CI, JSON.stringify(I)); } catch (e) { /* sin memoria */ } }
-        var VIES = [], ACTIVA = false, caixes = [$('#cl-ia'), $('#cl-ia-web'), $('#cl-prop')];
+        var VIES = [], ACTIVA = false, caixes = [$('#cl-ia'), $('#cl-ia-llig'), $('#cl-ia-web'), $('#cl-prop')];
         /* Al volver de GitHub, la sesión llega en el fragmento: se guarda y se borra de la barra. */
         var h = /^#sessio=([\w-]+\.[\w-]+)$/.exec(location.hash);
         if (h) {
@@ -1608,10 +1648,12 @@
         function pinta() {
             caixes.forEach(function (cx) {
                 if (!cx) return;
-                var esIA = cx.id !== 'cl-prop';
+                /* Leer su web no es IA: va aunque la IA no esté activa (como su propuesta). */
+                var esIA = cx.id !== 'cl-prop' && cx.id !== 'cl-ia-llig';
                 cx.hidden = (esIA && !ACTIVA) || (!VIES.length && !I.sessio);
                 var qui = cx.querySelector('[data-ia="qui"]'), ses = cx.querySelector('[data-ia="sessio"]'), boto = cx.querySelector('.ia-boto');
                 qui.textContent = ''; ses.textContent = '';
+                if (cx.id === 'cl-ia-llig' && !$('#cl-llig-web').value) $('#cl-llig-web').value = S.web || '';
                 if (I.sessio) {
                     qui.hidden = true; ses.hidden = false; boto.hidden = false;
                     ses.appendChild(el('span', {}, t('Hola, {0}', I.nom || t('tú')) + ' · ' + t(I.via === 'github' ? 'con GitHub' : 'con tu correo')));
@@ -1672,6 +1714,7 @@
                 } else if (!buida(S)) puja();
                 PUJA = function () { clearTimeout(pujaT); pujaT = setTimeout(puja, 1500); };
                 pinta();
+                fitxa({ foto: true }).then(function (f) { if (f.estat === 'foto' && f.lectura.estat === 'fet' && !FOTO) lectura(f.lectura); });
             });
         }
         function esborra() {
@@ -1683,7 +1726,9 @@
         }
 
         var FRASES = { mapa: ['Leyendo quién está a tu alrededor…', 'Buscando lo que se da y no se paga…', 'Pensando en quién te falta…', 'Poniéndolo con tus palabras…'].map(t),
-            web: ['Leyendo tu dibujo…', 'Buscando la frase que dice lo que haces…', 'Escribiendo para cada uno…', 'Ajustando el tono…'].map(t) };
+            web: ['Leyendo tu dibujo…', 'Buscando la frase que dice lo que haces…', 'Escribiendo para cada uno…', 'Ajustando el tono…'].map(t),
+            pagines: ['Leyendo tus páginas…', 'Buscando a quién habla cada una…', 'Mirando a quién no le habla ninguna…'].map(t),
+            llig: ['Leyendo tu web con calma, una página cada vez…', 'Mirando qué páginas deja leer…', 'Apuntando títulos y encabezados…', 'Quitando correos y teléfonos…'].map(t) };
         function pensant(res, pas, cx) {
             res.textContent = ''; cx.classList.add('ia-pensa');
             var w = el('div', { class: 'ia-pensant' }), p = el('p', { role: 'status' }, FRASES[pas][0]); w.appendChild(p);
@@ -1701,9 +1746,9 @@
                 llengua: LL, extra: S.extra || null, respuestas: D.PREGUNTES.map(function (p) { return { id: p.id, q: D.pregunta(p, LL).q, a: S.respuestas[p.id] || '' }; }),
                 alrededor: S.alrededor.map(function (f) { return { quien: f.quien, meDa: f.meDa, meDaEs: f.meDaEs, leDoy: f.leDoy, leDoyEs: f.leDoyEs }; }) };
         }
-        function crida(pas, nota, cx, res, boto) {
+        function crida(pas, nota, cx, res, boto, mes) {
             var para = pensant(res, pas, cx); boto.disabled = true;
-            return fetch('/.netlify/functions/pule-mapa', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessio: I.sessio, pas: pas, dades: dades(nota) }) })
+            return fetch('/.netlify/functions/pule-mapa', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessio: I.sessio, pas: pas, dades: Object.assign(dades(nota), mes || {}) }) })
                 .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); })
                 .then(function (j) {
                     para(); boto.disabled = false; res.textContent = '';
@@ -1711,7 +1756,7 @@
                     if (j.estat === 'identifica') { I = {}; desaI(); pinta(); aviso(t('Tu sesión ha caducado: identifícate otra vez')); return null; }
                     if (j.estat === 'topall') { final(res, t('Has usado toda la IA que te regalamos. Envíanos tu dibujo tal como está y seguimos juntos en la sesión.')); return null; }
                     if (j.estat === 'ocupat') { final(res, t('Hoy la IA ha tenido mucho trabajo. Vuelve mañana, o envíanos tu dibujo y lo vemos juntos.')); return null; }
-                    if (j.estat !== 'fet') { final(res, j.motiu || t('No llego a la IA ahora mismo. Prueba en un rato.')); return null; }
+                    if (j.estat !== 'fet') { final(res, j.motiu ? t(j.motiu) : t('No llego a la IA ahora mismo. Prueba en un rato.')); return null; }
                     return j.resultat;
                 }).catch(function () { para(); boto.disabled = false; final(res, t('No llego a la IA ahora mismo. Prueba en un rato.')); return null; });
         }
@@ -1824,6 +1869,82 @@
             });
         }
         $('#cl-ia-escriu').addEventListener('click', escriu);
+
+        /* 12 · «Leemos tu web» (llegeix-web-background.mjs): con su sí, solo su lugar, robots.txt
+           y un tope de páginas. Lee en segundo plano; la lectura llega por su ficha (fitxa.mjs).
+           14 · Luego la IA dice a qué puerta de su mapa va cada página vieja, y lo que la web
+           todavía no le dice a cada uno: la sesión lo usa para no perder Google al cambiar. */
+        var FOTO = null, lligT = null;
+        function ordena(ps) { return ps.slice().sort(function (a, b) { return (a.menu == null ? 99 : a.menu) - (b.menu == null ? 99 : b.menu); }); }
+        function lectura(L) {
+            var res = $('#cl-llig-res'); res.textContent = '';
+            if (!L || L.estat !== 'fet' || !L.foto) { if (L && L.estat === 'error') final(res, t(L.motiu || 'No hemos podido leer tu web ahora.')); return; }
+            FOTO = L.foto; $('#cl-llig').textContent = t('Leer otra vez');
+            var ps = ordena(FOTO.pagines), dom = FOTO.origen.replace(/^https?:\/\//, '');
+            res.appendChild(el('p', { class: 'ia-resum' }, t('{0} páginas leídas de {1}, el {2}', ps.length, dom, FOTO.data.split('-').reverse().join('/'))));
+            var ul = el('ul', { class: 'ia-pags', id: 'cl-llig-pags' }), pw = S.portesWeb && S.portesWeb.origen === FOTO.origen ? S.portesWeb : null;
+            ps.forEach(function (p, n) {
+                var li = el('li', { 'data-url': p.url }); li.style.animationDelay = (n * .05) + 's';
+                li.appendChild(el('code', {}, p.url + ' · ' + t(p.menu != null ? 'En el menú' : 'Fuera del menú')));
+                li.appendChild(el('b', {}, p.titol || p.h1 || p.url));
+                if (p.h1 && p.h1 !== p.titol) li.appendChild(el('span', { class: 'h' }, p.h1));
+                var q = pw && pw.pagines.filter(function (x) { return x.url === p.url; })[0];
+                if (q) porta(li, q);
+                ul.appendChild(li);
+            });
+            res.appendChild(ul);
+            res.appendChild(el('p', { class: 'nota' }, t('Correos y teléfonos no los guardamos. Lo borras con «Borrarlo de allí».')));
+            if (pw) falta(res, pw.falta);
+            if (ACTIVA) {
+                var b = el('button', { type: 'button', class: 'btn btn-primary', id: 'cl-llig-portes' }, t('✦ ¿A quién va cada página?'));
+                b.addEventListener('click', function () { portes(b); });
+                var a = el('div', { class: 'accions' }); a.appendChild(b); res.appendChild(a);
+            }
+        }
+        function porta(li, q) {
+            li.appendChild(el('span', { class: 'porta' + (q.quien ? '' : ' cap') }, q.quien ? t('Para {0}', q.quien) : t('No va a nadie de tu mapa')));
+            if (q.porque) li.appendChild(el('span', { class: 'per' }, q.porque));
+        }
+        function falta(res, fa) {
+            if (!fa || !fa.length) return;
+            var w = el('div', { class: 'ia-falta', id: 'cl-llig-falta' }), ul = el('ul');
+            w.appendChild(el('h3', {}, t('Lo que tu web todavía no le dice a…')));
+            fa.forEach(function (x) { var li = el('li'); li.appendChild(el('b', {}, x.quien + ': ')); li.appendChild(document.createTextNode(x.falta)); ul.appendChild(li); });
+            w.appendChild(ul); res.appendChild(w);
+        }
+        function portes(b) {
+            if (!FOTO) return;
+            if (D.mapa(S).roles.length < 3) { aviso(t('Primero di al menos quién está a tu alrededor (paso 4)')); return; }
+            var cx = $('#cl-ia-llig'), sor = el('div'); b.parentNode.after(sor);
+            crida('pagines', '', cx, sor, b, { pagines: FOTO.pagines.map(function (p) { return { url: p.url, titol: p.titol, h1: p.h1, text: (p.text || '').slice(0, 300) }; }) }).then(function (r) {
+                if (!r) return;
+                S.portesWeb = { origen: FOTO.origen, pagines: r.pagines, falta: r.falta }; desa();
+                lectura({ estat: 'fet', foto: FOTO });
+                $('#cl-llig-res').appendChild(el('p', { class: 'nota' }, t('Lo guardamos en tu ficha: lo usamos en la sesión para que cada página vieja lleve a su puerta y Google no la pierda.')));
+            });
+        }
+        function llig() {
+            var cx = $('#cl-ia-llig'), res = $('#cl-llig-res'), b = $('#cl-llig'), u = $('#cl-llig-web').value.trim();
+            if (!u) { aviso(t('Escribe la dirección de tu web')); $('#cl-llig-web').focus(); return; }
+            if (!$('#cl-llig-si').checked) { aviso(t('Marca que es tu web y que nos dejas leerla')); $('#cl-llig-si').focus(); return; }
+            if (!S.web) { S.web = u; desa(); }
+            var para = pensant(res, 'llig', cx); b.disabled = true; clearTimeout(lligT);
+            var n = 0, acaba = function (L) { para(); b.disabled = false; if (L) lectura(L); };
+            function mira() {
+                fitxa({ foto: true }).then(function (r) {
+                    if (r.estat === 'identifica') { acaba(null); I = {}; desaI(); pinta(); aviso(t('Tu sesión ha caducado: identifícate otra vez')); return; }
+                    var L = r.lectura;
+                    if (L && L.rebuig && L.rebuig.data >= inici) { acaba(null); res.textContent = ''; final(res, t(L.rebuig.motiu)); return; }
+                    if (L && L.estat !== 'llegint' && L.si && L.si.data >= inici) { acaba(L); return; }
+                    if (++n > 60) { acaba(null); res.textContent = ''; final(res, t('Sigue leyendo. Vuelve en un rato y la verás aquí.')); return; }
+                    lligT = setTimeout(mira, 3000);
+                });
+            }
+            var inici = new Date(Date.now() - 60e3).toISOString();
+            fetch('/.netlify/functions/llegeix-web-background', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessio: I.sessio, web: u, si: true, llengua: LL }) })
+                .then(function () { lligT = setTimeout(mira, 2500); }, function () { acaba({ estat: 'error' }); });
+        }
+        $('#cl-llig').addEventListener('click', llig);
 
         /* Tu propuesta (proposta.mjs): el precio no está en la página ni en el repositorio; llega solo a quien ha entrado. */
         var EUR = function (n) { return Number(n || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; };

@@ -418,6 +418,12 @@ jobs:
       - name: El dibuix de cada client, guardat amb el seu compte
         run: node SOS/tests/test-fitxa.mjs
 
+      # «Leemos tu web» (llegeix-web-background.mjs): només amb el seu sí, només
+      # aquell lloc, robots.txt, un tope de pàgines i cap adreça interna; i el pas
+      # de pule-mapa que diu a quina porta va cada pàgina.
+      - name: Llegir la web del client, amb el seu sí
+        run: node SOS/tests/test-llegeix-web.mjs
+
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció
       # no passi sense permís i que l'avís de Stripe sense signatura bona no compti.

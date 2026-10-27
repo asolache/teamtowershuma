@@ -203,7 +203,9 @@ console.log('\n══ /cliente/ · la IA ══');
     if (r.request().method() === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', body: '{"actiu":true}' });
     const c = JSON.parse(r.request().postData()); pets.push(['ia', c]); volta++;
     await new Promise(x => setTimeout(x, 400));
-    const res = c.pas === 'web'
+    const res = c.pas === 'pagines' ? { pagines: [{ url: '/', quien: 'Quien quiere ser profesor', porque: 'Es la portada que ven primero.' }, { url: '/cursos', quien: '', porque: 'Habla de todo a la vez.' }],
+        falta: [{ quien: 'Antiguos alumnos', falta: 'Que pueden recomendar la escuela y volver a formarse.' }] }
+      : c.pas === 'web'
       ? { lema: 'Formamos a los profesores que las escuelas buscan', presentacion: 'Cursos intensivos en Barcelona.', secciones: [{ quien: 'Quien quiere ser profesor', nombre: 'Futuros profes', intro: 'Aquí empieza tu camino como profesor de español.' }] }
       : { resumen: 'Tu red se apoya en la confianza de quien ya ha pasado por aquí.', preguntas: ['¿Quién te recomienda más?', '¿Qué te dan tus antiguos alumnos?'], pregunta: '¿Quién te recomienda más?',
           salut: { abans: { punts: 57, falten: [{ id: 'menes', diu: 'Falta lo que no se paga: confianza, recomendaciones, ideas. Al menos un tercio de lo que va y viene' }] }, despres: { punts: 86, falten: [] } },
@@ -212,10 +214,20 @@ console.log('\n══ /cliente/ · la IA ══');
             { tipo: 'quita', fila: 5, quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'tangible', porque: 'Es parte de tu equipo.' }] };
     r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ estat: 'fet', pas: c.pas, resultat: res, voltes: volta, queda: 100 - 8 * volta, usd: 0.04 * volta }) });
   });
+  /* «Leemos tu web» (llegeix-web-background.mjs): 202 de seguida, y la lectura llega per la fitxa. */
+  let lect = null; const llig = [];
+  await p.route('**/.netlify/functions/llegeix-web-background', r => {
+    const c = JSON.parse(r.request().postData()); llig.push(c); lect = { estat: 'llegint', si: { data: new Date().toISOString() } };
+    setTimeout(() => { lect = { estat: 'fet', si: lect.si, foto: { tipus: 'sos-foto-web', v: 1, origen: 'https://escuela.example', data: '2026-10-27',
+      pagines: [{ url: '/cursos', titol: 'Cursos', descripcio: '', h1: 'Cursos FELE 2027', text: '# Cursos FELE 2027', menu: 1 }, { url: '/', titol: 'Escuela ELE', descripcio: '', h1: 'Formamos profesores', text: '# Formamos profesores [correu]', menu: 0 },
+        { url: '/blog/viejo', titol: 'Un post viejo', descripcio: '', h1: '', text: '', menu: null }] } }; }, 800);
+    r.fulfill({ status: 202, body: '' });
+  });
   /* Su ficha, con su cuenta (fitxa.mjs): un magatzem en memòria, com el de Blobs. */
   let desada = null;
   await p.route('**/.netlify/functions/fitxa', r => {
     const c = JSON.parse(r.request().postData()); pets.push(['fitxa', c]);
+    if (c.foto) return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(lect ? { estat: 'foto', lectura: lect } : { estat: 'cap' }) });
     if (c.esborra) desada = null; else if (c.fitxa) desada = Object.assign({}, c.fitxa, { actualitzada: new Date().toISOString() });
     r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(c.esborra ? { estat: 'esborrada' } : c.fitxa ? { estat: 'desada', actualitzada: desada.actualitzada } : desada ? { estat: 'fet', fitxa: desada } : { estat: 'cap' }) });
   });
@@ -294,9 +306,29 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForSelector('#cl-prop-res .prop-t', { timeout: 5000 });
   const tx = await p.textContent('#cl-prop-res');
   ok(/Mapa de valor \+ web/.test(tx) && /Nivel 3/.test(tx) && /1,5 h/.test(tx) && /950,00 €/.test(tx) && /sin IVA/.test(tx) && /Solo la ves tú/.test(tx), 'con propuesta: lo que incluye, el nivel, las horas y su precio');
+  /* 12 · «Leemos tu web», con su sí; 14 · a quién va cada página y lo que no dice. */
+  ok(await p.isVisible('#cl-ia-llig .ia-llig'), 'con la sesión, la caja para leer su web');
+  await p.fill('#cl-llig-web', 'escuela.example');
+  await p.click('#cl-llig');
+  ok(!llig.length, 'sin la casilla «es mi web y os doy permiso», no se lee nada');
+  await p.check('#cl-llig-si'); await p.click('#cl-llig');
+  ok(await p.locator('#cl-ia-llig .ia-esq').count() === 3, 'mientras lee: lo que está haciendo');
+  await p.waitForSelector('#cl-llig-pags li', { timeout: 12000 });
+  ok(llig.length === 1 && llig[0].si === true && llig[0].web === 'escuela.example' && llig[0].sessio === SES && llig[0].llengua === 'es', 'pide la lectura con su sí, su web y su sesión');
+  const pg = await p.$$eval('#cl-llig-pags li', ls => ls.map(l => l.getAttribute('data-url')));
+  ok(pg.join() === '/,/cursos,/blog/viejo' && /3 páginas leídas de escuela\.example, el 27\/10\/2026/.test(await p.textContent('#cl-llig-res')), 'las páginas, en el orden de su menú y las de fuera al final');
+  ok(/Fuera del menú/.test(await p.textContent('#cl-llig-pags li:nth-child(3)')), 'y dice cuáles no están en el menú');
+  await p.click('#cl-llig-portes');
+  await p.waitForSelector('#cl-llig-pags .porta', { timeout: 5000 });
+  const cp = ia()[ia().length - 1][1];
+  ok(cp.pas === 'pagines' && cp.dades.pagines.length === 3 && cp.dades.pagines[0].url === '/cursos' && cp.dades.alrededor.length === 7, 'pregunta a la IA con sus páginas y su dibujo');
+  ok(/Para Quien quiere ser profesor/.test(await p.textContent('#cl-llig-pags li:nth-child(1)')) && /No va a nadie de tu mapa/.test(await p.textContent('#cl-llig-pags li:nth-child(2)')), 'cada página, con su puerta (o ninguna)');
+  ok(/Antiguos alumnos: Que pueden recomendar/.test(await p.textContent('#cl-llig-falta')), 'y lo que su web todavía no le dice a cada uno');
+  const pw = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).portesWeb);
+  ok(pw && pw.origen === 'https://escuela.example' && pw.pagines.length === 2 && pw.falta.length === 1, 'queda en su ficha, para la sesión');
   /* Su ficha, con su cuenta (fitxa.mjs): se guarda sola y vuelve en otro aparato. */
   const espera = async (f, ms = 6000) => { const t0 = Date.now(); while (!f() && Date.now() - t0 < ms) await new Promise(x => setTimeout(x, 100)); return f(); };
-  ok(fx()[0] && fx()[0][1].sessio === SES && !('fitxa' in fx()[0][1]), 'al entrar, pide su ficha guardada, con su sesión');
+  ok(fx()[0] && fx()[0][1].sessio === SES && !('fitxa' in fx()[0][1]) && !fx()[0][1].foto, 'al entrar, pide su ficha guardada, con su sesión');
   ok(await espera(() => desada && desada.alrededor.some(x => x.quien === 'Antiguos alumnos') && desada.marca && desada.marca.lema), 'y lo que cambia se guarda con su cuenta, solo');
   ok(/se guarda con tu cuenta/.test(await p.textContent('#cl-ia [data-ia="sessio"]')), 'se lo dice, con el botón para borrarlo');
   await p.evaluate(() => localStorage.removeItem('tt.cliente.v1'));
