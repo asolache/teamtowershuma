@@ -89,6 +89,11 @@ jobs:
       - name: Motor de l'editor del mapa de valor
         run: node SOS/tests/test-vna-motor.mjs
 
+      # La web que el client ja té: es replica, cada adreça vella té un 301 i
+      # eines/genera.mjs no publica si alguna es queda sense destí (punts 13 i 15).
+      - name: La web vella, replicada i sense adreces perdudes
+        run: node SOS/tests/test-web-vella.mjs
+
       # El nucli que carreguen l'app i l'editor: les deu regles i el pont entre
       # el mapa de l'app (per id) i la forma canònica (per nom).
       - name: Nucli del mapa de valor

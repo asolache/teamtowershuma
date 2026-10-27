@@ -4266,6 +4266,8 @@ const KIT_TXT = {
 };
 const SITE_TXT = {
   ca: { inici: 'Inici', serveis: 'Serveis', equip: 'Per a l\'equip', salta: 'Salta al contingut', menu: 'Menú',
+    fotoOrfe: 'L\'adreça vella {url} es quedaria sense destí i qui la tingui guardada trobaria un error: la web no es publica fins que en tingui un.',
+    fotoFora: '{n} adreces de la web vella no es van poder llegir: no tenen destí a la nova. Mira-les abans de canviar el domini.',
     contPersonal: 'cerebro/continguts/{id}.md té un correu, un telèfon, un DNI o un IBAN: la pàgina no surt. Les dades personals van al CRM, i el contacte de la web és el formulari.',
     contReservat: 'cerebro/continguts/{id}.md: aquest nom no es pot fer servir (minúscules, xifres i guions; ni equip, registre, gracies, 404, estil, web o index).',
     donem: 'Què et donem', dones: 'Què ens dones', xarxa: 'Amb la resta de la xarxa', benvinguda: 'La benvinguda',
@@ -4332,6 +4334,8 @@ const SITE_TXT = {
     cat: { crm: 'CRM', cobros: 'Cobraments', venta: 'Botiga', oficina: 'Agenda', comunica: 'Missatges', web: 'Dades pròpies' },
     contacte: 'On som', adreca: 'Adreça', telefon: 'Telèfon', horari: 'Horari' },
   es: { inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo', salta: 'Saltar al contenido', menu: 'Menú',
+    fotoOrfe: 'La dirección antigua {url} se quedaría sin destino y quien la tenga guardada encontraría un error: la web no se publica hasta que tenga uno.',
+    fotoFora: '{n} direcciones de la web antigua no se pudieron leer: no tienen destino en la nueva. Revísalas antes de cambiar el dominio.',
     contPersonal: 'cerebro/continguts/{id}.md tiene un correo, un teléfono, un DNI o un IBAN: la página no sale. Los datos personales van al CRM, y el contacto de la web es el formulario.',
     contReservat: 'cerebro/continguts/{id}.md: este nombre no se puede usar (minúsculas, cifras y guiones; ni equip, registre, gracies, 404, estil, web o index).',
     donem: 'Qué te damos', dones: 'Qué nos das', xarxa: 'Con el resto de la red', benvinguda: 'La bienvenida',
@@ -4784,8 +4788,63 @@ function mdAHtml(md) {
   tancaPar(); tancaLl();
   return out.join('\n');
 }
+/* ── La web que ja hi ha (punts 13 i 15 del backlog, 23/10/2026) ───────────
+ * Quan el client ja té web, primer es replica i després es millora: Google ja
+ * coneix les seves adreces i no s'han de perdre. La «foto d'abans»
+ * (`sos-foto-web` v1, la fa la lectura de /cliente/) diu de cada pàgina vella
+ * l'adreça, el títol, la descripció, l'H1, el text i el lloc al menú.
+ *
+ *  · Cada pàgina vella té una pàgina nova amb el mateix títol, descripció i H1,
+ *    i el seu text. Si `portesWeb` diu que és d'un rol del mapa, és la porta
+ *    d'aquell rol; si no, una pàgina més, amb el mateix lloc al menú.
+ *  · Cada adreça vella que canvia va a la nova amb un 301 (`_redirects`).
+ *  · `orfesFoto` diu quines adreces velles no tindrien destí. `eines/genera.mjs`
+ *    no publica mentre n'hi hagi cap: és la guarda que l'Àlvar va demanar.
+ * Les dades personals que la lectura no hagi amagat, s'amaguen aquí. */
+const fotoTall = (x, n) => String(x == null ? '' : x).replace(/\s+/g, ' ').trim().slice(0, n);
+function fotoNeta(f) {
+  if (!f || f.tipus !== 'sos-foto-web' || f.v !== 1 || !Array.isArray(f.pagines)) return null;
+  let origen; try { origen = new URL(f.origen); } catch (x) { return null; }
+  if (!/^https?:$/.test(origen.protocol)) return null;
+  if (typeof amagaPersonal !== 'function') throw new Error('Falta el bloc VS-IMPORTA: sense amagaPersonal, la foto de la web no es fa servir.');
+  const neta = (x, n) => amagaPersonal(fotoTall(x, n)).text;
+  return { origen: origen.href, llengua: fotoTall(f.llengua, 8).slice(0, 2).toLowerCase(),
+    fora: Array.isArray(f.fora) ? f.fora.filter(u => typeof u === 'string') : Number(f.fora) > 0 ? Math.floor(Number(f.fora)) : 0,
+    pagines: f.pagines.filter(p => p && typeof p.url === 'string').slice(0, 500).map(p => ({ url: p.url,
+      titol: neta(p.titol, 200), descripcio: neta(p.descripcio, 320), h1: neta(p.h1, 200),
+      text: amagaPersonal(String(p.text == null ? '' : p.text).slice(0, 20000)).text,
+      menu: Number.isInteger(p.menu) && p.menu >= 0 ? p.menu : null })) };
+}
+/* El camí d'una adreça vella dins del mateix lloc (amb www o sense), o null si és d'un altre lloc. */
+function fotoCami(url, origen) {
+  try {
+    const u = new URL(url, origen), o = new URL(origen);
+    if (!/^https?:$/.test(u.protocol) || u.hostname.replace(/^www\./, '') !== o.hostname.replace(/^www\./, '')) return null;
+    return u.pathname || '/';
+  } catch (x) { return null; }
+}
+const fotoHtml = t => String(t || '').split(/\n\s*\n/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean)
+  .map(x => '<p>' + x.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>').join('\n');
+/* Les adreces velles que es quedarien sense destí, contra els fitxers que surten:
+   una pàgina que hi és (amb .html o sense, com fa Netlify) o un 301 cap a una que hi és. */
+function orfesFoto(foto, fitxers) {
+  const F = fotoNeta(foto);
+  if (!F) return [];
+  const hi = {}; (fitxers || []).forEach(f => { hi[f.ruta] = 1; });
+  const red = {}, rd = (fitxers || []).find(f => f.ruta === '_redirects');
+  if (rd) rd.cos.split('\n').forEach(l => { const x = l.trim().split(/\s+/); if (x.length >= 3 && x[0][0] === '/') red[x[0].replace(/\/$/, '') || '/'] = x[1]; });
+  const serveix = c => { const r = c.replace(/^\//, ''); return c === '/' || !!(hi[r] || hi[r + '.html'] || hi[r.replace(/\/?$/, '/') + 'index.html'] || hi[r.replace(/\/$/, '') + '.html']); };
+  return F.pagines.map(p => p.url).concat(F.fora.length ? F.fora : []).filter(u => {
+    const c = fotoCami(u, F.origen);
+    if (c === null) return true;
+    const d = red[c.replace(/\/$/, '') || '/'];
+    return d ? !serveix(d) : !serveix(c);
+  });
+}
 function webASite(web, opts) {
-  const o = opts || {}, L = SITE_TXT[o.llengua] || SITE_TXT.ca, llengua = SITE_TXT[o.llengua] ? o.llengua : 'ca';
+  const o0 = opts || {}, F = fotoNeta(o0.foto);
+  const o = !SITE_TXT[o0.llengua] && F && SITE_TXT[F.llengua] ? Object.assign({}, o0, { llengua: F.llengua }) : o0;
+  const L = SITE_TXT[o.llengua] || SITE_TXT.ca, llengua = SITE_TXT[o.llengua] ? o.llengua : 'ca';
   const e = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const correu = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(o.correu || '') ? o.correu : '';
   const nom = String(o.nom || (web.casa || [])[0] || web.titol || 'La web').trim();
@@ -4838,21 +4897,44 @@ function webASite(web, opts) {
   const deMapa = ['inici'].concat((web.portes || []).map(p => p.id), (web.serveis || []).length ? ['serveis'] : []);
   const noves = Object.keys(cont).sort().filter(id => !deMapa.includes(id));
   const titolNova = id => cont[id].meta.titol || (id === 'serveis' ? L.serveis : id.replace(/-/g, ' ').replace(/^./, c => c.toUpperCase()));
-  const text = id => (cont[id] && deMapa.includes(id) ? mdAHtml(cont[id].cos) + '\n' : '');
-  const menu = (web.menu || []).filter(x => x.id !== 'equip' && (!basica || !porta(x.id) || principals.includes(porta(x.id)))).concat(noves.filter(id => cont[id].meta.menu !== false).map(id => ({ id, t: titolNova(id) })));
+  /* La web vella: a quina pàgina nova va cada adreça, i el seu títol, descripció i H1. */
+  const cap = {}, antic = [], replica = [];
+  if (F) {
+    const pres = {}; RESERVATS.concat(deMapa, noves, ['avis-legal', 'gracies']).forEach(x => { pres[x] = 1; });
+    const perRol = {}; ((o.portesWeb || {}).pagines || []).forEach(x => { const c = x && fotoCami(x.url, F.origen); if (c && x.quien) perRol[c] = String(x.quien); });
+    F.pagines.forEach(p => {
+      const cami = fotoCami(p.url, F.origen);
+      if (cami === null) return;
+      let id = /^\/(index\.html?)?$/.test(cami) ? 'inici' : null;
+      const pr = !id && !basica && (web.portes || []).find(x => x.rol === perRol[cami] && !cap[x.id]);
+      if (pr) id = pr.id;
+      if (!id) {
+        const b = webSlug(cami.replace(/\.[a-z0-9]+$/i, '').split('/').filter(Boolean).pop() || p.h1 || p.titol);
+        let k = b, n = 2; while (pres[k]) k = b + '-' + n++;
+        id = k; pres[k] = 1; replica.push(id);
+      }
+      antic.push({ cami, id });
+      if (!cap[id]) cap[id] = p;
+    });
+  }
+  const text = id => (cont[id] && deMapa.includes(id) ? mdAHtml(cont[id].cos) + '\n' : cap[id] && cap[id].text ? fotoHtml(cap[id].text) + '\n' : '');
+  const lloc = x => (cap[x.id] && cap[x.id].menu !== null ? cap[x.id].menu : x.id === 'inici' ? -1 : Infinity);
+  const menu = (web.menu || []).filter(x => x.id !== 'equip' && (!basica || !porta(x.id) || principals.includes(porta(x.id)))).concat(noves.filter(id => cont[id].meta.menu !== false).map(id => ({ id, t: titolNova(id) })),
+    replica.filter(id => cap[id].menu !== null).map(id => ({ id, t: cap[id].h1 || cap[id].titol || id })))
+    .map((x, i) => [x, i]).sort((a, b) => lloc(a[0]) - lloc(b[0]) || a[1] - b[1]).map(x => x[0]);
   const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-    + '<title>' + e(id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
-    + '<meta name="description" content="' + e(descripcio) + '">\n' + (extra || '')
-    + (url ? '<link rel="canonical" href="' + e(abs(ruta(id))) + '">\n<meta property="og:type" content="website">\n<meta property="og:title" content="' + e(titol) + '">\n'
-      + '<meta property="og:description" content="' + e(descripcio) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
+    + '<title>' + e(cap[id] && cap[id].titol ? cap[id].titol : id === 'inici' ? nom : titol + ' · ' + nom) + '</title>\n'
+    + '<meta name="description" content="' + e(cap[id] && cap[id].descripcio || descripcio) + '">\n' + (extra || '')
+    + (url ? '<link rel="canonical" href="' + e(abs(ruta(id))) + '">\n<meta property="og:type" content="website">\n<meta property="og:title" content="' + e(cap[id] && cap[id].titol || titol) + '">\n'
+      + '<meta property="og:description" content="' + e(cap[id] && cap[id].descripcio || descripcio) + '">\n<meta property="og:url" content="' + e(abs(ruta(id))) + '">\n' : '')
     + '<link rel="stylesheet" href="estil.css">\n<link rel="alternate" type="application/json" href="web.json" title="' + e(L.dades) + '">\n'
     + ld(dades) + '\n</head>\n<body>\n<a class="salta" href="#contingut">' + e(L.salta) + '</a>\n'
     + '<header>\n<p class="marca"><a href="index.html">' + (MC.logoSvg ? '<img src="logo.svg" alt="">' : '') + e(nom) + '</a></p>\n'
     + (MC.lema ? '<p class="lema">' + e(MC.lema) + '</p>\n' : '') + '<nav aria-label="' + e(L.menu) + '"><ul>'
     + menu.map(x => '<li><a href="' + enllac(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
     + (acces ? '<li><a class="entra" href="' + e(acces) + '">' + e(L.entra) + '</a></li>' : '')
-    + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(titol) + '</h1>\n' + cos + '\n</main>\n'
+    + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(cap[id] && cap[id].h1 || titol) + '</h1>\n' + cos + '\n</main>\n'
     + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (basica ? ' · <a href="avis-legal.html">' + e(L.legal) + '</a>' + (ambIntranet ? ' · <a href="equip.html">' + e(L.intranet) + '</a>' : '') : '') + (correu ? ' · ' + enllacCorreu(L.escriuCorreu) : '') + '</p>\n</footer>\n</body>\n</html>\n';
   const formulari = p => {
     const f = 'porta-' + p.id, demana = p.dona[0] ? p.dona[0].q : '';
@@ -4928,6 +5010,7 @@ function webASite(web, opts) {
       { '@type': 'ItemList', name: L.serveis, itemListElement: web.serveis.map((sv, i) => ({ '@type': 'ListItem', position: i + 1, item: servei(sv) })) }));
   }
   noves.forEach(id => posa(ruta(id), pagina(id, titolNova(id), mdAHtml(cont[id].cos), { '@type': 'WebPage', name: titolNova(id) })));
+  replica.forEach(id => posa(ruta(id), pagina(id, cap[id].h1 || cap[id].titol || id, text(id), { '@type': 'WebPage', name: cap[id].titol || cap[id].h1 || id })));
   /* El contenidor mínim de la vista bàsica: l'avís legal, amb el correu amagat. */
   if (basica) posa('avis-legal.html', pagina('avis-legal', L.legal, L.legalTxt.map((x, i) => '<p>' + e(x.replace('{titular}', CT.titular || nom)
     .replace('{nif}', CT.nif ? ', NIF ' + CT.nif : '').replace('{adreca}', CT.adreca ? ', ' + CT.adreca : '')) + (i === 2 && correu ? ' ' + enllacCorreu(L.escriuCorreu) + '.' : '') + '</p>').join('\n'),
@@ -4967,7 +5050,23 @@ function webASite(web, opts) {
      la configuració de Netlify. */
   posa('404.html', pagina('404', L.noHi, '<p>' + e(L.noHiD) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.noHi }, '<meta name="robots" content="noindex">\n'));
-  const publiques = ['index.html'].concat(basica ? ['avis-legal.html'] : [], (basica ? [] : web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta));
+  const publiques = ['index.html'].concat(basica ? ['avis-legal.html'] : [], (basica ? [] : web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta), replica.map(ruta));
+  /* Cada adreça vella que canvia, a la nova amb un 301. Amb «!» passa per
+     davant d'un fitxer que es digui igual; si l'adreça vella ja és una pàgina
+     de la web nova, no es toca. La foto viatja amb el repositori. */
+  if (F) {
+    const fet = {}, lin = [], ja = {}; fitxers.forEach(f => { ja[f.ruta] = 1; });
+    antic.forEach(({ cami, id }) => {
+      const nou = id === 'inici' ? '/' : '/' + ruta(id), c = cami.replace(/\/$/, '') || '/', r = c.slice(1);
+      if (c === '/' || /^\/index\.html?$/.test(c) || c === nou || fet[c] || ja[r] || ja[r + '.html']) return;
+      fet[c] = 1; lin.push(c + ' ' + nou + ' 301!');
+    });
+    /* Les que la lectura no va poder llegir, si en dona la llista: a l'inici, millor que un error. */
+    (F.fora.length ? F.fora : []).forEach(u => { const c = (fotoCami(u, F.origen) || '/').replace(/\/$/, '') || '/', r = c.slice(1);
+      if (c !== '/' && !/^\/index\.html?$/.test(c) && !fet[c] && !ja[r] && !ja[r + '.html']) { fet[c] = 1; lin.push(c + ' / 301!'); } });
+    if (lin.length) posa('_redirects', '# Les adreces de la web vella, a la nova (301). Ho escriu eines/genera.mjs des de cerebro/foto-web.json.\n' + lin.join('\n') + '\n', 'text/plain');
+    posa('cerebro/foto-web.json', JSON.stringify(o.foto, null, 2) + '\n', 'application/json');
+  }
   posa('robots.txt', 'User-agent: *\nAllow: /\nDisallow: /equip.html\nDisallow: /registre.html\n' + (url ? 'Sitemap: ' + url + 'sitemap.xml\n' : ''), 'text/plain');
   if (url) posa('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + publiques.map(r => '<url><loc>' + e(abs(r)) + '</loc></url>\n').join('') + '</urlset>\n', 'application/xml');
@@ -5023,7 +5122,10 @@ function webASite(web, opts) {
   if (o.sensemapa) for (let i = fitxers.length - 1; i >= 0; i--) if (/^cerebro\/mapa-(real|ideal)\.json$/.test(fitxers[i].ruta)) fitxers.splice(i, 1);
   const repo = (o.repo || []).filter(f => !fitxers.some(x => x.ruta === f.ruta));
   if (o.mapa) indexCervell(fitxers.concat(repo), nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
-  return { nom, llengua, fitxers };
+  const orfes = F ? orfesFoto(o.foto, fitxers) : [];
+  orfes.forEach(u => avisa(L.fotoOrfe.replace('{url}', u)));
+  if (F && !F.fora.length && F.fora > 0) avisa(L.fotoFora.replace('{n}', F.fora));
+  return { nom, llengua, fitxers, orfes };
 }
 
 /* L'índex del cervell: cada document del repositori amb el seu tema i la seva
@@ -5876,14 +5978,14 @@ function codiRepositori(tros, exemple) {
     + 'const tros = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\'));\n'
     + 'const sencer = nom => font.slice(font.indexOf(\'/*\' + nom + \'*/\'), font.indexOf(\'/*/\' + nom + \'*/\') + nom.length + 5);\n'
     + 'const exemple = font.slice(font.indexOf(\'const EXEMPLE = {\'), font.indexOf(\'};\', font.indexOf(\'const EXEMPLE = {\')) + 2);\n'
-    + 'export { EXEMPLE, marcaSvg };\n'
+    + 'export { EXEMPLE, marcaSvg, orfesFoto };\n'
     + 'export function genera(entrada, opts) {\n'
     + '  return generaWeb(entrada, opts, { sha: async b => createHash(\'sha256\').update(b).digest(\'hex\'),\n'
     + '    codi: { reg: tros(\'VS-REG\'), api: tros(\'VS-API\'), mcp: tros(\'VS-MCP\'), imp: tros(\'VS-IMPORTA\'), repo: codiRepositori(sencer, exemple) } });\n}\n';
   const genera = '#!/usr/bin/env node\n' + cap
     + '// Fa la web del mapa i la deixa a l\'arrel. Netlify l\'executa a cada publicació; en local, amb Node 18 o més.\n'
     + 'import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from \'node:fs\';\nimport { inflateRawSync } from \'node:zlib\';\n'
-    + 'import { genera, EXEMPLE, marcaSvg } from \'./motor.mjs\';\n'
+    + 'import { genera, EXEMPLE, marcaSvg, orfesFoto } from \'./motor.mjs\';\n'
     + 'const arrel = new URL(\'../\', import.meta.url), e = process.env, hi = r => existsSync(new URL(r, arrel));\n'
     + 'const llegeix = r => (hi(r) ? JSON.parse(readFileSync(new URL(r, arrel), \'utf8\')) : null);\n'
     + '/* El que és del repositori i la web no genera: els continguts, el que s\'ha importat, el dossier i els esborranys. */\n'
@@ -5899,14 +6001,17 @@ function codiRepositori(tros, exemple) {
     + 'if (ideal) mapa = Object.assign({}, mapa, { ideal });\n'
     + '/* El que es va triar a l\'editor i la marca viatgen amb el repositori: sense llegir-los, refer la web la tornava al català, al rol que més lliura i sense marca. Les variables TT_* hi passen per sobre. */\n'
     + 'const prova = r => { try { return llegeix(r); } catch (x) { console.warn(\'⚠️  \' + r + \' no és JSON vàlid: no es fa servir.\'); return null; } };\n'
-    + 'const conf = prova(\'cerebro/configuracio.json\') || {}, marca = prova(\'cerebro/marca.json\');\n'
+    + 'const conf = prova(\'cerebro/configuracio.json\') || {}, marca = prova(\'cerebro/marca.json\'), foto = prova(\'cerebro/foto-web.json\');\n'
     + 'if (marca && marca.logo === \'../logo.svg\') {\n'
     + '  if (hi(\'logo.svg\')) marca.logoSvg = readFileSync(new URL(\'logo.svg\', arrel), \'utf8\');\n'
     + '  if (!marcaSvg(marca.logoSvg)) console.warn(\'⚠️  cerebro/marca.json demana logo.svg, però \' + (hi(\'logo.svg\') ? \'no és un SVG que es pugui posar (porta scripts o enllaços, o passa de 100 kB)\' : \'no hi és\') + \': la web surt sense logo.\');\n}\n'
     + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }\n'
-    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, foto: foto || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + '/* La guarda de la web vella: cap adreça que Google ja coneix es pot quedar sense destí. Si en queda alguna, no es publica. */\n'
+    + 'const orfes = foto ? orfesFoto(foto, fitxers) : [];\n'
+    + 'if (orfes.length) { console.error(\'❌ \' + orfes.length + \' adreces de la web vella es quedarien sense destí (cerebro/foto-web.json): \' + orfes.join(\', \')); process.exit(1); }\n'
     + '/* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
-    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
+    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/foto-web.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
     + 'const escrit = r => /^cerebro\\/(fonts|continguts|esborranys)\\//.test(r);\n'
     + 'let n = 0;\n'
     + 'for (const f of fitxers) {\n'
