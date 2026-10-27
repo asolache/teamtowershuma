@@ -47,8 +47,11 @@ const MAX_ENTRADA = 14000;
 export function config(env) {
   const clau = net(env.ANTHROPIC_API_KEY);
   if (!clau) return { ok: false, motiu: 'falta ANTHROPIC_API_KEY' };
-  /* Sense dir mai el valor: només si no sembla una clau d'Anthropic (comença per sk-ant-). */
+  /* Sense dir mai el valor: només si no sembla una clau d'Anthropic (comença per sk-ant-), i
+     si és una clau d'Anthropic però no d'API (sk-ant-usr-, sk-ant-oat-…: l'API la rebutja,
+     authentication_error, el 27/10/2026 a producció). */
   if (!/^sk-ant-\S{20,}$/.test(clau)) return { ok: false, motiu: 'ANTHROPIC_API_KEY no comença per sk-ant- (o és massa curta)' };
+  if (!/^sk-ant-api\d\d-/.test(clau)) return { ok: false, motiu: "ANTHROPIC_API_KEY no és una clau d'API (ha de començar per sk-ant-api)" };
   if (net(env.IA_CLIENTE) === '0') return { ok: false, motiu: 'apagada (IA_CLIENTE=0)' };
   const num = (v, d, max) => { const x = parseFloat(v); return x > 0 ? Math.min(x, max) : d; };
   const invitats = net(env.IA_INVITATS).toLowerCase().split(/[\s,;]+/).filter(Boolean);
