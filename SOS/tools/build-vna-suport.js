@@ -524,6 +524,27 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', MOTOR, 'js');
   if (!APP.includes('<script src="lib/mapa-valor.js"></script>')) bad('SOS/index.html no carrega lib/mapa-valor.js');
 }
 
+/* ── L'importador, fora de l'editor: SOS/lib/importa.js ───────────────────
+   El bloc VS-IMPORTA (el rastrejador educat i el sedàs de dades personals),
+   literalment, perquè la funció «Leemos tu web» de /cliente/
+   (netlify/functions/llegeix-web-background.mjs) el porti dins sense llegir
+   l'HTML de l'editor en temps d'execució. Un sol codi: l'editor, el repositori
+   del client, analitza-contingut.js i la funció. */
+{
+  const f = join(SOS, 'lib', 'importa.js');
+  const MW = require('../lib/motor-web.js');
+  const cos = ['/* L\'importador · GENERAT per SOS/tools/build-vna-suport.js des del bloc',
+    '   VS-IMPORTA de SOS/vna-suport.html · no s\'edita a mà. Navegador:',
+    '   window.Importa. Node: require(). */',
+    '(function (g) {', '\'use strict\';', MW.bloc(readFileSync(join(SOS, 'vna-suport.html'), 'utf8'), 'VS-IMPORTA'),
+    'const Importa = { rastreja, htmlAText, amagaPersonal, robotsPermet };',
+    'if (typeof module !== \'undefined\' && module.exports) module.exports = Importa; else g.Importa = Importa;',
+    '})(typeof globalThis !== \'undefined\' ? globalThis : this);', ''].join('\n');
+  const ara = existsSync(f) ? readFileSync(f, 'utf8') : '';
+  if (ara !== cos) { if (CHECK) vells.push('SOS/lib/importa.js'); else { writeFileSync(f, cos); escrits++; } }
+  ok('l\'importador SOS/lib/importa.js surt del bloc VS-IMPORTA');
+}
+
 /* ── La marca de cada organització: SOS/lib/marca.js ──────────────────────
    Estàndard amb marge per personalitzar: la pell és una (build-pell.js) i una
    organització només hi posa el seu color, la seva lletra, la forma i el logo,

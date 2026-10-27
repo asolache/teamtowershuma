@@ -12,7 +12,10 @@
                    tres preguntes per a la volta següent i com està el dibuix
                    abans i si s'aplica tot (`salut`, la de l'app i l'editor);
        pas 'web':  el lema, la presentació i el text per a cada rol principal
-                   de la web bàsica (van a la `marca` del motor de la web).
+                   de la web bàsica (van a la `marca` del motor de la web);
+       pas 'pagines': a qui va cada pàgina de la web que ja té (la foto que
+                   ha deixat llegir, llegeix-web-background.mjs) i el que la
+                   seva web encara no diu a cadascun.
 
    El que no es negocia:
    · **Identificat** (identitat.mjs): sense sessió signada no hi ha IA.
@@ -38,7 +41,7 @@ const MODEL = 'claude-opus-5-5';
    pot respondre amb `fallbacks: "default"`. */
 const PREUS = { 'claude-opus-5-5': [4, 20], 'claude-opus-5': [5, 25], 'claude-opus-4-8': [5, 25] };
 const PITJOR = [5, 25];
-const MAX_TOKENS = { mapa: 3000, web: 2500 };
+const MAX_TOKENS = { mapa: 3000, web: 2500, pagines: 3000 };
 const MAX_ENTRADA = 14000;
 
 export function config(env) {
@@ -82,6 +85,8 @@ export function neteja(d) {
       /* La veda del sector (knowledge/vna/sectors/): el que ja se sap, el que sol faltar i com es pregunta. */
       veda: llista(x.model.veda, 'clau'), falta: llista(x.model.veda, 'falta'), preguntes: llista(x.model.veda, 'preguntes'),
       passos: (Array.isArray(x.model.passos) ? x.model.passos : []).slice(0, 8).map(s => t(s, 120)).filter(Boolean) } : null,
+    /* Les pàgines de la seva web d'ara (pas 'pagines'): el que cal per saber a qui van. */
+    pagines: (Array.isArray(x.pagines) ? x.pagines : []).slice(0, 12).map(p => ({ url: t(p && p.url, 200), titol: t(p && p.titol, 160), h1: t(p && p.h1, 160), text: t(p && p.text, 300) })).filter(p => p.url),
     nivel: t(x.nivel, 60), capes: (Array.isArray(x.capes) ? x.capes : []).filter(c => c === 'extranet' || c === 'intranet')
   };
 }
@@ -114,6 +119,10 @@ export function text(d) {
     if (d.model.passos.length) l.push('Las fases que suelen seguir para ponerlo en marcha: ' + d.model.passos.join(' → '));
     if (d.model.preguntes.length) l.push('Preguntas que suelen ayudar:', ...d.model.preguntes.map(s => '· ' + s));
   }
+  if (d.pagines.length) {
+    l.push('', 'Las páginas de su web de hoy (dirección · título · encabezado · cómo empieza):');
+    d.pagines.forEach(p => l.push('· ' + p.url + ' · ' + (p.titol || '—') + ' · ' + (p.h1 || '—') + ' · ' + (p.text || '—')));
+  }
   if (d.nivel || d.capes.length) l.push('', 'Web que pide: ' + [d.nivel, d.capes.length ? 'con ' + d.capes.join(' y ') : 'solo la parte pública'].filter(Boolean).join(', '));
   /* Lo que le falta para estar listo: las reglas del mapa, dichas como las lee ella. */
   const s = salut(d);
@@ -145,7 +154,10 @@ export const PAS = {
   web: ['Escribe los textos de su web: una página con una sección para cada uno de los que más dan y reciben.',
     '· «lema»: lo que hace, en una frase de hasta doce palabras.',
     '· «presentacion»: dos frases para quien llega por primera vez.',
-    '· «secciones»: hasta seis, una por cada grupo importante de su dibujo. «quien» copiado exactamente como está en su dibujo; «nombre», cómo se reconoce ese grupo (hasta cuatro palabras); «intro», una o dos frases dichas a esa persona: lo que encuentra aquí y por qué le importa.'].join('\n')
+    '· «secciones»: hasta seis, una por cada grupo importante de su dibujo. «quien» copiado exactamente como está en su dibujo; «nombre», cómo se reconoce ese grupo (hasta cuatro palabras); «intro», una o dos frases dichas a esa persona: lo que encuentra aquí y por qué le importa.'].join('\n'),
+  pagines: ['Su web de hoy se va a rehacer con su dibujo, sin perder lo que ya funciona. Ayúdale a ver qué tiene y qué le falta:',
+    '· «pagines»: una por cada página de la lista, con su «url» copiada exactamente. En «quien», a quién de su dibujo le sirve más esa página, copiado exactamente como está en su dibujo; vacío si es para todos (el aviso legal, el contacto general). En «porque», una frase corta.',
+    '· «falta»: hasta seis, para los que más dan y reciben en su dibujo. «quien» copiado exactamente; en «falta», lo que su web todavía no le dice a esa persona y le haría dar el paso, en una frase concreta. Piensa sobre todo en lo que no se paga (confianza, recomendaciones, pruebas de que funciona). Si una página ya lo dice, no lo repitas. Sin inventar datos.'].join('\n')
 };
 
 const S = (props, req) => ({ type: 'object', properties: props, required: req || Object.keys(props), additionalProperties: false });
@@ -153,7 +165,8 @@ const STR = { type: 'string' }, MENA_S = { type: 'string', enum: ['tangible', 'i
 export const ESQUEMA = {
   mapa: S({ resumen: STR, preguntas: { type: 'array', items: STR }, sugerencias: { type: 'array', items: S({ tipo: { type: 'string', enum: ['nuevo', 'cambia', 'quita'] }, fila: { type: 'integer' },
     quien: STR, meDa: STR, meDaEs: MENA_S, leDoy: STR, leDoyEs: MENA_S, porque: STR }) } }),
-  web: S({ lema: STR, presentacion: STR, secciones: { type: 'array', items: S({ quien: STR, nombre: STR, intro: STR }) } })
+  web: S({ lema: STR, presentacion: STR, secciones: { type: 'array', items: S({ quien: STR, nombre: STR, intro: STR }) } }),
+  pagines: S({ pagines: { type: 'array', items: S({ url: STR, quien: STR, porque: STR }) }, falta: { type: 'array', items: S({ quien: STR, falta: STR }) } })
 };
 
 /* Del que respon el model, només el que el navegador pot aplicar. */
@@ -169,6 +182,14 @@ export function valida(pas, j, d) {
     return { resumen: t(j.resumen, 400), preguntas: preg, pregunta: preg[0] || '', sugerencias: sug, salut: { abans: salut(d), despres: despres(d, sug) } };
   }
   const noms = new Map(d.alrededor.map(f => [f.quien.toLowerCase(), f.quien]).filter(x => x[0]));
+  if (pas === 'pagines') {
+    const urls = new Set(d.pagines.map(p => p.url)), fetes = new Set(), qui = new Set();
+    const ps = (Array.isArray(j.pagines) ? j.pagines : []).map(p => ({ url: t(p.url, 200), quien: noms.get(t(p.quien, 80).toLowerCase()) || '', porque: t(p.porque, 240) }))
+      .filter(p => urls.has(p.url) && !fetes.has(p.url) && fetes.add(p.url));
+    const fa = (Array.isArray(j.falta) ? j.falta : []).map(f => ({ quien: noms.get(t(f.quien, 80).toLowerCase()), falta: t(f.falta, 320) }))
+      .filter(f => f.quien && f.falta && !qui.has(f.quien) && qui.add(f.quien)).slice(0, 6);
+    return { pagines: ps, falta: fa };
+  }
   const vist = new Set();
   const sec = (Array.isArray(j.secciones) ? j.secciones : []).map(s => ({ quien: noms.get(t(s.quien, 80).toLowerCase()), nombre: t(s.nombre, 40), intro: t(s.intro, 320) }))
     .filter(s => s.quien && s.intro && !vist.has(s.quien) && vist.add(s.quien)).slice(0, 6);
@@ -198,9 +219,12 @@ export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new 
   if (!reg) return { estat: 'sense-config', motiu: 'sense registre (Blobs)' };
   const qui = llegeix(cos && cos.sessio, c.secret, ara.getTime());
   if (!qui || !qui.id) return { estat: 'identifica' };
-  const pas = cos.pas === 'web' ? 'web' : 'mapa', d = neteja(cos.dades), entrada = text(d);
+  const pas = ['web', 'pagines'].includes(cos.pas) ? cos.pas : 'mapa', d = neteja(cos.dades);
+  if (pas !== 'pagines') d.pagines = [];
+  const entrada = text(d);
   if (entrada.length > MAX_ENTRADA) return { estat: 'error', motiu: 'Tu dibujo es demasiado largo para una vuelta.' };
-  if (pas === 'web' && d.alrededor.filter(f => f.quien).length < 2) return { estat: 'error', motiu: 'Primero di al menos quién está a tu alrededor.' };
+  if (pas !== 'mapa' && d.alrededor.filter(f => f.quien).length < 2) return { estat: 'error', motiu: 'Primero di al menos quién está a tu alrededor.' };
+  if (pas === 'pagines' && !d.pagines.length) return { estat: 'error', motiu: 'Primero leemos tu web.' };
 
   const kp = 'persona/' + empremta(qui.id), kd = 'dia/' + ara.toISOString().slice(0, 10);
   const p = (await reg.get(kp)) || { gastat: 0, voltes: 0 }, dia = (await reg.get(kd)) || { gastat: 0 };

@@ -89,6 +89,11 @@ jobs:
       - name: Motor de l'editor del mapa de valor
         run: node SOS/tests/test-vna-motor.mjs
 
+      # La web que el client ja té: es replica, cada adreça vella té un 301 i
+      # eines/genera.mjs no publica si alguna es queda sense destí (punts 13 i 15).
+      - name: La web vella, replicada i sense adreces perdudes
+        run: node SOS/tests/test-web-vella.mjs
+
       # El nucli que carreguen l'app i l'editor: les deu regles i el pont entre
       # el mapa de l'app (per id) i la forma canònica (per nom).
       - name: Nucli del mapa de valor
@@ -417,6 +422,12 @@ jobs:
       # el llegeix ella, l'esborra d'un clic i deixar-lo preparat demana el testimoni.
       - name: El dibuix de cada client, guardat amb el seu compte
         run: node SOS/tests/test-fitxa.mjs
+
+      # «Leemos tu web» (llegeix-web-background.mjs): només amb el seu sí, només
+      # aquell lloc, robots.txt, un tope de pàgines i cap adreça interna; i el pas
+      # de pule-mapa que diu a quina porta va cada pàgina.
+      - name: Llegir la web del client, amb el seu sí
+        run: node SOS/tests/test-llegeix-web.mjs
 
       # El pagament de l'alta: Stripe Checkout, amb Apple Pay, en mode de prova.
       # Sense xarxa: que sense claus no cobri res, que una clau de producció

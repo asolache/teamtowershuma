@@ -9,15 +9,19 @@
    · `POST …/fitxa` {sessio}              la fitxa de qui ha entrat, o cap.
    · `POST …/fitxa` {sessio, fitxa}       la desa (l'última guanya).
    · `POST …/fitxa` {sessio, esborra:true} l'esborra (el seu dret, d'un clic).
+   · `POST …/fitxa` {sessio, foto:true}   la «foto» de la seva web que ha deixat
+     llegir (llegeix-web-background.mjs): si encara es llegeix, o el resultat.
    · Amb `Authorization: Bearer IA_CIERRE_TOKEN` i `?per=<correu|gh:id>`, com a
-     proposta.mjs: `GET` la llegeix, `PUT` la deixa preparada abans de la
-     sessió i `DELETE` l'esborra. Sense el testimoni, 404.
+     proposta.mjs: `GET` la llegeix (amb `&foto=1`, la foto de la web), `PUT`
+     la deixa preparada abans de la sessió i `DELETE` l'esborra, amb la foto.
+     Sense el testimoni, 404.
 
    Només el que la pàgina fa servir, net i tallat. Al registre (console), només
    l'estat: mai el dibuix ni qui és. */
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 import { magatzem } from '../lib/magatzem.mjs';
 import { idDe } from './proposta.mjs';
+import { clau as clauFoto } from './llegeix-web-background.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
 const t = (v, n) => net(v).slice(0, n);
@@ -44,9 +48,18 @@ export function neteja(f, ara = new Date()) {
     extra: { roles: (Array.isArray(ex.roles) ? ex.roles : []).slice(0, 16).map(x => t(x, 120)).filter(Boolean),
       pairs: (Array.isArray(ex.pairs) ? ex.pairs : []).slice(0, 40).filter(Array.isArray).map(q => [t(q[0], 120), t(q[1], 120), q[2] ? mena(q[2]) : '', t(q[3], 240), q[4] ? mena(q[4]) : '', t(q[5], 240)]).filter(q => q[0] && q[1]) },
     marca: { lema: t(marca.lema, 200), presentacio: t(marca.presentacio, 800), portes: p },
+    /* A qui va cada pàgina de la seva web d'ara, i el que encara no diu a cadascú (pule-mapa, pas 'pagines'). */
+    portesWeb: portesWeb(f.portesWeb),
     actualitzada: ara.toISOString()
   };
   return JSON.stringify(o).length > MAX ? null : o;
+}
+
+function portesWeb(x) {
+  if (!x || typeof x !== 'object') return null;
+  const ps = (Array.isArray(x.pagines) ? x.pagines : []).slice(0, 30).map(q => ({ url: t(q && q.url, 300), quien: t(q && q.quien, 120), porque: t(q && q.porque, 300) })).filter(q => q.url);
+  const fa = (Array.isArray(x.falta) ? x.falta : []).slice(0, 12).map(q => ({ quien: t(q && q.quien, 120), falta: t(q && q.falta, 400) })).filter(q => q.quien && q.falta);
+  return ps.length || fa.length ? { pagines: ps, falta: fa, origen: t(x.origen, 300) } : null;
 }
 
 export async function client(cos, env, reg, ara = new Date()) {
@@ -54,7 +67,8 @@ export async function client(cos, env, reg, ara = new Date()) {
   if (!qui || !qui.id) return { estat: 'identifica' };
   if (!reg) return { estat: 'sense-config' };
   const k = clau(qui.id);
-  if (cos.esborra === true) { await reg.del(k); return { estat: 'esborrada' }; }
+  if (cos.esborra === true) { await reg.del(k); await reg.del(clauFoto(qui.id)); return { estat: 'esborrada' }; }
+  if (cos.foto === true) { const f = await reg.get(clauFoto(qui.id)); return f ? { estat: 'foto', lectura: f } : { estat: 'cap' }; }
   if (cos.fitxa !== undefined) {
     const f = neteja(cos.fitxa, ara);
     if (!f) return { estat: 'error', motiu: 'Tu ficha es demasiado grande para guardarla.' };
@@ -66,13 +80,13 @@ export async function client(cos, env, reg, ara = new Date()) {
 }
 
 /* L'Àlvar la deixa preparada abans de la sessió («lo dejamos preparado»). */
-export async function gestiona(metode, per, autoritzacio, cos, env, reg, ara = new Date()) {
+export async function gestiona(metode, per, autoritzacio, cos, env, reg, ara = new Date(), ambFoto = false) {
   const tok = net(env.IA_CIERRE_TOKEN);
   if (tok.length < 24 || !reg || autoritzacio !== 'Bearer ' + tok) return null;
   const id = idDe(per);
   if (!id) return { estat: 'error', motiu: 'per=<correu|gh:id>' };
-  if (metode === 'DELETE') { await reg.del(clau(id)); return { estat: 'esborrada' }; }
-  if (metode === 'GET') { const f = await reg.get(clau(id)); return f ? { estat: 'fet', fitxa: f } : { estat: 'cap' }; }
+  if (metode === 'DELETE') { await reg.del(clau(id)); await reg.del(clauFoto(id)); return { estat: 'esborrada' }; }
+  if (metode === 'GET') { const f = await reg.get(ambFoto ? clauFoto(id) : clau(id)); return f ? (ambFoto ? { estat: 'foto', lectura: f } : { estat: 'fet', fitxa: f }) : { estat: 'cap' }; }
   const f = neteja(cos, ara);
   if (!f) return { estat: 'error', motiu: 'Fitxa buida o massa gran.' };
   await reg.set(clau(id), f);
@@ -84,7 +98,7 @@ export const handler = async (event) => {
   let cos = {}; try { cos = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
   let r;
   if (event.httpMethod !== 'POST') {
-    r = await gestiona(event.httpMethod, q.per, (event.headers || {}).authorization, cos, env, reg).catch(() => ({ estat: 'error', motiu: 'blobs' }));
+    r = await gestiona(event.httpMethod, q.per, (event.headers || {}).authorization, cos, env, reg, new Date(), q.foto === '1').catch(() => ({ estat: 'error', motiu: 'blobs' }));
     console.log('[fitxa]', JSON.stringify({ metode: event.httpMethod, estat: r ? r.estat : 'no' }));
     return r ? json(r.estat === 'error' ? 400 : 200, r) : json(404, {});
   }
