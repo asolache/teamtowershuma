@@ -5525,3 +5525,24 @@ cervell), cadascun amb els seus comptes.
 **Guarda:** `build-nav.js --check` (la barra porta «Entra») i
 `test-vna-motor.mjs` (el motor el posa amb extranet o intranet). La resta,
 pendent (backlog, «Una sola entrada»).
+
+## Veda 182 — Un sol lloc tria el model, i el més petit que fa bé la feina
+
+**Adoptada el 27/10/2026** per l'Álvaro: vol una peça que controli quin model
+d'IA és més eficient per a cada projecte seu.
+
+L'error que evita: cada funció amb el seu model escrit a mà, Opus per a tot,
+i ningú que sàpiga què gasta cada projecte. Va contra el compromís de
+`ia.html`: «lo más inteligente posible al menor coste energético».
+
+- **Una sola peça:** `netlify/lib/ia-router.mjs`. Cap funció escriu el nom
+  d'un model; demana `tria({ projecte, tasca })`. Les webs filles ho hereten.
+- **El més petit que fa bé la feina:** classificar, resumir i extreure, Haiku;
+  escriure, traduir i atendre, Sonnet; raonar i l'estratègia, Opus. Pujar de
+  model es fa al router, per tasca o per projecte, i es mesura abans.
+- **Comptat:** cada crida apunta projecte, tasca, model, tokens i cost
+  (magatzem `ia-router`), sense cap dada personal. La taula de qui fa què és
+  pública (`/.netlify/functions/ia-router`); la despesa, amb el testimoni.
+- **Una clau:** `ANTHROPIC_API_KEY` a Netlify. Cap altra.
+
+**Guarda:** `test-ia-router.mjs`.

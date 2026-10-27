@@ -34,13 +34,11 @@ import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 /* Les regles del mapa i la fitxa del client: les mateixes peces que el navegador. */
 import MV from '../../SOS/lib/mapa-valor.js';
 import DC from '../../SOS/lib/diagnosi-client.js';
+/* Quin model i quant costa: el router de la matriu (ia-router.mjs). */
+import { tria, peticio, capcaleres, cost, reserva as reservaRouter, registra } from '../lib/ia-router.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
-const MODEL = 'claude-opus-5-5';
-/* $ per milió de tokens (entrada, sortida). El de reserva és el més car que
-   pot respondre amb `fallbacks: "default"`. */
-const PREUS = { 'claude-opus-5-5': [4, 20], 'claude-opus-5': [5, 25], 'claude-opus-4-8': [5, 25] };
-const PITJOR = [5, 25];
+const IA = tria({ projecte: 'matriu', tasca: 'mapa' });
 const MAX_TOKENS = { mapa: 3000, web: 2500, pagines: 3000 };
 const MAX_ENTRADA = 14000;
 
@@ -197,19 +195,13 @@ export function valida(pas, j, d) {
 }
 
 /* ─── El cost ─── */
-const preu = m => PREUS[m] || PITJOR;
-export function cost(r) {
-  const parts = Array.isArray(r.usage && r.usage.iterations) && r.usage.iterations.length ? r.usage.iterations : [Object.assign({ model: r.model }, r.usage)];
-  return parts.reduce((s, u) => {
-    const [pe, ps] = preu(u.model || r.model);
-    const ent = (u.input_tokens || 0) + 1.25 * (u.cache_creation_input_tokens || 0) + 0.1 * (u.cache_read_input_tokens || 0);
-    return s + (ent * pe + (u.output_tokens || 0) * ps) / 1e6;
-  }, 0);
-}
-export const reserva = (pas, entrada) => ((Math.ceil(entrada.length / 2.5) + 1500) * PITJOR[0] + MAX_TOKENS[pas] * PITJOR[1]) / 1e6;
+export { cost };
+export const reserva = (pas, entrada) => reservaRouter(IA, entrada.length, MAX_TOKENS[pas]);
 
 /* ─── El registre de la despesa: Netlify Blobs (netlify/lib/magatzem.mjs) ─── */
 const magatzem = event => blobs(event, 'ia-cliente');
+/* El del router: el que gasta cada projecte i cada model, per a ia.html. */
+const comptes = event => blobs(event, 'ia-router');
 
 const json = (statusCode, o) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(o) });
 
@@ -238,10 +230,10 @@ export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new 
   let gast = 0, r, sortida;
   try {
     const resp = await fetchFn('https://api.anthropic.com/v1/messages', { method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': c.clau, 'anthropic-version': '2026-10-21', 'anthropic-beta': 'server-side-fallback-2026-07-01' },
-      body: JSON.stringify({ model: MODEL, max_tokens: MAX_TOKENS[pas], fallbacks: 'default', system: sistema(d.llengua),
-        output_config: { effort: 'low', format: { type: 'json_schema', schema: ESQUEMA[pas] } },
-        messages: [{ role: 'user', content: entrada + '\n\n' + PAS[pas] }] }) });
+      headers: capcaleres(c.clau, IA),
+      body: JSON.stringify(peticio(IA, { max_tokens: MAX_TOKENS[pas], system: sistema(d.llengua),
+        format: { type: 'json_schema', schema: ESQUEMA[pas] },
+        messages: [{ role: 'user', content: entrada + '\n\n' + PAS[pas] }] })) });
     r = await resp.json().catch(() => ({}));
     if (!resp.ok) sortida = { estat: 'error', motiu: 'claude: ' + ((r.error && r.error.type) || resp.status) };
     else {
@@ -265,7 +257,7 @@ export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new 
     mes.gastat += gast; mes.persones[h] = (mes.persones[h] || 0) + gast;
     await reg.set(km, mes);
   }
-  return Object.assign(sortida, { cost: gast }, estat());
+  return Object.assign(sortida, { cost: gast, ia: gast ? { model: (r && r.model) || IA.model, usage: r.usage } : null }, estat());
 }
 
 /* El tancament del dia 1 (repositori d'estratègia): el mes, sense dades
@@ -297,6 +289,7 @@ export const handler = async (event) => {
   /* Al registre, el que ha passat i el que ha costat; mai el text del client. */
   console.log('[pule-mapa]', JSON.stringify({ estat: r.estat, pas: r.pas, cost: r.cost, voltes: r.voltes, motiu: r.estat === 'error' ? r.motiu : undefined }));
   const codi = { 'sense-config': 503, identifica: 401, topall: 402, ocupat: 429, error: 400 }[r.estat] || 200;
-  delete r.cost;
+  if (r.ia) await registra(comptes(event), { projecte: IA.projecte, tasca: IA.tasca, model: r.ia.model, usd: r.cost, usage: r.ia.usage }).catch(() => {});
+  delete r.cost; delete r.ia;
   return json(codi, r);
 };

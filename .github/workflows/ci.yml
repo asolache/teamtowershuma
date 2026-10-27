@@ -413,6 +413,11 @@ jobs:
       - name: La IA de l'espai de client, identificada i amb tope
         run: node SOS/tests/test-pule-mapa.mjs
 
+      # El router de models (netlify/lib/ia-router.mjs): cada tasca al model més
+      # petit que la fa bé, el cost de cada crida i la despesa per projecte.
+      - name: El router de models de la IA
+        run: node SOS/tests/test-ia-router.mjs
+
       # El preu de cada client (proposta.mjs): només el veu qui ha entrat amb la
       # seva sessió, i carregar-lo demana el testimoni de gestió.
       - name: La proposta de cada client, només per a ell
