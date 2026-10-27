@@ -1388,7 +1388,9 @@
         if (!enViu) r.textContent = t('Preparando el boceto…');
         motor().then(function (html) {
             var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
-                f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: LL, url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes(), marca: S.marca || null });
+                f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: LL, url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes(), marca: S.marca || null,
+                    /* La web d'ara (punt 12) i a quina porta va cada pàgina (punt 14): el motor no perd cap adreça vella. */
+                    foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null });
             PAGS = {}; f.forEach(function (x) { PAGS[x.ruta] = x.cos; });
             var bar = $('#cl-pags'); bar.textContent = '';
             f.filter(function (x) { return /^[^/]+\.html$/.test(x.ruta) && !/^(404|gracies|registre)\.html$/.test(x.ruta) && (x.ruta !== 'equip.html' || capes().indexOf('intranet') >= 0); }).forEach(function (x) {
@@ -1979,7 +1981,7 @@
         fetch('/.netlify/functions/identitat').then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
         fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
         pinta(); sincronitza();
-        return { resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
+        return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
 
     function pintaTot() { pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }

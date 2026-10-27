@@ -71,6 +71,8 @@ console.log("\n2 · Amb la seva sessió i el seu sí");
   ok(r.estat === 'fet' && r.pagines === 3, 'llegeix les tres pàgines obertes del lloc');
   ok(!f.vistes.some(u => /privado|fora\.example|10\.0\.0\.5/.test(u)), 'ni la carpeta tancada per robots, ni el lloc de fora, ni la redirecció a una IP interna');
   ok(f.vistes[0] === 'https://escuela.example/robots.txt', 'el primer és robots.txt');
+  const Lf = JSON.parse(reg.m.get(clau(idDe('maria@exemple.cat')))).foto.fora;
+  ok(Array.isArray(Lf) && Lf.includes('/privado/notas') && Lf.includes('/salta') && !Lf.some(r => /fora\.example|10\.0\.0\.5|^\/cursos$/.test(r)), 'les adreces del lloc que no hem llegit, com a rutes (per al 301 del generador)');
   const L = JSON.parse(reg.m.get(clau(idDe('maria@exemple.cat'))));
   ok(L.si && L.si.data === '2026-10-27T08:00:00.000Z' && L.si.domini === 'escuela.example', 'el sí queda desat amb la data i el domini');
   const F = L.foto, p0 = F.pagines[0];

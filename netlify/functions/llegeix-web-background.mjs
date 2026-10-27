@@ -60,6 +60,15 @@ export function menuDe(html, base) {
   return vist;
 }
 const ruta = u => (u.pathname.replace(/\/+$/, '') || '/') + u.search;
+/* Les adreces del lloc que no s'han llegit (robots, error, tope), com a rutes: el
+   generador les porta a la portada amb un 301 perquè Google no les perdi. */
+export function foraDe(res, origen) {
+  const h = origen.hostname.replace(/^www\./, ''), llegides = (res.pagines || []).map(p => { try { return ruta(new URL(p.url)); } catch (e) { return ''; } }), v = [];
+  (res.fora || []).forEach(f => {
+    try { const u = new URL(f.font, origen); const r = ruta(u); if (/^https?:$/.test(u.protocol) && u.hostname.replace(/^www\./, '') === h && !llegides.includes(r) && !v.includes(r)) v.push(r); } catch (e) { /* no és una adreça */ }
+  });
+  return v.slice(0, 50);
+}
 export function foto(res, origen, ara = new Date()) {
   const ps = res.pagines || [], menu = ps.length ? menuDe(ps[0].html, ps[0].url) : [];
   return { tipus: 'sos-foto-web', v: 1, origen: origen.origin, data: ara.toISOString().slice(0, 10),
@@ -71,7 +80,7 @@ export function foto(res, origen, ara = new Date()) {
         /* Opcional (no trenca la v1): les imatges, com a referència per a la sessió. */
         imatges: (h.imatges || []).slice(0, 8).map(i => ({ src: net(i.src).slice(0, 400), alt: net(i.alt).slice(0, 160) })) };
     }),
-    llengua: net(ps.length ? IMP.htmlAText(ps[0].html, ps[0].url).llengua : '').slice(0, 8), fora: (res.fora || []).length };
+    llengua: net(ps.length ? IMP.htmlAText(ps[0].html, ps[0].url).llengua : '').slice(0, 8), fora: foraDe(res, origen) };
 }
 
 export async function llegeixWeb(cos, env, reg, fetchFn = globalThis.fetch, ara = new Date(), resolFn) {
