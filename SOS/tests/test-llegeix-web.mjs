@@ -80,6 +80,7 @@ console.log("\n2 · Amb la seva sessió i el seu sí");
   ok(p0.url === '/' && p0.titol === 'Escuela ELE' && p0.descripcio === 'Desc Escuela ELE' && p0.h1 === 'Formamos profesores de español' && p0.menu === 0, 'cada pàgina: adreça, títol, descripció, H1 i lloc al menú');
   ok(F.pagines.find(p => p.url === '/cursos').menu === 1 && F.pagines.find(p => p.url === '/contacto').menu === 2, 'el menú dona l\'estructura');
   ok(!/info@escuela|612 345 678/.test(JSON.stringify(F)), 'sense correus ni telèfons al text');
+  ok(p0.llengua === 'es', "l'idioma de cada pàgina (camp opcional, per al document de disseny)");
   ok(p0.imatges[0].src === 'https://escuela.example/foto.jpg' && p0.imatges[0].alt === 'Una clase', 'les imatges, com a referència (camp opcional)');
   const l = await fitxa({ sessio: MARIA, foto: true }, ENV, reg);
   ok(l.estat === 'foto' && l.lectura.estat === 'fet' && l.lectura.foto.pagines.length === 3, 'la pàgina la llegeix amb la seva sessió (fitxa.mjs)');

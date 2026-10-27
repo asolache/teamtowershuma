@@ -15,6 +15,19 @@
  *
  *   MapaEdita.activa(svg, { flux(a, b), mou(id, x, y), rol(x, y), edita(exId), pista(txt) }) → { treu }
  *   MapaEdita.form(nomA, nomB, { mena, nom, torna }) → { html, llegeix(arrel) }
+ *
+ * I el zoom, per als tallers amb tauleta i pantalla tàctil gran (Àlvar,
+ * 22/10/2026): sempre, editant o no,
+ *
+ *   · pessiga amb dos dits                → apropa o allunya
+ *   · arrossega amb dos dits              → mou el mapa
+ *   · Ctrl + roda (o pessigar el trackpad) → el mateix amb el ratolí
+ *   · els botons + − ⤢                    → el mateix amb un toc o el teclat
+ *
+ * Un dit continua sent el gest de l'edició (o el desplaçament de la pàgina), i
+ * el zoom es recorda mentre el mapa es torna a pintar.
+ *
+ *   MapaEdita.zoom(svg, clau) → { mes(), menys(), torna(), treu() }
  */
 (function () {
   var NS = 'http://www.w3.org/2000/svg', estil = false;
@@ -22,6 +35,7 @@
     if (estil) return; estil = true;
     var s = document.createElement('style');
     s.textContent =
+      'svg.me-zoom{touch-action:pan-x pan-y}' +
       'svg.me-on{touch-action:none;cursor:crosshair;user-select:none;-webkit-user-select:none}' +
       'svg.me-on g[data-rol]{cursor:grab}svg.me-on g[data-rol].me-mou{cursor:grabbing}' +
       'svg.me-on g[data-rol] circle{stroke-dasharray:4 3}' +
@@ -51,7 +65,7 @@
     posaEstil(); op = op || {};
     var pista = op.pista || function () {};
     svg.classList.add('me-on');
-    var A = null, ges = null;
+    var A = null, ges = null, dits = 0;
     svg.querySelectorAll('g[data-rol]').forEach(function (g) {
       g.setAttribute('tabindex', 0); g.setAttribute('role', 'button');
       g.setAttribute('aria-label', 'Rol ' + (g.querySelector('title') || {}).textContent + ': Retorn per connectar-lo');
@@ -65,6 +79,8 @@
 
     function baixa(ev) {
       if (ev.button > 0) return;
+      /* El segon dit és del zoom: el gest d'un dit que hi havia es desfà. */
+      if (ev.pointerType === 'touch' && ++dits > 1) { cancel(); return; }
       var g = ev.target.closest('g[data-rol]'), ex = ev.target.closest('path[data-ex]');
       var p = punt(svg, ev);
       ges = { g: g, ex: ex, p0: p, c0: { x: ev.clientX, y: ev.clientY }, mode: null, id: ev.pointerId };
@@ -95,6 +111,7 @@
       }
     }
     function puja(ev) {
+      if (ev.pointerType === 'touch') dits = Math.max(0, dits - 1);
       if (!ges || ev.pointerId !== ges.id) return;
       var G = ges; ges = null; clearTimeout(G.llarg);
       try { svg.releasePointerCapture(ev.pointerId); } catch (e) {}
@@ -112,7 +129,7 @@
       else if (A) { desfes(); pista('Toca un rol per començar un flux, o un espai buit per afegir-ne un.'); }
       else op.rol && op.rol(Math.round(p.x), Math.round(p.y));
     }
-    function cancel() { if (!ges) return; clearTimeout(ges.llarg); if (ges.l) ges.l.remove(); if (ges.g) { ges.g.classList.remove('me-a', 'me-mou'); ges.g.removeAttribute('transform'); } ges = null; }
+    function cancel(ev) { if (ev && ev.pointerType === 'touch') dits = Math.max(0, dits - 1); if (!ges) return; clearTimeout(ges.llarg); if (ges.l) ges.l.remove(); if (ges.g) { ges.g.classList.remove('me-a', 'me-mou'); ges.g.removeAttribute('transform'); } ges = null; }
     /* En mode edició, cap clic no obre res: ni el seguiment d'un flux ni la
        pàgina d'origen d'un rol. El gest ja l'ha llegit el pointerup. */
     function para(ev) { ev.stopPropagation(); ev.preventDefault(); }
@@ -186,5 +203,57 @@
     };
   }
 
-  window.MapaEdita = { activa: activa, form: form };
+  /* ── El zoom ─────────────────────────────────────────────────────────────
+     Es mou el viewBox: el dibuix no es refà i les coordenades que llegeix
+     l'edició (getScreenCTM) segueixen sent les del mapa. */
+  var ZOOM = {};   // clau → viewBox, perquè un mapa que es torna a pintar no perdi el zoom
+  function zoom(svg, clau) {
+    var b0 = (svg.getAttribute('viewBox') || '0 0 100 100').split(/[\s,]+/).map(Number);
+    var vb = (clau && ZOOM[clau]) ? ZOOM[clau].slice() : b0.slice();
+    function posa(v) {
+      var w = Math.min(b0[2] * 2, Math.max(b0[2] / 4, v[2])), h = w * b0[3] / b0[2];
+      vb = [v[0] + (v[2] - w) / 2, v[1] + (v[3] - h) / 2, w, h];
+      svg.setAttribute('viewBox', vb.join(' ')); if (clau) ZOOM[clau] = vb.slice();
+    }
+    function aMapa(x, y) { var m = svg.getScreenCTM(); if (!m) return { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2 }; var p = svg.createSVGPoint(); p.x = x; p.y = y; p = p.matrixTransform(m.inverse()); return { x: p.x, y: p.y }; }
+    /* Apropa k vegades mantenint quiet el punt de la pantalla (x, y). */
+    function apropa(k, x, y) {
+      var P = aMapa(x, y), w = vb[2] / k, h = vb[3] / k;
+      posa([P.x - (P.x - vb[0]) / k, P.y - (P.y - vb[1]) / k, w, h]);
+      var Q = aMapa(x, y); posa([vb[0] + P.x - Q.x, vb[1] + P.y - Q.y, vb[2], vb[3]]);
+    }
+    function centre() { var r = svg.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+    if (vb.join() !== b0.join()) posa(vb);
+    posaEstil(); svg.classList.add('me-zoom');
+    var pes = null;
+    function toc(ev) {
+      if (ev.touches.length !== 2) { pes = null; return; }
+      var a = ev.touches[0], b = ev.touches[1], mx = (a.clientX + b.clientX) / 2, my = (a.clientY + b.clientY) / 2;
+      pes = { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1, vb: vb.slice(), P: aMapa(mx, my) };
+    }
+    function mou(ev) {
+      if (!pes || ev.touches.length !== 2) return;
+      ev.preventDefault();
+      var a = ev.touches[0], b = ev.touches[1], mx = (a.clientX + b.clientX) / 2, my = (a.clientY + b.clientY) / 2;
+      var k = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) / pes.d;
+      posa([pes.vb[0], pes.vb[1], pes.vb[2] / k, pes.vb[3] / k]);
+      var Q = aMapa(mx, my); posa([vb[0] + pes.P.x - Q.x, vb[1] + pes.P.y - Q.y, vb[2], vb[3]]);
+    }
+    function roda(ev) { if (!ev.ctrlKey) return; ev.preventDefault(); apropa(Math.exp(-ev.deltaY / 200), ev.clientX, ev.clientY); }
+    svg.addEventListener('touchstart', toc, { passive: true });
+    svg.addEventListener('touchmove', mou, { passive: false });
+    svg.addEventListener('touchend', toc, { passive: true });
+    svg.addEventListener('wheel', roda, { passive: false });
+    return {
+      mes: function () { var c = centre(); apropa(1.4, c.x, c.y); },
+      menys: function () { var c = centre(); apropa(1 / 1.4, c.x, c.y); },
+      torna: function () { posa(b0); },
+      treu: function () {
+        svg.removeEventListener('touchstart', toc); svg.removeEventListener('touchmove', mou);
+        svg.removeEventListener('touchend', toc); svg.removeEventListener('wheel', roda);
+      }
+    };
+  }
+
+  window.MapaEdita = { activa: activa, form: form, zoom: zoom };
 })();

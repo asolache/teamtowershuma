@@ -696,6 +696,7 @@ a{color:var(--blue);text-decoration:none}
 .vna-canvas svg{width:100%;height:440px;display:block}
 .lents{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.6rem .7rem 0}
 .lent{font:600 var(--t0) inherit;font-family:inherit;min-height:40px;padding:.3rem .9rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;white-space:nowrap}
+.lent-z{min-width:44px;min-height:44px;padding:0;font-size:1.1rem}
 .lent.sel{background:var(--text);color:var(--bg);border-color:var(--text)}
 .lent-ed{border-color:var(--indigo);color:var(--indigo)}.lent-ed.sel{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .lents-t{display:flex;align-items:center;gap:.4rem;margin-left:auto;color:var(--muted);font:500 var(--t0) 'JetBrains Mono',monospace;white-space:nowrap}
@@ -11175,9 +11176,11 @@ function barraLents(node,canvas,svg0){
     barra.appendChild(tl);
   }
   /* Connecta i mou (lib/mapa-edita.js): el mapa es dibuixa amb el dit. */
-  const pe=el('p','me-pista');pe.hidden=true;let ed=null;
-  const edita=()=>{if(ed){ed.treu();ed=null;}pe.hidden=!state.mapaEdita;if(!state.mapaEdita||!canWrite(node).ok)return;
-    carregaLib('mapa-edita').then(()=>{if(ed)ed.treu();ed=MapaEdita.activa(svg,{pista:t=>{pe.textContent=t;},
+  const pe=el('p','me-pista');pe.hidden=true;let ed=null,zm=null;
+  /* El zoom (dos dits, Ctrl+roda o + − ⤢) hi és sempre; l'edició, si està activada. */
+  const edita=()=>{if(ed){ed.treu();ed=null;}if(zm){zm.treu();zm=null;}pe.hidden=!state.mapaEdita;
+    carregaLib('mapa-edita').then(()=>{if(zm)zm.treu();zm=MapaEdita.zoom(svg,'vna-'+node.id);
+      if(!state.mapaEdita||!canWrite(node).ok)return;if(ed)ed.treu();ed=MapaEdita.activa(svg,{pista:t=>{pe.textContent=t;},
       flux:(a,b)=>openNouFlux(node,a,b),edita:x=>openNouFlux(node,0,0,x),
       mou:(id,x,y)=>{const r=node.vna.roles.find(q=>q.id===id);if(!r)return;r.pos={x,y};persist(node);renderWorkspace();},
       rol:(x,y)=>openNouRol(node,x,y)});}).catch(()=>{});};
@@ -11185,6 +11188,8 @@ function barraLents(node,canvas,svg0){
     eb.setAttribute('aria-pressed',state.mapaEdita?'true':'false');eb.title='Arrossega d\'un rol a un altre per crear un flux';
     eb.onclick=()=>{state.mapaEdita=!state.mapaEdita;eb.classList.toggle('sel',state.mapaEdita);eb.setAttribute('aria-pressed',state.mapaEdita?'true':'false');edita();};
     barra.insertBefore(eb,barra.firstChild);}
+  [['＋','Apropa el mapa','mes'],['－','Allunya el mapa','menys'],['⤢','Torna el mapa a la mida de sempre','torna']].forEach(([t,a,f])=>{
+    const b=el('button','lent lent-z',t);b.type='button';b.setAttribute('aria-label',a);b.title=a;b.dataset.zoom=f;b.onclick=()=>zm&&zm[f]();barra.appendChild(b);});
   canvas.appendChild(barra);canvas.appendChild(pe);
   /* Un mapa on encara no ha circulat res és un disseny: diu què tocar perquè respiri. */
   if((node.vna.exchanges||[]).length&&!flowLedger(node).rows.some(r=>tsDeFlux(r).length))

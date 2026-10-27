@@ -78,7 +78,9 @@ export function foto(res, origen, ara = new Date()) {
       return { url: r, titol: net(h.titol).slice(0, 200), descripcio: net(h.descripcio).slice(0, 400), h1: net(h1).slice(0, 200),
         text: t.slice(0, 6000), menu: menu.indexOf(r) >= 0 ? menu.indexOf(r) : null,
         /* Opcional (no trenca la v1): les imatges, com a referència per a la sessió. */
-        imatges: (h.imatges || []).slice(0, 8).map(i => ({ src: net(i.src).slice(0, 400), alt: net(i.alt).slice(0, 160) })) };
+        imatges: (h.imatges || []).slice(0, 8).map(i => ({ src: net(i.src).slice(0, 400), alt: net(i.alt).slice(0, 160) })),
+        /* Opcional: l'idioma de la pàgina (el seu lang), perquè el document de disseny no barregi idiomes. */
+        llengua: net(h.llengua).toLowerCase().slice(0, 8) };
     }),
     llengua: net(ps.length ? IMP.htmlAText(ps[0].html, ps[0].url).llengua : '').slice(0, 8), fora: foraDe(res, origen) };
 }
