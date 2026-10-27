@@ -4841,6 +4841,184 @@ function orfesFoto(foto, fitxers) {
     return d ? !serveix(d) : !serveix(c);
   });
 }
+/* ── El document de disseny de la web (Àlvar, 27/10/2026) ──────────────────
+ * «El creador de la web sense format que tenim ara és lamentable, a més
+ * barreja els dos idiomes»: el pas no ha de fer la web, ha de fer el document
+ * de disseny que l'Àlvar revisa amb el client i que després Claude Code
+ * construeix en un repositori amb vista prèvia. La web d'ara (webASite) es
+ * queda com a vista ràpida del mapa, no com a entregable.
+ *
+ * Surt del mapa (webDelMapa), de la foto de la web vella (`sos-foto-web`),
+ * de `portesWeb` (a quina porta va cada pàgina vella) i de la marca:
+ *
+ *   dissenyWeb(web, { foto, portesWeb, marca, nom, url, llengua, llengues, capes })
+ *     → { json: sos-disseny-web v1, md }
+ *
+ * Cada idioma va en el seu bloc i no es barreja mai: l'idioma d'una pàgina
+ * vella és el seu `llengua`, o el prefix de la ruta (/es/, /ca/…), o el de la
+ * portada. Les pàgines que són la mateixa en dos idiomes (/es/cursos i
+ * /ca/cursos) són una sola pàgina amb dos blocs. */
+const DISSENY_TXT = {
+  ca: { titol: 'Document de disseny de la web', perQui: 'Per revisar amb el client i, un cop acceptat, construir-la amb Claude Code al repositori, amb vista prèvia.',
+    resum: 'Resum', llengues: 'Idiomes', origen: 'Web d\'ara', nova: 'Adreça nova', senseOrigen: 'No n\'hi ha: es comença de zero.',
+    marca: 'La marca', color: 'Color', lletra: 'Lletra', forma: 'Forma', lema: 'Lema', presentacio: 'Presentació', logo: 'Logo', siLogo: 'n\'hi ha (logo.svg)', contacte: 'Contacte',
+    pagines: 'Les pàgines', ruta: 'Ruta', porta: 'Porta (rol del mapa)', objectiu: 'Objectiu', seccions: 'Seccions', cta: 'Crida a l\'acció', imatges: 'Imatges', abans: 'Adreces velles',
+    textos: 'Textos', conserva: 'Es conserva', escriure: 'Per escriure', titolP: 'Títol', descr: 'Descripció', h1: 'H1', text: 'Text',
+    red: 'Les adreces velles, a la nova (301)', de: 'Adreça vella', a: 'Va a', orfes: 'Sense destí: cal decidir-ho abans de publicar',
+    req: 'Requisits', acc: 'Criteris d\'acceptació', claude: 'Com es construeix',
+    inici: 'Inici', serveis: 'Serveis', equip: 'Per a l\'equip',
+    objInici: 'Qui arriba sap què fa {nom} i troba la seva porta en un toc.', objRol: 'Que {rol} trobi {rep} i ens doni {dona}.', objRolSol: 'Que {rol} trobi el que ve a buscar i ens escrigui.', objVella: 'Mantenir el que ja troben els cercadors: {h1}.',
+    secPortes: 'Una porta per a cada rol', secRep: 'El que et donem', secDona: 'El que et demanem', secPassos: 'Com començar', secVella: 'El contingut d\'ara', secServeis: 'Els serveis, pas a pas', secContacte: 'Contacte',
+    ctaAlta: 'Formulari d\'alta (Netlify Forms): crea el teu compte', ctaEscriu: 'Formulari de contacte (Netlify Forms)', ctaPortes: 'Enllaços a cada porta',
+    requisits: ['Un idioma per pàgina, amb `lang` al document i `hreflang` entre versions. Cap text barreja dos idiomes.',
+      'Cada adreça vella porta a la nova amb un 301 (taula de dalt). `node eines/genera.mjs` no publica si en queda cap sense destí.',
+      'Les pàgines que ja posicionen conserven el títol, la descripció i l\'H1.',
+      'HTML semàntic (W3C): `header`, `nav`, `main`, `footer`, enllaç per saltar al contingut, etiquetes a tots els camps, focus visible.',
+      'Contrast AA amb el color de la marca, objectius de 44 px i lletra de 15 px o més.',
+      'Sense JavaScript imprescindible; la web funciona sense.',
+      'Les imatges són de la web (es copien a `img/`): la política de seguretat (CSP) no en deixa carregar de fora.',
+      'Dades per a màquines: JSON-LD de schema.org (Organization a l\'inici, WebPage a cada pàgina).',
+      'Els formularis són de Netlify Forms; cap dada personal al repositori.'],
+    acceptacio: ['`node eines/genera.mjs` acaba sense errors i sense adreces velles orfes.',
+      'A la vista prèvia, cada adreça vella de la taula respon 301 cap a una pàgina que existeix.',
+      'Cada pàgina té un sol idioma i el seu `lang`; les versions s\'enllacen amb `hreflang`.',
+      'El títol, la descripció i l\'H1 de les pàgines que es conserven són els d\'aquest document.',
+      'Cap error del validador del W3C, i l\'accessibilitat de Lighthouse és de 90 o més.',
+      'El client ha revisat els textos «Per escriure» i els ha acceptat.'],
+    construeix: ['Obre el repositori del client amb Claude Code.', 'Dona-li aquest document (`cerebro/disseny-web.md`, o el JSON `cerebro/disseny-web.json`) i demana-li que construeixi la web seguint-lo, pàgina a pàgina.',
+      'Revisa-la a la vista prèvia de Netlify amb els criteris d\'acceptació, i mergeja quan els compleixi.'] },
+  es: { titol: 'Documento de diseño de la web', perQui: 'Para revisar con el cliente y, una vez aceptado, construirla con Claude Code en el repositorio, con vista previa.',
+    resum: 'Resumen', llengues: 'Idiomas', origen: 'Web actual', nova: 'Dirección nueva', senseOrigen: 'No hay: se empieza de cero.',
+    marca: 'La marca', color: 'Color', lletra: 'Letra', forma: 'Forma', lema: 'Lema', presentacio: 'Presentación', logo: 'Logo', siLogo: 'hay (logo.svg)', contacte: 'Contacto',
+    pagines: 'Las páginas', ruta: 'Ruta', porta: 'Puerta (rol del mapa)', objectiu: 'Objetivo', seccions: 'Secciones', cta: 'Llamada a la acción', imatges: 'Imágenes', abans: 'Direcciones antiguas',
+    textos: 'Textos', conserva: 'Se conserva', escriure: 'Por escribir', titolP: 'Título', descr: 'Descripción', h1: 'H1', text: 'Texto',
+    red: 'Las direcciones antiguas, a la nueva (301)', de: 'Dirección antigua', a: 'Va a', orfes: 'Sin destino: hay que decidirlo antes de publicar',
+    req: 'Requisitos', acc: 'Criterios de aceptación', claude: 'Cómo se construye',
+    inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo',
+    objInici: 'Quien llega sabe qué hace {nom} y encuentra su puerta en un toque.', objRol: 'Que {rol} encuentre {rep} y nos dé {dona}.', objRolSol: 'Que {rol} encuentre lo que viene a buscar y nos escriba.', objVella: 'Mantener lo que ya encuentran los buscadores: {h1}.',
+    secPortes: 'Una puerta para cada rol', secRep: 'Lo que te damos', secDona: 'Lo que te pedimos', secPassos: 'Cómo empezar', secVella: 'El contenido actual', secServeis: 'Los servicios, paso a paso', secContacte: 'Contacto',
+    ctaAlta: 'Formulario de alta (Netlify Forms): crea tu cuenta', ctaEscriu: 'Formulario de contacto (Netlify Forms)', ctaPortes: 'Enlaces a cada puerta',
+    requisits: ['Un idioma por página, con `lang` en el documento y `hreflang` entre versiones. Ningún texto mezcla dos idiomas.',
+      'Cada dirección antigua lleva a la nueva con un 301 (tabla de arriba). `node eines/genera.mjs` no publica si queda alguna sin destino.',
+      'Las páginas que ya posicionan conservan el título, la descripción y el H1.',
+      'HTML semántico (W3C): `header`, `nav`, `main`, `footer`, enlace para saltar al contenido, etiquetas en todos los campos, foco visible.',
+      'Contraste AA con el color de la marca, objetivos de 44 px y letra de 15 px o más.',
+      'Sin JavaScript imprescindible; la web funciona sin él.',
+      'Las imágenes son de la web (se copian a `img/`): la política de seguridad (CSP) no deja cargarlas de fuera.',
+      'Datos para máquinas: JSON-LD de schema.org (Organization en el inicio, WebPage en cada página).',
+      'Los formularios son de Netlify Forms; ningún dato personal en el repositorio.'],
+    acceptacio: ['`node eines/genera.mjs` termina sin errores y sin direcciones antiguas huérfanas.',
+      'En la vista previa, cada dirección antigua de la tabla responde 301 hacia una página que existe.',
+      'Cada página tiene un solo idioma y su `lang`; las versiones se enlazan con `hreflang`.',
+      'El título, la descripción y el H1 de las páginas que se conservan son los de este documento.',
+      'Ningún error del validador del W3C, y la accesibilidad de Lighthouse es de 90 o más.',
+      'El cliente ha revisado los textos «Por escribir» y los ha aceptado.'],
+    construeix: ['Abre el repositorio del cliente con Claude Code.', 'Dale este documento (`cerebro/disseny-web.md`, o el JSON `cerebro/disseny-web.json`) y pídele que construya la web siguiéndolo, página a página.',
+      'Revísala en la vista previa de Netlify con los criterios de aceptación, y mergea cuando los cumpla.'] }
+};
+const DISSENY_LLENGUES = ['ca', 'es', 'en', 'fr', 'de', 'it', 'pt', 'eu', 'gl'];
+function dissenyWeb(web, opts) {
+  const o = opts || {}, F = fotoNeta(o.foto), MC = marcaNeta(o.marca), MP = MC.portes || {};
+  const fonts = (F ? F.pagines : []);
+  /* L'idioma de cada pàgina vella i la ruta sense el prefix de l'idioma. */
+  const llenguaDe = (p, cami) => { const q = String(p.llengua || '').slice(0, 2).toLowerCase(), m = /^\/([a-z]{2})(\/|$)/.exec(cami);
+    return DISSENY_LLENGUES.includes(q) ? q : m && DISSENY_LLENGUES.includes(m[1]) ? m[1] : (F && F.llengua) || 'es'; };
+  const senseLl = cami => cami.replace(/^\/[a-z]{2}(\/|$)/, m => (DISSENY_LLENGUES.includes(m.slice(1, 3)) ? '/' : m)) || '/';
+  const vist = [];
+  fonts.forEach(p => { const c = fotoCami(p.url, F.origen); if (c !== null) vist.push(llenguaDe(p, c)); });
+  const llengues = [].concat(o.llengues || [], F && F.llengua ? [F.llengua] : [], vist).map(x => String(x).slice(0, 2).toLowerCase())
+    .filter((x, i, a) => DISSENY_LLENGUES.includes(x) && a.indexOf(x) === i);
+  if (!llengues.length) llengues.push(DISSENY_TXT[o.llengua] ? o.llengua : 'es');
+  const L0 = llengues[0], T = DISSENY_TXT[o.llengua] || DISSENY_TXT[L0] || DISSENY_TXT.es;
+  const nom = String(o.nom || (web.casa || [])[0] || web.titol || 'La web').trim();
+  const per = {}; ((o.portesWeb || {}).pagines || []).forEach(x => { const c = x && F && fotoCami(x.url, F.origen); if (c && x.quien) per[senseLl(c)] = String(x.quien); });
+  const pags = [], perId = {};
+  const nova = (id, ruta, base) => { const p = Object.assign({ id, ruta, rol: null, objectiu: '', seccions: [], cta: '', imatges: [], abans: [], menu: null, capa: 'publica', textos: {} }, base || {}); pags.push(p); perId[id] = p; return p; };
+  const fill = (s, x) => Object.keys(x).reduce((t, k) => t.split('{' + k + '}').join(x[k]), s);
+  const sec = (t, q) => ({ titol: t, que: q });
+  /* Del mapa: l'inici, una porta per rol, els serveis. */
+  nova('inici', '/', { objectiu: fill(T.objInici, { nom }), menu: 0,
+    seccions: [sec(T.presentacio, MC.presentacio || web.titol || ''), sec(T.secPortes, (web.portes || []).filter(p => !p.buida).map(p => (MP[p.rol] && MP[p.rol].nom) || p.rol).join(', '))],
+    cta: T.ctaPortes });
+  (web.portes || []).forEach(p => {
+    if (p.buida) return;
+    nova(p.id, '/' + p.id + '.html', { rol: p.rol, capa: p.compte && (o.capes || ['extranet']).includes('extranet') ? 'extranet' : 'publica',
+      objectiu: p.rep[0] && p.dona[0] ? fill(T.objRol, { rol: p.rol, rep: p.rep[0].q, dona: p.dona[0].q }) : fill(T.objRolSol, { rol: p.rol }),
+      seccions: [].concat(p.rep.length ? [sec(T.secRep, p.rep.map(f => f.q).join(' · '))] : [], p.dona.length ? [sec(T.secDona, p.dona.map(f => f.q).join(' · '))] : [],
+        [sec(T.secPassos, p.benvinguda.map(b => ((SITE_TXT[o.llengua] || SITE_TXT[L0] || SITE_TXT.es).pas[b.pas] || [b.t])[0]).join(' → '))]),
+      cta: p.compte ? T.ctaAlta : T.ctaEscriu });
+  });
+  if ((web.serveis || []).length) nova('serveis', '/serveis.html', { objectiu: T.secServeis, seccions: web.serveis.map(sv => sec(sv.nom, sv.passos.map(x => x.q).join(' → '))), cta: T.ctaEscriu });
+  /* De la web vella: cada pàgina, per idioma, a la seva pàgina nova. */
+  const redir = [], usats = {}; pags.forEach(p => { usats[p.id] = 1; });
+  ['equip', 'registre', 'gracies', '404', 'estil', 'web', 'index', 'img'].forEach(x => { usats[x] = 1; });
+  const perClau = {};
+  fonts.forEach(p => {
+    const cami = fotoCami(p.url, F.origen); if (cami === null) return;
+    const ll = llenguaDe(p, cami), clau = senseLl(cami).replace(/\/index\.html?$/, '/').replace(/(.)\/$/, '$1');
+    let pg = perClau[clau];
+    if (!pg) {
+      const rol = per[clau] || per[clau + '/'], pr = rol && pags.find(x => x.rol === rol && !x.abans.length);
+      if (clau === '/') pg = perId.inici;
+      else if (pr) pg = pr;
+      else {
+        const b = webSlug(clau.replace(/\.[a-z0-9]+$/i, '').split('/').filter(Boolean).pop() || p.h1 || p.titol);
+        let k = b, n = 2; while (usats[k]) k = b + '-' + n++; usats[k] = 1;
+        pg = nova(k, '/' + k + '.html', { objectiu: fill(T.objVella, { h1: p.h1 || p.titol || k }), seccions: [sec(T.secVella, p.h1 || p.titol || '')], cta: T.ctaEscriu });
+      }
+      perClau[clau] = pg;
+    }
+    if (pg.menu === null && p.menu !== null) pg.menu = p.menu;
+    if (!pg.textos[ll]) pg.textos[ll] = { estat: 'conserva', titol: p.titol, descripcio: p.descripcio, h1: p.h1, text: p.text };
+    ((o.foto.pagines.find(x => x.url === p.url) || {}).imatges || []).slice(0, 8).forEach(im => { if (im && im.src && !pg.imatges.some(y => y.src === im.src)) pg.imatges.push({ src: String(im.src), alt: fotoTall(im.alt, 200) }); });
+    pg.abans.push(cami);
+    const a = (ll === L0 ? '' : '/' + ll) + (pg.ruta === '/' ? '/' : pg.ruta);
+    if (cami.replace(/\/$/, '') !== a.replace(/\/$/, '')) redir.push({ de: cami, a });
+  });
+  (F && F.fora.length ? F.fora : []).forEach(u => { const c = fotoCami(u, F.origen); if (c && c !== '/' && !redir.some(r => r.de === c)) redir.push({ de: c, a: '/' }); });
+  /* Els textos que falten, per idioma: per escriure, mai copiats d'un altre idioma. */
+  pags.forEach(p => llengues.forEach(ll => { if (!p.textos[ll]) p.textos[ll] = { estat: 'escriure' }; }));
+  const orfes = F ? F.pagines.map(p => p.url).filter(u => fotoCami(u, F.origen) === null) : [];
+  const json = { tipus: 'sos-disseny-web', v: 1, nom, url: /^https:\/\/[^\s"<>]+$/.test(o.url || '') ? o.url.replace(/\/*$/, '/') : '', origen: F ? F.origen : '', llengues,
+    marca: Object.assign({}, MC, { logoSvg: undefined, logo: !!MC.logoSvg }), pagines: pags, redireccions: redir, orfes,
+    requisits: T.requisits, acceptacio: T.acceptacio };
+  /* El mateix, per llegir. */
+  const md = [], cel = s => String(s == null ? '' : s).replace(/\|/g, '\\|').replace(/\n+/g, ' ');
+  md.push('# ' + T.titol + ' · ' + nom, '', T.perQui, '', '## ' + T.resum, '',
+    '- **' + T.llengues + ':** ' + llengues.join(', '), '- **' + T.origen + ':** ' + (json.origen || T.senseOrigen), '- **' + T.nova + ':** ' + (json.url || '—'), '');
+  md.push('## ' + T.marca, '');
+  [['color', T.color], ['lletra', T.lletra], ['forma', T.forma], ['lema', T.lema], ['presentacio', T.presentacio]].forEach(([k, t]) => { if (MC[k]) md.push('- **' + t + ':** ' + MC[k]); });
+  if (MC.logoSvg) md.push('- **' + T.logo + ':** ' + T.siLogo);
+  if (MC.contacte) md.push('- **' + T.contacte + ':** ' + Object.values(MC.contacte).join(' · '));
+  if (!Object.keys(MC).some(k => k !== 'portes')) md.push('—');
+  md.push('', '## ' + T.pagines, '');
+  pags.slice().sort((x, y) => (x.menu === null ? 999 : x.menu) - (y.menu === null ? 999 : y.menu)).forEach(p => {
+    md.push('### ' + (p.id === 'inici' ? T.inici : p.rol ? ((MP[p.rol] && MP[p.rol].nom) || p.rol) : (p.textos[L0].h1 || p.id)) + ' · `' + p.ruta + '`', '');
+    md.push('- **' + T.objectiu + ':** ' + p.objectiu);
+    if (p.rol) md.push('- **' + T.porta + ':** ' + p.rol + (p.capa !== 'publica' ? ' (' + p.capa + ')' : ''));
+    if (p.abans.length) md.push('- **' + T.abans + ':** ' + p.abans.map(x => '`' + x + '`').join(', '));
+    md.push('- **' + T.seccions + ':** ' + p.seccions.filter(s => s.que || s.titol).map(s => s.titol + (s.que ? ' (' + s.que + ')' : '')).join('; '));
+    md.push('- **' + T.cta + ':** ' + p.cta);
+    if (p.imatges.length) md.push('- **' + T.imatges + ':** ' + p.imatges.map(i => '`' + i.src + '`' + (i.alt ? ' «' + i.alt + '»' : '')).join(', '));
+    md.push('');
+    llengues.forEach(ll => {
+      const x = p.textos[ll];
+      md.push('#### ' + T.textos + ' · ' + ll + ' · ' + (x.estat === 'conserva' ? T.conserva : T.escriure), '');
+      if (x.estat !== 'conserva') { md.push('_' + T.escriure + '_', ''); return; }
+      md.push('- **' + T.titolP + ':** ' + (x.titol || '—'), '- **' + T.descr + ':** ' + (x.descripcio || '—'), '- **' + T.h1 + ':** ' + (x.h1 || '—'), '');
+      if (x.text) md.push(String(x.text).trim().split(/\n\s*\n/).map(par => '> ' + par.replace(/\s+/g, ' ').trim()).join('\n>\n'), '');
+    });
+  });
+  if (redir.length || orfes.length) {
+    md.push('## ' + T.red, '', '| ' + T.de + ' | ' + T.a + ' |', '|---|---|');
+    redir.forEach(r => md.push('| `' + cel(r.de) + '` | `' + cel(r.a) + '` |'));
+    md.push('');
+    if (orfes.length) md.push('**' + T.orfes + ':** ' + orfes.map(u => '`' + u + '`').join(', '), '');
+  }
+  md.push('## ' + T.req, '', ...T.requisits.map(x => '- ' + x), '', '## ' + T.acc, '', ...T.acceptacio.map(x => '- [ ] ' + x), '',
+    '## ' + T.claude, '', ...T.construeix.map((x, i) => (i + 1) + '. ' + x), '');
+  return { json, md: md.join('\n') };
+}
 function webASite(web, opts) {
   const o0 = opts || {}, F = fotoNeta(o0.foto);
   const o = !SITE_TXT[o0.llengua] && F && SITE_TXT[F.llengua] ? Object.assign({}, o0, { llengua: F.llengua }) : o0;
@@ -5121,6 +5299,8 @@ function webASite(web, opts) {
      desa com a seu: ni al repositori, ni a l'índex, ni a l'empremta. */
   if (o.sensemapa) for (let i = fitxers.length - 1; i >= 0; i--) if (/^cerebro\/mapa-(real|ideal)\.json$/.test(fitxers[i].ruta)) fitxers.splice(i, 1);
   const repo = (o.repo || []).filter(f => !fitxers.some(x => x.ruta === f.ruta));
+  /* El document de disseny: el que es revisa amb el client i es dona a Claude Code. */
+  if (o.mapa || F) { const D = dissenyWeb(web, o); posa('cerebro/disseny-web.json', JSON.stringify(D.json, null, 2) + '\n', 'application/json'); posa('cerebro/disseny-web.md', D.md, 'text/markdown'); }
   if (o.mapa) indexCervell(fitxers.concat(repo), nom, L.idx).forEach(f => posa(f.ruta, f.cos, f.tipus));
   const orfes = F ? orfesFoto(o.foto, fitxers) : [];
   orfes.forEach(u => avisa(L.fotoOrfe.replace('{url}', u)));
@@ -5154,6 +5334,7 @@ function indexCervell(fitxers, nom, T) {
     : /^cerebro\/procesos\//.test(r) ? ['processos', 'equip']
     : r === 'cerebro/decisiones.md' ? ['decisions', 'equip']
     : r === 'cerebro/marca.json' || r === 'cerebro/configuracio.json' ? ['web', 'equip']
+    : /^cerebro\/(foto-web\.json|disseny-web\.(md|json))$/.test(r) ? ['web', 'equip']
     : /^cerebro\/(tasques-ia\.(md|json)|esborranys\/.+\.md)$/.test(r) ? ['tasques', 'equip']
     : /^cerebro\/continguts\/[^/]+\.md$/.test(r) ? ['continguts', 'equip']
     : /^cerebro\/(fonts\/.+\.(md|json)|dossier\.md)$/.test(r) ? ['fonts', 'equip']

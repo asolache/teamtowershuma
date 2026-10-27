@@ -146,7 +146,7 @@ await page.goto(APP + '?viu');
 await page.waitForFunction(() => window.__SOS);
 await page.waitForTimeout(1200);
 const abans = await page.evaluate(() => ({
-  barra: [...document.querySelectorAll('.lents .lent')].map(x => x.textContent),
+  barra: [...document.querySelectorAll('.lents .lent:not(.lent-z)')].map(x => x.textContent),
   carregada: !!document.querySelector('script[src="lib/lents.js"]'),
   temps: !!document.querySelector('#lnTemps')
 }));
@@ -397,6 +397,32 @@ await page.waitForFunction(id => !window.__SOS.state.nodes.find(y => y.exempleVi
 ok(true, 'i «Treu el flux» el treu');
 await page.click('#lnEdita');
 ok(await page.evaluate(() => !document.querySelector('.vna-canvas svg.me-on') && document.querySelector('.me-pista').hidden), 'tornar-lo a tocar deixa el mapa com sempre');
+
+console.log('\n12b · El zoom, per als tallers: dos dits, Ctrl+roda i + − ⤢');
+const vbox = () => page.evaluate(() => document.querySelector('.vna-canvas svg.vna-svg').getAttribute('viewBox').split(' ').map(Number));
+await page.waitForSelector('.vna-canvas svg.me-zoom');
+const v0 = await vbox();
+await page.click('.lent-z[data-zoom=mes]');
+let v1 = await vbox();
+ok(v1[2] < v0[2] && Math.abs(v1[0] + v1[2] / 2 - (v0[0] + v0[2] / 2)) < 1, '«＋» apropa el mapa pel centre (' + Math.round(v0[2] / v1[2] * 100) + ' %)');
+await page.click('.lent-z[data-zoom=torna]');
+ok((await vbox()).join() === v0.join(), '«⤢» el torna a la mida de sempre');
+const caixaSvg = await page.evaluate(() => { const r = document.querySelector('.vna-canvas svg.vna-svg').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+await page.mouse.move(caixaSvg.x, caixaSvg.y);
+await page.keyboard.down('Control'); await page.mouse.wheel(0, -200); await page.keyboard.up('Control');
+ok((await vbox())[2] < v0[2], 'Ctrl + roda (o pessigar el trackpad) apropa');
+await page.click('.lent-z[data-zoom=torna]');
+const cdp = await page.context().newCDPSession(page);
+const dits = (t, d) => cdp.send('Input.dispatchTouchEvent', { type: t, touchPoints: t === 'touchEnd' ? [] : [{ x: caixaSvg.x - d, y: caixaSvg.y, id: 1 }, { x: caixaSvg.x + d, y: caixaSvg.y, id: 2 }] });
+await dits('touchStart', 40); for (const d of [60, 80, 100, 120]) await dits('touchMove', d); await dits('touchEnd');
+v1 = await vbox();
+ok(v1[2] < v0[2] * .5, 'pessigar amb dos dits apropa (' + Math.round(v0[2] / v1[2] * 100) + ' %)');
+await page.click('.lent[data-lent=valor]');
+await page.waitForSelector('.vna-canvas svg.me-zoom');
+ok((await vbox()).join() === v1.join(), 'i quan el mapa es torna a pintar, el zoom es queda');
+await page.click('.lent-z[data-zoom=torna]');
+const zb = await page.evaluate(() => [...document.querySelectorAll('.lent-z')].map(b => { const r = b.getBoundingClientRect(); return Math.min(r.width, r.height); }));
+ok(zb.length === 3 && zb.every(x => x >= 44), 'els tres botons, de 44 px o més per al dit');
 
 console.log('\n13 · Les vistes del cervell, sobre el teu mapa');
 const vista = async l => {

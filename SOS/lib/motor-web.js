@@ -8,7 +8,7 @@
 (function (g) {
 'use strict';
 var BLOCS = ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-IMPORTA', 'VS-GENERA'];
-var EXPORTA = ['revisa', 'fluxos', 'creaDiagnosi', 'creaModel', 'webDelMapa', 'webASite', 'ambPermaweb', 'generaWeb', 'codiRepositori', 'KIT_TXT', 'rastreja', 'orfesFoto'];
+var EXPORTA = ['revisa', 'fluxos', 'creaDiagnosi', 'creaModel', 'webDelMapa', 'webASite', 'ambPermaweb', 'generaWeb', 'codiRepositori', 'KIT_TXT', 'rastreja', 'orfesFoto', 'dissenyWeb'];
 
 /* El text entre `/*NOM*\/` i `/*\/NOM*\/`, sense la marca de tancament. */
 function bloc(html, nom) {
@@ -36,6 +36,13 @@ function site(m, html, opts) {
     url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, acces: o.acces, marca: o.marca, foto: o.foto, portesWeb: o.portesWeb, mapa: m }).fitxers;
 }
 
-var MotorWeb = { BLOCS: BLOCS, bloc: bloc, motor: motor, site: site };
+/* El document de disseny d'un mapa (27/10/2026): el que es revisa amb el
+   client i es dona a Claude Code. { json: sos-disseny-web v1, md }. */
+function disseny(m, html, opts) {
+  var o = opts || {}, M = motor(html), casa = o.casa || [];
+  return M.dissenyWeb(M.webDelMapa(m, { casa: casa }), o);
+}
+
+var MotorWeb = { BLOCS: BLOCS, bloc: bloc, motor: motor, site: site, disseny: disseny };
 if (typeof module !== 'undefined' && module.exports) module.exports = MotorWeb; else g.MotorWeb = MotorWeb;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
