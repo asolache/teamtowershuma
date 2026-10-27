@@ -90,5 +90,29 @@ try {
   ok(r.status === 1 && /sense destí/.test(r.stderr) && r.stderr.includes('altre.example/blog'), 'amb una adreça vella sense destí, s\'atura i diu quina (' + r.status + ')');
 } finally { rmSync(tmp, { recursive: true, force: true }); }
 
+console.log('\n6 · El document de disseny: per idioma, sense barrejar-los, per donar-lo a Claude Code');
+const bi = { tipus: 'sos-foto-web', v: 1, origen: 'https://escola.example/', llengua: 'es', fora: ['/es/promo'],
+  pagines: [
+    { url: '/es/', titol: 'Escuela de español', descripcio: 'Cursos en Barcelona.', h1: 'Aprende español', text: 'Somos una escuela.', menu: 0, imatges: [{ src: '/img/aula.jpg', alt: 'El aula' }] },
+    { url: '/ca/', titol: 'Escola d\'espanyol', descripcio: 'Cursos a Barcelona.', h1: 'Aprèn espanyol', text: 'Som una escola.', menu: 0 },
+    { url: '/es/cursos', titol: 'Cursos', descripcio: 'Intensivos.', h1: 'Nuestros cursos', text: 'Veinte horas.', menu: 1 },
+    { url: '/ca/cursos', titol: 'Cursos', descripcio: 'Intensius.', h1: 'Els nostres cursos', text: 'Vint hores.', menu: 1 },
+    { url: '/es/formacion', titol: 'Formación ELE', descripcio: 'Para profesores.', h1: 'Formación de profesores', text: 'Formación inicial.', menu: 2 }] };
+const D = M.dissenyWeb(M.webDelMapa(mapa, { casa: ['Escola'] }), { nom: 'Escola', foto: bi, llengua: 'es',
+  portesWeb: { pagines: [{ url: '/es/formacion', quien: 'Professors' }] }, marca: { color: '#0a7', lema: 'Aprende hablando' } });
+const J = D.json, pg = id => J.pagines.find(p => p.id === id);
+ok(J.tipus === 'sos-disseny-web' && J.v === 1 && J.llengues.join() === 'es,ca', 'sos-disseny-web v1, amb els dos idiomes, el de la portada primer (' + J.llengues.join(', ') + ')');
+ok(pg('inici').textos.es.h1 === 'Aprende español' && pg('inici').textos.ca.h1 === 'Aprèn espanyol', '/es/ i /ca/ són la mateixa portada, amb un bloc per idioma');
+ok(pg('cursos') && pg('cursos').textos.es.text === 'Veinte horas.' && pg('cursos').textos.ca.text === 'Vint hores.', 'i el mateix amb cada pàgina: cap text barreja els dos idiomes');
+ok(pg('professors').textos.es.h1 === 'Formación de profesores' && pg('professors').textos.ca.estat === 'escriure', 'la que només era en un idioma queda «per escriure» en l\'altre, sense copiar-la');
+ok(pg('alumnes') && pg('alumnes').textos.es.estat === 'escriure' && /Alumnes/.test(pg('alumnes').objectiu), 'les portes del mapa sense pàgina vella hi són, amb el seu objectiu');
+ok(pg('inici').imatges[0].src === '/img/aula.jpg', 'les imatges de cada pàgina, per copiar-les');
+const R = Object.fromEntries(J.redireccions.map(r => [r.de, r.a]));
+ok(R['/es/'] === '/' && !('/ca/' in R), 'l\'idioma principal va a l\'arrel i l\'altre es queda a /ca/: ' + JSON.stringify(R['/es/']) + ' ' + JSON.stringify(R['/ca/']));
+ok(R['/es/cursos'] === '/cursos.html' && R['/ca/cursos'] === '/ca/cursos.html' && R['/es/formacion'] === '/professors.html' && R['/es/promo'] === '/', 'cada adreça vella té el seu 301 a la nova');
+ok(/^# Documento de diseño de la web · Escola/m.test(D.md) && /#### Textos · ca · Se conserva/.test(D.md) && /- \[ \] /.test(D.md) && /Claude Code/.test(D.md), 'el Markdown: per idioma, amb criteris d\'acceptació i com es construeix amb Claude Code');
+ok(/\*\*Color:\*\* #0a7|\*\*Color:\*\* #00aa77/i.test(D.md) && /Aprende hablando/.test(D.md), 'i la marca');
+ok(M.webASite(M.webDelMapa(mapa, { casa: ['Escola'] }), { nom: 'Escola', foto, mapa }).fitxers.some(f => f.ruta === 'cerebro/disseny-web.md'), 'el repositori del client el porta a cerebro/disseny-web.md i .json');
+
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
