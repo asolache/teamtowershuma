@@ -50,9 +50,18 @@ export function neteja(f, ara = new Date()) {
     marca: { lema: t(marca.lema, 200), presentacio: t(marca.presentacio, 800), portes: p },
     /* A qui va cada pàgina de la seva web d'ara, i el que encara no diu a cadascú (pule-mapa, pas 'pagines'). */
     portesWeb: portesWeb(f.portesWeb),
+    /* El document de disseny: no el document (surt sempre del motor), sinó quan l'ha revisat i el que hi canviaria. */
+    disseny: dissenyRevisat(f.disseny),
     actualitzada: ara.toISOString()
   };
   return JSON.stringify(o).length > MAX ? null : o;
+}
+
+function dissenyRevisat(x) {
+  if (!x || typeof x !== 'object' || !/^\d{4}-\d\d-\d\dT/.test(String(x.data || ''))) return null;
+  const n = v => Math.max(0, Math.min(999, Math.floor(Number(v) || 0)));
+  return { data: t(x.data, 30), nota: t(x.nota, 1500), pagines: n(x.pagines), redireccions: n(x.redireccions),
+    llengues: (Array.isArray(x.llengues) ? x.llengues : []).slice(0, 6).map(l => t(l, 5)).filter(l => /^[a-z]{2}$/.test(l)) };
 }
 
 function portesWeb(x) {

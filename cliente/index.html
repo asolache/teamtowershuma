@@ -308,6 +308,16 @@
         .ia-pags .per { font-size: var(--t0); color: var(--muted); font-style: italic; }
         .ia-falta { margin-top: 1rem; display: grid; gap: .4rem; max-width: 64ch; }
         .ia-falta ul { margin: 0; padding-left: 1.1rem; font-size: var(--t0); }
+        /* El document de disseny (MotorWeb.disseny): el que es revisa amb el client i es dona a Claude Code. */
+        .disseny { margin-top: 1.6rem; padding: 1.2rem 1.3rem; border-radius: 18px; border: 1px solid var(--border); background: var(--card); }
+        .disseny h3 { margin: 0; }
+        .disseny > p { color: var(--light); font-size: var(--t0); max-width: 64ch; margin-top: .4rem; }
+        .disseny .ll { display: flex; flex-wrap: wrap; gap: .3rem; }
+        .disseny .ll span { font-size: var(--t0); padding: .05rem .5rem; border-radius: 99px; background: #e3f3ea; color: var(--green); }
+        .disseny .ll span.esc { background: #fff4d6; color: var(--text); }
+        .disseny details { margin-top: .8rem; font-size: var(--t0); }
+        .disseny details ul { padding-left: 1.1rem; }
+        .disseny textarea { width: 100%; min-height: 4.5rem; }
         .fila.nou { animation: ia-llum 1.6s ease-out; }
         @keyframes ia-llum { from { box-shadow: 0 0 0 3px var(--indigo); background: #f3f1ff; } }
         @media (prefers-reduced-motion: reduce) { .ia *, .ia, .fila.nou { animation: none !important; transition: none !important; } }
@@ -612,8 +622,15 @@
             <button type="button" class="btn btn-primary ia-boto" id="cl-ia-escriu" hidden>✦ Escribir mis textos</button>
             <div id="cl-ia-web-res" aria-live="polite"></div>
         </div>
+        <div class="disseny" id="cl-disseny">
+            <h3>El documento de diseño de tu web</h3>
+            <p>Sale de tu dibujo y, si la hemos leído, de tu web de ahora: cada página, para quién es y qué tiene que conseguir; tus direcciones de siempre, que siguen funcionando; los textos de cada idioma por separado, y lo que tu web tiene que cumplir. Lo revisamos juntos en la sesión y con él construimos tu web.</p>
+            <div class="accions"><button type="button" class="btn btn-primary" id="cl-disseny-fes">Preparar mi documento de diseño</button></div>
+            <div id="cl-disseny-res" aria-live="polite"></div>
+        </div>
+        <p class="nota" style="margin-top:1.6rem">El boceto es solo una vista rápida de tu dibujo como web, no tu web final.</p>
         <div class="accions">
-            <button type="button" class="btn btn-primary" id="cl-boceto">Ver el boceto de mi web</button>
+            <button type="button" class="btn btn-ghost" id="cl-boceto">Ver el boceto de mi web</button>
             <button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button>
         </div>
         <p class="nota" id="cl-boceto-r" role="status"></p>
@@ -1018,6 +1035,18 @@
         'Lo que tu web todavía no le dice a…': 'El que la teva web encara no li diu a…',
         'Lo guardamos en tu ficha: lo usamos en la sesión para que cada página vieja lleve a su puerta y Google no la pierda.': "Ho desem a la teva fitxa: ho fem servir a la sessió perquè cada pàgina vella porti a la seva porta i Google no la perdi.",
         'Primero leemos tu web.': 'Primer llegim la teva web.',
+        'El documento de diseño de tu web': 'El document de disseny de la teva web',
+        'Sale de tu dibujo y, si la hemos leído, de tu web de ahora: cada página, para quién es y qué tiene que conseguir; tus direcciones de siempre, que siguen funcionando; los textos de cada idioma por separado, y lo que tu web tiene que cumplir. Lo revisamos juntos en la sesión y con él construimos tu web.': "Surt del teu dibuix i, si l'hem llegida, de la teva web d'ara: cada pàgina, per a qui és i què ha d'aconseguir; les teves adreces de sempre, que continuen funcionant; els textos de cada idioma per separat, i el que la teva web ha de complir. El revisem junts a la sessió i amb ell construïm la teva web.",
+        'Preparar mi documento de diseño': 'Preparar el meu document de disseny', 'Preparar otra vez': 'Preparar-lo un altre cop',
+        'El boceto es solo una vista rápida de tu dibujo como web, no tu web final.': "L'esbós és només una vista ràpida del teu dibuix com a web, no la teva web final.",
+        'Preparando tu documento…': 'Preparant el teu document…', 'No he podido preparar el documento ahora.': "No he pogut preparar el document ara.",
+        '{0} páginas · idiomas: {1}': '{0} pàgines · idiomes: {1}', '{0} direcciones de siempre que siguen funcionando': '{0} adreces de sempre que continuen funcionant',
+        'Antes:': 'Abans:', 'Botón:': 'Botó:', 'Texto de tu web de ahora': "Text de la teva web d'ara", 'Por escribir': 'Per escriure',
+        'Tus direcciones de siempre, y adónde llevan': 'Les teves adreces de sempre, i on porten', 'Lo que tu web tiene que cumplir': 'El que la teva web ha de complir',
+        'Cómo comprobamos que está bien': 'Com comprovem que està bé',
+        'Descargar (.md)': 'Descarregar (.md)', 'Descargar (.json)': 'Descarregar (.json)',
+        '¿Qué cambiarías? (lo vemos en la sesión)': 'Què hi canviaries? (ho mirem a la sessió)', 'Guardarlo en mi ficha': 'Desar-ho a la meva fitxa',
+        'Guardado en tu ficha el {0}.': 'Desat a la teva fitxa el {0}.', 'documento-de-diseno': 'document-de-disseny',
         'Leyendo tus páginas…': 'Llegint les teves pàgines…', 'Buscando a quién habla cada una…': 'Buscant a qui parla cadascuna…', 'Mirando a quién no le habla ninguna…': 'Mirant a qui no li parla cap…',
         /* Los pasos y los niveles: de proces-web.js y web-viva.js (build-proces.js) */
 /*TT-PROCES-CA*/
@@ -1403,6 +1432,69 @@
         }).catch(function () { r.textContent = t('No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'); });
     }
     $('#cl-boceto').addEventListener('click', function () { pintaWeb(false); });
+
+    /* El documento de diseño (MotorWeb.disseny, sos-disseny-web v1; Álvaro, 27/10/2026:
+       el entregable de la web no es el boceto, es el documento que revisamos con ella
+       y que construye Claude Code). Aquí solo se enseña, se descarga y se guarda en
+       su ficha lo que ella dice; el documento sale siempre del motor, de su dibujo y
+       de la lectura de su web. */
+    var DOC = null;
+    function baixa(nom, tipus, cos) {
+        var a = el('a', { href: URL.createObjectURL(new Blob([cos], { type: tipus })), download: nom });
+        document.body.appendChild(a); a.click(); a.remove();
+    }
+    function fesDisseny() {
+        var r = $('#cl-disseny-res'), m = D.mapa(S), b = $('#cl-disseny-fes');
+        if (m.roles.length < 2) { aviso(t('Primero di al menos quién está a tu alrededor (paso 4)')); return; }
+        r.textContent = t('Preparando tu documento…'); b.disabled = true;
+        motor().then(function (html) {
+            b.disabled = false;
+            DOC = MotorWeb.disseny(m, html, { nom: S.org || S.nom, url: S.web, casa: [m.roles[0]], llengua: LL, capes: capes(), marca: S.marca || null,
+                foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null });
+            pintaDisseny(DOC.json);
+            b.textContent = t('Preparar otra vez');
+        }).catch(function () { b.disabled = false; r.textContent = t('No he podido preparar el documento ahora.'); });
+    }
+    function pintaDisseny(J) {
+        var r = $('#cl-disseny-res'), MP = (J.marca && J.marca.portes) || {}, L0 = J.llengues[0]; r.textContent = '';
+        var ps = J.pagines.slice().sort(function (x, y) { return (x.menu === null ? 999 : x.menu) - (y.menu === null ? 999 : y.menu); });
+        r.appendChild(el('p', { class: 'ia-resum' }, t('{0} páginas · idiomas: {1}', ps.length, J.llengues.join(', ')) + (J.redireccions.length ? ' · ' + t('{0} direcciones de siempre que siguen funcionando', J.redireccions.length) : '')));
+        var ul = el('ul', { class: 'ia-pags', id: 'cl-disseny-pags' });
+        ps.forEach(function (p, n) {
+            var li = el('li', { 'data-ruta': p.ruta }); li.style.animationDelay = (n * .05) + 's';
+            li.appendChild(el('code', {}, p.ruta + (p.abans.length ? ' · ' + t('Antes:') + ' ' + p.abans.join(', ') : '')));
+            li.appendChild(el('b', {}, p.id === 'inici' ? t('Inicio') : p.rol ? ((MP[p.rol] && MP[p.rol].nom) || p.rol) : ((p.textos[L0] || {}).h1 || p.id)));
+            if (p.rol) li.appendChild(el('span', { class: 'porta' }, t('Para {0}', p.rol)));
+            li.appendChild(el('span', { class: 'h' }, p.objectiu + (p.cta ? ' · ' + t('Botón:') + ' ' + p.cta : '')));
+            var ll = el('span', { class: 'll' });
+            J.llengues.forEach(function (k) { var x = p.textos[k] || {}; ll.appendChild(el('span', x.estat === 'conserva' ? {} : { class: 'esc' }, k + ' · ' + t(x.estat === 'conserva' ? 'Texto de tu web de ahora' : 'Por escribir'))); });
+            li.appendChild(ll); ul.appendChild(li);
+        });
+        r.appendChild(ul);
+        function plega(tit, items, id) {
+            if (!items.length) return;
+            var d = el('details', { id: id }), u = el('ul'); d.appendChild(el('summary', {}, tit));
+            items.forEach(function (x) { u.appendChild(el('li', {}, x)); }); d.appendChild(u); r.appendChild(d);
+        }
+        plega(t('Tus direcciones de siempre, y adónde llevan'), J.redireccions.map(function (x) { return x.de + ' → ' + x.a; }), 'cl-disseny-red');
+        plega(t('Lo que tu web tiene que cumplir'), J.requisits, 'cl-disseny-req');
+        plega(t('Cómo comprobamos que está bien'), J.acceptacio, 'cl-disseny-acc');
+        var acc = el('div', { class: 'accions' }), bm = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', id: 'cl-disseny-md' }, t('Descargar (.md)')), bj = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', id: 'cl-disseny-json' }, t('Descargar (.json)'));
+        var nf = t('documento-de-diseno') + '-' + String(J.nom || 'web').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        bm.addEventListener('click', function () { baixa(nf + '.md', 'text/markdown', DOC.md); });
+        bj.addEventListener('click', function () { baixa(nf + '.json', 'application/json', JSON.stringify(DOC.json, null, 2)); });
+        acc.appendChild(bm); acc.appendChild(bj); r.appendChild(acc);
+        var lb = el('label', { for: 'cl-disseny-nota' }, t('¿Qué cambiarías? (lo vemos en la sesión)')), tx = el('textarea', { id: 'cl-disseny-nota' });
+        tx.value = (S.disseny && S.disseny.nota) || ''; r.appendChild(lb); r.appendChild(tx);
+        var a2 = el('div', { class: 'accions' }), bg = el('button', { type: 'button', class: 'btn btn-primary', id: 'cl-disseny-desa' }, t('Guardarlo en mi ficha')), ok = el('p', { class: 'nota', role: 'status' });
+        if (S.disseny && S.disseny.data) ok.textContent = t('Guardado en tu ficha el {0}.', S.disseny.data.slice(0, 10).split('-').reverse().join('/'));
+        bg.addEventListener('click', function () {
+            S.disseny = { data: new Date().toISOString(), nota: tx.value.trim(), pagines: J.pagines.length, redireccions: J.redireccions.length, llengues: J.llengues }; desa();
+            ok.textContent = t('Guardado en tu ficha el {0}.', S.disseny.data.slice(0, 10).split('-').reverse().join('/'));
+        });
+        a2.appendChild(bg); r.appendChild(a2); r.appendChild(ok);
+    }
+    $('#cl-disseny-fes').addEventListener('click', fesDisseny);
 
     /* Tu mapa y tu web, en vivo (Álvaro, 24/10/2026: «el usuario quiere ver 1 su
        mapa, 2 su web», orientado a quien no sabe de lo que no conoce). Un panel
