@@ -13,14 +13,14 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 401 · 20659 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 402 · 20684 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 134 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
 | `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 20 · 454 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 12 · 10008 KB |
-| `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 360 KB |
+| `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 368 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
@@ -37,7 +37,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 4 · 36 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 130 · 1703 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 131 · 1711 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 73 · 1565 KB |
 
 ## saber

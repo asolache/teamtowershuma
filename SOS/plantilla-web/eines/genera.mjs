@@ -3,7 +3,7 @@
 // Fa la web del mapa i la deixa a l'arrel. Netlify l'executa a cada publicació; en local, amb Node 18 o més.
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { inflateRawSync } from 'node:zlib';
-import { genera, EXEMPLE, marcaSvg } from './motor.mjs';
+import { genera, EXEMPLE, marcaSvg, orfesFoto } from './motor.mjs';
 const arrel = new URL('../', import.meta.url), e = process.env, hi = r => existsSync(new URL(r, arrel));
 const llegeix = r => (hi(r) ? JSON.parse(readFileSync(new URL(r, arrel), 'utf8')) : null);
 /* El que és del repositori i la web no genera: els continguts, el que s'ha importat, el dossier i els esborranys. */
@@ -21,16 +21,19 @@ const ideal = llegeix('cerebro/mapa-ideal.json');
 if (ideal) mapa = Object.assign({}, mapa, { ideal });
 /* El que es va triar a l'editor i la marca viatgen amb el repositori: sense llegir-los, refer la web la tornava al català, al rol que més lliura i sense marca. Les variables TT_* hi passen per sobre. */
 const prova = r => { try { return llegeix(r); } catch (x) { console.warn('⚠️  ' + r + ' no és JSON vàlid: no es fa servir.'); return null; } };
-const conf = prova('cerebro/configuracio.json') || {}, marca = prova('cerebro/marca.json');
+const conf = prova('cerebro/configuracio.json') || {}, marca = prova('cerebro/marca.json'), foto = prova('cerebro/foto-web.json');
 if (marca && marca.logo === '../logo.svg') {
   if (hi('logo.svg')) marca.logoSvg = readFileSync(new URL('logo.svg', arrel), 'utf8');
   if (!marcaSvg(marca.logoSvg)) console.warn('⚠️  cerebro/marca.json demana logo.svg, però ' + (hi('logo.svg') ? 'no és un SVG que es pugui posar (porta scripts o enllaços, o passa de 100 kB)' : 'no hi és') + ': la web surt sense logo.');
 }
 let casa;
 try { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }
-const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn('⚠️  ' + m) });
+const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, foto: foto || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn('⚠️  ' + m) });
+/* La guarda de la web vella: cap adreça que Google ja coneix es pot quedar sense destí. Si en queda alguna, no es publica. */
+const orfes = foto ? orfesFoto(foto, fitxers) : [];
+if (orfes.length) { console.error('❌ ' + orfes.length + ' adreces de la web vella es quedarien sense destí (cerebro/foto-web.json): ' + orfes.join(', ')); process.exit(1); }
 /* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s'escriu (dossier, fonts, continguts, esborranys). */
-const propis = ['netlify.toml', 'cerebro/mapa-real.json', 'cerebro/marca.json', 'cerebro/mapa-ideal.json', 'cerebro/decisiones.md', 'cerebro/dossier.md'];
+const propis = ['netlify.toml', 'cerebro/mapa-real.json', 'cerebro/marca.json', 'cerebro/foto-web.json', 'cerebro/mapa-ideal.json', 'cerebro/decisiones.md', 'cerebro/dossier.md'];
 const escrit = r => /^cerebro\/(fonts|continguts|esborranys)\//.test(r);
 let n = 0;
 for (const f of fitxers) {

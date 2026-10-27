@@ -8,7 +8,7 @@
 (function (g) {
 'use strict';
 var BLOCS = ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-IMPORTA', 'VS-GENERA'];
-var EXPORTA = ['revisa', 'fluxos', 'creaDiagnosi', 'creaModel', 'webDelMapa', 'webASite', 'ambPermaweb', 'generaWeb', 'codiRepositori', 'KIT_TXT', 'rastreja'];
+var EXPORTA = ['revisa', 'fluxos', 'creaDiagnosi', 'creaModel', 'webDelMapa', 'webASite', 'ambPermaweb', 'generaWeb', 'codiRepositori', 'KIT_TXT', 'rastreja', 'orfesFoto'];
 
 /* El text entre `/*NOM*\/` i `/*\/NOM*\/`, sense la marca de tancament. */
 function bloc(html, nom) {
@@ -27,11 +27,13 @@ function motor(html) {
    [{ruta, cos}] de cada fitxer. `opts`: nom, correu, llengua, url, casa i
    vista ('basica': la capa informativa en una sola pàgina) i capes
    (['extranet', 'intranet']: el que es fa a més de la web pública) i marca
-   (lema, presentacio i portes: els textos que /cliente/ escriu amb la IA). */
+   (lema, presentacio i portes: els textos que /cliente/ escriu amb la IA) i
+   foto i portesWeb (la web que el client ja té: es replica i les adreces
+   velles hi porten amb un 301). */
 function site(m, html, opts) {
   var o = opts || {}, M = motor(html), casa = o.casa || [];
   return M.webASite(M.webDelMapa(m, { casa: casa }), { nom: o.nom || '', correu: o.correu || '', llengua: o.llengua || 'es',
-    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, acces: o.acces, marca: o.marca, mapa: m }).fitxers;
+    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, acces: o.acces, marca: o.marca, foto: o.foto, portesWeb: o.portesWeb, mapa: m }).fitxers;
 }
 
 var MotorWeb = { BLOCS: BLOCS, bloc: bloc, motor: motor, site: site };
