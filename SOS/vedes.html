@@ -2364,8 +2364,9 @@ details.ctx-i summary{cursor:pointer;font-weight:600}
 <li><strong>El més petit que fa bé la feina:</strong> classificar, resumir i extreure, Haiku; escriure, traduir i atendre, Sonnet; raonar i l'estratègia, Opus. Pujar de model es fa al router, per tasca o per projecte, i es mesura abans.</li>
 <li><strong>Comptat:</strong> cada crida apunta projecte, tasca, model, tokens i cost (magatzem <code>ia-router</code>), sense cap dada personal. La taula de qui fa què és pública (<code>/.netlify/functions/ia-router</code>); la despesa, amb el testimoni.</li>
 <li><strong>Una clau:</strong> <code>ANTHROPIC_API_KEY</code> a Netlify. Cap altra.</li>
+<li><strong>Els altres models es proven, no es fan servir</strong> (28/10): l'Álvaro vol comparar la qualitat amb Gemini, GPT i DeepSeek. El banc de proves (<code>SOS/tools/banc-ia.mjs</code>, l'acció «Banc de proves de la IA») els dona la mateixa feina, un jutge les puntua a cegues, i l'informe diu nota, temps i cost de cadascú. El router només canvia quan el banc ho demostra. Les seves claus són secrets de GitHub, no de Netlify; els seus preus, només amb font.</li>
 </ul>
-<p><strong>Guarda:</strong> <code>test-ia-router.mjs</code>.</p>
+<p><strong>Guarda:</strong> <code>test-ia-router.mjs</code> i <code>test-banc-ia.mjs</code>.</p>
 </article>
   <p class="empty hidden" id="empty">Cap veda amb aquest text. Prova amb una paraula més curta.</p>
 

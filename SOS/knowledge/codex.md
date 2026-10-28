@@ -5544,5 +5544,11 @@ i ningú que sàpiga què gasta cada projecte. Va contra el compromís de
   (magatzem `ia-router`), sense cap dada personal. La taula de qui fa què és
   pública (`/.netlify/functions/ia-router`); la despesa, amb el testimoni.
 - **Una clau:** `ANTHROPIC_API_KEY` a Netlify. Cap altra.
+- **Els altres models es proven, no es fan servir** (28/10): l'Álvaro vol
+  comparar la qualitat amb Gemini, GPT i DeepSeek. El banc de proves
+  (`SOS/tools/banc-ia.mjs`, l'acció «Banc de proves de la IA») els dona la
+  mateixa feina, un jutge les puntua a cegues, i l'informe diu nota, temps i
+  cost de cadascú. El router només canvia quan el banc ho demostra. Les seves
+  claus són secrets de GitHub, no de Netlify; els seus preus, només amb font.
 
-**Guarda:** `test-ia-router.mjs`.
+**Guarda:** `test-ia-router.mjs` i `test-banc-ia.mjs`.

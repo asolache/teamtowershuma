@@ -191,7 +191,7 @@ aquesta llista i res més.
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
 - `cliente` · obra · Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany
 - `visita` · obra · On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així
-- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) el preu de cada client, només per a ell (proposta), i el seu dibuix, guardat amb el seu compte (fitxa), i la seva web d'ara, llegida amb el seu sí (llegeix-web), i el router que tria quin model de Claude fa cada tasca i compta el que gasta cada projecte (ia-router)
+- `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) el preu de cada client, només per a ell (proposta), i el seu dibuix, guardat amb el seu compte (fitxa), i la seva web d'ara, llegida amb el seu sí (llegeix-web), i el router que tria quin model de Claude fa cada tasca i compta el que gasta cada projecte (ia-router), i els proveïdors del banc de proves de la IA (ia-proveidors)
 - `data` · arxiu · Llavors de dades d'una versió anterior
 - `js` · arxiu · Codi solt d'abans que tot fos autocontingut
 - `ia` · arxiu · Prototip d'app amb IA (SOS V10) i el seu proxy d'IA; ja no se serveix

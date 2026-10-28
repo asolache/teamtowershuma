@@ -1,0 +1,45 @@
+{
+  "nota": "Les tasques del banc de proves de la IA (SOS/tools/banc-ia.mjs). Una per cada feina del router, amb casos de l'ecosistema i sense dades de cap persona. `criteri` és el que mira el jutge.",
+  "tasques": [
+    {
+      "id": "classifica-lead",
+      "tasca": "classifica",
+      "max_tokens": 300,
+      "system": "Classifiques missatges que arriben al formulari d'una empresa d'esdeveniments del Penedès. Respon només amb una d'aquestes etiquetes: casament, empresa, festa-privada, proveidor, altres.",
+      "prompt": "Hola, som una empresa de 40 persones de Sant Sadurní i busquem una activitat de cohesió d'equip per al juny, amb dinar. Què ens podeu oferir?",
+      "criteri": "La resposta correcta és «empresa». Només l'etiqueta, sense text de més."
+    },
+    {
+      "id": "resumeix-taller",
+      "tasca": "resumeix",
+      "max_tokens": 400,
+      "system": "Resumeixes textos en castellà en dues frases curtes, sense afegir res que no hi sigui.",
+      "prompt": "El taller Fent Pinya lleva a los equipos de una empresa a construir una torre humana, como hacen las colles castelleras de Cataluña. Antes de subir, el grupo aprende a hacer la pinya, la base que sostiene a todos, y descubre que cada persona tiene un papel, desde quien está abajo aguantando hasta quien corona la torre. Después se habla de lo vivido: la confianza, la comunicación en momentos de presión y cómo se reparten los roles en su día a día. La actividad dura unas tres horas y se adapta a grupos de distintos tamaños y a personas que no han hecho nunca deporte.",
+      "criteri": "Dues frases. Diu què és (una torre humana en equip, a la manera castellera) i per a què serveix (confiança, comunicació, rols). No inventa xifres ni dades que no hi siguin."
+    },
+    {
+      "id": "escriu-resposta",
+      "tasca": "escriu",
+      "max_tokens": 900,
+      "system": "Escrius en nom de TeamTowers, que fa el taller Fent Pinya per a empreses. To proper i clar, frases curtes, en castellà. No inventes preus, dates ni xifres: si en falten, demana-les.",
+      "prompt": "Respon aquest correu d'un client: «Buenas, nos interesa el taller Fent Pinya para unas 25 personas en noviembre. ¿Cuánto cuesta y qué necesitáis de nosotros?»",
+      "criteri": "Respon el que pregunta sense inventar cap preu ni data. Demana el que falta per fer la proposta (data, lloc, durada, objectiu). Curt, proper, en castellà, sense jerga."
+    },
+    {
+      "id": "tradueix-ca-es",
+      "tasca": "tradueix",
+      "max_tokens": 500,
+      "system": "Tradueixes del català al castellà. Només la traducció.",
+      "prompt": "La pinya és la base que ho sosté tot: sense una bona pinya, cap castell no s'aixeca. A la colla, qui aguanta a baix és tan important com qui fa l'aleta a dalt de tot.",
+      "criteri": "Traducció fidel i natural. Respecta els termes castellers (pinya, colla, fer l'aleta), sense traduir-los malament ni explicar-los si no cal. Només la traducció."
+    },
+    {
+      "id": "estrategia-xarxa",
+      "tasca": "estrategia",
+      "max_tokens": 2000,
+      "system": "Ets consultor en anàlisi de xarxes de valor (Verna Allee). Respon en castellà, amb llistes curtes i sense jerga de consultoria. Si et falta informació, digues què et falta en lloc d'inventar-la.",
+      "prompt": "Una cooperativa de productores de vino del Penedès quiere vender más a restaurantes de Barcelona. Dibuja su red de valor: los roles principales, qué se dan entre ellos (tangible e intangible) y los dos o tres siguientes pasos más útiles.",
+      "criteri": "Roles concrets i creïbles (cooperativa, restaurants, distribuïdor, sommeliers, etc.). Intercanvis marcats com a tangibles o intangibles. Passos accionables. No inventa xifres de mercat. Diu què li falta saber."
+    }
+  ]
+}

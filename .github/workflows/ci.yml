@@ -418,6 +418,11 @@ jobs:
       - name: El router de models de la IA
         run: node SOS/tests/test-ia-router.mjs
 
+      # El banc de proves (netlify/lib/ia-proveidors.mjs i SOS/tools/banc-ia.mjs):
+      # Claude, GPT, Gemini i DeepSeek amb la seva forma, i el jutge a cegues.
+      - name: El banc de proves de la IA
+        run: node SOS/tests/test-banc-ia.mjs
+
       # El preu de cada client (proposta.mjs): només el veu qui ha entrat amb la
       # seva sessió, i carregar-lo demana el testimoni de gestió.
       - name: La proposta de cada client, només per a ell
