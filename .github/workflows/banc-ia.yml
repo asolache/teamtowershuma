@@ -1,0 +1,45 @@
+# El banc de proves de la IA (SOS/tools/banc-ia.mjs): la mateixa feina a
+# Claude, GPT, Gemini i DeepSeek, amb nota a cegues. Només a mà, des de
+# Actions → «Banc de proves de la IA» → Run workflow. No desplega res.
+# Les claus són secrets del repositori; qui no en té, no entra.
+name: Banc de proves de la IA
+
+on:
+  workflow_dispatch:
+    inputs:
+      tasca:
+        description: 'Només una feina (classifica, resumeix, escriu, tradueix, estrategia) o buit per a totes'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  banc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: El banc
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          BANC_MODEL_OPENAI: ${{ vars.BANC_MODEL_OPENAI }}
+          BANC_MODEL_GEMINI: ${{ vars.BANC_MODEL_GEMINI }}
+          BANC_MODEL_DEEPSEEK: ${{ vars.BANC_MODEL_DEEPSEEK }}
+          BANC_PREU_OPENAI: ${{ vars.BANC_PREU_OPENAI }}
+          BANC_PREU_GEMINI: ${{ vars.BANC_PREU_GEMINI }}
+          BANC_PREU_DEEPSEEK: ${{ vars.BANC_PREU_DEEPSEEK }}
+          TASCA: ${{ inputs.tasca }}
+        run: |
+          if [ -n "$TASCA" ]; then node SOS/tools/banc-ia.mjs --tasca "$TASCA" --sortida banc-ia; else node SOS/tools/banc-ia.mjs --sortida banc-ia; fi
+          cat banc-ia/informe.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: banc-ia
+          path: banc-ia/
