@@ -38,6 +38,9 @@ console.log('\n2 · Del que arriba, només el que la pàgina fa servir');
   ok(n.marca.portes['Futuros profesores'].nom === 'Quiero ser profe' && n.capes.join() === 'extranet', 'els textos de la web i les capes que hi ha');
   ok(!('script' in n) && !('__proto__x' in n) && n.actualitzada === '2026-10-26T08:00:00.000Z', 'cap camp de més, i diu quan es va desar');
   ok(neteja(null) === null && neteja('x') === null, 'una cosa que no és una fitxa, no');
+  const dz = neteja({ disseny: { data: '2026-10-28T09:00:00.000Z', nota: 'Más fotos', pagines: 7, redireccions: 3.7, llengues: ['es', 'ca', '<b>'], md: 'x'.repeat(9000) } }).disseny;
+  ok(dz && dz.nota === 'Más fotos' && dz.pagines === 7 && dz.redireccions === 3 && dz.llengues.join() === 'es,ca' && !('md' in dz), "del document de disseny, només quan l'ha revisat i el que hi canviaria");
+  ok(neteja({ disseny: { nota: 'x' } }).disseny === null, 'sense data, res');
   const gran = neteja({ alrededor: Array.from({ length: 24 }, () => ({ quien: 'q'.repeat(120), meDa: 'm'.repeat(240), leDoy: 'l'.repeat(240) })), inicial: 'i'.repeat(9000),
     extra: { pairs: Array.from({ length: 40 }, () => ['a'.repeat(120), 'b'.repeat(120), 'tangible', 'c'.repeat(240), 'intangible', 'd'.repeat(240)]) } });
   ok(gran && gran.inicial.length === 3000 && gran.alrededor.length === 24, 'el que és massa llarg es talla');

@@ -326,6 +326,21 @@ console.log('\n══ /cliente/ · la IA ══');
   ok(/Antiguos alumnos: Que pueden recomendar/.test(await p.textContent('#cl-llig-falta')), 'y lo que su web todavía no le dice a cada uno');
   const pw = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).portesWeb);
   ok(pw && pw.origen === 'https://escuela.example' && pw.pagines.length === 2 && pw.falta.length === 1, 'queda en su ficha, para la sesión');
+  /* El documento de diseño (MotorWeb.disseny): el entregable de la web, no el boceto. */
+  await p.click('#cl-disseny-fes');
+  await p.waitForSelector('#cl-disseny-pags li', { timeout: 15000 });
+  const dz = await p.$$eval('#cl-disseny-pags li', ls => ls.map(l => [l.getAttribute('data-ruta'), l.textContent]));
+  ok(dz[0][0] === '/' && /Antes: \//.test(dz[0][1]) && dz.some(x => /Antes: \/cursos/.test(x[1])) && dz.some(x => /Antes: \/blog\/viejo/.test(x[1])), 'cada página nueva, con las direcciones de su web de ahora que lleva');
+  ok(/es · Texto de tu web de ahora/.test(dz[0][1]) && /idiomas: es/.test(await p.textContent('#cl-disseny-res')), 'los textos por idioma: lo que ya dice su web, y lo que falta por escribir');
+  ok(await p.locator('#cl-disseny-red li').count() > 0 && await p.locator('#cl-disseny-req li').count() > 0 && await p.locator('#cl-disseny-acc li').count() > 0, 'adónde lleva cada dirección vieja, lo que tiene que cumplir y cómo se comprueba');
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#cl-disseny-md')]);
+  ok(/^documento-de-diseno-.+\.md$/.test(dl.suggestedFilename()), 'lo descarga en Markdown, para Claude Code (' + dl.suggestedFilename() + ')');
+  const [dj] = await Promise.all([p.waitForEvent('download'), p.click('#cl-disseny-json')]);
+  const dJ = JSON.parse((await import('node:fs')).readFileSync(await dj.path(), 'utf8'));
+  ok(dJ.tipus === 'sos-disseny-web' && dJ.v === 1 && dJ.redireccions.some(x => x.de === '/blog/viejo'), 'y en JSON, sos-disseny-web v1, sin perder ninguna dirección vieja');
+  await p.fill('#cl-disseny-nota', 'Más fotos de las clases'); await p.click('#cl-disseny-desa');
+  const dzS = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).disseny);
+  ok(dzS && dzS.nota === 'Más fotos de las clases' && dzS.pagines === dz.length && /Guardado en tu ficha/.test(await p.textContent('#cl-disseny-res')), 'lo que cambiaría queda en su ficha, para la sesión');
   /* Su ficha, con su cuenta (fitxa.mjs): se guarda sola y vuelve en otro aparato. */
   const espera = async (f, ms = 6000) => { const t0 = Date.now(); while (!f() && Date.now() - t0 < ms) await new Promise(x => setTimeout(x, 100)); return f(); };
   ok(fx()[0] && fx()[0][1].sessio === SES && !('fitxa' in fx()[0][1]) && !fx()[0][1].foto, 'al entrar, pide su ficha guardada, con su sesión');
