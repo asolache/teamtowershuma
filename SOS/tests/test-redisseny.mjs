@@ -150,7 +150,7 @@ const abans = await page.evaluate(() => ({
   carregada: !!document.querySelector('script[src="lib/lents.js"]'),
   temps: !!document.querySelector('#lnTemps')
 }));
-ok(abans.barra.join() === '✎ Connecta i mou,Valor,Torre,Equip,Repartiment,Saber,Castell,Cinc capes,Anells,3D', 'el mapa té el botó per dibuixar-lo i nou lents (' + abans.barra.join(', ') + ')');
+ok(abans.barra.join() === '✎ Connecta i mou,Valor,Torre,Equip,Repartiment,Saber,Castell,Cinc capes,Anells,3D,✨ IA,⛶ Taller', 'el mapa té el botó per dibuixar-lo i nou lents (' + abans.barra.join(', ') + ')');
 ok(!abans.carregada, 'i no pesen a l\'arrencada: lib/lents.js només es carrega en triar-ne una');
 ok(abans.temps, 'i el lliscador del temps');
 const lent = async l => {
@@ -421,8 +421,52 @@ await page.click('.lent[data-lent=valor]');
 await page.waitForSelector('.vna-canvas svg.me-zoom');
 ok((await vbox()).join() === v1.join(), 'i quan el mapa es torna a pintar, el zoom es queda');
 await page.click('.lent-z[data-zoom=torna]');
-const zb = await page.evaluate(() => [...document.querySelectorAll('.lent-z')].map(b => { const r = b.getBoundingClientRect(); return Math.min(r.width, r.height); }));
+const zb = await page.evaluate(() => [...document.querySelectorAll('.lent-z[data-zoom]')].map(b => { const r = b.getBoundingClientRect(); return Math.min(r.width, r.height); }));
 ok(zb.length === 3 && zb.every(x => x >= 44), 'els tres botons, de 44 px o més per al dit');
+
+console.log('\n12c · Per al taller: desfer a la vista i pantalla completa');
+const exAra = async () => (await rolsN()).e;
+const e0 = await exAra();
+ok(await page.evaluate(() => { const b = document.querySelector('#lnDesfes'); return !!b && !b.disabled; }), 'després de canviar el mapa, «↶» es pot tocar');
+await page.click('#lnDesfes');
+await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu).vna.exchanges.length === n + 1, e0);
+ok(await page.evaluate(id => window.__SOS.state.nodes.find(y => y.exempleViu).vna.exchanges.some(e => e.id === id), ex1), '«↶» torna el flux que s\'havia tret');
+await page.click('#lnTaller');
+const T = await page.evaluate(() => { const c = document.querySelector('.vna-canvas').getBoundingClientRect(), b = document.querySelector('.lent[data-lent=valor]').getBoundingClientRect();
+  return { on: document.body.classList.contains('sos-taller'), w: c.width, h: c.height, vw: innerWidth, vh: innerHeight, boto: b.height, txt: document.querySelector('#lnTaller').textContent }; });
+ok(T.on && T.w >= T.vw - 20 && T.h >= T.vh - 1, 'el mode taller posa el mapa a tota la pantalla (' + Math.round(T.w) + '×' + Math.round(T.h) + ')');
+ok(T.boto >= 56 && /Surt/.test(T.txt), 'amb botons de 56 px o més i «✕ Surt del taller» a la vista');
+await page.click('.lent[data-lent=torre]');
+ok(await page.evaluate(() => document.body.classList.contains('sos-taller')), 'i canviar de lent no en fa sortir');
+await page.click('.lent[data-lent=valor]');
+await page.keyboard.press('Escape');
+await page.waitForFunction(() => !document.body.classList.contains('sos-taller'));
+ok(true, 'Esc en surt');
+
+console.log('\n12d · Preguntar a la IA des del mapa');
+ok(await page.evaluate(() => !document.querySelector('script[src="lib/mapa-ia.js"]')), 'la finestra de la IA no pesa fins que algú la fa servir');
+await page.evaluate(() => { const A = window.__SOS.AI; A.__call = A.call; A.call = async (i, c) => { window.__iaCtx = { i, c }; await A.carrega();
+  return A.intents.millora_mapa.coerce({ lectura: 'Els aliats només reben.', rols: [{ nom: 'Escoles', perque: 'formen' }, { nom: 'Clients' }],
+    fluxos: [{ from: 'Aliats', to: 'el negoci', kind: 'intangible', label: 'Contactes nous', perque: 'que tornin' }, { from: 'Escoles', to: 'Clients', kind: 'tangible', label: 'Alumnes' }, { from: 'Ningú', to: 'Clients', kind: 'tangible', label: 'X' }],
+    noms: [{ id: 'f1', label: 'Comandes setmanals' }, { id: 'f99', label: 'no' }] }, c); }; });
+await page.click('#lnIa');
+await page.waitForSelector('.modal #iaOn');
+await page.click('.modal .ia-q [data-q=millora]');
+await page.click('.modal .modal-actions .btn-primary');
+await page.waitForSelector('#iaAplica');
+const IA = await page.evaluate(() => ({ i: window.__iaCtx.i, q: window.__iaCtx.c.pregunta, rols: window.__iaCtx.c.rols.length, fl: window.__iaCtx.c.fluxos.length,
+  marques: document.querySelectorAll('.modal input[data-k]').length, lec: document.querySelector('.ia-lec').textContent }));
+ok(IA.i === 'millora_mapa' && IA.q === 'millora' && IA.rols >= 5 && IA.fl >= 5, 'demana «millora-ho» amb el mapa sencer (' + IA.rols + ' rols, ' + IA.fl + ' fluxos)');
+ok(IA.marques === 4 && /només reben/.test(IA.lec), 'i ensenya la lectura i 4 canvis per marcar: descarta el rol repetit, el flux d\'un rol que no hi és i el nom d\'un flux inexistent');
+const r0 = await rolsN();
+await page.click('#iaAplica');
+await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu).vna.roles.length === n + 1, r0.r);
+const ap = await page.evaluate(() => { const n = window.__SOS.state.nodes.find(y => y.exempleViu); return { e: n.vna.exchanges.length, nom: n.vna.exchanges[0].label, esc: n.vna.roles.some(r => r.name === 'Escoles') }; });
+ok(ap.esc && ap.e === r0.e + 2 && ap.nom === 'Comandes setmanals', 'afegeix el rol, els dos fluxos i el nom nou');
+await page.click('#lnDesfes');
+await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu).vna.roles.length === n, r0.r);
+ok(true, 'i «↶» ho desfà tot d\'un cop');
+await page.evaluate(() => { const A = window.__SOS.AI; A.call = A.__call; });
 
 console.log('\n13 · Les vistes del cervell, sobre el teu mapa');
 const vista = async l => {
