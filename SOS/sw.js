@@ -43,7 +43,7 @@
 
    Escrit a mà no es va tocar mai, i el resultat era el defecte pitjor d'aquest
    fitxer: obrir una pàgina arreglada i seguir veient la trencada. */
-const CAU = 'sos-6600f35fdb';
+const CAU = 'sos-9b70808666';
 
 /* Només el que és nostre i és estàtic. Es demana de fons en instal·lar perquè
    la segona pàgina que obri algú ja hi sigui, i si alguna falla no es cancel·la
@@ -76,6 +76,7 @@ const PORTA = [
   './lib/mapa-edita.js',
   './lib/mapa-ia.js',
   './lib/marca.js',
+  './lib/models-mapa.js',
   './lib/mapa-orgs.js',
   './lib/mapa-valor.js',
   './lib/pinya.js',

@@ -468,6 +468,21 @@ await page.waitForFunction(n => window.__SOS.state.nodes.find(y => y.exempleViu)
 ok(true, 'i «↶» ho desfà tot d\'un cop');
 await page.evaluate(() => { const A = window.__SOS.AI; A.call = A.__call; });
 
+console.log('\n12e · Un mapa buit comença des d\'un model del seu sector');
+await page.evaluate(() => { const S = window.__SOS, n = S.newNode('Escola de música del barri', 'projecte', null); n.description = 'Classes de música per a infants i famílies'; S.state.nodes.push(n); S.state.tab = 'map'; S.selectNode(n.id); });
+await page.waitForSelector('#vnaModel #mmSel');
+const MM = await page.evaluate(() => ({ t: document.querySelector('#vnaModel .mm-t').textContent, n: document.querySelectorAll('#mmSel option').length, sel: document.querySelector('#mmSel').value }));
+ok(MM.n === 21 && /s'hi assembla/.test(MM.t), 'proposa els 7 models i els 14 sectors, amb el que s\'hi assembla triat (' + MM.sel + ')');
+await page.click('#mmPosa');
+await page.waitForSelector('.vna-canvas svg.vna-svg g[data-rol]');
+const MP = await page.evaluate(() => { const n = window.__SOS.state.nodes.find(x => x.name === 'Escola de música del barri'); return { r: n.vna.roles.length, e: n.vna.exchanges.length, casa: n.vna.roles.some(r => r.name === n.name), buit: !!document.querySelector('#vnaModel') }; });
+ok(MP.r >= 6 && MP.e >= MP.r && MP.casa && !MP.buit, 'un toc i el mapa ja té rols i fluxos, amb el projecte al centre (' + MP.r + ' rols, ' + MP.e + ' fluxos)');
+await page.click('#lnDesfes');
+await page.waitForSelector('#vnaModel #mmSel');
+ok(true, 'i «↶» el torna a deixar buit');
+await page.evaluate(() => { const S = window.__SOS; S.state.tab = 'map'; S.selectNode(S.state.nodes.find(x => x.exempleViu).id); });
+await page.waitForSelector('.lent[data-lent=valor]');
+
 console.log('\n13 · Les vistes del cervell, sobre el teu mapa');
 const vista = async l => {
   await page.click('.lent[data-lent="' + l + '"]');

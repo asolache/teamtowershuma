@@ -698,6 +698,8 @@ a{color:var(--blue);text-decoration:none}
 .lent{font:600 var(--t0) inherit;font-family:inherit;min-height:40px;padding:.3rem .9rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;white-space:nowrap}
 .lent-z{min-width:44px;min-height:44px;padding:0;font-size:1.1rem}
 .lent:disabled{opacity:.4;cursor:default}
+.mm-tria{padding:.8rem 1rem;border-top:1px solid var(--border)}.mm-t{margin:0 0 .5rem;font-weight:600}.mm-n{margin:.4rem 0 0;color:var(--muted);font-size:var(--t0)}
+.mm-f{display:flex;gap:.5rem;flex-wrap:wrap}.mm-f select{flex:1;min-width:12rem;min-height:44px}
 .ia-l{display:block;margin:.6rem 0;font-weight:600}.ia-l select{width:100%;min-height:44px;margin-top:.3rem}.ia-q{padding:0 0 .6rem}
 .ia-lec{margin:.8rem 0;line-height:1.5}.ia-c{display:flex;gap:.5rem;align-items:flex-start;padding:.45rem 0;min-height:44px;border-top:1px solid var(--border)}.ia-c small{display:block;color:var(--muted)}
 #iaAplica{margin-top:.6rem}
@@ -11023,6 +11025,7 @@ function renderVNA(body,node){
   if(molla)canvas.appendChild(molla);
   const ln=node.vna.roles.length?barraLents(node,canvas,buildVNASvg(node)):null;
   if(!ln)canvas.appendChild(buildVNASvg(node));
+  if(!node.vna.roles.length&&canWrite(node).ok)canvas.appendChild(triaModel(node));
   wrap.appendChild(canvas);
   // side
   const side=el('div','vna-side');
@@ -11161,6 +11164,26 @@ function dadesLent(node,ara){
         n:meus.reduce((a,e)=>a+(e.events||[]).filter(x=>!ara||Date.parse(x.ts)<=ara).length,0)
           +sur.reduce((a,x)=>a+(x.k||0),0),
         cal:cal.length,falta:cal.filter(a=>te.indexOf(a)<0).map(a=>aport(a).lbl.toLowerCase())};})};
+}
+/* Un mapa buit no comença de zero: el model o el sector que s'hi assembla pel
+   nom del projecte, de lib/models-mapa.js (la mateixa base que /cliente/). El
+   rol central pren el nom del projecte, i ↶ el desfà. */
+function triaModel(node){
+  const box=el('div','mm-tria');box.id='vnaModel';
+  carregaLib('models-mapa').then(()=>{
+    const ll=state.lang==='es'?'es':'ca',M=ModelsMapa,nom=m=>(m[ll]||m.ca).nom;
+    const sug=M.suggereix([node.name,node.description,node.vna.mission].filter(Boolean).join(' '),ll);
+    const opt=m=>'<option value="'+m.id+'"'+(sug&&sug.id===m.id?' selected':'')+'>'+esc(m.icona+' '+nom(m))+'</option>';
+    box.innerHTML='<p class="mm-t">Comença des d\'un model'+(sug?': aquest s\'hi assembla, <b>'+esc(sug.icona+' '+sug.nom)+'</b>':'')+'</p>'
+      +'<div class="mm-f"><select id="mmSel" aria-label="Model de mapa"><optgroup label="Models">'+M.MODELS.map(opt).join('')+'</optgroup><optgroup label="Sectors">'+M.SECTORS.map(opt).join('')+'</optgroup></select>'
+      +'<button class="btn btn-primary" id="mmPosa" type="button">Posa\'l al mapa</button></div><p class="mm-n">Després el canvies com vulguis.</p>';
+    box.querySelector('#mmPosa').onclick=async()=>{const m=M.mapa(box.querySelector('#mmSel').value,ll,node.name);if(!m)return;
+      guardaMapa(node);const id={};node.vna.roles=m.roles.map(n=>{const r={id:uid(),name:n};id[n]=r.id;return r;});node.vna.exchanges=[];
+      m.pairs.forEach(p=>{if(!id[p[0]]||!id[p[1]])return;node.vna.exchanges.push({id:uid(),from:id[p[0]],to:id[p[1]],kind:p[2],label:p[3]});
+        if(p[5])node.vna.exchanges.push({id:uid(),from:id[p[1]],to:id[p[0]],kind:p[4]||'tangible',label:p[5]});});
+      await persist(node);renderWorkspace();toast(m.bona||('Mapa de partida: '+m.nom),5000);};
+  }).catch(()=>{});
+  return box;
 }
 /* Desfer al mapa: abans de cada canvi fet des del mapa (moure, enllaçar, treure
    un flux, un rol nou) es guarda com era, i ↶ el torna. Viu només a la sessió. */
