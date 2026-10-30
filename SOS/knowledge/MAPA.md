@@ -13,13 +13,13 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 411 · 21001 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 412 · 21051 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 135 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
 | `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 21 · 467 KB |
-| `SOS/media/` | Imatges i material que serveixen les pàgines | 16 · 10203 KB |
+| `SOS/media/` | Imatges i material que serveixen les pàgines | 17 · 10250 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 385 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
