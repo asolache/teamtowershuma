@@ -22,6 +22,25 @@ return {
     build:ctx=>{const k=knowFor(ctx.level),meta=LEVEL_META[ctx.level];const picked=k.pains.filter(p=>ctx.painIds&&ctx.painIds.has(p.id)).map(p=>p.t+' — '+p.d);const txt=['Nivell: '+meta.label+(ctx.name?' · "'+ctx.name+'"':''),ctx.promptText?'Context de la comunitat: '+ctx.promptText:'',picked.length?'Reptes prioritzats: '+picked.join('; '):'','Rols de referència del nivell: '+k.roles.join(', ')].filter(Boolean).join('\n');return 'Proposa el mapa de valor per a aquesta comunitat:\n\n'+txt;},
     coerce:tu=>{const roles=[...new Set((tu.roles||[]).map(r=>String(r).trim()).filter(Boolean))];const rl=new Set(roles.map(r=>r.toLowerCase()));const exchanges=(tu.exchanges||[]).filter(x=>x&&x.from&&x.to&&rl.has(String(x.from).toLowerCase())&&rl.has(String(x.to).toLowerCase())).map(x=>({from:String(x.from).trim(),to:String(x.to).trim(),kind:x.kind==='intangible'?'intangible':'tangible',label:(x.label||'').trim()}));return{mission:(tu.mission||'').trim(),roles,exchanges};}
   },
+  /* Preguntar des del mapa, en un taller (fase 7): el mapa tal com és, i si cal
+     un rol o un flux on mirar. Torna canvis petits per marcar; l'app els afegeix
+     només si la sala els tria, i ↶ els desfà. */
+  millora_mapa:{
+    model:'claude-sonnet-5-5',max_tokens:1500,
+    system:'Acompanyes un taller de mapa de valor amb el mètode de Verna Allee (Value Network Analysis).\nEt donen el mapa tal com és ara i, de vegades, un rol o un flux on mirar. Proposes canvis petits\nperquè la sala els validi: no decideixes res. Escrius en la llengua del mapa.\n\nRegles:\n· Rol = el que algú FA, no una persona ni un càrrec. Cap nom de persona.\n· Flux = entregable que viatja d\'un rol a un altre, dit amb NOM (no amb verb) i comprovable.\n· Tangible si es pot tocar, comptar o facturar; intangible si és coneixement, confiança, reputació.\n· Cada rol hauria de donar i rebre. Un mapa sa té fluxos intangibles, no només diners i producte.\n· No repeteixis el que ja hi és. Com a molt 3 rols nous i 6 fluxos nous.\n· Per reanomenar un flux, fes servir el seu id (f1, f2...).\n· Cap import ni preu.\n· La lectura és de dues o tres frases, planera, per dir-la en veu alta a la sala.',
+    tool:{name:'proposta_mapa',description:'Retorna la lectura i els canvis proposats.',input_schema:{type:'object',properties:{lectura:{type:'string'},rols:{type:'array',items:{type:'object',properties:{nom:{type:'string'},perque:{type:'string'}},required:['nom']}},fluxos:{type:'array',items:{type:'object',properties:{from:{type:'string'},to:{type:'string'},kind:{type:'string',enum:['tangible','intangible']},label:{type:'string'},perque:{type:'string'}},required:['from','to','kind','label']}},noms:{type:'array',items:{type:'object',properties:{id:{type:'string'},label:{type:'string'},perque:{type:'string'}},required:['id','label']}}},required:['lectura']}},
+    build:ctx=>{const f=ctx.fluxos||[],on=ctx.focus;const q=ctx.text||(ctx.pregunta==='millora'?'Millora-ho: noms més clars, fluxos que no tornen, rols que només reben o només donen.':'Què hi falta? Rols o fluxos que una xarxa com aquesta sol tenir i aquí no hi són.');
+      return ['Mapa'+(ctx.nom?' «'+ctx.nom+'»':'')+(ctx.missio?' · missió: '+ctx.missio:''),'Rols: '+(ctx.rols||[]).join(', '),'Fluxos:',...f.map(x=>'- '+x.id+' · '+x.from+' → '+x.to+' · '+x.kind+' · '+x.label),
+        on?'Mira sobretot '+(on.flux?'el flux '+on.flux:'el rol «'+on.rol+'»')+'.':'Mira tot el mapa.','Pregunta de la sala: '+q].join('\n');},
+    coerce:(tu,ctx)=>{const c=ctx||{},net=v=>String(v||'').trim(),ja=new Set((c.rols||[]).map(r=>r.toLowerCase()));
+      const rols=(tu.rols||[]).map(r=>({nom:net(r.nom),perque:net(r.perque)})).filter(r=>r.nom&&!ja.has(r.nom.toLowerCase())).slice(0,3);
+      const tots={};(c.rols||[]).concat(rols.map(r=>r.nom)).forEach(n=>{tots[n.toLowerCase()]=n;});
+      const hi=new Set((c.fluxos||[]).map(x=>(x.from+'|'+x.to+'|'+x.label).toLowerCase())),ids=new Set((c.fluxos||[]).map(x=>x.id));
+      const fluxos=(tu.fluxos||[]).map(x=>({from:tots[net(x.from).toLowerCase()],to:tots[net(x.to).toLowerCase()],kind:x.kind==='intangible'?'intangible':'tangible',label:net(x.label),perque:net(x.perque)}))
+        .filter(x=>x.from&&x.to&&x.from!==x.to&&x.label&&!hi.has((x.from+'|'+x.to+'|'+x.label).toLowerCase())).slice(0,6);
+      const noms=(tu.noms||[]).map(x=>({id:net(x.id),label:net(x.label),perque:net(x.perque)})).filter(x=>ids.has(x.id)&&x.label);
+      return{lectura:net(tu.lectura),rols,fluxos,noms};}
+  },
   /* ═══════ ELS ENTREGABLES · dos, i no vuit ═══════
      El pla deia de provar el patró amb dos abans de declarar-ne vuit, i aquests
      són els dos: els més repetitius i els menys arriscats. Si el primer que es

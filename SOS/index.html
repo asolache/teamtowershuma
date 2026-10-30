@@ -697,6 +697,17 @@ a{color:var(--blue);text-decoration:none}
 .lents{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.6rem .7rem 0}
 .lent{font:600 var(--t0) inherit;font-family:inherit;min-height:40px;padding:.3rem .9rem;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;white-space:nowrap}
 .lent-z{min-width:44px;min-height:44px;padding:0;font-size:1.1rem}
+.lent:disabled{opacity:.4;cursor:default}
+.ia-l{display:block;margin:.6rem 0;font-weight:600}.ia-l select{width:100%;min-height:44px;margin-top:.3rem}.ia-q{padding:0 0 .6rem}
+.ia-lec{margin:.8rem 0;line-height:1.5}.ia-c{display:flex;gap:.5rem;align-items:flex-start;padding:.45rem 0;min-height:44px;border-top:1px solid var(--border)}.ia-c small{display:block;color:var(--muted)}
+#iaAplica{margin-top:.6rem}
+/* Mode taller: el mapa ocupa tota la pantalla i els botons es toquen amb el dit */
+body.sos-taller{overflow:hidden}
+body.sos-taller .vna-canvas{position:fixed;inset:0;z-index:150;border:0;border-radius:0;display:flex;flex-direction:column;overflow:auto;min-height:0}
+body.sos-taller .vna-canvas svg{flex:1 1 0;height:auto;min-height:0}
+body.sos-taller .lents{position:sticky;top:0;z-index:1;background:var(--bg-panel);padding-bottom:.6rem}
+body.sos-taller .lent{min-height:56px;padding:.5rem 1.2rem;font-size:1.05rem}
+body.sos-taller .lent-z{min-width:56px}
 .lent.sel{background:var(--text);color:var(--bg);border-color:var(--text)}
 .lent-ed{border-color:var(--indigo);color:var(--indigo)}.lent-ed.sel{background:var(--indigo);border-color:var(--indigo);color:#fff}
 .lents-t{display:flex;align-items:center;gap:.4rem;margin-left:auto;color:var(--muted);font:500 var(--t0) 'JetBrains Mono',monospace;white-space:nowrap}
@@ -11151,6 +11162,25 @@ function dadesLent(node,ara){
           +sur.reduce((a,x)=>a+(x.k||0),0),
         cal:cal.length,falta:cal.filter(a=>te.indexOf(a)<0).map(a=>aport(a).lbl.toLowerCase())};})};
 }
+/* Desfer al mapa: abans de cada canvi fet des del mapa (moure, enllaçar, treure
+   un flux, un rol nou) es guarda com era, i ↶ el torna. Viu només a la sessió. */
+const DESFES={};
+const guardaMapa=node=>{const p=DESFES[node.id]||(DESFES[node.id]=[]);
+  p.push(JSON.stringify({roles:node.vna.roles,exchanges:node.vna.exchanges}));if(p.length>30)p.shift();};
+async function desfesMapa(node){const p=DESFES[node.id];if(!p||!p.length)return;
+  const s=JSON.parse(p.pop());node.vna.roles=s.roles;node.vna.exchanges=s.exchanges;await persist(node);renderWorkspace();toast('Desfet');}
+/* Mode taller: pantalla completa si el dispositiu ho deixa; si no, el mapa ocupa
+   la finestra igualment. Esc o ✕ en surten. */
+const enTaller=()=>document.body.classList.contains('sos-taller');
+function modeTaller(on,quiet){document.body.classList.toggle('sos-taller',on);
+  const d=document,fs=d.fullscreenElement;
+  if(!quiet)try{if(on&&!fs&&d.documentElement.requestFullscreen)d.documentElement.requestFullscreen().catch(()=>{});
+    if(!on&&fs&&d.exitFullscreen)d.exitFullscreen().catch(()=>{});}catch(e){}
+  d.querySelectorAll('#lnTaller').forEach(b=>{b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on?'true':'false');b.textContent=on?'✕ Surt del taller':'⛶ Taller';});}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&enTaller())modeTaller(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&enTaller()&&!modalOpen())modeTaller(false);});
+/* Preguntar a la IA des del mapa (lib/mapa-ia.js, intenció «millora_mapa»). */
+const openIaMapa=(node,focus)=>carregaLib('mapa-ia').then(()=>MapaIa({modal,closeModal,esc,AI,guardaMapa,persist,renderWorkspace,toast,uid,isIntangible})(node,focus)).catch(()=>toast('Sense connexió'));
 function barraLents(node,canvas,svg0){
   let svg=svg0,dies=0;
   const lent=()=>state.lent||'valor';
@@ -11182,15 +11212,21 @@ function barraLents(node,canvas,svg0){
     carregaLib('mapa-edita').then(()=>{if(zm)zm.treu();zm=MapaEdita.zoom(svg,'vna-'+node.id);
       if(!state.mapaEdita||!canWrite(node).ok)return;if(ed)ed.treu();ed=MapaEdita.activa(svg,{pista:t=>{pe.textContent=t;},
       flux:(a,b)=>openNouFlux(node,a,b),edita:x=>openNouFlux(node,0,0,x),
-      mou:(id,x,y)=>{const r=node.vna.roles.find(q=>q.id===id);if(!r)return;r.pos={x,y};persist(node);renderWorkspace();},
+      mou:(id,x,y)=>{const r=node.vna.roles.find(q=>q.id===id);if(!r)return;guardaMapa(node);r.pos={x,y};persist(node);renderWorkspace();},
       rol:(x,y)=>openNouRol(node,x,y)});}).catch(()=>{});};
   if(canWrite(node).ok&&node.vna.roles.length){const eb=el('button','lent lent-ed'+(state.mapaEdita?' sel':''),'✎ Connecta i mou');eb.id='lnEdita';
     eb.setAttribute('aria-pressed',state.mapaEdita?'true':'false');eb.title='Arrossega d\'un rol a un altre per crear un flux';
     eb.onclick=()=>{state.mapaEdita=!state.mapaEdita;eb.classList.toggle('sel',state.mapaEdita);eb.setAttribute('aria-pressed',state.mapaEdita?'true':'false');edita();};
-    barra.insertBefore(eb,barra.firstChild);}
+    barra.insertBefore(eb,barra.firstChild);
+    const db=el('button','lent lent-z','↶');db.type='button';db.id='lnDesfes';db.setAttribute('aria-label','Desfés el darrer canvi del mapa');db.title='Desfés';
+    db.disabled=!(DESFES[node.id]||[]).length;db.onclick=()=>desfesMapa(node);barra.insertBefore(db,eb.nextSibling);}
+  if(canWrite(node).ok){const ib=el('button','lent lent-ta','✨ IA');ib.type='button';ib.id='lnIa';ib.title='Pregunta a la IA què hi falta o com millorar el mapa';
+    ib.onclick=()=>openIaMapa(node);barra.appendChild(ib);}
+  const tb=el('button','lent lent-ta','⛶ Taller');tb.type='button';tb.id='lnTaller';tb.title='El mapa a pantalla completa, amb botons grans, per treballar-lo en grup';
+  tb.onclick=()=>modeTaller(!enTaller());barra.appendChild(tb);
   [['＋','Apropa el mapa','mes'],['－','Allunya el mapa','menys'],['⤢','Torna el mapa a la mida de sempre','torna']].forEach(([t,a,f])=>{
     const b=el('button','lent lent-z',t);b.type='button';b.setAttribute('aria-label',a);b.title=a;b.dataset.zoom=f;b.onclick=()=>zm&&zm[f]();barra.appendChild(b);});
-  canvas.appendChild(barra);canvas.appendChild(pe);
+  canvas.appendChild(barra);canvas.appendChild(pe);modeTaller(enTaller(),1);
   /* Un mapa on encara no ha circulat res és un disseny: diu què tocar perquè respiri. */
   if((node.vna.exchanges||[]).length&&!flowLedger(node).rows.some(r=>tsDeFlux(r).length))
     canvas.appendChild(el('p','pm-pista','👆 Toca un flux quan passi de veritat i apunta\'l: el mapa començarà a respirar.'));
@@ -11209,11 +11245,11 @@ function openNouFlux(node,a,b,exId){
   const F=MapaEdita.form(R(a),R(b),x?{mena:isIntangible(x.kind)?'intangible':'tangible',nom:x.label}:{torna:!ex.some(e=>e.from===b&&e.to===a)});
   const desa=async()=>{closeModal();await persist(node);renderWorkspace();};
   const fet=()=>{const v=F.llegeix(bg);
-    if(x){x.kind=v.mena;x.label=v.nom;}
+    guardaMapa(node);if(x){x.kind=v.mena;x.label=v.nom;}
     else{ex.push({id:uid(),from:a,to:b,kind:v.mena,label:v.nom});
       if(v.torna)ex.push({id:uid(),from:b,to:a,kind:v.tornaMena,label:v.tornaNom});}
     desa();toast(x?'Flux desat':'Flux creat: '+R(a)+' → '+R(b)+(v.torna?' i de tornada':''));};
-  const bg=modal(F.html,[x&&{txt:'Treu el flux',cls:'btn btn-ghost',fn:()=>{node.vna.exchanges=ex.filter(e=>e!==x);desa();}},
+  const bg=modal(F.html,[x&&{txt:'✨ IA',cls:'btn btn-ghost',fn:()=>{closeModal();openIaMapa(node,'f:'+x.id);}},x&&{txt:'Treu el flux',cls:'btn btn-ghost',fn:()=>{guardaMapa(node);node.vna.exchanges=ex.filter(e=>e!==x);desa();}},
     {txt:'Cancel·la',cls:'btn btn-ghost',fn:closeModal},{txt:x?'Desa':'Crea el flux',cls:'btn btn-primary',fn:fet}]);
   F.lliga(bg);bg.querySelector('#meNom').onkeydown=e=>{if(e.key==='Enter')fet();};
 }
@@ -11221,7 +11257,7 @@ function openNouRol(node,x,y){
   const bg=modal('<h2>Un rol nou aquí</h2><p class="m-sub">Qui hi ha a la teva xarxa: una persona, un equip, un client, un proveïdor.</p><input id="meRol" maxlength="40" placeholder="p. ex. Clients, Proveïdors, Ajuntament" style="width:100%">',
     [{txt:'Cancel·la',cls:'btn btn-ghost',fn:closeModal},{txt:'Afegeix el rol',cls:'btn btn-primary',fn:()=>fet()}]);
   const i=bg.querySelector('#meRol'),fet=async()=>{const v=i.value.trim();if(!v)return i.focus();
-    node.vna.roles.push({id:uid(),name:v,pos:{x,y}});closeModal();await persist(node);renderWorkspace();};
+    guardaMapa(node);node.vna.roles.push({id:uid(),name:v,pos:{x,y}});closeModal();await persist(node);renderWorkspace();};
   i.onkeydown=e=>{if(e.key==='Enter')fet();};setTimeout(()=>i.focus(),30);
 }
 /* ═══════════ Els fluxos, llegits com una llista ═══════════
