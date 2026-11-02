@@ -21,7 +21,7 @@ on:
         default: ''
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   banc:
@@ -46,6 +46,20 @@ jobs:
           done
           cp SOS/knowledge/vna/banc-mapes/*.json banc-ia/ 2>/dev/null || true
           [ -f banc-ia/informe.md ] && cat banc-ia/informe.md >> "$GITHUB_STEP_SUMMARY" || true
+      # Els resultats del banc de mapes tornen a la mateixa branca (mai a main):
+      # casos i oficis al seu lloc, i cada execució a resultats/<data>-<run>/.
+      - name: Desa els resultats a la branca
+        if: ${{ inputs.eina == 'banc-mapes' && github.ref != 'refs/heads/main' }}
+        run: |
+          R="SOS/knowledge/vna/banc-mapes/resultats/$(date -u +%Y%m%d-%H%M)-${{ github.run_id }}"
+          mkdir -p "$R"
+          for f in respostes.json notes.json simulacio.json informe.md; do [ -f "banc-ia/$f" ] && cp "banc-ia/$f" "$R/"; done
+          git config user.name "banc-mapes"
+          git config user.email "banc-mapes@users.noreply.github.com"
+          git add SOS/knowledge/vna/banc-mapes
+          git diff --cached --quiet && exit 0
+          git commit -m "banc-mapes: resultats de ${{ github.run_id }} (${{ inputs.ordres }})"
+          for i in 1 2 3 4 5; do git pull --rebase -q origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep $((i*3)); done
       - name: El banc
         if: ${{ inputs.eina != 'banc-mapes' }}
         env:
