@@ -11,6 +11,14 @@ on:
         description: 'Només una feina (classifica, resumeix, escriu, tradueix, estrategia) o buit per a totes'
         required: false
         default: ''
+      eina:
+        description: 'banc-ia (models) o banc-mapes (mapes de valor)'
+        required: false
+        default: 'banc-ia'
+      ordres:
+        description: 'banc-mapes: les ordres, p. ex. «corre --variant actual --tope 15» (separa passos amb ;)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -23,7 +31,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: El banc de mapes
+        if: ${{ inputs.eina == 'banc-mapes' }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORDRES: ${{ inputs.ordres }}
+        run: |
+          mkdir -p banc-ia
+          IFS=';' read -ra PASSOS <<< "$ORDRES"
+          for p in "${PASSOS[@]}"; do
+            p="$(echo "$p" | xargs)"; [ -z "$p" ] && continue
+            read -ra A <<< "$p"
+            node SOS/tools/banc-mapes.mjs "${A[@]}" --sortida banc-ia
+          done
+          cp SOS/knowledge/vna/banc-mapes/casos.json banc-ia/ 2>/dev/null || true
+          [ -f banc-ia/informe.md ] && cat banc-ia/informe.md >> "$GITHUB_STEP_SUMMARY" || true
       - name: El banc
+        if: ${{ inputs.eina != 'banc-mapes' }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
