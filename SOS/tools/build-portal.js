@@ -131,7 +131,6 @@ const MON = [
    absència sense motiu escrit és un descuit, i aquesta és justament la llista
    que evita que la porta torni a callar-se les pàgines. */
 const FORA = {
-  'diagnostic.html': 'ja és una de les tres portes de dalt',
   'pressupost.html': 'va al bloc del que es pot contractar',
   'intro.html': 'és la tira d\'enllaços secundaris, abans d\'entrar',
   'uneix-te.html': 'és una de les tres portes de dalt, per a qui ve d\'una invitació'

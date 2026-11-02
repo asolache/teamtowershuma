@@ -109,11 +109,11 @@ const MOLEKULON = 'https://molekulon.org';
 const L = {
   diagnostic: ['diagnostic.html', T('Diagnòstic', 'Diagnóstico'),
     T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')],
-  vna: ['vna.html', T('El mètode', 'El método'),
+  vna: ['vna.html', T('Què és', 'Qué es'),
     T('Què és un mapa de valor, sobre un cas', 'Qué es un mapa de valor, sobre un caso')],
   editor: ['/cliente/#alrededor', T('Fer-ne un', 'Hacer uno'),
     T('Dibuixa qui t\'envolta i què us doneu, gratis', 'Dibuja quién te rodea y qué os dais, gratis')],
-  cataleg: ['cataleg.html', T('El catàleg', 'El catálogo'),
+  cataleg: ['cataleg.html', T('Què contractes', 'Qué contratas'),
     T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
   preus: ['pressupost.html', T('Preus i contractació', 'Precios y contratación'),
     T('De l\'esborrany al negoci operatiu, i la resta a mida', 'Del borrador al negocio operativo, y el resto a medida')],
@@ -135,7 +135,7 @@ const LLOC = [
      El producte. L'ordre és el camí de client: saber on ets, entendre el
      mètode, fer-ne un, i després què es compra i a quin preu. */
   { id: 'valor', lbl: T('Mapa de valor', 'Mapa de valor'), ic: '🗺',
-    links: [L.diagnostic, L.vna, L.editor, L.cataleg, L.preus] },
+    links: [L.vna, L.editor, L.cataleg, L.preus] },
   /* ══ 2 · LA WEB ═══════════════════════════════════════════════════════
      El servei de desenvolupament web: la web surt del mapa. Les dues pàgines
      són esborranys `noindex`, però des del menú s'hi ha de poder arribar. */
@@ -313,6 +313,11 @@ const FORA_DEL_MENU = {
      menú obligaria a triar abans de llegir què les distingeix —i qui triés
      malament acabaria dient el nombre d'habitants del seu municipi per
      demanar un taller d'equip. */
+  /* Surt del menú el 02/11/2026 (l'Àlvaro: «simplificar»): la barra del lloc
+     té una sola acció, fer el mapa a `/cliente/`. El diagnòstic és una de les
+     tres portes de la portada del SOS, i `/cliente/` hi enllaça per a qui no
+     sap per on començar. */
+  'diagnostic.html': 'És una de les tres portes de la portada del SOS, i `/cliente/` hi enllaça per a qui no sap per on començar. La barra del lloc té una sola acció: fer el mapa.',
   'diagnostic-org.html': 'Branca del diagnòstic. S\'hi entra per la tria de `diagnostic.html`, que és qui explica quina et toca.',
   'diagnostic-territori.html': 'Branca del diagnòstic. S\'hi entra per la tria de `diagnostic.html`, que és qui explica quina et toca.'
 };
