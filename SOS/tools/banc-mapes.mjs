@@ -66,6 +66,37 @@ export function peticionsCasos(n, model) {
   return l;
 }
 
+
+/* ─── A4 · Els oficis: models de mapa per a pimes i autònoms ───
+   Els 7 models i els 14 sectors de la Matriu són de territori; falten els oficis
+   dels clients que arriben a /cliente/. Cada ofici surt amb el format de
+   models-mapa.js (ca/es/en) i la seva veda (les quatre seccions de
+   knowledge/vna/sectors/). Queda en `banc-mapes/oficis.json` com a esborrany:
+   entra a build-models-mapa.js quan una persona l'ha revisat. */
+export const OFICIS = [
+  ['escola_idiomes', 'escuela de idiomas o academia'], ['formacio_professionals', 'formación de profesionales (p. ej. profesores)'],
+  ['celler', 'bodega o celler familiar'], ['restaurant', 'restaurante o bar de proximidad'], ['esdeveniments', 'organización de eventos'],
+  ['botiga', 'tienda de barrio'], ['estudi_creatiu', 'estudio creativo o agencia de diseño'], ['salut_autonoma', 'salud autónoma (fisio, psicología, nutrición)'],
+  ['allotjament_rural', 'casa rural o alojamiento con encanto'], ['serveis_professionals', 'consultoría o servicios profesionales'],
+  ['taller', 'taller de reparación (bicis, coches, electrónica)'], ['coworking', 'espacio de coworking'],
+  ['experiencies_turistiques', 'guía o experiencias turísticas'], ['productora_cultural', 'productora cultural o musical']];
+const ROL3 = { type: 'array', items: STR };
+const PAIR = { type: 'array', items: STR };
+const LLENGUA = S({ nom: STR, diu: STR, roles: ROL3, pairs: { type: 'array', items: PAIR }, passos: ROL3, centre: STR, bona: STR });
+const ESQ_OFICI = S({ icona: STR, paraules: STR, ca: LLENGUA, es: LLENGUA, en: LLENGUA,
+  veda: S({ clau: ROL3, falta: ROL3, preguntes: ROL3, senyals: ROL3 }) });
+const SIS_OFICI = [
+  'Eres experta en análisis de redes de valor (Verna Allee) y en pymes y autónomos de Cataluña y España.',
+  'Escribes el modelo de referencia de un oficio: cómo fluye el valor en un negocio así cuando funciona bien. Es buena práctica, no un caso: sin nombres de personas ni empresas, sin cifras.',
+  'Formato: «roles» 6 a 8 roles (nombres de rol, no personas; incluye siempre quien recomienda y el equipo). «pairs» 7 a 10 relaciones, cada una exactamente 6 textos: [rol que da, rol que recibe, "tangible"|"intangible", qué da (2 a 6 palabras), "tangible"|"intangible", qué vuelve (2 a 6 palabras)]; tangible = se paga o se acuerda, intangible = no se paga. Al menos la mitad de lo que circula, intangible. Los nombres de rol de pairs, idénticos a los de roles. «centre» = el rol del propio negocio. «passos» 4 a 6 fases para ponerlo en marcha. «bona» una frase de buena práctica. «diu» una frase de para quién es.',
+  '«ca», «es» y «en» son el mismo modelo en catalán, castellano e inglés: mismos roles y mismo orden.',
+  '«paraules»: 10 a 15 palabras sueltas (en castellano y catalán, minúsculas) que diría alguien de ese oficio al describirse.',
+  '«veda» en catalán, frases cortas: «clau» 3 a 4 intangibles que ya se saben del oficio, cada uno empezando por **Qui → a qui: què.** y una frase; «falta» 2 a 3 cosas que casi nunca se dibujan; «preguntes» 3 preguntas para la sesión, concretas y fáciles de contestar; «senyals» 3 señales de que la red está sana.',
+  'Una sola «icona»: un emoji.'].join('\n');
+export const peticionsOficis = model => OFICIS.map(([id, desc]) => ({ custom_id: 'ofici-' + id, params: { model, max_tokens: 8000,
+  system: SIS_OFICI, output_config: { effort: 'high', format: { type: 'json_schema', schema: ESQ_OFICI } },
+  messages: [{ role: 'user', content: 'El oficio: ' + desc + '. Escribe su modelo de referencia.' }] } }));
+
 /* ─── Les variants del prompt: banc-mapes/variants/<nom>.json ───
    { "nom": "...", "sistemaExtra": "línies que s'afegeixen al sistema", "pas": "substitueix PAS.mapa", "pasExtra": "s'afegeix a PAS.mapa" } */
 export function variant(nom) {
@@ -183,6 +214,14 @@ async function main() {
     const casos = vells.concat(nous.map((c, i) => Object.assign({ id: 'c' + String(vells.length + i + 1).padStart(3, '0') }, c)));
     writeFileSync(fitxer, JSON.stringify({ versio: 1, generat: new Date().toISOString().slice(0, 10), casos }, null, 1) + '\n');
     console.log('casos: ' + casos.length + ' · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
+    return;
+  }
+  if (ordre === 'oficis') {
+    const rs = await crida(peticionsOficis(OPUS));
+    if (!rs) return;
+    const fets = rs.filter(x => x.r).map(x => { try { return Object.assign({ id: x.id.replace(/^ofici-/, '') }, jsonDe(x.r)); } catch (e) { return null; } }).filter(Boolean);
+    writeFileSync(join(BANC, 'oficis.json'), JSON.stringify({ versio: 1, estat: 'esborrany', generat: new Date().toISOString().slice(0, 10), oficis: fets }, null, 1) + '\n');
+    console.log('oficis: ' + fets.length + ' · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
     return;
   }
   const casos = llegeixJ(join(BANC, 'casos.json')).casos.slice(0, Number(a.max || 999));

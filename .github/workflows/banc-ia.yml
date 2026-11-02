@@ -44,7 +44,7 @@ jobs:
             read -ra A <<< "$p"
             node SOS/tools/banc-mapes.mjs "${A[@]}" --sortida banc-ia
           done
-          cp SOS/knowledge/vna/banc-mapes/casos.json banc-ia/ 2>/dev/null || true
+          cp SOS/knowledge/vna/banc-mapes/*.json banc-ia/ 2>/dev/null || true
           [ -f banc-ia/informe.md ] && cat banc-ia/informe.md >> "$GITHUB_STEP_SUMMARY" || true
       - name: El banc
         if: ${{ inputs.eina != 'banc-mapes' }}
