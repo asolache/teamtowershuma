@@ -776,6 +776,7 @@
            per què nosaltres i l'índex per a qui vol entrar-hi a fons. */
         .hero-av { list-style:none; padding:0; margin:0 0 1.4rem; display:grid; gap:.45rem; }
         .hero-av li { position:relative; padding-left:1.6rem; color:var(--text); font-weight:500; line-height:1.45; }
+        .hero-av b { color:var(--blue); font-weight:700; }
         .hero-av li::before { content:'✓'; position:absolute; left:0; top:0; color:var(--green); font-weight:700; }
         .avantatges { padding:6rem 0 4rem; }
         .avantatges .section-header { margin-bottom:3rem; }
@@ -967,6 +968,7 @@
 })();
 </script>
 <!--/TT-NAV-->
+<main>
 
 <!-- HERO -->
 <section class="hero">
@@ -986,18 +988,18 @@
                     <span aria-hidden="true">·</span>
                     <a href="/cataleg?s=empresa" data-sec="empresa" data-i18n="hero.porta3">Empresa i cooperativa</a>
                 </div>
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Mira com flueix el valor al teu negoci <em>i fes-lo créixer</em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Consultoria estratègica i eina digital: veiem com flueix el valor al teu negoci i el convertim en la teva web i en processos que van sols, amb IA inclosa. Comença pel teu <strong>mapa de valor</strong>: és gratis i en surt el primer esbós de la web.</p>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Fem visible com flueix el valor al teu negoci <em>i el convertim en web, processos i equip</em></em></h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Som consultors d'estratègia amb eina pròpia. Dibuixem el <strong>mapa de valor</strong> del teu negoci (qui et dona què, i què li dones) i d'aquí en surten la teva web, processos que van sols amb IA i la formació del teu equip. Per a pimes, autònoms, grans empreses i entitats.</strong>: és gratis i en surt el primer esbós de la web.</p>
                 <ul class="hero-av fade-up" style="animation-delay:.25s">
-                    <li data-i18n="hero.av1">Veus el teu negoci sencer en un sol dibuix</li>
-                    <li data-i18n="hero.av2">Saps on es perd valor i per on començar</li>
-                    <li data-i18n="hero.av3">Tens l'esbós de la teva web, sortit del mapa</li>
+                    <li data-i18n-html="hero.av1"><b>Diagnòstic</b> · veus el teu negoci en un sol dibuix i on se t'escapa el valor</li>
+                    <li data-i18n-html="hero.av2"><b>Web i processos</b> · la web i les automatitzacions surten del mapa, no d'una plantilla</li>
+                    <li data-i18n-html="hero.av3"><b>Formació acció</b> · directius i equips aprenen fent-ho sobre el seu propi projecte</li>
                 </ul>
                 <div class="hero-actions fade-up" style="animation-delay:.3s">
                     <a href="/cliente/#alrededor" class="btn-primary" data-i18n="hero.cta1">Crea el teu mapa de valor, gratis →</a>
-                    <a href="/SOS/vna.html" class="btn-ghost" data-i18n="hero.cta2">Com es fa un mapa</a>
+                    <a href="/SOS/vna.html" class="btn-ghost" data-i18n="hero.cta2">Què és un mapa de valor</a>
                 </div>
-                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n-html="hero.note">Sense pagar i sense compromís: no s'envia res fins que tu ho diguis. Ja saps què vols? <a href="/cataleg.html">Mira què contractes</a>.</p>
+                <p class="hero-note fade-up" style="animation-delay:.35s" data-i18n-html="hero.note">El primer mapa és gratis i sense compromís: en cinc minuts tens el dibuix i l'esbós de la web, i no s'envia res fins que tu ho diguis. Ja saps què vols? <a href="/cataleg.html">Mira què contractes</a>.</a>.</p>
             </div>
             <div class="hero-cos">
                 <ul class="hero-proves fade-up" style="animation-delay:.38s">
@@ -1202,6 +1204,7 @@
 <script src="/SOS/cervell/forces.js" defer></script>
 <script src="/SOS/lib/cas-automatitzat.js" defer></script>
 <script src="/SOS/lib/mapa-valor.js" defer></script>
+<script src="/SOS/lib/mapa-etiquetes.js" defer></script>
 <script src="/SOS/lib/mapa-anima.js" defer></script>
 <script src="/SOS/cervell/pla.js" defer></script>
 <script src="/SOS/cervell/franja.js" defer></script>
@@ -1475,7 +1478,7 @@
             <table class="op-t op-escala">
                 <thead><tr><th scope="col" data-i18n="op.es.c0">Graó</th><th scope="col" data-i18n="op.es.c1">Preu</th><th scope="col" data-i18n="op.es.c2">Per a qui</th></tr></thead>
                 <tbody>
-        <tr><th scope="row" data-i18n="op.es.0.k">Esborrany del mapa</th><td class="op-xifra" data-i18n="op.es.0.p">0 €</td><td data-i18n="op.es.0.q">Qualsevol que arribi per la web</td></tr>
+        <tr><th scope="row" data-i18n="op.es.0.k">Esborrany del mapa</th><td class="op-xifra" data-i18n="op.es.0.p">Gratuït</td><td data-i18n="op.es.0.q">Qualsevol que arribi per la web</td></tr>
         <tr><th scope="row" data-i18n="op.es.1.k">Sessió individual</th><td class="op-xifra" data-i18n="op.es.1.p">A confirmar</td><td data-i18n="op.es.1.q">Autònoms i fundadors</td></tr>
         <tr><th scope="row" data-i18n="op.es.2.k">Taller d'equip</th><td class="op-xifra" data-i18n="op.es.2.p">A confirmar</td><td data-i18n="op.es.2.q">Equips de 4 a 12 persones</td></tr>
         <tr class="op-nou"><th scope="row" data-i18n="op.es.3.k">El teu negoci operatiu</th><td class="op-xifra" data-i18n="op.es.3.p">A confirmar</td><td data-i18n="op.es.3.q">Pimes i projectes que volen el sistema sencer</td></tr>
@@ -1799,6 +1802,7 @@
 </div>
 
 <!-- FOOTER -->
+</main>
 <!--TT-PEU-->
 <style>
 /* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
@@ -1895,12 +1899,12 @@ ca: {
   'av.intro':'No és un informe que es queda al calaix: és el dibuix del teu negoci, i el fas servir per decidir.',
   'av.h2':'Un mapa que treballa <em>per al teu negoci</em>',
   'av.k':'Què t\'emportes',
-  'hero.av3':'Tens l\'esbós de la teva web, sortit del mapa',
-  'hero.av2':'Saps on es perd valor i per on començar',
-  'hero.av1':'Veus el teu negoci sencer en un sol dibuix',
+  'hero.av3':'<b>Formació acció</b> · directius i equips aprenen fent-ho sobre el seu propi projecte',
+  'hero.av2':'<b>Web i processos</b> · la web i les automatitzacions surten del mapa, no d\'una plantilla',
+  'hero.av1':'<b>Diagnòstic</b> · veus el teu negoci en un sol dibuix i on se t\'escapa el valor',
 /* El negoci operatiu (estratègia d'octubre del 2026) */
   'hero.evo3.d':'El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d\'on s\'encalla el valor.',
-  'hero.cta2':'Com es fa un mapa',
+  'hero.cta2':'Què és un mapa de valor',
   'op.eyebrow':'La proposta',
   'op.h2':'Del taller al sistema viu: <em>el teu negoci operatiu</em>',
   'op.intro':'Una organització petita o mitjana surt amb el seu model de negoci funcionant, no amb un informe. La sala la seguim fent les persones; la feina que abans costava setmanes la fa el sistema.',
@@ -1966,7 +1970,7 @@ ca: {
   'op.es.c1':'Preu',
   'op.es.c2':'Per a qui',
   'op.es.0.k':'Esborrany del mapa',
-  'op.es.0.p':'0 €',
+  'op.es.0.p':'Gratuït',
   'op.es.0.q':'Qualsevol que arribi per la web',
   'op.es.1.k':'Sessió individual',
   'op.es.1.p':'A confirmar',
@@ -2185,8 +2189,8 @@ ca: {
   'vd.p2.t':'A Pantheon Work, des del 2019',
   'vd.p2.d':'L\'Álvaro Solache hi dirigeix projectes de consultoria amb aquest mètode, i en va cocrear la pràctica: venda, planificació, producció i formació. <b>Les fases, el full i les preguntes d\'aquesta pàgina surten del guió d\'una sessió real amb un equip de direcció</b>, no d\'un manual.',
 /*/TT-VD-I18N-CA*/
-  'hero.h1':'Mira com flueix el valor al teu negoci <em>i fes-lo créixer</em>',
-  'hero.desc':'Consultoria estratègica i eina digital: veiem com flueix el valor al teu negoci i el convertim en la teva web i en processos que van sols, amb IA inclosa. Comença pel teu <strong>mapa de valor</strong>: és gratis i en surt el primer esbós de la web.',
+  'hero.h1':'Fem visible com flueix el valor al teu negoci <em>i el convertim en web, processos i equip</em>',
+  'hero.desc':'Som consultors d\'estratègia amb eina pròpia. Dibuixem el <strong>mapa de valor</strong> del teu negoci (qui et dona què, i què li dones) i d\'aquí en surten la teva web, processos que van sols amb IA i la formació del teu equip. Per a pimes, autònoms, grans empreses i entitats.',
   'hero.evo0.k':'1996 · Direcció de persones','hero.evo0.d':'Nou anys dirigint persones i equips dins d\'empresa, abans de fer-ne consultoria. La trajectòria, al <a href="https://linkedin.com/in/alvarosolache" rel="me noopener" target="_blank">LinkedIn</a>.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells amb equips d\'empresa: un grup viu que el pes o es reparteix o no s\'aguanta.',
   'hero.evo2.k':'Després · el mapa de valor','hero.evo2.d':'El mètode que en va sortir: qui dona què a qui, també els favors i la confiança.',
@@ -2216,7 +2220,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'Sense pagar i sense compromís: no s\'envia res fins que tu ho diguis. Ja saps què vols? <a href="/cataleg.html">Mira què contractes</a>.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és com és la teva xarxa: en cinc minuts en tens el primer dibuix, i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg a la vista, el següent pas no és trucar: és dibuixar el teu mapa. D\'aquí surt quin paquet et toca.','band.btn':'Crea el teu mapa →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'El primer mapa és gratis i sense compromís: en cinc minuts tens el dibuix i l\'esbós de la web, i no s\'envia res fins que tu ho diguis. Ja saps què vols? <a href="/cataleg.html">Mira què contractes</a>.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és com és la teva xarxa: en cinc minuts en tens el primer dibuix, i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg a la vista, el següent pas no és trucar: és dibuixar el teu mapa. D\'aquí surt quin paquet et toca.','band.btn':'Crea el teu mapa →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
@@ -2348,11 +2352,11 @@ es: {
   'av.intro':'No es un informe que se queda en el cajón: es el dibujo de tu negocio, y lo usas para decidir.',
   'av.h2':'Un mapa que trabaja <em>para tu negocio</em>',
   'av.k':'Qué te llevas',
-  'hero.av3':'Tienes el boceto de tu web, salido del mapa',
-  'hero.av2':'Sabes dónde se pierde valor y por dónde empezar',
-  'hero.av1':'Ves tu negocio entero en un solo dibujo',
+  'hero.av3':'<b>Formación acción</b> · directivos y equipos aprenden haciéndolo sobre su propio proyecto',
+  'hero.av2':'<b>Web y procesos</b> · la web y las automatizaciones salen del mapa, no de una plantilla',
+  'hero.av1':'<b>Diagnóstico</b> · ves tu negocio en un solo dibujo y dónde se te escapa el valor',
   'hero.evo3.d':'El mismo método convertido en un sistema vivo: cada rol registra lo que da y recibe, y el mapa avisa de dónde se atasca el valor.',
-  'hero.cta2':'Cómo se hace un mapa',
+  'hero.cta2':'Qué es un mapa de valor',
   'op.eyebrow':'La propuesta',
   'op.h2':'Del taller al sistema vivo: <em>tu negocio operativo</em>',
   'op.intro':'Una organización pequeña o mediana sale con su modelo de negocio funcionando, no con un informe. La sala la seguimos haciendo las personas; el trabajo que antes costaba semanas lo hace el sistema.',
@@ -2418,7 +2422,7 @@ es: {
   'op.es.c1':'Precio',
   'op.es.c2':'Para quién',
   'op.es.0.k':'Borrador del mapa',
-  'op.es.0.p':'0 €',
+  'op.es.0.p':'Gratis',
   'op.es.0.q':'Cualquiera que llegue por la web',
   'op.es.1.k':'Sesión individual',
   'op.es.1.p':'A confirmar',
@@ -2637,8 +2641,8 @@ es: {
   'vd.p2.t':'En Pantheon Work, desde 2019',
   'vd.p2.d':'Álvaro Solache dirige allí proyectos de consultoría con este método, y cocreó su práctica: venta, planificación, producción y formación. <b>Las fases, la hoja y las preguntas de esta página salen del guion de una sesión real con un equipo de dirección</b>, no de un manual.',
 /*/TT-VD-I18N-ES*/
-  'hero.h1':'Mira cómo fluye el valor en tu negocio <em>y hazlo crecer</em>',
-  'hero.desc':'Consultoría estratégica y herramienta digital: vemos cómo fluye el valor en tu negocio y lo convertimos en tu web y en procesos que van solos, con IA incluida. Empieza por tu <strong>mapa de valor</strong>: es gratis y sale el primer esbozo de tu web.',
+  'hero.h1':'Hacemos visible cómo fluye el valor en tu negocio <em>y lo convertimos en web, procesos y equipo</em>',
+  'hero.desc':'Somos consultores de estrategia con herramienta propia. Dibujamos el <strong>mapa de valor</strong> de tu negocio (quién te da qué, y qué le das) y de ahí salen tu web, procesos que van solos con IA y la formación de tu equipo. Para pymes, autónomos, grandes empresas y entidades.',
   'hero.evo0.k':'1996 · Dirección de personas','hero.evo0.d':'Nueve años dirigiendo personas y equipos dentro de la empresa, antes de hacer consultoría. La trayectoria, en <a href="https://linkedin.com/in/alvarosolache" rel="me noopener" target="_blank">LinkedIn</a>.',
   'hero.evo1.k':'2005 · TeamTowers','hero.evo1.d':'Castells con equipos de empresa: un grupo vivo donde el peso o se reparte o no se aguanta.',
   'hero.evo2.k':'Después · el mapa de valor','hero.evo2.d':'El método que salió de ahí: quién da qué a quién, también los favores y la confianza.',
@@ -2668,7 +2672,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'Sin pagar y sin compromiso: no se envía nada hasta que tú lo digas. ¿Ya sabes lo que quieres? <a href="/cataleg.html">Mira qué contratas</a>.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es cómo es tu red: en cinco minutos tienes el primer dibujo, y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo a la vista, el siguiente paso no es llamar: es dibujar tu mapa. De ahí sale qué paquete te toca.','band.btn':'Crea tu mapa →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'El primer mapa es gratis y sin compromiso: en cinco minutos tienes el dibujo y el esbozo de la web, y no se envía nada hasta que tú lo digas. ¿Ya sabes lo que quieres? <a href="/cataleg.html">Mira qué contratas</a>.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es cómo es tu red: en cinco minutos tienes el primer dibujo, y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo a la vista, el siguiente paso no es llamar: es dibujar tu mapa. De ahí sale qué paquete te toca.','band.btn':'Crea tu mapa →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',

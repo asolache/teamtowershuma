@@ -163,3 +163,43 @@ L'objectiu: un botó és el mateix botó a totes les pàgines.
 - **Queda:** els botons de dins dels blocs generats per altres eines (`.mv-cta`
   del mapa de valor a la portada i al mètode, `.ct-btn` del contacte) i la
   capçalera de pàgina comuna de la fase 4.
+
+## 6 · Revisió DRY i W3C (02/11/2026)
+
+Demanada per l'Àlvar el 22/10/2026: «integrarem per millorar DRY en disseny i
+ser també W3C fans de l'arquitectura web». Mesurat sobre les 49 pàgines del
+repositori (arrel, carpetes amb `index.html` i `SOS/*.html`).
+
+**W3C · el que ja complien.** Totes tenen `lang`, `viewport` i `<title>`; cap
+imatge sense `alt`; un sol `<h1>` llevat de cinc pàgines que ho expliquen (la
+intro i el joc a pantalla completa, el blog bilingüe i dos prototips antics).
+
+**W3C · el que s'ha arreglat avui, amb guarda nova al CI (`check-w3c.js`).**
+
+- **Camps sense nom per al lector de pantalla:** 15 camps només tenien
+  `placeholder`, que desapareix en escriure i molts lectors no llegeixen (banc
+  de temps, La Compra, L'Energia, L'Habitatge, l'online i `/ia`). Ara porten
+  `aria-label`.
+- **Un `id` repetit a `/vna`:** la pinya del 4 sortia dues vegades amb el
+  mateix títol, i `aria-labelledby` llegia el primer. Arreglat a l'origen:
+  `build-castells.js` numera la segona.
+- **`<main>` a les nou pàgines amb la barra del lloc que no en tenien**
+  (portada, catàleg, qui som, premsa, avís legal, `/vna`, escola, uneix-te,
+  intro): el lector pot saltar la barra d'un sol cop. L'alçada de cada pàgina
+  és la mateixa abans i després.
+
+**W3C · queda.** Sense `meta description`: `finances.html`, `visita/` i els
+prototips `v2`–`v4`. Sense `<main>`: les pàgines sense la barra del lloc
+(`comando`, `ia`, `home-nova`, `finances`, els prototips `v4`–`v9`).
+
+**DRY · la regla que en surt.** *Una línia es pot repetir; la lògica, no.*
+
+- `$` (18 pàgines), `esc` (16) i `el` (9) són funcions d'una línia: una
+  llibreria compartida costaria una petició més a cada pàgina per estalviar
+  menys bytes dels que demana. Es queden.
+- **`applyLang`** viu a cinc pàgines d'arrel en tres variants que ja divergeixen
+  (portada; catàleg, qui som i premsa; avís legal). És lògica: ha de sortir
+  d'un sol lloc, generada per `build-nav.js` com la barra i el peu. Proper pas.
+- **`pintaMapa`** de La Compra, L'Energia i L'Habitatge: tres còpies que ja no
+  són iguals, del text que explica el mapa de cada dinàmica. Han de fer servir
+  el motor únic `SOS/lib/mapa-valor.js`. Proper pas.

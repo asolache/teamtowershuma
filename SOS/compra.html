@@ -412,7 +412,7 @@ ol.passos li{margin-bottom:.2rem}
     s'escala amb les persones que hi viuen. El total del grup és la suma, i és el que dona el
     volum: <strong>ningú negocia sol.</strong></p>
     <div class="fila">
-      <input id="inNom" placeholder="Nom de la llar" maxlength="24">
+      <input id="inNom" aria-label="Nom de la llar" placeholder="Nom de la llar" maxlength="24">
       <label>persones <input id="inLlar" type="number" min="1" max="12" value="2"></label>
       <button class="btn btn-primary" id="btnSoci">Dona d'alta</button>
     </div>
@@ -520,9 +520,9 @@ ol.passos li{margin-bottom:.2rem}
     La pàgina no ho comprova ni ho pot comprovar: ho apunta el grup.</p>
     <div class="taula"><table id="tComptes"></table></div>
     <div class="fila">
-      <select id="movSoci"></select>
+      <select id="movSoci" aria-label="Qui"></select>
       <label>€ <input id="movEur" type="number" min="0" step="0.01" value="0"></label>
-      <input id="movNota" placeholder="nota (opcional)" maxlength="40">
+      <input id="movNota" aria-label="Nota" placeholder="nota (opcional)" maxlength="40">
       <button class="btn" id="btnMov">Apunta-ho a la caixa</button>
     </div>
     <p class="mut" id="movAvis"></p>

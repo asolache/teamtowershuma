@@ -114,6 +114,7 @@
         .camps { display: grid; gap: 1rem; max-width: 46rem; }
         @media (min-width: 760px) { .camps.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         .camp { display: grid; gap: .3rem; }
+        .camp[hidden] { display: none; }
         .camp label, .camp .et { font-weight: 600; }
         .camp small { font-size: var(--t0); color: var(--muted); }
         .camp input, .camp textarea, .camp select, .fila input, .fila select { width: 100%; min-height: 44px; padding: .55rem .75rem; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--card); }
@@ -142,11 +143,20 @@
         .models { margin-top: 1.2rem; max-width: 70ch; }
         .models-sec { margin: .9rem 0 0; font-size: var(--t0); color: var(--muted); }
         .bona { margin-top: .8rem; line-height: 1.55; max-width: 70ch; }
+        .rols-model { margin-top: 1rem; padding: .9rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); display: grid; gap: .6rem; max-width: 72ch; }
+        .rols-model h3 { margin: 0; font-size: var(--t1, 1.05rem); }
+        .rols-model .nota { margin: 0; }
+        .rols-model .model-xips button[aria-pressed="true"] { opacity: .75; cursor: default; }
+        .rols-model .accions { margin-top: 0; }
         .sug { margin-top: .8rem; padding: .8rem 1rem; border-left: 3px solid var(--indigo); background: var(--card); border-radius: 0 12px 12px 0; line-height: 1.55; }
         .sug .btn { margin-left: .4rem; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
         .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
-        .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
+        .model-xips button[aria-pressed="true"], .model-xips button[aria-checked="true"] { border: 2px solid var(--indigo); }
+        .alcance { margin-top: 0; }
+        .mapa-tit { margin: 1rem 0 0; font-weight: 700; font-size: var(--t2); }
+        .mapa-tit:empty { display: none; }
+        .mapa-tit span { font-weight: 400; color: var(--muted); font-size: var(--t0); }
         .files { display: grid; gap: .8rem; margin-top: 1rem; }
         .fila { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem .9rem; display: grid; gap: .5rem; }
         /* Una fila curta al mòbil (02/11/2026): qui, i a sota què et dona i què li
@@ -199,6 +209,25 @@
         /* Tu mapa y tu web, en vivo (24/10/2026). Un panel que se abre al lado
            (a pantalla entera en el móvil, el diseño estándar) y se repinta solo
            con cada cosa que escribes en la página. */
+        /* L'avanç (02/11/2026): quant falta per a un mapa ben definit i que es pot
+           automatitzar. La targeta de dalt diu què falta i on; la píndola de baix
+           el recorda a tota la pàgina i porta a la targeta. */
+        .avanc { margin-top: 1.4rem; padding: 1rem 1.1rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+        .avanc-n { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 .5rem; font-weight: 700; }
+        .avanc-n b { white-space: nowrap; font-size: 1.6rem; color: var(--indigo); font-family: var(--mono); }
+        .avanc-barra { height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
+        .avanc-barra i { display: block; height: 100%; width: 0; background: var(--green, #2e7d4f); border-radius: 999px; transition: width .4s ease; }
+        .avanc ol { list-style: none; margin: .9rem 0 0; padding: 0; display: grid; gap: .4rem; grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr)); counter-reset: av; }
+        .avanc li { display: flex; counter-increment: av; }
+        .avanc li a { flex: 1; display: flex; gap: .55rem; align-items: center; min-height: 44px; padding: .4rem .7rem; border: 1px solid var(--border); border-radius: 10px; color: var(--text); text-decoration: none; font-size: var(--t0); line-height: 1.3; }
+        .avanc li a::before { content: counter(av); flex: none; display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1.5px solid var(--orange); color: var(--orange); font: 700 var(--t0) var(--mono); }
+        .avanc li a:hover, .avanc li a:focus-visible { border-color: var(--indigo); }
+        .avanc li.ok a { color: var(--muted); background: color-mix(in srgb, var(--green) 7%, transparent); border-color: color-mix(in srgb, var(--green) 30%, var(--border)); }
+        .avanc li.ok a::before { content: "✓"; border-color: var(--green); background: var(--green); color: #fff; }
+        .avanc-pill { position: fixed; left: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .9rem; border-radius: 999px; background: var(--card); border: 1px solid var(--border-strong); color: var(--text); font-weight: 700; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+        .avanc-pill span { font-family: var(--mono); color: var(--indigo); }
+        @media (max-width: 560px) { .avanc-pill { bottom: 4.4rem; } .aviso { bottom: 8.2rem; } }
+        @media (prefers-reduced-motion: reduce) { .avanc-barra i { transition: none; } }
         .viu-b { position: fixed; right: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; padding: .6rem 1.1rem; border-radius: 999px; border: 0; background: var(--indigo); color: var(--on-accent, #fff); font: inherit; font-weight: 700; box-shadow: 0 10px 28px -12px rgba(0, 0, 0, .45); cursor: pointer; }
         .viu-b[aria-expanded="true"] { display: none; }
         .viu { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; gap: .6rem; padding: .8rem 1rem 1rem; background: var(--bg, #fbfaf7); overflow-y: auto; }
@@ -219,9 +248,12 @@
         .viu-svg .mv-t { stroke: var(--blue); }
         .viu-svg .mv-i { stroke: var(--purple); stroke-dasharray: 5 4; }
         .viu-svg .mv-pt { fill: var(--muted); }
-        .viu-svg .mv-n ellipse { fill: var(--card); stroke: var(--border-strong); stroke-width: 1.4; }
-        .viu-svg .mv-casa ellipse { fill: var(--indigo); stroke: var(--indigo); }
-        .viu-svg .mv-n text { font: 600 13px system-ui, sans-serif; fill: var(--text, #1d1b18); }
+        .viu-svg .mv-n ellipse { fill: color-mix(in srgb, var(--indigo) 6%, var(--card)); stroke: color-mix(in srgb, var(--indigo) 35%, var(--border-strong)); stroke-width: 1.6; }
+        .viu-svg .mv-casa ellipse { fill: var(--indigo); stroke: var(--indigo); filter: drop-shadow(0 4px 8px rgba(79, 70, 229, .35)); }
+        .viu-svg .mv-n text { font: 700 14px system-ui, sans-serif; fill: var(--text, #1d1b18); }
+        .viu-tit { margin: 0; font-weight: 700; font-size: var(--t2, 1.2rem); line-height: 1.25; }
+        .viu-tit span { font-weight: 400; font-size: var(--t0); color: var(--muted); }
+        .viu-tit:empty { display: none; }
         .viu-svg .mv-casa text { fill: var(--on-accent, #fff); }
         .viu-svg .mv-e { font: 13px system-ui, sans-serif; fill: var(--light); paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
         .viu-svg .mv-x { stroke-opacity: .35; }
@@ -303,6 +335,13 @@
         .ia-preg { margin-top: 1.1rem; display: grid; gap: .5rem; max-width: 64ch; }
         .ia-preg label { font-weight: 600; }
         .ia-preg textarea { min-height: 4.5rem; }
+        .ia-xips { border: 0; padding: 0; margin: 0; display: grid; gap: .5rem; }
+        .ia-xips legend { font-weight: 600; padding: 0; margin-bottom: .4rem; }
+        .ia-xips .nota { margin: 0; }
+        .model-xips button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+        .web-eines { margin-top: 1.6rem; display: grid; gap: 1rem; max-width: 72ch; }
+        .web-eines .eina { display: grid; gap: .4rem; padding: .7rem .9rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+        .web-eines .eina b { font-size: var(--t0); }
         .ia-final { margin-top: 1rem; font-size: var(--t0); color: var(--light); }
         .ia-textos { display: grid; gap: .8rem; margin-top: 1rem; }
         .ia-textos .fila { animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; }
@@ -472,14 +511,11 @@
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
         <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
-        <ol class="nota" style="margin-top:1rem;display:grid;gap:.2rem">
-            <li><span class="num-paso">1 ·</span> <a href="#alrededor">Quién está a tu alrededor</a></li>
-            <li><span class="num-paso">2 ·</span> <a href="#web">Qué web quieres, y su boceto</a></li>
-            <li><span class="num-paso">3 ·</span> <a href="#cuentanos">Lo que quieres, con tus palabras</a></li>
-            <li><span class="num-paso">4 ·</span> <a href="#preguntas">Unas preguntas (o que las conteste tu IA)</a></li>
-            <li><span class="num-paso">5 ·</span> <a href="#cuenta">Tu cuenta</a></li>
-            <li><span class="num-paso">6 ·</span> <a href="#enviar">Nos lo envías</a></li>
-        </ol>
+        <div class="avanc" id="avance" aria-labelledby="avanc-t">
+            <p class="avanc-n" id="avanc-t"><b id="cl-avanc-n">0%</b> <span>hacia un mapa bien definido y que puede ir solo</span></p>
+            <div class="avanc-barra" role="progressbar" aria-labelledby="avanc-t" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="cl-avanc-b"><i></i></div>
+            <ol id="cl-avanc"></ol>
+        </div>
         <p class="nota" style="margin-top:1rem"><a href="#alrededor">Empieza por tu mapa</a>. ¿No sabes si te hace falta? <a href="/SOS/diagnostic.html?lang=es">Hazte el diagnóstico de 3 minutos</a>.</p>
         <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="/acceso">tu espacio</a>.</p>
     </div>
@@ -492,13 +528,24 @@
             <h2 id="t-alrededor">Con quién trabajas, qué te da y qué le das.</h2>
             <p>Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.</p>
         </div>
+        <div class="camps dos">
+            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org" placeholder="El nombre de tu escuela, tu empresa, tu asociación…"><small>Es el nombre del mapa.</small></div>
+            <div class="camp"><span class="et" id="cl-alc-t">De qué es este mapa</span>
+                <div class="model-xips alcance" id="cl-alcance" role="radiogroup" aria-labelledby="cl-alc-t"><button type="button" role="radio" data-alc="global" aria-checked="true">Toda la organización</button><button type="button" role="radio" data-alc="zoom" aria-checked="false">Un área (zoom)</button></div>
+                <small id="cl-alc-d">El mapa global: todo lo que haces y con quién.</small></div>
+            <div class="camp" id="cl-area-c" hidden><label for="cl-area">Qué área</label><input id="cl-area" data-c="area" placeholder="Los cursos de verano, la tienda, la formación de profes…"><small>Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.</small></div>
+        </div>
+        <p class="mapa-tit" id="cl-mapa-tit" aria-live="polite"></p>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
             <div class="model-xips" id="cl-models" role="group" aria-label="Modelos para empezar"></div>
+            <p class="models-sec">O por oficio, si eres una pyme o trabajas por tu cuenta:</p>
+            <div class="model-xips" id="cl-oficis" role="group" aria-label="Modelos por oficio"></div>
             <p class="models-sec">O por sector, si tu proyecto mira al territorio:</p>
             <div class="model-xips" id="cl-sectors" role="group" aria-label="Modelos por sector"></div>
             <p class="bona" id="cl-bona" hidden></p>
+            <div class="rols-model" id="cl-rols" aria-live="polite" hidden></div>
         </div>
         <div class="files" id="cl-files"></div>
         <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
@@ -545,7 +592,11 @@
             <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
             <label><input type="checkbox" data-capa="extranet"> <b>El espacio de clientes y aliados</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
             <label><input type="checkbox" data-capa="intranet"> <b>El espacio de tu equipo</b><span>Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
+            <label><input type="checkbox" id="cl-automatiza"> <b>Que lo que se repite vaya solo</b><span>Marcamos en tu mapa lo que puede preparar una máquina (avisos, informes, presupuestos, reservas) y lo dejamos funcionando, con una persona que lo revisa. Lo que no se paga y el dinero los lleva siempre una persona.</span></label>
         </div>
+        <h3 style="margin-top:1.6rem">Dónde está tu web y qué usas</h3>
+        <p class="nota">Elige lo que sepas; lo que no, lo vemos juntos. Así sabemos desde el principio con qué se conecta tu web.</p>
+        <div class="web-eines" id="cl-eines"></div>
         <div class="ia" id="cl-ia-llig" hidden data-per="Para leer tu web, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
                 <div><h3>¿Ya tienes web? La leemos</h3><p>Con tu permiso leemos las páginas públicas de tu web de ahora, para que la nueva no pierda lo que Google ya conoce de ti. Luego te decimos a quién va cada página y lo que tu web todavía no le dice a cada uno.</p></div></div>
@@ -637,15 +688,16 @@
         <div class="camps dos">
             <div class="camp"><label for="cl-nom">Tu nombre</label><input id="cl-nom" autocomplete="name" data-c="nom"></div>
             <div class="camp"><label for="cl-mail">Tu correo</label><input id="cl-mail" type="email" autocomplete="email" data-c="mail"></div>
-            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org"></div>
             <div class="camp"><label for="cl-web">Tu web de ahora, si la tienes</label><input id="cl-web" type="url" inputmode="url" placeholder="https://" data-c="web"></div>
         </div>
         <div class="accions">
             <button type="button" class="btn btn-primary" id="cl-crea">Crear mi cuenta</button>
             <button type="button" class="btn btn-ghost" id="cl-baixa">Descargar mi ficha</button>
+            <button type="button" class="btn btn-ghost" id="cl-cervell">Descargar el cerebro de mi proyecto</button>
             <label class="btn btn-ghost" for="cl-carrega">Cargar una ficha</label>
             <input type="file" id="cl-carrega" accept="application/json,.json" hidden>
         </div>
+        <p class="nota">El cerebro de tu proyecto es una carpeta con tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar. Cualquier IA que la lea antes de trabajar contigo empieza sabiendo lo que ya hemos aprendido.</p>
         <p class="compte" id="cl-compte" role="status"></p>
     </div>
 </section>
@@ -701,9 +753,11 @@
 
 </main>
 <!-- Tu mapa y tu web, en vivo: lo que escribes arriba se ve aquí al momento. -->
+<a class="avanc-pill" id="cl-avanc-p" href="#avance" >Avance <span>0%</span></a>
 <button type="button" class="viu-b" id="cl-viu-b" aria-controls="cl-viu" aria-expanded="false">✦ Ver mi mapa y mi web</button>
 <aside class="viu" id="cl-viu" aria-labelledby="t-viu" hidden>
     <div class="viu-cap"><h2 id="t-viu">Tu mapa y tu web, en vivo</h2><button type="button" class="btn btn-sm btn-ghost" id="cl-viu-tanca">Cerrar</button></div>
+    <p class="viu-tit" id="cl-viu-tit" aria-live="polite"></p>
     <p class="nota">Lo que escribes en la página se ve aquí al momento. Primero tu mapa: con quién trabajas y qué os dais. De ahí sale tu web.</p>
     <div class="viu-tabs" role="tablist" aria-label="Qué miras">
         <button type="button" class="btn btn-ghost" role="tab" id="cl-viu-t-mapa" aria-controls="cl-viu-mapa" aria-selected="true">1 · Mi mapa</button>
@@ -778,8 +832,8 @@
      lo envía el botón «Enviar a TeamTowers» con un POST, y nada más. -->
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
-  <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
-  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea>
+  <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="alcance"><input name="web">
+  <input name="objectiu"><input name="nivel"><input name="capas"><input name="automatiza"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea><textarea name="eines"></textarea>
 </form>
 
 <script src="/SOS/lib/mapa-valor.js"></script>
@@ -839,6 +893,17 @@
         'Escribe arriba con quién trabajas (paso 1) y aquí aparece tu web.': 'Escriu a dalt amb qui treballes (pas 1) i aquí apareix la teva web.',
         'Empieza tu proyecto | TeamTowers Humà': 'Comença el teu projecte | TeamTowers Humà',
         'Tu espacio de cliente': 'El teu espai de client',
+        'hacia un mapa bien definido y que puede ir solo': 'cap a un mapa ben definit i que pot anar sol',
+        'Lo que no se paga, también': 'El que no es paga, també',
+        'Con cada uno, algo va y algo vuelve': 'Amb cadascun, alguna cosa va i alguna cosa torna',
+        'Cada uno por lo que hace, sin cifras': 'Cadascú pel que fa, sense xifres',
+        'Qué quieres conseguir': 'Què vols aconseguir',
+        'Lo que puede ir solo, señalado': 'El que pot anar sol, assenyalat',
+        'Tu avance': 'El teu avanç',
+        'Avance': 'Avanç',
+        'Qué web quieres': 'Quina web vols',
+        'Que lo que se repite vaya solo': 'Que el que es repeteix vagi sol',
+        'Marcamos en tu mapa lo que puede preparar una máquina (avisos, informes, presupuestos, reservas) y lo dejamos funcionando, con una persona que lo revisa. Lo que no se paga y el dinero los lleva siempre una persona.': "Marquem al teu mapa el que pot preparar una màquina (avisos, informes, pressupostos, reserves) i ho deixem funcionant, amb una persona que ho revisa. El que no es paga i els diners els porta sempre una persona.",
         '¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en': 'Ja treballes amb nosaltres? La teva pàgina, el teu pla i la nostra conversa són al',
         'tu espacio': 'teu espai',
         'Empieza por tu mapa': 'Comença pel teu mapa',
@@ -858,6 +923,21 @@
         'Tu nombre': 'El teu nom',
         'Tu correo': 'El teu correu',
         'Tu organización': 'La teva organització',
+        'El nombre de tu escuela, tu empresa, tu asociación…': "El nom de la teva escola, la teva empresa, la teva associació…",
+        'Es el nombre del mapa.': 'És el nom del mapa.',
+        'De qué es este mapa': "De què és aquest mapa",
+        'Toda la organización': "Tota l'organització",
+        'Un área (zoom)': 'Una àrea (zoom)',
+        'El mapa global: todo lo que haces y con quién.': 'El mapa global: tot el que fas i amb qui.',
+        'Un zoom: solo el área en la que estáis trabajando.': "Un zoom: només l'àrea en què esteu treballant.",
+        'Qué área': 'Quina àrea',
+        'Los cursos de verano, la tienda, la formación de profes…': "Els cursos d'estiu, la botiga, la formació de professors…",
+        'Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.': "Fem zoom en el que esteu treballant ara; la resta de l'organització queda fora del dibuix.",
+        'Mapa de valor': 'Mapa de valor',
+        'zoom en {0}': 'zoom a {0}',
+        'zoom en un área': 'zoom a una àrea',
+        'mapa global': 'mapa global',
+        'De quién es el mapa y qué abarca': "De qui és el mapa i què abasta",
         'Tu web de ahora, si la tienes': "La teva web d'ara, si en tens",
         'Crear mi cuenta': 'Crear el meu compte',
         'Descargar mi ficha': 'Descarregar la meva fitxa',
@@ -922,7 +1002,7 @@
         'Pega aquí lo que te ha contestado': "Enganxa aquí el que t'ha contestat",
         'Tu equipo, Equipo de formación, La bodega…': "El teu equip, Equip de formació, El celler…",
         'Modelos para empezar': 'Models per començar',
-        'Modelos por sector': 'Models per sector',
+        'Modelos por sector': 'Models per sector', 'Modelos por oficio': 'Models per ofici',
         'El editor de tu dibujo': 'L\'editor del teu dibuix',
         'Nivel de web': 'Nivell de web',
         'Qué partes de la web hacemos': 'Quines parts de la web fem',
@@ -948,9 +1028,9 @@
         'Primero di al menos quién está a tu alrededor (paso 1)': 'Primer digues almenys qui hi ha al teu voltant (pas 1)',
         'Preparando el boceto…': "Preparant l'esbós…",
         'Inicio': 'Inici',
-        'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.': "Aquest és el teu esbós: la landing amb el que aporta valor a cadascun dels principals, i l'avís legal.",
-        'Este es tu boceto: una puerta para cada uno, con el acceso de clientes y aliados (extranet).': "Aquest és el teu esbós: una porta per a cadascú, amb l'accés de clients i aliats (extranet).",
-        'La intranet del equipo está en «Intranet».': "La intranet de l'equip és a «Intranet».",
+        'Este es tu boceto: una portada con una parte para cada persona importante de tu dibujo, y el aviso legal.': "Aquest és el teu esbós: una portada amb una part per a cada persona important del teu dibuix, i l'avís legal.",
+        'Este es tu boceto: una puerta para cada uno, con el espacio de clientes y aliados.': "Aquest és el teu esbós: una porta per a cadascú, amb l'espai de clients i aliats.",
+        'El espacio de tu equipo está en «Intranet».': "L'espai del teu equip és a «Intranet».",
         'No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.': "No he pogut preparar l'esbós ara. Pots enviar-ho igualment i ho mirem junts.",
         'Esto cambia quién está a tu alrededor por lo del modelo «{0}». ¿Seguimos?': 'Això canvia qui hi ha al teu voltant pel que diu el model «{0}». Continuem?',
         'Modelo «{0}»: ahora cámbialo con tus palabras': "Model «{0}»: ara canvia'l amb les teves paraules",
@@ -1029,7 +1109,23 @@
         'Hemos recuperado tu dibujo guardado': 'Hem recuperat el teu dibuix desat',
         '¿Borramos tu dibujo de tu cuenta? En este navegador se queda.': "Esborrem el teu dibuix del teu compte? En aquest navegador s'hi queda.",
         'No se ha podido borrar. Prueba en un rato.': "No s'ha pogut esborrar. Prova-ho d'aquí a una estona.", 'Borrado de tu cuenta. En este navegador sigue.': 'Esborrat del teu compte. En aquest navegador continua.',
-        'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta',
+        'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta', 'Otra': 'Una altra', 'Puedes elegir más de una.': 'En pots triar més d\'una.',
+        'O por oficio, si eres una pyme o trabajas por tu cuenta:': 'O per ofici, si ets una pime o treballes pel teu compte:',
+        'Quién suele estar en «{0}»': 'Qui sol haver-hi a «{0}»', 'Quién suele estar': 'Qui sol haver-hi',
+        'Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.': 'Afegeix qui et serveixi, un per un, amb el que sol donar i rebre. Després posa-ho amb les teves paraules.',
+        'Añadido: {0}': 'Afegit: {0}', 'Añadidos: {0}': 'Afegits: {0}', 'Añadir los {0} que faltan': 'Afegir els {0} que falten',
+        'Cambiar todo por este modelo': 'Canviar-ho tot per aquest model', 'Ver quién suele estar': 'Veure qui sol haver-hi',
+        'Dónde está tu web y qué usas': 'On és la teva web i què fas servir',
+        'Elige lo que sepas; lo que no, lo vemos juntos. Así sabemos desde el principio con qué se conecta tu web.': 'Tria el que sàpigues; el que no, ho mirem junts. Així sabem des del principi amb què es connecta la teva web.',
+        'Dónde está hoy tu web': 'On és avui la teva web', 'Qué herramientas usas': 'Quines eines fas servir',
+        'Netlify u otro alojamiento': 'Netlify o un altre allotjament', 'No tengo web': 'No tinc web', 'No lo sé': 'No ho sé', 'Sí': 'Sí', 'No': 'No',
+        'Un CRM (tus clientes y contactos)': 'Un CRM (els teus clients i contactes)', 'Un gestor de alumnos, socios o reservas': "Un gestor d'alumnes, socis o reserves",
+        'Una tienda online': 'Una botiga en línia', 'Un boletín o newsletter': 'Un butlletí o newsletter', 'Un calendario de citas': 'Un calendari de cites', 'Otra herramienta': 'Una altra eina',
+        '¿Cómo se llama? (si lo sabes)': 'Com es diu? (si ho saps)', 'Por ejemplo: Holded, Moodle, Mailchimp…': 'Per exemple: Holded, Moodle, Mailchimp…',
+        '¿Se puede conectar con otras herramientas (tiene API)?': 'Es pot connectar amb altres eines (té API)?', '¿Tiene API?': 'Té API?',
+        'Descargar el cerebro de mi proyecto': 'Descarregar el cervell del meu projecte',
+        'El cerebro de tu proyecto es una carpeta con tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar. Cualquier IA que la lea antes de trabajar contigo empieza sabiendo lo que ya hemos aprendido.': "El cervell del teu projecte és una carpeta amb el teu mapa, el que has decidit, les eines que fas servir i el que queda per parlar. Qualsevol IA que la llegeixi abans de treballar amb tu comença sabent el que ja hem après.",
+        'cerebro-{0}.zip': 'cervell-{0}.zip', 'Cerebro descargado': 'Cervell descarregat', 'No se ha podido preparar ahora. Prueba en un rato.': "No s'ha pogut preparar ara. Prova-ho d'aquí a una estona.",
         'La frase de tu web': 'La frase de la teva web', 'La presentación': 'La presentació', 'Para {0}': 'Per a {0}',
         'Cómo le llamas en la web': "Com l'anomenes a la web", 'Lo que le dices': 'El que li dius', 'Verlo en el boceto': "Veure-ho a l'esbós",
         '¿Ya tienes web? La leemos': 'Ja tens web? La llegim',
@@ -1219,18 +1315,20 @@
     }
     tradueix();
     var CLAU = 'tt.cliente.v1';
-    var S = { nom: '', mail: '', org: '', web: '', inicial: '', casa: '', nivel: '', respuestas: {}, alrededor: [], cuenta: false };
+    var S = { nom: '', mail: '', org: '', alcance: 'global', area: '', web: '', inicial: '', casa: '', nivel: '', automatiza: false, respuestas: {}, alrededor: [], cuenta: false };
     try { Object.assign(S, JSON.parse(localStorage.getItem(CLAU) || 'null') || {}); } catch (e) { /* sin memoria: se empieza de cero */ }
     /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
     var PUJA = null;
-    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); if (PUJA) PUJA(); }
+    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); pintaAvanc(); if (PUJA) PUJA(); }
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
+    /* Lo que decide por el camino (acepta, descarta, elige) va al cerebro del proyecto. */
+    function apunta(que) { S.decisiones = (S.decisiones || []).concat([{ data: new Date().toISOString(), que: que }]).slice(-80); desa(); }
     /* Los campos simples (data-c) van y vienen del estado. */
     function pintaCamps() { document.querySelectorAll('[data-c]').forEach(function (i) { i.value = S[i.dataset.c] || ''; }); }
     document.querySelectorAll('[data-c]').forEach(function (i) {
-        i.addEventListener('input', function () { S[i.dataset.c] = i.value; desa(); pintaPrompt(); if (i.dataset.c === 'casa') pintaSalut(); });
+        i.addEventListener('input', function () { S[i.dataset.c] = i.value; desa(); pintaPrompt(); pintaTitol(); if (i.dataset.c === 'casa' || i.dataset.c === 'area') pintaSalut(); });
     });
 
     /* 1 · La cuenta */
@@ -1245,6 +1343,19 @@
     $('#cl-baixa').addEventListener('click', function () {
         var a = el('a', { href: URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' })), download: t('mi-ficha-teamtowers.json') });
         document.body.appendChild(a); a.click(); a.remove(); aviso(t('Ficha descargada'));
+    });
+    /* El cerebro del proyecto: una carpeta `cerebro/` en un zip (DiagnosiClient.cervell
+       y el zip del kit del cerebro, SOS/cervell/exporta.js, que se carga al pulsar). */
+    $('#cl-cervell').addEventListener('click', function () {
+        function baixa() {
+            var fs = D.cervell(S, { llengua: LL, capes: capes(), eines: EINES.text(), salut: D.salut(D.mapa(S), null, LL) });
+            var nom = (S.org || S.casa || 'proyecto').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'proyecto';
+            var a = el('a', { href: URL.createObjectURL(window.CervellExporta.zip(fs)), download: t('cerebro-{0}.zip', nom) });
+            document.body.appendChild(a); a.click(); a.remove(); aviso(t('Cerebro descargado'));
+        }
+        if (window.CervellExporta) { baixa(); return; }
+        var sc = el('script', { src: '/SOS/cervell/exporta.js' }); sc.onload = baixa; sc.onerror = function () { aviso(t('No se ha podido preparar ahora. Prueba en un rato.')); };
+        document.head.appendChild(sc);
     });
     $('#cl-carrega').addEventListener('change', function (ev) {
         var f = ev.target.files[0]; if (!f) return;
@@ -1317,6 +1428,7 @@
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
         $('#cl-salut-n').textContent = t('Tu dibujo, al {0} %', D.salut(D.mapa(S), null, LL).punts);
+        pintaAvanc();
         /* Cada cosa que falta porta on s'arregla: «la màxima de tot és un enllaç». */
         r.punts.forEach(function (p) {
             var li = el('li', { class: p.ok ? 'ok' : '' }), sp = el('span', {}, p.diu + ' ');
@@ -1390,6 +1502,60 @@
     }
     pintaCaso();
 
+    /* L'avanç: cada fita té el seu pes i el seu enllaç («la màxima de tot és un
+       enllaç»). Les regles del dibuix són les de D.revisa, les mateixes de
+       «¿Está listo para dibujarlo?»; «puede ir solo» és la regla del tauler
+       (MM.automatitza), la del panell «Lo que puede ir solo». */
+    function pintaAvanc() {
+        var ol = $('#cl-avanc'); if (!ol) return;
+        var ok = {}; try { D.revisa(D.mapa(S), null, LL).punts.forEach(function (p) { ok[p.id] = p.ok; }); } catch (e) { /* sin dibujo todavía */ }
+        var maq = 0; try { maq = MM.automatitza ? auto().filter(function (x) { return x.r.qui === 'maquina'; }).length : 0; } catch (e) { /* sin flechas */ }
+        var F = [
+            [5, !!(S.org || '').trim() && (S.alcance !== 'zoom' || !!(S.area || '').trim()), '#alrededor', t('De quién es el mapa y qué abarca')],
+            [10, ok.rols, '#cl-files', t('Quién está a tu alrededor')],
+            [10, ok.menes, '#cl-files', t('Lo que no se paga, también')],
+            [10, ok.reciprocitat && ok.solts, '#cl-files', t('Con cada uno, algo va y algo vuelve')],
+            [5, ok.rols && ok.noms && ok.xifres, '#cl-files', t('Cada uno por lo que hace, sin cifras')],
+            [10, ok.abast, '#cl-p-objetivo', t('Qué quieres conseguir')],
+            [15, maq > 0, '#cl-auto', t('Lo que puede ir solo, señalado')],
+            [10, !!S.nivel, '#web', t('Qué web quieres')],
+            [10, !!S.cuenta, '#cuenta', t('Tu cuenta')],
+            [15, !!S.enviat, '#enviar', t('Nos lo envías')]
+        ];
+        var n = 0; ol.textContent = '';
+        F.forEach(function (f) {
+            if (f[1]) n += f[0];
+            var li = el('li', { class: f[1] ? 'ok' : '' }); li.appendChild(el('a', { href: f[2] }, f[3])); ol.appendChild(li);
+        });
+        $('#cl-avanc-n').textContent = n + '%';
+        $('#cl-avanc-b').setAttribute('aria-valuenow', String(n));
+        $('#cl-avanc-b i').style.width = n + '%';
+        $('#cl-avanc-p span').textContent = n + '%';
+    }
+    $('#cl-automatiza').checked = !!S.automatiza;
+    $('#cl-automatiza').addEventListener('change', function () { S.automatiza = this.checked; desa(); });
+
+    /* 1 · De quién es el mapa y qué abarca: toda la organización o un zoom en un área. */
+    function pintaTitol() {
+        var z = S.alcance === 'zoom', org = (S.org || '').trim(), area = (S.area || '').trim(), h = $('#cl-mapa-tit');
+        document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.alc === (z ? 'zoom' : 'global'))); });
+        $('#cl-area-c').hidden = !z;
+        $('#cl-alc-d').textContent = z ? t('Un zoom: solo el área en la que estáis trabajando.') : t('El mapa global: todo lo que haces y con quién.');
+        [h, $('#cl-viu-tit')].forEach(function (x) {
+            x.textContent = '';
+            if (!org && !(z && area)) return;
+            x.appendChild(document.createTextNode(t('Mapa de valor') + (org ? ' · ' + org : '')));
+            x.appendChild(el('span', {}, ' · ' + (z ? (area ? t('zoom en {0}', area) : t('zoom en un área')) : t('mapa global'))));
+        });
+    }
+    document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            S.alcance = b.dataset.alc; desa(); pintaTitol(); pintaSalut();
+            if (S.alcance === 'zoom') $('#cl-area').focus();
+        });
+    });
+    pintaTitol();
+
     /* 5 · El nivel y el boceto (el mismo motor que el editor del mapa) */
     document.querySelectorAll('#cl-nivells input').forEach(function (i) {
         i.checked = i.value === S.nivel;
@@ -1427,6 +1593,55 @@
             if (!$('#cl-marc-caixa').hidden) pintaWeb(true);
         });
     });
+    /* Dónde está su web y qué usa (l'Àlvar, 02/11/2026): la web la construimos en
+       Claude Code a partir de lo que sale de aquí, y hay que saber desde el principio
+       con qué se conecta. Solo botones; el nombre, si lo sabe. Va a la ficha, al
+       envío y al cerebro del proyecto. */
+    var EINES = (function () {
+        var ALOJA = ['WordPress', 'Wix', 'Squarespace', 'Shopify', 'Netlify u otro alojamiento', 'No tengo web', 'No lo sé'];
+        var TIPUS = [['crm', 'Un CRM (tus clientes y contactos)'], ['gestor', 'Un gestor de alumnos, socios o reservas'], ['tienda', 'Una tienda online'],
+            ['newsletter', 'Un boletín o newsletter'], ['calendario', 'Un calendario de citas'], ['otra', 'Otra herramienta']];
+        var API = ['Sí', 'No', 'No lo sé'];
+        function E() { if (!S.eines || typeof S.eines !== 'object') S.eines = { aloja: '', eines: {} }; if (!S.eines.eines) S.eines.eines = {}; return S.eines; }
+        function xips(grup, ops, actiu, fn) {
+            var g = el('div', { class: 'model-xips', role: 'group', 'aria-label': grup });
+            ops.forEach(function (o) {
+                var b = el('button', { type: 'button', 'aria-pressed': String(actiu(o)) }, t(Array.isArray(o) ? o[1] : o));
+                b.addEventListener('click', function () { fn(o); desa(); pinta(); }); g.appendChild(b);
+            });
+            return g;
+        }
+        function pinta() {
+            var c = $('#cl-eines'), e = E(); c.textContent = '';
+            var d1 = el('div'); d1.appendChild(el('b', {}, t('Dónde está hoy tu web')));
+            d1.appendChild(xips(t('Dónde está hoy tu web'), ALOJA, function (o) { return e.aloja === o; }, function (o) { e.aloja = e.aloja === o ? '' : o; }));
+            c.appendChild(d1);
+            var d2 = el('div'); d2.appendChild(el('b', {}, t('Qué herramientas usas')));
+            d2.appendChild(el('p', { class: 'nota' }, t('Puedes elegir más de una.')));
+            d2.appendChild(xips(t('Qué herramientas usas'), TIPUS, function (o) { return !!e.eines[o[0]]; }, function (o) { if (e.eines[o[0]]) delete e.eines[o[0]]; else e.eines[o[0]] = { nom: '', api: '' }; }));
+            c.appendChild(d2);
+            TIPUS.filter(function (o) { return e.eines[o[0]]; }).forEach(function (o) {
+                var x = e.eines[o[0]], f = el('div', { class: 'eina' }), id = 'cl-eina-' + o[0];
+                f.appendChild(el('b', {}, t(o[1])));
+                var lb = el('label', { for: id }, t('¿Cómo se llama? (si lo sabes)')), i = el('input', { id: id, placeholder: t('Por ejemplo: Holded, Moodle, Mailchimp…') });
+                i.value = x.nom || ''; i.addEventListener('input', function () { x.nom = i.value; desa(); });
+                f.appendChild(lb); f.appendChild(i);
+                f.appendChild(el('span', { class: 'nota' }, t('¿Se puede conectar con otras herramientas (tiene API)?')));
+                f.appendChild(xips(t('¿Tiene API?'), API, function (a) { return x.api === a; }, function (a) { x.api = x.api === a ? '' : a; }));
+                c.appendChild(f);
+            });
+        }
+        /* En texto, para el envío y para el cerebro: siempre en castellano, que es como lo leemos. */
+        function text() {
+            var e = E(), l = [];
+            if (e.aloja) l.push('Su web hoy: ' + e.aloja);
+            TIPUS.forEach(function (o) { var x = e.eines[o[0]]; if (x) l.push('· ' + o[1] + (x.nom ? ': ' + x.nom.trim() : '') + ' · API: ' + (x.api || 'sin decir')); });
+            return l.join('\n');
+        }
+        pinta();
+        return { pinta: pinta, text: text };
+    })();
+
     /* El boceto: con el botón del paso 5, o en vivo (`enViu`) desde el panel
        «Mi web» y cada vez que cambia algo, sin moverse de la página que miras. */
     var ARA = 'index.html';
@@ -1446,8 +1661,8 @@
                 b.addEventListener('click', function () { mostra(x.ruta); }); bar.appendChild(b);
             });
             $('#cl-marc-caixa').hidden = false; mostra(enViu && PAGS[ARA] ? ARA : 'index.html');
-            r.textContent = t(basica ? 'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.'
-                : 'Este es tu boceto: una puerta para cada uno, con el acceso de clientes y aliados (extranet).') + (capes().indexOf('intranet') >= 0 ? ' ' + t('La intranet del equipo está en «Intranet».') : '');
+            r.textContent = t(basica ? 'Este es tu boceto: una portada con una parte para cada persona importante de tu dibujo, y el aviso legal.'
+                : 'Este es tu boceto: una puerta para cada uno, con el espacio de clientes y aliados.') + (capes().indexOf('intranet') >= 0 ? ' ' + t('El espacio de tu equipo está en «Intranet».') : '');
         }).catch(function () { r.textContent = t('No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'); });
     }
     $('#cl-boceto').addEventListener('click', function () { pintaWeb(false); });
@@ -1619,7 +1834,7 @@
     var MM = window.ModelsMapa;
     /* Y los catorce sectores de la Matriu (SECTORS), con el mismo botón. */
     function pintaModels() {
-        pintaGrup($('#cl-models'), MM.MODELS); pintaGrup($('#cl-sectors'), MM.SECTORS || []);
+        pintaGrup($('#cl-models'), MM.MODELS); pintaGrup($('#cl-oficis'), MM.OFICIS || []); pintaGrup($('#cl-sectors'), MM.SECTORS || []);
         /* Cada modelo trae su buena práctica (models-mapa.js, BONES): por qué
            está ese flujo que no se paga. Es lo que enseña el modelo. */
         var mb = S.modelo && MM.mapa(S.modelo, LL), bo = $('#cl-bona');
@@ -1629,14 +1844,57 @@
     function pintaGrup(c, llista) {
         c.textContent = '';
         llista.forEach(function (x) {
-            var b = el('button', { type: 'button', title: x[LL].diu, 'aria-pressed': String(S.modelo === x.id) }, x.icona + ' ' + x[LL].nom);
-            b.addEventListener('click', function () { tria(x); });
+            var b = el('button', { type: 'button', title: x[LL].diu, 'aria-pressed': String((VIST || S.modelo) === x.id) }, x.icona + ' ' + x[LL].nom);
+            b.addEventListener('click', function () { mostraModel(x); });
             c.appendChild(b);
         });
+    }
+    /* Un modelo, sin pisar lo que ya tiene (l'Àlvar, 02/11/2026): si el dibujo está
+       vacío, se carga entero; si no, se ven las personas que suelen estar en ese
+       tipo de proyecto y se añaden una a una, o todas las que faltan de golpe. */
+    var VIST = null;
+    function buit() { return !S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; }); }
+    function mostraModel(x) {
+        if (buit()) { VIST = null; if (tria(x)) pintaRols(); return; }
+        VIST = x.id; pintaModels(); pintaRols();
+        $('#cl-rols').scrollIntoView({ block: 'nearest' });
+    }
+    function totsModels() { return MM.MODELS.concat(MM.OFICIS || [], MM.SECTORS || []); }
+    function teRol(q) { var k = String(q).trim().toLowerCase(); return S.alrededor.some(function (f) { return String(f.quien).trim().toLowerCase() === k; }); }
+    function filaDe(m, q) {
+        var d = D.desDe(m, m.centre), f = d.alrededor.filter(function (x) { return x.quien === q; })[0];
+        return f || { quien: q, meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' };
+    }
+    function afegeixRols(x, qs) {
+        var m = MM.mapa(x.id, LL, S.casa.trim() || null);
+        if (!S.casa.trim()) S.casa = m.centre;
+        S.alrededor = S.alrededor.filter(function (f) { return f.quien || f.meDa || f.leDoy; });
+        qs.filter(function (q) { return !teRol(q); }).forEach(function (q) { S.alrededor.push(filaDe(m, q)); apunta('Añadido del modelo «' + x[LL].nom + '»: ' + q); });
+        S.modelo = x.id; S.extra = null; desa();
+        pintaCamps(); pintaFiles(); pintaModels(); pintaRols(); suggereix();
+    }
+    function pintaRols() {
+        var c = $('#cl-rols'), id = VIST || S.modelo, x = id && totsModels().filter(function (y) { return y.id === id; })[0];
+        c.textContent = ''; c.hidden = !x; if (!x) return;
+        var m = MM.mapa(x.id, LL, S.casa.trim() || null), rols = m.roles.filter(function (r) { return r !== m.centre; });
+        c.appendChild(el('h3', {}, t('Quién suele estar en «{0}»', x.icona + ' ' + x[LL].nom)));
+        c.appendChild(el('p', { class: 'nota' }, t('Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.')));
+        var g = el('div', { class: 'model-xips', role: 'group', 'aria-label': t('Quién suele estar') }), falten = [];
+        rols.forEach(function (q) {
+            var hi = teRol(q), b = el('button', { type: 'button', 'aria-pressed': String(hi) }, (hi ? '✓ ' : '+ ') + q);
+            if (hi) b.setAttribute('aria-disabled', 'true'); else { falten.push(q); b.addEventListener('click', function () { afegeixRols(x, [q]); aviso(t('Añadido: {0}', q)); }); }
+            g.appendChild(b);
+        });
+        c.appendChild(g);
+        var acc = el('div', { class: 'accions' });
+        if (falten.length > 1) { var tt = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t('Añadir los {0} que faltan', falten.length)); tt.addEventListener('click', function () { afegeixRols(x, falten); aviso(t('Añadidos: {0}', falten.length)); }); acc.appendChild(tt); }
+        if (!buit()) { var tc = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('Cambiar todo por este modelo')); tc.addEventListener('click', function () { if (tria(x)) { VIST = null; pintaRols(); } }); acc.appendChild(tc); }
+        if (acc.childNodes.length) c.appendChild(acc);
     }
     function tria(x) {
         var hiHa = S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; });
         if (hiHa && !confirm(t('Esto cambia quién está a tu alrededor por lo del modelo «{0}». ¿Seguimos?', x[LL].nom))) return false;
+        VIST = null;
         var m = MM.mapa(x.id, LL, S.casa.trim() || null);
         if (!S.casa.trim()) S.casa = m.centre;
         var d = D.desDe(m, S.casa);
@@ -1655,17 +1913,17 @@
         var m = MM.suggereix && MM.suggereix(txt, LL);
         SUG.hidden = !m || m.id === S.modelo;
         if (SUG.hidden) return;
-        var x = MM.MODELS.concat(MM.SECTORS || []).filter(function (y) { return y.id === m.id; })[0];
+        var x = totsModels().filter(function (y) { return y.id === m.id; })[0];
         SUG.textContent = '';
         SUG.appendChild(el('span', {}, t('Por lo que cuentas, tu proyecto se parece a') + ' '));
         SUG.appendChild(el('b', {}, x.icona + ' ' + x[LL].nom));
         SUG.appendChild(el('span', {}, '. ' + x[LL].diu + ' '));
-        var b = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t('Empezar con este modelo'));
-        b.addEventListener('click', function () { if (tria(x)) $('#alrededor').scrollIntoView({ block: 'start' }); });
+        var b = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t(buit() ? 'Empezar con este modelo' : 'Ver quién suele estar'));
+        b.addEventListener('click', function () { mostraModel(x); $('#alrededor').scrollIntoView({ block: 'start' }); });
         SUG.appendChild(b);
     }
     $('#cl-inicial').addEventListener('input', function () { clearTimeout(sugT); sugT = setTimeout(suggereix, 400); });
-    pintaModels();
+    pintaModels(); pintaRols();
 
     /* El dibujo, dentro de la página: el editor del mapa (vna-suport.html) en un
        marco, abierto debajo del botón que se ha pulsado. Entra con el mapa de la
@@ -1688,7 +1946,7 @@
         $('#cl-ed-avz').setAttribute('aria-pressed', String(avanzada));
         $('#cl-ed-avz').textContent = t(avanzada ? 'Vista sencilla' : 'Vista avanzada');
         ED.classList.toggle('avanzada', avanzada);
-        MARC.src = '/SOS/vna-suport.html?app&lang=' + LL + (avanzada ? '' : '&incrustat') + '&t=' + Date.now();
+        MARC.src = '/SOS/vna-suport.html?app&lang=' + LL + '&incrustat' + (avanzada ? '&ple' : '') + '&t=' + Date.now();
     }
     $('#cl-ed-avz').addEventListener('click', function () {
         try { localStorage.removeItem('sos-mapa-cap-editor'); } catch (e) { /* nada que quitar */ }
@@ -1710,9 +1968,9 @@
         /* La casilla deja constancia de que se ha informado (registro de
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
-        var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
-            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum() };
+        var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
+            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: Object.keys(dades).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(dades[k] || ''); }).join('&') })
@@ -1920,10 +2178,10 @@
                         if (!nova) { fet(t('Esa fila ya no está')); return; }
                         S.extra = null; desa(); pintaFiles(); ara();
                         if (nova !== true) { var fi = document.querySelectorAll('#cl-files .fila')[S.alrededor.indexOf(nova)]; if (fi) fi.classList.add('nou'); }
-                        fet(t('✓ Aplicado'));
+                        fet(t('✓ Aplicado')); apunta('Aceptado (' + s.tipo + '): ' + (s.quien || (f && f.quien) || '') + (s.porque ? ' · ' + s.porque : ''));
                     }
                     pend.push(aplica);
-                    si.addEventListener('click', aplica); no.addEventListener('click', function () { fet(t('Descartado')); });
+                    si.addEventListener('click', aplica); no.addEventListener('click', function () { fet(t('Descartado')); apunta('Descartado (' + s.tipo + '): ' + (s.quien || (f && f.quien) || '')); });
                     acc.appendChild(si); acc.appendChild(no); c.appendChild(acc); props.appendChild(c);
                 });
                 if (!r.sugerencias.length) props.appendChild(el('p', { class: 'ia-final' }, t('Tu dibujo está muy completo: no veo nada que cambiar ahora.')));
@@ -1934,17 +2192,39 @@
                     tot.addEventListener('click', function () { pend.slice().forEach(function (a) { a(); }); });
                     var ta = el('div', { class: 'accions' }); ta.appendChild(tot); res.appendChild(ta);
                 }
-                /* Las dos o tres preguntas de la vuelta siguiente: contesta las que quiera. */
-                var pqs = r.preguntas && r.preguntas.length ? r.preguntas : r.pregunta ? [r.pregunta] : [];
+                /* Las preguntas de la vuelta siguiente, con botones para elegir (y «Otra» para
+                   escribir): se piensa y se escribe menos. Sin opciones, se contesta escribiendo. */
+                var pqs = (r.preguntas && r.preguntas.length ? r.preguntas : r.pregunta ? [r.pregunta] : []).map(function (q) { return typeof q === 'string' ? { pregunta: q, opciones: [] } : q; });
                 if (pqs.length) {
-                    var pg = el('div', { class: 'ia-preg' }), txs = [];
+                    var pg = el('div', { class: 'ia-preg' }), resp = [];
                     pqs.forEach(function (q, k) {
-                        var id = 'cl-ia-nota-' + k; pg.appendChild(el('label', { for: id }, q));
-                        var tx = el('textarea', { id: id, placeholder: t('Tu respuesta, con tus palabras') }); pg.appendChild(tx); txs.push([q, tx]);
+                        var id = 'cl-ia-nota-' + k, tria = [], tx = el('textarea', { id: id, placeholder: t('Tu respuesta, con tus palabras') });
+                        resp.push(function () { var v = tria.slice(); if (tx.value.trim()) v.push(tx.value.trim()); return v.length ? q.pregunta + ' ' + v.join(', ') : ''; });
+                        if (!q.opciones || !q.opciones.length) { pg.appendChild(el('label', { for: id }, q.pregunta)); pg.appendChild(tx); return; }
+                        var fs = el('fieldset', { class: 'ia-xips' }); fs.appendChild(el('legend', {}, q.pregunta));
+                        if (q.varias) fs.appendChild(el('p', { class: 'nota' }, t('Puedes elegir más de una.')));
+                        var bx = el('div', { class: 'model-xips', role: 'group', 'aria-label': q.pregunta }); fs.appendChild(bx);
+                        function xip(tx0, fn) { var b = el('button', { type: 'button', 'aria-pressed': 'false' }, tx0); b.addEventListener('click', function () { fn(b); }); bx.appendChild(b); return b; }
+                        q.opciones.forEach(function (o) {
+                            xip(o, function (b) {
+                                var on = b.getAttribute('aria-pressed') !== 'true';
+                                if (!q.varias) { tria.length = 0; bx.querySelectorAll('button').forEach(function (x) { if (x !== ot) x.setAttribute('aria-pressed', 'false'); }); }
+                                var i = tria.indexOf(o); if (i >= 0) tria.splice(i, 1); if (on) tria.push(o);
+                                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+                            });
+                        });
+                        var ot = xip(t('Otra'), function (b) { var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); tx.hidden = !on; if (on) tx.focus(); else tx.value = ''; });
+                        tx.hidden = true; tx.setAttribute('aria-label', q.pregunta); fs.appendChild(tx); pg.appendChild(fs);
                     });
-                    var ot = el('button', { type: 'button', class: 'btn btn-primary' }, t('✦ Otra vuelta'));
-                    ot.addEventListener('click', function () { pule(txs.filter(function (x) { return x[1].value.trim(); }).map(function (x) { return x[0] + ' ' + x[1].value.trim(); }).join(' · ')); });
-                    var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(ot); pg.appendChild(a2); res.appendChild(pg);
+                    var seg = el('button', { type: 'button', class: 'btn btn-primary' }, t('✦ Otra vuelta'));
+                    S.pendents = pqs.map(function (q) { return q.pregunta; }); desa();
+                    seg.addEventListener('click', function () {
+                        var rr = resp.map(function (f) { return f(); });
+                        rr.forEach(function (x) { if (x) apunta('Contestado: ' + x); });
+                        S.pendents = pqs.filter(function (q, k) { return !rr[k]; }).map(function (q) { return q.pregunta; }); desa();
+                        pule(rr.filter(Boolean).join(' · '));
+                    });
+                    var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(seg); pg.appendChild(a2); res.appendChild(pg);
                 }
                 /* Del dibujo a la web sin buscar nada: el siguiente paso, aquí mismo. */
                 var sw = el('button', { type: 'button', class: 'btn btn-primary', id: 'cl-ia-seguir' }, t('✦ Ahora, los textos de mi web'));
@@ -2095,7 +2375,7 @@
         return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
 
-    function pintaTot() { pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 })();

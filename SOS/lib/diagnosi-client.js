@@ -79,12 +79,12 @@ function pregunta(p, ll) { return ll === 'ca' && p.ca ? p.ca : { q: p.q, ej: p.e
    exacte que `llegeix` sap llegir: les claus no es tradueixen. */
 var PROMPT = {
   es: { hola: 'Ayúdame a preparar la web nueva de mi organización. Te cuento quién soy y lo que quiero, y te pido que contestes unas preguntas y que me digas quién está a mi alrededor.',
-    org: 'Mi organización: ', web: 'Mi web de ahora: ', webN: ' (léela si puedes; si no, dímelo)', vol: 'Lo que quiero, con mis palabras: ', buit: '(todavía no lo he escrito)',
+    org: 'Mi organización: ', zoom: 'El mapa es solo de un área, la que estamos trabajando ahora: ', web: 'Mi web de ahora: ', webN: ' (léela si puedes; si no, dímelo)', vol: 'Lo que quiero, con mis palabras: ', buit: '(todavía no lo he escrito)',
     p1: '1. Contesta estas preguntas con lo que sepas de mí. Si no lo sabes, escribe «?» y no lo inventes:',
     p2: function (a, b) { return '2. Dime entre ' + a + ' y ' + b + ' personas o grupos que están a mi alrededor (quien me compra, quien me recomienda, quien me ayuda, quien me avala…). Llámalos por lo que hacen, sin nombres propios ni de empresas. Para cada uno: qué me da y qué le doy yo, en pocas palabras. Marca «gratis» si eso no se paga (confianza, ideas, recomendaciones, reputación) y «se paga» si es dinero, un producto o un servicio. Sin cifras.'; },
     p3: '3. Devuélvemelo solo así, en un bloque JSON, para que lo pegue en mi formulario:' },
   ca: { hola: "Ajuda'm a preparar la web nova de la meva organització. T'explico qui soc i què vull, i et demano que contestis unes preguntes i que em diguis qui hi ha al meu voltant.",
-    org: 'La meva organització: ', web: "La meva web d'ara: ", webN: " (llegeix-la si pots; si no, digues-m'ho)", vol: 'El que vull, amb les meves paraules: ', buit: "(encara no ho he escrit)",
+    org: 'La meva organització: ', zoom: "El mapa és només d'una àrea, la que estem treballant ara: ", web: "La meva web d'ara: ", webN: " (llegeix-la si pots; si no, digues-m'ho)", vol: 'El que vull, amb les meves paraules: ', buit: "(encara no ho he escrit)",
     p1: "1. Contesta aquestes preguntes amb el que sàpigues de mi. Si no ho saps, escriu «?» i no t'ho inventis:",
     p2: function (a, b) { return "2. Digues-me entre " + a + " i " + b + " persones o grups que hi ha al meu voltant (qui em compra, qui em recomana, qui m'ajuda, qui m'avala…). Anomena'ls pel que fan, sense noms propis ni d'empreses. Per a cadascun: què em dona i què li dono jo, en poques paraules. Marca «gratis» si això no es paga (confiança, idees, recomanacions, reputació) i «se paga» si són diners, un producte o un servei. Sense xifres. Contesta en català."; },
     p3: "3. Torna-m'ho només així, en un bloc JSON, perquè l'enganxi al meu formulari:" }
@@ -94,6 +94,7 @@ function prompt(c, llengua) {
   l.push(T.hola);
   l.push('');
   if (net(o.org)) l.push(T.org + net(o.org));
+  if (zoom(o)) l.push(T.zoom + zoom(o));
   if (net(o.web)) l.push(T.web + net(o.web) + T.webN);
   l.push(T.vol + (net(o.inicial) || T.buit));
   l.push('');
@@ -132,6 +133,10 @@ function llegeix(text, llengua) {
 /* El mapa canònic: el client al centre (`casa`), cada persona o grup del seu
    voltant amb un parell d'anada i tornada. Un esborrany en estrella: la
    sessió hi afegeix el que passa entre els altres. */
+/* De què és el mapa (l'Àlvar, 02/11/2026): de tota l'organització (global) o
+   un zoom en l'àrea que s'està treballant. Torna el nom de l'àrea o ''. */
+function zoom(o) { return o && o.alcance === 'zoom' ? (net(o.area) || 'un área') : ''; }
+
 function mapa(c) {
   var o = c || {}, casa = net(o.casa) || 'Tu equipo', vist = {};
   var al = (o.alrededor || []).filter(function (x) {
@@ -141,13 +146,17 @@ function mapa(c) {
   });
   var ex = o.extra || {}, roles = [casa].concat(al.map(function (x) { return net(x.quien); }));
   (ex.roles || []).forEach(function (r) { if (roles.indexOf(r) < 0) roles.push(r); });
-  return {
+  var m = {
     abast: net((o.respuestas || {}).objetivo) || net(o.inicial),
     roles: roles,
     pairs: al.map(function (x) {
       return [net(x.quien), casa, x.meDa ? (x.meDaEs || 'tangible') : '', net(x.meDa), x.leDoy ? (x.leDoyEs || 'tangible') : '', net(x.leDoy)];
     }).concat((ex.pairs || []).filter(function (p) { return roles.indexOf(p[0]) >= 0 && roles.indexOf(p[1]) >= 0; }))
   };
+  /* El nom i l'abast del mapa, només si s'han dit: un mapa sense ells és el de sempre. */
+  if (net(o.org)) m.nom = net(o.org);
+  if (zoom(o)) m.zoom = zoom(o);
+  return m;
 }
 
 /* A la inversa: el que torna de l'editor del mapa (MODEL.exporta) cap a la
@@ -223,6 +232,8 @@ function aplica(files, s, f) {
 /* El que arriba a la casa: compte, frase inicial, respostes, nivell i mapa. */
 function resum(c) {
   var o = c || {}, l = [];
+  if (net(o.org)) l.push('Organización: ' + net(o.org));
+  l.push('Mapa: ' + (zoom(o) ? 'zoom en ' + zoom(o) : 'global, toda la organización'));
   if (net(o.inicial)) l.push('Lo que quiere: ' + net(o.inicial));
   PREGUNTES.forEach(function (p) { var v = net((o.respuestas || {})[p.id]); if (v) l.push('· ' + p.q + ' ' + v); });
   if (net(o.nivel)) l.push('Nivel de web: ' + net(o.nivel));
@@ -280,6 +291,45 @@ function dibuix(m, op) {
     + fl + nodes + et + '</svg>';
 }
 
-var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, salut: salut, aplica: aplica, resum: resum, dibuix: dibuix };
+/* El cervell del client (l'Àlvar, 02/11/2026): el que s'ha après fent el mapa i la
+   web, com una carpeta `cerebro/` que obre el kit del cervell (SOS/tools/cervell.js
+   --nou) i que la plantilla de la web llegeix (`cerebro/mapa-real.json`,
+   `configuracio.json`, `marca.json`, `decisiones.md`). Mai `cervell.json`: aquest
+   el posa el kit. `op`: { llengua, capes, eines (text), salut, data }. Torna
+   [{ nom, text }] per a CervellExporta.zip. */
+function cervell(c, op) {
+  var o = c || {}, q = op || {}, data = q.data || new Date().toISOString().slice(0, 10), nom = net(o.org) || net(o.casa) || 'Mi proyecto';
+  var m = mapa(o), dec = Array.isArray(o.decisiones) ? o.decisiones : [], pend = Array.isArray(o.pendents) ? o.pendents : [];
+  var f = [{ nom: 'cerebro/mapa-real.json', text: JSON.stringify(m, null, 2) + '\n' },
+    { nom: 'cerebro/configuracio.json', text: JSON.stringify({ nom: nom, llengua: q.llengua === 'ca' ? 'ca' : 'es', url: net(o.web) || undefined, capes: q.capes || [] }, null, 2) + '\n' }];
+  if (o.marca && typeof o.marca === 'object') f.push({ nom: 'cerebro/marca.json', text: JSON.stringify(o.marca, null, 2) + '\n' });
+  var b = ['# ' + nom + ' · el encargo', '', '> Sale de /cliente/ el ' + data + '. Es lo que ha contado la persona, con sus palabras: la guía para hacer su web.', ''];
+  if (net(o.inicial)) b.push('## Lo que quiere', '', net(o.inicial), '');
+  var rs = PREGUNTES.filter(function (p) { return net((o.respuestas || {})[p.id]); });
+  if (rs.length) b.push('## Sus respuestas', '', rs.map(function (p) { return '- **' + p.q + '** ' + net(o.respuestas[p.id]); }).join('\n'), '');
+  b.push('## Su mapa', '', (zoom(o) ? 'Un zoom en **' + zoom(o) + '**, no toda la organización.' : 'Global: toda la organización.') + ' En el centro: **' + (m.roles[0] || '') + '**.', '');
+  (o.alrededor || []).filter(function (x) { return net(x.quien); }).forEach(function (x) {
+    b.push('- **' + net(x.quien) + '** le da ' + (net(x.meDa) || '—') + ' (' + (x.meDaEs === 'intangible' ? 'no se paga' : 'se paga') + ') · recibe ' + (net(x.leDoy) || '—') + ' (' + (x.leDoyEs === 'intangible' ? 'no se paga' : 'se paga') + ')');
+  });
+  b.push('');
+  if (net(o.nivel) || (q.capes || []).length) b.push('## La web que pide', '', '- ' + [net(o.nivel) || 'Sin elegir', 'web pública'].concat(q.capes || []).join(' · '), '');
+  if (o.marca && (o.marca.lema || o.marca.presentacio)) b.push('## Sus textos', '', o.marca.lema ? '- Frase: ' + o.marca.lema : '', o.marca.presentacio ? '- Presentación: ' + o.marca.presentacio : '', '');
+  f.push({ nom: 'cerebro/encargo.md', text: b.filter(function (x, i, a) { return x !== '' || a[i - 1] !== ''; }).join('\n').replace(/\n+$/, '') + '\n' });
+  f.push({ nom: 'cerebro/herramientas.md', text: '# Dónde está su web y qué usa\n\n' + (net(q.eines) || 'Todavía sin decir: se pregunta en la sesión.') +
+    '\n\nCon API: se puede conectar a la web. «No lo sé»: se mira en la sesión antes de prometer nada.\n' });
+  f.push({ nom: 'cerebro/decisiones.md', text: '# Decisiones\n\nCada decisión, con su fecha. Las primeras salen de /cliente/: lo que aceptó, descartó o eligió.\n\n' +
+    (dec.length ? dec.map(function (d) { return '- ' + net(d.data).slice(0, 10) + ' · ' + net(d.que); }).join('\n') : '- ' + data + ' · Empieza el proyecto en /cliente/.') + '\n' });
+  var falten = q.salut && Array.isArray(q.salut.falten) ? q.salut.falten.map(function (x) { return x.diu; }) : [];
+  f.push({ nom: 'cerebro/preguntas-abiertas.md', text: '# Lo que queda por hablar\n\n' +
+    (pend.concat(falten).length ? pend.concat(falten).map(function (x) { return '- ' + net(x); }).join('\n') : '- Nada pendiente desde /cliente/.') + '\n' });
+  f.push({ nom: 'cerebro/LEEME.md', text: '# El cerebro de ' + nom + '\n\n' +
+    'Esta carpeta es lo que hemos aprendido de tu proyecto: tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar.\n\n' +
+    '- **Con cualquier IA:** dale estos ficheros antes de pedirle nada. Empezará sabiendo lo que ya sabemos, en vez de preguntártelo otra vez.\n' +
+    '- **Para quien hace tu web (en Claude Code):** pon la carpeta `cerebro/` en el repositorio de la web y ejecuta `node SOS/tools/cervell.js --nou <carpeta> --nom "' + nom.replace(/"/g, '') + '"`, luego `node guardas/cervell.js` y `node guardas/cervell.js --check`.\n' +
+    '- `mapa-real.json` es el mapa tal como lo lee el editor del mapa de valor y la plantilla de la web.\n' });
+  return f;
+}
+
+var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, salut: salut, aplica: aplica, resum: resum, dibuix: dibuix, cervell: cervell };
 if (typeof module !== 'undefined' && module.exports) module.exports = DiagnosiClient; else g.DiagnosiClient = DiagnosiClient;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -1,0 +1,6 @@
+{
+ "nom": "menos-preguntas",
+ "esquema": "opcions",
+ "sistemaExtra": "Trabajas como un buen consultor que no cansa: deduce y propone; pregunta solo cuando la respuesta cambiaría el mapa y no se puede deducir.",
+ "pasExtra": "Cambio en «preguntas»: como mucho dos, cada una un objeto {pregunta, opciones, varias}, con dos a cuatro opciones cortas que no se solapen (la página añade «Otra»). «varias»: true si puede elegir más de una. Si con lo que hay ya puedes proponer algo razonable, no preguntes: propónlo en «sugerencias» y deja que lo acepte o lo descarte."
+}
