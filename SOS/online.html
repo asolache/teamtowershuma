@@ -491,7 +491,7 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
       <label for="fCat">Què ofereixes</label>
       <div class="parell">
         <select id="fCat" aria-label="Categoria del que ofereixes"></select>
-        <input type="text" id="fTxt" maxlength="80" placeholder="Cuino per a colles">
+        <input type="text" id="fTxt" aria-label="Què ofereixes, en paraules teves" maxlength="80" placeholder="Cuino per a colles">
         <button type="button" class="btn" id="btnAfegirO" aria-label="Afegeix el que ofereixes">Afegeix</button>
       </div>
       <ul class="llista" id="llistaO"></ul>
@@ -499,7 +499,7 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
       <label for="fCatB">Què busques</label>
       <div class="parell">
         <select id="fCatB" aria-label="Categoria del que busques"></select>
-        <input type="text" id="fTxtB" maxlength="80" placeholder="Algú que em porti caixes">
+        <input type="text" id="fTxtB" aria-label="Què busques, en paraules teves" maxlength="80" placeholder="Algú que em porti caixes">
         <button type="button" class="btn" id="btnAfegirB" aria-label="Afegeix el que busques">Afegeix</button>
       </div>
       <ul class="llista" id="llistaB"></ul>
@@ -539,9 +539,9 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
       <p class="mini">La còpia xifrada que vas guardar des de l'eina (<code>🆔 La meva identitat
       digital → ⭳ Exporta còpia xifrada</code>). Carrega el fitxer o enganxa'l, i posa la
       contrasenya que hi vas posar.</p>
-      <input type="file" id="joFitxer" accept="application/json,.json">
-      <textarea id="joText" placeholder="…o enganxa aquí el contingut del fitxer"></textarea>
-      <input type="password" id="joPass" placeholder="La contrasenya de la còpia" autocomplete="current-password">
+      <input type="file" id="joFitxer" aria-label="Fitxer del joc" accept="application/json,.json">
+      <textarea id="joText" aria-label="Contingut del fitxer" placeholder="…o enganxa aquí el contingut del fitxer"></textarea>
+      <input type="password" id="joPass" aria-label="Contrasenya de la còpia" placeholder="La contrasenya de la còpia" autocomplete="current-password">
       <button type="button" class="btn-primary" id="joEntra">Entra amb aquesta identitat</button>
       <p class="mini" id="joAvis" aria-live="polite"></p>
     </div>
@@ -551,7 +551,7 @@ footer.peu{border-top:1px solid var(--border);padding:2rem 0;color:var(--muted);
       <p class="mini">Si aquesta identitat ha nascut aquí, aquesta és l'única manera de no
       perdre-la en esborrar les dades del navegador, i de portar-la a un altre aparell.
       Mínim 8 caràcters. <strong>Ningú la pot restablir</strong>: apunta-la en paper.</p>
-      <input type="password" id="joPassNova" placeholder="Una contrasenya llarga" autocomplete="new-password">
+      <input type="password" id="joPassNova" aria-label="Contrasenya nova" placeholder="Una contrasenya llarga" autocomplete="new-password">
       <button type="button" class="btn" id="joExporta">⭳ Descarrega la còpia xifrada</button>
       <p class="mini" id="joAvisExp" aria-live="polite"></p>
     </div>
