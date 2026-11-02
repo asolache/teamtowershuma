@@ -1,0 +1,4446 @@
+{
+ "versio": 1,
+ "estat": "esborrany",
+ "generat": "2026-11-02",
+ "oficis": [
+  {
+   "id": "estudi_creatiu",
+   "icona": "🎨",
+   "paraules": "marca, identitat, briefing, concepte, disseny, creatividad, propuesta, tipografia, maqueta, estrategia, idea, cliente, encàrrec, portfoli",
+   "ca": {
+    "nom": "Estudi creatiu o agència de disseny",
+    "diu": "Per a estudis i agències petites que creen marca, comunicació i peces visuals per a empreses i institucions.",
+    "roles": [
+     "Estudi creatiu",
+     "Client",
+     "Equip creatiu",
+     "Col·laboradors freelance",
+     "Proveïdors de producció",
+     "Qui recomana",
+     "Comunitat del sector"
+    ],
+    "pairs": [
+     [
+      "Client",
+      "Estudi creatiu",
+      "tangible",
+      "Encàrrec amb pressupost acordat",
+      "tangible",
+      "Projecte creatiu lliurat"
+     ],
+     [
+      "Client",
+      "Estudi creatiu",
+      "intangible",
+      "Context i accés a decisors",
+      "intangible",
+      "Mirada externa sobre la marca"
+     ],
+     [
+      "Estudi creatiu",
+      "Equip creatiu",
+      "tangible",
+      "Sou i projectes estables",
+      "tangible",
+      "Feina creativa executada"
+     ],
+     [
+      "Equip creatiu",
+      "Estudi creatiu",
+      "intangible",
+      "Idees i criteri propi",
+      "intangible",
+      "Reconeixement i espai per créixer"
+     ],
+     [
+      "Estudi creatiu",
+      "Col·laboradors freelance",
+      "tangible",
+      "Encàrrecs puntuals pagats",
+      "intangible",
+      "Coneixement d'especialitat compartit"
+     ],
+     [
+      "Estudi creatiu",
+      "Proveïdors de producció",
+      "tangible",
+      "Comandes de producció",
+      "intangible",
+      "Assessorament tècnic de materials"
+     ],
+     [
+      "Qui recomana",
+      "Estudi creatiu",
+      "intangible",
+      "Recomanació a clients nous",
+      "intangible",
+      "Bona imatge davant els seus"
+     ],
+     [
+      "Estudi creatiu",
+      "Comunitat del sector",
+      "intangible",
+      "Portfoli i coneixement publicat",
+      "intangible",
+      "Visibilitat i reputació creativa"
+     ]
+    ],
+    "passos": [
+     "Definir el tipus de projectes i clients amb què l'estudi aporta més valor.",
+     "Establir un procés clar de briefing, proposta, revisions i lliurament.",
+     "Formar un equip estable i una xarxa de freelance i proveïdors de confiança.",
+     "Cuidar i publicar el portfoli amb casos que expliquin el raonament, no només el resultat.",
+     "Cultivar qui recomana i la comunitat del sector amb seguiment i agraïment."
+    ],
+    "centre": "Estudi creatiu",
+    "bona": "Un bon briefing compartit amb el client estalvia més revisions que qualsevol talent."
+   },
+   "es": {
+    "nom": "Estudio creativo o agencia de diseño",
+    "diu": "Para estudios y agencias pequeñas que crean marca, comunicación y piezas visuales para empresas e instituciones.",
+    "roles": [
+     "Estudio creativo",
+     "Cliente",
+     "Equipo creativo",
+     "Colaboradores freelance",
+     "Proveedores de producción",
+     "Quien recomienda",
+     "Comunidad del sector"
+    ],
+    "pairs": [
+     [
+      "Cliente",
+      "Estudio creativo",
+      "tangible",
+      "Encargo con presupuesto acordado",
+      "tangible",
+      "Proyecto creativo entregado"
+     ],
+     [
+      "Cliente",
+      "Estudio creativo",
+      "intangible",
+      "Contexto y acceso a decisores",
+      "intangible",
+      "Mirada externa sobre la marca"
+     ],
+     [
+      "Estudio creativo",
+      "Equipo creativo",
+      "tangible",
+      "Sueldo y proyectos estables",
+      "tangible",
+      "Trabajo creativo ejecutado"
+     ],
+     [
+      "Equipo creativo",
+      "Estudio creativo",
+      "intangible",
+      "Ideas y criterio propio",
+      "intangible",
+      "Reconocimiento y espacio para crecer"
+     ],
+     [
+      "Estudio creativo",
+      "Colaboradores freelance",
+      "tangible",
+      "Encargos puntuales pagados",
+      "intangible",
+      "Conocimiento especializado compartido"
+     ],
+     [
+      "Estudio creativo",
+      "Proveedores de producción",
+      "tangible",
+      "Pedidos de producción",
+      "intangible",
+      "Asesoramiento técnico de materiales"
+     ],
+     [
+      "Quien recomienda",
+      "Estudio creativo",
+      "intangible",
+      "Recomendación a clientes nuevos",
+      "intangible",
+      "Buena imagen ante los suyos"
+     ],
+     [
+      "Estudio creativo",
+      "Comunidad del sector",
+      "intangible",
+      "Portfolio y conocimiento publicado",
+      "intangible",
+      "Visibilidad y reputación creativa"
+     ]
+    ],
+    "passos": [
+     "Definir el tipo de proyectos y clientes con los que el estudio aporta más valor.",
+     "Establecer un proceso claro de briefing, propuesta, revisiones y entrega.",
+     "Formar un equipo estable y una red de freelance y proveedores de confianza.",
+     "Cuidar y publicar el portfolio con casos que expliquen el razonamiento, no solo el resultado.",
+     "Cultivar a quien recomienda y a la comunidad del sector con seguimiento y agradecimiento."
+    ],
+    "centre": "Estudio creativo",
+    "bona": "Un buen briefing compartido con el cliente ahorra más revisiones que cualquier talento."
+   },
+   "en": {
+    "nom": "Creative studio or design agency",
+    "diu": "For small studios and agencies that create brands, communication and visual work for companies and institutions.",
+    "roles": [
+     "Creative studio",
+     "Client",
+     "Creative team",
+     "Freelance collaborators",
+     "Production suppliers",
+     "Referrer",
+     "Industry community"
+    ],
+    "pairs": [
+     [
+      "Client",
+      "Creative studio",
+      "tangible",
+      "Commission with agreed budget",
+      "tangible",
+      "Delivered creative project"
+     ],
+     [
+      "Client",
+      "Creative studio",
+      "intangible",
+      "Context and access to decision-makers",
+      "intangible",
+      "Outside view on the brand"
+     ],
+     [
+      "Creative studio",
+      "Creative team",
+      "tangible",
+      "Salary and steady projects",
+      "tangible",
+      "Executed creative work"
+     ],
+     [
+      "Creative team",
+      "Creative studio",
+      "intangible",
+      "Ideas and own judgement",
+      "intangible",
+      "Recognition and room to grow"
+     ],
+     [
+      "Creative studio",
+      "Freelance collaborators",
+      "tangible",
+      "Paid one-off assignments",
+      "intangible",
+      "Shared specialist know-how"
+     ],
+     [
+      "Creative studio",
+      "Production suppliers",
+      "tangible",
+      "Production orders",
+      "intangible",
+      "Technical advice on materials"
+     ],
+     [
+      "Referrer",
+      "Creative studio",
+      "intangible",
+      "Referrals to new clients",
+      "intangible",
+      "Good standing with their contacts"
+     ],
+     [
+      "Creative studio",
+      "Industry community",
+      "intangible",
+      "Published portfolio and knowledge",
+      "intangible",
+      "Visibility and creative reputation"
+     ]
+    ],
+    "passos": [
+     "Define the kinds of projects and clients where the studio adds most value.",
+     "Set a clear process for briefing, proposal, revisions and delivery.",
+     "Build a stable team and a trusted network of freelancers and suppliers.",
+     "Curate and publish a portfolio with cases that explain the thinking, not just the result.",
+     "Nurture referrers and the industry community with follow-up and thanks."
+    ],
+    "centre": "Creative studio",
+    "bona": "A good brief shared with the client saves more revisions than any amount of talent."
+   },
+   "veda": {
+    "clau": [
+     "**Client → Estudi creatiu: context i accés a decisors.** Sense saber què passa a dins, la proposta queda bonica però buida.",
+     "**Equip creatiu → Estudi creatiu: idees i criteri propi.** El que es ven és la mirada de l'equip, no només les hores.",
+     "**Qui recomana → Estudi creatiu: recomanació a clients nous.** La majoria d'encàrrecs bons arriben per boca d'algú que confia.",
+     "**Proveïdors de producció → Estudi creatiu: assessorament tècnic.** Una impremta que avisa a temps salva un llançament."
+    ],
+    "falta": [
+     "El temps de revisions i reunions que el client no veu però que l'estudi regala.",
+     "El que els freelance aporten de coneixement nou a l'equip intern.",
+     "El retorn a qui recomana: gairebé mai se li diu com ha anat."
+    ],
+    "preguntes": [
+     "D'on va venir el vostre últim client bo?",
+     "Qui del client us dona la informació que de debò necessiteu?",
+     "A quin proveïdor o freelance truqueu primer quan hi ha un problema?"
+    ],
+    "senyals": [
+     "Els clients tornen i porten encàrrecs nous sense concurs.",
+     "L'equip proposa idees abans que se li demanin.",
+     "Els proveïdors avisen dels problemes abans que passin."
+    ]
+   }
+  },
+  {
+   "id": "productora_cultural",
+   "icona": "🎤",
+   "paraules": "gira, caixet, bolos, booking, programació, cartel, rider, producció, sala, festival, subvenció, públic, artistas, directe, escenario",
+   "ca": {
+    "nom": "Productora cultural o musical",
+    "diu": "Per a productores, agències de booking i promotores que connecten artistes, escenaris i públic.",
+    "roles": [
+     "Productora",
+     "Artistes",
+     "Programadors i sales",
+     "Públic",
+     "Equip tècnic i producció",
+     "Institucions i patrocinadors",
+     "Mitjans i prescriptors"
+    ],
+    "pairs": [
+     [
+      "Artistes",
+      "Productora",
+      "intangible",
+      "Confiança i projecte artístic",
+      "tangible",
+      "Contracte i gestió de gira"
+     ],
+     [
+      "Productora",
+      "Programadors i sales",
+      "tangible",
+      "Propostes de concert tancades",
+      "tangible",
+      "Caixet i data confirmada"
+     ],
+     [
+      "Programadors i sales",
+      "Productora",
+      "intangible",
+      "Informació d'agenda i públic",
+      "intangible",
+      "Fiabilitat i compliment tècnic"
+     ],
+     [
+      "Productora",
+      "Públic",
+      "tangible",
+      "Espectacles i entrades",
+      "intangible",
+      "Fidelitat i boca-orella"
+     ],
+     [
+      "Mitjans i prescriptors",
+      "Públic",
+      "intangible",
+      "Recomanació i context crític",
+      "intangible",
+      "Atenció i confiança"
+     ],
+     [
+      "Productora",
+      "Mitjans i prescriptors",
+      "intangible",
+      "Accés i continguts exclusius",
+      "intangible",
+      "Visibilitat i reputació"
+     ],
+     [
+      "Institucions i patrocinadors",
+      "Productora",
+      "tangible",
+      "Subvencions i patrocini",
+      "tangible",
+      "Memòria d'impacte justificada"
+     ],
+     [
+      "Equip tècnic i producció",
+      "Productora",
+      "tangible",
+      "Muntatge i tècnica en directe",
+      "intangible",
+      "Previsió i bon tracte"
+     ],
+     [
+      "Productora",
+      "Artistes",
+      "intangible",
+      "Criteri i acompanyament de carrera",
+      "intangible",
+      "Lleialtat i recomanació a col·legues"
+     ]
+    ],
+    "passos": [
+     "Definir la línia artística i el tipus de projectes que la productora vol defensar.",
+     "Tancar un catàleg d'artistes amb acords clars de gira, caixets i drets.",
+     "Construir relació estable amb programadors, sales i festivals afins.",
+     "Formar un equip tècnic de confiança amb calendari i condicions previsibles.",
+     "Activar mitjans, prescriptors i patrocinadors amb continguts i dades d'impacte.",
+     "Revisar cada temporada què ha funcionat amb artistes, sales i públic."
+    ],
+    "centre": "Productora",
+    "bona": "Cuida igual l'artista, la sala i l'equip tècnic: la reputació d'una productora es fa bolo a bolo.\n"
+   },
+   "es": {
+    "nom": "Productora cultural o musical",
+    "diu": "Para productoras, agencias de booking y promotoras que conectan artistas, escenarios y público.",
+    "roles": [
+     "Productora",
+     "Artistas",
+     "Programadores y salas",
+     "Público",
+     "Equipo técnico y producción",
+     "Instituciones y patrocinadores",
+     "Medios y prescriptores"
+    ],
+    "pairs": [
+     [
+      "Artistas",
+      "Productora",
+      "intangible",
+      "Confianza y proyecto artístico",
+      "tangible",
+      "Contrato y gestión de gira"
+     ],
+     [
+      "Productora",
+      "Programadores y salas",
+      "tangible",
+      "Propuestas de concierto cerradas",
+      "tangible",
+      "Caché y fecha confirmada"
+     ],
+     [
+      "Programadores y salas",
+      "Productora",
+      "intangible",
+      "Información de agenda y público",
+      "intangible",
+      "Fiabilidad y cumplimiento técnico"
+     ],
+     [
+      "Productora",
+      "Público",
+      "tangible",
+      "Espectáculos y entradas",
+      "intangible",
+      "Fidelidad y boca a boca"
+     ],
+     [
+      "Medios y prescriptores",
+      "Público",
+      "intangible",
+      "Recomendación y contexto crítico",
+      "intangible",
+      "Atención y confianza"
+     ],
+     [
+      "Productora",
+      "Medios y prescriptores",
+      "intangible",
+      "Acceso y contenidos exclusivos",
+      "intangible",
+      "Visibilidad y reputación"
+     ],
+     [
+      "Instituciones y patrocinadores",
+      "Productora",
+      "tangible",
+      "Subvenciones y patrocinio",
+      "tangible",
+      "Memoria de impacto justificada"
+     ],
+     [
+      "Equipo técnico y producción",
+      "Productora",
+      "tangible",
+      "Montaje y técnica en directo",
+      "intangible",
+      "Previsión y buen trato"
+     ],
+     [
+      "Productora",
+      "Artistas",
+      "intangible",
+      "Criterio y acompañamiento de carrera",
+      "intangible",
+      "Lealtad y recomendación a colegas"
+     ]
+    ],
+    "passos": [
+     "Definir la línea artística y el tipo de proyectos que la productora quiere defender.",
+     "Cerrar un catálogo de artistas con acuerdos claros de gira, cachés y derechos.",
+     "Construir relación estable con programadores, salas y festivales afines.",
+     "Formar un equipo técnico de confianza con calendario y condiciones previsibles.",
+     "Activar medios, prescriptores y patrocinadores con contenidos y datos de impacto.",
+     "Revisar cada temporada qué ha funcionado con artistas, salas y público."
+    ],
+    "centre": "Productora",
+    "bona": "Cuida por igual al artista, la sala y el equipo técnico: la reputación de una productora se hace bolo a bolo."
+   },
+   "en": {
+    "nom": "Cultural or music production company",
+    "diu": "For production companies, booking agencies and promoters who connect artists, venues and audiences.",
+    "roles": [
+     "Production company",
+     "Artists",
+     "Programmers and venues",
+     "Audience",
+     "Technical and production crew",
+     "Institutions and sponsors",
+     "Media and tastemakers"
+    ],
+    "pairs": [
+     [
+      "Artists",
+      "Production company",
+      "intangible",
+      "Trust and artistic project",
+      "tangible",
+      "Contract and tour management"
+     ],
+     [
+      "Production company",
+      "Programmers and venues",
+      "tangible",
+      "Ready-to-book concert proposals",
+      "tangible",
+      "Fee and confirmed date"
+     ],
+     [
+      "Programmers and venues",
+      "Production company",
+      "intangible",
+      "Calendar and audience insight",
+      "intangible",
+      "Reliability and technical compliance"
+     ],
+     [
+      "Production company",
+      "Audience",
+      "tangible",
+      "Shows and tickets",
+      "intangible",
+      "Loyalty and word of mouth"
+     ],
+     [
+      "Media and tastemakers",
+      "Audience",
+      "intangible",
+      "Recommendation and critical context",
+      "intangible",
+      "Attention and trust"
+     ],
+     [
+      "Production company",
+      "Media and tastemakers",
+      "intangible",
+      "Access and exclusive content",
+      "intangible",
+      "Visibility and reputation"
+     ],
+     [
+      "Institutions and sponsors",
+      "Production company",
+      "tangible",
+      "Grants and sponsorship",
+      "tangible",
+      "Justified impact report"
+     ],
+     [
+      "Technical and production crew",
+      "Production company",
+      "tangible",
+      "Live setup and engineering",
+      "intangible",
+      "Predictability and fair treatment"
+     ],
+     [
+      "Production company",
+      "Artists",
+      "intangible",
+      "Judgement and career guidance",
+      "intangible",
+      "Loyalty and peer referrals"
+     ]
+    ],
+    "passos": [
+     "Define the artistic line and the kind of projects the company wants to champion.",
+     "Build an artist roster with clear agreements on touring, fees and rights.",
+     "Build steady relationships with like-minded programmers, venues and festivals.",
+     "Form a trusted technical crew with predictable schedules and conditions.",
+     "Engage media, tastemakers and sponsors with content and impact data.",
+     "Review each season what worked with artists, venues and audiences."
+    ],
+    "centre": "Production company",
+    "bona": "Care equally for the artist, the venue and the crew: a production company's reputation is built gig by gig."
+   },
+   "veda": {
+    "clau": [
+     "**Artistes → Productora: confiança.** L'artista posa la seva carrera en mans de qui el mou.",
+     "**Programadors i sales → Productora: informació.** Saben quin públic tenen i què encaixa a l'agenda.",
+     "**Mitjans i prescriptors → Públic: recomanació.** Una crítica o una playlist omple més que un cartell.",
+     "**Productora → Artistes: criteri.** Dir que no a un bolo també és acompanyar una carrera."
+    ],
+    "falta": [
+     "El coneixement i la paciència de l'equip tècnic que salva els directes.",
+     "La relació entre artistes que es recomanen productores entre ells.",
+     "El públic fidel que torna i arrossega amics sense cap campanya."
+    ],
+    "preguntes": [
+     "Quina sala o festival et torna a trucar sense que insisteixis?",
+     "Quin artista t'ha arribat per recomanació d'un altre artista?",
+     "Qui de l'equip tècnic et falta quan no pot venir a un bolo?"
+    ],
+    "senyals": [
+     "Les sales et proposen dates abans que tu les demanis.",
+     "Els artistes renoven i en porten d'altres.",
+     "L'equip tècnic repeteix temporada rere temporada."
+    ]
+   }
+  },
+  {
+   "id": "escola_idiomes",
+   "icona": "🗣️",
+   "paraules": "idiomes, idiomas, classes, clases, alumnes, alumnos, nivell, nivel, exàmens, exámenes, grups, grupos, professorat, certificat, matrícula",
+   "ca": {
+    "nom": "Escola d'idiomes o acadèmia",
+    "diu": "Per a acadèmies i escoles d'idiomes de barri o de ciutat amb grups reduïts, preparació d'exàmens oficials i formació per a empreses.",
+    "roles": [
+     "Acadèmia",
+     "Alumnes",
+     "Famílies",
+     "Equip docent",
+     "Centres examinadors",
+     "Empreses",
+     "Qui recomana"
+    ],
+    "pairs": [
+     [
+      "Acadèmia",
+      "Alumnes",
+      "tangible",
+      "classes en grups reduïts",
+      "tangible",
+      "quota mensual"
+     ],
+     [
+      "Acadèmia",
+      "Famílies",
+      "intangible",
+      "informes de progrés clars",
+      "intangible",
+      "confiança i continuïtat"
+     ],
+     [
+      "Equip docent",
+      "Alumnes",
+      "intangible",
+      "atenció i seguiment personal",
+      "intangible",
+      "esforç i progrés visible"
+     ],
+     [
+      "Acadèmia",
+      "Equip docent",
+      "tangible",
+      "sou i formació contínua",
+      "intangible",
+      "idees i coneixement d'aula"
+     ],
+     [
+      "Acadèmia",
+      "Centres examinadors",
+      "tangible",
+      "candidats inscrits i preparats",
+      "intangible",
+      "reconeixement com a centre"
+     ],
+     [
+      "Acadèmia",
+      "Empreses",
+      "tangible",
+      "cursos a mida in company",
+      "tangible",
+      "contracte anual de formació"
+     ],
+     [
+      "Qui recomana",
+      "Famílies",
+      "intangible",
+      "recomanació de confiança",
+      "intangible",
+      "gratitud i vincle"
+     ],
+     [
+      "Acadèmia",
+      "Qui recomana",
+      "intangible",
+      "tracte proper i reconeixement",
+      "intangible",
+      "nous alumnes referits"
+     ],
+     [
+      "Alumnes",
+      "Equip docent",
+      "intangible",
+      "opinió sobre les classes",
+      "intangible",
+      "ajust del ritme"
+     ]
+    ],
+    "passos": [
+     "Definir el públic i els nivells: infants, adults, exàmens o empresa.",
+     "Formar l'equip docent amb un mètode i uns criteris comuns.",
+     "Posar en marxa la prova de nivell i el seguiment de cada alumne.",
+     "Explicar el progrés a alumnes i famílies cada trimestre.",
+     "Tancar aliances amb centres examinadors i empreses de la zona.",
+     "Cuidar i agrair qui ens recomana."
+    ],
+    "centre": "Acadèmia",
+    "bona": "Fes visible el progrés de cada alumne cada trimestre: és el que fa que les famílies renovin i recomanin."
+   },
+   "es": {
+    "nom": "Escuela de idiomas o academia",
+    "diu": "Para academias y escuelas de idiomas de barrio o de ciudad con grupos reducidos, preparación de exámenes oficiales y formación para empresas.",
+    "roles": [
+     "Academia",
+     "Alumnos",
+     "Familias",
+     "Equipo docente",
+     "Centros examinadores",
+     "Empresas",
+     "Quien recomienda"
+    ],
+    "pairs": [
+     [
+      "Academia",
+      "Alumnos",
+      "tangible",
+      "clases en grupos reducidos",
+      "tangible",
+      "cuota mensual"
+     ],
+     [
+      "Academia",
+      "Familias",
+      "intangible",
+      "informes de progreso claros",
+      "intangible",
+      "confianza y continuidad"
+     ],
+     [
+      "Equipo docente",
+      "Alumnos",
+      "intangible",
+      "atención y seguimiento personal",
+      "intangible",
+      "esfuerzo y progreso visible"
+     ],
+     [
+      "Academia",
+      "Equipo docente",
+      "tangible",
+      "sueldo y formación continua",
+      "intangible",
+      "ideas y conocimiento de aula"
+     ],
+     [
+      "Academia",
+      "Centros examinadores",
+      "tangible",
+      "candidatos inscritos y preparados",
+      "intangible",
+      "reconocimiento como centro"
+     ],
+     [
+      "Academia",
+      "Empresas",
+      "tangible",
+      "cursos a medida in company",
+      "tangible",
+      "contrato anual de formación"
+     ],
+     [
+      "Quien recomienda",
+      "Familias",
+      "intangible",
+      "recomendación de confianza",
+      "intangible",
+      "gratitud y vínculo"
+     ],
+     [
+      "Academia",
+      "Quien recomienda",
+      "intangible",
+      "trato cercano y reconocimiento",
+      "intangible",
+      "nuevos alumnos referidos"
+     ],
+     [
+      "Alumnos",
+      "Equipo docente",
+      "intangible",
+      "opinión sobre las clases",
+      "intangible",
+      "ajuste del ritmo"
+     ]
+    ],
+    "passos": [
+     "Definir el público y los niveles: niños, adultos, exámenes o empresa.",
+     "Formar al equipo docente con un método y unos criterios comunes.",
+     "Poner en marcha la prueba de nivel y el seguimiento de cada alumno.",
+     "Explicar el progreso a alumnos y familias cada trimestre.",
+     "Cerrar alianzas con centros examinadores y empresas de la zona.",
+     "Cuidar y agradecer a quien nos recomienda."
+    ],
+    "centre": "Academia",
+    "bona": "Haz visible el progreso de cada alumno cada trimestre: es lo que hace que las familias renueven y recomienden."
+   },
+   "en": {
+    "nom": "Language school or academy",
+    "diu": "For neighbourhood or city language schools with small groups, official exam preparation and company training.",
+    "roles": [
+     "Academy",
+     "Students",
+     "Families",
+     "Teaching team",
+     "Exam centres",
+     "Companies",
+     "Referrers"
+    ],
+    "pairs": [
+     [
+      "Academy",
+      "Students",
+      "tangible",
+      "small group classes",
+      "tangible",
+      "monthly fee"
+     ],
+     [
+      "Academy",
+      "Families",
+      "intangible",
+      "clear progress reports",
+      "intangible",
+      "trust and continuity"
+     ],
+     [
+      "Teaching team",
+      "Students",
+      "intangible",
+      "personal attention and follow-up",
+      "intangible",
+      "effort and visible progress"
+     ],
+     [
+      "Academy",
+      "Teaching team",
+      "tangible",
+      "salary and ongoing training",
+      "intangible",
+      "ideas and classroom knowledge"
+     ],
+     [
+      "Academy",
+      "Exam centres",
+      "tangible",
+      "registered, well-prepared candidates",
+      "intangible",
+      "recognition as a centre"
+     ],
+     [
+      "Academy",
+      "Companies",
+      "tangible",
+      "tailored in-company courses",
+      "tangible",
+      "annual training contract"
+     ],
+     [
+      "Referrers",
+      "Families",
+      "intangible",
+      "trusted recommendation",
+      "intangible",
+      "gratitude and bond"
+     ],
+     [
+      "Academy",
+      "Referrers",
+      "intangible",
+      "close treatment and recognition",
+      "intangible",
+      "new referred students"
+     ],
+     [
+      "Students",
+      "Teaching team",
+      "intangible",
+      "feedback on classes",
+      "intangible",
+      "adjusted pace"
+     ]
+    ],
+    "passos": [
+     "Define the audience and levels: children, adults, exams or companies.",
+     "Build the teaching team around a shared method and criteria.",
+     "Set up placement tests and follow-up for each student.",
+     "Explain progress to students and families every term.",
+     "Build partnerships with exam centres and local companies.",
+     "Look after and thank those who recommend us."
+    ],
+    "centre": "Academy",
+    "bona": "Make each student's progress visible every term: that is what makes families renew and recommend."
+   },
+   "veda": {
+    "clau": [
+     "**Equip docent → Alumnes: motivació.** Sense vincle amb el professor, l'alumne abandona abans de l'estiu.",
+     "**Acadèmia → Famílies: visibilitat del progrés.** Les famílies paguen pel que veuen avançar.",
+     "**Qui recomana → Famílies: confiança.** La majoria d'alumnes nous arriben pel boca-orella del barri o de l'escola.",
+     "**Centres examinadors → Acadèmia: prestigi.** Els aprovats als exàmens oficials són la millor carta de presentació."
+    ],
+    "falta": [
+     "El coneixement que el professorat té de cada alumne i que es perd quan marxa.",
+     "El paper de les escoles i les AFA com a prescriptores.",
+     "L'opinió dels alumnes que deixen el curs a mitges."
+    ],
+    "preguntes": [
+     "D'on va venir l'últim alumne que es va matricular?",
+     "Quan vau explicar per última vegada a una família com avança el seu fill?",
+     "Si un professor marxés demà, què es perdria?"
+    ],
+    "senyals": [
+     "Les renovacions de setembre arriben sense haver de trucar.",
+     "Els alumnes nous venen recomanats per alumnes actuals.",
+     "El professorat es queda més d'un curs i proposa millores."
+    ]
+   }
+  },
+  {
+   "id": "allotjament_rural",
+   "icona": "🏡",
+   "paraules": "acollida, acogida, masia, tranquil·litat, esmorzar, desayuno, entorn, territorio, hostes, huéspedes, proximitat, natura, detalls, encanto, família",
+   "ca": {
+    "nom": "Casa rural o allotjament amb encant",
+    "diu": "Per a qui obre casa seva a hostes i vol que el territori formi part de l'estada.",
+    "roles": [
+     "Casa rural",
+     "Hostes",
+     "Qui recomana",
+     "Equip de neteja i manteniment",
+     "Productors locals",
+     "Activitats i restaurants de l'entorn",
+     "Plataformes de reserva",
+     "Ens de turisme local"
+    ],
+    "pairs": [
+     [
+      "Casa rural",
+      "Hostes",
+      "tangible",
+      "Estada i esmorzar casolà",
+      "tangible",
+      "Pagament de la reserva"
+     ],
+     [
+      "Casa rural",
+      "Hostes",
+      "intangible",
+      "Acollida i consells de l'entorn",
+      "intangible",
+      "Ressenya sincera i confiança"
+     ],
+     [
+      "Qui recomana",
+      "Casa rural",
+      "intangible",
+      "Hostes afins recomanats",
+      "intangible",
+      "Agraïment i tracte preferent"
+     ],
+     [
+      "Casa rural",
+      "Equip de neteja i manteniment",
+      "tangible",
+      "Sou o tarifa acordada",
+      "tangible",
+      "Habitacions netes a temps"
+     ],
+     [
+      "Equip de neteja i manteniment",
+      "Casa rural",
+      "intangible",
+      "Avisos de detalls i avaries",
+      "intangible",
+      "Confiança i autonomia"
+     ],
+     [
+      "Productors locals",
+      "Casa rural",
+      "tangible",
+      "Producte de proximitat",
+      "tangible",
+      "Compra regular i pagament"
+     ],
+     [
+      "Casa rural",
+      "Activitats i restaurants de l'entorn",
+      "intangible",
+      "Clients recomanats amb criteri",
+      "intangible",
+      "Recomanacions creuades"
+     ],
+     [
+      "Plataformes de reserva",
+      "Casa rural",
+      "tangible",
+      "Visibilitat i reserves",
+      "tangible",
+      "Comissió per reserva"
+     ],
+     [
+      "Ens de turisme local",
+      "Casa rural",
+      "intangible",
+      "Promoció del territori",
+      "intangible",
+      "Implicació i coneixement local"
+     ]
+    ],
+    "passos": [
+     "Definir quin tipus d'hoste encaixa amb la casa i el territori.",
+     "Teixir acords amb productors, restaurants i activitats de l'entorn.",
+     "Preparar l'equip amb protocols clars i espai per avisar de detalls.",
+     "Combinar plataformes amb reserva directa i recomanació d'antics hostes.",
+     "Recollir opinions després de cada estada i ajustar l'experiència."
+    ],
+    "centre": "Casa rural",
+    "bona": "Cuidar l'acollida i el vincle amb l'entorn tant com les habitacions, perquè és el que fa tornar i recomanar."
+   },
+   "es": {
+    "nom": "Casa rural o alojamiento con encanto",
+    "diu": "Para quien abre su casa a huéspedes y quiere que el territorio forme parte de la estancia.",
+    "roles": [
+     "Casa rural",
+     "Huéspedes",
+     "Quien recomienda",
+     "Equipo de limpieza y mantenimiento",
+     "Productores locales",
+     "Actividades y restaurantes del entorno",
+     "Plataformas de reserva",
+     "Ente de turismo local"
+    ],
+    "pairs": [
+     [
+      "Casa rural",
+      "Huéspedes",
+      "tangible",
+      "Estancia y desayuno casero",
+      "tangible",
+      "Pago de la reserva"
+     ],
+     [
+      "Casa rural",
+      "Huéspedes",
+      "intangible",
+      "Acogida y consejos del entorno",
+      "intangible",
+      "Reseña sincera y confianza"
+     ],
+     [
+      "Quien recomienda",
+      "Casa rural",
+      "intangible",
+      "Huéspedes afines recomendados",
+      "intangible",
+      "Agradecimiento y trato preferente"
+     ],
+     [
+      "Casa rural",
+      "Equipo de limpieza y mantenimiento",
+      "tangible",
+      "Sueldo o tarifa acordada",
+      "tangible",
+      "Habitaciones limpias a tiempo"
+     ],
+     [
+      "Equipo de limpieza y mantenimiento",
+      "Casa rural",
+      "intangible",
+      "Avisos de detalles y averías",
+      "intangible",
+      "Confianza y autonomía"
+     ],
+     [
+      "Productores locales",
+      "Casa rural",
+      "tangible",
+      "Producto de proximidad",
+      "tangible",
+      "Compra regular y pago"
+     ],
+     [
+      "Casa rural",
+      "Actividades y restaurantes del entorno",
+      "intangible",
+      "Clientes recomendados con criterio",
+      "intangible",
+      "Recomendaciones cruzadas"
+     ],
+     [
+      "Plataformas de reserva",
+      "Casa rural",
+      "tangible",
+      "Visibilidad y reservas",
+      "tangible",
+      "Comisión por reserva"
+     ],
+     [
+      "Ente de turismo local",
+      "Casa rural",
+      "intangible",
+      "Promoción del territorio",
+      "intangible",
+      "Implicación y conocimiento local"
+     ]
+    ],
+    "passos": [
+     "Definir qué tipo de huésped encaja con la casa y el territorio.",
+     "Tejer acuerdos con productores, restaurantes y actividades del entorno.",
+     "Preparar al equipo con protocolos claros y espacio para avisar de detalles.",
+     "Combinar plataformas con reserva directa y recomendación de antiguos huéspedes.",
+     "Recoger opiniones tras cada estancia y ajustar la experiencia."
+    ],
+    "centre": "Casa rural",
+    "bona": "Cuidar la acogida y el vínculo con el entorno tanto como las habitaciones, porque es lo que hace volver y recomendar."
+   },
+   "en": {
+    "nom": "Rural guesthouse or charming stay",
+    "diu": "For those who open their home to guests and want the local area to be part of the stay.",
+    "roles": [
+     "Rural guesthouse",
+     "Guests",
+     "Referrer",
+     "Cleaning and maintenance team",
+     "Local producers",
+     "Nearby activities and restaurants",
+     "Booking platforms",
+     "Local tourism board"
+    ],
+    "pairs": [
+     [
+      "Rural guesthouse",
+      "Guests",
+      "tangible",
+      "Stay and homemade breakfast",
+      "tangible",
+      "Booking payment"
+     ],
+     [
+      "Rural guesthouse",
+      "Guests",
+      "intangible",
+      "Welcome and local tips",
+      "intangible",
+      "Honest review and trust"
+     ],
+     [
+      "Referrer",
+      "Rural guesthouse",
+      "intangible",
+      "Well-matched referred guests",
+      "intangible",
+      "Gratitude and preferential treatment"
+     ],
+     [
+      "Rural guesthouse",
+      "Cleaning and maintenance team",
+      "tangible",
+      "Agreed wage or fee",
+      "tangible",
+      "Rooms cleaned on time"
+     ],
+     [
+      "Cleaning and maintenance team",
+      "Rural guesthouse",
+      "intangible",
+      "Alerts about details and faults",
+      "intangible",
+      "Trust and autonomy"
+     ],
+     [
+      "Local producers",
+      "Rural guesthouse",
+      "tangible",
+      "Locally sourced produce",
+      "tangible",
+      "Regular purchases and payment"
+     ],
+     [
+      "Rural guesthouse",
+      "Nearby activities and restaurants",
+      "intangible",
+      "Thoughtfully referred customers",
+      "intangible",
+      "Cross recommendations"
+     ],
+     [
+      "Booking platforms",
+      "Rural guesthouse",
+      "tangible",
+      "Visibility and bookings",
+      "tangible",
+      "Commission per booking"
+     ],
+     [
+      "Local tourism board",
+      "Rural guesthouse",
+      "intangible",
+      "Promotion of the area",
+      "intangible",
+      "Local involvement and knowledge"
+     ]
+    ],
+    "passos": [
+     "Define which kind of guest fits the house and the area.",
+     "Build agreements with local producers, restaurants and activities.",
+     "Prepare the team with clear routines and room to flag details.",
+     "Combine platforms with direct booking and referrals from past guests.",
+     "Gather feedback after every stay and adjust the experience."
+    ],
+    "centre": "Rural guesthouse",
+    "bona": "Care for the welcome and the bond with the area as much as the rooms, because that is what makes guests return and recommend."
+   },
+   "veda": {
+    "clau": [
+     "**Casa rural → Hostes: acollida i consells.** La manera de rebre i orientar és el que l'hoste recorda i explica.",
+     "**Hostes → Casa rural: ressenya sincera.** Una opinió honesta dona confiança als futurs hostes i orienta millores.",
+     "**Qui recomana → Casa rural: hostes afins.** Els antics hostes porten gent que encaixa amb l'estil de la casa.",
+     "**Casa rural → Activitats i restaurants de l'entorn: clients amb criteri.** Recomanar bé l'entorn fa que l'entorn també et recomani."
+    ],
+    "falta": [
+     "Els avisos de l'equip sobre petits detalls que eviten queixes.",
+     "El retorn dels productors i negocis de l'entorn quan envien gent a la casa.",
+     "La implicació amb el poble i el que el territori aporta a l'estada."
+    ],
+    "preguntes": [
+     "D'on van venir els tres últims hostes que van repetir o recomanar-te?",
+     "A quins restaurants o activitats envies hostes, i ells t'envien algú a tu?",
+     "Què et va avisar l'equip l'últim mes que no haguessis vist tu?"
+    ],
+    "senyals": [
+     "Hi ha hostes que repeteixen o arriben per recomanació directa.",
+     "Els negocis de l'entorn et recomanen sense que els ho demanis.",
+     "L'equip avisa dels detalls abans que l'hoste els noti."
+    ]
+   }
+  },
+  {
+   "id": "formacio_professionals",
+   "icona": "🎓",
+   "paraules": "formació, formación, docents, claustro, acompanyament, aula, pràctica, certificat, homologación, metodologia, competències, mentoría, comunitat, innovación",
+   "ca": {
+    "nom": "Formació de professionals",
+    "diu": "Per a centres i persones que formen docents i altres professionals i volen que la formació canviï la pràctica real.",
+    "roles": [
+     "Centre de formació",
+     "Docents en formació",
+     "Escoles i equips directius",
+     "Administració educativa",
+     "Equip de formadors",
+     "Docents que recomanen",
+     "Universitats i experts"
+    ],
+    "pairs": [
+     [
+      "Centre de formació",
+      "Docents en formació",
+      "tangible",
+      "cursos certificats i materials",
+      "tangible",
+      "matrícula i assistència"
+     ],
+     [
+      "Centre de formació",
+      "Escoles i equips directius",
+      "tangible",
+      "formació a mida al claustre",
+      "tangible",
+      "contracte i pagament"
+     ],
+     [
+      "Administració educativa",
+      "Centre de formació",
+      "tangible",
+      "homologació de les activitats",
+      "tangible",
+      "memòries i assistència justificades"
+     ],
+     [
+      "Centre de formació",
+      "Equip de formadors",
+      "tangible",
+      "encàrrecs i honoraris",
+      "intangible",
+      "millores als materials"
+     ],
+     [
+      "Equip de formadors",
+      "Docents en formació",
+      "intangible",
+      "acompanyament després del curs",
+      "intangible",
+      "casos reals d'aula"
+     ],
+     [
+      "Docents que recomanen",
+      "Centre de formació",
+      "intangible",
+      "recomanació a companys",
+      "intangible",
+      "reconeixement i primícies"
+     ],
+     [
+      "Universitats i experts",
+      "Centre de formació",
+      "intangible",
+      "evidència i recerca actualitzada",
+      "intangible",
+      "accés a aules reals"
+     ],
+     [
+      "Docents en formació",
+      "Escoles i equips directius",
+      "intangible",
+      "pràctiques noves a l'aula",
+      "intangible",
+      "temps per aplicar-les"
+     ],
+     [
+      "Escoles i equips directius",
+      "Centre de formació",
+      "intangible",
+      "necessitats reals del claustre",
+      "intangible",
+      "confiança a llarg termini"
+     ]
+    ],
+    "passos": [
+     "Escolta escoles i docents per detectar necessitats reals abans de dissenyar.",
+     "Dissenya formacions curtes, pràctiques i aplicables a l'aula.",
+     "Tramita l'homologació i deixa clar què certifica cada curs.",
+     "Cohesiona l'equip de formadors amb un estil i materials compartits.",
+     "Fes seguiment després del curs i recull evidències d'aplicació."
+    ],
+    "centre": "Centre de formació",
+    "bona": "Una formació acaba quan es veu a l'aula, no quan es lliura el certificat."
+   },
+   "es": {
+    "nom": "Formación de profesionales",
+    "diu": "Para centros y personas que forman a docentes y otros profesionales y quieren que la formación cambie la práctica real.",
+    "roles": [
+     "Centro de formación",
+     "Docentes en formación",
+     "Escuelas y equipos directivos",
+     "Administración educativa",
+     "Equipo de formadores",
+     "Docentes que recomiendan",
+     "Universidades y expertos"
+    ],
+    "pairs": [
+     [
+      "Centro de formación",
+      "Docentes en formación",
+      "tangible",
+      "cursos certificados y materiales",
+      "tangible",
+      "matrícula y asistencia"
+     ],
+     [
+      "Centro de formación",
+      "Escuelas y equipos directivos",
+      "tangible",
+      "formación a medida al claustro",
+      "tangible",
+      "contrato y pago"
+     ],
+     [
+      "Administración educativa",
+      "Centro de formación",
+      "tangible",
+      "homologación de las actividades",
+      "tangible",
+      "memorias y asistencia justificadas"
+     ],
+     [
+      "Centro de formación",
+      "Equipo de formadores",
+      "tangible",
+      "encargos y honorarios",
+      "intangible",
+      "mejoras en los materiales"
+     ],
+     [
+      "Equipo de formadores",
+      "Docentes en formación",
+      "intangible",
+      "acompañamiento después del curso",
+      "intangible",
+      "casos reales de aula"
+     ],
+     [
+      "Docentes que recomiendan",
+      "Centro de formación",
+      "intangible",
+      "recomendación a compañeros",
+      "intangible",
+      "reconocimiento y primicias"
+     ],
+     [
+      "Universidades y expertos",
+      "Centro de formación",
+      "intangible",
+      "evidencia e investigación actualizada",
+      "intangible",
+      "acceso a aulas reales"
+     ],
+     [
+      "Docentes en formación",
+      "Escuelas y equipos directivos",
+      "intangible",
+      "prácticas nuevas en el aula",
+      "intangible",
+      "tiempo para aplicarlas"
+     ],
+     [
+      "Escuelas y equipos directivos",
+      "Centro de formación",
+      "intangible",
+      "necesidades reales del claustro",
+      "intangible",
+      "confianza a largo plazo"
+     ]
+    ],
+    "passos": [
+     "Escucha a escuelas y docentes para detectar necesidades reales antes de diseñar.",
+     "Diseña formaciones cortas, prácticas y aplicables en el aula.",
+     "Tramita la homologación y deja claro qué certifica cada curso.",
+     "Cohesiona el equipo de formadores con un estilo y materiales compartidos.",
+     "Haz seguimiento después del curso y recoge evidencias de aplicación."
+    ],
+    "centre": "Centro de formación",
+    "bona": "Una formación termina cuando se ve en el aula, no cuando se entrega el certificado."
+   },
+   "en": {
+    "nom": "Professional training",
+    "diu": "For centres and people who train teachers and other professionals and want training to change real practice.",
+    "roles": [
+     "Training centre",
+     "Teachers in training",
+     "Schools and leadership teams",
+     "Education authority",
+     "Trainer team",
+     "Recommending teachers",
+     "Universities and experts"
+    ],
+    "pairs": [
+     [
+      "Training centre",
+      "Teachers in training",
+      "tangible",
+      "certified courses and materials",
+      "tangible",
+      "enrolment and attendance"
+     ],
+     [
+      "Training centre",
+      "Schools and leadership teams",
+      "tangible",
+      "tailored whole-staff training",
+      "tangible",
+      "contract and payment"
+     ],
+     [
+      "Education authority",
+      "Training centre",
+      "tangible",
+      "official course accreditation",
+      "tangible",
+      "reports and verified attendance"
+     ],
+     [
+      "Training centre",
+      "Trainer team",
+      "tangible",
+      "assignments and fees",
+      "intangible",
+      "improvements to materials"
+     ],
+     [
+      "Trainer team",
+      "Teachers in training",
+      "intangible",
+      "follow-up after the course",
+      "intangible",
+      "real classroom cases"
+     ],
+     [
+      "Recommending teachers",
+      "Training centre",
+      "intangible",
+      "recommendation to colleagues",
+      "intangible",
+      "recognition and early access"
+     ],
+     [
+      "Universities and experts",
+      "Training centre",
+      "intangible",
+      "up-to-date research and evidence",
+      "intangible",
+      "access to real classrooms"
+     ],
+     [
+      "Teachers in training",
+      "Schools and leadership teams",
+      "intangible",
+      "new classroom practices",
+      "intangible",
+      "time to apply them"
+     ],
+     [
+      "Schools and leadership teams",
+      "Training centre",
+      "intangible",
+      "real staff needs",
+      "intangible",
+      "long-term trust"
+     ]
+    ],
+    "passos": [
+     "Listen to schools and teachers to find real needs before designing.",
+     "Design short, practical training that can be applied in class.",
+     "Get accreditation and make clear what each course certifies.",
+     "Align the trainer team around a shared style and materials.",
+     "Follow up after the course and gather evidence of application."
+    ],
+    "centre": "Training centre",
+    "bona": "Training ends when it shows in the classroom, not when the certificate is handed over."
+   },
+   "veda": {
+    "clau": [
+     "**Equip de formadors → Docents en formació: acompanyament després del curs.** És el que converteix una sessió en un canvi real a l'aula.",
+     "**Docents que recomanen → Centre de formació: recomanació a companys.** Moltes inscripcions arriben de boca a orella dins del claustre.",
+     "**Escoles i equips directius → Centre de formació: necessitats reals del claustre.** Sense aquest diagnòstic es fan cursos que ningú aplica.",
+     "**Universitats i experts → Centre de formació: evidència actualitzada.** Dona credibilitat i evita modes pedagògiques sense base."
+    ],
+    "falta": [
+     "El temps que l'escola dona, o no, al docent per aplicar el que ha après.",
+     "El que els formadors aprenen dels docents i torna als materials.",
+     "La relació entre docents d'una mateixa formació un cop acabada."
+    ],
+    "preguntes": [
+     "Qui us va recomanar l'última vegada que es va omplir un curs?",
+     "Què feu amb un docent un mes després d'acabar la formació?",
+     "Quina escola us ha demanat una segona formació, i per què?"
+    ],
+    "senyals": [
+     "Les escoles tornen i demanen formacions de continuïtat.",
+     "Els docents porten casos de l'aula i els formadors els incorporen als materials.",
+     "Hi ha cursos que s'omplen sense publicitat, per recomanació."
+    ]
+   }
+  },
+  {
+   "id": "coworking",
+   "icona": "🪑",
+   "paraules": "comunitat, comunidad, escriptori, mesa, sala, quota, autònoms, emprendedores, sinergies, ambient, flexibilitat, networking, conexiones, acollida",
+   "ca": {
+    "nom": "Espai de coworking",
+    "diu": "Per a qui gestiona un espai de treball compartit on autònoms, petites empreses i professionals en remot hi troben lloc, servei i comunitat.",
+    "roles": [
+     "Espai de coworking",
+     "Equip de comunitat",
+     "Membres",
+     "Qui recomana",
+     "Empreses que lloguen sales",
+     "Propietat del local",
+     "Xarxa local d'emprenedoria"
+    ],
+    "pairs": [
+     [
+      "Espai de coworking",
+      "Membres",
+      "tangible",
+      "lloc de treball equipat",
+      "tangible",
+      "quota mensual"
+     ],
+     [
+      "Equip de comunitat",
+      "Membres",
+      "intangible",
+      "presentacions entre membres",
+      "intangible",
+      "confiança i feedback"
+     ],
+     [
+      "Membres",
+      "Espai de coworking",
+      "intangible",
+      "ambient i bona reputació",
+      "intangible",
+      "sentit de pertinença"
+     ],
+     [
+      "Qui recomana",
+      "Espai de coworking",
+      "intangible",
+      "nous membres de confiança",
+      "intangible",
+      "reconeixement i visibilitat"
+     ],
+     [
+      "Espai de coworking",
+      "Equip de comunitat",
+      "tangible",
+      "sou i eines",
+      "intangible",
+      "coneixement del dia a dia"
+     ],
+     [
+      "Espai de coworking",
+      "Empreses que lloguen sales",
+      "tangible",
+      "sales per a reunions",
+      "tangible",
+      "pagament per ús"
+     ],
+     [
+      "Equip de comunitat",
+      "Empreses que lloguen sales",
+      "intangible",
+      "acollida i atenció",
+      "intangible",
+      "contactes amb nous clients"
+     ],
+     [
+      "Propietat del local",
+      "Espai de coworking",
+      "tangible",
+      "local en lloguer estable",
+      "tangible",
+      "renda puntual"
+     ],
+     [
+      "Xarxa local d'emprenedoria",
+      "Espai de coworking",
+      "intangible",
+      "derivació d'emprenedors",
+      "intangible",
+      "espai per a activitats"
+     ]
+    ],
+    "passos": [
+     "Definir per a quin tipus de professional és l'espai i quin ambient s'hi vol.",
+     "Acordar amb la propietat un lloguer estable i adequar el local.",
+     "Posar a punt llocs, sales, connexió i normes de convivència senzilles.",
+     "Designar qui fa d'amfitrió i acull i presenta cada membre nou.",
+     "Obrir l'espai a la xarxa local amb activitats i demanar recomanacions als membres satisfets."
+    ],
+    "centre": "Espai de coworking",
+    "bona": "Presenta cada membre nou a almenys dues persones de la comunitat durant la primera setmana.](no)"
+   },
+   "es": {
+    "nom": "Espacio de coworking",
+    "diu": "Para quien gestiona un espacio de trabajo compartido donde autónomos, pequeñas empresas y profesionales en remoto encuentran sitio, servicio y comunidad.",
+    "roles": [
+     "Espacio de coworking",
+     "Equipo de comunidad",
+     "Miembros",
+     "Quien recomienda",
+     "Empresas que alquilan salas",
+     "Propiedad del local",
+     "Red local de emprendimiento"
+    ],
+    "pairs": [
+     [
+      "Espacio de coworking",
+      "Miembros",
+      "tangible",
+      "puesto de trabajo equipado",
+      "tangible",
+      "cuota mensual"
+     ],
+     [
+      "Equipo de comunidad",
+      "Miembros",
+      "intangible",
+      "presentaciones entre miembros",
+      "intangible",
+      "confianza y feedback"
+     ],
+     [
+      "Miembros",
+      "Espacio de coworking",
+      "intangible",
+      "ambiente y buena reputación",
+      "intangible",
+      "sentido de pertenencia"
+     ],
+     [
+      "Quien recomienda",
+      "Espacio de coworking",
+      "intangible",
+      "nuevos miembros de confianza",
+      "intangible",
+      "reconocimiento y visibilidad"
+     ],
+     [
+      "Espacio de coworking",
+      "Equipo de comunidad",
+      "tangible",
+      "sueldo y herramientas",
+      "intangible",
+      "conocimiento del día a día"
+     ],
+     [
+      "Espacio de coworking",
+      "Empresas que alquilan salas",
+      "tangible",
+      "salas para reuniones",
+      "tangible",
+      "pago por uso"
+     ],
+     [
+      "Equipo de comunidad",
+      "Empresas que alquilan salas",
+      "intangible",
+      "acogida y atención",
+      "intangible",
+      "contactos con nuevos clientes"
+     ],
+     [
+      "Propiedad del local",
+      "Espacio de coworking",
+      "tangible",
+      "local en alquiler estable",
+      "tangible",
+      "renta puntual"
+     ],
+     [
+      "Red local de emprendimiento",
+      "Espacio de coworking",
+      "intangible",
+      "derivación de emprendedores",
+      "intangible",
+      "espacio para actividades"
+     ]
+    ],
+    "passos": [
+     "Definir para qué tipo de profesional es el espacio y qué ambiente se quiere.",
+     "Acordar con la propiedad un alquiler estable y adecuar el local.",
+     "Poner a punto puestos, salas, conexión y normas de convivencia sencillas.",
+     "Designar quién hace de anfitrión y acoge y presenta a cada miembro nuevo.",
+     "Abrir el espacio a la red local con actividades y pedir recomendaciones a los miembros satisfechos."
+    ],
+    "centre": "Espacio de coworking",
+    "bona": "Presenta a cada miembro nuevo al menos a dos personas de la comunidad durante su primera semana."
+   },
+   "en": {
+    "nom": "Coworking space",
+    "diu": "For those running a shared workspace where freelancers, small businesses and remote professionals find a desk, services and community.",
+    "roles": [
+     "Coworking space",
+     "Community team",
+     "Members",
+     "Referrer",
+     "Companies renting rooms",
+     "Property owner",
+     "Local entrepreneurship network"
+    ],
+    "pairs": [
+     [
+      "Coworking space",
+      "Members",
+      "tangible",
+      "equipped workspace",
+      "tangible",
+      "monthly fee"
+     ],
+     [
+      "Community team",
+      "Members",
+      "intangible",
+      "introductions between members",
+      "intangible",
+      "trust and feedback"
+     ],
+     [
+      "Members",
+      "Coworking space",
+      "intangible",
+      "atmosphere and good reputation",
+      "intangible",
+      "sense of belonging"
+     ],
+     [
+      "Referrer",
+      "Coworking space",
+      "intangible",
+      "trusted new members",
+      "intangible",
+      "recognition and visibility"
+     ],
+     [
+      "Coworking space",
+      "Community team",
+      "tangible",
+      "salary and tools",
+      "intangible",
+      "day-to-day knowledge"
+     ],
+     [
+      "Coworking space",
+      "Companies renting rooms",
+      "tangible",
+      "meeting rooms",
+      "tangible",
+      "pay per use"
+     ],
+     [
+      "Community team",
+      "Companies renting rooms",
+      "intangible",
+      "welcome and care",
+      "intangible",
+      "contacts with new clients"
+     ],
+     [
+      "Property owner",
+      "Coworking space",
+      "tangible",
+      "stable rented premises",
+      "tangible",
+      "rent paid on time"
+     ],
+     [
+      "Local entrepreneurship network",
+      "Coworking space",
+      "intangible",
+      "referral of entrepreneurs",
+      "intangible",
+      "venue for activities"
+     ]
+    ],
+    "passos": [
+     "Define which kind of professional the space is for and the atmosphere you want.",
+     "Agree a stable lease with the owner and fit out the premises.",
+     "Set up desks, rooms, connectivity and simple house rules.",
+     "Name a host who welcomes and introduces every new member.",
+     "Open the space to the local network with activities and ask happy members for referrals."
+    ],
+    "centre": "Coworking space",
+    "bona": "Introduce every new member to at least two people in the community during their first week."
+   },
+   "veda": {
+    "clau": [
+     "**Equip de comunitat → Membres: presentacions.** Una bona presentació val més que una taula millor.",
+     "**Membres → Espai de coworking: ambient.** L'ambient el fan els membres i és el que es ven.",
+     "**Qui recomana → Espai de coworking: membres de confiança.** La majoria de membres nous arriben per boca-orella.",
+     "**Xarxa local d'emprenedoria → Espai de coworking: derivació.** Les entitats locals envien gent que busca on començar."
+    ],
+    "falta": [
+     "Els encàrrecs i col·laboracions que neixen entre membres gràcies a l'espai.",
+     "El que l'equip de comunitat sap de cada membre i que no està escrit enlloc.",
+     "El que reben les empreses que lloguen sales a més de la sala."
+    ],
+    "preguntes": [
+     "Com va arribar el darrer membre que s'hi ha apuntat?",
+     "Quins membres han treballat junts després de conèixer-se aquí?",
+     "Qui acull la persona nova el primer dia?"
+    ],
+    "senyals": [
+     "Els membres es presenten clients i encàrrecs entre ells.",
+     "Els nous membres arriben recomanats per algú de dins.",
+     "La gent es queda més enllà dels primers mesos."
+    ]
+   }
+  },
+  {
+   "id": "experiencies_turistiques",
+   "icona": "🧭",
+   "paraules": "ruta, territori, territorio, grup, grupo, història, historia, relat, tast, cata, sortida, salida, local, experiència, guia",
+   "ca": {
+    "nom": "Guia o experiències turístiques",
+    "diu": "Per a guies i petites empreses que dissenyen i condueixen visites, rutes i experiències al territori.",
+    "roles": [
+     "Guia d'experiències",
+     "Viatger",
+     "Qui recomana",
+     "Equip de guies",
+     "Plataforma de reserves",
+     "Proveïdors locals",
+     "Comunitat i territori"
+    ],
+    "pairs": [
+     [
+      "Guia d'experiències",
+      "Viatger",
+      "tangible",
+      "experiència guiada reservada",
+      "tangible",
+      "pagament de la reserva"
+     ],
+     [
+      "Viatger",
+      "Guia d'experiències",
+      "intangible",
+      "ressenya i fotos compartides",
+      "intangible",
+      "atenció personal i consells"
+     ],
+     [
+      "Qui recomana",
+      "Guia d'experiències",
+      "intangible",
+      "recomanació als seus hostes",
+      "intangible",
+      "hostes ben atesos"
+     ],
+     [
+      "Guia d'experiències",
+      "Qui recomana",
+      "intangible",
+      "calendari de sortides actualitzat",
+      "intangible",
+      "confiança per recomanar"
+     ],
+     [
+      "Guia d'experiències",
+      "Equip de guies",
+      "tangible",
+      "torns i remuneració justa",
+      "intangible",
+      "coneixement i entusiasme"
+     ],
+     [
+      "Equip de guies",
+      "Guia d'experiències",
+      "intangible",
+      "retorn de cada grup",
+      "intangible",
+      "formació i reconeixement"
+     ],
+     [
+      "Plataforma de reserves",
+      "Guia d'experiències",
+      "tangible",
+      "reserves i visibilitat",
+      "tangible",
+      "comissió per reserva"
+     ],
+     [
+      "Proveïdors locals",
+      "Guia d'experiències",
+      "tangible",
+      "tastos i espais acordats",
+      "tangible",
+      "grups i pagament puntual"
+     ],
+     [
+      "Comunitat i territori",
+      "Guia d'experiències",
+      "intangible",
+      "història i acollida veïnal",
+      "intangible",
+      "respecte i retorn local"
+     ]
+    ],
+    "passos": [
+     "Definir l'experiència: què es viu, per a qui i per què aquí.",
+     "Pactar amb proveïdors locals i la comunitat què s'hi aporta i què hi torna.",
+     "Preparar l'equip de guies amb el relat, la seguretat i el to de la casa.",
+     "Obrir canals de reserva propis i de plataforma, i informar qui recomana.",
+     "Recollir el retorn de cada grup i ajustar ruta, ritme i relat."
+    ],
+    "centre": "Guia d'experiències",
+    "bona": "Cuida el territori i qui hi viu tant com el viatger: sense el seu permís tàcit no hi ha experiència.Ara bé, revisa-ho sovint.\n"
+   },
+   "es": {
+    "nom": "Guía o experiencias turísticas",
+    "diu": "Para guías y pequeñas empresas que diseñan y conducen visitas, rutas y experiencias en el territorio.",
+    "roles": [
+     "Guía de experiencias",
+     "Viajero",
+     "Quien recomienda",
+     "Equipo de guías",
+     "Plataforma de reservas",
+     "Proveedores locales",
+     "Comunidad y territorio"
+    ],
+    "pairs": [
+     [
+      "Guía de experiencias",
+      "Viajero",
+      "tangible",
+      "experiencia guiada reservada",
+      "tangible",
+      "pago de la reserva"
+     ],
+     [
+      "Viajero",
+      "Guía de experiencias",
+      "intangible",
+      "reseña y fotos compartidas",
+      "intangible",
+      "atención personal y consejos"
+     ],
+     [
+      "Quien recomienda",
+      "Guía de experiencias",
+      "intangible",
+      "recomendación a sus huéspedes",
+      "intangible",
+      "huéspedes bien atendidos"
+     ],
+     [
+      "Guía de experiencias",
+      "Quien recomienda",
+      "intangible",
+      "calendario de salidas actualizado",
+      "intangible",
+      "confianza para recomendar"
+     ],
+     [
+      "Guía de experiencias",
+      "Equipo de guías",
+      "tangible",
+      "turnos y remuneración justa",
+      "intangible",
+      "conocimiento y entusiasmo"
+     ],
+     [
+      "Equipo de guías",
+      "Guía de experiencias",
+      "intangible",
+      "retorno de cada grupo",
+      "intangible",
+      "formación y reconocimiento"
+     ],
+     [
+      "Plataforma de reservas",
+      "Guía de experiencias",
+      "tangible",
+      "reservas y visibilidad",
+      "tangible",
+      "comisión por reserva"
+     ],
+     [
+      "Proveedores locales",
+      "Guía de experiencias",
+      "tangible",
+      "catas y espacios acordados",
+      "tangible",
+      "grupos y pago puntual"
+     ],
+     [
+      "Comunidad y territorio",
+      "Guía de experiencias",
+      "intangible",
+      "historia y acogida vecinal",
+      "intangible",
+      "respeto y retorno local"
+     ]
+    ],
+    "passos": [
+     "Definir la experiencia: qué se vive, para quién y por qué aquí.",
+     "Pactar con proveedores locales y la comunidad qué se aporta y qué vuelve.",
+     "Preparar al equipo de guías con el relato, la seguridad y el tono de la casa.",
+     "Abrir canales de reserva propios y de plataforma, e informar a quien recomienda.",
+     "Recoger el retorno de cada grupo y ajustar ruta, ritmo y relato."
+    ],
+    "centre": "Guía de experiencias",
+    "bona": "Cuida el territorio y a quien vive en él tanto como al viajero: sin su permiso tácito no hay experiencia."
+   },
+   "en": {
+    "nom": "Guide or tourism experiences",
+    "diu": "For guides and small businesses that design and lead tours, routes and local experiences.",
+    "roles": [
+     "Experience guide",
+     "Traveller",
+     "Referrer",
+     "Guide team",
+     "Booking platform",
+     "Local suppliers",
+     "Community and place"
+    ],
+    "pairs": [
+     [
+      "Experience guide",
+      "Traveller",
+      "tangible",
+      "booked guided experience",
+      "tangible",
+      "booking payment"
+     ],
+     [
+      "Traveller",
+      "Experience guide",
+      "intangible",
+      "shared review and photos",
+      "intangible",
+      "personal attention and tips"
+     ],
+     [
+      "Referrer",
+      "Experience guide",
+      "intangible",
+      "recommendation to their guests",
+      "intangible",
+      "well looked-after guests"
+     ],
+     [
+      "Experience guide",
+      "Referrer",
+      "intangible",
+      "up-to-date departure calendar",
+      "intangible",
+      "confidence to recommend"
+     ],
+     [
+      "Experience guide",
+      "Guide team",
+      "tangible",
+      "shifts and fair pay",
+      "intangible",
+      "knowledge and enthusiasm"
+     ],
+     [
+      "Guide team",
+      "Experience guide",
+      "intangible",
+      "feedback from each group",
+      "intangible",
+      "training and recognition"
+     ],
+     [
+      "Booking platform",
+      "Experience guide",
+      "tangible",
+      "bookings and visibility",
+      "tangible",
+      "commission per booking"
+     ],
+     [
+      "Local suppliers",
+      "Experience guide",
+      "tangible",
+      "agreed tastings and venues",
+      "tangible",
+      "groups and prompt payment"
+     ],
+     [
+      "Community and place",
+      "Experience guide",
+      "intangible",
+      "history and neighbourly welcome",
+      "intangible",
+      "respect and local return"
+     ]
+    ],
+    "passos": [
+     "Define the experience: what people live, for whom and why here.",
+     "Agree with local suppliers and the community what each gives and gets back.",
+     "Prepare the guide team with the story, safety and house tone.",
+     "Open own and platform booking channels, and brief referrers.",
+     "Collect feedback from each group and adjust route, pace and story."
+    ],
+    "centre": "Experience guide",
+    "bona": "Care for the place and its people as much as for the traveller: without their tacit consent there is no experience."
+   },
+   "veda": {
+    "clau": [
+     "**Viatger → Guia d'experiències: ressenya.** Una ressenya concreta i amb fotos val més que qualsevol anunci.",
+     "**Qui recomana → Guia d'experiències: recomanació.** Recepcions i allotjaments envien hostes només si confien que tornaran contents.",
+     "**Equip de guies → Guia d'experiències: retorn dels grups.** Qui guia cada dia sap què funciona i què avorreix.",
+     "**Comunitat i territori → Guia d'experiències: acollida.** Els veïns i la seva història són la matèria primera de l'experiència."
+    ],
+    "falta": [
+     "El que l'experiència retorna als veïns i al territori més enllà de pagar proveïdors.",
+     "La informació que cal donar a qui recomana perquè ho faci bé.",
+     "El coneixement que els guies acumulen i que es perd quan marxen."
+    ],
+    "preguntes": [
+     "D'on van venir els tres últims grups que vau tenir?",
+     "Qui us envia clients sense cobrar res i què rep a canvi?",
+     "Què us diu el veïnat quan passeu amb un grup?"
+    ],
+    "senyals": [
+     "Una bona part de les reserves arriba per recomanació o canals propis.",
+     "Els guies proposen millores a la ruta i s'hi queden temporada rere temporada.",
+     "Proveïdors i veïns parlen bé de l'experiència i hi volen participar."
+    ]
+   }
+  },
+  {
+   "id": "celler",
+   "icona": "🍇",
+   "paraules": "verema, vendimia, vinya, viña, celler, bodega, raïm, uva, criança, crianza, terrer, terruño, tast, cata, família",
+   "ca": {
+    "nom": "Celler familiar",
+    "diu": "Per a cellers de família que elaboren vi de les seves vinyes o de veïns i el venen a prop, a restaurants i a qui els visita.",
+    "roles": [
+     "Celler familiar",
+     "Equip",
+     "Viticultors veïns",
+     "Restaurants i vinoteques",
+     "Visitants d'enoturisme",
+     "Club de clients",
+     "Qui recomana"
+    ],
+    "pairs": [
+     [
+      "Viticultors veïns",
+      "Celler familiar",
+      "tangible",
+      "raïm de parcel·les conegudes",
+      "intangible",
+      "assessorament de vinya compartit"
+     ],
+     [
+      "Celler familiar",
+      "Restaurants i vinoteques",
+      "tangible",
+      "vi i fitxes tècniques",
+      "tangible",
+      "comandes i pagament puntual"
+     ],
+     [
+      "Restaurants i vinoteques",
+      "Celler familiar",
+      "intangible",
+      "opinió dels comensals",
+      "intangible",
+      "relat i formació del personal"
+     ],
+     [
+      "Celler familiar",
+      "Visitants d'enoturisme",
+      "tangible",
+      "visita i tast guiats",
+      "intangible",
+      "ressenyes i fotos compartides"
+     ],
+     [
+      "Qui recomana",
+      "Celler familiar",
+      "intangible",
+      "prescripció a taula i guies",
+      "intangible",
+      "accés a vinya i elaborador"
+     ],
+     [
+      "Equip",
+      "Celler familiar",
+      "intangible",
+      "ofici i coneixement de collita",
+      "tangible",
+      "sou i calendari estable"
+     ],
+     [
+      "Celler familiar",
+      "Equip",
+      "intangible",
+      "confiança i veu en decisions",
+      "intangible",
+      "idees i compromís a la verema"
+     ],
+     [
+      "Club de clients",
+      "Celler familiar",
+      "tangible",
+      "quotes i compres anuals",
+      "intangible",
+      "fidelitat i boca-orella"
+     ],
+     [
+      "Qui recomana",
+      "Visitants d'enoturisme",
+      "intangible",
+      "recomanació de visitar el celler",
+      "intangible",
+      "experiència per explicar"
+     ]
+    ],
+    "passos": [
+     "Dibuixar d'on ve cada raïm i quina relació hi ha amb cada viticultor.",
+     "Escriure el relat del celler: família, vinyes i manera d'elaborar.",
+     "Triar pocs restaurants i vinoteques afins i cuidar-los amb visites i formació.",
+     "Obrir el celler a visites guiades amb tast i recollir contactes.",
+     "Convertir els visitants que repeteixen en un club de clients amb preestrenes.",
+     "Revisar després de cada verema què ha après l'equip i què han dit els clients."
+    ],
+    "centre": "Celler familiar",
+    "bona": "Cuida el viticultor, l'equip i qui et recomana com cuides la vinya: el vi que es ven sol neix d'aquestes relacions."
+   },
+   "es": {
+    "nom": "Bodega familiar",
+    "diu": "Para bodegas de familia que elaboran vino de sus viñas o de vecinos y lo venden cerca, a restaurantes y a quien las visita.",
+    "roles": [
+     "Bodega familiar",
+     "Equipo",
+     "Viticultores vecinos",
+     "Restaurantes y vinotecas",
+     "Visitantes de enoturismo",
+     "Club de clientes",
+     "Quien recomienda"
+    ],
+    "pairs": [
+     [
+      "Viticultores vecinos",
+      "Bodega familiar",
+      "tangible",
+      "uva de parcelas conocidas",
+      "intangible",
+      "asesoramiento de viña compartido"
+     ],
+     [
+      "Bodega familiar",
+      "Restaurantes y vinotecas",
+      "tangible",
+      "vino y fichas técnicas",
+      "tangible",
+      "pedidos y pago puntual"
+     ],
+     [
+      "Restaurantes y vinotecas",
+      "Bodega familiar",
+      "intangible",
+      "opinión de los comensales",
+      "intangible",
+      "relato y formación del personal"
+     ],
+     [
+      "Bodega familiar",
+      "Visitantes de enoturismo",
+      "tangible",
+      "visita y cata guiadas",
+      "intangible",
+      "reseñas y fotos compartidas"
+     ],
+     [
+      "Quien recomienda",
+      "Bodega familiar",
+      "intangible",
+      "prescripción en mesa y guías",
+      "intangible",
+      "acceso a viña y elaborador"
+     ],
+     [
+      "Equipo",
+      "Bodega familiar",
+      "intangible",
+      "oficio y conocimiento de cosecha",
+      "tangible",
+      "sueldo y calendario estable"
+     ],
+     [
+      "Bodega familiar",
+      "Equipo",
+      "intangible",
+      "confianza y voz en decisiones",
+      "intangible",
+      "ideas y compromiso en vendimia"
+     ],
+     [
+      "Club de clientes",
+      "Bodega familiar",
+      "tangible",
+      "cuotas y compras anuales",
+      "intangible",
+      "fidelidad y boca a boca"
+     ],
+     [
+      "Quien recomienda",
+      "Visitantes de enoturismo",
+      "intangible",
+      "recomendación de visitar la bodega",
+      "intangible",
+      "experiencia para contar"
+     ]
+    ],
+    "passos": [
+     "Dibujar de dónde viene cada uva y qué relación hay con cada viticultor.",
+     "Escribir el relato de la bodega: familia, viñas y forma de elaborar.",
+     "Elegir pocos restaurantes y vinotecas afines y cuidarlos con visitas y formación.",
+     "Abrir la bodega a visitas guiadas con cata y recoger contactos.",
+     "Convertir a los visitantes que repiten en un club de clientes con preestrenos.",
+     "Revisar tras cada vendimia qué ha aprendido el equipo y qué han dicho los clientes."
+    ],
+    "centre": "Bodega familiar",
+    "bona": "Cuida al viticultor, al equipo y a quien te recomienda como cuidas la viña: el vino que se vende solo nace de esas relaciones."
+   },
+   "en": {
+    "nom": "Family winery",
+    "diu": "For family wineries that make wine from their own or neighbours' vineyards and sell it locally, to restaurants and to visitors.",
+    "roles": [
+     "Family winery",
+     "Team",
+     "Neighbouring growers",
+     "Restaurants and wine shops",
+     "Wine tourism visitors",
+     "Customer club",
+     "Recommender"
+    ],
+    "pairs": [
+     [
+      "Neighbouring growers",
+      "Family winery",
+      "tangible",
+      "grapes from known plots",
+      "intangible",
+      "shared vineyard advice"
+     ],
+     [
+      "Family winery",
+      "Restaurants and wine shops",
+      "tangible",
+      "wine and tech sheets",
+      "tangible",
+      "orders and timely payment"
+     ],
+     [
+      "Restaurants and wine shops",
+      "Family winery",
+      "intangible",
+      "diners' feedback",
+      "intangible",
+      "story and staff training"
+     ],
+     [
+      "Family winery",
+      "Wine tourism visitors",
+      "tangible",
+      "guided visit and tasting",
+      "intangible",
+      "shared reviews and photos"
+     ],
+     [
+      "Recommender",
+      "Family winery",
+      "intangible",
+      "table prescription and guides",
+      "intangible",
+      "access to vineyard and winemaker"
+     ],
+     [
+      "Team",
+      "Family winery",
+      "intangible",
+      "craft and harvest knowledge",
+      "tangible",
+      "wages and stable schedule"
+     ],
+     [
+      "Family winery",
+      "Team",
+      "intangible",
+      "trust and voice in decisions",
+      "intangible",
+      "ideas and harvest commitment"
+     ],
+     [
+      "Customer club",
+      "Family winery",
+      "tangible",
+      "fees and yearly purchases",
+      "intangible",
+      "loyalty and word of mouth"
+     ],
+     [
+      "Recommender",
+      "Wine tourism visitors",
+      "intangible",
+      "advice to visit the winery",
+      "intangible",
+      "an experience worth telling"
+     ]
+    ],
+    "passos": [
+     "Map where each grape comes from and the relationship with each grower.",
+     "Write the winery's story: family, vineyards and winemaking style.",
+     "Choose a few like-minded restaurants and wine shops and nurture them with visits and training.",
+     "Open the winery to guided visits with tastings and collect contacts.",
+     "Turn returning visitors into a customer club with previews.",
+     "After each harvest, review what the team learned and what customers said."
+    ],
+    "centre": "Family winery",
+    "bona": "Care for growers, the team and those who recommend you as you care for the vineyard: wine that sells itself grows from those relationships."
+   },
+   "veda": {
+    "clau": [
+     "**Viticultors veïns → Celler familiar: coneixement de la parcel·la.** Saber com s'ha comportat cada vinya decideix la data de verema.",
+     "**Qui recomana → Celler familiar: prescripció a taula.** Un sommelier que explica el vi ven més que qualsevol anunci.",
+     "**Visitants d'enoturisme → Celler familiar: ressenyes i fotos.** La visita viscuda es converteix en reputació pública.",
+     "**Equip → Celler familiar: ofici de collita.** El que sap l'equip de la verema no està escrit enlloc."
+    ],
+    "falta": [
+     "El relat i la formació que el celler dona al personal de sala dels restaurants.",
+     "L'assessorament de vinya que el celler torna als viticultors veïns.",
+     "La veu de la generació següent de la família en les decisions."
+    ],
+    "preguntes": [
+     "Quin viticultor us truca abans de la verema per explicar-vos com està la vinya?",
+     "Quin restaurant o sommelier us ha portat més clients aquest any sense demanar res?",
+     "Què us diuen els visitants en acabar el tast que no surt a cap ressenya?"
+    ],
+    "senyals": [
+     "Els mateixos viticultors i temporers tornen any rere any.",
+     "Els cambrers expliquen el vi amb les vostres paraules.",
+     "Una part dels visitants acaba al club de clients i hi porta coneguts."
+    ]
+   }
+  },
+  {
+   "id": "esdeveniments",
+   "icona": "🎪",
+   "paraules": "esdeveniments, eventos, logística, proveïdors, proveedores, càtering, escaleta, imprevistos, briefing, muntatge, montaje, invitats, invitados, coordinació, timing",
+   "ca": {
+    "nom": "Organització d'esdeveniments",
+    "diu": "Per a qui organitza esdeveniments, de petits actes a congressos, i coordina clients, proveïdors i equip perquè tot surti bé el dia clau.",
+    "roles": [
+     "Organitzadora d'esdeveniments",
+     "Client",
+     "Assistents",
+     "Proveïdors",
+     "Equip i col·laboradors",
+     "Qui recomana",
+     "Patrocinadors"
+    ],
+    "pairs": [
+     [
+      "Client",
+      "Organitzadora d'esdeveniments",
+      "tangible",
+      "encàrrec i pagament",
+      "tangible",
+      "esdeveniment llest i coordinat"
+     ],
+     [
+      "Client",
+      "Organitzadora d'esdeveniments",
+      "intangible",
+      "confiança i marge per decidir",
+      "intangible",
+      "tranquil·litat el dia clau"
+     ],
+     [
+      "Organitzadora d'esdeveniments",
+      "Proveïdors",
+      "tangible",
+      "comandes ben especificades",
+      "tangible",
+      "servei puntual i correcte"
+     ],
+     [
+      "Proveïdors",
+      "Organitzadora d'esdeveniments",
+      "intangible",
+      "flexibilitat d'última hora",
+      "intangible",
+      "fidelitat i bona paraula"
+     ],
+     [
+      "Organitzadora d'esdeveniments",
+      "Equip i col·laboradors",
+      "tangible",
+      "feina i honoraris",
+      "intangible",
+      "compromís el dia D"
+     ],
+     [
+      "Equip i col·laboradors",
+      "Organitzadora d'esdeveniments",
+      "intangible",
+      "avisos de problemes a temps",
+      "intangible",
+      "reconeixement i aprenentatge"
+     ],
+     [
+      "Organitzadora d'esdeveniments",
+      "Assistents",
+      "intangible",
+      "experiència ben cuidada",
+      "intangible",
+      "opinions i fotos compartides"
+     ],
+     [
+      "Qui recomana",
+      "Organitzadora d'esdeveniments",
+      "intangible",
+      "recomanació a nous clients",
+      "intangible",
+      "agraïment i feina ben feta"
+     ],
+     [
+      "Patrocinadors",
+      "Organitzadora d'esdeveniments",
+      "tangible",
+      "aportació econòmica pactada",
+      "tangible",
+      "visibilitat i dades acordades"
+     ]
+    ],
+    "passos": [
+     "Fer un briefing a fons amb el client: objectiu, públic, pressupost i què vol que recordin.",
+     "Triar i confirmar proveïdors de confiança amb encàrrecs per escrit i un pla B.",
+     "Muntar l'equip i repartir rols clars amb una escaleta compartida.",
+     "Executar el dia D amb un sol punt de coordinació i comunicació ràpida.",
+     "Tancar amb el client i l'equip: recollir opinions, agrair i demanar recomanacions."
+    ],
+    "centre": "Organitzadora d'esdeveniments",
+    "bona": "Cuida els proveïdors i l'equip com si fossin clients: són ells qui et salven quan apareix l'imprevist."
+   },
+   "es": {
+    "nom": "Organización de eventos",
+    "diu": "Para quien organiza eventos, de pequeños actos a congresos, y coordina clientes, proveedores y equipo para que todo salga bien el día clave.",
+    "roles": [
+     "Organizadora de eventos",
+     "Cliente",
+     "Asistentes",
+     "Proveedores",
+     "Equipo y colaboradores",
+     "Quien recomienda",
+     "Patrocinadores"
+    ],
+    "pairs": [
+     [
+      "Cliente",
+      "Organizadora de eventos",
+      "tangible",
+      "encargo y pago",
+      "tangible",
+      "evento listo y coordinado"
+     ],
+     [
+      "Cliente",
+      "Organizadora de eventos",
+      "intangible",
+      "confianza y margen para decidir",
+      "intangible",
+      "tranquilidad el día clave"
+     ],
+     [
+      "Organizadora de eventos",
+      "Proveedores",
+      "tangible",
+      "pedidos bien especificados",
+      "tangible",
+      "servicio puntual y correcto"
+     ],
+     [
+      "Proveedores",
+      "Organizadora de eventos",
+      "intangible",
+      "flexibilidad de última hora",
+      "intangible",
+      "fidelidad y buena palabra"
+     ],
+     [
+      "Organizadora de eventos",
+      "Equipo y colaboradores",
+      "tangible",
+      "trabajo y honorarios",
+      "intangible",
+      "compromiso el día D"
+     ],
+     [
+      "Equipo y colaboradores",
+      "Organizadora de eventos",
+      "intangible",
+      "avisos de problemas a tiempo",
+      "intangible",
+      "reconocimiento y aprendizaje"
+     ],
+     [
+      "Organizadora de eventos",
+      "Asistentes",
+      "intangible",
+      "experiencia bien cuidada",
+      "intangible",
+      "opiniones y fotos compartidas"
+     ],
+     [
+      "Quien recomienda",
+      "Organizadora de eventos",
+      "intangible",
+      "recomendación a nuevos clientes",
+      "intangible",
+      "agradecimiento y trabajo bien hecho"
+     ],
+     [
+      "Patrocinadores",
+      "Organizadora de eventos",
+      "tangible",
+      "aportación económica pactada",
+      "tangible",
+      "visibilidad y datos acordados"
+     ]
+    ],
+    "passos": [
+     "Hacer un briefing a fondo con el cliente: objetivo, público, presupuesto y qué quiere que recuerden.",
+     "Elegir y confirmar proveedores de confianza con encargos por escrito y un plan B.",
+     "Montar el equipo y repartir roles claros con una escaleta compartida.",
+     "Ejecutar el día D con un solo punto de coordinación y comunicación rápida.",
+     "Cerrar con el cliente y el equipo: recoger opiniones, agradecer y pedir recomendaciones."
+    ],
+    "centre": "Organizadora de eventos",
+    "bona": "Cuida a proveedores y equipo como si fueran clientes: son ellos quienes te salvan cuando aparece el imprevisto."
+   },
+   "en": {
+    "nom": "Event organisation",
+    "diu": "For those who organise events, from small gatherings to conferences, coordinating clients, suppliers and team so everything goes well on the big day.",
+    "roles": [
+     "Event organiser",
+     "Client",
+     "Attendees",
+     "Suppliers",
+     "Team and freelancers",
+     "Referrer",
+     "Sponsors"
+    ],
+    "pairs": [
+     [
+      "Client",
+      "Event organiser",
+      "tangible",
+      "brief and payment",
+      "tangible",
+      "event delivered and coordinated"
+     ],
+     [
+      "Client",
+      "Event organiser",
+      "intangible",
+      "trust and room to decide",
+      "intangible",
+      "peace of mind on the day"
+     ],
+     [
+      "Event organiser",
+      "Suppliers",
+      "tangible",
+      "clearly specified orders",
+      "tangible",
+      "punctual, correct service"
+     ],
+     [
+      "Suppliers",
+      "Event organiser",
+      "intangible",
+      "last-minute flexibility",
+      "intangible",
+      "loyalty and good word"
+     ],
+     [
+      "Event organiser",
+      "Team and freelancers",
+      "tangible",
+      "work and fees",
+      "intangible",
+      "commitment on the day"
+     ],
+     [
+      "Team and freelancers",
+      "Event organiser",
+      "intangible",
+      "early warning of problems",
+      "intangible",
+      "recognition and learning"
+     ],
+     [
+      "Event organiser",
+      "Attendees",
+      "intangible",
+      "well-cared-for experience",
+      "intangible",
+      "shared feedback and photos"
+     ],
+     [
+      "Referrer",
+      "Event organiser",
+      "intangible",
+      "referrals to new clients",
+      "intangible",
+      "thanks and work done well"
+     ],
+     [
+      "Sponsors",
+      "Event organiser",
+      "tangible",
+      "agreed financial contribution",
+      "tangible",
+      "agreed visibility and data"
+     ]
+    ],
+    "passos": [
+     "Run a thorough briefing with the client: goal, audience, budget and what they want people to remember.",
+     "Choose and confirm trusted suppliers with written orders and a plan B.",
+     "Build the team and assign clear roles with a shared run sheet.",
+     "Deliver on the day with a single coordination point and fast communication.",
+     "Close with client and team: gather feedback, say thanks and ask for referrals."
+    ],
+    "centre": "Event organiser",
+    "bona": "Treat suppliers and team like clients: they are the ones who save you when the unexpected happens."
+   },
+   "veda": {
+    "clau": [
+     "**Client → organitzadora: confiança.** Sense marge per decidir, cada detall es converteix en una negociació.",
+     "**Proveïdors → organitzadora: flexibilitat d'última hora.** És el que salva l'esdeveniment quan alguna cosa falla.",
+     "**Equip → organitzadora: avisos a temps.** Un problema detectat aviat és un problema petit.",
+     "**Qui recomana → organitzadora: nous clients.** La major part de la feina arriba per boca-orella."
+    ],
+    "falta": [
+     "La tranquil·litat que rep el client el dia clau, que és el que realment compra.",
+     "Els aprenentatges que l'equip s'emporta de cada esdeveniment i que no es recullen enlloc.",
+     "Les fotos i opinions dels assistents com a font de nous encàrrecs."
+    ],
+    "preguntes": [
+     "Quin proveïdor et va treure d'un apuro l'últim any i com li ho vas agrair?",
+     "D'on va venir el teu últim client?",
+     "Què fas el dia després d'un esdeveniment amb l'equip i amb el client?"
+    ],
+    "senyals": [
+     "Els proveïdors et responen ràpid i t'avisen abans que hi hagi un problema.",
+     "Els clients repeteixen o et recomanen sense que ho demanis.",
+     "L'equip vol tornar a treballar amb tu al pròxim esdeveniment."
+    ]
+   }
+  },
+  {
+   "id": "restaurant",
+   "icona": "☕",
+   "paraules": "barri, barrio, veïns, vecinos, menú, esmorzar, almuerzo, tapes, tapas, terrassa, proximitat, cercanía, casolà, casero, habituals",
+   "ca": {
+    "nom": "Restaurant o bar de proximitat",
+    "diu": "Per a bars i restaurants de barri o de poble que viuen de la clientela habitual i del veïnat.",
+    "roles": [
+     "Bar de proximitat",
+     "Clientela habitual",
+     "Veïnat que recomana",
+     "Equip de sala i cuina",
+     "Proveïdors de proximitat",
+     "Comerç i entitats del barri",
+     "Gestoria"
+    ],
+    "pairs": [
+     [
+      "Bar de proximitat",
+      "Clientela habitual",
+      "tangible",
+      "menjar i beguda servits",
+      "tangible",
+      "pagament del consum"
+     ],
+     [
+      "Bar de proximitat",
+      "Clientela habitual",
+      "intangible",
+      "lloc de trobada acollidor",
+      "intangible",
+      "fidelitat i confiança diària"
+     ],
+     [
+      "Veïnat que recomana",
+      "Bar de proximitat",
+      "intangible",
+      "recomanacions boca-orella",
+      "intangible",
+      "tracte proper i reconeixement"
+     ],
+     [
+      "Bar de proximitat",
+      "Equip de sala i cuina",
+      "tangible",
+      "sou i horaris pactats",
+      "intangible",
+      "implicació i bon tracte"
+     ],
+     [
+      "Equip de sala i cuina",
+      "Clientela habitual",
+      "intangible",
+      "memòria dels gustos",
+      "intangible",
+      "conversa i agraïment"
+     ],
+     [
+      "Proveïdors de proximitat",
+      "Bar de proximitat",
+      "tangible",
+      "producte fresc de temporada",
+      "tangible",
+      "pagament puntual"
+     ],
+     [
+      "Proveïdors de proximitat",
+      "Bar de proximitat",
+      "intangible",
+      "avisos de producte bo",
+      "intangible",
+      "fidelitat i bona paraula"
+     ],
+     [
+      "Comerç i entitats del barri",
+      "Bar de proximitat",
+      "intangible",
+      "clients i activitats compartides",
+      "intangible",
+      "espai per a trobades"
+     ],
+     [
+      "Gestoria",
+      "Bar de proximitat",
+      "tangible",
+      "comptes i permisos al dia",
+      "tangible",
+      "quota de serveis"
+     ]
+    ],
+    "passos": [
+     "Dibuixar qui ve cada dia, a quina hora i per què.",
+     "Pactar amb l'equip horaris estables i el to del tracte.",
+     "Triar dos o tres proveïdors propers i fixar comandes i pagaments.",
+     "Teixir aliances amb comerços i entitats del barri.",
+     "Revisar cada mes què es diu del bar al barri i a les ressenyes."
+    ],
+    "centre": "Bar de proximitat",
+    "bona": "Conèixer la clientela pel nom i pels gustos val més que qualsevol oferta."
+   },
+   "es": {
+    "nom": "Restaurante o bar de proximidad",
+    "diu": "Para bares y restaurantes de barrio o de pueblo que viven de la clientela habitual y del vecindario.",
+    "roles": [
+     "Bar de proximidad",
+     "Clientela habitual",
+     "Vecindario que recomienda",
+     "Equipo de sala y cocina",
+     "Proveedores de proximidad",
+     "Comercio y entidades del barrio",
+     "Gestoría"
+    ],
+    "pairs": [
+     [
+      "Bar de proximidad",
+      "Clientela habitual",
+      "tangible",
+      "comida y bebida servidas",
+      "tangible",
+      "pago de la consumición"
+     ],
+     [
+      "Bar de proximidad",
+      "Clientela habitual",
+      "intangible",
+      "lugar de encuentro acogedor",
+      "intangible",
+      "fidelidad y confianza diaria"
+     ],
+     [
+      "Vecindario que recomienda",
+      "Bar de proximidad",
+      "intangible",
+      "recomendaciones boca a boca",
+      "intangible",
+      "trato cercano y reconocimiento"
+     ],
+     [
+      "Bar de proximidad",
+      "Equipo de sala y cocina",
+      "tangible",
+      "sueldo y horarios pactados",
+      "intangible",
+      "implicación y buen trato"
+     ],
+     [
+      "Equipo de sala y cocina",
+      "Clientela habitual",
+      "intangible",
+      "memoria de los gustos",
+      "intangible",
+      "conversación y agradecimiento"
+     ],
+     [
+      "Proveedores de proximidad",
+      "Bar de proximidad",
+      "tangible",
+      "producto fresco de temporada",
+      "tangible",
+      "pago puntual"
+     ],
+     [
+      "Proveedores de proximidad",
+      "Bar de proximidad",
+      "intangible",
+      "avisos de buen producto",
+      "intangible",
+      "fidelidad y buena palabra"
+     ],
+     [
+      "Comercio y entidades del barrio",
+      "Bar de proximidad",
+      "intangible",
+      "clientes y actividades compartidas",
+      "intangible",
+      "espacio para encuentros"
+     ],
+     [
+      "Gestoría",
+      "Bar de proximidad",
+      "tangible",
+      "cuentas y permisos al día",
+      "tangible",
+      "cuota de servicios"
+     ]
+    ],
+    "passos": [
+     "Dibujar quién viene cada día, a qué hora y por qué.",
+     "Pactar con el equipo horarios estables y el tono del trato.",
+     "Elegir dos o tres proveedores cercanos y fijar pedidos y pagos.",
+     "Tejer alianzas con comercios y entidades del barrio.",
+     "Revisar cada mes qué se dice del bar en el barrio y en las reseñas."
+    ],
+    "centre": "Bar de proximidad",
+    "bona": "Conocer a la clientela por su nombre y sus gustos vale más que cualquier oferta."
+   },
+   "en": {
+    "nom": "Neighbourhood restaurant or bar",
+    "diu": "For neighbourhood or village bars and restaurants that live on regulars and local residents.",
+    "roles": [
+     "Neighbourhood bar",
+     "Regular customers",
+     "Neighbours who recommend",
+     "Front and kitchen team",
+     "Local suppliers",
+     "Local shops and associations",
+     "Accounting advisor"
+    ],
+    "pairs": [
+     [
+      "Neighbourhood bar",
+      "Regular customers",
+      "tangible",
+      "food and drinks served",
+      "tangible",
+      "payment for consumption"
+     ],
+     [
+      "Neighbourhood bar",
+      "Regular customers",
+      "intangible",
+      "welcoming meeting place",
+      "intangible",
+      "daily loyalty and trust"
+     ],
+     [
+      "Neighbours who recommend",
+      "Neighbourhood bar",
+      "intangible",
+      "word-of-mouth recommendations",
+      "intangible",
+      "warm treatment and recognition"
+     ],
+     [
+      "Neighbourhood bar",
+      "Front and kitchen team",
+      "tangible",
+      "agreed wages and schedules",
+      "intangible",
+      "commitment and good manners"
+     ],
+     [
+      "Front and kitchen team",
+      "Regular customers",
+      "intangible",
+      "remembering their preferences",
+      "intangible",
+      "conversation and gratitude"
+     ],
+     [
+      "Local suppliers",
+      "Neighbourhood bar",
+      "tangible",
+      "fresh seasonal produce",
+      "tangible",
+      "on-time payment"
+     ],
+     [
+      "Local suppliers",
+      "Neighbourhood bar",
+      "intangible",
+      "tips on good produce",
+      "intangible",
+      "loyalty and good word"
+     ],
+     [
+      "Local shops and associations",
+      "Neighbourhood bar",
+      "intangible",
+      "shared customers and activities",
+      "intangible",
+      "space for gatherings"
+     ],
+     [
+      "Accounting advisor",
+      "Neighbourhood bar",
+      "tangible",
+      "accounts and permits updated",
+      "tangible",
+      "service fee"
+     ]
+    ],
+    "passos": [
+     "Map who comes each day, at what time and why.",
+     "Agree stable schedules and the tone of service with the team.",
+     "Choose two or three nearby suppliers and set orders and payments.",
+     "Build alliances with local shops and associations.",
+     "Review monthly what the neighbourhood and reviews say about the bar."
+    ],
+    "centre": "Neighbourhood bar",
+    "bona": "Knowing regulars by name and by taste is worth more than any special offer."
+   },
+   "veda": {
+    "clau": [
+     "**Equip de sala i cuina → Clientela habitual: memòria dels gustos.** Saber el cafè de cadascú fa que la gent torni.",
+     "**Bar de proximitat → Clientela habitual: lloc de trobada.** El bar és la sala d'estar del barri.",
+     "**Veïnat que recomana → Bar de proximitat: boca-orella.** La recomanació d'un veí omple més taules que la publicitat.",
+     "**Proveïdors de proximitat → Bar de proximitat: avisos de producte bo.** El proveïdor de confiança avisa quan arriba el millor."
+    ],
+    "falta": [
+     "L'escolta i la contenció que el bar ofereix a veïns grans o sols.",
+     "La informació del barri que circula a la barra i que arriba a l'equip.",
+     "El suport mutu amb els comerços veïns quan algú té un mal moment."
+    ],
+    "preguntes": [
+     "Qui són els cinc clients que venen gairebé cada dia?",
+     "Quin proveïdor t'ha fet un favor que no t'ha cobrat?",
+     "Com t'arriba la majoria de clientela nova?"
+    ],
+    "senyals": [
+     "L'equip saluda pel nom la majoria de la gent que entra.",
+     "Hi ha clients nous que diuen que venen perquè algú els ho ha recomanat.",
+     "Els proveïdors i comerços del barri compten amb el bar per a les seves activitats."
+    ]
+   }
+  },
+  {
+   "id": "botiga",
+   "icona": "🏪",
+   "paraules": "barri, barrio, veïns, vecinos, confiança, confianza, proximitat, proximidad, fresc, encàrrecs, encargos, taulell, mostrador, tracte, fiar",
+   "ca": {
+    "nom": "Botiga de barri",
+    "diu": "Per a botigues de proximitat que viuen del tracte diari amb els veïns i volen entendre què les fa imprescindibles al barri.",
+    "roles": [
+     "Botiga",
+     "Clients del barri",
+     "Equip",
+     "Veí que recomana",
+     "Proveïdors",
+     "Productors de proximitat",
+     "Comerços veïns"
+    ],
+    "pairs": [
+     [
+      "Botiga",
+      "Clients del barri",
+      "tangible",
+      "producte fresc i proper",
+      "tangible",
+      "pagament de la compra"
+     ],
+     [
+      "Botiga",
+      "Clients del barri",
+      "intangible",
+      "tracte de confiança i escolta",
+      "intangible",
+      "fidelitat i comentaris sincers"
+     ],
+     [
+      "Veí que recomana",
+      "Botiga",
+      "intangible",
+      "recomanació boca-orella",
+      "intangible",
+      "reconeixement i atenció especial"
+     ],
+     [
+      "Proveïdors",
+      "Botiga",
+      "tangible",
+      "comandes i reposició",
+      "tangible",
+      "pagament puntual"
+     ],
+     [
+      "Proveïdors",
+      "Botiga",
+      "intangible",
+      "avís de novetats",
+      "intangible",
+      "informació del que es demana"
+     ],
+     [
+      "Productors de proximitat",
+      "Botiga",
+      "tangible",
+      "producte local de temporada",
+      "intangible",
+      "visibilitat i història explicada"
+     ],
+     [
+      "Botiga",
+      "Equip",
+      "tangible",
+      "sou i horaris estables",
+      "intangible",
+      "coneixement dels clients"
+     ],
+     [
+      "Comerços veïns",
+      "Botiga",
+      "intangible",
+      "derivació de clients",
+      "intangible",
+      "suport mutu i favors"
+     ]
+    ],
+    "passos": [
+     "Dibuixar qui entra a la botiga cada setmana i per què torna.",
+     "Identificar els veïns que ja recomanen i agrair-ho de manera personal.",
+     "Parlar amb proveïdors i productors propers per compartir què demana el barri.",
+     "Donar a l'equip temps i confiança per conèixer els clients pel nom.",
+     "Pactar amb els comerços veïns derivacions i petites accions conjuntes."
+    ],
+    "centre": "Botiga",
+    "bona": "Conèixer cada client pel nom i pel que necessita val més que qualsevol oferta."
+   },
+   "es": {
+    "nom": "Tienda de barrio",
+    "diu": "Para tiendas de proximidad que viven del trato diario con los vecinos y quieren entender qué las hace imprescindibles en el barrio.",
+    "roles": [
+     "Tienda",
+     "Clientes del barrio",
+     "Equipo",
+     "Vecino que recomienda",
+     "Proveedores",
+     "Productores de proximidad",
+     "Comercios vecinos"
+    ],
+    "pairs": [
+     [
+      "Tienda",
+      "Clientes del barrio",
+      "tangible",
+      "producto fresco y cercano",
+      "tangible",
+      "pago de la compra"
+     ],
+     [
+      "Tienda",
+      "Clientes del barrio",
+      "intangible",
+      "trato de confianza y escucha",
+      "intangible",
+      "fidelidad y comentarios sinceros"
+     ],
+     [
+      "Vecino que recomienda",
+      "Tienda",
+      "intangible",
+      "recomendación boca a boca",
+      "intangible",
+      "reconocimiento y atención especial"
+     ],
+     [
+      "Proveedores",
+      "Tienda",
+      "tangible",
+      "pedidos y reposición",
+      "tangible",
+      "pago puntual"
+     ],
+     [
+      "Proveedores",
+      "Tienda",
+      "intangible",
+      "aviso de novedades",
+      "intangible",
+      "información de lo que se pide"
+     ],
+     [
+      "Productores de proximidad",
+      "Tienda",
+      "tangible",
+      "producto local de temporada",
+      "intangible",
+      "visibilidad e historia contada"
+     ],
+     [
+      "Tienda",
+      "Equipo",
+      "tangible",
+      "sueldo y horarios estables",
+      "intangible",
+      "conocimiento de los clientes"
+     ],
+     [
+      "Comercios vecinos",
+      "Tienda",
+      "intangible",
+      "derivación de clientes",
+      "intangible",
+      "apoyo mutuo y favores"
+     ]
+    ],
+    "passos": [
+     "Dibujar quién entra en la tienda cada semana y por qué vuelve.",
+     "Identificar a los vecinos que ya recomiendan y agradecerlo de forma personal.",
+     "Hablar con proveedores y productores cercanos para compartir qué pide el barrio.",
+     "Dar al equipo tiempo y confianza para conocer a los clientes por su nombre.",
+     "Pactar con los comercios vecinos derivaciones y pequeñas acciones conjuntas."
+    ],
+    "centre": "Tienda",
+    "bona": "Conocer a cada cliente por su nombre y por lo que necesita vale más que cualquier oferta."
+   },
+   "en": {
+    "nom": "Neighbourhood shop",
+    "diu": "For local shops that live on daily contact with neighbours and want to understand what makes them essential to the neighbourhood.",
+    "roles": [
+     "Shop",
+     "Neighbourhood customers",
+     "Team",
+     "Recommending neighbour",
+     "Suppliers",
+     "Local producers",
+     "Neighbouring shops"
+    ],
+    "pairs": [
+     [
+      "Shop",
+      "Neighbourhood customers",
+      "tangible",
+      "fresh, nearby products",
+      "tangible",
+      "payment for purchases"
+     ],
+     [
+      "Shop",
+      "Neighbourhood customers",
+      "intangible",
+      "trusted, attentive service",
+      "intangible",
+      "loyalty and honest feedback"
+     ],
+     [
+      "Recommending neighbour",
+      "Shop",
+      "intangible",
+      "word-of-mouth recommendation",
+      "intangible",
+      "recognition and special attention"
+     ],
+     [
+      "Suppliers",
+      "Shop",
+      "tangible",
+      "orders and restocking",
+      "tangible",
+      "timely payment"
+     ],
+     [
+      "Suppliers",
+      "Shop",
+      "intangible",
+      "news about new products",
+      "intangible",
+      "insight into customer demand"
+     ],
+     [
+      "Local producers",
+      "Shop",
+      "tangible",
+      "seasonal local produce",
+      "intangible",
+      "visibility and their story told"
+     ],
+     [
+      "Shop",
+      "Team",
+      "tangible",
+      "stable pay and hours",
+      "intangible",
+      "knowledge of customers"
+     ],
+     [
+      "Neighbouring shops",
+      "Shop",
+      "intangible",
+      "customer referrals",
+      "intangible",
+      "mutual support and favours"
+     ]
+    ],
+    "passos": [
+     "Map who comes into the shop each week and why they return.",
+     "Identify the neighbours who already recommend you and thank them personally.",
+     "Talk with nearby suppliers and producers to share what the neighbourhood asks for.",
+     "Give the team time and trust to know customers by name.",
+     "Agree referrals and small joint actions with neighbouring shops."
+    ],
+    "centre": "Shop",
+    "bona": "Knowing each customer by name and by what they need is worth more than any discount."
+   },
+   "veda": {
+    "clau": [
+     "**Botiga → Clients del barri: tracte de confiança.** És el motiu principal pel qual tornen encara que el súper sigui més barat.",
+     "**Veí que recomana → Botiga: boca-orella.** La majoria de clients nous arriben perquè algú del barri els n'ha parlat.",
+     "**Equip → Botiga: coneixement dels clients.** Saber gustos, horaris i encàrrecs fa que la compra sigui ràpida i personal.",
+     "**Comerços veïns → Botiga: derivació de clients.** Quan un comerç no té una cosa, envia el client al del costat."
+    ],
+    "falta": [
+     "El paper de la botiga com a punt de trobada i de vigilància informal per a la gent gran del barri.",
+     "La informació que la botiga dona als proveïdors sobre què demana realment el barri.",
+     "Els favors entre comerços veïns: guardar paquets, deixar canvi, avisar d'incidències."
+    ],
+    "preguntes": [
+     "Quins tres clients et van portar més gent nova l'últim any?",
+     "Quan un client no troba el que busca, a quina botiga del barri l'envies?",
+     "Què saben de tu els proveïdors que no surt a cap factura?"
+    ],
+    "senyals": [
+     "Els clients fan encàrrecs i confien que la botiga els els guardarà.",
+     "Els veïns nous diuen que han vingut perquè algú els ho ha recomanat.",
+     "Els comerços del carrer es deriven clients i es fan favors sense demanar res a canvi."
+    ]
+   }
+  },
+  {
+   "id": "salut_autonoma",
+   "icona": "🩺",
+   "paraules": "pacients, consulta, sessió, escolta, confiança, derivació, seguiment, pauta, tratamiento, evolución, acompañar, alta, col·legiada, autònoma, cuidar",
+   "ca": {
+    "nom": "Salut autònoma (fisioteràpia, psicologia, nutrició)",
+    "diu": "Per a professionals sanitaris que treballen pel seu compte i volen que els pacients arribin, millorin i tornin a recomanar-los.",
+    "roles": [
+     "Professional de salut",
+     "Pacient",
+     "Professional que deriva",
+     "Equip de consulta",
+     "Família o cuidador",
+     "Mútua o asseguradora",
+     "Col·legi i formació"
+    ],
+    "pairs": [
+     [
+      "Professional de salut",
+      "Pacient",
+      "tangible",
+      "sessions i pla de tractament",
+      "tangible",
+      "pagament per sessió"
+     ],
+     [
+      "Pacient",
+      "Professional de salut",
+      "intangible",
+      "confiança i relat honest",
+      "intangible",
+      "escolta sense judici"
+     ],
+     [
+      "Professional que deriva",
+      "Professional de salut",
+      "intangible",
+      "derivació de pacients adequats",
+      "intangible",
+      "informe d'evolució clar"
+     ],
+     [
+      "Equip de consulta",
+      "Professional de salut",
+      "tangible",
+      "agenda i recepció gestionades",
+      "tangible",
+      "tarifa o sou acordat"
+     ],
+     [
+      "Professional de salut",
+      "Equip de consulta",
+      "intangible",
+      "criteri clínic compartit",
+      "intangible",
+      "avisos sobre cada pacient"
+     ],
+     [
+      "Família o cuidador",
+      "Professional de salut",
+      "intangible",
+      "context de la vida diària",
+      "intangible",
+      "pautes per acompanyar a casa"
+     ],
+     [
+      "Mútua o asseguradora",
+      "Professional de salut",
+      "tangible",
+      "pacients concertats i pagament",
+      "tangible",
+      "factures i informes acordats"
+     ],
+     [
+      "Col·legi i formació",
+      "Professional de salut",
+      "tangible",
+      "formació i assegurança professional",
+      "tangible",
+      "quota col·legial"
+     ],
+     [
+      "Pacient",
+      "Professional que deriva",
+      "intangible",
+      "recomanació a coneguts",
+      "intangible",
+      "seguiment després de l'alta"
+     ]
+    ],
+    "passos": [
+     "Definir per a quin tipus de pacient treballes millor i què no atens.",
+     "Identificar dos o tres professionals que et poden derivar i acordar com us informareu.",
+     "Preparar l'acollida: primera visita, pla de tractament clar i preu explicat.",
+     "Repartir tasques amb l'equip o col·laboradors i compartir criteri clínic.",
+     "Tancar cada procés amb un alta i un seguiment breu que convidi a recomanar."
+    ],
+    "centre": "Professional de salut",
+    "bona": "Retorna sempre un informe breu a qui t'ha derivat un pacient: és el que fa que torni a fer-ho."
+   },
+   "es": {
+    "nom": "Salud autónoma (fisioterapia, psicología, nutrición)",
+    "diu": "Para profesionales sanitarios que trabajan por su cuenta y quieren que los pacientes lleguen, mejoren y los vuelvan a recomendar.",
+    "roles": [
+     "Profesional de salud",
+     "Paciente",
+     "Profesional que deriva",
+     "Equipo de consulta",
+     "Familia o cuidador",
+     "Mutua o aseguradora",
+     "Colegio y formación"
+    ],
+    "pairs": [
+     [
+      "Profesional de salud",
+      "Paciente",
+      "tangible",
+      "sesiones y plan de tratamiento",
+      "tangible",
+      "pago por sesión"
+     ],
+     [
+      "Paciente",
+      "Profesional de salud",
+      "intangible",
+      "confianza y relato honesto",
+      "intangible",
+      "escucha sin juicio"
+     ],
+     [
+      "Profesional que deriva",
+      "Profesional de salud",
+      "intangible",
+      "derivación de pacientes adecuados",
+      "intangible",
+      "informe de evolución claro"
+     ],
+     [
+      "Equipo de consulta",
+      "Profesional de salud",
+      "tangible",
+      "agenda y recepción gestionadas",
+      "tangible",
+      "tarifa o sueldo acordado"
+     ],
+     [
+      "Profesional de salud",
+      "Equipo de consulta",
+      "intangible",
+      "criterio clínico compartido",
+      "intangible",
+      "avisos sobre cada paciente"
+     ],
+     [
+      "Familia o cuidador",
+      "Profesional de salud",
+      "intangible",
+      "contexto de la vida diaria",
+      "intangible",
+      "pautas para acompañar en casa"
+     ],
+     [
+      "Mutua o aseguradora",
+      "Profesional de salud",
+      "tangible",
+      "pacientes concertados y pago",
+      "tangible",
+      "facturas e informes acordados"
+     ],
+     [
+      "Colegio y formación",
+      "Profesional de salud",
+      "tangible",
+      "formación y seguro profesional",
+      "tangible",
+      "cuota colegial"
+     ],
+     [
+      "Paciente",
+      "Profesional que deriva",
+      "intangible",
+      "recomendación a conocidos",
+      "intangible",
+      "seguimiento tras el alta"
+     ]
+    ],
+    "passos": [
+     "Definir con qué tipo de paciente trabajas mejor y qué no atiendes.",
+     "Identificar dos o tres profesionales que pueden derivarte y acordar cómo os informaréis.",
+     "Preparar la acogida: primera visita, plan de tratamiento claro y precio explicado.",
+     "Repartir tareas con el equipo o colaboradores y compartir criterio clínico.",
+     "Cerrar cada proceso con un alta y un seguimiento breve que invite a recomendar."
+    ],
+    "centre": "Profesional de salud",
+    "bona": "Devuelve siempre un informe breve a quien te ha derivado un paciente: es lo que hace que vuelva a hacerlo."
+   },
+   "en": {
+    "nom": "Independent health practice (physiotherapy, psychology, nutrition)",
+    "diu": "For self-employed health professionals who want patients to arrive, get better and recommend them again.",
+    "roles": [
+     "Health practitioner",
+     "Patient",
+     "Referring professional",
+     "Practice team",
+     "Family or carer",
+     "Insurer or mutual",
+     "Professional college and training"
+    ],
+    "pairs": [
+     [
+      "Health practitioner",
+      "Patient",
+      "tangible",
+      "sessions and treatment plan",
+      "tangible",
+      "payment per session"
+     ],
+     [
+      "Patient",
+      "Health practitioner",
+      "intangible",
+      "trust and honest account",
+      "intangible",
+      "non-judgmental listening"
+     ],
+     [
+      "Referring professional",
+      "Health practitioner",
+      "intangible",
+      "referral of suitable patients",
+      "intangible",
+      "clear progress report"
+     ],
+     [
+      "Practice team",
+      "Health practitioner",
+      "tangible",
+      "managed diary and reception",
+      "tangible",
+      "agreed fee or salary"
+     ],
+     [
+      "Health practitioner",
+      "Practice team",
+      "intangible",
+      "shared clinical judgement",
+      "intangible",
+      "alerts about each patient"
+     ],
+     [
+      "Family or carer",
+      "Health practitioner",
+      "intangible",
+      "context of daily life",
+      "intangible",
+      "guidance for support at home"
+     ],
+     [
+      "Insurer or mutual",
+      "Health practitioner",
+      "tangible",
+      "covered patients and payment",
+      "tangible",
+      "agreed invoices and reports"
+     ],
+     [
+      "Professional college and training",
+      "Health practitioner",
+      "tangible",
+      "training and professional insurance",
+      "tangible",
+      "membership fee"
+     ],
+     [
+      "Patient",
+      "Referring professional",
+      "intangible",
+      "recommendation to acquaintances",
+      "intangible",
+      "follow-up after discharge"
+     ]
+    ],
+    "passos": [
+     "Define which kind of patient you work best with and what you don't treat.",
+     "Identify two or three professionals who can refer to you and agree how you will keep each other informed.",
+     "Prepare the welcome: first visit, clear treatment plan and explained price.",
+     "Share tasks with the team or collaborators and align clinical judgement.",
+     "Close each process with a discharge and a short follow-up that invites recommendation."
+    ],
+    "centre": "Health practitioner",
+    "bona": "Always send a short report back to whoever referred a patient: that is what makes them refer again."
+   },
+   "veda": {
+    "clau": [
+     "**Pacient → professional: confiança.** Sense un relat sincer, el tractament no funciona.",
+     "**Professional que deriva → professional: reputació prestada.** Qui deriva hi posa el seu nom.",
+     "**Pacient → altres: recomanació.** El boca-orella és la font principal de pacients nous.",
+     "**Professional → família: pautes.** La millora es juga a casa, no només a la consulta."
+    ],
+    "falta": [
+     "L'informe de tornada a qui ha derivat, que gairebé mai es fa.",
+     "El seguiment després de l'alta, que sosté la recomanació.",
+     "El suport entre col·legues per a casos difícils i desgast emocional."
+    ],
+    "preguntes": [
+     "D'on t'han arribat els tres últims pacients nous?",
+     "A qui li has enviat un informe aquest mes?",
+     "Què fas quan un pacient rep l'alta?"
+    ],
+    "senyals": [
+     "Els derivadors tornen a enviar pacients sense que els ho demanis.",
+     "Els pacients nous arriben dient qui els ha recomanat.",
+     "Poques cancel·lacions i abandonaments a mig tractament."
+    ]
+   }
+  },
+  {
+   "id": "serveis_professionals",
+   "icona": "🧭",
+   "paraules": "asesoramiento, assessorament, diagnóstico, diagnòstic, criterio, criteri, propuesta, proposta, confianza, confiança, honorarios, honoraris, método, mètode, acompanyament",
+   "ca": {
+    "nom": "Consultoria i serveis professionals",
+    "diu": "Per a despatxos, consultors autònoms i petites firmes que venen coneixement, criteri i acompanyament a empreses i particulars.",
+    "roles": [
+     "Despatx de consultoria",
+     "Client",
+     "Equip consultor",
+     "Prescriptor",
+     "Col·laboradors especialistes",
+     "Proveïdors i eines",
+     "Xarxa professional i sector"
+    ],
+    "pairs": [
+     [
+      "Despatx de consultoria",
+      "Client",
+      "tangible",
+      "Diagnòstic i proposta clara",
+      "tangible",
+      "Honoraris acordats"
+     ],
+     [
+      "Client",
+      "Despatx de consultoria",
+      "intangible",
+      "Context i accés intern",
+      "intangible",
+      "Criteri honest i confidencialitat"
+     ],
+     [
+      "Equip consultor",
+      "Despatx de consultoria",
+      "intangible",
+      "Coneixement i criteri expert",
+      "tangible",
+      "Sou i pla de creixement"
+     ],
+     [
+      "Despatx de consultoria",
+      "Equip consultor",
+      "intangible",
+      "Autonomia i mentoria",
+      "intangible",
+      "Compromís i millores de mètode"
+     ],
+     [
+      "Prescriptor",
+      "Despatx de consultoria",
+      "intangible",
+      "Recomanació amb context",
+      "intangible",
+      "Agraïment i clients ben atesos"
+     ],
+     [
+      "Client",
+      "Prescriptor",
+      "intangible",
+      "Resultats que reforcen confiança",
+      "intangible",
+      "Escolta i seguiment"
+     ],
+     [
+      "Col·laboradors especialistes",
+      "Despatx de consultoria",
+      "tangible",
+      "Treball especialitzat subcontractat",
+      "intangible",
+      "Clients derivats i reconeixement"
+     ],
+     [
+      "Proveïdors i eines",
+      "Despatx de consultoria",
+      "tangible",
+      "Programari i dades",
+      "tangible",
+      "Quota de subscripció"
+     ],
+     [
+      "Xarxa professional i sector",
+      "Despatx de consultoria",
+      "intangible",
+      "Tendències i normativa nova",
+      "intangible",
+      "Articles i participació activa"
+     ],
+     [
+      "Despatx de consultoria",
+      "Client",
+      "intangible",
+      "Seguiment després del projecte",
+      "intangible",
+      "Testimoni i cas d'èxit"
+     ]
+    ],
+    "passos": [
+     "Definir l'especialitat i el tipus de client on aportes més valor.",
+     "Identificar qui et recomana i cuidar aquesta relació de manera regular.",
+     "Estandarditzar el diagnòstic inicial i el format de proposta.",
+     "Preparar l'equip i la xarxa de col·laboradors amb rols i criteris compartits.",
+     "Tancar cada projecte amb seguiment, aprenentatge intern i petició de testimoni."
+    ],
+    "centre": "Despatx de consultoria",
+    "bona": "Diu al client què no cal fer tan clarament com què sí, i torna sempre el context a qui t'ha recomanat."
+   },
+   "es": {
+    "nom": "Consultoría y servicios profesionales",
+    "diu": "Para despachos, consultores autónomos y pequeñas firmas que venden conocimiento, criterio y acompañamiento a empresas y particulares.",
+    "roles": [
+     "Despacho de consultoría",
+     "Cliente",
+     "Equipo consultor",
+     "Prescriptor",
+     "Colaboradores especialistas",
+     "Proveedores y herramientas",
+     "Red profesional y sector"
+    ],
+    "pairs": [
+     [
+      "Despacho de consultoría",
+      "Cliente",
+      "tangible",
+      "Diagnóstico y propuesta clara",
+      "tangible",
+      "Honorarios acordados"
+     ],
+     [
+      "Cliente",
+      "Despacho de consultoría",
+      "intangible",
+      "Contexto y acceso interno",
+      "intangible",
+      "Criterio honesto y confidencialidad"
+     ],
+     [
+      "Equipo consultor",
+      "Despacho de consultoría",
+      "intangible",
+      "Conocimiento y criterio experto",
+      "tangible",
+      "Sueldo y plan de crecimiento"
+     ],
+     [
+      "Despacho de consultoría",
+      "Equipo consultor",
+      "intangible",
+      "Autonomía y mentoría",
+      "intangible",
+      "Compromiso y mejoras de método"
+     ],
+     [
+      "Prescriptor",
+      "Despacho de consultoría",
+      "intangible",
+      "Recomendación con contexto",
+      "intangible",
+      "Agradecimiento y clientes bien atendidos"
+     ],
+     [
+      "Cliente",
+      "Prescriptor",
+      "intangible",
+      "Resultados que refuerzan confianza",
+      "intangible",
+      "Escucha y seguimiento"
+     ],
+     [
+      "Colaboradores especialistas",
+      "Despacho de consultoría",
+      "tangible",
+      "Trabajo especializado subcontratado",
+      "intangible",
+      "Clientes derivados y reconocimiento"
+     ],
+     [
+      "Proveedores y herramientas",
+      "Despacho de consultoría",
+      "tangible",
+      "Software y datos",
+      "tangible",
+      "Cuota de suscripción"
+     ],
+     [
+      "Red profesional y sector",
+      "Despacho de consultoría",
+      "intangible",
+      "Tendencias y normativa nueva",
+      "intangible",
+      "Artículos y participación activa"
+     ],
+     [
+      "Despacho de consultoría",
+      "Cliente",
+      "intangible",
+      "Seguimiento tras el proyecto",
+      "intangible",
+      "Testimonio y caso de éxito"
+     ]
+    ],
+    "passos": [
+     "Definir la especialidad y el tipo de cliente donde aportas más valor.",
+     "Identificar quién te recomienda y cuidar esa relación de forma regular.",
+     "Estandarizar el diagnóstico inicial y el formato de propuesta.",
+     "Preparar al equipo y la red de colaboradores con roles y criterios compartidos.",
+     "Cerrar cada proyecto con seguimiento, aprendizaje interno y petición de testimonio."
+    ],
+    "centre": "Despacho de consultoría",
+    "bona": "Dile al cliente qué no hace falta hacer tan claro como qué sí, y devuelve siempre el contexto a quien te ha recomendado."
+   },
+   "en": {
+    "nom": "Consulting and professional services",
+    "diu": "For practices, freelance consultants and small firms that sell knowledge, judgement and guidance to businesses and individuals.",
+    "roles": [
+     "Consulting firm",
+     "Client",
+     "Consulting team",
+     "Referrer",
+     "Specialist partners",
+     "Suppliers and tools",
+     "Professional network and sector"
+    ],
+    "pairs": [
+     [
+      "Consulting firm",
+      "Client",
+      "tangible",
+      "Diagnosis and clear proposal",
+      "tangible",
+      "Agreed fees"
+     ],
+     [
+      "Client",
+      "Consulting firm",
+      "intangible",
+      "Context and internal access",
+      "intangible",
+      "Honest judgement and confidentiality"
+     ],
+     [
+      "Consulting team",
+      "Consulting firm",
+      "intangible",
+      "Expert knowledge and judgement",
+      "tangible",
+      "Salary and growth plan"
+     ],
+     [
+      "Consulting firm",
+      "Consulting team",
+      "intangible",
+      "Autonomy and mentoring",
+      "intangible",
+      "Commitment and method improvements"
+     ],
+     [
+      "Referrer",
+      "Consulting firm",
+      "intangible",
+      "Referral with context",
+      "intangible",
+      "Thanks and well-served clients"
+     ],
+     [
+      "Client",
+      "Referrer",
+      "intangible",
+      "Results that reinforce trust",
+      "intangible",
+      "Listening and follow-up"
+     ],
+     [
+      "Specialist partners",
+      "Consulting firm",
+      "tangible",
+      "Subcontracted specialist work",
+      "intangible",
+      "Referred clients and recognition"
+     ],
+     [
+      "Suppliers and tools",
+      "Consulting firm",
+      "tangible",
+      "Software and data",
+      "tangible",
+      "Subscription fee"
+     ],
+     [
+      "Professional network and sector",
+      "Consulting firm",
+      "intangible",
+      "Trends and new regulation",
+      "intangible",
+      "Articles and active participation"
+     ],
+     [
+      "Consulting firm",
+      "Client",
+      "intangible",
+      "Follow-up after the project",
+      "intangible",
+      "Testimonial and success story"
+     ]
+    ],
+    "passos": [
+     "Define your specialty and the type of client where you add most value.",
+     "Identify who refers you and look after that relationship regularly.",
+     "Standardise the initial diagnosis and the proposal format.",
+     "Prepare the team and partner network with shared roles and criteria.",
+     "Close every project with follow-up, internal learning and a request for a testimonial."
+    ],
+    "centre": "Consulting firm",
+    "bona": "Tell the client what they don't need to do as clearly as what they do, and always report back to whoever referred them."
+   },
+   "veda": {
+    "clau": [
+     "**Despatx de consultoria → Client: criteri honest.** Dir què no cal fer genera més confiança que vendre hores.",
+     "**Prescriptor → Despatx de consultoria: recomanació amb context.** El client arriba ja amb confiança i la venda s'escurça.",
+     "**Client → Despatx de consultoria: context i accés intern.** Sense informació real el diagnòstic no val res.",
+     "**Equip consultor → Despatx de consultoria: criteri expert.** El valor del despatx és el que l'equip sap i decideix bé."
+    ],
+    "falta": [
+     "El retorn al prescriptor: gairebé ningú li explica com ha anat el client recomanat.",
+     "El coneixement que l'equip aprèn a cada projecte i que es perd si no es documenta.",
+     "Els clients que els col·laboradors especialistes deriven cap al despatx."
+    ],
+    "preguntes": [
+     "Qui t'ha recomanat els tres darrers clients i li vas dir com va anar?",
+     "Què et demana el client que no factures però que valora molt?",
+     "Quina feina passes a col·laboradors i quins clients et tornen ells?"
+    ],
+    "senyals": [
+     "Més de la meitat dels clients nous arriben per recomanació.",
+     "Els clients tornen o amplien encàrrec sense haver de fer campanya.",
+     "L'equip proposa millores de mètode per iniciativa pròpia."
+    ]
+   }
+  },
+  {
+   "id": "taller",
+   "icona": "🔧",
+   "paraules": "avaria, diagnòstic, recanvi, garantia, pressupost, taller, mecànic, avería, repuesto, presupuesto, arreglar, reparar, confiança, barrio, ofici",
+   "ca": {
+    "nom": "Taller de reparació",
+    "diu": "Per a tallers de bicis, cotxes o electrònica que viuen de la confiança del client i de tornar a fer funcionar les coses.",
+    "roles": [
+     "Taller",
+     "Client",
+     "Equip tècnic",
+     "Proveïdor de recanvis",
+     "Qui recomana",
+     "Fabricant o servei oficial",
+     "Comunitat de barri"
+    ],
+    "pairs": [
+     [
+      "Taller",
+      "Client",
+      "tangible",
+      "Reparació amb garantia",
+      "tangible",
+      "Pagament de la reparació"
+     ],
+     [
+      "Taller",
+      "Client",
+      "intangible",
+      "Diagnòstic honest i explicat",
+      "intangible",
+      "Confiança per tornar"
+     ],
+     [
+      "Qui recomana",
+      "Taller",
+      "intangible",
+      "Clients nous de confiança",
+      "intangible",
+      "Reputació de bon consell"
+     ],
+     [
+      "Equip tècnic",
+      "Taller",
+      "tangible",
+      "Hores de treball qualificat",
+      "tangible",
+      "Sou i condicions estables"
+     ],
+     [
+      "Taller",
+      "Equip tècnic",
+      "intangible",
+      "Formació i casos difícils",
+      "intangible",
+      "Ofici i criteri tècnic"
+     ],
+     [
+      "Proveïdor de recanvis",
+      "Taller",
+      "tangible",
+      "Recanvis a temps",
+      "tangible",
+      "Comandes i pagament puntual"
+     ],
+     [
+      "Proveïdor de recanvis",
+      "Taller",
+      "intangible",
+      "Avís de peces alternatives",
+      "intangible",
+      "Opinió sobre qualitat de peces"
+     ],
+     [
+      "Fabricant o servei oficial",
+      "Taller",
+      "intangible",
+      "Documentació tècnica i esquemes",
+      "intangible",
+      "Dades de fallades reals"
+     ],
+     [
+      "Comunitat de barri",
+      "Taller",
+      "intangible",
+      "Visibilitat i proximitat",
+      "intangible",
+      "Consells de manteniment gratuïts"
+     ],
+     [
+      "Client",
+      "Equip tècnic",
+      "intangible",
+      "Descripció precisa de l'avaria",
+      "intangible",
+      "Consells per allargar la vida"
+     ]
+    ],
+    "passos": [
+     "Definir què repares i què no, i el temps de resposta que pots prometre.",
+     "Establir un diagnòstic amb pressupost clar abans de tocar res.",
+     "Assegurar dos o tres proveïdors de recanvis i accés a documentació tècnica.",
+     "Formar l'equip perquè sàpiga explicar l'avaria al client amb paraules senzilles.",
+     "Fer seguiment després de la reparació i demanar que et recomanin.",
+     "Participar al barri amb consells i petites revisions que facin visible l'ofici."
+    ],
+    "centre": "Taller",
+    "bona": "Explica sempre què falla, què costa i què pot esperar, abans de reparar: la confiança és el teu millor recanvi.}"
+   },
+   "es": {
+    "nom": "Taller de reparación",
+    "diu": "Para talleres de bicis, coches o electrónica que viven de la confianza del cliente y de volver a hacer funcionar las cosas.",
+    "roles": [
+     "Taller",
+     "Cliente",
+     "Equipo técnico",
+     "Proveedor de repuestos",
+     "Quien recomienda",
+     "Fabricante o servicio oficial",
+     "Comunidad de barrio"
+    ],
+    "pairs": [
+     [
+      "Taller",
+      "Cliente",
+      "tangible",
+      "Reparación con garantía",
+      "tangible",
+      "Pago de la reparación"
+     ],
+     [
+      "Taller",
+      "Cliente",
+      "intangible",
+      "Diagnóstico honesto y explicado",
+      "intangible",
+      "Confianza para volver"
+     ],
+     [
+      "Quien recomienda",
+      "Taller",
+      "intangible",
+      "Clientes nuevos de confianza",
+      "intangible",
+      "Reputación de buen consejo"
+     ],
+     [
+      "Equipo técnico",
+      "Taller",
+      "tangible",
+      "Horas de trabajo cualificado",
+      "tangible",
+      "Sueldo y condiciones estables"
+     ],
+     [
+      "Taller",
+      "Equipo técnico",
+      "intangible",
+      "Formación y casos difíciles",
+      "intangible",
+      "Oficio y criterio técnico"
+     ],
+     [
+      "Proveedor de repuestos",
+      "Taller",
+      "tangible",
+      "Repuestos a tiempo",
+      "tangible",
+      "Pedidos y pago puntual"
+     ],
+     [
+      "Proveedor de repuestos",
+      "Taller",
+      "intangible",
+      "Aviso de piezas alternativas",
+      "intangible",
+      "Opinión sobre calidad de piezas"
+     ],
+     [
+      "Fabricante o servicio oficial",
+      "Taller",
+      "intangible",
+      "Documentación técnica y esquemas",
+      "intangible",
+      "Datos de fallos reales"
+     ],
+     [
+      "Comunidad de barrio",
+      "Taller",
+      "intangible",
+      "Visibilidad y cercanía",
+      "intangible",
+      "Consejos de mantenimiento gratuitos"
+     ],
+     [
+      "Cliente",
+      "Equipo técnico",
+      "intangible",
+      "Descripción precisa de la avería",
+      "intangible",
+      "Consejos para alargar la vida"
+     ]
+    ],
+    "passos": [
+     "Definir qué reparas y qué no, y el tiempo de respuesta que puedes prometer.",
+     "Establecer un diagnóstico con presupuesto claro antes de tocar nada.",
+     "Asegurar dos o tres proveedores de repuestos y acceso a documentación técnica.",
+     "Formar al equipo para que sepa explicar la avería al cliente con palabras sencillas.",
+     "Hacer seguimiento tras la reparación y pedir que te recomienden.",
+     "Participar en el barrio con consejos y pequeñas revisiones que hagan visible el oficio."
+    ],
+    "centre": "Taller",
+    "bona": "Explica siempre qué falla, qué cuesta y qué puede esperar, antes de reparar: la confianza es tu mejor repuesto."
+   },
+   "en": {
+    "nom": "Repair workshop",
+    "diu": "For bike, car or electronics workshops that live on customer trust and on making things work again.",
+    "roles": [
+     "Workshop",
+     "Customer",
+     "Technical team",
+     "Parts supplier",
+     "Referrer",
+     "Manufacturer or official service",
+     "Neighbourhood community"
+    ],
+    "pairs": [
+     [
+      "Workshop",
+      "Customer",
+      "tangible",
+      "Repair with warranty",
+      "tangible",
+      "Payment for the repair"
+     ],
+     [
+      "Workshop",
+      "Customer",
+      "intangible",
+      "Honest, explained diagnosis",
+      "intangible",
+      "Trust to come back"
+     ],
+     [
+      "Referrer",
+      "Workshop",
+      "intangible",
+      "Trusted new customers",
+      "intangible",
+      "Reputation for good advice"
+     ],
+     [
+      "Technical team",
+      "Workshop",
+      "tangible",
+      "Skilled working hours",
+      "tangible",
+      "Stable pay and conditions"
+     ],
+     [
+      "Workshop",
+      "Technical team",
+      "intangible",
+      "Training and tricky cases",
+      "intangible",
+      "Craft and technical judgement"
+     ],
+     [
+      "Parts supplier",
+      "Workshop",
+      "tangible",
+      "Parts on time",
+      "tangible",
+      "Orders and prompt payment"
+     ],
+     [
+      "Parts supplier",
+      "Workshop",
+      "intangible",
+      "Tips on alternative parts",
+      "intangible",
+      "Feedback on part quality"
+     ],
+     [
+      "Manufacturer or official service",
+      "Workshop",
+      "intangible",
+      "Technical documentation and diagrams",
+      "intangible",
+      "Real-world failure data"
+     ],
+     [
+      "Neighbourhood community",
+      "Workshop",
+      "intangible",
+      "Visibility and closeness",
+      "intangible",
+      "Free maintenance advice"
+     ],
+     [
+      "Customer",
+      "Technical team",
+      "intangible",
+      "Precise description of fault",
+      "intangible",
+      "Tips to extend lifespan"
+     ]
+    ],
+    "passos": [
+     "Define what you repair and what you don't, and the turnaround you can promise.",
+     "Set up a diagnosis with a clear quote before touching anything.",
+     "Secure two or three parts suppliers and access to technical documentation.",
+     "Train the team to explain the fault to customers in plain words.",
+     "Follow up after the repair and ask for referrals.",
+     "Take part in the neighbourhood with advice and small check-ups that make the craft visible."
+    ],
+    "centre": "Workshop",
+    "bona": "Always explain what is wrong, what it costs and what to expect before repairing: trust is your best spare part."
+   },
+   "veda": {
+    "clau": [
+     "**Taller → Client: diagnòstic honest.** Explicar l'avaria sense inflar-la és el que fa que el client torni i recomani.",
+     "**Qui recomana → Taller: clients de confiança.** La major part de clients nous arriben pel boca-orella d'algú satisfet.",
+     "**Proveïdor de recanvis → Taller: avís de peces alternatives.** Saber quina peça hi ha disponible avui estalvia dies d'espera.",
+     "**Taller → Equip tècnic: casos difícils.** Les avaries complicades són la millor escola i retenen el bon tècnic."
+    ],
+    "falta": [
+     "El que el client explica de l'avaria i com ajuda o enganya el diagnòstic.",
+     "Els consells de manteniment que el taller regala i que generen fidelitat.",
+     "Les dades de fallades reals que el taller podria retornar al fabricant."
+    ],
+    "preguntes": [
+     "Com arriben la majoria dels teus clients nous?",
+     "Què expliques al client abans de donar-li el pressupost?",
+     "A quin proveïdor truques quan una peça no arriba i què et dona a canvi?"
+    ],
+    "senyals": [
+     "Els clients tornen i porten altres clients sense que ho demanis.",
+     "Els pressupostos s'accepten sense discussió perquè s'entenen.",
+     "L'equip resol avaries noves i comparteix el que aprèn."
+    ]
+   }
+  }
+ ]
+}
