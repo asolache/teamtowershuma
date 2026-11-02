@@ -261,14 +261,16 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
       evo: conf.querySelectorAll('.hero-evo li').length,
       llinatge: /TeamTowers Humà/.test(conf.textContent) && /2005/.test(conf.textContent),
       flux: /flu(x|eix) (de |el )?valor/i.test(hero.textContent),
-      diag: !!hero.querySelector('a[href*="diagnostic"]'),
-      mapa: !!hero.querySelector('a.btn-primary[href="/cliente/"]'),
+      /* 02/11/2026 · una sola acció al hero (PR #335): el mapa, a /cliente/#alrededor;
+         el diagnòstic surt del hero i la segona sortida és «com es fa un mapa». */
+      diag: !!hero.querySelector('a[href^="/SOS/vna.html"]'),
+      mapa: !!hero.querySelector('a.btn-primary[href^="/cliente/"]'),
       /* La segona sortida era «veure el SOS en viu» i ara és demanar
          pressupost. Les dues tornen alguna cosa sense demanar res a canvi, que
          és el que la fa una sortida i no una crida a l'acció qualsevol; i el
          SOS segueix a un clic des de la barra de dalt, que és on el busca qui
          el vol veure. */
-      segona: !!hero.querySelector('a[href="/cliente/"]'),
+      segona: hero.querySelectorAll('a[href^="/cliente/"]').length === 1,
       sosAlMenu: !!document.querySelector('.nav-links a[href="/SOS/"], nav a[href="/SOS/"]'),
       finan: /subvencions/i.test(conf.textContent),
       ordre: [...document.querySelectorAll('section[id]')].map(s => s.id)
@@ -280,7 +282,7 @@ console.log('\n6 · El que ja hi havia segueix sent-hi');
   ok(r.evo === 4, '«Per què nosaltres» explica d\'on ve la casa en quatre passos, des de la direcció de persones');
   ok(r.llinatge, 'i nomena les dues cases i l\'any: TeamTowers → TeamTowers Humà');
   ok(r.flux, 'i diu què es mesura, que és el que es contracta');
-  ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla');
+  ok(r.diag && r.segona, 'els dos camins de sortida segueixen a la primera pantalla: fer el mapa i veure com es fa');
   ok(r.sosAlMenu, 'i el SOS és a un clic des de la barra de dalt');
   ok(r.finan, 'i la línia que diu qui ho paga, que és la primera pregunta d\'un ajuntament');
   /* Abans això comptava seccions. Comptar-les no diu res del que importa i peta
