@@ -53,7 +53,7 @@ jobs:
         run: |
           R="SOS/knowledge/vna/banc-mapes/resultats/$(date -u +%Y%m%d-%H%M)-${{ github.run_id }}"
           mkdir -p "$R"
-          for f in respostes.json notes.json simulacio.json informe.md; do [ -f "banc-ia/$f" ] && cp "banc-ia/$f" "$R/"; done
+          for f in respostes.json notes.json notes-final.json simulacio.json informe.md; do [ -f "banc-ia/$f" ] && cp "banc-ia/$f" "$R/"; done
           git config user.name "banc-mapes"
           git config user.email "banc-mapes@users.noreply.github.com"
           git add SOS/knowledge/vna/banc-mapes
