@@ -149,9 +149,17 @@
         .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
         .files { display: grid; gap: .8rem; margin-top: 1rem; }
         .fila { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem .9rem; display: grid; gap: .5rem; }
-        @media (min-width: 900px) { .fila { grid-template-columns: 1.1fr 1.4fr 8rem 1.4fr 8rem auto; align-items: end; } }
+        /* Una fila curta al mòbil (02/11/2026): qui, i a sota què et dona i què li
+           dones, cadascun amb el seu «es paga» al costat. Abans eren sis camps un
+           sota l'altre i quatre persones feien quatre pantalles. */
+        .fila-cap { display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: end; }
+        .par { display: grid; grid-template-columns: 1fr 7.5rem; gap: .4rem; align-items: end; }
+        .par .eso { visibility: hidden; }
+        .fila .treu { min-width: 44px; padding: 0 .7rem; font-size: 1.1rem; line-height: 1; }
+        @media (min-width: 900px) { .fila { grid-template-columns: 1.1fr 1.6fr 1.6fr; align-items: end; } .par .eso { visibility: visible; } }
         .fila label { font-size: var(--t0); color: var(--muted); display: grid; gap: .2rem; }
         .fila .treu { min-height: 44px; }
+        .salut li a { margin-left: .3rem; white-space: nowrap; }
         .auto { margin-top: 1.4rem; max-width: 70ch; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
         .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
         /* El caso anónimo de un mapa que ya trabaja (cas-automatitzat.js) */
@@ -931,7 +939,7 @@
         'Hecho: {0} respuestas y {1} personas o grupos. Revísalo abajo.': 'Fet: {0} respostes i {1} persones o grups. Revisa-ho a sota.',
         'se paga': 'es paga', 'no se paga': 'no es paga',
         'Quién': 'Qui', 'quien me recomienda': 'qui em recomana', 'Qué te da': 'Què et dona', 'alumnos nuevos': 'alumnes nous',
-        'Eso…': 'Això…', 'Qué le das': 'Què li dones', 'un curso que le sirve': 'un curs que li serveix',
+        'Eso…': 'Això…', 'Contestarla': 'Contestar-la', 'Ir': 'Anar-hi', 'Qué le das': 'Què li dones', 'un curso que le sirve': 'un curs que li serveix',
         'Quitar a {0}': 'Treure {0}', 'esta fila': 'aquesta fila', 'Quitar': 'Treure',
         'En tu web de verdad, esto te llega por correo': "A la teva web de debò, això t'arriba per correu",
         'Primero di al menos quién está a tu alrededor (paso 1).': 'Primer digues almenys qui hi ha al teu voltant (pas 1).',
@@ -1285,14 +1293,18 @@
         var c = $('#cl-files'); c.textContent = '';
         S.alrededor.forEach(function (x, n) {
             var f = el('div', { class: 'fila' }), ch = function (k) { return function (v) { x[k] = v; desa(); pintaSalut(); }; };
-            f.appendChild(camp(t('Quién'), x.quien, ch('quien'), t('quien me recomienda')));
-            f.appendChild(camp(t('Qué te da'), x.meDa, ch('meDa'), t('alumnos nuevos')));
-            var l1 = el('label', {}, t('Eso…')); l1.appendChild(sel(x.meDaEs || 'tangible', ch('meDaEs'))); f.appendChild(l1);
-            f.appendChild(camp(t('Qué le das'), x.leDoy, ch('leDoy'), t('un curso que le sirve')));
-            var l2 = el('label', {}, t('Eso…')); l2.appendChild(sel(x.leDoyEs || 'tangible', ch('leDoyEs'))); f.appendChild(l2);
-            var b = el('button', { type: 'button', class: 'btn btn-ghost treu', 'aria-label': t('Quitar a {0}', x.quien || t('esta fila')) }, t('Quitar'));
+            var cap = el('div', { class: 'fila-cap' });
+            cap.appendChild(camp(t('Quién'), x.quien, ch('quien'), t('quien me recomienda')));
+            var b = el('button', { type: 'button', class: 'btn btn-ghost treu', 'aria-label': t('Quitar a {0}', x.quien || t('esta fila')), title: t('Quitar') }, '✕');
             b.addEventListener('click', function () { S.alrededor.splice(n, 1); desa(); pintaFiles(); });
-            f.appendChild(b); c.appendChild(f);
+            cap.appendChild(b); f.appendChild(cap);
+            var p1 = el('div', { class: 'par' });
+            p1.appendChild(camp(t('Qué te da'), x.meDa, ch('meDa'), t('alumnos nuevos')));
+            var l1 = el('label'); l1.appendChild(el('span', { class: 'eso' }, t('Eso…'))); l1.appendChild(sel(x.meDaEs || 'tangible', ch('meDaEs'))); p1.appendChild(l1); f.appendChild(p1);
+            var p2 = el('div', { class: 'par' });
+            p2.appendChild(camp(t('Qué le das'), x.leDoy, ch('leDoy'), t('un curso que le sirve')));
+            var l2 = el('label'); l2.appendChild(el('span', { class: 'eso' }, t('Eso…'))); l2.appendChild(sel(x.leDoyEs || 'tangible', ch('leDoyEs'))); p2.appendChild(l2); f.appendChild(p2);
+            c.appendChild(f);
         });
         pintaSalut();
     }
@@ -1303,7 +1315,12 @@
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
         $('#cl-salut-n').textContent = t('Tu dibujo, al {0} %', D.salut(D.mapa(S), null, LL).punts);
-        r.punts.forEach(function (p) { c.appendChild(el('li', { class: p.ok ? 'ok' : '' }, p.diu)); });
+        /* Cada cosa que falta porta on s'arregla: «la màxima de tot és un enllaç». */
+        r.punts.forEach(function (p) {
+            var li = el('li', { class: p.ok ? 'ok' : '' }), sp = el('span', {}, p.diu + ' ');
+            if (!p.ok) { var a = el('a', { href: p.id === 'abast' ? '#cl-p-objetivo' : '#cl-files' }, t(p.id === 'abast' ? 'Contestarla' : 'Ir')); sp.appendChild(a); }
+            li.appendChild(sp); c.appendChild(li);
+        });
         pintaAuto();
     }
     /* Lo que se puede automatizar de su mapa: la regla del tablero de la app
