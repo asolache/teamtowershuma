@@ -150,7 +150,7 @@ const abans = await page.evaluate(() => ({
   carregada: !!document.querySelector('script[src="lib/lents.js"]'),
   temps: !!document.querySelector('#lnTemps')
 }));
-ok(abans.barra.join() === '✎ Connecta i mou,Valor,Torre,Equip,Repartiment,Saber,Castell,Cinc capes,Anells,3D,✨ IA,⛶ Taller', 'el mapa té el botó per dibuixar-lo i nou lents (' + abans.barra.join(', ') + ')');
+ok(abans.barra.join() === '✎ Connecta i mou,Valor,Torre,Equip,Repartiment,Saber,Castell,Cinc capes,Anells,3D,✨ IA,▣ Taller', 'el mapa té el botó per dibuixar-lo i nou lents (' + abans.barra.join(', ') + ')');
 ok(!abans.carregada, 'i no pesen a l\'arrencada: lib/lents.js només es carrega en triar-ne una');
 ok(abans.temps, 'i el lliscador del temps');
 const lent = async l => {
