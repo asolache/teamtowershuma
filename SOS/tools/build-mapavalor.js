@@ -1509,8 +1509,8 @@ const VN = {
     ca: 'El cas del celler és <strong>un exemple treballat, no el d\'un celler concret</strong>, i no porta cap xifra d\'euros: el marge el calcula la casa amb els seus números. El que el mapa aporta no és una previsió — és on mirar.',
     es: 'El caso de la bodega es <strong>un ejemplo trabajado, no el de una bodega concreta</strong>, y no lleva ninguna cifra de euros: el margen lo calcula la casa con sus números. Lo que el mapa aporta no es una previsión — es dónde mirar.'
   },
-  'vn.cta1': { ca: 'Demana el mapa de la teva casa →', es: 'Pide el mapa de tu casa →' },
-  'vn.cta2': { ca: 'Fes el diagnòstic · 3 min', es: 'Haz el diagnóstico · 3 min' },
+  'vn.cta1': { ca: 'Què contractes', es: 'Qué contratas' },
+  'vn.cta2': { ca: 'Fes el mapa de la teva casa →', es: 'Haz el mapa de tu casa →' },
   'vn.cta3': { ca: 'Obre el SOS', es: 'Abre el SOS' },
   'vn.cta4': { ca: 'La formació, de N0 a N3', es: 'La formación, de N0 a N3' },
   'vn.peu3': {

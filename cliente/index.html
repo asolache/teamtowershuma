@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- PROTOTIPO · no se indexa: es la entrada de los clientes que ya han hablado con nosotros. -->
     <meta name="robots" content="noindex, follow">
-    <title>Empieza tu proyecto | TeamTowers</title>
+    <title>Empieza tu proyecto | TeamTowers Humà</title>
     <meta name="description" content="Tu espacio para empezar la web: te creas tu cuenta, nos cuentas qué quieres y ves el primer dibujo de con quién trabajas y un boceto de tu web. Nada se envía hasta que tú lo digas.">
     <meta name="author" content="Álvaro Solache · TeamTowers">
     <link rel="canonical" href="https://teamtowershuma.com/cliente/">
@@ -149,9 +149,17 @@
         .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
         .files { display: grid; gap: .8rem; margin-top: 1rem; }
         .fila { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem .9rem; display: grid; gap: .5rem; }
-        @media (min-width: 900px) { .fila { grid-template-columns: 1.1fr 1.4fr 8rem 1.4fr 8rem auto; align-items: end; } }
+        /* Una fila curta al mòbil (02/11/2026): qui, i a sota què et dona i què li
+           dones, cadascun amb el seu «es paga» al costat. Abans eren sis camps un
+           sota l'altre i quatre persones feien quatre pantalles. */
+        .fila-cap { display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: end; }
+        .par { display: grid; grid-template-columns: 1fr 7.5rem; gap: .4rem; align-items: end; }
+        .par .eso { visibility: hidden; }
+        .fila .treu { min-width: 44px; padding: 0 .7rem; font-size: 1.1rem; line-height: 1; }
+        @media (min-width: 900px) { .fila { grid-template-columns: 1.1fr 1.6fr 1.6fr; align-items: end; } .par .eso { visibility: visible; } }
         .fila label { font-size: var(--t0); color: var(--muted); display: grid; gap: .2rem; }
         .fila .treu { min-height: 44px; }
+        .salut li a { margin-left: .3rem; white-space: nowrap; }
         .auto { margin-top: 1.4rem; max-width: 70ch; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
         .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
         /* El caso anónimo de un mapa que ya trabaja (cas-automatitzat.js) */
@@ -321,7 +329,7 @@
         .fila.nou { animation: ia-llum 1.6s ease-out; }
         @keyframes ia-llum { from { box-shadow: 0 0 0 3px var(--indigo); background: #f3f1ff; } }
         @media (prefers-reduced-motion: reduce) { .ia *, .ia, .fila.nou { animation: none !important; transition: none !important; } }
-        .aviso { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 10px; font-size: var(--t0); z-index: 300; }
+        .aviso { position: fixed; left: 50%; bottom: 5rem; transform: translateX(-50%); max-width: calc(100vw - 2rem); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 10px; font-size: var(--t0); z-index: 300; }
 /*TT-PROCES*/
 .pr{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:0;counter-reset:pr}.pr-p{counter-increment:pr;position:relative;display:grid;align-content:start;grid-template-columns:2.6rem minmax(0,1fr);column-gap:1rem;padding:0 0 1.4rem}.pr-p::before{content:counter(pr);display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;border:2px solid var(--indigo,var(--acc,#3b3fb6));color:var(--indigo,var(--acc,#3b3fb6));font-weight:600;background:var(--bg,#fff);position:relative;z-index:1}.pr-p::after{content:"";position:absolute;left:1.2rem;top:2.4rem;bottom:0;width:2px;margin-left:-1px;background:var(--border,var(--lin,#d6d6e0))}.pr-p:last-child::after{display:none}.pr-p h3{font-size:1.125rem;line-height:1.3;margin:.35rem 0 .35rem}.pr-p p{margin:.2rem 0;line-height:1.55;max-width:62ch}.pr-reps{color:var(--muted,var(--mut,#555))}.pr-q{display:inline-flex;flex-wrap:wrap;gap:.35rem;margin:.1rem 0 .3rem}.pr-q span,.pr-e{font-size:.9375rem;border:1px solid var(--border-strong,var(--lin,#bbb));border-radius:999px;padding:.05rem .55rem}.pr .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.pr-p.opc::before{border-style:dashed}.pr-p.fet::before{content:"✓";background:var(--indigo,var(--acc,#3b3fb6));color:#fff}.pr-p.ara::before{box-shadow:0 0 0 4px color-mix(in srgb,var(--indigo,var(--acc,#3b3fb6)) 25%,transparent)}.pr-p.ara h3::after{content:attr(data-ara);margin-left:.5rem;font-size:.9375rem;font-weight:500;color:var(--indigo,var(--acc,#3b3fb6))}@media (min-width:60rem){.pr{grid-template-columns:repeat(7,minmax(0,1fr));gap:1rem}.pr-p{grid-template-columns:1fr;row-gap:.4rem;padding:0}.pr-p::after{left:2.4rem;right:-1rem;top:1.2rem;bottom:auto;width:auto;height:2px;margin:-1px 0 0}}
 /*/TT-PROCES*/
@@ -441,10 +449,10 @@
 <nav class="tt-nav" aria-label="Navegación del sitio">
   <a class="tn-brand" href="/">Team<span>Towers</span> Humà</a>
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
-  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/diagnostic.html"><b data-i18n="nv.t.diagnostic">Diagnóstico</b><span data-i18n="nv.d.diagnostic">Dónde estás y qué te falta, en 3 minutos</span></a><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">El método</b><span data-i18n="nv.d.vna">Qué es un mapa de valor, sobre un caso</span></a><a href="/SOS/vna-suport.html"><b data-i18n="nv.t.vna-suport">Hacer uno</b><span data-i18n="nv.d.vna-suport">El editor visual: roles, entregables, real e ideal</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">El catálogo</b><span data-i18n="nv.d.arrel-cataleg">Paquetes por flujos: horas e IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Precios y contratación</b><span data-i18n="nv.d.pressupost">Del borrador al negocio operativo, y el resto a medida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">Tu web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa de tu negocio y la web, en una sesión</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Servicios conectables</b><span data-i18n="nv.d.carpeta-conecta">Tu web con tu IA, el CRM y los cobros</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS y formación</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que mantiene vivo el mapa, sin cuenta</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formación acción</b><span data-i18n="nv.d.formacio">Los módulos, de N0 a N3, y el certificado es tuyo</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Flujos con IA</b><span data-i18n="nv.d.ia">Automatizar lo tangible, valorar lo intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Quiénes somos</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Quiénes somos</b><span data-i18n="nv.d.arrel-qui-som">Veinte años, los clientes y de dónde viene el método</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Prensa</b><span data-i18n="nv.d.arrel-premsa">Lo que se ha dicho fuera</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacidad, explicada</span></a></div></details></div>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">Qué es</b><span data-i18n="nv.d.vna">Qué es un mapa de valor, sobre un caso</span></a><a href="/cliente/#alrededor"><b data-i18n="nv.t.carpeta-cliente">Hacer uno</b><span data-i18n="nv.d.carpeta-cliente">Dibuja quién te rodea y qué os dais, gratis</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">Qué contratas</b><span data-i18n="nv.d.arrel-cataleg">Paquetes por flujos: horas e IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Precios y contratación</b><span data-i18n="nv.d.pressupost">Del borrador al negocio operativo, y el resto a medida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">Tu web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa de tu negocio y la web, en una sesión</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Servicios conectables</b><span data-i18n="nv.d.carpeta-conecta">Tu web con tu IA, el CRM y los cobros</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS y formación</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que mantiene vivo el mapa, sin cuenta</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formación acción</b><span data-i18n="nv.d.formacio">Los módulos, de N0 a N3, y el certificado es tuyo</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Flujos con IA</b><span data-i18n="nv.d.ia">Automatizar lo tangible, valorar lo intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Quiénes somos</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Quiénes somos</b><span data-i18n="nv.d.arrel-qui-som">Veinte años, los clientes y de dónde viene el método</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Prensa</b><span data-i18n="nv.d.arrel-premsa">Lo que se ha dicho fuera</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacidad, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b" data-lang="ca">CA</button><button type="button" class="lang-b on" data-lang="es">ES</button></div>
   <a class="tn-in" href="/acceso"><span data-i18n="nv.entra">Entra</span></a>
-  <a class="tn-cta" href="/cliente/" aria-current="page"><span data-i18n="nv.cta">Crea tu mapa</span> →</a>
+  <a class="tn-cta" href="/cliente/#alrededor"><span data-i18n="nv.cta">Crea tu mapa</span> →</a>
 </nav>
 <script>
 (function () {
@@ -463,88 +471,24 @@
     <div class="container">
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
-        <p class="lead">Te creas tu cuenta, nos cuentas qué quieres y en unos minutos ves el primer dibujo de con quién trabajas y un boceto de tu web. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
+        <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
         <ol class="nota" style="margin-top:1rem;display:grid;gap:.2rem">
-            <li><span class="num-paso">1 ·</span> Tu cuenta</li>
-            <li><span class="num-paso">2 ·</span> Lo que quieres, con tus palabras</li>
-            <li><span class="num-paso">3 ·</span> Unas preguntas (o que las conteste tu IA)</li>
-            <li><span class="num-paso">4 ·</span> Quién está a tu alrededor</li>
-            <li><span class="num-paso">5 ·</span> Qué web quieres, y su boceto</li>
-            <li><span class="num-paso">6 ·</span> Nos lo envías</li>
+            <li><span class="num-paso">1 ·</span> <a href="#alrededor">Quién está a tu alrededor</a></li>
+            <li><span class="num-paso">2 ·</span> <a href="#web">Qué web quieres, y su boceto</a></li>
+            <li><span class="num-paso">3 ·</span> <a href="#cuentanos">Lo que quieres, con tus palabras</a></li>
+            <li><span class="num-paso">4 ·</span> <a href="#preguntas">Unas preguntas (o que las conteste tu IA)</a></li>
+            <li><span class="num-paso">5 ·</span> <a href="#cuenta">Tu cuenta</a></li>
+            <li><span class="num-paso">6 ·</span> <a href="#enviar">Nos lo envías</a></li>
         </ol>
+        <p class="nota" style="margin-top:1rem"><a href="#alrededor">Empieza por tu mapa</a>. ¿No sabes si te hace falta? <a href="/SOS/diagnostic.html?lang=es">Hazte el diagnóstico de 3 minutos</a>.</p>
         <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="/acceso">tu espacio</a>.</p>
-    </div>
-</section>
-
-<section id="cuenta" class="alt" aria-labelledby="t-cuenta">
-    <div class="container">
-        <div class="cabeza">
-            <p class="eyebrow">1 · Tu cuenta</p>
-            <h2 id="t-cuenta">Quién eres y dónde te contestamos.</h2>
-            <p>Tu cuenta es tu correo. Lo que escribas se guarda en este navegador; si quieres seguir en otro, descarga tu ficha y cárgala allí.</p>
-        </div>
-        <div class="camps dos">
-            <div class="camp"><label for="cl-nom">Tu nombre</label><input id="cl-nom" autocomplete="name" data-c="nom"></div>
-            <div class="camp"><label for="cl-mail">Tu correo</label><input id="cl-mail" type="email" autocomplete="email" data-c="mail"></div>
-            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org"></div>
-            <div class="camp"><label for="cl-web">Tu web de ahora, si la tienes</label><input id="cl-web" type="url" inputmode="url" placeholder="https://" data-c="web"></div>
-        </div>
-        <div class="accions">
-            <button type="button" class="btn btn-primary" id="cl-crea">Crear mi cuenta</button>
-            <button type="button" class="btn btn-ghost" id="cl-baixa">Descargar mi ficha</button>
-            <label class="btn btn-ghost" for="cl-carrega">Cargar una ficha</label>
-            <input type="file" id="cl-carrega" accept="application/json,.json" hidden>
-        </div>
-        <p class="compte" id="cl-compte" role="status"></p>
-    </div>
-</section>
-
-<section id="cuentanos" aria-labelledby="t-cuentanos">
-    <div class="container">
-        <div class="cabeza">
-            <p class="eyebrow">2 · Lo que quieres</p>
-            <h2 id="t-cuentanos">Cuéntanoslo como se lo contarías a una amiga.</h2>
-            <p>Qué haces, para quién y qué tiene que conseguir la web. No hace falta que esté ordenado.</p>
-        </div>
-        <div class="camps">
-            <div class="camp"><label for="cl-inicial">Lo que quieres</label><textarea id="cl-inicial" class="gran" data-c="inicial" placeholder="Por ejemplo: formo a profesores de español en Barcelona y quiero que la web llene los cursos de 2027…"></textarea></div>
-        </div>
-        <p class="sug" id="cl-sug" role="status" hidden></p>
-        <div class="camins">
-            <div class="cami">
-                <h3>Contesto yo</h3>
-                <p>Abajo tienes ocho preguntas cortas. Contesta las que puedas; las demás las vemos juntos.</p>
-                <a class="btn btn-ghost" href="#preguntas">Ir a las preguntas</a>
-            </div>
-            <div class="cami">
-                <h3>Que me ayude mi IA</h3>
-                <p>Copia este texto en Claude, ChatGPT o la IA que uses. Te contestará las preguntas y te dirá quién está a tu alrededor. Luego pega aquí su respuesta.</p>
-                <pre id="cl-prompt" aria-label="Texto para tu IA"></pre>
-                <div class="accions" style="margin-top:0"><button type="button" class="btn btn-primary" id="cl-copia">Copiar el texto</button></div>
-                <div class="camp"><label for="cl-retorn">La respuesta de tu IA</label><textarea id="cl-retorn" placeholder="Pega aquí lo que te ha contestado"></textarea></div>
-                <div class="accions" style="margin-top:0"><button type="button" class="btn btn-ghost" id="cl-omple">Rellenar con su respuesta</button></div>
-                <p class="nota" id="cl-omple-r" role="status"></p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section id="preguntas" class="alt" aria-labelledby="t-preguntas">
-    <div class="container">
-        <div class="cabeza">
-            <p class="eyebrow">3 · Las preguntas</p>
-            <h2 id="t-preguntas">Lo que necesitamos para dibujar tu primer mapa.</h2>
-            <p>Revisa lo que haya puesto tu IA: tú sabes mejor que nadie cómo es tu día a día.</p>
-        </div>
-        <div class="preguntes" id="cl-preguntes"></div>
-        <div class="accions"><button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button></div>
     </div>
 </section>
 
 <section id="alrededor" aria-labelledby="t-alrededor">
     <div class="container">
         <div class="cabeza">
-            <p class="eyebrow">4 · Quién está a tu alrededor</p>
+            <p class="eyebrow">1 · Quién está a tu alrededor</p>
             <h2 id="t-alrededor">Con quién trabajas, qué te da y qué le das.</h2>
             <p>Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.</p>
         </div>
@@ -584,23 +528,23 @@
 <section id="web" class="alt" aria-labelledby="t-web">
     <div class="container">
         <div class="cabeza">
-            <p class="eyebrow">5 · Qué web quieres</p>
+            <p class="eyebrow">2 · Qué web quieres</p>
             <h2 id="t-web">Elige hasta dónde, y mira el boceto.</h2>
-            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública es una landing con lo que aporta valor a cada uno de los principales, y puedes sumar la extranet para clientes y aliados y la intranet del equipo. Es un borrador para hablarlo, no la web final.</p>
+            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.</p>
         </div>
         <div class="nivells" id="cl-nivells" role="radiogroup" aria-label="Nivel de web">
 <!--TT-NIVELLS-->
-            <label class="nivell" for="cl-n-pagina"><span class="k">Nivel 1 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-pagina" value="Una página"> <b>Una página</b></span><span>Para estar y que te encuentren</span><ul><li>Portada y contacto, en un idioma</li><li>Sale del borrador de tu mapa</li><li>Tuya: en tu GitHub y tu Netlify</li></ul></label>
-            <label class="nivell" for="cl-n-mapa"><span class="k">Nivel 2 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-mapa" value="La web de tu mapa"> <b>La web de tu mapa</b></span><span>Para que cada rol encuentre su puerta</span><ul><li>Todo lo anterior</li><li>Hasta tres puertas del flujo que importa ahora</li><li>Formularios que te llegan por correo</li><li>Datos para buscadores e IA en cada página</li></ul></label>
-            <label class="nivell" for="cl-n-conectada"><span class="k">Nivel 3 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-conectada" value="La web conectada"> <b>La web conectada</b></span><span>Para dejar de copiar y pegar</span><ul><li>Todo lo anterior</li><li>Tu CRM, tus reservas o tus matrículas</li><li>La web avisa a tu IA, con MCP o con una función</li><li>Más idiomas o más puertas, como flujos</li></ul></label>
+            <label class="nivell" for="cl-n-pagina"><span class="k">Nivel 1</span><span><input type="radio" name="nivel" id="cl-n-pagina" value="Una página"> <b>Una página</b></span><span>Para estar y que te encuentren</span><ul><li>Portada y contacto, en un idioma</li><li>Sale del borrador de tu mapa</li><li>Tuya, a tu nombre: el código y el alojamiento</li></ul></label>
+            <label class="nivell" for="cl-n-mapa"><span class="k">Nivel 2</span><span><input type="radio" name="nivel" id="cl-n-mapa" value="La web de tu mapa"> <b>La web de tu mapa</b></span><span>Para que cada persona encuentre lo suyo</span><ul><li>Todo lo anterior</li><li>Hasta tres páginas, para quien más te importa ahora</li><li>Formularios que te llegan por correo</li><li>Datos para buscadores e IA en cada página</li></ul></label>
+            <label class="nivell" for="cl-n-conectada"><span class="k">Nivel 3</span><span><input type="radio" name="nivel" id="cl-n-conectada" value="La web conectada"> <b>La web conectada</b></span><span>Para dejar de copiar y pegar</span><ul><li>Todo lo anterior</li><li>Tu CRM, tus reservas o tus matrículas</li><li>La web avisa a tu asistente de IA cuando llega algo</li><li>Más idiomas o más puertas, cuando las necesites</li></ul></label>
             <label class="nivell" for="cl-n-viva"><span class="k">Nivel 4 · cuota mensual</span><span><input type="radio" name="nivel" id="cl-n-viva" value="La web viva"> <b>La web viva</b></span><span>Para que el sistema mejore cada mes</span><ul><li>Todo lo anterior</li><li>Tus procesos repetitivos, definidos y gestionados</li><li>El tablero del día y el informe del mes</li><li>Comprobaciones automáticas y cambios pequeños</li></ul></label>
 <!--/TT-NIVELLS-->
         </div>
         <h3 style="margin-top:1.6rem">Qué hacemos</h3>
         <div class="vistes" id="cl-capes" role="group" aria-label="Qué partes de la web hacemos">
-            <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
-            <label><input type="checkbox" data-capa="extranet"> <b>La extranet</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
-            <label><input type="checkbox" data-capa="intranet"> <b>La intranet</b><span>Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
+            <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
+            <label><input type="checkbox" data-capa="extranet"> <b>El espacio de clientes y aliados</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
+            <label><input type="checkbox" data-capa="intranet"> <b>El espacio de tu equipo</b><span>Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
         </div>
         <div class="ia" id="cl-ia-llig" hidden data-per="Para leer tu web, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
@@ -638,6 +582,71 @@
             <div class="barra" id="cl-pags" aria-label="Páginas del boceto"></div>
             <iframe id="cl-marc" title="Boceto de tu web" sandbox="allow-same-origin"></iframe>
         </div>
+    </div>
+</section>
+
+<section id="cuentanos" aria-labelledby="t-cuentanos">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">3 · Lo que quieres</p>
+            <h2 id="t-cuentanos">Cuéntanoslo como se lo contarías a una amiga.</h2>
+            <p>Qué haces, para quién y qué tiene que conseguir la web. No hace falta que esté ordenado.</p>
+        </div>
+        <div class="camps">
+            <div class="camp"><label for="cl-inicial">Lo que quieres</label><textarea id="cl-inicial" class="gran" data-c="inicial" placeholder="Por ejemplo: formo a profesores de español en Barcelona y quiero que la web llene los cursos de 2027…"></textarea></div>
+        </div>
+        <p class="sug" id="cl-sug" role="status" hidden></p>
+        <div class="camins">
+            <div class="cami">
+                <h3>Contesto yo</h3>
+                <p>Abajo tienes ocho preguntas cortas. Contesta las que puedas; las demás las vemos juntos.</p>
+                <a class="btn btn-ghost" href="#preguntas">Ir a las preguntas</a>
+            </div>
+            <div class="cami">
+                <h3>Que me ayude mi IA</h3>
+                <p>Copia este texto en Claude, ChatGPT o la IA que uses. Te contestará las preguntas y te dirá quién está a tu alrededor. Luego pega aquí su respuesta.</p>
+                <pre id="cl-prompt" aria-label="Texto para tu IA"></pre>
+                <div class="accions" style="margin-top:0"><button type="button" class="btn btn-primary" id="cl-copia">Copiar el texto</button></div>
+                <div class="camp"><label for="cl-retorn">La respuesta de tu IA</label><textarea id="cl-retorn" placeholder="Pega aquí lo que te ha contestado"></textarea></div>
+                <div class="accions" style="margin-top:0"><button type="button" class="btn btn-ghost" id="cl-omple">Rellenar con su respuesta</button></div>
+                <p class="nota" id="cl-omple-r" role="status"></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="preguntas" class="alt" aria-labelledby="t-preguntas">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">4 · Las preguntas</p>
+            <h2 id="t-preguntas">Lo que necesitamos para dibujar tu primer mapa.</h2>
+            <p>Revisa lo que haya puesto tu IA: tú sabes mejor que nadie cómo es tu día a día.</p>
+        </div>
+        <div class="preguntes" id="cl-preguntes"></div>
+        <div class="accions"><button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button></div>
+    </div>
+</section>
+
+<section id="cuenta" class="alt" aria-labelledby="t-cuenta">
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">5 · Tu cuenta</p>
+            <h2 id="t-cuenta">Quién eres y dónde te contestamos.</h2>
+            <p>Tu cuenta es tu correo. Lo que escribas se guarda en este navegador; si quieres seguir en otro, descarga tu ficha y cárgala allí.</p>
+        </div>
+        <div class="camps dos">
+            <div class="camp"><label for="cl-nom">Tu nombre</label><input id="cl-nom" autocomplete="name" data-c="nom"></div>
+            <div class="camp"><label for="cl-mail">Tu correo</label><input id="cl-mail" type="email" autocomplete="email" data-c="mail"></div>
+            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org"></div>
+            <div class="camp"><label for="cl-web">Tu web de ahora, si la tienes</label><input id="cl-web" type="url" inputmode="url" placeholder="https://" data-c="web"></div>
+        </div>
+        <div class="accions">
+            <button type="button" class="btn btn-primary" id="cl-crea">Crear mi cuenta</button>
+            <button type="button" class="btn btn-ghost" id="cl-baixa">Descargar mi ficha</button>
+            <label class="btn btn-ghost" for="cl-carrega">Cargar una ficha</label>
+            <input type="file" id="cl-carrega" accept="application/json,.json" hidden>
+        </div>
+        <p class="compte" id="cl-compte" role="status"></p>
     </div>
 </section>
 
@@ -760,7 +769,7 @@
 <footer class="tt-peu">
   <div class="tp-in">
     <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema" lang="ca">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span data-i18n="nv.peu.mail">Escríbenos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html?lang=es"><span data-i18n="nv.peu.legal">Aviso legal y privacidad</span></a></div>
-    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/diagnostic.html"><span data-i18n="nv.t.diagnostic">Diagnóstico</span></a></li><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">El método</span></a></li><li><a href="/SOS/vna-suport.html"><span data-i18n="nv.t.vna-suport">Hacer uno</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">El catálogo</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Precios y contratación</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">Tu web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Servicios conectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS y formación</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formación acción</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Flujos con IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Quiénes somos</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Quiénes somos</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Prensa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">Qué es</span></a></li><li><a href="/cliente/#alrededor"><span data-i18n="nv.t.carpeta-cliente">Hacer uno</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">Qué contratas</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Precios y contratación</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">Tu web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Servicios conectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS y formación</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formación acción</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Flujos con IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Quiénes somos</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Quiénes somos</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Prensa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
   </div>
 </footer>
 <!--/TT-PEU-->
@@ -817,7 +826,7 @@
         'Los colores se ajustan solos para que todo se lea bien. Tu logo y tus fotos los ponemos juntos en la sesión.': 'Els colors s\'ajusten sols perquè tot es llegeixi bé. El logo i les fotos els posem junts a la sessió.',
         'Gratis: un proyecto con su ficha. Cuando quieras, nos pides cualquiera de los pasos que vienen después.': 'Gratis: un projecte amb la seva fitxa. Quan vulguis, ens demanes qualsevol dels passos que vénen després.',
         'Sereno': 'Serè', 'Cálido': 'Càlid', 'Fresco': 'Fresc', 'Clásico': 'Clàssic',
-        'Escribe arriba con quién trabajas (paso 4) y aquí aparece tu mapa.': 'Escriu a dalt amb qui treballes (pas 4) i aquí apareix el teu mapa.',
+        'Escribe arriba con quién trabajas (paso 1) y aquí aparece tu mapa.': 'Escriu a dalt amb qui treballes (pas 1) i aquí apareix el teu mapa.',
         '— Línea llena: lo que se paga o se entrega': '— Línia plena: el que es paga o s\'entrega',
         '- - Discontinua: lo que no se paga (confianza, ideas, recomendaciones)': '- - Discontínua: el que no es paga (confiança, idees, recomanacions)',
         'En el centro, tú. Alrededor, {0} personas o grupos, y {1} cosas que van y vienen.': 'Al centre, tu. Al voltant, {0} persones o grups, i {1} coses que van i vénen.',
@@ -827,18 +836,23 @@
         'Con {0}, de momento solo va en un sentido: piensa qué os devolvéis, aunque no se pague.': 'Amb {0}, de moment només va en un sentit: pensa què us torneu, encara que no es pagui.',
         'Resaltado: lo que puede preparar una máquina': 'Ressaltat: el que pot preparar una màquina',
         'De {0} cosas que van y vienen, {1} las puede preparar una máquina, y una persona las revisa. Lo que no se paga y el dinero los lleva siempre una persona.': 'De {0} coses que van i vénen, {1} les pot preparar una màquina, i una persona les revisa. El que no es paga i els diners els porta sempre una persona.',
-        'Escribe arriba con quién trabajas (paso 4) y aquí aparece tu web.': 'Escriu a dalt amb qui treballes (pas 4) i aquí apareix la teva web.',
-        'Empieza tu proyecto | TeamTowers': 'Comença el teu projecte | TeamTowers',
+        'Escribe arriba con quién trabajas (paso 1) y aquí aparece tu web.': 'Escriu a dalt amb qui treballes (pas 1) i aquí apareix la teva web.',
+        'Empieza tu proyecto | TeamTowers Humà': 'Comença el teu projecte | TeamTowers Humà',
         'Tu espacio de cliente': 'El teu espai de client',
+        '¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en': 'Ja treballes amb nosaltres? La teva pàgina, el teu pla i la nostra conversa són al',
+        'tu espacio': 'teu espai',
+        'Empieza por tu mapa': 'Comença pel teu mapa',
+        '. ¿No sabes si te hace falta?': '. No saps si et cal?',
+        'Hazte el diagnóstico de 3 minutos': 'Fes-te el diagnòstic de 3 minuts',
         'Empieza tu proyecto aquí, a tu ritmo.': 'Comença el teu projecte aquí, al teu ritme.',
-        'Te creas tu cuenta, nos cuentas qué quieres y en unos minutos ves el primer dibujo de con quién trabajas y un boceto de tu web. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».': "Et crees el compte, ens expliques què vols i en uns minuts veus el primer dibuix de amb qui treballes i un esbós de la teva web. El que escrius es queda al teu navegador fins que premis «Enviar».",
+        'Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».': "Comences dibuixant amb qui treballes i en uns minuts veus el teu mapa i un esbós de la teva web. El compte, només quan ens ho vulguis enviar. El que escrius es queda al teu navegador fins que premis «Enviar».",
         'Tu cuenta': 'El teu compte',
         'Lo que quieres, con tus palabras': 'El que vols, amb les teves paraules',
         'Unas preguntas (o que las conteste tu IA)': 'Unes preguntes (o que les contesti la teva IA)',
         'Quién está a tu alrededor': 'Qui hi ha al teu voltant',
         'Qué web quieres, y su boceto': 'Quina web vols, i el seu esbós',
         'Nos lo envías': "Ens ho envies",
-        '1 · Tu cuenta': '1 · El teu compte',
+        '5 · Tu cuenta': '5 · El teu compte',
         'Quién eres y dónde te contestamos.': 'Qui ets i on et contestem.',
         'Tu cuenta es tu correo. Lo que escribas se guarda en este navegador; si quieres seguir en otro, descarga tu ficha y cárgala allí.': "El teu compte és el teu correu. El que escriguis es desa en aquest navegador; si vols continuar en un altre, descarrega la teva fitxa i carrega-la allà.",
         'Tu nombre': 'El teu nom',
@@ -848,7 +862,7 @@
         'Crear mi cuenta': 'Crear el meu compte',
         'Descargar mi ficha': 'Descarregar la meva fitxa',
         'Cargar una ficha': 'Carregar una fitxa',
-        '2 · Lo que quieres': '2 · El que vols',
+        '3 · Lo que quieres': '3 · El que vols',
         'Cuéntanoslo como se lo contarías a una amiga.': "Explica-ho com ho explicaries a una amiga.",
         'Qué haces, para quién y qué tiene que conseguir la web. No hace falta que esté ordenado.': "Què fas, per a qui i què ha d'aconseguir la web. No cal que estigui endreçat.",
         'Lo que quieres': 'El que vols',
@@ -860,11 +874,11 @@
         'Copiar el texto': 'Copiar el text',
         'La respuesta de tu IA': 'La resposta de la teva IA',
         'Rellenar con su respuesta': 'Omplir amb la seva resposta',
-        '3 · Las preguntas': '3 · Les preguntes',
+        '4 · Las preguntas': '4 · Les preguntes',
         'Lo que necesitamos para dibujar tu primer mapa.': 'El que necessitem per dibuixar el teu primer mapa.',
         'Revisa lo que haya puesto tu IA: tú sabes mejor que nadie cómo es tu día a día.': "Revisa el que hi hagi posat la teva IA: tu saps millor que ningú com és el teu dia a dia.",
         'Ver mi dibujo aquí': 'Veure el meu dibuix aquí',
-        '4 · Quién está a tu alrededor': '4 · Qui hi ha al teu voltant',
+        '1 · Quién está a tu alrededor': '1 · Qui hi ha al teu voltant',
         'Con quién trabajas, qué te da y qué le das.': 'Amb qui treballes, què et dona i què li dones.',
         'Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.': "Anomena cadascú pel que fa («qui vol ser professor», «qui em recomana»), no pel seu nom. Marca «no es paga» el que és confiança, idees, recomanacions o reputació: sol ser el que més compta i el que la web gairebé mai no diu.",
         'Cómo llamas a lo que haces tú': 'Com anomenes el que fas tu',
@@ -883,14 +897,14 @@
         'Vista sencilla': 'Vista senzilla',
         'Cerrar': 'Tancar',
         '¿Está listo para dibujarlo?': 'Està a punt per dibuixar-lo?',
-        '5 · Qué web quieres': '5 · Quina web vols',
+        '2 · Qué web quieres': '2 · Quina web vols',
         'Elige hasta dónde, y mira el boceto.': "Tria fins on, i mira l'esbós.",
-        'Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública es una landing con lo que aporta valor a cada uno de los principales, y puedes sumar la extranet para clientes y aliados y la intranet del equipo. Es un borrador para hablarlo, no la web final.': "Comença pel mínim que et serveix. L'esbós surt del teu dibuix: la web pública és una landing amb el que aporta valor a cadascun dels principals, i hi pots sumar l'extranet per a clients i aliats i la intranet de l'equip. És un esborrany per parlar-ne, no la web final.",
+        'Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.': "Comença pel mínim que et serveix. L'esbós surt del teu dibuix: la web pública té una part per a cada persona important del teu dibuix, i si vols hi sumes un espai privat per a clients i aliats i un altre per al teu equip. És un esborrany per parlar-ne, no la web final.",
         'Qué hacemos': 'Què fem',
         'La web pública': 'La web pública',
-        'La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.': "La landing: una secció per a cadascun dels principals, amb el que ve a buscar, l'avís legal i el teu correu amagat als robots. Hi va sempre.",
+        'La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.': "La portada: una part per a cada persona important, amb el que ve a buscar, l'avís legal i el teu correu amagat als robots. Hi va sempre.",
         'Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.': "Un espai amb compte per als teus clients i aliats: el que els dones i el que et donen, cadascun a la seva porta.",
-        'Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.': "La teva part interna, amb el SOS: primer per a tu (el teu tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb el teu equip.",
+        'Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.': "La teva part interna: primer per a tu (el teu tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb el teu equip.",
         'Escribe tus textos con IA': 'Escriu els teus textos amb IA',
         'A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en el boceto.': "A partir del teu dibuix: la frase que diu el que fas, la presentació i el que troba cadascú a la seva secció. Canvia'ls al teu gust i mira'ls a l'esbós.",
         '✦ Escribir mis textos': '✦ Escriure els meus textos',
@@ -927,11 +941,11 @@
         'Hecho: {0} respuestas y {1} personas o grupos. Revísalo abajo.': 'Fet: {0} respostes i {1} persones o grups. Revisa-ho a sota.',
         'se paga': 'es paga', 'no se paga': 'no es paga',
         'Quién': 'Qui', 'quien me recomienda': 'qui em recomana', 'Qué te da': 'Què et dona', 'alumnos nuevos': 'alumnes nous',
-        'Eso…': 'Això…', 'Qué le das': 'Què li dones', 'un curso que le sirve': 'un curs que li serveix',
+        'Eso…': 'Això…', 'Contestarla': 'Contestar-la', 'Ir': 'Anar-hi', 'Qué le das': 'Què li dones', 'un curso que le sirve': 'un curs que li serveix',
         'Quitar a {0}': 'Treure {0}', 'esta fila': 'aquesta fila', 'Quitar': 'Treure',
         'En tu web de verdad, esto te llega por correo': "A la teva web de debò, això t'arriba per correu",
-        'Primero di al menos quién está a tu alrededor (paso 4).': 'Primer digues almenys qui hi ha al teu voltant (pas 4).',
-        'Primero di al menos quién está a tu alrededor (paso 4)': 'Primer digues almenys qui hi ha al teu voltant (pas 4)',
+        'Primero di al menos quién está a tu alrededor (paso 1).': 'Primer digues almenys qui hi ha al teu voltant (pas 1).',
+        'Primero di al menos quién está a tu alrededor (paso 1)': 'Primer digues almenys qui hi ha al teu voltant (pas 1)',
         'Preparando el boceto…': "Preparant l'esbós…",
         'Inicio': 'Inici',
         'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.': "Aquest és el teu esbós: la landing amb el que aporta valor a cadascun dels principals, i l'avís legal.",
@@ -956,7 +970,7 @@
         'Dónde está el foco ahora': 'On és el focus ara',
         'Tu mapa puede ir por el mismo camino: primero se define cada intercambio (quién, qué, con qué); lo que está definido se puede automatizar, y lo que no se paga lo lleva siempre una persona.': "El teu mapa pot fer el mateix camí: primer es defineix cada intercanvi (qui, què, amb què); el que està definit es pot automatitzar, i el que no es paga ho porta sempre una persona.",
         /* Tu propuesta (#299) */
-        'La extranet': "L'extranet", 'La intranet': 'La intranet',
+        'El espacio de clientes y aliados': "L'espai de clients i aliats", 'El espacio de tu equipo': "L'espai del teu equip",
         '7 · Tu propuesta': '7 · La teva proposta',
         'Quién trabaja en tu proyecto, y lo que te cuesta a ti.': 'Qui treballa al teu projecte, i el que et costa a tu.',
         'Tu proyecto lo llevan personas de tres niveles, con formación y mentoría entre ellas. Tu precio sale de las horas de cada nivel que necesita tu proyecto, más la IA y las herramientas. No lo publicamos: lo ves solo tú, aquí, cuando entras.': "El teu projecte el porten persones de tres nivells, amb formació i mentoria entre elles. El teu preu surt de les hores de cada nivell que necessita el teu projecte, més la IA i les eines. No el publiquem: el veus només tu, aquí, quan hi entres.",
@@ -980,7 +994,7 @@
         'Actualizada el {0}': 'Actualitzada el {0}', 'válida hasta el {0}': 'vàlida fins al {0}', 'Solo la ves tú.': 'Només la veus tu.',
         'El editor todavía se está abriendo': "L'editor encara s'està obrint",
         'Guardado en tu ficha: {0} personas o grupos': 'Desat a la teva fitxa: {0} persones o grups',
-        'Primero crea tu cuenta (paso 1): así sabemos a quién contestar.': 'Primer crea el teu compte (pas 1): així sabem a qui contestar.',
+        'Primero crea tu cuenta (paso 5): así sabemos a quién contestar.': 'Primer crea el teu compte (pas 5): així sabem a qui contestar.',
         'Marca la casilla de privacidad para poder enviarlo.': 'Marca la casella de privacitat per poder enviar-ho.',
         'Enviando…': 'Enviant…',
         '¡Enviado! Te escribimos a {0}. Ya estás en el paso 2.': "Enviat! T'escrivim a {0}. Ja ets al pas 2.",
@@ -993,9 +1007,9 @@
         'Para usar la IA, dinos quién eres. Elige cómo:': 'Per fer servir la IA, digues-nos qui ets. Tria com:',
         'Con GitHub': 'Amb GitHub', 'Con mi correo': 'Amb el meu correu',
         'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas, y mi dibujo se guarda con mi cuenta.': "He llegit com tracteu les meves dades. El que escric passa per Claude, la IA d'Anthropic, només per preparar les propostes, i el meu dibuix es desa amb el meu compte.",
-        'Más en el': "Més a l'", 'aviso legal': 'avís legal', 'Con el correo usamos el de tu cuenta (paso 1).': 'Amb el correu fem servir el del teu compte (pas 1).',
+        'Más en el': "Més a l'", 'aviso legal': 'avís legal', 'Con el correo usamos el de tu cuenta (paso 5).': 'Amb el correu fem servir el del teu compte (pas 5).',
         'Marca la casilla de privacidad para usar la IA': 'Marca la casella de privacitat per fer servir la IA',
-        'Primero crea tu cuenta con tu correo (paso 1)': 'Primer crea el teu compte amb el teu correu (pas 1)',
+        'Primero crea tu cuenta con tu correo (paso 5)': 'Primer crea el teu compte amb el teu correu (pas 5)',
         'No se ha podido': "No s'ha pogut",
         'Leyendo quién está a tu alrededor…': 'Llegint qui hi ha al teu voltant…', 'Buscando lo que se da y no se paga…': 'Buscant el que es dona i no es paga…',
         'Pensando en quién te falta…': "Pensant en qui et falta…", 'Poniéndolo con tus palabras…': 'Posant-ho amb les teves paraules…',
@@ -1075,25 +1089,25 @@
         "Tu web, viva": "La teva web, viva",
         "Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.": "Si vols, una quota mensual sense permanència: les teves automatitzacions definides i gestionades, comprovacions i el mapa al dia.",
         "Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.": "Cada mes, l'informe del teu mapa: què es mou, què s'atura i què s'ha automatitzat.",
-        "Nivel 1 · por flujos": "Nivell 1 · per fluxos",
+        "Nivel 1": "Nivell 1",
         "Una página": "Una pàgina",
         "Para estar y que te encuentren": "Per ser-hi i que et trobin",
         "Portada y contacto, en un idioma": "Portada i contacte, en un idioma",
         "Sale del borrador de tu mapa": "Surt de l'esborrany del teu mapa",
-        "Tuya: en tu GitHub y tu Netlify": "Teva: al teu GitHub i el teu Netlify",
-        "Nivel 2 · por flujos": "Nivell 2 · per fluxos",
+        "Tuya, a tu nombre: el código y el alojamiento": "Teva, al teu nom: el codi i l'allotjament",
+        "Nivel 2": "Nivell 2",
         "La web de tu mapa": "La web del teu mapa",
-        "Para que cada rol encuentre su puerta": "Perquè cada rol trobi la seva porta",
+        "Para que cada persona encuentre lo suyo": "Perquè cada persona hi trobi el seu",
         "Todo lo anterior": "Tot l'anterior",
-        "Hasta tres puertas del flujo que importa ahora": "Fins a tres portes del flux que importa ara",
+        "Hasta tres páginas, para quien más te importa ahora": "Fins a tres pàgines, per a qui més t'importa ara",
         "Formularios que te llegan por correo": "Formularis que et arriben per correu",
         "Datos para buscadores e IA en cada página": "Dades per a cercadors i IA a cada pàgina",
-        "Nivel 3 · por flujos": "Nivell 3 · per fluxos",
+        "Nivel 3": "Nivell 3",
         "La web conectada": "La web connectada",
         "Para dejar de copiar y pegar": "Per deixar de copiar i enganxar",
         "Tu CRM, tus reservas o tus matrículas": "El teu CRM, les teves reserves o les teves matrícules",
-        "La web avisa a tu IA, con MCP o con una función": "La web avisa la teva IA, amb MCP o amb una funció",
-        "Más idiomas o más puertas, como flujos": "Més idiomes o més portes, com a fluxos",
+        "La web avisa a tu asistente de IA cuando llega algo": "La web avisa el teu assistent d'IA quan arriba alguna cosa",
+        "Más idiomas o más puertas, cuando las necesites": "Més idiomes o més portes, quan les necessitis",
         "Nivel 4 · cuota mensual": "Nivell 4 · quota mensual",
         "Para que el sistema mejore cada mes": "Perquè el sistema millori cada mes",
         "Tus procesos repetitivos, definidos y gestionados": "Els teus processos repetitius, definits i gestionats",
@@ -1106,13 +1120,11 @@
     var NAV = {
 /*TT-NAV-I18N-CA*/
   'nv.g.valor':'Mapa de valor',
-  'nv.t.diagnostic':'Diagnòstic',
-  'nv.d.diagnostic':'On ets i què et falta, en 3 minuts',
-  'nv.t.vna':'El mètode',
+  'nv.t.vna':'Què és',
   'nv.d.vna':'Què és un mapa de valor, sobre un cas',
-  'nv.t.vna-suport':'Fer-ne un',
-  'nv.d.vna-suport':'L\'editor visual: rols, lliuraments, real i ideal',
-  'nv.t.arrel-cataleg':'El catàleg',
+  'nv.t.carpeta-cliente':'Fer-ne un',
+  'nv.d.carpeta-cliente':'Dibuixa qui t\'envolta i què us doneu, gratis',
+  'nv.t.arrel-cataleg':'Què contractes',
   'nv.d.arrel-cataleg':'Paquets per fluxos: hores i IA',
   'nv.t.pressupost':'Preus i contractació',
   'nv.d.pressupost':'De l\'esborrany al negoci operatiu, i la resta a mida',
@@ -1147,13 +1159,11 @@
     var NAV_ES = {
 /*TT-NAV-I18N-ES*/
   'nv.g.valor':'Mapa de valor',
-  'nv.t.diagnostic':'Diagnóstico',
-  'nv.d.diagnostic':'Dónde estás y qué te falta, en 3 minutos',
-  'nv.t.vna':'El método',
+  'nv.t.vna':'Qué es',
   'nv.d.vna':'Qué es un mapa de valor, sobre un caso',
-  'nv.t.vna-suport':'Hacer uno',
-  'nv.d.vna-suport':'El editor visual: roles, entregables, real e ideal',
-  'nv.t.arrel-cataleg':'El catálogo',
+  'nv.t.carpeta-cliente':'Hacer uno',
+  'nv.d.carpeta-cliente':'Dibuja quién te rodea y qué os dais, gratis',
+  'nv.t.arrel-cataleg':'Qué contratas',
   'nv.d.arrel-cataleg':'Paquetes por flujos: horas e IA',
   'nv.t.pressupost':'Precios y contratación',
   'nv.d.pressupost':'Del borrador al negocio operativo, y el resto a medida',
@@ -1285,14 +1295,18 @@
         var c = $('#cl-files'); c.textContent = '';
         S.alrededor.forEach(function (x, n) {
             var f = el('div', { class: 'fila' }), ch = function (k) { return function (v) { x[k] = v; desa(); pintaSalut(); }; };
-            f.appendChild(camp(t('Quién'), x.quien, ch('quien'), t('quien me recomienda')));
-            f.appendChild(camp(t('Qué te da'), x.meDa, ch('meDa'), t('alumnos nuevos')));
-            var l1 = el('label', {}, t('Eso…')); l1.appendChild(sel(x.meDaEs || 'tangible', ch('meDaEs'))); f.appendChild(l1);
-            f.appendChild(camp(t('Qué le das'), x.leDoy, ch('leDoy'), t('un curso que le sirve')));
-            var l2 = el('label', {}, t('Eso…')); l2.appendChild(sel(x.leDoyEs || 'tangible', ch('leDoyEs'))); f.appendChild(l2);
-            var b = el('button', { type: 'button', class: 'btn btn-ghost treu', 'aria-label': t('Quitar a {0}', x.quien || t('esta fila')) }, t('Quitar'));
+            var cap = el('div', { class: 'fila-cap' });
+            cap.appendChild(camp(t('Quién'), x.quien, ch('quien'), t('quien me recomienda')));
+            var b = el('button', { type: 'button', class: 'btn btn-ghost treu', 'aria-label': t('Quitar a {0}', x.quien || t('esta fila')), title: t('Quitar') }, '✕');
             b.addEventListener('click', function () { S.alrededor.splice(n, 1); desa(); pintaFiles(); });
-            f.appendChild(b); c.appendChild(f);
+            cap.appendChild(b); f.appendChild(cap);
+            var p1 = el('div', { class: 'par' });
+            p1.appendChild(camp(t('Qué te da'), x.meDa, ch('meDa'), t('alumnos nuevos')));
+            var l1 = el('label'); l1.appendChild(el('span', { class: 'eso' }, t('Eso…'))); l1.appendChild(sel(x.meDaEs || 'tangible', ch('meDaEs'))); p1.appendChild(l1); f.appendChild(p1);
+            var p2 = el('div', { class: 'par' });
+            p2.appendChild(camp(t('Qué le das'), x.leDoy, ch('leDoy'), t('un curso que le sirve')));
+            var l2 = el('label'); l2.appendChild(el('span', { class: 'eso' }, t('Eso…'))); l2.appendChild(sel(x.leDoyEs || 'tangible', ch('leDoyEs'))); p2.appendChild(l2); f.appendChild(p2);
+            c.appendChild(f);
         });
         pintaSalut();
     }
@@ -1303,7 +1317,12 @@
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
         $('#cl-salut-n').textContent = t('Tu dibujo, al {0} %', D.salut(D.mapa(S), null, LL).punts);
-        r.punts.forEach(function (p) { c.appendChild(el('li', { class: p.ok ? 'ok' : '' }, p.diu)); });
+        /* Cada cosa que falta porta on s'arregla: «la màxima de tot és un enllaç». */
+        r.punts.forEach(function (p) {
+            var li = el('li', { class: p.ok ? 'ok' : '' }), sp = el('span', {}, p.diu + ' ');
+            if (!p.ok) { var a = el('a', { href: p.id === 'abast' ? '#cl-p-objetivo' : '#cl-files' }, t(p.id === 'abast' ? 'Contestarla' : 'Ir')); sp.appendChild(a); }
+            li.appendChild(sp); c.appendChild(li);
+        });
         pintaAuto();
     }
     /* Lo que se puede automatizar de su mapa: la regla del tablero de la app
@@ -1413,7 +1432,7 @@
     var ARA = 'index.html';
     function pintaWeb(enViu) {
         var r = $('#cl-boceto-r'), m = D.mapa(S);
-        if (m.roles.length < 2) { r.textContent = t(enViu ? 'Escribe arriba con quién trabajas (paso 4) y aquí aparece tu web.' : 'Primero di al menos quién está a tu alrededor (paso 4).'); $('#cl-marc-caixa').hidden = true; return; }
+        if (m.roles.length < 2) { r.textContent = t(enViu ? 'Escribe arriba con quién trabajas (paso 1) y aquí aparece tu web.' : 'Primero di al menos quién está a tu alrededor (paso 1).'); $('#cl-marc-caixa').hidden = true; return; }
         if (!enViu) r.textContent = t('Preparando el boceto…');
         motor().then(function (html) {
             var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
@@ -1445,7 +1464,7 @@
     }
     function fesDisseny() {
         var r = $('#cl-disseny-res'), m = D.mapa(S), b = $('#cl-disseny-fes');
-        if (m.roles.length < 2) { aviso(t('Primero di al menos quién está a tu alrededor (paso 4)')); return; }
+        if (m.roles.length < 2) { aviso(t('Primero di al menos quién está a tu alrededor (paso 1)')); return; }
         r.textContent = t('Preparando tu documento…'); b.disabled = true;
         motor().then(function (html) {
             b.disabled = false;
@@ -1524,7 +1543,7 @@
     function pintaMapa() {
         var m = D.mapa(S), caixa = $('#cl-viu-svg'), ley = $('#cl-viu-ley'), diu = $('#cl-viu-diu'), fl = fluxos(m);
         ley.textContent = ''; diu.textContent = '';
-        if (m.roles.length < 2) { caixa.textContent = ''; caixa.appendChild(el('p', { class: 'nota' }, t('Escribe arriba con quién trabajas (paso 4) y aquí aparece tu mapa.'))); return; }
+        if (m.roles.length < 2) { caixa.textContent = ''; caixa.appendChild(el('p', { class: 'nota' }, t('Escribe arriba con quién trabajas (paso 1) y aquí aparece tu mapa.'))); return; }
         var clau = function (f) { return f.de + '\u0000' + f.a + '\u0000' + f.que; }, on = {}, sols = [], op = {};
         var posa = function (a) { a.forEach(function (x) { ley.appendChild(el('span', {}, x)); }); };
         if (LENT === 'vuelta' && window.Pinya) {
@@ -1687,7 +1706,7 @@
     /* 6 · El envío. Es la única llamada que saca datos de este navegador. */
     $('#cl-envia').addEventListener('click', function () {
         var r = $('#cl-envia-r'), b = this;
-        if (!S.cuenta) { r.className = 'resposta ko'; r.textContent = t('Primero crea tu cuenta (paso 1): así sabemos a quién contestar.'); location.hash = 'cuenta'; return; }
+        if (!S.cuenta) { r.className = 'resposta ko'; r.textContent = t('Primero crea tu cuenta (paso 5): así sabemos a quién contestar.'); location.hash = 'cuenta'; return; }
         /* La casilla deja constancia de que se ha informado (registro de
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
@@ -1771,14 +1790,14 @@
                 var lp = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox', 'data-ia': 'priv' });
                 lp.appendChild(ck); lp.appendChild(el('span', {}, ' ' + t((cx.getAttribute('data-priv') || 'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas, y mi dibujo se guarda con mi cuenta.').trim())));
                 qui.appendChild(lp);
-                var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode(t('Más en el') + ' ')); nl.appendChild(el('a', { href: '/avis-legal.html?lang=' + LL }, t('aviso legal'))); nl.appendChild(document.createTextNode('. ' + t('Con el correo usamos el de tu cuenta (paso 1).')));
+                var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode(t('Más en el') + ' ')); nl.appendChild(el('a', { href: '/avis-legal.html?lang=' + LL }, t('aviso legal'))); nl.appendChild(document.createTextNode('. ' + t('Con el correo usamos el de tu cuenta (paso 5).')));
                 qui.appendChild(nl);
             });
         }
         function priv(cx) { var c = cx.querySelector('[data-ia="priv"]'); if (c && c.checked) return true; aviso(t('Marca la casilla de privacidad para usar la IA')); if (c) c.focus(); return false; }
         function perCorreu(cx, b) {
             if (!priv(cx)) return;
-            if (!S.cuenta || !S.mail) { aviso(t('Primero crea tu cuenta con tu correo (paso 1)')); location.hash = 'cuenta'; return; }
+            if (!S.cuenta || !S.mail) { aviso(t('Primero crea tu cuenta con tu correo (paso 5)')); location.hash = 'cuenta'; return; }
             b.disabled = true;
             fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true }) })
                 .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || t('No se ha podido')); return j; }); })
@@ -1938,7 +1957,7 @@
         /* La web: los textos van a la marca del motor (lema, presentación y la intro de cada puerta). */
         function escriu() {
             var cx = $('#cl-ia-web'), res = $('#cl-ia-web-res'), boto = $('#cl-ia-escriu');
-            if (D.mapa(S).roles.length < 3) { aviso(t('Primero di al menos quién está a tu alrededor (paso 4)')); return; }
+            if (D.mapa(S).roles.length < 3) { aviso(t('Primero di al menos quién está a tu alrededor (paso 1)')); return; }
             crida('web', '', cx, res, boto).then(function (r) {
                 if (!r) return;
                 var w = el('div', { class: 'ia-textos' });
@@ -2008,7 +2027,7 @@
         }
         function portes(b) {
             if (!FOTO) return;
-            if (D.mapa(S).roles.length < 3) { aviso(t('Primero di al menos quién está a tu alrededor (paso 4)')); return; }
+            if (D.mapa(S).roles.length < 3) { aviso(t('Primero di al menos quién está a tu alrededor (paso 1)')); return; }
             var cx = $('#cl-ia-llig'), sor = el('div'); b.parentNode.after(sor);
             crida('pagines', '', cx, sor, b, { pagines: FOTO.pagines.map(function (p) { return { url: p.url, titol: p.titol, h1: p.h1, text: (p.text || '').slice(0, 300) }; }) }).then(function (r) {
                 if (!r) return;
