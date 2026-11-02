@@ -114,6 +114,7 @@
         .camps { display: grid; gap: 1rem; max-width: 46rem; }
         @media (min-width: 760px) { .camps.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         .camp { display: grid; gap: .3rem; }
+        .camp[hidden] { display: none; }
         .camp label, .camp .et { font-weight: 600; }
         .camp small { font-size: var(--t0); color: var(--muted); }
         .camp input, .camp textarea, .camp select, .fila input, .fila select { width: 100%; min-height: 44px; padding: .55rem .75rem; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--card); }
@@ -146,7 +147,11 @@
         .sug .btn { margin-left: .4rem; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
         .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
-        .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
+        .model-xips button[aria-pressed="true"], .model-xips button[aria-checked="true"] { border: 2px solid var(--indigo); }
+        .alcance { margin-top: 0; }
+        .mapa-tit { margin: 1rem 0 0; font-weight: 700; font-size: var(--t2); }
+        .mapa-tit:empty { display: none; }
+        .mapa-tit span { font-weight: 400; color: var(--muted); font-size: var(--t0); }
         .files { display: grid; gap: .8rem; margin-top: 1rem; }
         .fila { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem .9rem; display: grid; gap: .5rem; }
         /* Una fila curta al mòbil (02/11/2026): qui, i a sota què et dona i què li
@@ -513,6 +518,14 @@
             <h2 id="t-alrededor">Con quién trabajas, qué te da y qué le das.</h2>
             <p>Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.</p>
         </div>
+        <div class="camps dos">
+            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org" placeholder="El nombre de tu escuela, tu empresa, tu asociación…"><small>Es el nombre del mapa.</small></div>
+            <div class="camp"><span class="et" id="cl-alc-t">De qué es este mapa</span>
+                <div class="model-xips alcance" id="cl-alcance" role="radiogroup" aria-labelledby="cl-alc-t"><button type="button" role="radio" data-alc="global" aria-checked="true">De toda la organización</button><button type="button" role="radio" data-alc="zoom" aria-checked="false">De un área (zoom)</button></div>
+                <small id="cl-alc-d">El mapa global: todo lo que haces y con quién.</small></div>
+            <div class="camp" id="cl-area-c" hidden><label for="cl-area">Qué área</label><input id="cl-area" data-c="area" placeholder="Los cursos de verano, la tienda, la formación de profes…"><small>Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.</small></div>
+        </div>
+        <p class="mapa-tit" id="cl-mapa-tit" aria-live="polite"></p>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
@@ -662,7 +675,6 @@
         <div class="camps dos">
             <div class="camp"><label for="cl-nom">Tu nombre</label><input id="cl-nom" autocomplete="name" data-c="nom"></div>
             <div class="camp"><label for="cl-mail">Tu correo</label><input id="cl-mail" type="email" autocomplete="email" data-c="mail"></div>
-            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org"></div>
             <div class="camp"><label for="cl-web">Tu web de ahora, si la tienes</label><input id="cl-web" type="url" inputmode="url" placeholder="https://" data-c="web"></div>
         </div>
         <div class="accions">
@@ -806,7 +818,7 @@
      lo envía el botón «Enviar a TeamTowers» con un POST, y nada más. -->
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
-  <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
+  <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="alcance"><input name="web">
   <input name="objectiu"><input name="nivel"><input name="capas"><input name="automatiza"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea><textarea name="eines"></textarea>
 </form>
 
@@ -897,6 +909,21 @@
         'Tu nombre': 'El teu nom',
         'Tu correo': 'El teu correu',
         'Tu organización': 'La teva organització',
+        'El nombre de tu escuela, tu empresa, tu asociación…': "El nom de la teva escola, la teva empresa, la teva associació…",
+        'Es el nombre del mapa.': 'És el nom del mapa.',
+        'De qué es este mapa': "De què és aquest mapa",
+        'De toda la organización': "De tota l'organització",
+        'De un área (zoom)': "D'una àrea (zoom)",
+        'El mapa global: todo lo que haces y con quién.': 'El mapa global: tot el que fas i amb qui.',
+        'Un zoom: solo el área en la que estáis trabajando.': "Un zoom: només l'àrea en què esteu treballant.",
+        'Qué área': 'Quina àrea',
+        'Los cursos de verano, la tienda, la formación de profes…': "Els cursos d'estiu, la botiga, la formació de professors…",
+        'Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.': "Fem zoom en el que esteu treballant ara; la resta de l'organització queda fora del dibuix.",
+        'Mapa de valor': 'Mapa de valor',
+        'zoom en {0}': 'zoom a {0}',
+        'zoom en un área': 'zoom a una àrea',
+        'mapa global': 'mapa global',
+        'De quién es el mapa y qué abarca': "De qui és el mapa i què abasta",
         'Tu web de ahora, si la tienes': "La teva web d'ara, si en tens",
         'Crear mi cuenta': 'Crear el meu compte',
         'Descargar mi ficha': 'Descarregar la meva fitxa',
@@ -1269,7 +1296,7 @@
     }
     tradueix();
     var CLAU = 'tt.cliente.v1';
-    var S = { nom: '', mail: '', org: '', web: '', inicial: '', casa: '', nivel: '', automatiza: false, respuestas: {}, alrededor: [], cuenta: false };
+    var S = { nom: '', mail: '', org: '', alcance: 'global', area: '', web: '', inicial: '', casa: '', nivel: '', automatiza: false, respuestas: {}, alrededor: [], cuenta: false };
     try { Object.assign(S, JSON.parse(localStorage.getItem(CLAU) || 'null') || {}); } catch (e) { /* sin memoria: se empieza de cero */ }
     /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
     var PUJA = null;
@@ -1282,7 +1309,7 @@
     /* Los campos simples (data-c) van y vienen del estado. */
     function pintaCamps() { document.querySelectorAll('[data-c]').forEach(function (i) { i.value = S[i.dataset.c] || ''; }); }
     document.querySelectorAll('[data-c]').forEach(function (i) {
-        i.addEventListener('input', function () { S[i.dataset.c] = i.value; desa(); pintaPrompt(); if (i.dataset.c === 'casa') pintaSalut(); });
+        i.addEventListener('input', function () { S[i.dataset.c] = i.value; desa(); pintaPrompt(); pintaTitol(); if (i.dataset.c === 'casa' || i.dataset.c === 'area') pintaSalut(); });
     });
 
     /* 1 · La cuenta */
@@ -1465,7 +1492,8 @@
         var ok = {}; try { D.revisa(D.mapa(S), null, LL).punts.forEach(function (p) { ok[p.id] = p.ok; }); } catch (e) { /* sin dibujo todavía */ }
         var maq = 0; try { maq = MM.automatitza ? auto().filter(function (x) { return x.r.qui === 'maquina'; }).length : 0; } catch (e) { /* sin flechas */ }
         var F = [
-            [15, ok.rols, '#alrededor', t('Quién está a tu alrededor')],
+            [5, !!(S.org || '').trim() && (S.alcance !== 'zoom' || !!(S.area || '').trim()), '#alrededor', t('De quién es el mapa y qué abarca')],
+            [10, ok.rols, '#cl-files', t('Quién está a tu alrededor')],
             [10, ok.menes, '#cl-files', t('Lo que no se paga, también')],
             [10, ok.reciprocitat && ok.solts, '#cl-files', t('Con cada uno, algo va y algo vuelve')],
             [5, ok.rols && ok.noms && ok.xifres, '#cl-files', t('Cada uno por lo que hace, sin cifras')],
@@ -1487,6 +1515,25 @@
     }
     $('#cl-automatiza').checked = !!S.automatiza;
     $('#cl-automatiza').addEventListener('change', function () { S.automatiza = this.checked; desa(); });
+
+    /* 1 · De quién es el mapa y qué abarca: toda la organización o un zoom en un área. */
+    function pintaTitol() {
+        var z = S.alcance === 'zoom', org = (S.org || '').trim(), area = (S.area || '').trim(), h = $('#cl-mapa-tit');
+        document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.alc === (z ? 'zoom' : 'global'))); });
+        $('#cl-area-c').hidden = !z;
+        $('#cl-alc-d').textContent = z ? t('Un zoom: solo el área en la que estáis trabajando.') : t('El mapa global: todo lo que haces y con quién.');
+        h.textContent = '';
+        if (!org && !(z && area)) return;
+        h.appendChild(document.createTextNode(t('Mapa de valor') + (org ? ' · ' + org : '')));
+        h.appendChild(el('span', {}, ' · ' + (z ? (area ? t('zoom en {0}', area) : t('zoom en un área')) : t('mapa global'))));
+    }
+    document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            S.alcance = b.dataset.alc; desa(); pintaTitol(); pintaSalut();
+            if (S.alcance === 'zoom') $('#cl-area').focus();
+        });
+    });
+    pintaTitol();
 
     /* 5 · El nivel y el boceto (el mismo motor que el editor del mapa) */
     document.querySelectorAll('#cl-nivells input').forEach(function (i) {
@@ -1857,7 +1904,7 @@
         /* La casilla deja constancia de que se ha informado (registro de
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
-        var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
+        var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
             objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
@@ -2264,7 +2311,7 @@
         return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
 
-    function pintaTot() { EINES.pinta(); pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 })();
