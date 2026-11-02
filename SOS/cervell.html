@@ -108,7 +108,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 .pinya-l{font-size:.92rem;margin:10px 0 0}.pinya-l ul{margin:0;padding-left:1.2em}.pinya-l p{margin:6px 0 0}
 #cvPla{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px}
 #cv.pla .cv-3d,#cv.pla .cv-ley{display:none}
-#cv.org{display:none}
+#cv.org .cv-ley,#cv.org .cv-f{display:none}
 .crea{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--indigo);border-radius:14px;padding:16px 18px;margin:28px 0 0}
 .crea h2{margin-top:0}.crea p{color:var(--light);max-width:66ch}
 .crea a{font-weight:600;color:var(--indigo)}
@@ -269,11 +269,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     <button type="button" role="tab" data-v="pinya" aria-selected="false">Pinya</button>
   </div>
   <p class="vistes-d" id="vistesD"></p>
-  <div id="cvOrg" hidden></div>
   <div id="cvTemps" hidden></div>
   <div id="cvPla" hidden></div>
   <div class="pinya-l" id="cvPinya" hidden aria-live="polite"></div>
   <div id="cv"></div>
+  <div id="cvOrg" hidden></div>
 
   <!-- Les cinc capes dites de tres maneres alhora: la paraula de cada dia, el
        castell i el Vedanta. El mètode sencer, amb l'antahkarana i la Trinitat, és
@@ -399,8 +399,19 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     CP.deRepo(repo, { token: token(), senseCodex: true }).then(function (f) {
       peces(f);
       if (!f) { estat.textContent = repo + ' encara no té cervell: ni cervell.json ni la cultura escrita (codex). Es crea amb cervell.js --nou, o puja el teu codex.md.'; return; }
-      REPO = repo;
-      return Promise.all([CP.documents(repo, f.conf, { token: token() }).catch(function () { return []; }), uni()]).then(function (x) { DOCS = x[0]; return f; });
+      REPO = repo; DOCS = [];
+      /* El dibuix surt de seguida; els documents (una crida per fitxer) arriben
+         després i tornen a pintar l'organització quan hi són. */
+      uni().then(function () {
+        if (REPO === repo && ara === 'org' && D) mostra('org');
+        return CP.documents(repo, f.conf, { token: token() });
+      }).catch(function () { return []; }).then(function (ds) {
+        if (REPO !== repo) return;
+        DOCS = ds;
+        if (ara === 'org') mostra('org');
+        if (D && ds.length) estat.textContent = 'El cervell de ' + repo + ': ' + (D.nodos.length ? D.nodos.length + ' aprenentatges a la cultura' : 'encara sense cultura pròpia escrita') + ' i ' + ds.length + ' documents.';
+      });
+      return f;
     }).then(function (f) {
       if (!f) return;
       dibuixa(f.codex || '', { nom: f.nom || repo.split('/')[1], font: repo, herencia: f.herencia, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: f.plantilla });
@@ -434,7 +445,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
      l'obre al panell de sota, el mateix del 3D. */
   var ara = 'org', pla = null, org = null, cvOrg = document.getElementById('cvOrg'), DOCS = [], UNI = null, REPO = null, cvPla = document.getElementById('cvPla'), temps = document.getElementById('cvTemps');
   var DIU = {
-    org: 'Al centre, la cultura; al voltant, les dotze àrees de qualsevol organització. Toca una àrea per veure\'n els documents, i un aprenentatge per llegir-lo.',
+    org: 'El cervell i, a sota, la seva cultura i les dotze àrees de qualsevol organització. Toca una àrea per veure\'n els documents, i un aprenentatge per trobar-lo al cervell.',
     '3d': 'Cada esfera és una kosha, el cos a fora i el propòsit al centre.',
     castellera: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i criteri), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda.',
     capes: 'Les cinc koshas, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
@@ -450,11 +461,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     var esOrg = v === 'org', es3d = v === '3d';
     caixa.classList.toggle('org', esOrg); cvOrg.hidden = !esOrg || !D;
     if (esOrg && D) org = CervellOrg.munta(cvOrg, { uni: UNI, docs: DOCS, nodos: D.nodos, repo: REPO,
-      alVeda: function (id) { mostra('3d'); if (vista) vista.tria(id); caixa.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+      alVeda: function (id) { if (vista) vista.tria(id); caixa.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
       alCultura: function () { mostra('3d'); } });
-    caixa.classList.toggle('pla', !es3d); cvPla.hidden = temps.hidden = es3d || esOrg || !D;
+    caixa.classList.toggle('pla', !es3d && !esOrg); cvPla.hidden = temps.hidden = es3d || esOrg || !D;
     var lect = document.getElementById('cvPinya'); lect.hidden = v !== 'pinya' || !D;
-    if (vista && vista.activa) vista.activa(es3d);
+    if (vista && vista.activa) vista.activa(es3d || esOrg);
     if (es3d || esOrg || !D || !D.nodos.length) return;
     pla = CervellPla.munta(cvPla, D, { vista: v, mou: false, control: temps, lectura: v === 'pinya' ? lect : null, ara: document.getElementById('estat'),
       etiqueta: D.nodos.length + ' vedes en vista ' + v, alTriar: function (id) { if (id && vista) vista.tria(id); } });
