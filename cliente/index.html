@@ -114,6 +114,7 @@
         .camps { display: grid; gap: 1rem; max-width: 46rem; }
         @media (min-width: 760px) { .camps.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
         .camp { display: grid; gap: .3rem; }
+        .camp[hidden] { display: none; }
         .camp label, .camp .et { font-weight: 600; }
         .camp small { font-size: var(--t0); color: var(--muted); }
         .camp input, .camp textarea, .camp select, .fila input, .fila select { width: 100%; min-height: 44px; padding: .55rem .75rem; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--card); }
@@ -146,7 +147,11 @@
         .sug .btn { margin-left: .4rem; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
         .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
-        .model-xips button[aria-pressed="true"] { border: 2px solid var(--indigo); }
+        .model-xips button[aria-pressed="true"], .model-xips button[aria-checked="true"] { border: 2px solid var(--indigo); }
+        .alcance { margin-top: 0; }
+        .mapa-tit { margin: 1rem 0 0; font-weight: 700; font-size: var(--t2); }
+        .mapa-tit:empty { display: none; }
+        .mapa-tit span { font-weight: 400; color: var(--muted); font-size: var(--t0); }
         .files { display: grid; gap: .8rem; margin-top: 1rem; }
         .fila { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .8rem .9rem; display: grid; gap: .5rem; }
         /* Una fila curta al mòbil (02/11/2026): qui, i a sota què et dona i què li
@@ -199,6 +204,23 @@
         /* Tu mapa y tu web, en vivo (24/10/2026). Un panel que se abre al lado
            (a pantalla entera en el móvil, el diseño estándar) y se repinta solo
            con cada cosa que escribes en la página. */
+        /* L'avanç (02/11/2026): quant falta per a un mapa ben definit i que es pot
+           automatitzar. La targeta de dalt diu què falta i on; la píndola de baix
+           el recorda a tota la pàgina i porta a la targeta. */
+        .avanc { margin-top: 1.4rem; padding: 1rem 1.1rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+        .avanc-n { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 .5rem; font-weight: 700; }
+        .avanc-n b { white-space: nowrap; font-size: 1.6rem; color: var(--indigo); font-family: var(--mono); }
+        .avanc-barra { height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
+        .avanc-barra i { display: block; height: 100%; width: 0; background: var(--green, #2e7d4f); border-radius: 999px; transition: width .4s ease; }
+        .avanc ol { list-style: none; margin: .8rem 0 0; padding: 0; display: grid; gap: .35rem; }
+        .avanc li { display: flex; gap: .5rem; align-items: baseline; }
+        .avanc li::before { content: "○"; color: var(--orange); font-weight: 700; }
+        .avanc li.ok::before { content: "✓"; color: var(--green); }
+        .avanc li.ok a { color: var(--muted); }
+        .avanc-pill { position: fixed; left: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .9rem; border-radius: 999px; background: var(--card); border: 1px solid var(--border-strong); color: var(--text); font-weight: 700; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+        .avanc-pill span { font-family: var(--mono); color: var(--indigo); }
+        @media (max-width: 560px) { .avanc-pill { bottom: 4.4rem; } .aviso { bottom: 8.2rem; } }
+        @media (prefers-reduced-motion: reduce) { .avanc-barra i { transition: none; } }
         .viu-b { position: fixed; right: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; padding: .6rem 1.1rem; border-radius: 999px; border: 0; background: var(--indigo); color: var(--on-accent, #fff); font: inherit; font-weight: 700; box-shadow: 0 10px 28px -12px rgba(0, 0, 0, .45); cursor: pointer; }
         .viu-b[aria-expanded="true"] { display: none; }
         .viu { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; gap: .6rem; padding: .8rem 1rem 1rem; background: var(--bg, #fbfaf7); overflow-y: auto; }
@@ -479,14 +501,11 @@
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
         <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
-        <ol class="nota" style="margin-top:1rem;display:grid;gap:.2rem">
-            <li><span class="num-paso">1 ·</span> <a href="#alrededor">Quién está a tu alrededor</a></li>
-            <li><span class="num-paso">2 ·</span> <a href="#web">Qué web quieres, y su boceto</a></li>
-            <li><span class="num-paso">3 ·</span> <a href="#cuentanos">Lo que quieres, con tus palabras</a></li>
-            <li><span class="num-paso">4 ·</span> <a href="#preguntas">Unas preguntas (o que las conteste tu IA)</a></li>
-            <li><span class="num-paso">5 ·</span> <a href="#cuenta">Tu cuenta</a></li>
-            <li><span class="num-paso">6 ·</span> <a href="#enviar">Nos lo envías</a></li>
-        </ol>
+        <div class="avanc" id="avance" aria-labelledby="avanc-t">
+            <p class="avanc-n" id="avanc-t"><b id="cl-avanc-n">0 %</b> <span>hacia un mapa bien definido y que puede ir solo</span></p>
+            <div class="avanc-barra" role="progressbar" aria-labelledby="avanc-t" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="cl-avanc-b"><i></i></div>
+            <ol id="cl-avanc"></ol>
+        </div>
         <p class="nota" style="margin-top:1rem"><a href="#alrededor">Empieza por tu mapa</a>. ¿No sabes si te hace falta? <a href="/SOS/diagnostic.html?lang=es">Hazte el diagnóstico de 3 minutos</a>.</p>
         <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="/acceso">tu espacio</a>.</p>
     </div>
@@ -499,6 +518,14 @@
             <h2 id="t-alrededor">Con quién trabajas, qué te da y qué le das.</h2>
             <p>Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.</p>
         </div>
+        <div class="camps dos">
+            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org" placeholder="El nombre de tu escuela, tu empresa, tu asociación…"><small>Es el nombre del mapa.</small></div>
+            <div class="camp"><span class="et" id="cl-alc-t">De qué es este mapa</span>
+                <div class="model-xips alcance" id="cl-alcance" role="radiogroup" aria-labelledby="cl-alc-t"><button type="button" role="radio" data-alc="global" aria-checked="true">De toda la organización</button><button type="button" role="radio" data-alc="zoom" aria-checked="false">De un área (zoom)</button></div>
+                <small id="cl-alc-d">El mapa global: todo lo que haces y con quién.</small></div>
+            <div class="camp" id="cl-area-c" hidden><label for="cl-area">Qué área</label><input id="cl-area" data-c="area" placeholder="Los cursos de verano, la tienda, la formación de profes…"><small>Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.</small></div>
+        </div>
+        <p class="mapa-tit" id="cl-mapa-tit" aria-live="polite"></p>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
@@ -552,6 +579,7 @@
             <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
             <label><input type="checkbox" data-capa="extranet"> <b>El espacio de clientes y aliados</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
             <label><input type="checkbox" data-capa="intranet"> <b>El espacio de tu equipo</b><span>Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
+            <label><input type="checkbox" id="cl-automatiza"> <b>Que lo que se repite vaya solo</b><span>Marcamos en tu mapa lo que puede preparar una máquina (avisos, informes, presupuestos, reservas) y lo dejamos funcionando, con una persona que lo revisa. Lo que no se paga y el dinero los lleva siempre una persona.</span></label>
         </div>
         <h3 style="margin-top:1.6rem">Dónde está tu web y qué usas</h3>
         <p class="nota">Elige lo que sepas; lo que no, lo vemos juntos. Así sabemos desde el principio con qué se conecta tu web.</p>
@@ -647,7 +675,6 @@
         <div class="camps dos">
             <div class="camp"><label for="cl-nom">Tu nombre</label><input id="cl-nom" autocomplete="name" data-c="nom"></div>
             <div class="camp"><label for="cl-mail">Tu correo</label><input id="cl-mail" type="email" autocomplete="email" data-c="mail"></div>
-            <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org"></div>
             <div class="camp"><label for="cl-web">Tu web de ahora, si la tienes</label><input id="cl-web" type="url" inputmode="url" placeholder="https://" data-c="web"></div>
         </div>
         <div class="accions">
@@ -713,6 +740,7 @@
 
 </main>
 <!-- Tu mapa y tu web, en vivo: lo que escribes arriba se ve aquí al momento. -->
+<a class="avanc-pill" id="cl-avanc-p" href="#avance" >Avance <span>0 %</span></a>
 <button type="button" class="viu-b" id="cl-viu-b" aria-controls="cl-viu" aria-expanded="false">✦ Ver mi mapa y mi web</button>
 <aside class="viu" id="cl-viu" aria-labelledby="t-viu" hidden>
     <div class="viu-cap"><h2 id="t-viu">Tu mapa y tu web, en vivo</h2><button type="button" class="btn btn-sm btn-ghost" id="cl-viu-tanca">Cerrar</button></div>
@@ -790,8 +818,8 @@
      lo envía el botón «Enviar a TeamTowers» con un POST, y nada más. -->
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
-  <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
-  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea><textarea name="eines"></textarea>
+  <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="alcance"><input name="web">
+  <input name="objectiu"><input name="nivel"><input name="capas"><input name="automatiza"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea><textarea name="eines"></textarea>
 </form>
 
 <script src="/SOS/lib/mapa-valor.js"></script>
@@ -851,6 +879,17 @@
         'Escribe arriba con quién trabajas (paso 1) y aquí aparece tu web.': 'Escriu a dalt amb qui treballes (pas 1) i aquí apareix la teva web.',
         'Empieza tu proyecto | TeamTowers Humà': 'Comença el teu projecte | TeamTowers Humà',
         'Tu espacio de cliente': 'El teu espai de client',
+        'hacia un mapa bien definido y que puede ir solo': 'cap a un mapa ben definit i que pot anar sol',
+        'Lo que no se paga, también': 'El que no es paga, també',
+        'Con cada uno, algo va y algo vuelve': 'Amb cadascun, alguna cosa va i alguna cosa torna',
+        'Cada uno por lo que hace, sin cifras': 'Cadascú pel que fa, sense xifres',
+        'Qué quieres conseguir': 'Què vols aconseguir',
+        'Lo que puede ir solo, señalado': 'El que pot anar sol, assenyalat',
+        'Tu avance': 'El teu avanç',
+        'Avance': 'Avanç',
+        'Qué web quieres': 'Quina web vols',
+        'Que lo que se repite vaya solo': 'Que el que es repeteix vagi sol',
+        'Marcamos en tu mapa lo que puede preparar una máquina (avisos, informes, presupuestos, reservas) y lo dejamos funcionando, con una persona que lo revisa. Lo que no se paga y el dinero los lleva siempre una persona.': "Marquem al teu mapa el que pot preparar una màquina (avisos, informes, pressupostos, reserves) i ho deixem funcionant, amb una persona que ho revisa. El que no es paga i els diners els porta sempre una persona.",
         '¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en': 'Ja treballes amb nosaltres? La teva pàgina, el teu pla i la nostra conversa són al',
         'tu espacio': 'teu espai',
         'Empieza por tu mapa': 'Comença pel teu mapa',
@@ -870,6 +909,21 @@
         'Tu nombre': 'El teu nom',
         'Tu correo': 'El teu correu',
         'Tu organización': 'La teva organització',
+        'El nombre de tu escuela, tu empresa, tu asociación…': "El nom de la teva escola, la teva empresa, la teva associació…",
+        'Es el nombre del mapa.': 'És el nom del mapa.',
+        'De qué es este mapa': "De què és aquest mapa",
+        'De toda la organización': "De tota l'organització",
+        'De un área (zoom)': "D'una àrea (zoom)",
+        'El mapa global: todo lo que haces y con quién.': 'El mapa global: tot el que fas i amb qui.',
+        'Un zoom: solo el área en la que estáis trabajando.': "Un zoom: només l'àrea en què esteu treballant.",
+        'Qué área': 'Quina àrea',
+        'Los cursos de verano, la tienda, la formación de profes…': "Els cursos d'estiu, la botiga, la formació de professors…",
+        'Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.': "Fem zoom en el que esteu treballant ara; la resta de l'organització queda fora del dibuix.",
+        'Mapa de valor': 'Mapa de valor',
+        'zoom en {0}': 'zoom a {0}',
+        'zoom en un área': 'zoom a una àrea',
+        'mapa global': 'mapa global',
+        'De quién es el mapa y qué abarca': "De qui és el mapa i què abasta",
         'Tu web de ahora, si la tienes': "La teva web d'ara, si en tens",
         'Crear mi cuenta': 'Crear el meu compte',
         'Descargar mi ficha': 'Descarregar la meva fitxa',
@@ -960,9 +1014,9 @@
         'Primero di al menos quién está a tu alrededor (paso 1)': 'Primer digues almenys qui hi ha al teu voltant (pas 1)',
         'Preparando el boceto…': "Preparant l'esbós…",
         'Inicio': 'Inici',
-        'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.': "Aquest és el teu esbós: la landing amb el que aporta valor a cadascun dels principals, i l'avís legal.",
-        'Este es tu boceto: una puerta para cada uno, con el acceso de clientes y aliados (extranet).': "Aquest és el teu esbós: una porta per a cadascú, amb l'accés de clients i aliats (extranet).",
-        'La intranet del equipo está en «Intranet».': "La intranet de l'equip és a «Intranet».",
+        'Este es tu boceto: una portada con una parte para cada persona importante de tu dibujo, y el aviso legal.': "Aquest és el teu esbós: una portada amb una part per a cada persona important del teu dibuix, i l'avís legal.",
+        'Este es tu boceto: una puerta para cada uno, con el espacio de clientes y aliados.': "Aquest és el teu esbós: una porta per a cadascú, amb l'espai de clients i aliats.",
+        'El espacio de tu equipo está en «Intranet».': "L'espai del teu equip és a «Intranet».",
         'No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.': "No he pogut preparar l'esbós ara. Pots enviar-ho igualment i ho mirem junts.",
         'Esto cambia quién está a tu alrededor por lo del modelo «{0}». ¿Seguimos?': 'Això canvia qui hi ha al teu voltant pel que diu el model «{0}». Continuem?',
         'Modelo «{0}»: ahora cámbialo con tus palabras': "Model «{0}»: ara canvia'l amb les teves paraules",
@@ -1242,11 +1296,11 @@
     }
     tradueix();
     var CLAU = 'tt.cliente.v1';
-    var S = { nom: '', mail: '', org: '', web: '', inicial: '', casa: '', nivel: '', respuestas: {}, alrededor: [], cuenta: false };
+    var S = { nom: '', mail: '', org: '', alcance: 'global', area: '', web: '', inicial: '', casa: '', nivel: '', automatiza: false, respuestas: {}, alrededor: [], cuenta: false };
     try { Object.assign(S, JSON.parse(localStorage.getItem(CLAU) || 'null') || {}); } catch (e) { /* sin memoria: se empieza de cero */ }
     /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
     var PUJA = null;
-    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); if (PUJA) PUJA(); }
+    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); pintaAvanc(); if (PUJA) PUJA(); }
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
@@ -1255,7 +1309,7 @@
     /* Los campos simples (data-c) van y vienen del estado. */
     function pintaCamps() { document.querySelectorAll('[data-c]').forEach(function (i) { i.value = S[i.dataset.c] || ''; }); }
     document.querySelectorAll('[data-c]').forEach(function (i) {
-        i.addEventListener('input', function () { S[i.dataset.c] = i.value; desa(); pintaPrompt(); if (i.dataset.c === 'casa') pintaSalut(); });
+        i.addEventListener('input', function () { S[i.dataset.c] = i.value; desa(); pintaPrompt(); pintaTitol(); if (i.dataset.c === 'casa' || i.dataset.c === 'area') pintaSalut(); });
     });
 
     /* 1 · La cuenta */
@@ -1355,6 +1409,7 @@
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
         $('#cl-salut-n').textContent = t('Tu dibujo, al {0} %', D.salut(D.mapa(S), null, LL).punts);
+        pintaAvanc();
         /* Cada cosa que falta porta on s'arregla: «la màxima de tot és un enllaç». */
         r.punts.forEach(function (p) {
             var li = el('li', { class: p.ok ? 'ok' : '' }), sp = el('span', {}, p.diu + ' ');
@@ -1427,6 +1482,58 @@
         c.appendChild(el('p', { class: 'nota' }, t('Tu mapa puede ir por el mismo camino: primero se define cada intercambio (quién, qué, con qué); lo que está definido se puede automatizar, y lo que no se paga lo lleva siempre una persona.')));
     }
     pintaCaso();
+
+    /* L'avanç: cada fita té el seu pes i el seu enllaç («la màxima de tot és un
+       enllaç»). Les regles del dibuix són les de D.revisa, les mateixes de
+       «¿Está listo para dibujarlo?»; «puede ir solo» és la regla del tauler
+       (MM.automatitza), la del panell «Lo que puede ir solo». */
+    function pintaAvanc() {
+        var ol = $('#cl-avanc'); if (!ol) return;
+        var ok = {}; try { D.revisa(D.mapa(S), null, LL).punts.forEach(function (p) { ok[p.id] = p.ok; }); } catch (e) { /* sin dibujo todavía */ }
+        var maq = 0; try { maq = MM.automatitza ? auto().filter(function (x) { return x.r.qui === 'maquina'; }).length : 0; } catch (e) { /* sin flechas */ }
+        var F = [
+            [5, !!(S.org || '').trim() && (S.alcance !== 'zoom' || !!(S.area || '').trim()), '#alrededor', t('De quién es el mapa y qué abarca')],
+            [10, ok.rols, '#cl-files', t('Quién está a tu alrededor')],
+            [10, ok.menes, '#cl-files', t('Lo que no se paga, también')],
+            [10, ok.reciprocitat && ok.solts, '#cl-files', t('Con cada uno, algo va y algo vuelve')],
+            [5, ok.rols && ok.noms && ok.xifres, '#cl-files', t('Cada uno por lo que hace, sin cifras')],
+            [10, ok.abast, '#cl-p-objetivo', t('Qué quieres conseguir')],
+            [15, maq > 0, '#cl-auto', t('Lo que puede ir solo, señalado')],
+            [10, !!S.nivel, '#web', t('Qué web quieres')],
+            [10, !!S.cuenta, '#cuenta', t('Tu cuenta')],
+            [15, !!S.enviat, '#enviar', t('Nos lo envías')]
+        ];
+        var n = 0; ol.textContent = '';
+        F.forEach(function (f) {
+            if (f[1]) n += f[0];
+            var li = el('li', { class: f[1] ? 'ok' : '' }); li.appendChild(el('a', { href: f[2] }, f[3])); ol.appendChild(li);
+        });
+        $('#cl-avanc-n').textContent = n + ' %';
+        $('#cl-avanc-b').setAttribute('aria-valuenow', String(n));
+        $('#cl-avanc-b i').style.width = n + '%';
+        $('#cl-avanc-p span').textContent = n + ' %';
+    }
+    $('#cl-automatiza').checked = !!S.automatiza;
+    $('#cl-automatiza').addEventListener('change', function () { S.automatiza = this.checked; desa(); });
+
+    /* 1 · De quién es el mapa y qué abarca: toda la organización o un zoom en un área. */
+    function pintaTitol() {
+        var z = S.alcance === 'zoom', org = (S.org || '').trim(), area = (S.area || '').trim(), h = $('#cl-mapa-tit');
+        document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.alc === (z ? 'zoom' : 'global'))); });
+        $('#cl-area-c').hidden = !z;
+        $('#cl-alc-d').textContent = z ? t('Un zoom: solo el área en la que estáis trabajando.') : t('El mapa global: todo lo que haces y con quién.');
+        h.textContent = '';
+        if (!org && !(z && area)) return;
+        h.appendChild(document.createTextNode(t('Mapa de valor') + (org ? ' · ' + org : '')));
+        h.appendChild(el('span', {}, ' · ' + (z ? (area ? t('zoom en {0}', area) : t('zoom en un área')) : t('mapa global'))));
+    }
+    document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            S.alcance = b.dataset.alc; desa(); pintaTitol(); pintaSalut();
+            if (S.alcance === 'zoom') $('#cl-area').focus();
+        });
+    });
+    pintaTitol();
 
     /* 5 · El nivel y el boceto (el mismo motor que el editor del mapa) */
     document.querySelectorAll('#cl-nivells input').forEach(function (i) {
@@ -1533,8 +1640,8 @@
                 b.addEventListener('click', function () { mostra(x.ruta); }); bar.appendChild(b);
             });
             $('#cl-marc-caixa').hidden = false; mostra(enViu && PAGS[ARA] ? ARA : 'index.html');
-            r.textContent = t(basica ? 'Este es tu boceto: la landing con lo que aporta valor a cada uno de los principales, y el aviso legal.'
-                : 'Este es tu boceto: una puerta para cada uno, con el acceso de clientes y aliados (extranet).') + (capes().indexOf('intranet') >= 0 ? ' ' + t('La intranet del equipo está en «Intranet».') : '');
+            r.textContent = t(basica ? 'Este es tu boceto: una portada con una parte para cada persona importante de tu dibujo, y el aviso legal.'
+                : 'Este es tu boceto: una puerta para cada uno, con el espacio de clientes y aliados.') + (capes().indexOf('intranet') >= 0 ? ' ' + t('El espacio de tu equipo está en «Intranet».') : '');
         }).catch(function () { r.textContent = t('No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'); });
     }
     $('#cl-boceto').addEventListener('click', function () { pintaWeb(false); });
@@ -1775,7 +1882,7 @@
         $('#cl-ed-avz').setAttribute('aria-pressed', String(avanzada));
         $('#cl-ed-avz').textContent = t(avanzada ? 'Vista sencilla' : 'Vista avanzada');
         ED.classList.toggle('avanzada', avanzada);
-        MARC.src = '/SOS/vna-suport.html?app&lang=' + LL + (avanzada ? '' : '&incrustat') + '&t=' + Date.now();
+        MARC.src = '/SOS/vna-suport.html?app&lang=' + LL + '&incrustat' + (avanzada ? '&ple' : '') + '&t=' + Date.now();
     }
     $('#cl-ed-avz').addEventListener('click', function () {
         try { localStorage.removeItem('sos-mapa-cap-editor'); } catch (e) { /* nada que quitar */ }
@@ -1797,8 +1904,8 @@
         /* La casilla deja constancia de que se ha informado (registro de
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
-        var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
+        var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -2204,7 +2311,7 @@
         return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
 
-    function pintaTot() { EINES.pinta(); pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 })();

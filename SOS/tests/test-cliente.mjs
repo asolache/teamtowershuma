@@ -41,8 +41,15 @@ const CV = D.cervell({ casa: 'La escuela', org: 'Escuela "Sol"', inicial: 'Llena
 const cvN = CV.map(f => f.nom), cvF = n => (CV.find(f => f.nom === 'cerebro/' + n) || {}).text || '';
 ok(CV.every(f => f.nom.startsWith('cerebro/')) && !cvN.some(n => /cervell\.json$/.test(n)) && ['mapa-real.json', 'configuracio.json', 'marca.json', 'encargo.md', 'herramientas.md', 'decisiones.md', 'preguntas-abiertas.md', 'LEEME.md'].every(n => cvN.includes('cerebro/' + n)),
   'el cerebro del proyecto: solo la carpeta cerebro/, sin cervell.json (lo pone el kit)');
-ok(JSON.stringify(JSON.parse(cvF('mapa-real.json'))) === JSON.stringify(D.mapa({ casa: 'La escuela', inicial: 'Llenar los cursos', respuestas: { objetivo: 'Llenar los cursos' }, alrededor: [{ quien: 'Alumnos', meDa: 'la matrícula', meDaEs: 'tangible', leDoy: 'confianza', leDoyEs: 'intangible' }] })),
+ok(JSON.stringify(JSON.parse(cvF('mapa-real.json'))) === JSON.stringify(D.mapa({ casa: 'La escuela', org: 'Escuela "Sol"', inicial: 'Llenar los cursos', respuestas: { objetivo: 'Llenar los cursos' }, alrededor: [{ quien: 'Alumnos', meDa: 'la matrícula', meDaEs: 'tangible', leDoy: 'confianza', leDoyEs: 'intangible' }] })),
   'mapa-real.json es el mismo mapa que abre el editor y lee la plantilla de la web');
+/* El nom i l'abast del mapa (02/11/2026): global o zoom en una àrea. */
+const mz = D.mapa({ casa: 'Cursos de verano', org: 'Escuela Sol', alcance: 'zoom', area: 'Los cursos de verano', alrededor: [] });
+ok(mz.nom === 'Escuela Sol' && mz.zoom === 'Los cursos de verano' && !('zoom' in D.mapa({ org: 'Escuela Sol' })) && !('nom' in D.mapa({})),
+  'el mapa lleva el nombre de la organización y, si es un zoom, de qué área');
+ok(/Mapa: zoom en Los cursos de verano/.test(D.resum({ org: 'Escuela Sol', alcance: 'zoom', area: 'Los cursos de verano' })) && /Mapa: global/.test(D.resum({}))
+  && /zoom en un área|solo de un área.*Los cursos/.test(D.prompt({ alcance: 'zoom', area: 'Los cursos de verano' }, 'es')),
+  'a la casa y a la IA les llega si el mapa es global o un zoom');
 ok(/Holded · API: Sí/.test(cvF('herramientas.md')) && /2026-11-02 · Aceptado/.test(cvF('decisiones.md')) && /¿Quién te avala\?/.test(cvF('preguntas-abiertas.md')) && /Falta lo que no se paga/.test(cvF('preguntas-abiertas.md')),
   'con sus herramientas, sus decisiones fechadas y lo que queda por hablar');
 ok(/--nom "Escuela Sol"/.test(cvF('LEEME.md')) && JSON.parse(cvF('configuracio.json')).capes[0] === 'extranet', 'y cómo abrirlo con el kit del cerebro');
@@ -112,10 +119,12 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(fitxa.alrededor.length === 6 && fitxa.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'), 'lo que cambia en el editor vuelve a la ficha, también lo que pasa entre los demás');
   ok(await p.locator('#cl-files .fila').count() === 6, 'y las filas siguen ahí');
   await p.click('#cl-ed-avz');
-  await p.waitForFunction(() => { const f = document.getElementById('cl-ed-marc'); return !/incrustat/.test(f.contentWindow.location.search) && f.contentWindow.document.readyState === 'complete' && f.contentWindow.__VS_ED && f.contentWindow.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
+  await p.waitForFunction(() => { const f = document.getElementById('cl-ed-marc'); return /[?&]ple\b/.test(f.contentWindow.location.search) && f.contentWindow.document.readyState === 'complete' && f.contentWindow.__VS_ED && f.contentWindow.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
   const fr2 = p.frames().find(f => /vna-suport/.test(f.url()));
-  ok(await fr2.evaluate(() => window.__VS_ED.exporta().pairs.some(x => x[3] === 'confianza' || x[5] === 'confianza')) && await fr2.evaluate(() => !!document.querySelector('header.cap').offsetParent && !!document.querySelector('#pre').offsetParent),
+  ok(await fr2.evaluate(() => window.__VS_ED.exporta().pairs.some(x => x[3] === 'confianza' || x[5] === 'confianza')) && await fr2.evaluate(() => !!(document.querySelector('.ed-modes') || {}).offsetParent),
     'la vista avanzada abre el editor entero con el mismo dibujo');
+  ok(await fr2.evaluate(() => !(document.querySelector('header.cap') || {}).offsetParent && !(document.querySelector('body > nav') || {}).offsetParent && !(document.querySelector('.tt-peu') || {}).offsetParent),
+    'y sin la web alrededor: ni la barra, ni la cabecera, ni el pie dentro del marco');
   await p.click('#cl-ed-tanca');
   ok(!(await p.isVisible('#cl-ed')), 'el editor se cierra y sigues donde estabas');
 
@@ -138,7 +147,26 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.fill('#cl-casa', 'Equipo de formación');
   await p.fill('#cl-retorn', RESPOSTA); await p.click('#cl-omple');
 
+  /* De qui és el mapa i què abasta: el nom de l'organització i global o zoom. */
+  await p.fill('#cl-org', 'Escuela de prueba');
+  const avA = parseInt(await p.textContent('#cl-avanc-n'), 10);
+  await p.click('#cl-alcance [data-alc="zoom"]');
+  const zoomSenseArea = !(await p.locator('#cl-area-c').isHidden()) && parseInt(await p.textContent('#cl-avanc-n'), 10) === avA - 5;
+  await p.fill('#cl-area', 'Los cursos de verano');
+  ok(zoomSenseArea && parseInt(await p.textContent('#cl-avanc-n'), 10) === avA && /Escuela de prueba/.test(await p.textContent('#cl-mapa-tit')) && /zoom en Los cursos de verano/.test(await p.textContent('#cl-mapa-tit'))
+    && await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('tt.cliente.v1')); return s.alcance === 'zoom' && s.area === 'Los cursos de verano' && s.org === 'Escuela de prueba'; }),
+    'el mapa lleva el nombre de la organización y si es global o un zoom en un área (con su título y su paso del avance)');
+  await p.click('#cl-alcance [data-alc="global"]');
+  ok(await p.locator('#cl-area-c').isHidden() && /mapa global/.test(await p.textContent('#cl-mapa-tit')), 'y vuelve a global sin perder el nombre');
+
+  /* L'avanç (02/11/2026): puja amb el dibuix i amb la web triada, i cada fita és un enllaç. */
+  const av0 = parseInt(await p.textContent('#cl-avanc-n'), 10);
   await p.check('#cl-n-conectada', { force: true });
+  const av1 = parseInt(await p.textContent('#cl-avanc-n'), 10);
+  ok(av0 > 0 && av1 === av0 + 10 && await p.locator('#cl-avanc li a[href^="#"]').count() === 10 && /%/.test(await p.textContent('#cl-avanc-p')),
+    'el avance sube con el dibujo y con la web elegida (' + av0 + ' → ' + av1 + ' %), y cada paso lleva adonde se hace');
+  await p.check('#cl-automatiza');
+  ok((await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).automatiza)) === true, 'la opción «que lo que se repite vaya solo» queda en la ficha');
   await p.click('#cl-boceto');
   await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
   await p.waitForTimeout(300);
