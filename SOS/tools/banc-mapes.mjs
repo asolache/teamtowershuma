@@ -99,6 +99,34 @@ export const peticionsOficis = model => OFICIS.map(([id, desc]) => ({ custom_id:
   system: SIS_OFICI, output_config: { effort: 'high', format: { type: 'json_schema', schema: ESQ_OFICI } },
   messages: [{ role: 'user', content: 'El oficio: ' + desc + '. Escribe su modelo de referencia.' }] } }));
 
+/* ─── B2 · Les opcions de web per ofici ───
+   L'Àlvar (02/11/2026): el que surt de /cliente/ és un brief i la web la fa ell a
+   Claude Code. Per a cada ofici, opcions ja preparades que el brief proposa per
+   defecte i que /cliente/ pot ensenyar a l'instant i sense cost: el to, el menú,
+   tres portades, una secció per a cada rol del model, les proves de confiança
+   (els intangibles fets visibles), què se sol connectar i les preguntes amb
+   botons per triar. Queda a `banc-mapes/webs.json` com a esborrany. */
+const VEU = S({ nom: STR, exemple: STR });
+const WEB_LL = S({ tons: { type: 'array', items: VEU }, menu: LST, portades: { type: 'array', items: S({ lema: STR, presentacio: STR, boto: STR }) },
+  seccions: { type: 'array', items: S({ quien: STR, nom: STR, intro: STR, boto: STR }) },
+  proves: LST, connecta: { type: 'array', items: S({ eina: STR, per: STR }) },
+  preguntes: { type: 'array', items: S({ pregunta: STR, opciones: LST, varias: { type: 'boolean' } }) } });
+const ESQ_WEB = S({ es: WEB_LL, ca: WEB_LL });
+const SIS_WEB = [
+  'Eres redactora web y estratega de pymes y autónomos en Cataluña y España, y conoces los mapas de valor (Verna Allee).',
+  'Preparas las opciones por defecto de la web de un oficio: lo que una persona de ese oficio elegiría con un toque, sin escribir. Es buena práctica, no un cliente concreto: sin nombres de personas ni empresas, sin precios ni cifras inventadas, sin promesas que no se puedan cumplir.',
+  'Escribes de tú, cálido y concreto, sin jerga («VNA», «rol», «tangible», «flujo», «stakeholder» nunca).',
+  '«tons»: 3 tonos distintos de verdad (nombre corto y una frase de ejemplo en ese tono). «menu»: 4 a 6 entradas cortas. «portades»: 3 opciones de portada (lema hasta 12 palabras, presentación de dos frases, texto del botón principal).',
+  '«seccions»: una por cada rol del modelo menos el propio negocio, con «quien» copiado exactamente del modelo; «nom» cómo se reconoce ese grupo en la web (hasta cuatro palabras), «intro» una o dos frases dichas a esa persona, «boto» lo que pulsa.',
+  '«proves»: 3 a 5 formas de hacer visible lo que no se paga (confianza, recomendaciones, reputación) propias del oficio. «connecta»: 3 a 5 herramientas típicas del oficio por tipo (no marcas) y qué haría la web con ellas. «preguntes»: 3 preguntas para afinar su web, cada una con 2 a 4 opciones cortas que no se solapen.',
+  '«es» en castellano y «ca» en catalán: lo mismo, con los nombres de rol de cada idioma tal como vienen en el modelo.'].join('\n');
+export function peticionsWebs(oficis, model) {
+  return oficis.map(o => ({ custom_id: 'web-' + o.id, params: { model, max_tokens: 9000, system: [{ type: 'text', text: SIS_WEB, cache_control: { type: 'ephemeral' } }],
+    output_config: { effort: 'high', format: { type: 'json_schema', schema: ESQ_WEB } },
+    messages: [{ role: 'user', content: 'El oficio: ' + o.es.nom + ' (' + o.es.diu + ')\nModelo en castellano: ' + JSON.stringify({ centre: o.es.centre, roles: o.es.roles, pairs: o.es.pairs }) +
+      '\nModelo en catalán: ' + JSON.stringify({ centre: o.ca.centre, roles: o.ca.roles }) + '\nPrepara sus opciones de web.' }] } }));
+}
+
 /* ─── Les variants del prompt: banc-mapes/variants/<nom>.json ───
    { "nom": "...", "sistemaExtra": "línies que s'afegeixen al sistema", "pas": "substitueix PAS.mapa", "pasExtra": "s'afegeix a PAS.mapa" } */
 export function variant(nom) {
@@ -319,6 +347,18 @@ async function main() {
     const fets = rs.filter(x => x.r).map(x => { try { return Object.assign({ id: x.id.replace(/^ofici-/, '') }, jsonDe(x.r)); } catch (e) { return null; } }).filter(Boolean);
     writeFileSync(join(BANC, 'oficis.json'), JSON.stringify({ versio: 1, estat: 'esborrany', generat: new Date().toISOString().slice(0, 10), oficis: fets }, null, 1) + '\n');
     console.log('oficis: ' + fets.length + ' · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
+    return;
+  }
+  if (ordre === 'webs') {
+    const oficis = llegeixJ(join(BANC, 'oficis.json')).oficis, rs = await crida(peticionsWebs(oficis, OPUS));
+    if (!rs) return;
+    const nom = {}; oficis.forEach(o => { nom[o.id] = o; });
+    const fets = rs.filter(x => x.r).map(x => { try { const id = x.id.replace(/^web-/, ''), j = jsonDe(x.r);
+      /* Cada secció, d'un rol del model: la que no hi és, fora. */
+      ['es', 'ca'].forEach(ll => { const rols = new Set(nom[id][ll].roles); j[ll].seccions = j[ll].seccions.filter(c => rols.has(c.quien) && c.quien !== nom[id][ll].centre); });
+      return Object.assign({ id }, j); } catch (e) { return null; } }).filter(Boolean);
+    writeFileSync(join(BANC, 'webs.json'), JSON.stringify({ versio: 1, estat: 'esborrany', generat: new Date().toISOString().slice(0, 10), webs: fets }, null, 1) + '\n');
+    console.log('webs: ' + fets.length + ' · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
     return;
   }
   const casos = llegeixJ(join(BANC, 'casos.json')).casos.slice(0, Number(a.max || 999));
