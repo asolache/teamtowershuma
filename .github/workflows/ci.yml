@@ -99,6 +99,10 @@ jobs:
       - name: Nucli del mapa de valor
         run: node SOS/tests/test-mapa-valor.mjs
 
+      # El nom de cada entregable damunt de les fletxes dels mapes de valor.
+      - name: Etiquetes dels entregables
+        run: node SOS/tests/test-mapa-etiquetes.mjs
+
       # La colla castellera surt a dos llocs: la portada i el mapa de valor.
       # Són dues còpies deliberades, i per això mateix poden divergir en
       # silenci — que és exactament el que va passar amb els herois.

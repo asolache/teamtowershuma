@@ -155,6 +155,7 @@
     if (conc && !conc.ok) PRI.push({ n: 3, c: 'var(--indigo)', t: t.p3, d: f(t.p3d, pct, menor(R[mig])), rol: R[mig], fl: fx.filter(function (x) { return x.de[L] === R[mig] || x.a[L] === R[mig]; }) });
     else if (humans.length) PRI.push({ n: 3, c: COLOR.persona, t: t.p4, d: f(t.p4d, humans.length, llista(humans.slice(0, 3).map(function (x) { return x.que[L]; }), L)), fl: humans });
 
+    var vell = cont.querySelector('.ma-svg'); if (vell && vell._me) vell._me.treu();
     cont.textContent = '';
     var grid = el('div', { class: 'ma-grid' }), esq = el('div'), dre = el('div', { class: 'ma-pri' });
     var svg = el('svg', { class: 'ma-svg', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': f(t.a11y, R.length, fx.length) });
@@ -231,6 +232,10 @@
     var cta = cont.getAttribute('data-cta');
     if (cta) dre.appendChild(el('a', { class: 'btn-primary', href: cta }, cont.getAttribute('data-cta-' + L) || cta));
     grid.appendChild(esq); grid.appendChild(dre); cont.appendChild(grid);
+    /* El nom de cada lliurament, damunt de la seva fletxa (lib/mapa-etiquetes.js). */
+    if (g.MapaEtiquetes) g.MapaEtiquetes.posa(svg, vies.map(function (v) {
+      return { p: v.p, text: v.x.que[L], de: v.x.de[L], a: v.x.a[L], mena: v.x.mena === 'intangible' ? 'i' : 't' };
+    }));
 
     var fix = null;
     function tria(fl, rol) {
