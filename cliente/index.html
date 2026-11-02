@@ -142,6 +142,11 @@
         .models { margin-top: 1.2rem; max-width: 70ch; }
         .models-sec { margin: .9rem 0 0; font-size: var(--t0); color: var(--muted); }
         .bona { margin-top: .8rem; line-height: 1.55; max-width: 70ch; }
+        .rols-model { margin-top: 1rem; padding: .9rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); display: grid; gap: .6rem; max-width: 72ch; }
+        .rols-model h3 { margin: 0; font-size: var(--t1, 1.05rem); }
+        .rols-model .nota { margin: 0; }
+        .rols-model .model-xips button[aria-pressed="true"] { opacity: .75; cursor: default; }
+        .rols-model .accions { margin-top: 0; }
         .sug { margin-top: .8rem; padding: .8rem 1rem; border-left: 3px solid var(--indigo); background: var(--card); border-radius: 0 12px 12px 0; line-height: 1.55; }
         .sug .btn { margin-left: .4rem; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
@@ -503,9 +508,12 @@
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
             <div class="model-xips" id="cl-models" role="group" aria-label="Modelos para empezar"></div>
+            <p class="models-sec">O por oficio, si eres una pyme o trabajas por tu cuenta:</p>
+            <div class="model-xips" id="cl-oficis" role="group" aria-label="Modelos por oficio"></div>
             <p class="models-sec">O por sector, si tu proyecto mira al territorio:</p>
             <div class="model-xips" id="cl-sectors" role="group" aria-label="Modelos por sector"></div>
             <p class="bona" id="cl-bona" hidden></p>
+            <div class="rols-model" id="cl-rols" aria-live="polite" hidden></div>
         </div>
         <div class="files" id="cl-files"></div>
         <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
@@ -934,7 +942,7 @@
         'Pega aquí lo que te ha contestado': "Enganxa aquí el que t'ha contestat",
         'Tu equipo, Equipo de formación, La bodega…': "El teu equip, Equip de formació, El celler…",
         'Modelos para empezar': 'Models per començar',
-        'Modelos por sector': 'Models per sector',
+        'Modelos por sector': 'Models per sector', 'Modelos por oficio': 'Models per ofici',
         'El editor de tu dibujo': 'L\'editor del teu dibuix',
         'Nivel de web': 'Nivell de web',
         'Qué partes de la web hacemos': 'Quines parts de la web fem',
@@ -1042,6 +1050,11 @@
         '¿Borramos tu dibujo de tu cuenta? En este navegador se queda.': "Esborrem el teu dibuix del teu compte? En aquest navegador s'hi queda.",
         'No se ha podido borrar. Prueba en un rato.': "No s'ha pogut esborrar. Prova-ho d'aquí a una estona.", 'Borrado de tu cuenta. En este navegador sigue.': 'Esborrat del teu compte. En aquest navegador continua.',
         'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta', 'Otra': 'Una altra', 'Puedes elegir más de una.': 'En pots triar més d\'una.',
+        'O por oficio, si eres una pyme o trabajas por tu cuenta:': 'O per ofici, si ets una pime o treballes pel teu compte:',
+        'Quién suele estar en «{0}»': 'Qui sol haver-hi a «{0}»', 'Quién suele estar': 'Qui sol haver-hi',
+        'Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.': 'Afegeix qui et serveixi, un per un, amb el que sol donar i rebre. Després posa-ho amb les teves paraules.',
+        'Añadido: {0}': 'Afegit: {0}', 'Añadidos: {0}': 'Afegits: {0}', 'Añadir los {0} que faltan': 'Afegir els {0} que falten',
+        'Cambiar todo por este modelo': 'Canviar-ho tot per aquest model', 'Ver quién suele estar': 'Veure qui sol haver-hi',
         'Dónde está tu web y qué usas': 'On és la teva web i què fas servir',
         'Elige lo que sepas; lo que no, lo vemos juntos. Así sabemos desde el principio con qué se conecta tu web.': 'Tria el que sàpigues; el que no, ho mirem junts. Així sabem des del principi amb què es connecta la teva web.',
         'Dónde está hoy tu web': 'On és avui la teva web', 'Qué herramientas usas': 'Quines eines fas servir',
@@ -1706,7 +1719,7 @@
     var MM = window.ModelsMapa;
     /* Y los catorce sectores de la Matriu (SECTORS), con el mismo botón. */
     function pintaModels() {
-        pintaGrup($('#cl-models'), MM.MODELS); pintaGrup($('#cl-sectors'), MM.SECTORS || []);
+        pintaGrup($('#cl-models'), MM.MODELS); pintaGrup($('#cl-oficis'), MM.OFICIS || []); pintaGrup($('#cl-sectors'), MM.SECTORS || []);
         /* Cada modelo trae su buena práctica (models-mapa.js, BONES): por qué
            está ese flujo que no se paga. Es lo que enseña el modelo. */
         var mb = S.modelo && MM.mapa(S.modelo, LL), bo = $('#cl-bona');
@@ -1716,14 +1729,57 @@
     function pintaGrup(c, llista) {
         c.textContent = '';
         llista.forEach(function (x) {
-            var b = el('button', { type: 'button', title: x[LL].diu, 'aria-pressed': String(S.modelo === x.id) }, x.icona + ' ' + x[LL].nom);
-            b.addEventListener('click', function () { tria(x); });
+            var b = el('button', { type: 'button', title: x[LL].diu, 'aria-pressed': String((VIST || S.modelo) === x.id) }, x.icona + ' ' + x[LL].nom);
+            b.addEventListener('click', function () { mostraModel(x); });
             c.appendChild(b);
         });
+    }
+    /* Un modelo, sin pisar lo que ya tiene (l'Àlvar, 02/11/2026): si el dibujo está
+       vacío, se carga entero; si no, se ven las personas que suelen estar en ese
+       tipo de proyecto y se añaden una a una, o todas las que faltan de golpe. */
+    var VIST = null;
+    function buit() { return !S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; }); }
+    function mostraModel(x) {
+        if (buit()) { VIST = null; if (tria(x)) pintaRols(); return; }
+        VIST = x.id; pintaModels(); pintaRols();
+        $('#cl-rols').scrollIntoView({ block: 'nearest' });
+    }
+    function totsModels() { return MM.MODELS.concat(MM.OFICIS || [], MM.SECTORS || []); }
+    function teRol(q) { var k = String(q).trim().toLowerCase(); return S.alrededor.some(function (f) { return String(f.quien).trim().toLowerCase() === k; }); }
+    function filaDe(m, q) {
+        var d = D.desDe(m, m.centre), f = d.alrededor.filter(function (x) { return x.quien === q; })[0];
+        return f || { quien: q, meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' };
+    }
+    function afegeixRols(x, qs) {
+        var m = MM.mapa(x.id, LL, S.casa.trim() || null);
+        if (!S.casa.trim()) S.casa = m.centre;
+        S.alrededor = S.alrededor.filter(function (f) { return f.quien || f.meDa || f.leDoy; });
+        qs.filter(function (q) { return !teRol(q); }).forEach(function (q) { S.alrededor.push(filaDe(m, q)); apunta('Añadido del modelo «' + x[LL].nom + '»: ' + q); });
+        S.modelo = x.id; S.extra = null; desa();
+        pintaCamps(); pintaFiles(); pintaModels(); pintaRols(); suggereix();
+    }
+    function pintaRols() {
+        var c = $('#cl-rols'), id = VIST || S.modelo, x = id && totsModels().filter(function (y) { return y.id === id; })[0];
+        c.textContent = ''; c.hidden = !x; if (!x) return;
+        var m = MM.mapa(x.id, LL, S.casa.trim() || null), rols = m.roles.filter(function (r) { return r !== m.centre; });
+        c.appendChild(el('h3', {}, t('Quién suele estar en «{0}»', x.icona + ' ' + x[LL].nom)));
+        c.appendChild(el('p', { class: 'nota' }, t('Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.')));
+        var g = el('div', { class: 'model-xips', role: 'group', 'aria-label': t('Quién suele estar') }), falten = [];
+        rols.forEach(function (q) {
+            var hi = teRol(q), b = el('button', { type: 'button', 'aria-pressed': String(hi) }, (hi ? '✓ ' : '+ ') + q);
+            if (hi) b.setAttribute('aria-disabled', 'true'); else { falten.push(q); b.addEventListener('click', function () { afegeixRols(x, [q]); aviso(t('Añadido: {0}', q)); }); }
+            g.appendChild(b);
+        });
+        c.appendChild(g);
+        var acc = el('div', { class: 'accions' });
+        if (falten.length > 1) { var tt = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t('Añadir los {0} que faltan', falten.length)); tt.addEventListener('click', function () { afegeixRols(x, falten); aviso(t('Añadidos: {0}', falten.length)); }); acc.appendChild(tt); }
+        if (!buit()) { var tc = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('Cambiar todo por este modelo')); tc.addEventListener('click', function () { if (tria(x)) { VIST = null; pintaRols(); } }); acc.appendChild(tc); }
+        if (acc.childNodes.length) c.appendChild(acc);
     }
     function tria(x) {
         var hiHa = S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; });
         if (hiHa && !confirm(t('Esto cambia quién está a tu alrededor por lo del modelo «{0}». ¿Seguimos?', x[LL].nom))) return false;
+        VIST = null;
         var m = MM.mapa(x.id, LL, S.casa.trim() || null);
         if (!S.casa.trim()) S.casa = m.centre;
         var d = D.desDe(m, S.casa);
@@ -1742,17 +1798,17 @@
         var m = MM.suggereix && MM.suggereix(txt, LL);
         SUG.hidden = !m || m.id === S.modelo;
         if (SUG.hidden) return;
-        var x = MM.MODELS.concat(MM.SECTORS || []).filter(function (y) { return y.id === m.id; })[0];
+        var x = totsModels().filter(function (y) { return y.id === m.id; })[0];
         SUG.textContent = '';
         SUG.appendChild(el('span', {}, t('Por lo que cuentas, tu proyecto se parece a') + ' '));
         SUG.appendChild(el('b', {}, x.icona + ' ' + x[LL].nom));
         SUG.appendChild(el('span', {}, '. ' + x[LL].diu + ' '));
-        var b = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t('Empezar con este modelo'));
-        b.addEventListener('click', function () { if (tria(x)) $('#alrededor').scrollIntoView({ block: 'start' }); });
+        var b = el('button', { type: 'button', class: 'btn btn-sm btn-primary' }, t(buit() ? 'Empezar con este modelo' : 'Ver quién suele estar'));
+        b.addEventListener('click', function () { mostraModel(x); $('#alrededor').scrollIntoView({ block: 'start' }); });
         SUG.appendChild(b);
     }
     $('#cl-inicial').addEventListener('input', function () { clearTimeout(sugT); sugT = setTimeout(suggereix, 400); });
-    pintaModels();
+    pintaModels(); pintaRols();
 
     /* El dibujo, dentro de la página: el editor del mapa (vna-suport.html) en un
        marco, abierto debajo del botón que se ha pulsado. Entra con el mapa de la
