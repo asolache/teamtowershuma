@@ -21,7 +21,7 @@ ok(tria({ projecte: 'eventspenedes', tasca: 'classifica' }).model === 'claude-ha
 ok(tria({ projecte: 'teamtowers', tasca: 'escriu' }).model === 'claude-sonnet-5-5', 'escriure → Sonnet 5.5');
 ok(tria({ projecte: 'matriu', tasca: 'estrategia' }).model === 'claude-opus-5-5', 'estratègia → Opus 5.5');
 const m = tria({ projecte: 'matriu', tasca: 'mapa' });
-ok(m.model === 'claude-opus-5-5' && m.effort === 'low', 'el mapa del client: Opus 5.5 amb esforç baix (com abans del router)');
+ok(m.model === 'claude-sonnet-5-5' && m.effort === 'low', 'el mapa del client: Sonnet 5.5 amb esforç baix (el banc de mapes: fa el mateix que Opus a mig preu)');
 const d = tria({ projecte: 'no-existeix', tasca: 'inventada' });
 ok(d.projecte === 'matriu' && d.tasca === 'escriu' && d.model === 'claude-sonnet-5-5', 'projecte o tasca desconeguts: la matriu i Sonnet, mai Opus per defecte');
 ok(Object.values(TASQUES).every(t => MODELS[t.model] && 'fallbacks' in MODELS[t.model]), 'cada tasca apunta a un model de la carta');

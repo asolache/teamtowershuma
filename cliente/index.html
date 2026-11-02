@@ -303,6 +303,13 @@
         .ia-preg { margin-top: 1.1rem; display: grid; gap: .5rem; max-width: 64ch; }
         .ia-preg label { font-weight: 600; }
         .ia-preg textarea { min-height: 4.5rem; }
+        .ia-xips { border: 0; padding: 0; margin: 0; display: grid; gap: .5rem; }
+        .ia-xips legend { font-weight: 600; padding: 0; margin-bottom: .4rem; }
+        .ia-xips .nota { margin: 0; }
+        .model-xips button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+        .web-eines { margin-top: 1.6rem; display: grid; gap: 1rem; max-width: 72ch; }
+        .web-eines .eina { display: grid; gap: .4rem; padding: .7rem .9rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+        .web-eines .eina b { font-size: var(--t0); }
         .ia-final { margin-top: 1rem; font-size: var(--t0); color: var(--light); }
         .ia-textos { display: grid; gap: .8rem; margin-top: 1rem; }
         .ia-textos .fila { animation: ia-entra .45s cubic-bezier(.2, .8, .2, 1) both; }
@@ -546,6 +553,9 @@
             <label><input type="checkbox" data-capa="extranet"> <b>El espacio de clientes y aliados</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
             <label><input type="checkbox" data-capa="intranet"> <b>El espacio de tu equipo</b><span>Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
         </div>
+        <h3 style="margin-top:1.6rem">Dónde está tu web y qué usas</h3>
+        <p class="nota">Elige lo que sepas; lo que no, lo vemos juntos. Así sabemos desde el principio con qué se conecta tu web.</p>
+        <div class="web-eines" id="cl-eines"></div>
         <div class="ia" id="cl-ia-llig" hidden data-per="Para leer tu web, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
                 <div><h3>¿Ya tienes web? La leemos</h3><p>Con tu permiso leemos las páginas públicas de tu web de ahora, para que la nueva no pierda lo que Google ya conoce de ti. Luego te decimos a quién va cada página y lo que tu web todavía no le dice a cada uno.</p></div></div>
@@ -643,9 +653,11 @@
         <div class="accions">
             <button type="button" class="btn btn-primary" id="cl-crea">Crear mi cuenta</button>
             <button type="button" class="btn btn-ghost" id="cl-baixa">Descargar mi ficha</button>
+            <button type="button" class="btn btn-ghost" id="cl-cervell">Descargar el cerebro de mi proyecto</button>
             <label class="btn btn-ghost" for="cl-carrega">Cargar una ficha</label>
             <input type="file" id="cl-carrega" accept="application/json,.json" hidden>
         </div>
+        <p class="nota">El cerebro de tu proyecto es una carpeta con tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar. Cualquier IA que la lea antes de trabajar contigo empieza sabiendo lo que ya hemos aprendido.</p>
         <p class="compte" id="cl-compte" role="status"></p>
     </div>
 </section>
@@ -779,7 +791,7 @@
 <form name="cliente-web" data-netlify="true" netlify-honeypot="bot-field" hidden>
   <input type="hidden" name="form-name" value="cliente-web">
   <input name="bot-field"><input name="nom"><input name="mail"><input name="orgNom"><input name="web">
-  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea>
+  <input name="objectiu"><input name="nivel"><input name="capas"><input name="privacidad"><input name="ia"><textarea name="resum"></textarea><textarea name="eines"></textarea>
 </form>
 
 <script src="/SOS/lib/mapa-valor.js"></script>
@@ -1029,7 +1041,18 @@
         'Hemos recuperado tu dibujo guardado': 'Hem recuperat el teu dibuix desat',
         '¿Borramos tu dibujo de tu cuenta? En este navegador se queda.': "Esborrem el teu dibuix del teu compte? En aquest navegador s'hi queda.",
         'No se ha podido borrar. Prueba en un rato.': "No s'ha pogut esborrar. Prova-ho d'aquí a una estona.", 'Borrado de tu cuenta. En este navegador sigue.': 'Esborrat del teu compte. En aquest navegador continua.',
-        'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta',
+        'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta', 'Otra': 'Una altra', 'Puedes elegir más de una.': 'En pots triar més d\'una.',
+        'Dónde está tu web y qué usas': 'On és la teva web i què fas servir',
+        'Elige lo que sepas; lo que no, lo vemos juntos. Así sabemos desde el principio con qué se conecta tu web.': 'Tria el que sàpigues; el que no, ho mirem junts. Així sabem des del principi amb què es connecta la teva web.',
+        'Dónde está hoy tu web': 'On és avui la teva web', 'Qué herramientas usas': 'Quines eines fas servir',
+        'Netlify u otro alojamiento': 'Netlify o un altre allotjament', 'No tengo web': 'No tinc web', 'No lo sé': 'No ho sé', 'Sí': 'Sí', 'No': 'No',
+        'Un CRM (tus clientes y contactos)': 'Un CRM (els teus clients i contactes)', 'Un gestor de alumnos, socios o reservas': "Un gestor d'alumnes, socis o reserves",
+        'Una tienda online': 'Una botiga en línia', 'Un boletín o newsletter': 'Un butlletí o newsletter', 'Un calendario de citas': 'Un calendari de cites', 'Otra herramienta': 'Una altra eina',
+        '¿Cómo se llama? (si lo sabes)': 'Com es diu? (si ho saps)', 'Por ejemplo: Holded, Moodle, Mailchimp…': 'Per exemple: Holded, Moodle, Mailchimp…',
+        '¿Se puede conectar con otras herramientas (tiene API)?': 'Es pot connectar amb altres eines (té API)?', '¿Tiene API?': 'Té API?',
+        'Descargar el cerebro de mi proyecto': 'Descarregar el cervell del meu projecte',
+        'El cerebro de tu proyecto es una carpeta con tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar. Cualquier IA que la lea antes de trabajar contigo empieza sabiendo lo que ya hemos aprendido.': "El cervell del teu projecte és una carpeta amb el teu mapa, el que has decidit, les eines que fas servir i el que queda per parlar. Qualsevol IA que la llegeixi abans de treballar amb tu comença sabent el que ja hem après.",
+        'cerebro-{0}.zip': 'cervell-{0}.zip', 'Cerebro descargado': 'Cervell descarregat', 'No se ha podido preparar ahora. Prueba en un rato.': "No s'ha pogut preparar ara. Prova-ho d'aquí a una estona.",
         'La frase de tu web': 'La frase de la teva web', 'La presentación': 'La presentació', 'Para {0}': 'Per a {0}',
         'Cómo le llamas en la web': "Com l'anomenes a la web", 'Lo que le dices': 'El que li dius', 'Verlo en el boceto': "Veure-ho a l'esbós",
         '¿Ya tienes web? La leemos': 'Ja tens web? La llegim',
@@ -1227,6 +1250,8 @@
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
+    /* Lo que decide por el camino (acepta, descarta, elige) va al cerebro del proyecto. */
+    function apunta(que) { S.decisiones = (S.decisiones || []).concat([{ data: new Date().toISOString(), que: que }]).slice(-80); desa(); }
     /* Los campos simples (data-c) van y vienen del estado. */
     function pintaCamps() { document.querySelectorAll('[data-c]').forEach(function (i) { i.value = S[i.dataset.c] || ''; }); }
     document.querySelectorAll('[data-c]').forEach(function (i) {
@@ -1245,6 +1270,19 @@
     $('#cl-baixa').addEventListener('click', function () {
         var a = el('a', { href: URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' })), download: t('mi-ficha-teamtowers.json') });
         document.body.appendChild(a); a.click(); a.remove(); aviso(t('Ficha descargada'));
+    });
+    /* El cerebro del proyecto: una carpeta `cerebro/` en un zip (DiagnosiClient.cervell
+       y el zip del kit del cerebro, SOS/cervell/exporta.js, que se carga al pulsar). */
+    $('#cl-cervell').addEventListener('click', function () {
+        function baixa() {
+            var fs = D.cervell(S, { llengua: LL, capes: capes(), eines: EINES.text(), salut: D.salut(D.mapa(S), null, LL) });
+            var nom = (S.org || S.casa || 'proyecto').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'proyecto';
+            var a = el('a', { href: URL.createObjectURL(window.CervellExporta.zip(fs)), download: t('cerebro-{0}.zip', nom) });
+            document.body.appendChild(a); a.click(); a.remove(); aviso(t('Cerebro descargado'));
+        }
+        if (window.CervellExporta) { baixa(); return; }
+        var sc = el('script', { src: '/SOS/cervell/exporta.js' }); sc.onload = baixa; sc.onerror = function () { aviso(t('No se ha podido preparar ahora. Prueba en un rato.')); };
+        document.head.appendChild(sc);
     });
     $('#cl-carrega').addEventListener('change', function (ev) {
         var f = ev.target.files[0]; if (!f) return;
@@ -1427,6 +1465,55 @@
             if (!$('#cl-marc-caixa').hidden) pintaWeb(true);
         });
     });
+    /* Dónde está su web y qué usa (l'Àlvar, 02/11/2026): la web la construimos en
+       Claude Code a partir de lo que sale de aquí, y hay que saber desde el principio
+       con qué se conecta. Solo botones; el nombre, si lo sabe. Va a la ficha, al
+       envío y al cerebro del proyecto. */
+    var EINES = (function () {
+        var ALOJA = ['WordPress', 'Wix', 'Squarespace', 'Shopify', 'Netlify u otro alojamiento', 'No tengo web', 'No lo sé'];
+        var TIPUS = [['crm', 'Un CRM (tus clientes y contactos)'], ['gestor', 'Un gestor de alumnos, socios o reservas'], ['tienda', 'Una tienda online'],
+            ['newsletter', 'Un boletín o newsletter'], ['calendario', 'Un calendario de citas'], ['otra', 'Otra herramienta']];
+        var API = ['Sí', 'No', 'No lo sé'];
+        function E() { if (!S.eines || typeof S.eines !== 'object') S.eines = { aloja: '', eines: {} }; if (!S.eines.eines) S.eines.eines = {}; return S.eines; }
+        function xips(grup, ops, actiu, fn) {
+            var g = el('div', { class: 'model-xips', role: 'group', 'aria-label': grup });
+            ops.forEach(function (o) {
+                var b = el('button', { type: 'button', 'aria-pressed': String(actiu(o)) }, t(Array.isArray(o) ? o[1] : o));
+                b.addEventListener('click', function () { fn(o); desa(); pinta(); }); g.appendChild(b);
+            });
+            return g;
+        }
+        function pinta() {
+            var c = $('#cl-eines'), e = E(); c.textContent = '';
+            var d1 = el('div'); d1.appendChild(el('b', {}, t('Dónde está hoy tu web')));
+            d1.appendChild(xips(t('Dónde está hoy tu web'), ALOJA, function (o) { return e.aloja === o; }, function (o) { e.aloja = e.aloja === o ? '' : o; }));
+            c.appendChild(d1);
+            var d2 = el('div'); d2.appendChild(el('b', {}, t('Qué herramientas usas')));
+            d2.appendChild(el('p', { class: 'nota' }, t('Puedes elegir más de una.')));
+            d2.appendChild(xips(t('Qué herramientas usas'), TIPUS, function (o) { return !!e.eines[o[0]]; }, function (o) { if (e.eines[o[0]]) delete e.eines[o[0]]; else e.eines[o[0]] = { nom: '', api: '' }; }));
+            c.appendChild(d2);
+            TIPUS.filter(function (o) { return e.eines[o[0]]; }).forEach(function (o) {
+                var x = e.eines[o[0]], f = el('div', { class: 'eina' }), id = 'cl-eina-' + o[0];
+                f.appendChild(el('b', {}, t(o[1])));
+                var lb = el('label', { for: id }, t('¿Cómo se llama? (si lo sabes)')), i = el('input', { id: id, placeholder: t('Por ejemplo: Holded, Moodle, Mailchimp…') });
+                i.value = x.nom || ''; i.addEventListener('input', function () { x.nom = i.value; desa(); });
+                f.appendChild(lb); f.appendChild(i);
+                f.appendChild(el('span', { class: 'nota' }, t('¿Se puede conectar con otras herramientas (tiene API)?')));
+                f.appendChild(xips(t('¿Tiene API?'), API, function (a) { return x.api === a; }, function (a) { x.api = x.api === a ? '' : a; }));
+                c.appendChild(f);
+            });
+        }
+        /* En texto, para el envío y para el cerebro: siempre en castellano, que es como lo leemos. */
+        function text() {
+            var e = E(), l = [];
+            if (e.aloja) l.push('Su web hoy: ' + e.aloja);
+            TIPUS.forEach(function (o) { var x = e.eines[o[0]]; if (x) l.push('· ' + o[1] + (x.nom ? ': ' + x.nom.trim() : '') + ' · API: ' + (x.api || 'sin decir')); });
+            return l.join('\n');
+        }
+        pinta();
+        return { pinta: pinta, text: text };
+    })();
+
     /* El boceto: con el botón del paso 5, o en vivo (`enViu`) desde el panel
        «Mi web» y cada vez que cambia algo, sin moverse de la página que miras. */
     var ARA = 'index.html';
@@ -1712,7 +1799,7 @@
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, web: S.web,
             objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
-            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum() };
+            privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: Object.keys(dades).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(dades[k] || ''); }).join('&') })
@@ -1920,10 +2007,10 @@
                         if (!nova) { fet(t('Esa fila ya no está')); return; }
                         S.extra = null; desa(); pintaFiles(); ara();
                         if (nova !== true) { var fi = document.querySelectorAll('#cl-files .fila')[S.alrededor.indexOf(nova)]; if (fi) fi.classList.add('nou'); }
-                        fet(t('✓ Aplicado'));
+                        fet(t('✓ Aplicado')); apunta('Aceptado (' + s.tipo + '): ' + (s.quien || (f && f.quien) || '') + (s.porque ? ' · ' + s.porque : ''));
                     }
                     pend.push(aplica);
-                    si.addEventListener('click', aplica); no.addEventListener('click', function () { fet(t('Descartado')); });
+                    si.addEventListener('click', aplica); no.addEventListener('click', function () { fet(t('Descartado')); apunta('Descartado (' + s.tipo + '): ' + (s.quien || (f && f.quien) || '')); });
                     acc.appendChild(si); acc.appendChild(no); c.appendChild(acc); props.appendChild(c);
                 });
                 if (!r.sugerencias.length) props.appendChild(el('p', { class: 'ia-final' }, t('Tu dibujo está muy completo: no veo nada que cambiar ahora.')));
@@ -1934,17 +2021,39 @@
                     tot.addEventListener('click', function () { pend.slice().forEach(function (a) { a(); }); });
                     var ta = el('div', { class: 'accions' }); ta.appendChild(tot); res.appendChild(ta);
                 }
-                /* Las dos o tres preguntas de la vuelta siguiente: contesta las que quiera. */
-                var pqs = r.preguntas && r.preguntas.length ? r.preguntas : r.pregunta ? [r.pregunta] : [];
+                /* Las preguntas de la vuelta siguiente, con botones para elegir (y «Otra» para
+                   escribir): se piensa y se escribe menos. Sin opciones, se contesta escribiendo. */
+                var pqs = (r.preguntas && r.preguntas.length ? r.preguntas : r.pregunta ? [r.pregunta] : []).map(function (q) { return typeof q === 'string' ? { pregunta: q, opciones: [] } : q; });
                 if (pqs.length) {
-                    var pg = el('div', { class: 'ia-preg' }), txs = [];
+                    var pg = el('div', { class: 'ia-preg' }), resp = [];
                     pqs.forEach(function (q, k) {
-                        var id = 'cl-ia-nota-' + k; pg.appendChild(el('label', { for: id }, q));
-                        var tx = el('textarea', { id: id, placeholder: t('Tu respuesta, con tus palabras') }); pg.appendChild(tx); txs.push([q, tx]);
+                        var id = 'cl-ia-nota-' + k, tria = [], tx = el('textarea', { id: id, placeholder: t('Tu respuesta, con tus palabras') });
+                        resp.push(function () { var v = tria.slice(); if (tx.value.trim()) v.push(tx.value.trim()); return v.length ? q.pregunta + ' ' + v.join(', ') : ''; });
+                        if (!q.opciones || !q.opciones.length) { pg.appendChild(el('label', { for: id }, q.pregunta)); pg.appendChild(tx); return; }
+                        var fs = el('fieldset', { class: 'ia-xips' }); fs.appendChild(el('legend', {}, q.pregunta));
+                        if (q.varias) fs.appendChild(el('p', { class: 'nota' }, t('Puedes elegir más de una.')));
+                        var bx = el('div', { class: 'model-xips', role: 'group', 'aria-label': q.pregunta }); fs.appendChild(bx);
+                        function xip(tx0, fn) { var b = el('button', { type: 'button', 'aria-pressed': 'false' }, tx0); b.addEventListener('click', function () { fn(b); }); bx.appendChild(b); return b; }
+                        q.opciones.forEach(function (o) {
+                            xip(o, function (b) {
+                                var on = b.getAttribute('aria-pressed') !== 'true';
+                                if (!q.varias) { tria.length = 0; bx.querySelectorAll('button').forEach(function (x) { if (x !== ot) x.setAttribute('aria-pressed', 'false'); }); }
+                                var i = tria.indexOf(o); if (i >= 0) tria.splice(i, 1); if (on) tria.push(o);
+                                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+                            });
+                        });
+                        var ot = xip(t('Otra'), function (b) { var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); tx.hidden = !on; if (on) tx.focus(); else tx.value = ''; });
+                        tx.hidden = true; tx.setAttribute('aria-label', q.pregunta); fs.appendChild(tx); pg.appendChild(fs);
                     });
-                    var ot = el('button', { type: 'button', class: 'btn btn-primary' }, t('✦ Otra vuelta'));
-                    ot.addEventListener('click', function () { pule(txs.filter(function (x) { return x[1].value.trim(); }).map(function (x) { return x[0] + ' ' + x[1].value.trim(); }).join(' · ')); });
-                    var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(ot); pg.appendChild(a2); res.appendChild(pg);
+                    var seg = el('button', { type: 'button', class: 'btn btn-primary' }, t('✦ Otra vuelta'));
+                    S.pendents = pqs.map(function (q) { return q.pregunta; }); desa();
+                    seg.addEventListener('click', function () {
+                        var rr = resp.map(function (f) { return f(); });
+                        rr.forEach(function (x) { if (x) apunta('Contestado: ' + x); });
+                        S.pendents = pqs.filter(function (q, k) { return !rr[k]; }).map(function (q) { return q.pregunta; }); desa();
+                        pule(rr.filter(Boolean).join(' · '));
+                    });
+                    var a2 = el('div', { class: 'accions' }); a2.style.marginTop = '0'; a2.appendChild(seg); pg.appendChild(a2); res.appendChild(pg);
                 }
                 /* Del dibujo a la web sin buscar nada: el siguiente paso, aquí mismo. */
                 var sw = el('button', { type: 'button', class: 'btn btn-primary', id: 'cl-ia-seguir' }, t('✦ Ahora, los textos de mi web'));
@@ -2095,7 +2204,7 @@
         return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
     })();
 
-    function pintaTot() { pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { EINES.pinta(); pintaCamps(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 })();

@@ -8,7 +8,7 @@
    energético». Per això la regla és **el model més petit que fa bé la feina**:
    · Haiku 5.5   classificar, resumir, extreure, etiquetar.
    · Sonnet 5.5  escriure, traduir, atendre (clients, xat).
-   · Opus 5.5    raonar, estratègia, el mapa de valor.
+   · Opus 5.5    raonar, estratègia (el mapa de valor, a Sonnet: banc-mapes).
    Pujar de model es fa aquí, per tasca o per projecte, i mai a la funció.
 
    · `tria({ projecte, tasca })` → { model, effort, fallbacks, preu, pitjor }.
@@ -41,8 +41,9 @@ export const TASQUES = {
   aten: { model: 'claude-sonnet-5-5', effort: 'low' },
   raona: { model: 'claude-opus-5-5', effort: 'medium' },
   estrategia: { model: 'claude-opus-5-5', effort: 'high' },
-  /* pule-mapa.mjs: el mapa del client, amb esquema i esforç baix. */
-  mapa: { model: 'claude-opus-5-5', effort: 'low' }
+  /* pule-mapa.mjs: el mapa del client, amb esquema i esforç baix. Sonnet des del 02/11/2026:
+     al banc de mapes (36 casos, jutge a cegues) fa el mateix que Opus (3,03 sobre 5) a mig preu. */
+  mapa: { model: 'claude-sonnet-5-5', effort: 'low' }
 };
 
 /* Els projectes de l'Àlvar. `tasques` canvia una tasca només en aquell projecte. */

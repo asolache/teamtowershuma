@@ -34,6 +34,19 @@ const dib = D.dibuix(D.mapa({ casa: 'La <casa>', alrededor: [{ quien: 'Alumnos',
 ok(/^<svg/.test(dib) && !/<casa>/.test(dib) && /La &lt;casa&gt;/.test(dib) && (dib.match(/<line /g) || []).length === 2 && / x-i"/.test(dib),
   'el dibujo del mapa: un SVG escapado, una flecha por sentido y la mirada como clase');
 
+const CV = D.cervell({ casa: 'La escuela', org: 'Escuela "Sol"', inicial: 'Llenar los cursos', respuestas: { objetivo: 'Llenar los cursos' }, nivel: 'Una página',
+  alrededor: [{ quien: 'Alumnos', meDa: 'la matrícula', meDaEs: 'tangible', leDoy: 'confianza', leDoyEs: 'intangible' }], marca: { lema: 'Profes que enseñan' },
+  decisiones: [{ data: '2026-11-02T10:00:00Z', que: 'Aceptado (nuevo): Antiguos alumnos' }], pendents: ['¿Quién te avala?'] },
+  { llengua: 'es', capes: ['extranet'], eines: 'Su web hoy: Wix\n· Un CRM (tus clientes y contactos): Holded · API: Sí', salut: { falten: [{ diu: 'Falta lo que no se paga' }] }, data: '2026-11-02' });
+const cvN = CV.map(f => f.nom), cvF = n => (CV.find(f => f.nom === 'cerebro/' + n) || {}).text || '';
+ok(CV.every(f => f.nom.startsWith('cerebro/')) && !cvN.some(n => /cervell\.json$/.test(n)) && ['mapa-real.json', 'configuracio.json', 'marca.json', 'encargo.md', 'herramientas.md', 'decisiones.md', 'preguntas-abiertas.md', 'LEEME.md'].every(n => cvN.includes('cerebro/' + n)),
+  'el cerebro del proyecto: solo la carpeta cerebro/, sin cervell.json (lo pone el kit)');
+ok(JSON.stringify(JSON.parse(cvF('mapa-real.json'))) === JSON.stringify(D.mapa({ casa: 'La escuela', inicial: 'Llenar los cursos', respuestas: { objetivo: 'Llenar los cursos' }, alrededor: [{ quien: 'Alumnos', meDa: 'la matrícula', meDaEs: 'tangible', leDoy: 'confianza', leDoyEs: 'intangible' }] })),
+  'mapa-real.json es el mismo mapa que abre el editor y lee la plantilla de la web');
+ok(/Holded · API: Sí/.test(cvF('herramientas.md')) && /2026-11-02 · Aceptado/.test(cvF('decisiones.md')) && /¿Quién te avala\?/.test(cvF('preguntas-abiertas.md')) && /Falta lo que no se paga/.test(cvF('preguntas-abiertas.md')),
+  'con sus herramientas, sus decisiones fechadas y lo que queda por hablar');
+ok(/--nom "Escuela Sol"/.test(cvF('LEEME.md')) && JSON.parse(cvF('configuracio.json')).capes[0] === 'extranet', 'y cómo abrirlo con el kit del cerebro');
+
 const RESPOSTA = 'Aquí lo tienes:\n```json\n' + JSON.stringify({
   respuestas: { objetivo: 'Llenar los cursos intensivos del año que viene', quien: 'Gente que quiere enseñar español', llegan: 'Google y antiguos alumnos', aliados: 'Formadores y una asociación', despues: 'Encuentran trabajo y nos recomiendan', preguntan: 'Fechas y si el título sirve fuera', tiempo: 'Contestar correos', webHoy: '?' },
   alrededor: [
@@ -207,7 +220,7 @@ console.log('\n══ /cliente/ · la IA ══');
         falta: [{ quien: 'Antiguos alumnos', falta: 'Que pueden recomendar la escuela y volver a formarse.' }] }
       : c.pas === 'web'
       ? { lema: 'Formamos a los profesores que las escuelas buscan', presentacion: 'Cursos intensivos en Barcelona.', secciones: [{ quien: 'Quien quiere ser profesor', nombre: 'Futuros profes', intro: 'Aquí empieza tu camino como profesor de español.' }] }
-      : { resumen: 'Tu red se apoya en la confianza de quien ya ha pasado por aquí.', preguntas: ['¿Quién te recomienda más?', '¿Qué te dan tus antiguos alumnos?'], pregunta: '¿Quién te recomienda más?',
+      : { resumen: 'Tu red se apoya en la confianza de quien ya ha pasado por aquí.', preguntas: [{ pregunta: '¿Quién te recomienda más?', opciones: ['Antiguos alumnos', 'Escuelas', 'Colegas'], varias: true }, { pregunta: '¿Qué te dan tus antiguos alumnos?', opciones: [], varias: false }], pregunta: '¿Quién te recomienda más?',
           salut: { abans: { punts: 57, falten: [{ id: 'menes', diu: 'Falta lo que no se paga: confianza, recomendaciones, ideas. Al menos un tercio de lo que va y viene' }] }, despres: { punts: 86, falten: [] } },
           sugerencias: [{ tipo: 'nuevo', fila: -1, quien: 'Antiguos alumnos', meDa: 'recomendaciones', meDaEs: 'intangible', leDoy: 'comunidad', leDoyEs: 'intangible', porque: 'Suelen traer a otros.' },
             { tipo: 'cambia', fila: 0, quien: 'Quien quiere ser profesor', meDa: 'la matrícula del curso', meDaEs: 'tangible', leDoy: 'el curso FELE', leDoyEs: 'tangible', porque: 'Más concreto.' },
@@ -276,11 +289,18 @@ console.log('\n══ /cliente/ · la IA ══');
   ok(f1[0].meDa === 'la matrícula del curso' && f1[0].leDoy === 'el curso FELE' && f1.some(x => x.quien === 'Antiguos alumnos'), 'los cambios aplicados quedan en la ficha');
   const araN = await p.textContent('#cl-ia .ia-salut .n'), araE = await p.evaluate(() => window.DiagnosiClient.salut(window.DiagnosiClient.mapa(JSON.parse(localStorage.getItem('tt.cliente.v1'))), null, 'es').punts);
   ok(araN === araE + ' %', 'al aplicar, la cifra de «Tu dibujo» se mueve con lo que ha aplicado');
-  ok(await p.locator('#cl-ia .ia-preg textarea').count() === 2, 'dos preguntas para la vuelta siguiente, cada una con su respuesta');
-  await p.fill('#cl-ia-nota-0', 'Sobre todo antiguos alumnos');
+  ok(await p.locator('#cl-ia .ia-preg fieldset .model-xips button').count() === 4 && await p.isHidden('#cl-ia-nota-0') && await p.isVisible('#cl-ia-nota-1'),
+    'dos preguntas: la primera con botones para elegir y «Otra» (el texto, escondido), la segunda sin opciones, para escribir');
+  await p.click('#cl-ia .ia-preg fieldset button:has-text("Antiguos alumnos")');
+  await p.click('#cl-ia .ia-preg fieldset button:has-text("Otra")');
+  ok(await p.isVisible('#cl-ia-nota-0') && /más de una/.test(await p.textContent('#cl-ia .ia-preg fieldset')), '«Otra» abre el texto; puede elegir más de una');
+  await p.fill('#cl-ia-nota-0', 'mi hermana');
   await p.click('#cl-ia button:has-text("Otra vuelta")');
   await p.waitForFunction(() => document.querySelectorAll('#cl-ia .ia-prop').length === 3 && !document.querySelector('#cl-ia .ia-prop.fet'), null, { timeout: 5000 });
-  ok(ia()[1][1].dades.nota === '¿Quién te recomienda más? Sobre todo antiguos alumnos' && ia()[1][1].dades.alrededor.length === 7, 'otra vuelta lleva la pregunta que ha contestado, su respuesta y el dibujo ya cambiado');
+  ok(ia()[1][1].dades.nota === '¿Quién te recomienda más? Antiguos alumnos, mi hermana' && ia()[1][1].dades.alrededor.length === 7, 'otra vuelta lleva la pregunta que ha contestado, lo que ha elegido y el dibujo ya cambiado');
+  const fD = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(fD.decisiones.some(d => /^Aceptado \(nuevo\): Antiguos alumnos/.test(d.que)) && fD.decisiones.some(d => /^Descartado \(quita\)/.test(d.que)) && fD.decisiones.some(d => d.que === 'Contestado: ¿Quién te recomienda más? Antiguos alumnos, mi hermana'),
+    'lo que acepta, descarta y elige queda apuntado, con fecha, para el cerebro del proyecto');
 
   ok(await p.locator('#cl-ia-seguir').count() === 1, 'al acabar de pulir, el siguiente paso está ahí mismo: los textos de la web');
   await p.click('#cl-ia-seguir');
@@ -341,6 +361,17 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.fill('#cl-disseny-nota', 'Más fotos de las clases'); await p.click('#cl-disseny-desa');
   const dzS = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).disseny);
   ok(dzS && dzS.nota === 'Más fotos de las clases' && dzS.pagines === dz.length && /Guardado en tu ficha/.test(await p.textContent('#cl-disseny-res')), 'lo que cambiaría queda en su ficha, para la sesión');
+  /* Dónde está su web y qué usa, y el cerebro del proyecto (un zip con cerebro/). */
+  await p.click('#cl-eines button:has-text("Wix")');
+  await p.click('#cl-eines button:has-text("Un CRM")');
+  await p.fill('#cl-eina-crm', 'Holded');
+  await p.click('#cl-eines .eina button:has-text("Sí")');
+  const fE = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).eines);
+  ok(fE.aloja === 'Wix' && fE.eines.crm.nom === 'Holded' && fE.eines.crm.api === 'Sí', 'dónde está su web y qué usa: con botones, y el nombre si lo sabe');
+  const [dc] = await Promise.all([p.waitForEvent('download'), p.click('#cl-cervell')]);
+  const zb = (await import('node:fs')).readFileSync(await dc.path()), zt = zb.toString('utf8');
+  ok(/^cerebro-.+\.zip$/.test(dc.suggestedFilename()) && zb.readUInt32LE(0) === 0x04034b50 && /cerebro\/mapa-real\.json/.test(zt) && /cerebro\/herramientas\.md/.test(zt) && /Holded · API: Sí/.test(zt) && !/cervell\.json/.test(zt),
+    'descarga el cerebro del proyecto: un zip con cerebro/, su mapa y sus herramientas (' + dc.suggestedFilename() + ')');
   /* Su ficha, con su cuenta (fitxa.mjs): se guarda sola y vuelve en otro aparato. */
   const espera = async (f, ms = 6000) => { const t0 = Date.now(); while (!f() && Date.now() - t0 < ms) await new Promise(x => setTimeout(x, 100)); return f(); };
   ok(fx()[0] && fx()[0][1].sessio === SES && !('fitxa' in fx()[0][1]) && !fx()[0][1].foto, 'al entrar, pide su ficha guardada, con su sesión');
@@ -375,6 +406,8 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   await p.goto(URL_ + '?lang=ca');
   ok(await p.evaluate(() => document.documentElement.lang) === 'ca' && /Comença el teu projecte/.test(await p.textContent('h1')), 'amb ?lang=ca, la pàgina és en català');
   ok(/Què ha d'aconseguir/.test(await p.textContent('#cl-preguntes')) && /Nivell 1 · per fluxos/.test(await p.textContent('#cl-nivells')) && /Ens escrius/.test(await p.textContent('#enviar .pr')), 'preguntes, nivells i passos, en català');
+  ok(/On és avui la teva web/.test(await p.textContent('#cl-eines')) && /No ho sé/.test(await p.textContent('#cl-eines')) && /On és la teva web i què fas servir/.test(await p.textContent('#web')) && /Descarregar el cervell/.test(await p.textContent('#cuenta')),
+  'on és la seva web i què fa servir, i el cervell del projecte, en català');
   ok(/Diagnòstic/.test(await p.textContent('.tt-nav')) && await p.locator('.tt-nav .lang-b.on[data-lang="ca"]').count() === 1, 'la barra, en català i amb el botó CA marcat');
   ok(/Educació/.test(await p.textContent('#cl-models')) && await p.getAttribute('.tp-legal', 'href') === '/avis-legal.html?lang=ca', 'els models en català i l\'avís legal en català');
   const resta = await p.evaluate(() => (document.querySelector('main').innerText.match(/\b(Quién|Cuéntanos|Elige|Empieza|Tu cuenta|Enviar a TeamTowers y)\b/g) || []));
