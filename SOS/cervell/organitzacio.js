@@ -129,5 +129,21 @@
     return { treu: function () { caixa.innerHTML = ''; caixa.onclick = null; } };
   }
 
-  raiz.CervellOrg = { munta: munta, slug: slug };
+  /* Els mateixos documents per al 3D: un quadrat per document, del color de la
+     capa de la seva àrea, amb l'id de les vedes que cita. */
+  var KOSHA = { anna: '#b45309', prana: '#15803d', mano: '#0e7490', vijnana: '#1d4ed8', ananda: '#7c3aed' };
+  function per3d(docs, uni, nodos, repo) {
+    var ROL = ((uni && uni.facetes) || []).filter(function (f) { return f.id === 'role'; })[0], rols = ROL ? ROL.valors : [];
+    var perN = {}; (nodos || []).forEach(function (n) { perN[n.n] = n.id; });
+    return (docs || []).map(function (d) {
+      var r = null;
+      d.rols.some(function (v) { var s = slug(v); r = rols.filter(function (x) { return [x.id, x.ca, x.es, x.en].concat(x.alias || []).some(function (a) { return slug(a) === s; }); })[0] || null; return r; });
+      return { id: 'doc:' + d.ruta, titol: d.titol, ruta: d.ruta, tipus: d.tipus, estat: d.estat,
+        url: repo ? 'https://github.com/' + repo + '/blob/HEAD/' + d.ruta.split('/').map(encodeURIComponent).join('/') : null,
+        area: r ? r.id : 'cap', nomArea: r ? r.ca : null, color: KOSHA[(r && r.kosha) || 'mano'] || '#5e594d',
+        vedes: d.vedes.map(function (v) { return perN[v]; }).filter(Boolean) };
+    });
+  }
+
+  raiz.CervellOrg = { munta: munta, per3d: per3d, slug: slug };
 })(typeof window !== 'undefined' ? window : globalThis);

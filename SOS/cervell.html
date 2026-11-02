@@ -109,6 +109,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 #cvPla{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px}
 #cv.pla .cv-3d,#cv.pla .cv-ley{display:none}
 #cv.org .cv-ley,#cv.org .cv-f{display:none}
+.altre-l{margin:-6px 0 10px;font-size:.95rem}
 .crea{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--indigo);border-radius:14px;padding:16px 18px;margin:28px 0 0}
 .crea h2{margin-top:0}.crea p{color:var(--light);max-width:66ch}
 .crea a{font-weight:600;color:var(--indigo)}
@@ -245,24 +246,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 <main class="cw">
   <p class="kick">El cervell de cadascú</p>
   <h1>El teu cervell</h1>
-  <p class="lead">El cervell d'un projecte té dues parts. Al centre, <b>la cultura</b>: el que ha après i com vol treballar. Al voltant, <b>les àrees</b> de qualsevol organització (vendes, finances, persones…) amb els seus documents. Aquí veus totes dues i com es connecten, i te l'emportes com a context per a les teves IA i com a paquet per al teu LMS.</p>
-
-  <form class="font" id="font">
-    <label for="repo" style="position:absolute;left:-9999px">Repositori</label>
-    <input id="repo" type="text" placeholder="propietari/repositori" autocomplete="off" spellcheck="false">
-    <button type="submit">Llegeix</button>
-    <label>o puja el teu codex.md<input id="fitxer" type="file" accept=".md,text/markdown,text/plain"></label>
-    <div class="gh" id="gh" hidden></div>
-    <small>Cada SOS porta a l'arrel un <code>cervell.json</code> que diu on és el codex, la taxonomia, el mapa i la resta de peces; si no en té, el codex es busca a SOS/knowledge/codex.md. Amb GitHub tries entre els teus repos, també els privats: es llegeixen al teu navegador i no se'n publica res (veda 168). El fitxer que puges tampoc no surt del teu navegador.</small>
-  </form>
+  <p class="lead">Al centre, la cultura del projecte: el que ha après i com vol treballar. Al voltant, les seves àrees amb els documents.</p>
   <p class="estat" id="estat" aria-live="polite"></p>
-  <ul class="peces" id="peces" aria-label="Les peces del cervell" hidden></ul>
+  <p class="altre-l"><a href="#altre">Mira un altre cervell o entra amb GitHub ↓</a></p>
   <!-- Les mateixes vedes de diverses maneres, per pensar-hi amb els ulls: el
        dibuix és de cervell/vista.js (3D) i cervell/pla.js (la resta), els
        mateixos que fan servir la portada i les webs filles. -->
   <div class="vistes" role="tablist" aria-label="Com el vols veure">
     <button type="button" role="tab" data-v="org" aria-selected="true">L'organització</button>
-    <button type="button" role="tab" data-v="3d" aria-selected="false">Cultura en 3D</button>
+    <button type="button" role="tab" data-v="3d" aria-selected="false">En 3D</button>
     <button type="button" role="tab" data-v="castellera" aria-selected="false">Castellera</button>
     <button type="button" role="tab" data-v="capes" aria-selected="false">Cinc capes</button>
     <button type="button" role="tab" data-v="mapa" aria-selected="false">Mapa</button>
@@ -274,6 +266,18 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   <div class="pinya-l" id="cvPinya" hidden aria-live="polite"></div>
   <div id="cv"></div>
   <div id="cvOrg" hidden></div>
+  <h2 id="altre">Mira un altre cervell</h2>
+  <p>El cervell d'un projecte té dues parts: <b>la cultura</b> (el codex, el que ha après i com vol treballar) i <b>les àrees</b> de qualsevol organització (vendes, finances, persones…) amb els seus documents. Te l'emportes com a context per a les teves IA i com a paquet per al teu LMS.</p>
+
+  <form class="font" id="font">
+    <label for="repo" style="position:absolute;left:-9999px">Repositori</label>
+    <input id="repo" type="text" placeholder="propietari/repositori" autocomplete="off" spellcheck="false">
+    <button type="submit">Llegeix</button>
+    <label>o puja el teu codex.md<input id="fitxer" type="file" accept=".md,text/markdown,text/plain"></label>
+    <div class="gh" id="gh" hidden></div>
+    <small>Cada SOS porta a l'arrel un <code>cervell.json</code> que diu on és el codex, la taxonomia, el mapa i la resta de peces; si no en té, el codex es busca a SOS/knowledge/codex.md. Amb GitHub tries entre els teus repos, també els privats: es llegeixen al teu navegador i no se'n publica res (veda 168). El fitxer que puges tampoc no surt del teu navegador.</small>
+  </form>
+  <ul class="peces" id="peces" aria-label="Les peces del cervell" hidden></ul>
 
   <!-- Les cinc capes dites de tres maneres alhora: la paraula de cada dia, el
        castell i el Vedanta. El mètode sencer, amb l'antahkarana i la Trinitat, és
@@ -408,6 +412,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
       }).catch(function () { return []; }).then(function (ds) {
         if (REPO !== repo) return;
         DOCS = ds;
+        posaDocs();
         if (ara === 'org') mostra('org');
         if (D && ds.length) estat.textContent = 'El cervell de ' + repo + ': ' + (D.nodos.length ? D.nodos.length + ' aprenentatges a la cultura' : 'encara sense cultura pròpia escrita') + ' i ' + ds.length + ' documents.';
       });
@@ -429,6 +434,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     if (!UNIP) UNIP = fetch('knowledge/cervell/taxonomia-universal.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(function (j) { UNI = j; return j; });
     return UNIP;
   }
+  /* Els documents també al 3D, com a quadrats al voltant de la cultura. */
+  function posaDocs() { if (vista && vista.docs && D) vista.docs(CervellOrg.per3d(DOCS, UNI, D.nodos, REPO)); }
   function dibuixa(codex, op) {
     var L = CP.lee(codex, op);
     if (vista) vista.atura();
@@ -436,6 +443,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     meta = { nom: op.nom, font: op.font, id: op.nom.replace(/[^\w-]/g, '-'), lang: 'ca', data: new Date().toISOString().slice(0, 10), url: 'teamtowershuma.com/SOS/cervell.html' };
     vista = CervellVista.munta(caixa, D, { lang: 'ca' });
     AN = vista && vista.analisi;
+    posaDocs();
     mostra(ara);
     estat.textContent = 'El cervell de ' + op.font + ': ' + (D.nodos.length ? D.nodos.length + ' aprenentatges a la cultura' : 'encara sense cultura pròpia escrita') + (DOCS.length ? ' i ' + DOCS.length + ' documents' : '') + '.';
   }
@@ -446,7 +454,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   var ara = 'org', pla = null, org = null, cvOrg = document.getElementById('cvOrg'), DOCS = [], UNI = null, REPO = null, cvPla = document.getElementById('cvPla'), temps = document.getElementById('cvTemps');
   var DIU = {
     org: 'El cervell i, a sota, la seva cultura i les dotze àrees de qualsevol organització. Toca una àrea per veure\'n els documents, i un aprenentatge per trobar-lo al cervell.',
-    '3d': 'Cada esfera és una kosha, el cos a fora i el propòsit al centre.',
+    '3d': 'Cada esfera és una kosha, el cos a fora i el propòsit al centre. Els quadrats de fora són els documents, del color de la seva àrea, units a les vedes que citen.',
     castellera: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i criteri), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda.',
     capes: 'Les cinc koshas, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
     mapa: 'Com un mapa de valor: cada veda és un node i cada cita, un lliurament. El propòsit al centre i l\'obra a fora.',
