@@ -105,10 +105,27 @@ export function variant(nom) {
   if (!nom || nom === 'actual') return { nom: 'actual' };
   return Object.assign({ nom }, llegeixJ(join(BANC, 'variants', nom + '.json')));
 }
+/* Amb --oficis, el model ve dels oficis (banc-mapes/oficis.json) si n'hi ha un que s'assembla: així es mesura si els oficis milloren el mapa. */
+let USA_OFICIS = false, OFICIS_J = null;
+const pla = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+export function oficiDe(text) {
+  if (!OFICIS_J) OFICIS_J = existsSync(join(BANC, 'oficis.json')) ? llegeixJ(join(BANC, 'oficis.json')).oficis : [];
+  const t = ' ' + pla(text).replace(/[^a-z0-9]+/g, ' ') + ' ';
+  let millor = null;
+  OFICIS_J.forEach(o => { const n = pla(o.paraules + ' ' + o.es.nom).split(/[^a-z0-9]+/).filter(w => w.length >= 4).filter(w => t.includes(' ' + w.slice(0, 5))).length;
+    if (n >= 2 && (!millor || n > millor.n)) millor = { n, o }; });
+  return millor && millor.o;
+}
+function mapaOfici(o, ll, casa) {
+  const m = o[ll] || o.es, c = m.centre, r = x => (casa && x === c ? casa : x);
+  return { nom: m.nom, bona: m.bona, pairs: m.pairs.map(p => [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]), veda: o.veda, passos: m.passos };
+}
 /* La fitxa que enviaria /cliente/, amb el model del sector si n'hi ha (com el navegador). */
 export function dadesDe(cas, llengua = 'es') {
   const r = Object.entries(cas.respuestas || {}).filter(([, a]) => a).map(([id, a]) => ({ id, q: id, a }));
-  const sug = MM.suggereix([cas.casa, cas.org, cas.inicial, ...r.map(x => x.a)].join(' '), llengua), mr = sug ? MM.mapa(sug.id, llengua, cas.casa) : null;
+  const txt = [cas.casa, cas.org, cas.inicial, ...r.map(x => x.a)].join(' ');
+  const of = USA_OFICIS ? oficiDe(txt) : null;
+  const sug = of ? null : MM.suggereix(txt, llengua), mr = of ? mapaOfici(of, llengua, cas.casa) : sug ? MM.mapa(sug.id, llengua, cas.casa) : null;
   return neteja({ casa: cas.casa, org: cas.org, inicial: cas.inicial, nota: cas.nota || '', respuestas: r, alrededor: cas.alrededor || [], llengua,
     model: mr ? { nom: mr.nom, bona: mr.bona, pairs: mr.pairs, veda: mr.veda, passos: mr.passos } : null });
 }
@@ -273,6 +290,7 @@ function args(v) {
 }
 async function main() {
   const a = args(process.argv.slice(2)), ordre = a._[0], clau = (process.env.ANTHROPIC_API_KEY || '').trim();
+  USA_OFICIS = !!a.oficis;
   const tope = Number(a.tope || 5), lotOn = !a.sincron, sortida = resolve(a.sortida || 'banc-mapes');
   const crida = async ps => {
     const max = pitjor(ps, lotOn);
