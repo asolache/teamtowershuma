@@ -324,6 +324,23 @@ async function main() {
     console.log('respostes: ' + respostes.filter(r => r.resposta).length + '/' + casos.length + ' · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
     return;
   }
+  /* El mapa final de cada simulació, contra l'«esperado»: --de <carpeta de resultats/> (una o més, amb comes). */
+  const jutjaFinal = async dir => {
+    const per = new Map(casos.map(c => [c.id, c]));
+      const R = llegeixJ(join(resolve(dir), 'simulacio.json'));
+      const ok = R.casos.filter(x => per.has(x.id) && x.final);
+      const ps = ok.map(x => peticioFinal(per.get(x.id), x.final, OPUS));
+      const rs = await crida(ps); if (!rs) return;
+      const nota = new Map(rs.filter(x => x.r).map(x => { try { return [x.id, jsonDe(x.r)]; } catch (e) { return [x.id, null]; } }));
+      const notes = ok.map(x => ({ id: x.id, nota: nota.get(x.id) || null }));
+      const camps = ['roles', 'intangibles', 'reciprocitat', 'fidelitat', 'global'];
+      const m = k => { const v = notes.filter(n => n.nota).map(n => n.nota[k]); return v.length ? (v.reduce((a2, b) => a2 + b, 0) / v.length).toFixed(2) : '—'; };
+      const txt = ['', '## El mapa final, jutjat', '', '| ' + camps.join(' | ') + ' |', '|' + camps.map(() => '---').join('|') + '|', '| ' + camps.map(m).join(' | ') + ' |',
+        '', 'Cost del jutge: ' + costReal(rs, lotOn).toFixed(2) + ' $', ''].join('\n');
+      writeFileSync(join(resolve(dir), 'notes-final.json'), JSON.stringify(notes, null, 1));
+      writeFileSync(join(resolve(dir), 'informe.md'), readFileSync(join(resolve(dir), 'informe.md'), 'utf8') + txt);
+      console.log(dir + txt);
+  };
   if (ordre === 'simula') {
     const v = variant(a.variant), base = tria({ projecte: 'matriu', tasca: 'mapa' });
     const t = Object.assign({}, base, a.model ? { model: a.model } : {}, a.effort ? { effort: a.effort } : {});
@@ -339,28 +356,10 @@ async function main() {
     writeFileSync(join(sortida, 'simulacio.json'), JSON.stringify(tot, null, 1));
     writeFileSync(join(sortida, 'informe.md'), informeSim(tot));
     console.log(informeSim(tot));
+    if (a.jutja) await jutjaFinal(sortida);
     return;
   }
-  /* El mapa final de cada simulació, contra l'«esperado»: --de <carpeta de resultats/> (una o més, amb comes). */
-  if (ordre === 'jutja-sim') {
-    const per = new Map(casos.map(c => [c.id, c])), dirs = String(a.de || '').split(',').filter(Boolean);
-    for (const dir of dirs) {
-      const R = llegeixJ(join(resolve(dir), 'simulacio.json'));
-      const ok = R.casos.filter(x => per.has(x.id) && x.final);
-      const ps = ok.map(x => peticioFinal(per.get(x.id), x.final, OPUS));
-      const rs = await crida(ps); if (!rs) continue;
-      const nota = new Map(rs.filter(x => x.r).map(x => { try { return [x.id, jsonDe(x.r)]; } catch (e) { return [x.id, null]; } }));
-      const notes = ok.map(x => ({ id: x.id, nota: nota.get(x.id) || null }));
-      const camps = ['roles', 'intangibles', 'reciprocitat', 'fidelitat', 'global'];
-      const m = k => { const v = notes.filter(n => n.nota).map(n => n.nota[k]); return v.length ? (v.reduce((a2, b) => a2 + b, 0) / v.length).toFixed(2) : '—'; };
-      const txt = ['', '## El mapa final, jutjat', '', '| ' + camps.join(' | ') + ' |', '|' + camps.map(() => '---').join('|') + '|', '| ' + camps.map(m).join(' | ') + ' |',
-        '', 'Cost del jutge: ' + costReal(rs, lotOn).toFixed(2) + ' $', ''].join('\n');
-      writeFileSync(join(resolve(dir), 'notes-final.json'), JSON.stringify(notes, null, 1));
-      writeFileSync(join(resolve(dir), 'informe.md'), readFileSync(join(resolve(dir), 'informe.md'), 'utf8') + txt);
-      console.log(dir + txt);
-    }
-    return;
-  }
+  if (ordre === 'jutja-sim') { for (const dir of String(a.de || '').split(',').filter(Boolean)) await jutjaFinal(dir); return; }
   if (ordre === 'jutja') {
     const R = llegeixJ(join(sortida, 'respostes.json')), per = new Map(casos.map(c => [c.id, c]));
     const ok = R.respostes.filter(r => r.resposta && per.has(r.id));
