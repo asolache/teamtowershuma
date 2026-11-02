@@ -742,8 +742,22 @@ function vedesAra(MM) {
   });
 }
 
+/* ══ ELS OFICIS (02/11/2026) ═════════════════════════════════════════════════
+   Els models i els sectors són de territori; els clients de /cliente/ són pimes i
+   autònoms. Els catorze oficis els va escriure el banc de mapes
+   (SOS/tools/banc-mapes.mjs oficis, `knowledge/vna/banc-mapes/oficis.json`) amb
+   el mateix format, la seva veda i les seves paraules. L'Àlvar (02/11/2026): que
+   el que s'ha fet per sector serveixi per veure i precarregar els rols d'un
+   ofici. Aquí es llegeixen tal com són, en català i castellà. */
+const OFICIS_J = join(ARREL, 'knowledge', 'vna', 'banc-mapes', 'oficis.json');
+function oficis() {
+  if (!existsSync(OFICIS_J)) return [];
+  return JSON.parse(readFileSync(OFICIS_J, 'utf8')).oficis.map(o => ({ id: 'ofici_' + o.id, icona: o.icona, paraules: o.paraules, ca: o.ca, es: o.es,
+    veda: { clau: o.veda.clau, preguntes: o.veda.preguntes, falta: o.veda.falta } }));
+}
+
 function genera() {
-  const { out, sectors, falten } = models();
+  const { out, sectors, falten } = models(), ofs = oficis();
   out.concat(sectors).forEach(M => { const v = llegeixVeda(M.id, falten); if (v) M.veda = v; });
   const R = regla();
   const cos = '/* GENERAT per SOS/tools/build-models-mapa.js des de SOS/index.html (DYNAMICS «negoci»,\n'
@@ -757,12 +771,15 @@ function genera() {
     + '  var MODELS = ' + JSON.stringify(out, null, 1).replace(/\n/g, '\n  ') + ';\n'
     + '  /* Els sectors de la Matriu: rols, fluxos i els passos per posar-ho en marxa. */\n'
     + '  var SECTORS = ' + JSON.stringify(sectors, null, 1).replace(/\n/g, '\n  ') + ';\n'
+    + '  /* Els oficis de pimes i autònoms (knowledge/vna/banc-mapes/oficis.json), en català i castellà. */\n'
+    + '  var OFICIS = ' + JSON.stringify(ofs) + ';\n'
+    + '  var TOTS = MODELS.concat(SECTORS, OFICIS);\n'
     + '  /* Qui fa de «tu» quan algú comença per aquest model: el que el promou (`centre`) o, si no el diu, el rol que més dona i rep. */\n'
     + '  function centre(m) { if (m.centre) return m.centre; var n = {}; m.pairs.forEach(function (p) { n[p[0]] = (n[p[0]] || 0) + 1; n[p[1]] = (n[p[1]] || 0) + 1; });\n'
     + '    return m.roles.slice().sort(function (a, b) { return (n[b] || 0) - (n[a] || 0); })[0]; }\n'
     + '  /* El model en una llengua, amb el centre canviat pel nom de qui el fa servir. */\n'
     + '  function mapa(id, llengua, casa) {\n'
-    + '    var M = MODELS.concat(SECTORS).filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
+    + '    var M = TOTS.filter(function (x) { return x.id === id; })[0]; if (!M) return null;\n'
     + '    var m = M[llengua] || M.es || M.ca, c = centre(m), r = function (x) { return casa && x === c ? casa : x; };\n'
     + '    return { abast: \'\', roles: m.roles.map(r), pairs: m.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }), centre: casa || c, nom: m.nom, bona: m.bona || \'\', veda: M.veda || null, passos: m.passos || [] };\n'
     + '  }\n'
@@ -776,16 +793,17 @@ function genera() {
     + '  function textDe(m) { return [m.nom, m.nom, m.diu, m.diu, m.roles.join(\' \'), m.pairs.map(function (p) { return p[3] + \' \' + p[5]; }).join(\' \')].join(\' \'); }\n'
     + '  function suggereix(text, llengua) {\n'
     + '    var meves = {}; arrels(text).forEach(function (w) { meves[w] = 1; });\n'
-    + '    var tots = MODELS.concat(SECTORS), df = {}, bosses = tots.map(function (M) {\n'
+    + '    var tots = TOTS, df = {}, bosses = tots.map(function (M) {\n'
     + '      var b = {}; arrels(textDe(M[llengua] || M.es || M.ca) + \' \' + M.paraules + \' \' + M.paraules).forEach(function (w) { b[w] = (b[w] || 0) + 1; });\n'
-    + '      Object.keys(b).forEach(function (w) { df[w] = (df[w] || 0) + 1; }); return b; });\n'
+    + '      /* Els oficis no compten per a la raresa: així no diluen els models i sectors que ja hi eren. */\n'
+    + '      if (OFICIS.indexOf(M) < 0) Object.keys(b).forEach(function (w) { df[w] = (df[w] || 0) + 1; }); return b; });\n'
     + '    /* Una arrel que surt a molts models diu poc: pesa menys (1 / quants la tenen). */\n'
     + '    var millor = null;\n'
     + '    tots.forEach(function (M, i) {\n'
     + '      var punts = 0, n = 0;\n'
-    + '      Object.keys(meves).forEach(function (w) { if (bosses[i][w]) { n++; punts += Math.min(bosses[i][w], 2) / df[w]; } });\n'
+    + '      Object.keys(meves).forEach(function (w) { if (bosses[i][w]) { n++; punts += Math.min(bosses[i][w], 2) / (df[w] || 1); } });\n'
     + '      var m = M[llengua] || M.es || M.ca;\n'
-    + '      if (punts >= 1 && (!millor || punts > millor.punts)) millor = { id: M.id, icona: M.icona, nom: m.nom, punts: Math.round(punts * 100) / 100, sector: SECTORS.indexOf(M) >= 0 };\n'
+    + '      if (punts >= 1 && (!millor || punts > millor.punts)) millor = { id: M.id, icona: M.icona, nom: m.nom, punts: Math.round(punts * 100) / 100, sector: SECTORS.indexOf(M) >= 0, ofici: OFICIS.indexOf(M) >= 0 };\n'
     + '    });\n'
     + '    return millor;\n'
     + '  }\n'
@@ -796,7 +814,7 @@ function genera() {
     + '  /* maquina: la prepara la màquina (amb el producte que ja ho fa, si n\'hi ha); persona: la fa\n'
     + '     una persona (el que no es paga i els diners, sempre); visita: es decideix a la sessió. */\n'
     + '  ' + automatitza.toString().replace(/\n/g, '\n  ') + '\n'
-    + '  return { MODELS: MODELS, SECTORS: SECTORS, centre: centre, mapa: mapa, suggereix: suggereix, automatitza: automatitza };\n'
+    + '  return { MODELS: MODELS, SECTORS: SECTORS, OFICIS: OFICIS, centre: centre, mapa: mapa, suggereix: suggereix, automatitza: automatitza };\n'
     + '});\n';
   return { cos, falten };
 }
@@ -810,13 +828,13 @@ if (require.main === module) {
   {
     const MV = require('../lib/mapa-valor.js'), MM = Function('module', cos + ';return module.exports')({ exports: {} });
     const REGLES = ['rols', 'menes', 'reciprocitat', 'solts'], mals = [];
-    MM.MODELS.concat(MM.SECTORS).forEach(M => ['ca', 'es'].forEach(ll => {
+    MM.MODELS.concat(MM.SECTORS, MM.OFICIS).forEach(M => ['ca', 'es'].forEach(ll => {
       const m = MM.mapa(M.id, ll, null), r = MV.revisa({ abast: '-', roles: m.roles, pairs: m.pairs });
       const ko = r.regles.filter(x => REGLES.indexOf(x.id) >= 0 && !x.ok).map(x => x.id);
       if (ko.length) mals.push(M.id + ' (' + ll + '): ' + ko.join(', '));
     }));
     if (mals.length) { console.error('✗ Models que no compleixen les regles del mapa (BONES):\n  ' + mals.join('\n  ')); process.exit(1); }
-    console.log('✓ Els ' + (MM.MODELS.length + MM.SECTORS.length) + ' models compleixen les regles 2 a 5 en català i castellà');
+    console.log('✓ Els ' + (MM.MODELS.length + MM.SECTORS.length + MM.OFICIS.length) + ' models compleixen les regles 2 a 5 en català i castellà');
   }
   if (process.argv.includes('--check')) {
     const ara = existsSync(SORTIDA) ? readFileSync(SORTIDA, 'utf8') : '';

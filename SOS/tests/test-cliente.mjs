@@ -129,15 +129,28 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(!(await p.isVisible('#cl-ed')), 'el editor se cierra y sigues donde estabas');
 
   await p.fill('#cl-casa', '');
-  p.once('dialog', d => d.accept());
+  /* Con el dibujo empezado, un modelo no lo pisa: enseña quién suele estar, para añadirlos uno a uno. */
+  const filesAbans = await p.locator('#cl-files .fila').count();
   await p.click('#cl-models button:has-text("Educación")');
+  ok(await p.isVisible('#cl-rols') && /Quién suele estar en «.*Educación/.test(await p.textContent('#cl-rols h3')) && await p.locator('#cl-files .fila').count() === filesAbans,
+    'con el dibujo empezado, un modelo enseña quién suele estar y no toca nada');
+  const rolsMod = await p.$$eval('#cl-rols .model-xips button', bs => bs.map(b => [b.textContent, b.getAttribute('aria-pressed')]));
+  const primerNou = rolsMod.find(r => r[1] === 'false');
+  await p.click('#cl-rols .model-xips button[aria-pressed="false"] >> nth=0');
+  ok(await p.locator('#cl-files .fila').count() === filesAbans + 1 && await p.getAttribute('#cl-rols .model-xips button:has-text("' + primerNou[0].slice(2) + '")', 'aria-pressed') === 'true',
+    'cada persona del modelo se añade sola, con lo que suele dar y recibir, y queda marcada (' + primerNou[0] + ')');
+  ok(await p.locator('#cl-rols button:has-text("que faltan")').count() === 1, 'y las que faltan, de golpe');
+  ok(await p.locator('#cl-oficis button').count() === 14, 'también los catorce oficios de pymes y autónomos');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-rols button:has-text("Cambiar todo por este modelo")');
   ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() === 5,
     'un modelo del SOS (Educación) rellena el centro y quién está alrededor, en castellano, con sus antiguos alumnos');
   ok(await p.getAttribute('#cl-models button:has-text("Educación")', 'aria-pressed') === 'true', 'y queda marcado el modelo elegido');
   /* Los catorce sectores de la Matriu (SECTORS de models-mapa.js), con el mismo botón. */
   ok(await p.locator('#cl-sectors button').count() === 14, 'y también los catorce sectores de la Matriu');
-  p.once('dialog', d => d.accept());
   await p.click('#cl-sectors button:has-text("Vivienda asequible")');
+  p.once('dialog', d => d.accept());
+  await p.click('#cl-rols button:has-text("Cambiar todo por este modelo")');
   const vals = await p.$$eval('#cl-files input', xs => xs.map(x => x.value).join(' · '));
   ok(await p.inputValue('#cl-casa') === 'Formadores/as' && await p.locator('#cl-files .fila').count() >= 3
     && /Financiación ética|Unidades de convivencia/.test(vals) && !/Educación|Alumnado/.test(vals),
