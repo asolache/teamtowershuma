@@ -56,11 +56,13 @@ jobs:
           for f in respostes.json notes.json notes-final.json simulacio.json informe.md; do [ -f "banc-ia/$f" ] && cp "banc-ia/$f" "$R/"; done
           git config user.name "banc-mapes"
           git config user.email "banc-mapes@users.noreply.github.com"
-          git add SOS/knowledge/vna/banc-mapes
+          # El mapa del cervell compta les mides: es refà amb els resultats nous (si no, el CI peta).
+          node SOS/tools/cervell.js > /dev/null
+          git add SOS/knowledge/vna/banc-mapes SOS/knowledge/MAPA.md
           git diff --cached --quiet && exit 0
           git commit -m "banc-mapes: resultats de ${{ github.run_id }} (${{ inputs.ordres }})"
           # Si una altra execució ha tocat el mateix fitxer (oficis.json), guanya la d'ara.
-          ok=0; for i in 1 2 3 4 5; do git rebase --abort 2>/dev/null || true; git pull --rebase -X theirs -q origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && ok=1 && break; sleep $((i*3)); done
+          ok=0; for i in 1 2 3 4 5; do git rebase --abort 2>/dev/null || true; git pull --rebase -X theirs -q origin "${GITHUB_REF_NAME}" && node SOS/tools/cervell.js > /dev/null && { git diff --quiet SOS/knowledge/MAPA.md || git commit -qam "Cervell: MAPA.md al dia"; } && git push -q origin "HEAD:${GITHUB_REF_NAME}" && ok=1 && break; sleep $((i*3)); done
           [ "$ok" = 1 ] || { echo "no s'han pogut desar els resultats"; exit 1; }
       - name: El banc
         if: ${{ inputs.eina != 'banc-mapes' }}
