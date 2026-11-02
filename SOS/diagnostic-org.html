@@ -1099,7 +1099,7 @@ es: {
    a `tt_lang` i els formularis a `sos.lang`, i qui triava castellà a la
    portada i clicava cap aquí es trobava el formulari en català. */
 let DX_LANG='ca';
-try{DX_LANG=localStorage.getItem('sos.lang')||localStorage.getItem('tt_lang')||'ca';}catch(e){}
+try{DX_LANG=(/[?&]lang=(ca|es)\b/.exec(location.search)||[])[1]||localStorage.getItem('sos.lang')||localStorage.getItem('tt_lang')||'ca';}catch(e){}
 /* `T` és el text d'una clau; `L` el d'un camp amb germà castellà (`tEs`). Les
    dues llegeixen la mateixa variable, i per això no hi pot haver mitja pàgina
    en una llengua i mitja en l'altra. */

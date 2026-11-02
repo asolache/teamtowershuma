@@ -2977,7 +2977,7 @@ function blAplicaLang(l) {
 }
 (function () {
   var l = 'ca';
-  try { l = localStorage.getItem('tt_lang') || localStorage.getItem('sos.lang') || 'ca'; } catch (e) {}
+  try { l = (/[?&]lang=(ca|es)\b/.exec(location.search)||[])[1]||localStorage.getItem('tt_lang') || localStorage.getItem('sos.lang') || 'ca'; } catch (e) {}
   var q = /[?&]lang=(ca|es)\b/.exec(location.search);
   if (q) l = q[1];
   document.querySelectorAll('.lang-b').forEach(function (b) {
