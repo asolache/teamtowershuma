@@ -99,7 +99,7 @@ console.log('\n3 · Una volta del mapa');
   ok(sa.despres.punts >= sa.abans.punts, 'i com quedaria si ho aplica tot: el nou intangible no l\'empitjora');
   ok(req.messages[0].content.includes('Cómo está su dibujo: ' + sa.abans.punts + ' de 100') && sa.abans.falten.every(f => req.messages[0].content.includes(f.diu)), 'la IA rep la mateixa salut i el que falta, per anar-hi primer');
   ok(ESQUEMA.mapa.properties.preguntas.type === 'array' && !('pregunta' in ESQUEMA.mapa.properties), "l'esquema demana una llista de preguntes");
-  ok(req.model === 'claude-sonnet-5-5' && req.output_config.effort === 'low' && req.output_config.format.type === 'json_schema', 'Sonnet 5.5 (el banc de mapes), esforç baix, sortida amb esquema');
+  ok(req.model === 'claude-sonnet-5-5' && req.output_config.effort === 'medium' && req.output_config.format.type === 'json_schema', 'Sonnet 5.5 (el banc de mapes), esforç mitjà, sortida amb esquema');
   ok(Array.isArray(req.system) && req.system[0].cache_control && req.system[0].cache_control.type === 'ephemeral', 'el sistema va a la memòria cau');
   ok(/UNA sola cosa/.test(req.system[0].text) && /nunca el nombre de una persona/.test(req.system[0].text), 'amb les regles del bon mapa (rigor2)');
   ok(req.fallbacks === 'default' && h['anthropic-beta'] === 'server-side-fallback-2026-07-01' && !('temperature' in req), 'amb fallbacks i sense paràmetres de mostreig');

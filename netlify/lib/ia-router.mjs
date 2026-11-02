@@ -41,9 +41,10 @@ export const TASQUES = {
   aten: { model: 'claude-sonnet-5-5', effort: 'low' },
   raona: { model: 'claude-opus-5-5', effort: 'medium' },
   estrategia: { model: 'claude-opus-5-5', effort: 'high' },
-  /* pule-mapa.mjs: el mapa del client, amb esquema i esforç baix. Sonnet des del 02/11/2026:
-     al banc de mapes (36 casos, jutge a cegues) fa el mateix que Opus (3,03 sobre 5) a mig preu. */
-  mapa: { model: 'claude-sonnet-5-5', effort: 'low' }
+  /* pule-mapa.mjs: el mapa del client, amb esquema. Sonnet des del 02/11/2026:
+     al banc de mapes (36 casos, jutge a cegues) fa el mateix que Opus (3,03 sobre 5) a mig preu;
+     amb esforç mitjà, 3,06 contra 2,86 de l'esforç baix, pel mateix cost. */
+  mapa: { model: 'claude-sonnet-5-5', effort: 'medium' }
 };
 
 /* Els projectes de l'Àlvar. `tasques` canvia una tasca només en aquell projecte. */

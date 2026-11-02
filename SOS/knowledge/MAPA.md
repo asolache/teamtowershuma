@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 444 · 22362 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 450 · 22610 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 9 · 135 KB |
@@ -46,7 +46,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 122 · 2446 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 128 · 2693 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 76 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 7 · 386 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
@@ -56,7 +56,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 3 · 32 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 15 · 143 KB |
-| `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 55 · 1276 KB |
+| `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 61 · 1524 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
 
 ## arxiu
