@@ -715,7 +715,7 @@ es: {
 };
 
 var currentLang = 'ca';
-try { currentLang = localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
+try { currentLang = (/[?&]lang=(ca|es)\b/.exec(location.search) || [])[1] || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
 
 function applyLang(l) {
     currentLang = l;

@@ -1576,7 +1576,7 @@ es: {
    Es llegeixen les dues i s'escriuen les dues, i així la tria viatja en els dos
    sentits sense haver de tocar el commutador de la portada. */
 var PR_LANG = 'ca';
-try { PR_LANG = localStorage.getItem('sos.lang') || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
+try { PR_LANG = (/[?&]lang=(ca|es)\b/.exec(location.search) || [])[1] || localStorage.getItem('sos.lang') || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
 
 function prAplicaLang(l) {
   if (!PR_I18N[l]) l = 'ca';

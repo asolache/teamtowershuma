@@ -415,7 +415,7 @@ es: {
    `tt_lang` i els formularis a `sos.lang`, i qui triava castellà a la portada i
    clicava cap aquí es trobava la pàgina en català. */
 var TR_LANG = 'ca';
-try { TR_LANG = localStorage.getItem('sos.lang') || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
+try { TR_LANG = (/[?&]lang=(ca|es)\b/.exec(location.search) || [])[1] || localStorage.getItem('sos.lang') || localStorage.getItem('tt_lang') || 'ca'; } catch (e) {}
 function trAplicaLang(l) {
   if (!TR_I18N[l]) l = 'ca';
   TR_LANG = l;

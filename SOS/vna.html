@@ -2426,6 +2426,7 @@ const VN_I18N = {
 };
 let VN_LANG = 'ca';
 try { const g = localStorage.getItem('tt_lang'); if (g === 'es' || g === 'ca') VN_LANG = g; } catch (e) {}
+{ const q = /[?&]lang=(ca|es)\b/.exec(location.search); if (q) VN_LANG = q[1]; }
 
 function vnAplicaLang(l) {
   VN_LANG = (l === 'es') ? 'es' : 'ca';

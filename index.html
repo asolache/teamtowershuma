@@ -1705,15 +1705,15 @@
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="com.eyebrow">Com funciona</div>
-            <h2 data-i18n-html="com.h2">Quatre passos, i el quart <em>és que el mapa segueix viu</em></em></h2>
+            <h2 data-i18n-html="com.h2">Quatre passos, i el quart <em>és que el mapa segueix viu</em></h2>
             <p data-i18n="com.intro">Del primer esborrany al sistema funcionant. Pots parar en qualsevol pas i quedar-te el que portis fet.</p>
         </div>
         <div class="passos-grid fade-up">
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p1.n">Pas 01</div>
-                <h3 data-i18n="com.p1.h">Mires on ets</h3>
-                <p data-i18n="com.p1.p">Respons unes preguntes sobre la teva organització: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.</p>
-                <div class="pas-meta"><span data-i18n="com.p1.m1">3 minuts</span><span data-i18n="com.p1.m2">Gratuït</span><span class="t-endus" data-i18n="com.p1.m3">T'endús: el diagnòstic</span></div>
+                <h3 data-i18n="com.p1.h">Dibuixes el teu mapa</h3>
+                <p data-i18n="com.p1.p">Ens dius qui t'envolta i què us doneu, i en surt el primer dibuix i un esbós de la web. Ho pots fer ara mateix, sol i sense parlar amb ningú.</p>
+                <div class="pas-meta"><span data-i18n="com.p1.m1">5 minuts</span><span data-i18n="com.p1.m2">Gratuït</span><span class="t-endus" data-i18n="com.p1.m3">T'endús: el teu mapa</span></div>
             </div>
             <div class="pas">
                 <div class="pas-n" data-i18n="com.p2.n">Pas 02</div>
@@ -2265,11 +2265,11 @@ ca: {
   'com.h2':'Quatre passos, i el quart <em>és que el mapa segueix viu</em>',
   'com.intro':'Del primer esborrany al sistema funcionant. Pots parar en qualsevol pas i quedar-te el que portis fet.',
   'com.p1.n':'Pas 01',
-  'com.p1.h':'Mires on ets',
-  'com.p1.p':'Respons unes preguntes sobre la teva organització: què hi ha en marxa, qui hi és i què us falta. Ho pots fer ara mateix, sol i sense parlar amb ningú.',
-  'com.p1.m1':'3 minuts',
+  'com.p1.h':'Dibuixes el teu mapa',
+  'com.p1.p':'Ens dius qui t\'envolta i què us doneu, i en surt el primer dibuix i un esbós de la web. Ho pots fer ara mateix, sol i sense parlar amb ningú.',
+  'com.p1.m1':'5 minuts',
   'com.p1.m2':'Gratuït',
-  'com.p1.m3':'T\'endús: el diagnòstic',
+  'com.p1.m3':'T\'endús: el teu mapa',
   'com.p2.n':'Pas 02',
   'com.p2.h':'Dibuixeu el mapa a la sala',
   'com.p2.p':'L\'equip dibuixa junt el mapa de la direcció i el de l\'àrea on el valor s\'encalla, el real i l\'ideal, i marca les zones calentes. Aquesta conversa és el producte, i no l\'automatitza res.',
@@ -2717,11 +2717,11 @@ es: {
   'com.h2':'Cuatro pasos, y el cuarto <em>es que el mapa sigue vivo</em>',
   'com.intro':'Del primer borrador al sistema funcionando. Puedes parar en cualquier paso y quedarte con lo que lleves hecho.',
   'com.p1.n':'Paso 01',
-  'com.p1.h':'Miras dónde estás',
-  'com.p1.p':'Respondes unas preguntas sobre tu organización: qué hay en marcha, quién está y qué os falta. Puedes hacerlo ahora mismo, solo y sin hablar con nadie.',
-  'com.p1.m1':'3 minutos',
+  'com.p1.h':'Dibujas tu mapa',
+  'com.p1.p':'Nos dices quién te rodea y qué os dais, y sale el primer dibujo y un boceto de la web. Puedes hacerlo ahora mismo, solo y sin hablar con nadie.',
+  'com.p1.m1':'5 minutos',
   'com.p1.m2':'Gratis',
-  'com.p1.m3':'Te llevas: el diagnóstico',
+  'com.p1.m3':'Te llevas: tu mapa',
   'com.p2.n':'Paso 02',
   'com.p2.h':'Dibujáis el mapa en la sala',
   'com.p2.p':'El equipo dibuja junto el mapa de dirección y el del área donde el valor se atasca, el real y el ideal, y marca las zonas calientes. Esa conversación es el producto, y no la automatiza nada.',
@@ -2778,7 +2778,8 @@ cap:        {title:'Cap de Colla — Director',        t:'Tangible: comandos ope
 musics:     {title:'Músics — Reloj de Red',          t:'Tangible: telemetría acústica — la melodía señala la fase exacta del Enxaneta a los Baixos', i:'Intangible: estado de flujo grupal — el ritmo sincroniza respiración, enfoque y motivación'}
 };
 
-var currentLang = localStorage.getItem('tt_lang') || 'ca';
+/* `?lang=es` mana sobre la memoria: un enllaç en castellà s'ha d'obrir en castellà. */
+var currentLang = (/[?&]lang=(ca|es)\b/.exec(location.search) || [])[1] || localStorage.getItem('tt_lang') || 'ca';
 
 function applyLang(l) {
     currentLang = l;
@@ -3050,6 +3051,8 @@ document.querySelectorAll('.colla-node').forEach(function(node) {
         [].slice.call(document.querySelectorAll('.lang-b')).forEach(function (b) {
             b.addEventListener('click', function () { setTimeout(pinta, 0); });
         });
+        /* I d'entrada, per a qui arriba amb la pàgina en castellà. */
+        if (es()) pinta();
     });
 })();
 </script>

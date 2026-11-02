@@ -1599,7 +1599,7 @@ cap:        {title:'Cap de Colla — Director',        t:'Tangible: comandos ope
 musics:     {title:'Músics — Reloj de Red',          t:'Tangible: telemetría acústica — la melodía señala la fase exacta del Enxaneta a los Baixos', i:'Intangible: estado de flujo grupal — el ritmo sincroniza respiración, enfoque y motivación'}
 };
 
-var currentLang = localStorage.getItem('tt_lang') || 'ca';
+var currentLang = (/[?&]lang=(ca|es)\b/.exec(location.search) || [])[1] || localStorage.getItem('tt_lang') || 'ca';
 
 function applyLang(l) {
     currentLang = l;
