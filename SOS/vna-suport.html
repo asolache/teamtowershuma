@@ -797,11 +797,16 @@ kbd{font-family:var(--mono);font-size:var(--t0);background:var(--panel);border:1
    Només el dibuix i l'inspector: ni la web al voltant ni el que és de taller
    (el pols, el flux, real i ideal, el diagnòstic i la web). */
 html.incrustat body>nav,html.incrustat header.cap,html.incrustat .peu,html.incrustat .tt-peu,
-html.incrustat main>:not(#editor),html.incrustat .ed-ple-b,html.incrustat .ed-modes,html.incrustat .ed-vistes,
-html.incrustat .ed-baix,html.incrustat #edTabDia,html.incrustat #edTabWeb,html.incrustat .salta,
-html.incrustat .ed-tit .s,html.incrustat .ed-idioma,html.incrustat #edRegles{display:none !important}
+html.incrustat main>:not(#editor),html.incrustat .ed-ple-b,html.incrustat .salta,html.incrustat .ed-idioma,
+html.incrustat:not(.ple) .ed-modes,html.incrustat:not(.ple) .ed-vistes,html.incrustat:not(.ple) .ed-baix,
+html.incrustat:not(.ple) #edTabDia,html.incrustat:not(.ple) #edTabWeb,
+html.incrustat:not(.ple) .ed-tit .s,html.incrustat:not(.ple) #edRegles{display:none !important}
 html.incrustat main{padding:0;max-width:none}
 html.incrustat #editor{margin:0;border:0;border-radius:0}
+/* Ple (?incrustat&ple): la vista avançada de /cliente/. L'editor sencer, amb
+   les vistes, real i ideal, el diagnòstic i les regles, però sense la web al
+   voltant: abans carregava la pàgina sencera dins del marc, amb la barra, la
+   capçalera i el peu del lloc (02/11/2026). */
 .ed-idioma{display:flex;gap:2px}
 .ed-idioma button{font:inherit;font-size:var(--t0);font-family:var(--mono);padding:.2rem .45rem;border:1px solid var(--border);
   background:transparent;color:var(--muted);border-radius:6px;cursor:pointer}
@@ -815,6 +820,7 @@ html.incrustat #editor{margin:0;border:0;border-radius:0}
 (function () {
   var q = location.search, h = document.documentElement, l = (q.match(/[?&]lang=(ca|es|en)\b/) || q.match(/[?&](es|en)\b/) || [])[1];
   if (/[?&]incrustat\b/.test(q)) h.classList.add('incrustat');
+  if (/[?&]ple\b/.test(q)) h.classList.add('ple');
   if (!l) try { l = localStorage.getItem('tt_lang'); } catch (e) {}
   window.ED_LLENGUA = /^(es|en)$/.test(l) ? l : 'ca';
 })();

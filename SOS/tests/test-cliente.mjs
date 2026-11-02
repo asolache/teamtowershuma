@@ -112,10 +112,12 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(fitxa.alrededor.length === 6 && fitxa.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'), 'lo que cambia en el editor vuelve a la ficha, también lo que pasa entre los demás');
   ok(await p.locator('#cl-files .fila').count() === 6, 'y las filas siguen ahí');
   await p.click('#cl-ed-avz');
-  await p.waitForFunction(() => { const f = document.getElementById('cl-ed-marc'); return !/incrustat/.test(f.contentWindow.location.search) && f.contentWindow.document.readyState === 'complete' && f.contentWindow.__VS_ED && f.contentWindow.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
+  await p.waitForFunction(() => { const f = document.getElementById('cl-ed-marc'); return /[?&]ple\b/.test(f.contentWindow.location.search) && f.contentWindow.document.readyState === 'complete' && f.contentWindow.__VS_ED && f.contentWindow.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
   const fr2 = p.frames().find(f => /vna-suport/.test(f.url()));
-  ok(await fr2.evaluate(() => window.__VS_ED.exporta().pairs.some(x => x[3] === 'confianza' || x[5] === 'confianza')) && await fr2.evaluate(() => !!document.querySelector('header.cap').offsetParent && !!document.querySelector('#pre').offsetParent),
+  ok(await fr2.evaluate(() => window.__VS_ED.exporta().pairs.some(x => x[3] === 'confianza' || x[5] === 'confianza')) && await fr2.evaluate(() => !!(document.querySelector('.ed-modes') || {}).offsetParent),
     'la vista avanzada abre el editor entero con el mismo dibujo');
+  ok(await fr2.evaluate(() => !(document.querySelector('header.cap') || {}).offsetParent && !(document.querySelector('body > nav') || {}).offsetParent && !(document.querySelector('.tt-peu') || {}).offsetParent),
+    'y sin la web alrededor: ni la barra, ni la cabecera, ni el pie dentro del marco');
   await p.click('#cl-ed-tanca');
   ok(!(await p.isVisible('#cl-ed')), 'el editor se cierra y sigues donde estabas');
 
@@ -138,7 +140,14 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.fill('#cl-casa', 'Equipo de formación');
   await p.fill('#cl-retorn', RESPOSTA); await p.click('#cl-omple');
 
+  /* L'avanç (02/11/2026): puja amb el dibuix i amb la web triada, i cada fita és un enllaç. */
+  const av0 = parseInt(await p.textContent('#cl-avanc-n'), 10);
   await p.check('#cl-n-conectada', { force: true });
+  const av1 = parseInt(await p.textContent('#cl-avanc-n'), 10);
+  ok(av0 > 0 && av1 === av0 + 10 && await p.locator('#cl-avanc li a[href^="#"]').count() === 9 && /%/.test(await p.textContent('#cl-avanc-p')),
+    'el avance sube con el dibujo y con la web elegida (' + av0 + ' → ' + av1 + ' %), y cada paso lleva adonde se hace');
+  await p.check('#cl-automatiza');
+  ok((await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).automatiza)) === true, 'la opción «que lo que se repite vaya solo» queda en la ficha');
   await p.click('#cl-boceto');
   await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
   await p.waitForTimeout(300);
