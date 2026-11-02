@@ -14,13 +14,28 @@
     };
     var kc = {}; ['anna', 'prana', 'mano', 'vijnana', 'ananda'].forEach(function (k) { kc[k] = tono('--k-' + k, '#888'); });
     var quieto = raiz.matchMedia && raiz.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var D, an, P, byId, sel = null, encima = null, luz = null, t0 = 0, vivo = false, raf = 0;
+    var D, an, P, byId, docs = [], sel = null, encima = null, luz = null, t0 = 0, vivo = false, raf = 0;
     var cam = { yaw: 0.6, pitch: -0.35, dist: 3.1 }, W = 0, H = 0, ppp = 1, proy = {}, ultimo = 0;
 
     function monta(datos, analisis) {
       D = datos; an = analisis; P = F.coloca(D, an); byId = {};
       D.nodos.forEach(function (n) { byId[n.id] = n; });
       if (sel && !byId[sel]) sel = null; luz = null; pinta();
+    }
+    /* Els documents del cervell: quadrats a fora de tot, un sector per àrea, i
+       una línia fins a cada veda que citen. No entren a l'anàlisi de forces. */
+    function ponDocs(ds) {
+      var arees = []; (ds || []).forEach(function (d) { if (arees.indexOf(d.area) < 0) arees.push(d.area); });
+      var oro = Math.PI * (3 - Math.sqrt(5)), dir = {};
+      arees.forEach(function (a, i) { var y = 1 - 2 * (i + 0.5) / arees.length, r = Math.sqrt(1 - y * y); dir[a] = [Math.cos(oro * i) * r, y, Math.sin(oro * i) * r]; });
+      docs = (ds || []).map(function (d, i) {
+        var h = (i * 2654435761 % 1000) / 1000, g = (i * 40503 % 1000) / 1000, v = dir[d.area];
+        v = [v[0] + (h - 0.5) * 0.45, v[1] + (g - 0.5) * 0.45, v[2] + (((h + g) % 1) - 0.5) * 0.45];
+        var m = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) || 1;
+        return Object.assign({}, d, { p: [v[0] / m * 1.22, v[1] / m * 1.22, v[2] / m * 1.22], vedes: (d.vedes || []).filter(function (k) { return byId && byId[k]; }) });
+      });
+      if (sel && sel.indexOf('doc:') === 0 && !docs.some(function (d) { return d.id === sel; })) sel = null;
+      pinta();
     }
     function mide() {
       var r = lienzo.getBoundingClientRect(); ppp = Math.min(2, raiz.devicePixelRatio || 1);
@@ -47,7 +62,26 @@
       });
       cx.setLineDash([]);
       proy = {}; D.nodos.forEach(function (n) { proy[n.id] = gira(P[n.id]); });
-      var vecSel = sel ? an.vec[sel] : null, fase = (ahora - t0) / 1000;
+      docs.forEach(function (d) { proy[d.id] = gira(d.p); });
+      /* Del document a les vedes que cita: puntejat fi, en el color de l'àrea. */
+      cx.setLineDash([2, 3]);
+      docs.forEach(function (d) {
+        var on = sel === d.id || d.vedes.indexOf(sel) >= 0;
+        d.vedes.forEach(function (k) {
+          var p = proy[d.id], q = proy[k]; if (!q) return;
+          cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(q.x, q.y);
+          cx.strokeStyle = d.color || C.apagado; cx.globalAlpha = on ? 0.9 : sel ? 0.06 : 0.3 * alfa((p.z + q.z) / 2); cx.lineWidth = on ? 1.6 : 1; cx.stroke();
+        });
+      });
+      cx.setLineDash([]);
+      docs.slice().sort(function (a, b) { return proy[b.id].z - proy[a.id].z; }).forEach(function (d) {
+        var p = proy[d.id], r = Math.max(2.5, 3.4 * p.e / 180), on = !sel || sel === d.id || d.vedes.indexOf(sel) >= 0;
+        cx.globalAlpha = (on ? 0.95 : 0.15) * alfa(p.z); cx.fillStyle = d.color || C.apagado;
+        cx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+        if (sel === d.id) { cx.lineWidth = 2.5; cx.strokeStyle = C.tinta; cx.globalAlpha = 1; cx.strokeRect(p.x - r, p.y - r, r * 2, r * 2); }
+      });
+      var dSel = sel && !byId[sel] ? docs.filter(function (d) { return d.id === sel; })[0] : null,
+        vecSel = sel ? (dSel ? dSel.vedes.reduce(function (o, k) { o[k] = 1; return o; }, {}) : an.vec[sel] || {}) : null, fase = (ahora - t0) / 1000;
       var encendida = function (id) {
         if (!luz || !luz[id]) return 0;
         var t = fase - luz[id].onda * 0.45; if (t < 0) return 0;
@@ -95,7 +129,7 @@
       cx.globalAlpha = 1;
       [sel, encima].forEach(function (id, i) {
         if (!id || !proy[id] || (i && id === sel)) return;
-        var p = proy[id], n = byId[id], txt = n.n + ' · ' + n.t;
+        var p = proy[id], n = byId[id] || docs.filter(function (d) { return d.id === id; })[0], txt = n.titol ? '▪ ' + n.titol : n.n + ' · ' + n.t;
         if (txt.length > 48) txt = txt.slice(0, 46) + '…';
         cx.font = '600 12px "Space Grotesk", system-ui, sans-serif';
         var w = cx.measureText(txt).width;
@@ -156,13 +190,13 @@
 
     function zoom(f) { cam.dist = Math.max(1.4, Math.min(6, cam.dist * f)); pinta(); }
     function centra() { cam = { yaw: 0.6, pitch: -0.35, dist: 3.1 }; pinta(); }
-    function selecciona(id) { sel = id && byId[id] ? id : null; pinta(); }
+    function selecciona(id) { sel = id && (byId[id] || docs.some(function (d) { return d.id === id; })) ? id : null; pinta(); }
     function dispara(id) {
       if (!byId[id]) return null;
       sel = id; luz = F.dispara(id, an.vec, an.cuanticos); t0 = performance.now(); pinta();
       return luz;
     }
-    return { monta: monta, activa: activa, selecciona: selecciona, dispara: dispara, zoom: zoom, centra: centra };
+    return { monta: monta, ponDocs: ponDocs, activa: activa, selecciona: selecciona, dispara: dispara, zoom: zoom, centra: centra };
   }
   raiz.Cerebro3D = Cerebro3D;
 })(window);

@@ -23,7 +23,8 @@
       soltes: function (s, t, g) { return '<b>Vedes soltes.</b> ' + s + ' de ' + t + ' no citen ni les citen. ' + g + ' ja tenen un enllaç quàntic que diu amb quina connectar-les.'; },
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya és més ampla que el tronc.' : 'No aguanta: el tronc ha crescut més que la pinya.'); },
       comp: 'comparteixen saber', mateixa: 'citen la mateixa veda', mateixes: function (n) { return 'citen les mateixes ' + n; },
-      mes: 'Acosta', menys: 'Allunya', tot: 'Tot', buit: 'Aquest codex encara no té vedes.'
+      mes: 'Acosta', menys: 'Allunya', tot: 'Tot', buit: 'Aquest codex encara no té vedes.',
+      doc: 'Document', docs: function (n) { return n + (n === 1 ? ' document' : ' documents'); }
     },
     es: {
       tria: 'Toca una veda para leerla y ver con cuáles conecta.', cita: 'Cita a', citen: 'La citan', ent: 'Entrelazadas',
@@ -37,7 +38,8 @@
       soltes: function (s, t, g) { return '<b>Vedas sueltas.</b> ' + s + ' de ' + t + ' no citan ni las citan. ' + g + ' ya tienen un enlace cuántico que dice con cuál conectarlas.'; },
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya es más ancha que el tronco.' : 'No aguanta: el tronco ha crecido más que la pinya.'); },
       comp: 'comparten saber', mateixa: 'citan la misma veda', mateixes: function (n) { return 'citan las mismas ' + n; },
-      mes: 'Acercar', menys: 'Alejar', tot: 'Todo', buit: 'Este codex aún no tiene vedas.'
+      mes: 'Acercar', menys: 'Alejar', tot: 'Todo', buit: 'Este codex aún no tiene vedas.',
+      doc: 'Documento', docs: function (n) { return n + (n === 1 ? ' documento' : ' documentos'); }
     }
   };
   var CSS = '.cv{--k-anna:#b45309;--k-prana:#15803d;--k-mano:#0e7490;--k-vijnana:#1d4ed8;--k-ananda:#7c3aed;--cv-l:var(--border,#ddd7c8);--cv-c:var(--card,#fff);--cv-t:var(--text,#15130f);--cv-m:var(--muted,#5e594d)}' +
@@ -78,7 +80,8 @@
       '<p class="cv-now" aria-live="polite"></p><p class="cv-ley">' + esc(t.ley) + '</p>' +
       '<div class="cv-p" aria-live="polite"><p>' + t.tria + '</p></div><div class="cv-f"></div>';
     var panel = caixa.querySelector('.cv-p'), now = caixa.querySelector('.cv-now');
-    var C3 = raiz.Cerebro3D(caixa.querySelector('canvas'), { alElegir: function (id) { if (id) tria(id); else { C3.selecciona(null); panel.innerHTML = '<p>' + t.tria + '</p>'; panel.style.removeProperty('--c'); } } });
+    var DOCS = {};
+    var C3 = raiz.Cerebro3D(caixa.querySelector('canvas'), { alElegir: function (id) { if (id && DOCS[id]) triaDoc(id); else if (id) tria(id); else { C3.selecciona(null); panel.innerHTML = '<p>' + t.tria + '</p>'; panel.style.removeProperty('--c'); } } });
     C3.monta(D, AN); C3.activa(true);
 
     function chip(id, extra) { var n = byId[id]; return '<button type="button" class="cv-go" data-id="' + esc(id) + '">' + n.n + ' · ' + esc(n.t) + (extra ? ' <small>· ' + esc(extra) + '</small>' : '') + '</button>'; }
@@ -99,6 +102,21 @@
         chips(cita, t.cita) + chips(citen, t.citen) + chips(ent, t.ent) +
         '<p class="cv-m" style="margin-top:10px">' + t.massa + ' ' + AN.masa[id] + ' · ' + t.pot + ' ' + AN.potencial[id] + ' · ' + t.enc(a.vedas, a.capas) + '</p>' +
         '<button type="button" class="cv-dis" data-dispara="' + esc(id) + '">' + t.dispara + '</button>';
+    }
+    /* Un document triat al 3D: què és, de quina àrea, on és i quines vedes cita. */
+    function triaDoc(id) {
+      var d = DOCS[id]; C3.selecciona(id);
+      panel.style.setProperty('--c', d.color || 'var(--cv-l)');
+      panel.innerHTML = '<p class="cv-m">' + esc([t.doc, d.nomArea, d.tipus, d.estat].filter(Boolean).join(' · ')) + '</p><h3>' + esc(d.titol) + '</h3>' +
+        (d.url ? '<p><a href="' + esc(d.url) + '" rel="noopener">' + esc(d.ruta) + '</a></p>' : '') +
+        chips(d.vedes.filter(function (k) { return byId[k]; }), t.cita);
+    }
+    function docs(ds) {
+      DOCS = {}; (ds || []).forEach(function (d) { DOCS[d.id] = d; });
+      C3.ponDocs(ds);
+      var k = caixa.querySelector('.cv-k'), l = k.querySelector('[data-docs]');
+      if (l) l.remove();
+      if (ds && ds.length) k.insertAdjacentHTML('beforeend', '<span data-docs style="--c:var(--cv-m)"><i style="border-radius:1px"></i>' + esc(t.docs(ds.length)) + '</span>');
     }
     function dispara(id) {
       var luz = C3.dispara(id); if (!luz) return;
@@ -122,7 +140,7 @@
       var b = e.target.closest('[data-id]'); if (!b) return;
       tria(b.getAttribute('data-id')); caixa.querySelector('.cv-3d').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-    return { analisi: AN, tria: tria, dispara: dispara, atura: function () { C3.activa(false); }, activa: function (b) { C3.activa(b); } };
+    return { analisi: AN, tria: function (id) { return DOCS[id] ? triaDoc(id) : tria(id); }, docs: docs, dispara: dispara, atura: function () { C3.activa(false); }, activa: function (b) { C3.activa(b); } };
   }
   raiz.CervellVista = { munta: munta };
 })(window);
