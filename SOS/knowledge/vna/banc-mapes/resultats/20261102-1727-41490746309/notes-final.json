@@ -1,0 +1,398 @@
+[
+ {
+  "id": "c001",
+  "nota": {
+   "roles": 2,
+   "intangibles": 3,
+   "reciprocitat": 4,
+   "fidelitat": 3,
+   "global": 2,
+   "falla": "Faltan los roles que sirven al objetivo de atraer más adultos: empresas locales que forman a su plantilla, centros examinadores oficiales y las familias de alumnos menores. Sin ellos, el mapa solo describe a quien ya viene. También faltan intangibles clave, como la información sobre convocatorias de exámenes, las opiniones que ajustan horarios y grupos, y la motivación por el avance. Además, da por hecho cosas que el caso no dice: que los adultos estudian «para trabajar», que el profesorado son «profesoras» y que hay «grupos pequeños»."
+  }
+ },
+ {
+  "id": "c002",
+  "nota": {
+   "roles": 4,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 3,
+   "global": 4,
+   "falla": "Falta la administración educativa que reconoce créditos. El mapa atribuye los «puntos» a los centros de profesores y da por hecho que los cursos son acreditables y que pagan los centros, sin aclarar quién homologa ni quién contrata y paga (centro de profesores, colegio o docentes directamente). Además, «reconocimiento de puntos» marcado como tangible y la relación con los colegios («profesores que se apuntan» / «clases más tranquilas») quedan forzados."
+  }
+ },
+ {
+  "id": "c003",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Da por hechos datos que el caso no confirma. Supone que la bodega pertenece a la Denominación de Origen Toro, aunque ese dato estaba entre los que no había que inventar. Trata las visitas guiadas de pago como algo que ya existe, cuando solo consta que se las preguntan. Además, la relación con la cooperativa es una incógnita y el mapa la resuelve como «contactos para vender fuera» sin preguntar si les venden uva o comparten servicios. Faltan los proveedores de uva o viticultores. También faltan intangibles clave: el conocimiento técnico compartido con la cooperativa y la confianza del distribuidor en una calidad constante. Por último, los visitantes aparecen duplicados en dos roles."
+  }
+ },
+ {
+  "id": "c004",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan roles clave. Los productores se reducen a la huerta, sin carne, queso ni pescado. No aparecen quienes recomiendan el restaurante, como alojamientos o comercios vecinos. Se confunde a quien lee opiniones con quien las escribe, y por eso el intercambio «opiniones a cambio de historia» queda cojo. También se mezclan cocina y sala con un «sueldo» que no encaja con la pareja propietaria. Por último, el mapa no recoge la duda de los clientes sobre si hay que reservar."
+  }
+ },
+ {
+  "id": "c005",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 4,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Falta el canal principal de llegada: las recomendaciones de clientes anteriores (boca a boca) no aparecen como rol ni como intangible. Además, las empresas, que son su objetivo, solo tienen una relación de pago, sin el intangible de confianza o tranquilidad que ella les da ni lo que podrían devolverle (repetición, recomendación a otras empresas). Tampoco aparece la coordinación y el conocimiento compartido con catering y freelances. La derivación de las fincas a empresas se da por hecha cuando es una duda abierta."
+  }
+ },
+ {
+  "id": "c006",
+  "nota": {
+   "roles": 4,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "El mapa no aborda el problema central del caso: socios que pagan y piden pero no participan. Falta un intercambio que muestre qué recibe la familia por implicarse (decidir, pertenencia) frente a solo comprar, que es justo el mensaje de «no somos una tienda». También incluye datos inventados: el descuento por turnos, las visitas a la huerta, que la cuota sea mensual y la palabra «huerta». Por último, mezcla la cuota con el pago de los pedidos («cuota ↔ verdura»), y eso desdibuja la diferencia entre ser socio y ser cliente."
+  }
+ },
+ {
+  "id": "c007",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 5,
+   "global": 3,
+   "falla": "Falta el equipo o los trabajadores de la pyme como rol propio, con sus intangibles: información sincera sobre el clima a cambio de escucha. Tampoco aparecen la confianza y el acceso a los problemas internos que da el gerente, frente a la mirada externa y la discreción que aporta la consultora. La fila de pymes duplica a los clientes que recomiendan, y no hay colaboradores ni formadores."
+  }
+ },
+ {
+  "id": "c008",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Faltan el productor local de la tierra (justo lo que la diferencia del súper) y el vecino de siempre como recomendador ante los recién llegados. Además hay cosas inventadas: «Doña Carmen» es un nombre propio y no un rol, y el reparto a domicilio por WhatsApp a vecinos nuevos se da por hecho cuando el caso solo dice que se lo preguntan. Tampoco se sabe si la panadería le vende pan. La panadería está duplicada, y el fiado aparece solo como tangible, sin el intangible de confianza que lo sostiene."
+  }
+ },
+ {
+  "id": "c009",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "Lo que más le falta es la agencia de marketing vista como relación de valor y de dependencia, que es justo lo que quieren cambiar. Solo aparece como encargos por diseños. Faltan sus intangibles: visibilidad indirecta y aprendizaje en proyectos grandes a cambio de fiabilidad en plazos, y si pueden firmar o mostrar ese trabajo. También falta el permiso de los clientes para enseñar sus proyectos en el portfolio, que es la base para captar proyectos más grandes. Los clientes no se separan por rol (emprendedor que lanza negocio frente a restaurante u hostelería). Además se añaden roles que el caso no menciona (gestorías, arquitectos e interioristas) y encargos supuestos (papelería, cartelería, seguimiento). Las socias aparecen como rol externo, lo que no aporta al mapa."
+  }
+ },
+ {
+  "id": "c010",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Da por hecho que trabaja con mutuas («factura para la mutua»), cuando eso es justo lo que le preguntan y no se sabe; además, la mutua no aparece como rol. Añade roles que ella nunca mencionó (ginecología y medicina de familia, grupos de preparación al parto). Agrupa a todas en un genérico «Pacientes», sin separar mujer posparto, corredor y persona mayor con dolor, aunque su objetivo es que la encuentren las mujeres de suelo pélvico. Tampoco separa a la alumna de pilates ni aclara la relación real con el gimnasio."
+  }
+ },
+ {
+  "id": "c011",
+  "nota": {
+   "roles": 4,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "Falta la oficina de turismo comarcal, clave para atraer gente fuera de verano mediante información de eventos y temporada baja. También faltan los comercios y los proveedores locales. Además, el mapa da por hechas cosas que no se han confirmado: que admiten perros «según el caso», que hay relación con guías y clubes de senderismo, y que el bar ya les recomienda. Hay marcas confusas, como «Escapadas fuera de temporada» como intangible cuando son estancias pagadas, y la fila del propio matrimonio como rol externo."
+  }
+ },
+ {
+  "id": "c012",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan los talleristas y los comercios y entidades del barrio, que podrían apoyar a cambio de visibilidad. Además, la junta aparece fusionada con el voluntariado. Hay filas duplicadas: «Vecinos que vienen» sale dos veces y los jóvenes están partidos en dos. La última fila es incoherente: los vecinos «dan» respuestas a dudas que en realidad les da la asociación. También se da por hecho que existe una cuota de socio, cuando justo eso es lo que pregunta la gente y no está confirmado."
+  }
+ },
+ {
+  "id": "c013",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan las familias de la canalla y su intangible clave, la confianza en que cuidáis a sus hijos, que responde a la pregunta sobre la edad de los niños. También faltan el público y los grallers. Además, el mapa repite roles: castellers aparece tres veces y otras collas dos, con un «compañerismo por compañerismo» que no aporta nada. Al patrocinador solo se le ofrece el nombre, marcado como tangible, sin trabajar la visibilidad y la buena imagen local. Por último, se dan por hechas una cuota y una subvención que el caso no menciona."
+  }
+ },
+ {
+  "id": "c014",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Falta el lado de salida al mercado: promotores y bookers, plataformas de distribución y público oyente. También faltan dos intangibles clave: el criterio artístico y consejo de producción que se da a los artistas, y los contactos con salas y promotores que la productora comparte. La relación con salas y sellos está mal planteada: 'grabaciones con buen sonido' no es intangible y no explica qué recibe la sala. Además, el mapa da por hecho que hay colaboradores habituales cuando la persona solo dijo 'yo', y no aclara qué servicios ofrece ni cómo le llegan los clientes."
+  }
+ },
+ {
+  "id": "c015",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Falta el intangible clave que piden los suscriptores: información sobre qué trae la cesta y cómo cocinarlo. Tampoco se aborda la confianza en que es ecológico de verdad ni las bajas de verano. Se inventan «Comedores y restaurantes cercanos», que no aparecen en el caso, y se da por hecha una certificación ecológica que no está confirmada. Faltan además proveedores de semillas y plantel y otros productores que completen la cesta, y la fila «Tu pareja y tú» no es un rol externo de la red."
+  }
+ },
+ {
+  "id": "c016",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 4,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "El marcado tangible/intangible es incoherente. El bar presta el sitio gratis, así que es intangible, y lo que recibe son clientes que pagan, que es tangible. El festival aparece una vez como tangible y otra como intangible. Hay filas duplicadas (alumnas que recomiendan, madres) que deberían fusionarse. Se cuelan elementos no dichos: el festival de fin de curso, los comercios que ceden sitio para carteles y la cuota mensual. Para el objetivo de llenar las clases de adultos entre semana falta Instagram como canal y lo que las profes aportan más allá de las horas: cercanía, retención y estilo propio."
+  }
+ },
+ {
+  "id": "c017",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan los aliados externos que traerían adultos y prestigio: colegios de la zona, empresas cercanas y centros examinadores de certificación. Sin ellos, el mapa no explica cómo llegar a más adultos más allá del boca a boca. Además, «Alumnos adultos» y «Padres que quieren aprender» se solapan, y algunas reciprocidades son flojas, como «por fin se atreven a hablar» a cambio de recomendaciones o la web, que hoy no existe."
+  }
+ },
+ {
+  "id": "c018",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "Da por hecho, sin confirmarlo, que el centro de formación paga y concede el reconocimiento para sexenios. Falta separar a la administración que reconoce créditos y aclarar quién paga realmente. Tampoco aparecen intangibles clave: los casos reales del aula que aportan los docentes y el conocimiento de los problemas del centro que aportan los equipos directivos. Además, «plazas cubiertas» no debería ir como intangible, y la fila de dudas/acompañamiento está duplicada con la de testimonios/respuestas."
+  }
+ },
+ {
+  "id": "c019",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Falta el eslabón de tiendas y restaurantes, el canal que de verdad recomienda el vino fuera de la zona, y falta el origen de la uva (viticultores y su conocimiento del viñedo). Además, el mapa da por hecho que la bodega recibe visitas y no aclara si «fuera» significa otras comunidades o exportación, algo que cambia qué distribuidores y aliados importan."
+  }
+ },
+ {
+  "id": "c020",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 4,
+   "fidelitat": 4,
+   "global": 4,
+   "falla": "Falta el barrio como rol (asociación o comercios vecinos), junto con el intangible de vida y punto de encuentro que el restaurante le aporta, y eso pesa porque el objetivo es que se les conozca por el producto de aquí. Sobra la fila genérica «clientes», que duplica al menú y las cenas. El equipo no tiene ningún intangible. La reseña debería expresarse como confianza para gente nueva y no solo como «reseñas en mapas». Dar «saber si hay menú y reservar» a cambio del boca a boca de las oficinas es una contrapartida débil. «Nombrarles en la carta» y concretar «pescadería» dan por hecho cosas que no constan."
+  }
+ },
+ {
+  "id": "c021",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 4,
+   "global": 4,
+   "falla": "Faltan los invitados a las bodas, que descubren el servicio y lo recuerdan para su propio evento. Es el canal más directo hacia «más bodas». También faltan las familias de los novios, que a menudo deciden o pagan, y el catering. Además, «Parejas que celebran cumpleaños» es un rol mal nombrado. En la fila de reseñas el flujo está invertido: el caso dice que son las parejas quienes le mandan las fotos a ella. Queda sin aclarar si los proveedores le pagan comisión o los contrata la pareja."
+  }
+ },
+ {
+  "id": "c022",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 2,
+   "falla": "Faltan los dos roles clave para su objetivo: la familia interesada que aún no es socia (con sus dudas sobre cuota y turnos) y el grupo coordinador que sostiene la coope, del que dicen depender. Sin ellos el mapa no explica por qué no crecen. Además, «socios que recomiendan» y «familias que recomiendan» están duplicados. Hay marcas incorrectas: los turnos y el local cedido figuran como tangibles aunque no se pagan. También se dan por hechos la cuota, el ahorro y lo que la coope devuelve a la asociación, cuando eso está por confirmar."
+  }
+ },
+ {
+  "id": "c023",
+  "nota": {
+   "roles": 2,
+   "intangibles": 2,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 2,
+   "falla": "Faltan los roles centrales de una consultora de RRHH: la persona responsable de personas en la empresa cliente, los equipos empleados que participan en los procesos, los candidatos y los colaboradores externos. Sin ellos se pierden los intangibles clave: confidencialidad sobre la situación interna, diagnóstico del clima, reputación ante candidatos y feedback de los procesos. Además, «Tu web» aparece como rol cuando es un canal. Las asesorías, las gestorías, las asociaciones de Bizkaia y las charlas son aliados y servicios que la persona no ha mencionado, propuestos como si fueran hechos."
+  }
+ },
+ {
+  "id": "c024",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "Faltan intangibles clave del caso: el fiado como confianza, y el cuidado y la compañía a las mayores al llevarles la compra. Esa entrega se marca como tangible pagada sin saber si se cobra o es un favor. Tampoco aparece la flexibilidad del distribuidor y del panadero, que quedan como simple intercambio de dinero. Además, se presenta como existente a «gente joven que encarga por WhatsApp» y ofrece «novedades antes que nadie», cosas que el caso no dice. El grupo de WhatsApp es un canal, no un rol. «Clientas» y «Clientas mayores» están duplicadas."
+  }
+ },
+ {
+  "id": "c025",
+  "nota": {
+   "roles": 4,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "La fila de bodegas está invertida: dice que la bodega «me da» el pago y «le doy» el proyecto, cuando es al revés. Además falta el intangible central de la relación con el cliente, la confianza y la comprensión de su marca, que es justo lo que justifica proyectos más completos. «Seguimiento después de entregar» se presenta como algo que ya ocurre, cuando dicen que casi nunca reciben respuesta tras entregar. Tampoco se explora si la imprenta les envía clientes, y hay roles de cliente duplicados («que vuelven y recomiendan» y «contentos que vuelven»)."
+  }
+ },
+ {
+  "id": "c026",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Le falta el familiar que organiza la atención del mayor, que da tranquilidad y confianza y a menudo es quien decide y contacta. Tampoco aparece el valor que retendría a los pacientes que «vienen unas sesiones y desaparecen», que es su problema central: pautas de autocuidado en casa, continuidad y los bonos que le piden. Además hay cosas inventadas que no salen del caso: las farmacias del barrio como canal, el descuento al gimnasio y el informe de evolución al médico. Habría que separar al deportista y aclarar si el médico la recomienda a ella o la fisioterapia en general."
+  }
+ },
+ {
+  "id": "c027",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan aliados clave para llenar fines de semana: la oficina de turismo comarcal (visibilidad en la promoción de la zona) y las empresas de actividades en la naturaleza, y no aparece el personal de limpieza y mantenimiento. Además, la fila «Anfitriones de la casa» es la propia pareja intercambiando consigo misma y no aporta nada. Las «escapadas» al sobrino son una suposición y no son intangibles, porque tienen valor económico. Tampoco se recoge la pregunta recurrente sobre perros como posible oferta diferencial."
+  }
+ },
+ {
+  "id": "c028",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 4,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan dos roles clave: los ponentes y artistas invitados, que sostienen la programación y a quienes la asociación da visibilidad, y los comercios del barrio como canal de difusión y apoyo. Junta y voluntarios aparecen fusionados en un solo rol. Además, el 'Local cedido' figura como tangible sin aclarar si es una cesión gratuita o un convenio con condiciones. La cuota de socio se da por hecha sin saber cuánto cuesta ni qué incluye. Y la programación aparece unas veces como tangible y otras como intangible, sin un criterio claro."
+  }
+ },
+ {
+  "id": "c029",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 3,
+   "falla": "Faltan roles clave: el equipo técnico (formación y seguridad, un intangible central en una colla), las otras collas (invitaciones e intercambio), las familias y los organizadores de fiestas. Además, «Jordi» aparece con nombre propio en lugar de un rol, con una relación sin vuelta («le doy: nada», marcado como tangible). El Bar de la plaza está repetido en tres filas, mientras que el ayuntamiento solo tiene una relación tangible, sin el intangible que recibe."
+  }
+ },
+ {
+  "id": "c030",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 5,
+   "global": 3,
+   "falla": "Faltan los colaboradores profesionales del oficio: músicos de sesión, técnicos de mezcla y masterización, y promotores o sellos independientes. Son quienes pueden traer clientes y dar reputación. Tampoco aparece el intangible central de un productor, el consejo artístico y el criterio de producción que ofrece a los grupos. Además hay filas flojas o invertidas: la «mención como productor» la recibe él, no la da. «Amigos y familia» duplica a «músicos y conocidos». Varias devoluciones se quedan en un simple «agradecimiento»."
+  }
+ },
+ {
+  "id": "c031",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 4,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "Falta el intangible central de un huerto ecológico: la confianza en el origen y la forma de cultivo, junto con la certificadora y los proveedores de semillas y abono. Además, el mapa da por hechas cosas que el caso no dice: que a la tienda se le paga con verdura (precisamente una duda abierta) y que existe un grupo de consumo del barrio con pedido regular. El 'Equipo del huerto' figura como relación externa cuando son las dos personas que hacen el mapa."
+  }
+ },
+ {
+  "id": "c032",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Da por hechos datos que el caso no dice: que la clase de prueba es gratis, que hay un festival con un profe de coreografías pagado aparte y que se avisa por WhatsApp. Faltan intangibles clave: la reputación y el estilo del profesorado y el feedback del alumnado sobre horarios y niveles, útil para llenar los martes. Tampoco se explora por qué se va quien dura solo un trimestre. Hay marcas confusas, como la clase gratis puesta como tangible o «se apuntan tras probar» como intangible."
+  }
+ },
+ {
+  "id": "c033",
+  "nota": {
+   "roles": 3,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 5,
+   "global": 3,
+   "falla": "Faltan los aliados: bancos, abogados u otras asesorías que derivan clientes. Tampoco se ve cómo llegan hoy los clientes nuevos, algo clave porque su objetivo de mejora sigue sin concretar. En intangibles faltan la confianza para delegar información sensible y el conocimiento acumulado del negocio del cliente. Además, los avisos de cambios normativos se atribuyen a Hacienda, cuando el valor diferencial es que la gestoría los traslada al cliente. Algunas parejas de ida y vuelta están forzadas, como recomendaciones a cambio de quitar el papeleo."
+  }
+ },
+ {
+  "id": "c034",
+  "nota": {
+   "roles": 3,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 2,
+   "global": 3,
+   "falla": "Lo más débil es la relación con la tienda grande. Aparece como un intercambio tangible de «bicis por arreglos», sin aclarar si la tienda le paga o le manda al cliente directamente. La derivación de clientes, que es el intangible clave, no está marcada como tal. Además se inventan aliados que el caso no menciona: «Universidad y residencias» y «Grupos de ciclistas de carretera». También se inventa la promesa de «bici lista para el día siguiente». Los estudiantes, en cambio, no figuran como clientes. Algunas filas («vuelven cuando pinchan», «preguntan por la pieza») describen comportamientos y no valores intercambiados. Falta además la confianza en plazos honestos como intangible explícito."
+  }
+ },
+ {
+  "id": "c035",
+  "nota": {
+   "roles": 4,
+   "intangibles": 4,
+   "reciprocitat": 3,
+   "fidelitat": 4,
+   "global": 4,
+   "falla": "Falta el intangible clave para su objetivo: la pertenencia que convierte a quien viene por días en fijo y qué lo frena. Algunas vueltas no tienen sentido: a la cafetería se le da una «factura» en lugar del pago, y las empresas de fuera «dan» puestos fijos cuando deberían dar una cuota. Además, se da por hecho que el ayuntamiento da ayudas al coworking y deriva emprendedores, cuando no se sabe si esas ayudas van a los residentes o si hay difusión del espacio."
+  }
+ },
+ {
+  "id": "c036",
+  "nota": {
+   "roles": 4,
+   "intangibles": 3,
+   "reciprocitat": 3,
+   "fidelitat": 3,
+   "global": 3,
+   "falla": "Faltan los monumentos y espacios visitados (la duda de las entradas queda sin resolver) y el conocimiento histórico de la guía como intangible central. Además, la red con guías de otras ciudades se presenta como relación ya existente, cuando ella dice que no puede derivar. También 'repetir curso tras curso' no está en el caso. Hay filas duplicadas (valoraciones de quienes repiten) y la vuelta a la agencia ('factura') es pobre. Tampoco se ve qué relaciones apoyan el objetivo de depender menos de las plataformas."
+  }
+ }
+]

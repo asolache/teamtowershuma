@@ -280,6 +280,45 @@ function dibuix(m, op) {
     + fl + nodes + et + '</svg>';
 }
 
-var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, salut: salut, aplica: aplica, resum: resum, dibuix: dibuix };
+/* El cervell del client (l'Àlvar, 02/11/2026): el que s'ha après fent el mapa i la
+   web, com una carpeta `cerebro/` que obre el kit del cervell (SOS/tools/cervell.js
+   --nou) i que la plantilla de la web llegeix (`cerebro/mapa-real.json`,
+   `configuracio.json`, `marca.json`, `decisiones.md`). Mai `cervell.json`: aquest
+   el posa el kit. `op`: { llengua, capes, eines (text), salut, data }. Torna
+   [{ nom, text }] per a CervellExporta.zip. */
+function cervell(c, op) {
+  var o = c || {}, q = op || {}, data = q.data || new Date().toISOString().slice(0, 10), nom = net(o.org) || net(o.casa) || 'Mi proyecto';
+  var m = mapa(o), dec = Array.isArray(o.decisiones) ? o.decisiones : [], pend = Array.isArray(o.pendents) ? o.pendents : [];
+  var f = [{ nom: 'cerebro/mapa-real.json', text: JSON.stringify(m, null, 2) + '\n' },
+    { nom: 'cerebro/configuracio.json', text: JSON.stringify({ nom: nom, llengua: q.llengua === 'ca' ? 'ca' : 'es', url: net(o.web) || undefined, capes: q.capes || [] }, null, 2) + '\n' }];
+  if (o.marca && typeof o.marca === 'object') f.push({ nom: 'cerebro/marca.json', text: JSON.stringify(o.marca, null, 2) + '\n' });
+  var b = ['# ' + nom + ' · el encargo', '', '> Sale de /cliente/ el ' + data + '. Es lo que ha contado la persona, con sus palabras: la guía para hacer su web.', ''];
+  if (net(o.inicial)) b.push('## Lo que quiere', '', net(o.inicial), '');
+  var rs = PREGUNTES.filter(function (p) { return net((o.respuestas || {})[p.id]); });
+  if (rs.length) b.push('## Sus respuestas', '', rs.map(function (p) { return '- **' + p.q + '** ' + net(o.respuestas[p.id]); }).join('\n'), '');
+  b.push('## Su mapa', '', 'En el centro: **' + (m.roles[0] || '') + '**.', '');
+  (o.alrededor || []).filter(function (x) { return net(x.quien); }).forEach(function (x) {
+    b.push('- **' + net(x.quien) + '** le da ' + (net(x.meDa) || '—') + ' (' + (x.meDaEs === 'intangible' ? 'no se paga' : 'se paga') + ') · recibe ' + (net(x.leDoy) || '—') + ' (' + (x.leDoyEs === 'intangible' ? 'no se paga' : 'se paga') + ')');
+  });
+  b.push('');
+  if (net(o.nivel) || (q.capes || []).length) b.push('## La web que pide', '', '- ' + [net(o.nivel) || 'Sin elegir', 'web pública'].concat(q.capes || []).join(' · '), '');
+  if (o.marca && (o.marca.lema || o.marca.presentacio)) b.push('## Sus textos', '', o.marca.lema ? '- Frase: ' + o.marca.lema : '', o.marca.presentacio ? '- Presentación: ' + o.marca.presentacio : '', '');
+  f.push({ nom: 'cerebro/encargo.md', text: b.filter(function (x, i, a) { return x !== '' || a[i - 1] !== ''; }).join('\n').replace(/\n+$/, '') + '\n' });
+  f.push({ nom: 'cerebro/herramientas.md', text: '# Dónde está su web y qué usa\n\n' + (net(q.eines) || 'Todavía sin decir: se pregunta en la sesión.') +
+    '\n\nCon API: se puede conectar a la web. «No lo sé»: se mira en la sesión antes de prometer nada.\n' });
+  f.push({ nom: 'cerebro/decisiones.md', text: '# Decisiones\n\nCada decisión, con su fecha. Las primeras salen de /cliente/: lo que aceptó, descartó o eligió.\n\n' +
+    (dec.length ? dec.map(function (d) { return '- ' + net(d.data).slice(0, 10) + ' · ' + net(d.que); }).join('\n') : '- ' + data + ' · Empieza el proyecto en /cliente/.') + '\n' });
+  var falten = q.salut && Array.isArray(q.salut.falten) ? q.salut.falten.map(function (x) { return x.diu; }) : [];
+  f.push({ nom: 'cerebro/preguntas-abiertas.md', text: '# Lo que queda por hablar\n\n' +
+    (pend.concat(falten).length ? pend.concat(falten).map(function (x) { return '- ' + net(x); }).join('\n') : '- Nada pendiente desde /cliente/.') + '\n' });
+  f.push({ nom: 'cerebro/LEEME.md', text: '# El cerebro de ' + nom + '\n\n' +
+    'Esta carpeta es lo que hemos aprendido de tu proyecto: tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar.\n\n' +
+    '- **Con cualquier IA:** dale estos ficheros antes de pedirle nada. Empezará sabiendo lo que ya sabemos, en vez de preguntártelo otra vez.\n' +
+    '- **Para quien hace tu web (en Claude Code):** pon la carpeta `cerebro/` en el repositorio de la web y ejecuta `node SOS/tools/cervell.js --nou <carpeta> --nom "' + nom.replace(/"/g, '') + '"`, luego `node guardas/cervell.js` y `node guardas/cervell.js --check`.\n' +
+    '- `mapa-real.json` es el mapa tal como lo lee el editor del mapa de valor y la plantilla de la web.\n' });
+  return f;
+}
+
+var DiagnosiClient = { PREGUNTES: PREGUNTES, pregunta: pregunta, MIN_ALTRES: MIN_ALTRES, MAX_ALTRES: MAX_ALTRES, prompt: prompt, llegeix: llegeix, mapa: mapa, desDe: desDe, revisa: revisa, salut: salut, aplica: aplica, resum: resum, dibuix: dibuix, cervell: cervell };
 if (typeof module !== 'undefined' && module.exports) module.exports = DiagnosiClient; else g.DiagnosiClient = DiagnosiClient;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -1,0 +1,2295 @@
+{
+ "versio": 1,
+ "generat": "2026-11-02",
+ "casos": [
+  {
+   "id": "c001",
+   "sector": "escuela de idiomas",
+   "casa": "Logroño",
+   "org": "Academia Puente de Idiomas",
+   "inicial": "tengo una academia de ingles y aleman, pequeña",
+   "respuestas": {
+    "objetivo": "que vengan mas alumnos adultos",
+    "quien": "yo y dos profes",
+    "llegan": "por el boca a boca supongo",
+    "aliados": "no se, ninguno",
+    "despues": "algunos se apuntan otro año",
+    "preguntan": "precio y horarios",
+    "tiempo": "10 años",
+    "webHoy": "una pagina que hizo mi sobrino, no la toco"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Dirección de la academia",
+     "Profesorado",
+     "Alumnado adulto",
+     "Familias de alumnos menores",
+     "Alumnos antiguos que recomiendan",
+     "Centros examinadores oficiales",
+     "Empresas locales que forman a su plantilla"
+    ],
+    "intangibles": [
+     "Recomendaciones de alumnos antiguos a conocidos",
+     "Confianza de las familias en el seguimiento del progreso",
+     "Motivación y sensación de avance que el profesorado transmite",
+     "Información sobre convocatorias de exámenes oficiales",
+     "Opiniones de los alumnos que ayudan a ajustar horarios y grupos"
+    ],
+    "noInventar": [
+     "Precio de las clases o matrícula",
+     "Número de alumnos",
+     "Nombres de los profesores",
+     "Tasa de aprobados en exámenes oficiales",
+     "Nombre del centro examinador"
+    ],
+    "dudas": [
+     "¿Preparan exámenes oficiales o solo enseñan idioma general?",
+     "¿Los adultos vienen por trabajo, viajes u otro motivo?",
+     "¿Hay también alumnos niños y quién decide en ese caso?",
+     "¿Han trabajado alguna vez con empresas de la zona?"
+    ]
+   }
+  },
+  {
+   "id": "c002",
+   "sector": "formación de profesores",
+   "casa": "Granada",
+   "org": "Aula Abierta Formación Docente",
+   "inicial": "doy cursos a profesores de primaria sobre como llevar la clase. Online y alguno presencial",
+   "respuestas": {
+    "objetivo": "darme a conocer en mas colegios",
+    "quien": "yo sola",
+    "llegan": "algun centro de profesores me llamo",
+    "aliados": "una compañera que tambien forma",
+    "despues": "me escriben dudas por correo",
+    "preguntan": "si el curso da puntos",
+    "tiempo": "3 años",
+    "webHoy": "no tengo"
+   },
+   "alrededor": [
+    {
+     "quien": "centro de profesores",
+     "meDa": "me paga los cursos",
+     "meDaEs": "tangible",
+     "leDoy": "el curso",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Formadora",
+     "Docentes de primaria",
+     "Equipos directivos de colegios",
+     "Centros de formación del profesorado",
+     "Administración educativa que reconoce créditos",
+     "Formadoras colaboradoras",
+     "Docentes que recomiendan entre claustros"
+    ],
+    "intangibles": [
+     "Recomendación entre docentes de distintos claustros",
+     "Resolución de dudas tras el curso por correo",
+     "Experiencias de aula que los docentes comparten y enriquecen los cursos",
+     "Reputación ante los centros de formación",
+     "Intercambio de materiales y enfoques con la compañera formadora"
+    ],
+    "noInventar": [
+     "Precio de los cursos",
+     "Número de créditos o horas reconocidas",
+     "Nombre del centro de profesores",
+     "Número de docentes formados",
+     "Nombre de la compañera"
+    ],
+    "dudas": [
+     "¿Sus cursos están homologados y quién los reconoce?",
+     "¿Quién decide la contratación: el centro de profesores o el colegio?",
+     "¿Qué relación tiene con la compañera: comparten cursos o se derivan clientes?",
+     "¿Los docentes pagan directamente alguna vez?"
+    ]
+   }
+  },
+  {
+   "id": "c003",
+   "sector": "bodega familiar",
+   "casa": "Toro, Zamora",
+   "org": "Bodega Los Almendros",
+   "inicial": "bodega de mi familia, hacemos tinto",
+   "respuestas": {
+    "objetivo": "vender mas fuera",
+    "quien": "mi padre, mi hermano y yo",
+    "llegan": "",
+    "aliados": "la cooperativa?",
+    "despues": "",
+    "preguntan": "si hacemos visitas",
+    "tiempo": "desde mi abuelo",
+    "webHoy": "nada"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Bodega familiar",
+     "Viticultores o proveedores de uva",
+     "Distribuidores",
+     "Restaurantes y tiendas de vino",
+     "Visitantes de enoturismo",
+     "Consejo regulador de la denominación",
+     "Cooperativa de la zona",
+     "Clientes particulares que repiten"
+    ],
+    "intangibles": [
+     "Historia familiar que da identidad al vino",
+     "Recomendaciones de restaurantes a sus comensales",
+     "Conocimiento técnico compartido con la cooperativa",
+     "Experiencia de la visita que genera fidelidad",
+     "Confianza del distribuidor en la calidad constante"
+    ],
+    "noInventar": [
+     "Precio de las botellas",
+     "Producción anual en botellas o litros",
+     "Hectáreas de viñedo",
+     "Pertenencia a una denominación de origen concreta",
+     "Premios obtenidos"
+    ],
+    "dudas": [
+     "¿Qué relación tienen exactamente con la cooperativa: venden uva, compran o comparten servicios?",
+     "¿Ofrecen ya visitas o es algo que piden y no tienen?",
+     "¿Fuera significa otras provincias o exportar?",
+     "¿Venden hoy a través de distribuidor o directamente?"
+    ]
+   }
+  },
+  {
+   "id": "c004",
+   "sector": "restaurante de proximidad",
+   "casa": "Ourense",
+   "org": "Casa Lúa",
+   "inicial": "restaurante con producto de aqui, menu del dia y carta",
+   "respuestas": {
+    "objetivo": "que la gente sepa que el producto es local",
+    "quien": "mi pareja en cocina y yo en sala, y un camarero",
+    "llegan": "pasan por delante, y algunos de fuera por opiniones",
+    "aliados": "los productores",
+    "despues": "",
+    "preguntan": "si hay que reservar",
+    "tiempo": "2 años",
+    "webHoy": "solo redes"
+   },
+   "alrededor": [
+    {
+     "quien": "Manolo el de las verduras",
+     "meDa": "verdura",
+     "meDaEs": "tangible",
+     "leDoy": "le pago",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Equipo de cocina",
+     "Equipo de sala",
+     "Productores locales de verdura",
+     "Otros productores locales (carne, queso, pescado)",
+     "Clientes del menú del día",
+     "Visitantes de fuera",
+     "Personas que publican opiniones",
+     "Comercios o alojamientos vecinos que recomiendan"
+    ],
+    "intangibles": [
+     "Historia y origen del producto que el restaurante cuenta a los clientes",
+     "Visibilidad que el restaurante da a los productores",
+     "Opiniones en internet que atraen a visitantes",
+     "Confianza mutua con los productores sobre calidad y temporada",
+     "Recomendaciones de alojamientos cercanos"
+    ],
+    "noInventar": [
+     "Precio del menú del día",
+     "Nombres de productores (Manolo debe pasar a rol)",
+     "Número de cubiertos",
+     "Puntuación en opiniones",
+     "Kilómetros de origen de los productos"
+    ],
+    "dudas": [
+     "¿Cuántos productores tienen y de qué productos?",
+     "¿Los productores reciben algo más que el pago, como mención en la carta?",
+     "¿Quién recomienda el restaurante además de las opiniones online?",
+     "¿El público principal es de la zona o visitantes?"
+    ]
+   }
+  },
+  {
+   "id": "c005",
+   "sector": "organizadora de eventos",
+   "casa": "Valencia",
+   "org": "Pétalo Eventos",
+   "inicial": "organizo bodas y alguna comunion, tambien eventos de empresa pequeños",
+   "respuestas": {
+    "objetivo": "mas eventos de empresa",
+    "quien": "yo y freelances cuando hace falta",
+    "llegan": "instagram y recomendaciones",
+    "aliados": "fincas, fotografos, catering",
+    "despues": "me mandan fotos y a veces una reseña",
+    "preguntan": "cuanto cuesta y si tengo fecha",
+    "tiempo": "6 años",
+    "webHoy": "una web vieja con fotos"
+   },
+   "alrededor": [
+    {
+     "quien": "Finca",
+     "meDa": "espacio",
+     "meDaEs": "tangible",
+     "leDoy": "clientes",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Laura fotografa",
+     "meDa": "fotos",
+     "meDaEs": "tangible",
+     "leDoy": "dinero",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "catering",
+     "meDa": "comida",
+     "meDaEs": "tangible",
+     "leDoy": "dinero",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Fincas",
+     "meDa": "sitio para bodas",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Organizadora de eventos",
+     "Parejas que se casan",
+     "Familias que celebran comuniones",
+     "Empresas que contratan eventos",
+     "Fincas y espacios",
+     "Fotografía",
+     "Catering",
+     "Clientes anteriores que recomiendan"
+    ],
+    "intangibles": [
+     "Recomendaciones de parejas ya casadas",
+     "Fincas que derivan clientes a la organizadora",
+     "Fotos de proveedores que sirven como portafolio",
+     "Tranquilidad y confianza que la organizadora da al cliente",
+     "Reseñas tras el evento",
+     "Coordinación y conocimiento compartido entre proveedores"
+    ],
+    "noInventar": [
+     "Precio de los servicios",
+     "Número de eventos al año",
+     "Nombres de fincas o proveedores (Laura debe pasar a rol)",
+     "Presupuesto medio de una boda",
+     "Nombre de empresas clientes"
+    ],
+    "dudas": [
+     "¿Las fincas le derivan clientes o solo ella les lleva clientes a ellas? (Finca aparece repetida)",
+     "¿Qué tipo de empresa busca: tamaño, sector, tipo de evento?",
+     "¿Los freelances son un rol aparte o son los mismos proveedores?",
+     "¿Cobra comisión a proveedores o solo al cliente?"
+    ]
+   }
+  },
+  {
+   "id": "c006",
+   "sector": "cooperativa de consumo",
+   "casa": "Barrio de Delicias, Zaragoza",
+   "org": "Cooperativa de consumo de producto ecológico y local",
+   "inicial": "somos una coope de consumo, unas 80 familias. queremos que la gente entienda que no somos una tienda",
+   "respuestas": {
+    "objetivo": "que entre más gente y que se queden, que participen",
+    "quien": "familias del barrio, mucha gente joven con críos",
+    "llegan": "por amigos sobre todo, y algún cartel",
+    "aliados": "los productores, la asociación de vecinos nos deja el local para asambleas",
+    "despues": "pagan la cuota y hacen pedidos cada semana, pero luego muchos no vienen a las asambleas",
+    "preguntan": "si hay que hacer turnos obligatorios y cuánto cuesta",
+    "tiempo": "6 años",
+    "webHoy": "un blog viejo que no actualizamos"
+   },
+   "alrededor": [
+    {
+     "quien": "Los socios",
+     "meDa": "cuota mensual",
+     "meDaEs": "tangible",
+     "leDoy": "verdura y fruta",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Paco el de la huerta",
+     "meDa": "verduras",
+     "meDaEs": "tangible",
+     "leDoy": "dinero",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Los socios",
+     "meDa": "turnos de reparto",
+     "meDaEs": "tangible",
+     "leDoy": "descuento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Asociación de vecinos",
+     "meDa": "local",
+     "meDaEs": "tangible",
+     "leDoy": "nada",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [],
+    "intangibles": [],
+    "noInventar": [],
+    "dudas": []
+   }
+  },
+  {
+   "id": "c007",
+   "sector": "consultora de personas",
+   "casa": "Valencia, trabajo desde casa",
+   "org": "Consultoría de recursos humanos y desarrollo de equipos para pymes",
+   "inicial": "ayudo a empresas pequeñas con temas de equipo",
+   "respuestas": {
+    "objetivo": "más clientes",
+    "quien": "pymes",
+    "llegan": "",
+    "aliados": "",
+    "despues": "",
+    "preguntan": "",
+    "tiempo": "2 años",
+    "webHoy": "no tengo"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Gerente o propietario de pyme cliente",
+     "Equipo o trabajadores de la pyme",
+     "Gestoría o asesoría laboral",
+     "Formador o consultor colaborador",
+     "Persona que recomienda (cliente anterior o contacto profesional)",
+     "Asociación empresarial o cámara local"
+    ],
+    "intangibles": [
+     "El gerente aporta confianza y acceso a los problemas internos del equipo; la consultora aporta mirada externa y discreción",
+     "Los trabajadores dan información sincera sobre el clima; reciben escucha y sensación de ser tenidos en cuenta",
+     "La gestoría deriva clientes con problemas de personas; recibe criterio experto que refuerza su servicio",
+     "Clientes satisfechos aportan testimonios y recomendaciones; reciben seguimiento y relación continuada",
+     "Colaboradores comparten conocimiento y metodologías mutuamente"
+    ],
+    "noInventar": [
+     "Tarifas o precio por sesión o proyecto",
+     "Número de clientes o empresas atendidas",
+     "Nombre de la consultora o de la persona",
+     "Tamaño concreto de las pymes",
+     "Certificaciones o formación de la consultora"
+    ],
+    "dudas": [
+     "Qué servicios concretos ofrece: selección, formación, conflictos, clima laboral",
+     "Cómo le llegaron los clientes que ya tiene",
+     "Si trabaja sola o con colaboradores",
+     "Qué sector o tamaño de pyme le interesa más"
+    ]
+   }
+  },
+  {
+   "id": "c008",
+   "sector": "tienda de barrio",
+   "casa": "Barrio de Triana, Sevilla",
+   "org": "Tienda de ultramarinos y productos de la tierra",
+   "inicial": "tengo una tienda de comestibles de toda la vida, era de mi padre. la gente del barrio viene pero los jovenes compran en el super",
+   "respuestas": {
+    "objetivo": "que me conozca la gente nueva que llega al barrio",
+    "quien": "señoras mayores sobre todo, algún vecino de siempre",
+    "llegan": "pasan por la puerta",
+    "aliados": "el panadero de al lado, el bar de la esquina me compra cosas",
+    "despues": "vuelven todos los días, algunos les apunto y pagan a final de mes",
+    "preguntan": "si llevo a casa, si tengo tal cosa",
+    "tiempo": "35 años la tienda, yo 12",
+    "webHoy": "nada, solo whatsapp"
+   },
+   "alrededor": [
+    {
+     "quien": "Doña Carmen",
+     "meDa": "compra diaria",
+     "meDaEs": "tangible",
+     "leDoy": "productos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Doña Carmen",
+     "meDa": "me cuenta lo que pasa en el barrio",
+     "meDaEs": "intangible",
+     "leDoy": "le llevo la compra a casa",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Bar de la esquina",
+     "meDa": "pedidos",
+     "meDaEs": "tangible",
+     "leDoy": "embutido y queso",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Distribuidor",
+     "meDa": "género",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Panadería",
+     "meDa": "pan para vender",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Cliente habitual del barrio (persona mayor)",
+     "Vecino nuevo o familia joven",
+     "Comercio vecino (panadería)",
+     "Hostelería del barrio",
+     "Distribuidor o proveedor",
+     "Productor local de la tierra",
+     "Persona que recomienda (vecino de siempre)"
+    ],
+    "intangibles": [
+     "El cliente habitual aporta noticias del barrio y fidelidad; la tienda le da trato cercano, fiado y compañía",
+     "La tienda ofrece confianza para apuntar la cuenta; el cliente devuelve lealtad",
+     "Comercio vecino y tienda se derivan clientes mutuamente",
+     "El bar menciona la procedencia del producto; la tienda gana reputación",
+     "Vecinos de siempre recomiendan la tienda a los recién llegados"
+    ],
+    "noInventar": [
+     "Precios o márgenes",
+     "Nombre de la tienda",
+     "Número de clientes diarios",
+     "Nombres de proveedores",
+     "Si tiene redes sociales además de WhatsApp"
+    ],
+    "dudas": [
+     "Si el reparto a domicilio es un servicio para todos o solo un favor a algunos",
+     "Qué productos de la tierra lleva y de dónde vienen",
+     "Cómo usa WhatsApp: pedidos, avisos o solo contactos personales",
+     "Qué ofrece que los jóvenes no encuentren en el supermercado"
+    ]
+   }
+  },
+  {
+   "id": "c009",
+   "sector": "estudio de diseño",
+   "casa": "Bilbao, local compartido",
+   "org": "Estudio de diseño gráfico e identidad visual, dos socias",
+   "inicial": "hacemos branding y diseño para marcas pequeñas. somos dos",
+   "respuestas": {
+    "objetivo": "proyectos más grandes y dejar de depender de lo que nos pasan",
+    "quien": "emprendedores, gente que abre negocio, algún restaurante",
+    "llegan": "por instagram y por una agencia de marketing que nos subcontrata",
+    "aliados": "una imprenta, un fotógrafo con el que trabajamos a veces",
+    "despues": "cuando acabamos el logo se van y a veces vuelven al año para algo",
+    "preguntan": "cuánto cuesta un logo y cuánto se tarda",
+    "tiempo": "4 años",
+    "webHoy": "un portfolio en una plataforma gratuita"
+   },
+   "alrededor": [
+    {
+     "quien": "Clientes",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "logo y manual de marca",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Agencia de marketing",
+     "meDa": "encargos",
+     "meDaEs": "tangible",
+     "leDoy": "diseños",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Imprenta",
+     "meDa": "impresión",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Jon fotógrafo",
+     "meDa": "fotos",
+     "meDaEs": "tangible",
+     "leDoy": "factura",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Emprendedor que lanza negocio",
+     "Restaurante u hostelería cliente",
+     "Agencia de marketing que subcontrata",
+     "Imprenta",
+     "Fotógrafo colaborador",
+     "Seguidores en redes sociales",
+     "Persona que recomienda (cliente satisfecho)"
+    ],
+    "intangibles": [
+     "El cliente aporta confianza y visión de su proyecto; el estudio devuelve claridad y criterio sobre su identidad",
+     "Clientes satisfechos permiten mostrar su trabajo en el portfolio y recomiendan el estudio",
+     "La agencia da visibilidad indirecta y aprendizaje en proyectos mayores; el estudio da fiabilidad en plazos",
+     "La imprenta asesora sobre papeles y acabados; el estudio le deriva clientes",
+     "El fotógrafo y el estudio se recomiendan mutuamente y comparten red de contactos"
+    ],
+    "noInventar": [
+     "Precio de un logo o de un proyecto",
+     "Plazos de entrega",
+     "Nombre del estudio o de las socias",
+     "Número de seguidores",
+     "Nombre de la agencia o de clientes concretos"
+    ],
+    "dudas": [
+     "Si la agencia permite firmar o mostrar los trabajos subcontratados",
+     "Qué entienden por proyecto más grande",
+     "Qué pasa con los clientes después de entregar el logo, si hay mantenimiento",
+     "Si quieren seguir trabajando con la agencia o reducir esa dependencia"
+    ]
+   }
+  },
+  {
+   "id": "c010",
+   "sector": "fisioterapeuta autónoma",
+   "casa": "Gijón, consulta propia",
+   "org": "Consulta de fisioterapia, especializada en suelo pélvico y deportistas",
+   "inicial": "soy fisio autonoma, tengo consulta pequeña. me gustaria tener web para que me encuentren",
+   "respuestas": {
+    "objetivo": "que me encuentren las mujeres que necesitan suelo pélvico, hay poca gente que lo haga aquí",
+    "quien": "mujeres después del parto, corredores, gente mayor con dolores",
+    "llegan": "me mandan de un club de atletismo y una matrona me recomienda",
+    "aliados": "la matrona, el club, un gimnasio",
+    "despues": "hacen varias sesiones y algunas vienen a clases de pilates que doy",
+    "preguntan": "si cubre la mutua, cuántas sesiones necesitan",
+    "tiempo": "3 años por mi cuenta",
+    "webHoy": "ficha en un directorio y google maps"
+   },
+   "alrededor": [
+    {
+     "quien": "Pacientes",
+     "meDa": "pago sesión",
+     "meDaEs": "tangible",
+     "leDoy": "tratamiento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Pacientes",
+     "meDa": "pago pilates",
+     "meDaEs": "tangible",
+     "leDoy": "clases",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Matrona",
+     "meDa": "pacientes",
+     "meDaEs": "tangible",
+     "leDoy": "nada de momento",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Club de atletismo",
+     "meDa": "corredores lesionados",
+     "meDaEs": "tangible",
+     "leDoy": "precio especial",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Mujer en posparto",
+     "Deportista o corredor",
+     "Persona mayor con dolor crónico",
+     "Matrona que deriva",
+     "Club deportivo",
+     "Gimnasio colaborador",
+     "Mutua o aseguradora",
+     "Alumna de pilates"
+    ],
+    "intangibles": [
+     "La matrona aporta confianza y derivación; la fisio le devuelve informes de evolución y respaldo profesional",
+     "La paciente posparto comparte su experiencia y recomienda a otras madres; recibe escucha y acompañamiento en un tema íntimo",
+     "El club aporta visibilidad entre sus socios; la fisio aporta prevención de lesiones y charlas",
+     "El gimnasio y la fisio se recomiendan mutuamente",
+     "Pacientes aportan reseñas y opiniones que ayudan a que la encuentren"
+    ],
+    "noInventar": [
+     "Precio de la sesión o de las clases de pilates",
+     "Mutuas con las que trabaja o si trabaja con alguna",
+     "Número de sesiones recomendadas",
+     "Nombre de la consulta o de la fisio",
+     "Descuento concreto al club"
+    ],
+    "dudas": [
+     "Si realmente trabaja con mutuas o solo de forma privada",
+     "Qué relación tiene con el gimnasio: deriva, alquila sala o da clases allí",
+     "Si quiere centrarse en suelo pélvico o mantener todos los perfiles",
+     "Si la matrona recibe algo a cambio o le gustaría"
+    ]
+   }
+  },
+  {
+   "id": "c011",
+   "sector": "casa rural",
+   "casa": "Sierra de Albarracín, Teruel",
+   "org": "Casa rural familiar de cuatro habitaciones",
+   "inicial": "tengo una casa rural y quiero ver como mejorar",
+   "respuestas": {
+    "objetivo": "que venga más gente fuera de verano",
+    "quien": "mi marido y yo",
+    "llegan": "por las webs de reservas sobre todo",
+    "aliados": "no se, el bar del pueblo?",
+    "despues": "algunos repiten",
+    "preguntan": "rutas, si se admiten perros",
+    "tiempo": "",
+    "webHoy": "una página sencilla que hizo mi sobrino"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Huéspedes",
+     "Plataformas de reservas",
+     "Comercios y bares del pueblo",
+     "Guías o empresas de actividades en la naturaleza",
+     "Oficina de turismo comarcal",
+     "Huéspedes que repiten y recomiendan",
+     "Proveedores locales de alimentos"
+    ],
+    "intangibles": [
+     "Consejos de rutas y sitios del entorno que la familia da a los huéspedes",
+     "Reseñas y recomendaciones boca a boca de quienes repiten",
+     "Derivación mutua de clientes con el bar y los comercios del pueblo",
+     "Información sobre temporada baja y eventos que comparte la oficina de turismo",
+     "Confianza de los huéspedes con mascota al saber que son bienvenidos"
+    ],
+    "noInventar": [
+     "Precio por noche",
+     "Número de reservas o porcentaje de ocupación",
+     "Comisión de las plataformas",
+     "Nombre de la casa o del pueblo concreto",
+     "Puntuación en reseñas"
+    ],
+    "dudas": [
+     "Qué relación real tienen con el bar del pueblo: se recomiendan o no",
+     "Si admiten perros o solo les preguntan",
+     "Qué tipo de huésped quieren atraer fuera de verano",
+     "Si colaboran ya con alguien de actividades"
+    ]
+   }
+  },
+  {
+   "id": "c012",
+   "sector": "asociación cultural",
+   "casa": "Barrio de Delicias, Valladolid",
+   "org": "Asociación cultural vecinal con talleres y cineclub",
+   "inicial": "somos una asociación del barrio, hacemos talleres y cine",
+   "respuestas": {
+    "objetivo": "que se apunte gente joven",
+    "quien": "una junta de 5 y voluntarios",
+    "llegan": "carteles y whatsapp",
+    "aliados": "el ayuntamiento nos deja el local",
+    "despues": "",
+    "preguntan": "horarios y si hay que ser socio",
+    "tiempo": "tardes",
+    "webHoy": "no tenemos, solo un perfil en redes"
+   },
+   "alrededor": [
+    {
+     "quien": "ayuntamiento",
+     "meDa": "local",
+     "meDaEs": "tangible",
+     "leDoy": "actividades",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Personas socias",
+     "Voluntariado",
+     "Junta directiva",
+     "Ayuntamiento (área de cultura o participación)",
+     "Talleristas",
+     "Público de las actividades",
+     "Comercios y entidades del barrio",
+     "Centros educativos cercanos"
+    ],
+    "intangibles": [
+     "Vida y cohesión en el barrio que la asociación devuelve al ayuntamiento",
+     "Saber y tiempo que aportan los voluntarios y talleristas",
+     "Difusión boca a boca de socios entre vecinos",
+     "Sentido de pertenencia que reciben los socios",
+     "Visibilidad para comercios que apoyan las actividades"
+    ],
+    "noInventar": [
+     "Cuota de socio",
+     "Número de socios",
+     "Importe de subvenciones",
+     "Nombre de la asociación o del local",
+     "Títulos de películas o talleres concretos"
+    ],
+    "dudas": [
+     "Si el local es cesión gratuita o con convenio y contrapartidas",
+     "Si hace falta ser socio para participar",
+     "Qué actividades interesan a la gente joven que quieren atraer",
+     "Si reciben subvención además del local"
+    ]
+   }
+  },
+  {
+   "id": "c013",
+   "sector": "colla castellera",
+   "casa": "Vilanova, Tarragona",
+   "org": "Colla castellera de pueblo",
+   "inicial": "Somos una colla, queremos más gente y patrocinio",
+   "respuestas": {
+    "objetivo": "más castellers y algún patrocinador",
+    "quien": "la junta y la tècnica",
+    "llegan": "porque conocen a alguien",
+    "aliados": "el ayuntamiento, otras collas",
+    "despues": "se quedan si se sienten a gusto",
+    "preguntan": "si hace falta experiencia, edad de los niños",
+    "tiempo": "ensayos martes y viernes",
+    "webHoy": "blog viejo"
+   },
+   "alrededor": [
+    {
+     "quien": "Jordi (alcalde)",
+     "meDa": "subvención",
+     "meDaEs": "tangible",
+     "leDoy": "actuaciones en fiestas",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "otras collas",
+     "meDa": "diadas",
+     "meDaEs": "tangible",
+     "leDoy": "diadas",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "castellers",
+     "meDa": "cuota",
+     "meDaEs": "tangible",
+     "leDoy": "camisa",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "castellers nuevos",
+     "meDa": "cuota",
+     "meDaEs": "tangible",
+     "leDoy": "camisa",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Castellers",
+     "Familias de los niños de la canalla",
+     "Equipo técnico",
+     "Ayuntamiento",
+     "Otras collas",
+     "Patrocinadores locales",
+     "Público de las actuaciones",
+     "Grallers y músicos"
+    ],
+    "intangibles": [
+     "Seguridad y formación técnica que el equipo da a los nuevos",
+     "Invitación boca a boca de castellers a amigos y familiares",
+     "Intercambio de invitaciones y prestigio con otras collas",
+     "Orgullo e identidad del pueblo que la colla aporta en fiestas",
+     "Visibilidad y buena imagen para patrocinadores locales",
+     "Confianza de las familias en el cuidado de los niños"
+    ],
+    "noInventar": [
+     "Importe de la subvención",
+     "Cuota anual",
+     "Nombre de la colla o del alcalde",
+     "Número de castellers",
+     "Castells conseguidos"
+    ],
+    "dudas": [
+     "Si castellers y castellers nuevos son en realidad el mismo rol",
+     "Si falta el papel de quien recomienda y trae gente nueva",
+     "Qué pueden ofrecer a un patrocinador además de logo en camisa",
+     "Cómo se organiza la canalla y qué piden las familias"
+    ]
+   }
+  },
+  {
+   "id": "c014",
+   "sector": "productora musical",
+   "casa": "Lavapiés, Madrid",
+   "org": "Pequeña productora y estudio de grabación",
+   "inicial": "productora",
+   "respuestas": {
+    "objetivo": "",
+    "quien": "yo",
+    "llegan": "",
+    "aliados": "",
+    "despues": "",
+    "preguntan": "",
+    "tiempo": "",
+    "webHoy": "no"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Artistas y bandas",
+     "Músicos de sesión",
+     "Técnicos de mezcla y masterización",
+     "Salas de conciertos",
+     "Promotores y bookers",
+     "Plataformas de distribución",
+     "Público oyente"
+    ],
+    "intangibles": [
+     "Criterio artístico y consejo de producción que se da a los artistas",
+     "Recomendaciones entre bandas que traen nuevos clientes",
+     "Contactos con salas y promotores que la productora comparte",
+     "Reputación que gana la productora cuando un artista crece",
+     "Feedback de los músicos de sesión sobre los temas"
+    ],
+    "noInventar": [
+     "Precio por hora de estudio",
+     "Nombres de artistas producidos",
+     "Número de discos",
+     "Géneros musicales",
+     "Equipamiento del estudio"
+    ],
+    "dudas": [
+     "Qué servicios ofrece exactamente: grabación, producción, management",
+     "Con qué tipo de artistas trabaja",
+     "Cómo le llegan hoy los clientes",
+     "Si trabaja solo o con colaboradores habituales"
+    ]
+   }
+  },
+  {
+   "id": "c015",
+   "sector": "huerto ecológico con cestas",
+   "casa": "Vega del Guadalquivir, Sevilla",
+   "org": "Huerto ecológico con reparto semanal de cestas",
+   "inicial": "hago cestas de verdura ecologica y las reparto",
+   "respuestas": {
+    "objetivo": "tener más suscriptores fijos",
+    "quien": "mi pareja y yo, en temporada un ayudante",
+    "llegan": "por amigos",
+    "aliados": "una tienda que hace de punto de recogida",
+    "despues": "algunos se dan de baja en verano",
+    "preguntan": "qué trae la cesta, si es ecológico de verdad",
+    "tiempo": "",
+    "webHoy": "formulario y whatsapp"
+   },
+   "alrededor": [
+    {
+     "quien": "clientes",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "cesta",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Familias suscriptoras",
+     "Punto de recogida",
+     "Personas que recomiendan la cesta",
+     "Ayudante de temporada",
+     "Entidad certificadora ecológica",
+     "Proveedores de semillas y plantel",
+     "Otros productores con los que completar la cesta"
+    ],
+    "intangibles": [
+     "Información sobre qué trae la cesta y cómo cocinarlo",
+     "Confianza en que es ecológico de verdad",
+     "Recomendación de suscriptores a amigos",
+     "Clientela y tráfico que el punto de recogida gana a cambio de su espacio",
+     "Comentarios de los suscriptores sobre lo que gusta o sobra"
+    ],
+    "noInventar": [
+     "Precio de la cesta",
+     "Número de suscriptores",
+     "Nombre de la tienda",
+     "Tener sello ecológico oficial",
+     "Productos concretos de la cesta"
+    ],
+    "dudas": [
+     "Si tienen certificación ecológica o solo cultivan en ecológico",
+     "Qué recibe la tienda a cambio de ser punto de recogida",
+     "Por qué se dan de baja en verano",
+     "Si completan la cesta con productos de otros"
+    ]
+   }
+  },
+  {
+   "id": "c016",
+   "sector": "academia de baile",
+   "casa": "local alquilado en un bajo, barrio de Delicias, Zaragoza",
+   "org": "Academia de baile de barrio (salsa, bachata y danza moderna para niñas)",
+   "inicial": "Hola, tengo una academia pequeña y quiero ver cómo se mueve todo",
+   "respuestas": {
+    "objetivo": "llenar las clases de adultos entre semana",
+    "quien": "yo y dos profes que vienen por horas",
+    "llegan": "por amigas de alumnas y por los carteles",
+    "aliados": "el bar de al lado nos deja hacer las fiestas",
+    "despues": "algunas se apuntan al grupo de competición",
+    "preguntan": "si hace falta venir con pareja",
+    "tiempo": "ocho años",
+    "webHoy": "solo tenemos Instagram"
+   },
+   "alrededor": [
+    {
+     "quien": "Lucía (profe de salsa)",
+     "meDa": "clases",
+     "meDaEs": "tangible",
+     "leDoy": "dinero por hora",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "alumnas",
+     "meDa": "cuota mensual",
+     "meDaEs": "tangible",
+     "leDoy": "clases",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "madres de las niñas",
+     "meDa": "cuota",
+     "meDaEs": "tangible",
+     "leDoy": "festival de fin de curso",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "bar de al lado",
+     "meDa": "el sitio para la fiesta",
+     "meDaEs": "tangible",
+     "leDoy": "clientes",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [],
+    "intangibles": [],
+    "noInventar": [],
+    "dudas": []
+   }
+  },
+  {
+   "id": "c017",
+   "sector": "escuela de idiomas",
+   "casa": "Logroño",
+   "org": "Academia Puente Inglés",
+   "inicial": "tengo una academia pequeña de ingles, sobre todo niños",
+   "respuestas": {
+    "objetivo": "que vengan mas adultos",
+    "quien": "Yo y otra profe",
+    "llegan": "boca a boca supongo",
+    "aliados": "no se",
+    "despues": "siguen el curso que viene si les va bien",
+    "preguntan": "precios y horarios",
+    "tiempo": "8 años",
+    "webHoy": "una pagina de facebook que casi no uso"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Alumnado infantil",
+     "Familias que pagan y deciden",
+     "Alumnado adulto",
+     "Profesorado",
+     "Colegios de la zona",
+     "Centros examinadores de certificación",
+     "Familias que recomiendan"
+    ],
+    "intangibles": [
+     "Las familias recomiendan la academia a otras familias del colegio",
+     "La academia informa a las familias de cómo progresa cada niño",
+     "Los colegios aportan confianza y visibilidad al derivar alumnos",
+     "El profesorado aporta cercanía y seguimiento personal que fideliza",
+     "El alumnado adulto comparte su motivación (trabajo, viajes) y orienta la oferta"
+    ],
+    "noInventar": [
+     "Precios de las clases",
+     "Número de alumnos",
+     "Nombre de la otra profesora",
+     "Certificaciones concretas que preparan",
+     "Horarios"
+    ],
+    "dudas": [
+     "¿Preparan exámenes oficiales o solo refuerzo?",
+     "¿Por qué quiere más adultos: huecos de horario, ingresos, otra cosa?",
+     "¿Tiene relación con algún colegio o empresa cercana?",
+     "¿Quién decide en las familias: madres, padres, los propios alumnos mayores?"
+    ]
+   }
+  },
+  {
+   "id": "c018",
+   "sector": "formación de profesores",
+   "casa": "Valladolid",
+   "org": "Aula Abierta Formación",
+   "inicial": "Doy cursos a docentes sobre gestión del aula y convivencia. Trabajo sola, a veces con un compañero.",
+   "respuestas": {
+    "objetivo": "Que los centros me llamen sin tener que ir yo detrás",
+    "quien": "Profesores de primaria y secundaria",
+    "llegan": "Por los centros de formación del profesorado y por compañeros",
+    "aliados": "Un compañero psicólogo que me ayuda en algunos cursos",
+    "despues": "Algunos me escriben con dudas meses después",
+    "preguntan": "si el curso cuenta para sexenios",
+    "tiempo": "3 años",
+    "webHoy": "no tengo"
+   },
+   "alrededor": [
+    {
+     "quien": "Profes",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "curso",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Docentes participantes",
+     "Equipos directivos de los centros",
+     "Centros de formación del profesorado",
+     "Administración que reconoce créditos de formación",
+     "Colaborador experto (psicología)",
+     "Docentes que recomiendan a otros"
+    ],
+    "intangibles": [
+     "Los docentes comparten casos reales del aula que enriquecen los cursos",
+     "La formadora acompaña con dudas después del curso",
+     "Los docentes recomiendan los cursos en sus claustros",
+     "El colaborador aporta una mirada experta y credibilidad",
+     "Los equipos directivos aportan conocimiento de los problemas del centro"
+    ],
+    "noInventar": [
+     "Precio de los cursos",
+     "Número de horas o créditos",
+     "Nombre del compañero",
+     "Centros concretos donde ha formado",
+     "Número de participantes"
+    ],
+    "dudas": [
+     "¿Quién paga realmente: el docente, el centro o la administración?",
+     "¿Los cursos están reconocidos oficialmente para sexenios?",
+     "¿El compañero cobra aparte o es un acuerdo informal?",
+     "¿Quiere llegar a equipos directivos o al profesorado individual?"
+    ]
+   }
+  },
+  {
+   "id": "c019",
+   "sector": "bodega familiar",
+   "casa": "Cariñena (Zaragoza)",
+   "org": "Bodegas Hermanos Lasierra",
+   "inicial": "bodega de la familia, vino",
+   "respuestas": {
+    "objetivo": "vender mas fuera",
+    "quien": "",
+    "llegan": "",
+    "aliados": "",
+    "despues": "",
+    "preguntan": "",
+    "tiempo": "desde el abuelo",
+    "webHoy": "una antigua que hizo un sobrino"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Viticultores que aportan uva",
+     "Bodega familiar",
+     "Distribuidores",
+     "Tiendas y restaurantes",
+     "Consumidores finales",
+     "Visitantes de enoturismo",
+     "Denominación de origen"
+    ],
+    "intangibles": [
+     "La historia familiar aporta autenticidad y confianza al comprador",
+     "Los restaurantes recomiendan el vino a sus clientes",
+     "Los visitantes cuentan su experiencia en la bodega a conocidos",
+     "Los viticultores comparten conocimiento del viñedo y la cosecha",
+     "La denominación de origen aporta reconocimiento y prestigio"
+    ],
+    "noInventar": [
+     "Variedades de uva",
+     "Volumen de producción",
+     "Precios de las botellas",
+     "Nombres de familiares",
+     "Mercados extranjeros concretos"
+    ],
+    "dudas": [
+     "¿«Fuera» significa otras comunidades o exportación?",
+     "¿Cultivan su propia uva o la compran?",
+     "¿Venden ahora a través de distribuidor, directamente o ambas?",
+     "¿Reciben visitas en la bodega?"
+    ]
+   }
+  },
+  {
+   "id": "c020",
+   "sector": "restaurante de proximidad",
+   "casa": "Gijón",
+   "org": "Casa Tina",
+   "inicial": "Restaurante de barrio, cocina de mercado, menú del día y cenas los fines de semana.",
+   "respuestas": {
+    "objetivo": "Que se nos conozca por el producto de aquí",
+    "quien": "Gente del barrio y oficinas cerca",
+    "llegan": "pasan por delante, algunos por reseñas",
+    "aliados": "los del mercado",
+    "despues": "vuelven, los del menú casi todos los días",
+    "preguntan": "si hay menú y si se puede reservar",
+    "tiempo": "5 años",
+    "webHoy": "solo ficha en mapas con reseñas"
+   },
+   "alrededor": [
+    {
+     "quien": "Pescadería del mercado",
+     "meDa": "pescado",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Manolo de la huerta",
+     "meDa": "verduras",
+     "meDaEs": "tangible",
+     "leDoy": "dinero",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "comida",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes del menú",
+     "meDa": "pagan",
+     "meDaEs": "tangible",
+     "leDoy": "menú",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Proveedores del mercado",
+     "Productores de huerta local",
+     "Clientela habitual del menú",
+     "Clientela de cenas de fin de semana",
+     "Personas que dejan reseñas",
+     "Equipo de cocina y sala",
+     "Asociación o comercio del barrio"
+    ],
+    "intangibles": [
+     "Los proveedores avisan de qué producto está mejor cada día",
+     "El restaurante da visibilidad a los productores locales nombrándolos",
+     "La clientela habitual recomienda el sitio a compañeros de oficina",
+     "Quienes dejan reseñas aportan confianza a gente nueva",
+     "El restaurante aporta vida y punto de encuentro al barrio"
+    ],
+    "noInventar": [
+     "Precio del menú",
+     "Nombre de los platos",
+     "Nombre del productor (usar rol, no «Manolo»)",
+     "Número de comensales",
+     "Puntuación de las reseñas"
+    ],
+    "dudas": [
+     "¿Los proveedores aceptarían ser nombrados en la carta o la web?",
+     "¿La clientela de cenas es distinta a la del menú?",
+     "¿Quién del equipo atiende reservas y reseñas?",
+     "¿Hay relación con otros comercios del barrio?"
+    ]
+   }
+  },
+  {
+   "id": "c021",
+   "sector": "organizadora de eventos",
+   "casa": "Málaga",
+   "org": "Celebra con Lucía",
+   "inicial": "organizo bodas y cumpleaños pequeños",
+   "respuestas": {
+    "objetivo": "mas bodas",
+    "quien": "parejas",
+    "llegan": "instagram y recomendaciones",
+    "aliados": "fotógrafos, floristería",
+    "despues": "me mandan fotos y ya",
+    "preguntan": "cuanto cuesta",
+    "tiempo": "2 años",
+    "webHoy": "instagram"
+   },
+   "alrededor": [
+    {
+     "quien": "Fotógrafo",
+     "meDa": "fotos",
+     "meDaEs": "tangible",
+     "leDoy": "trabajo",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Parejas que se casan",
+     "Familias de los novios",
+     "Fotógrafos",
+     "Floristerías",
+     "Fincas y espacios de celebración",
+     "Catering",
+     "Invitados que recomiendan"
+    ],
+    "intangibles": [
+     "Los fotógrafos aportan imágenes que sirven de escaparate de su trabajo",
+     "Los proveedores se recomiendan mutuamente a nuevas parejas",
+     "Las parejas comparten fotos y opiniones que generan confianza",
+     "La organizadora aporta tranquilidad y coordinación el día del evento",
+     "Los invitados descubren el servicio y lo recuerdan para sus propios eventos"
+    ],
+    "noInventar": [
+     "Precios o presupuestos",
+     "Nombres de fincas o proveedores",
+     "Número de bodas organizadas",
+     "Zona geográfica exacta de trabajo"
+    ],
+    "dudas": [
+     "¿Los proveedores le pagan comisión, ella los contrata o los contrata la pareja?",
+     "¿Tiene permiso para usar las fotos de las bodas?",
+     "¿Quién decide en la contratación: la pareja o las familias?",
+     "¿Trabaja con fincas concretas de forma habitual?"
+    ]
+   }
+  },
+  {
+   "id": "c022",
+   "sector": "cooperativa de consumo",
+   "casa": "Valladolid",
+   "org": "La Cesta Común",
+   "inicial": "Somos una coope de consumo, compramos verdura y cosas ecológicas directamente a productores de la zona. Queremos ver el mapa para entender por qué no crecemos.",
+   "respuestas": {
+    "objetivo": "que entren más socios y no depender siempre de los mismos para todo",
+    "quien": "familias del barrio, sobre todo con niños pequeños",
+    "llegan": "por el boca a boca, alguna vez por un cartel en el centro cívico",
+    "aliados": "los productores, la asociación de vecinos nos deja el local",
+    "despues": "recogen la cesta el jueves y ya, algunos se apuntan a turnos",
+    "preguntan": "si hay que pagar cuota, si es obligatorio hacer turnos",
+    "tiempo": "llevamos 4 años",
+    "webHoy": "tenemos un blog que no actualizamos desde hace mucho"
+   },
+   "alrededor": [
+    {
+     "quien": "Pili la del huerto",
+     "meDa": "verdura",
+     "meDaEs": "tangible",
+     "leDoy": "dinero",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "los socios",
+     "meDa": "cuota",
+     "meDaEs": "tangible",
+     "leDoy": "la cesta",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "socios",
+     "meDa": "turnos de reparto",
+     "meDaEs": "tangible",
+     "leDoy": "descuento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "asociación de vecinos",
+     "meDa": "local",
+     "meDaEs": "tangible",
+     "leDoy": "nada",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Persona socia consumidora",
+     "Persona socia voluntaria de turnos",
+     "Productor local",
+     "Asociación vecinal que cede espacio",
+     "Grupo coordinador de la cooperativa",
+     "Familia interesada aún no socia"
+    ],
+    "intangibles": [
+     "Confianza en el origen y el trato del producto",
+     "Conocimiento sobre temporada y cultivo que el productor comparte",
+     "Recomendación de socios a vecinos y conocidos",
+     "Sentido de comunidad y pertenencia en los turnos",
+     "Visibilidad y vida de barrio que la cooperativa aporta a la asociación vecinal"
+    ],
+    "noInventar": [
+     "Importe de la cuota",
+     "Número de socios",
+     "Nombres de productores",
+     "Precio de la cesta",
+     "Porcentaje de descuento por turnos"
+    ],
+    "dudas": [
+     "Si la cooperativa da algo a la asociación vecinal a cambio del local",
+     "Quién coordina y cuánta gente sostiene los turnos",
+     "Qué hace que un socio se dé de baja",
+     "Si hay más productores aparte del huerto mencionado"
+    ]
+   }
+  },
+  {
+   "id": "c023",
+   "sector": "consultora de personas",
+   "casa": "Bilbao",
+   "org": "Raíz Talento",
+   "inicial": "consultora de rrhh, pequeña",
+   "respuestas": {
+    "objetivo": "más clientes",
+    "quien": "empresas",
+    "llegan": "contactos",
+    "aliados": "",
+    "despues": "",
+    "preguntan": "precio",
+    "tiempo": "2 años",
+    "webHoy": "una página sencilla"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Empresa cliente (dirección o gerencia)",
+     "Responsable de personas en la empresa cliente",
+     "Equipos y personas empleadas que participan en los procesos",
+     "Candidatos en procesos de selección",
+     "Red de contactos profesionales que recomienda",
+     "Colaboradores externos (formadores, psicólogos)"
+    ],
+    "intangibles": [
+     "Confianza y confidencialidad sobre la situación interna de la empresa",
+     "Diagnóstico y conocimiento del clima del equipo",
+     "Recomendación entre gerentes y contactos profesionales",
+     "Reputación que la empresa cliente gana ante candidatos",
+     "Feedback de candidatos y empleados sobre los procesos"
+    ],
+    "noInventar": [
+     "Tarifas o precios",
+     "Nombres de empresas cliente",
+     "Número de clientes",
+     "Servicios concretos que no ha mencionado",
+     "Sector de las empresas cliente"
+    ],
+    "dudas": [
+     "Qué servicios ofrece exactamente (selección, formación, clima, coaching)",
+     "Qué tamaño y sector tienen las empresas cliente",
+     "Quiénes son esos contactos por los que llegan clientes",
+     "Si trabaja sola o con colaboradores"
+    ]
+   }
+  },
+  {
+   "id": "c024",
+   "sector": "tienda de barrio",
+   "casa": "Cádiz",
+   "org": "Ultramarinos Lola",
+   "inicial": "Tengo una tienda de comestibles de toda la vida en el barrio, la heredé de mi madre. Con el súper nuevo cada vez viene menos gente joven.",
+   "respuestas": {
+    "objetivo": "que la gente joven del barrio vuelva a comprar aquí",
+    "quien": "vecinas mayores sobre todo, algún obrero a mediodía",
+    "llegan": "viven al lado, pasan por la puerta",
+    "aliados": "el distribuidor, el panadero que me trae el pan",
+    "despues": "vuelven al día siguiente, a algunas les llevo la compra a casa",
+    "preguntan": "si tengo tal cosa, si fío",
+    "tiempo": "la tienda tiene 30 años, yo la llevo desde hace 8",
+    "webHoy": "no tengo, solo un grupo de whatsapp con algunas clientas"
+   },
+   "alrededor": [
+    {
+     "quien": "clientas",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "productos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientas mayores",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "llevar la compra",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "distribuidor",
+     "meDa": "género",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "panadero",
+     "meDa": "pan",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes",
+     "meDa": "compran",
+     "meDaEs": "tangible",
+     "leDoy": "atención",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Vecina habitual mayor",
+     "Vecino joven o familia nueva en el barrio",
+     "Trabajador de paso a mediodía",
+     "Distribuidor mayorista",
+     "Panadería proveedora",
+     "Vecina que recomienda la tienda en el barrio"
+    ],
+    "intangibles": [
+     "Trato cercano y confianza (incluido el fiado)",
+     "Cuidado y compañía a las personas mayores al llevarles la compra",
+     "Información de barrio y avisos por el grupo de mensajería",
+     "Recomendación boca a boca entre vecinas",
+     "Flexibilidad del distribuidor con pedidos pequeños o urgentes"
+    ],
+    "noInventar": [
+     "Precios de productos",
+     "Volumen de ventas",
+     "Nombre del distribuidor o del panadero",
+     "Número de clientas en el grupo de mensajería",
+     "Nombre del supermercado competidor"
+    ],
+    "dudas": [
+     "Si el servicio a domicilio se cobra o es un favor",
+     "Cómo funciona el fiado y con quién",
+     "Qué buscan los jóvenes que no encuentran en la tienda",
+     "Si el grupo de mensajería se usa para pedidos o solo para avisos"
+    ]
+   }
+  },
+  {
+   "id": "c025",
+   "sector": "estudio de diseño",
+   "casa": "Valencia",
+   "org": "Estudio Malva",
+   "inicial": "Somos dos diseñadoras, hacemos identidad visual y packaging para marcas pequeñas. Casi todo nos llega por recomendación pero no sabemos de quién exactamente.",
+   "respuestas": {
+    "objetivo": "dejar de hacer encargos baratos y tener proyectos más completos",
+    "quien": "marcas pequeñas, gente que emprende, alguna bodega",
+    "llegan": "recomendación, instagram un poco",
+    "aliados": "una imprenta con la que trabajamos siempre, un fotógrafo",
+    "despues": "a veces vuelven para otra cosa, casi nunca nos dicen nada",
+    "preguntan": "cuánto cuesta un logo, cuánto se tarda",
+    "tiempo": "5 años",
+    "webHoy": "portfolio con trabajos, sin textos casi"
+   },
+   "alrededor": [
+    {
+     "quien": "clientes",
+     "meDa": "encargos y pago",
+     "meDaEs": "tangible",
+     "leDoy": "diseños",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "imprenta",
+     "meDa": "impresión",
+     "meDaEs": "tangible",
+     "leDoy": "trabajo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Javi fotógrafo",
+     "meDa": "fotos",
+     "meDaEs": "tangible",
+     "leDoy": "le pasamos clientes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "instagram",
+     "meDa": "visibilidad",
+     "meDaEs": "intangible",
+     "leDoy": "publicaciones",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Persona emprendedora con marca pequeña",
+     "Pequeña bodega o productor",
+     "Imprenta colaboradora",
+     "Fotógrafo colaborador",
+     "Cliente anterior que recomienda",
+     "Comunidad en redes sociales que sigue el trabajo"
+    ],
+    "intangibles": [
+     "Recomendación de clientes anteriores a nuevos clientes",
+     "Derivación mutua de clientes con el fotógrafo",
+     "Asesoría técnica de la imprenta sobre materiales y acabados",
+     "Confianza y comprensión de la marca que se construye con el cliente",
+     "Prestigio que aporta mostrar proyectos en el portfolio"
+    ],
+    "noInventar": [
+     "Precio de un logo o de un proyecto",
+     "Plazos de entrega",
+     "Nombres de clientes o bodegas",
+     "Número de seguidores",
+     "Nombre de la imprenta"
+    ],
+    "dudas": [
+     "Quiénes recomiendan exactamente (clientes, imprenta, fotógrafo)",
+     "Si la imprenta también les envía clientes",
+     "Qué entienden por proyecto más completo",
+     "Si piden opinión o testimonio a los clientes al terminar"
+    ]
+   }
+  },
+  {
+   "id": "c026",
+   "sector": "fisioterapeuta autónoma",
+   "casa": "Ourense",
+   "org": "Fisio Uxía",
+   "inicial": "fisio autónoma, voy a domicilio y tengo una sala pequeña",
+   "respuestas": {
+    "objetivo": "llenar las tardes",
+    "quien": "gente con dolor de espalda, mayores, algún deportista",
+    "llegan": "el médico de cabecera a veces les dice, y conocidos",
+    "aliados": "un gimnasio",
+    "despues": "vienen unas sesiones y desaparecen",
+    "preguntan": "si hago bonos, si voy a casa",
+    "tiempo": "3 años",
+    "webHoy": "ficha en un directorio y nada más"
+   },
+   "alrededor": [
+    {
+     "quien": "pacientes",
+     "meDa": "pagan sesión",
+     "meDaEs": "tangible",
+     "leDoy": "tratamiento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "pacientes mayores",
+     "meDa": "pagan",
+     "meDaEs": "tangible",
+     "leDoy": "voy a casa",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "gimnasio",
+     "meDa": "socios",
+     "meDaEs": "tangible",
+     "leDoy": "descuento",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Paciente con dolor crónico",
+     "Persona mayor atendida a domicilio",
+     "Familiar que organiza la atención del mayor",
+     "Deportista aficionado",
+     "Médico de atención primaria que orienta",
+     "Gimnasio colaborador"
+    ],
+    "intangibles": [
+     "Orientación del médico hacia la fisioterapia",
+     "Derivación de socios desde el gimnasio",
+     "Tranquilidad y confianza para la familia del paciente mayor",
+     "Pautas y educación para el autocuidado en casa",
+     "Recomendación de pacientes a conocidos"
+    ],
+    "noInventar": [
+     "Precio de la sesión o de los bonos",
+     "Número de pacientes",
+     "Nombre del gimnasio",
+     "Descuento concreto",
+     "Zona de cobertura a domicilio"
+    ],
+    "dudas": [
+     "Por qué los pacientes dejan de venir tras unas sesiones",
+     "Si el médico la recomienda a ella o solo sugiere fisioterapia en general",
+     "Qué recibe el gimnasio a cambio además del descuento a sus socios",
+     "Si los mayores contactan ellos o lo hace un familiar"
+    ]
+   }
+  },
+  {
+   "id": "c027",
+   "sector": "casa rural",
+   "casa": "Mi casa rural",
+   "org": "Casa El Rebollar",
+   "inicial": "tengo una casa rural en un pueblo pequeño y quiero ver cómo hacer que venga más gente",
+   "respuestas": {
+    "objetivo": "llenar más fines de semana",
+    "quien": "yo y mi marido",
+    "llegan": "por internet sobre todo",
+    "aliados": "no sé",
+    "despues": "algunos repiten",
+    "preguntan": "si se admiten perros",
+    "tiempo": "",
+    "webHoy": "una página sencilla que hizo mi sobrino"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Huéspedes",
+     "Portales de reserva",
+     "Comercios y restaurantes del pueblo",
+     "Empresas de actividades en la naturaleza",
+     "Oficina de turismo comarcal",
+     "Personal de limpieza y mantenimiento",
+     "Huéspedes que repiten y recomiendan"
+    ],
+    "intangibles": [
+     "Reseñas y opiniones de los huéspedes",
+     "Recomendaciones de restaurantes y rutas a los huéspedes",
+     "Clientes derivados por los negocios del pueblo",
+     "Visibilidad en la promoción de la comarca",
+     "Confianza de los huéspedes que repiten"
+    ],
+    "noInventar": [
+     "Precio por noche",
+     "Número de habitaciones o plazas",
+     "Nombre del pueblo o la comarca",
+     "Porcentaje de ocupación",
+     "Comisiones de los portales"
+    ],
+    "dudas": [
+     "Si aceptan mascotas como política habitual",
+     "Qué proporción de reservas llega por portales y cuál directa",
+     "Si colaboran ya con algún negocio o actividad del pueblo",
+     "Qué temporadas tienen más ocupación"
+    ]
+   }
+  },
+  {
+   "id": "c028",
+   "sector": "asociación cultural",
+   "casa": "La asociación",
+   "org": "Asociación Cultural La Trastienda",
+   "inicial": "somos una asociación de barrio, hacemos cosas culturales, charlas, cine… queremos ordenarnos",
+   "respuestas": {
+    "objetivo": "que venga gente joven",
+    "quien": "una junta de cinco personas y voluntarios",
+    "llegan": "boca a boca y carteles",
+    "aliados": "el ayuntamiento nos deja el local",
+    "despues": "",
+    "preguntan": "cuánto cuesta hacerse socio",
+    "tiempo": "tardes y fines de semana",
+    "webHoy": "solo redes sociales"
+   },
+   "alrededor": [
+    {
+     "quien": "Ayuntamiento",
+     "meDa": "local",
+     "meDaEs": "tangible",
+     "leDoy": "actividades",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Socios",
+     "Público asistente",
+     "Voluntarios",
+     "Ayuntamiento",
+     "Ponentes y artistas invitados",
+     "Comercios del barrio",
+     "Otras asociaciones del barrio"
+    ],
+    "intangibles": [
+     "Vida y actividad cultural para el barrio a cambio de apoyo municipal",
+     "Difusión de actividades por parte de comercios y otras asociaciones",
+     "Sentido de pertenencia de socios y voluntarios",
+     "Visibilidad para ponentes y artistas",
+     "Ideas y propuestas que aportan los asistentes"
+    ],
+    "noInventar": [
+     "Cuota de socio",
+     "Número de socios",
+     "Nombre del barrio o ciudad",
+     "Importe de subvenciones"
+    ],
+    "dudas": [
+     "Si el local es cesión gratuita o tiene convenio con condiciones",
+     "Cuánto cuesta la cuota y qué incluye",
+     "Si reciben subvenciones además del local",
+     "Qué entienden por gente joven y por qué no viene ahora"
+    ]
+   }
+  },
+  {
+   "id": "c029",
+   "sector": "colla castellera",
+   "casa": "La colla",
+   "org": "Colla Castellera dels Terrers",
+   "inicial": "som una colla castellera petita, bueno, en castellano mejor. queremos más gente y patrocinadores",
+   "respuestas": {
+    "objetivo": "crecer y tener más dinero para viajes y camisas",
+    "quien": "la junta y el equipo técnico",
+    "llegan": "nos ven en las actuaciones",
+    "aliados": "el ayuntamiento y algún bar",
+    "despues": "algunos se quedan a probar en los ensayos",
+    "preguntan": "si hace falta experiencia",
+    "tiempo": "ensayos dos días por semana",
+    "webHoy": "una web vieja que nadie actualiza"
+   },
+   "alrededor": [
+    {
+     "quien": "Ayuntamiento",
+     "meDa": "subvención",
+     "meDaEs": "tangible",
+     "leDoy": "actuaciones en fiestas",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Bar de la plaza",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "logo en la camisa",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Jordi",
+     "meDa": "ayuda",
+     "meDaEs": "tangible",
+     "leDoy": "nada",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Bar",
+     "meDa": "descuento",
+     "meDaEs": "tangible",
+     "leDoy": "vamos después de ensayar",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Castelleros y castelleras",
+     "Familias de los miembros",
+     "Equipo técnico",
+     "Ayuntamiento",
+     "Comercios patrocinadores",
+     "Organizadores de fiestas y diadas",
+     "Público de las actuaciones",
+     "Otras collas"
+    ],
+    "intangibles": [
+     "Sentido de pertenencia y cohesión de grupo",
+     "Visibilidad y prestigio para los patrocinadores",
+     "Formación y seguridad que aporta el equipo técnico",
+     "Invitaciones e intercambio con otras collas",
+     "Captación de nuevos miembros entre el público"
+    ],
+    "noInventar": [
+     "Importe de la subvención o del patrocinio",
+     "Número de miembros",
+     "Nombre del pueblo",
+     "Castells que hacen o su nivel"
+    ],
+    "dudas": [
+     "Quién es Jordi y qué rol cumple (voluntario, técnico, colaborador)",
+     "Si los dos bares son el mismo",
+     "Qué recibe el ayuntamiento además de las actuaciones",
+     "Si las familias participan en la colla"
+    ]
+   }
+  },
+  {
+   "id": "c030",
+   "sector": "productora musical",
+   "casa": "Mi productora",
+   "org": "Estudio Onda Baja",
+   "inicial": "produzco música para grupos, tengo un estudio pequeño",
+   "respuestas": {
+    "objetivo": "más clientes",
+    "quien": "yo",
+    "llegan": "conocidos",
+    "aliados": "",
+    "despues": "",
+    "preguntan": "precio",
+    "tiempo": "",
+    "webHoy": "no tengo"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Grupos y artistas",
+     "Músicos de sesión",
+     "Técnicos de mezcla y masterización",
+     "Salas de conciertos",
+     "Promotores y sellos independientes",
+     "Artistas que recomiendan el estudio"
+    ],
+    "intangibles": [
+     "Recomendaciones entre grupos",
+     "Reputación por los trabajos publicados",
+     "Consejo artístico y criterio de producción",
+     "Contactos con salas y promotores para los artistas",
+     "Colaboraciones con músicos de sesión que traen clientes"
+    ],
+    "noInventar": [
+     "Tarifas por hora o por canción",
+     "Nombres de grupos con los que ha trabajado",
+     "Equipamiento del estudio",
+     "Número de producciones"
+    ],
+    "dudas": [
+     "Qué estilos musicales produce",
+     "Si hace también mezcla y masterización o lo externaliza",
+     "Si trabaja con músicos de sesión",
+     "Cómo llegan los conocidos: recomendación de otros grupos o contacto propio"
+    ]
+   }
+  },
+  {
+   "id": "c031",
+   "sector": "huerto ecológico con cestas",
+   "casa": "El huerto",
+   "org": "Huerta La Acequia",
+   "inicial": "tenemos un huerto ecológico y repartimos cestas semanales, queremos que se apunte más gente",
+   "respuestas": {
+    "objetivo": "llegar a 20 cestas más",
+    "quien": "somos dos",
+    "llegan": "por amigos y una tienda del barrio",
+    "aliados": "la tienda",
+    "despues": "algunos se dan de baja en invierno",
+    "preguntan": "qué viene en la cesta",
+    "tiempo": "reparto los jueves",
+    "webHoy": "un formulario para apuntarse"
+   },
+   "alrededor": [
+    {
+     "quien": "Tienda del barrio",
+     "meDa": "punto de recogida",
+     "meDaEs": "tangible",
+     "leDoy": "verdura",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Familias suscriptoras",
+     "Punto de recogida",
+     "Proveedores de semillas y abono",
+     "Certificadora ecológica",
+     "Grupos de consumo",
+     "Suscriptores que recomiendan"
+    ],
+    "intangibles": [
+     "Confianza en el origen y la forma de cultivo",
+     "Recomendaciones entre suscriptores",
+     "Clientes que llegan a la tienda al recoger la cesta",
+     "Recetas e información de temporada para las familias",
+     "Comentarios de las familias sobre lo que quieren en la cesta"
+    ],
+    "noInventar": [
+     "Precio de la cesta",
+     "Número actual de suscriptores",
+     "Productos concretos de cada temporada",
+     "Ubicación del huerto"
+    ],
+    "dudas": [
+     "Si tienen certificación ecológica oficial",
+     "Si la tienda cobra algo o recibe solo verdura",
+     "Por qué se dan de baja en invierno",
+     "Si hay cestas de distintos tamaños"
+    ]
+   }
+  },
+  {
+   "id": "c032",
+   "sector": "academia de baile",
+   "casa": "Valencia, barrio de Benimaclet",
+   "org": "Escuela de baile Compás Abierto",
+   "inicial": "hola, tengo una academia de baile pequeña, salsa y bachata sobre todo, y quiero ver cómo se organiza todo esto",
+   "respuestas": {
+    "objetivo": "que venga más gente entre semana, los martes están medio vacíos",
+    "quien": "adultos de 30 a 55 más o menos, muchas mujeres, alguna pareja",
+    "llegan": "por instagram y porque se lo dice una amiga",
+    "aliados": "un bar de aquí al lado donde hacemos las sociales",
+    "despues": "algunos se quedan años, otros vienen un trimestre y desaparecen",
+    "preguntan": "si hace falta venir con pareja y si hay clase de prueba",
+    "tiempo": "ocho años",
+    "webHoy": "una página muy básica con los horarios, la hizo mi sobrino"
+   },
+   "alrededor": [
+    {
+     "quien": "alumnos",
+     "meDa": "la cuota mensual",
+     "meDaEs": "tangible",
+     "leDoy": "clases",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Lucía y Andrés (profes)",
+     "meDa": "las clases",
+     "meDaEs": "tangible",
+     "leDoy": "sueldo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Lucía",
+     "meDa": "coreografías para el festival",
+     "meDaEs": "tangible",
+     "leDoy": "dinero extra",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "el bar",
+     "meDa": "el local para las sociales",
+     "meDaEs": "tangible",
+     "leDoy": "consumiciones",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Academia (dirección)",
+     "Alumnado adulto",
+     "Profesorado",
+     "Bar o local de sociales",
+     "Alumnos que recomiendan",
+     "Comunidad de baile local (otras escuelas, DJs)",
+     "Público de festivales y exhibiciones"
+    ],
+    "intangibles": [
+     "Recomendación boca a boca de alumnos a amistades",
+     "Sensación de comunidad y grupo que hace que el alumnado se quede",
+     "Confianza de quien llega sin pareja de que será bien recibido",
+     "Visibilidad que da el bar a la academia en las sociales",
+     "Reputación y estilo propio que aporta el profesorado",
+     "Feedback del alumnado sobre horarios y niveles"
+    ],
+    "noInventar": [
+     "Precio de la cuota mensual",
+     "Sueldo de los profesores",
+     "Número de alumnos",
+     "Nombre del bar",
+     "Horarios concretos de los martes"
+    ],
+    "dudas": [
+     "Si el bar recibe algo más que consumiciones o hay un acuerdo de reparto",
+     "Por qué se van quienes solo duran un trimestre",
+     "Si hay clase de prueba gratuita o de pago",
+     "Qué papel tienen los festivales en atraer alumnado"
+    ]
+   }
+  },
+  {
+   "id": "c033",
+   "sector": "gestoría",
+   "casa": "Albacete",
+   "org": "Gestoría Martínez Ruiz",
+   "inicial": "gestoría",
+   "respuestas": {
+    "objetivo": "no sé, mejorar",
+    "quien": "autónomos",
+    "llegan": "",
+    "aliados": "",
+    "despues": "",
+    "preguntan": "lo de la renta",
+    "tiempo": "mucho",
+    "webHoy": "no tenemos"
+   },
+   "alrededor": [],
+   "esperado": {
+    "roles": [
+     "Gestoría",
+     "Autónomos clientes",
+     "Pequeñas empresas clientes",
+     "Administración pública (Hacienda, Seguridad Social)",
+     "Clientes que recomiendan",
+     "Bancos o asesorías colaboradoras"
+    ],
+    "intangibles": [
+     "Tranquilidad del autónomo de tener sus papeles en regla",
+     "Recomendación de clientes satisfechos a otros autónomos",
+     "Avisos y consejos sobre cambios de normativa",
+     "Confianza para delegar información sensible",
+     "Conocimiento del negocio del cliente acumulado con los años"
+    ],
+    "noInventar": [
+     "Tarifas o cuotas mensuales",
+     "Número de clientes",
+     "Años exactos en activo",
+     "Número de empleados de la gestoría"
+    ],
+    "dudas": [
+     "Qué quiere mejorar exactamente: captar clientes, ordenar trabajo, otra cosa",
+     "Cómo llegan hoy los clientes nuevos",
+     "Si trabajan también con empresas o solo con autónomos",
+     "Si colaboran con otros profesionales (abogados, bancos)"
+    ]
+   }
+  },
+  {
+   "id": "c034",
+   "sector": "taller de bicicletas",
+   "casa": "Sevilla, Triana",
+   "org": "Taller Rueda Libre",
+   "inicial": "tengo un taller de bicis, arreglo y algo de venta de piezas. Me han dicho que haga esto",
+   "respuestas": {
+    "objetivo": "que la gente sepa que existo y no solo los del barrio",
+    "quien": "gente que va al trabajo en bici, estudiantes, algún ciclista de carretera",
+    "llegan": "pasan por la puerta, o les digo yo en la calle jaja",
+    "aliados": "compro a un distribuidor y a veces me pasan bicis de una tienda grande que no arregla",
+    "despues": "vuelven cuando pinchan otra vez",
+    "preguntan": "cuánto tarda y si tengo la pieza",
+    "tiempo": "tres años",
+    "webHoy": "una ficha en el mapa del móvil con reseñas"
+   },
+   "alrededor": [
+    {
+     "quien": "clientes",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "arreglo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes de carretera",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "puesta a punto",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "distribuidor",
+     "meDa": "piezas",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "la tienda grande",
+     "meDa": "bicis para arreglar",
+     "meDaEs": "tangible",
+     "leDoy": "arreglos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes",
+     "meDa": "reseñas",
+     "meDaEs": "intangible",
+     "leDoy": "buen trato",
+     "leDoyEs": "intangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Taller (mecánico)",
+     "Ciclistas urbanos",
+     "Estudiantes",
+     "Ciclistas deportivos",
+     "Distribuidor de piezas",
+     "Tienda que deriva reparaciones",
+     "Clientes que dejan reseñas o recomiendan",
+     "Grupos o asociaciones ciclistas del barrio"
+    ],
+    "intangibles": [
+     "Derivación de clientes desde la tienda grande",
+     "Reseñas y recomendaciones que traen gente de fuera del barrio",
+     "Consejos de mantenimiento que da el mecánico",
+     "Confianza en plazos honestos de reparación",
+     "Información del distribuidor sobre disponibilidad de piezas"
+    ],
+    "noInventar": [
+     "Precios de reparaciones",
+     "Nombre del distribuidor o de la tienda",
+     "Número de reseñas o nota",
+     "Tiempos de reparación concretos"
+    ],
+    "dudas": [
+     "Si la tienda grande le paga a él o le manda directamente al cliente",
+     "Si hay grupos ciclistas o clubes con los que colabore",
+     "Cuánto pesa la venta de piezas frente a las reparaciones",
+     "Si vende o alquila bicis además de arreglarlas"
+    ]
+   }
+  },
+  {
+   "id": "c035",
+   "sector": "espacio de coworking",
+   "casa": "Bilbao, Zorrotzaurre",
+   "org": "La Nave Compartida",
+   "inicial": "somos dos socias con un coworking, 20 puestos. Queremos entender mejor qué ofrecemos",
+   "respuestas": {
+    "objetivo": "llenar los puestos fijos, ahora hay mucha gente que viene solo días sueltos",
+    "quien": "freelances, diseñadores, gente en remoto de empresas de fuera",
+    "llegan": "buscando en internet coworking bilbao, y por eventos que hacemos",
+    "aliados": "una cafetería que nos trae el café, un ayuntamiento que da ayudas a emprendedores",
+    "despues": "si se quedan, acaban trabajando juntos entre ellos a veces",
+    "preguntan": "precio, si hay sala de reuniones y si se puede ir con perro",
+    "tiempo": "dos años",
+    "webHoy": "web con tarifas y fotos pero no se actualiza"
+   },
+   "alrededor": [
+    {
+     "quien": "coworkers fijos",
+     "meDa": "cuota",
+     "meDaEs": "tangible",
+     "leDoy": "mesa y wifi",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "coworkers por días",
+     "meDa": "pago por día",
+     "meDaEs": "tangible",
+     "leDoy": "mesa",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "cafetería",
+     "meDa": "café",
+     "meDaEs": "tangible",
+     "leDoy": "factura",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "empresas que alquilan la sala",
+     "meDa": "alquiler",
+     "meDaEs": "tangible",
+     "leDoy": "sala",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Coworking (socias gestoras)",
+     "Profesionales residentes fijos",
+     "Usuarios por días",
+     "Empresas que alquilan sala",
+     "Proveedor de cafetería",
+     "Administración local de apoyo a emprendedores",
+     "Asistentes a eventos",
+     "Residentes que recomiendan el espacio"
+    ],
+    "intangibles": [
+     "Comunidad y contactos entre coworkers que generan colaboraciones",
+     "Eventos que dan visibilidad al espacio y atraen futuros residentes",
+     "Recomendación de residentes a otros freelances",
+     "Sensación de pertenencia que convierte usuarios de días en fijos",
+     "Legitimidad o difusión que aporta el programa municipal",
+     "Feedback de los residentes sobre el espacio"
+    ],
+    "noInventar": [
+     "Tarifas de puesto fijo o por día",
+     "Ocupación actual",
+     "Importe de ayudas municipales",
+     "Nombre de la cafetería",
+     "Número de eventos al mes"
+    ],
+    "dudas": [
+     "Si la relación con el ayuntamiento es solo ayudas a residentes o también difusión del espacio",
+     "Qué tipo de eventos hacen y quién asiste",
+     "Por qué los usuarios por días no pasan a fijos",
+     "Si se admiten perros (lo preguntan y no lo dicen)"
+    ]
+   }
+  },
+  {
+   "id": "c036",
+   "sector": "guía turística",
+   "casa": "Toledo",
+   "org": "Paseos con Historia (guía autónoma)",
+   "inicial": "soy guía oficial en Toledo, hago rutas a pie por el casco antiguo",
+   "respuestas": {
+    "objetivo": "depender menos de las plataformas que se llevan comisión",
+    "quien": "turistas españoles y algunos extranjeros, grupos de colegios en primavera",
+    "llegan": "por plataformas de reservas, hoteles que me recomiendan y gente que repite",
+    "aliados": "dos hoteles y una agencia de Madrid",
+    "despues": "me dejan valoraciones, algunos me escriben para otra ciudad pero no puedo",
+    "preguntan": "si la ruta incluye entradas y si es apta para niños",
+    "tiempo": "seis años",
+    "webHoy": "no tengo web, solo perfil en las plataformas"
+   },
+   "alrededor": [
+    {
+     "quien": "turistas",
+     "meDa": "pago de la ruta",
+     "meDaEs": "tangible",
+     "leDoy": "visita guiada",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "plataforma de reservas",
+     "meDa": "reservas",
+     "meDaEs": "tangible",
+     "leDoy": "comisión",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "hotel",
+     "meDa": "clientes",
+     "meDaEs": "tangible",
+     "leDoy": "nada",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "hotel",
+     "meDa": "clientes",
+     "meDaEs": "tangible",
+     "leDoy": "buen servicio a sus huéspedes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Pedro de la agencia",
+     "meDa": "grupos",
+     "meDaEs": "tangible",
+     "leDoy": "factura",
+     "leDoyEs": "tangible"
+    }
+   ],
+   "esperado": {
+    "roles": [
+     "Guía turística",
+     "Turistas individuales y familias",
+     "Grupos escolares y profesorado",
+     "Plataformas de reservas",
+     "Hoteles que recomiendan",
+     "Agencia de viajes",
+     "Turistas que repiten o recomiendan",
+     "Monumentos y espacios visitados"
+    ],
+    "intangibles": [
+     "Recomendación del hotel a sus huéspedes",
+     "Mejora de la experiencia del huésped que refuerza la imagen del hotel",
+     "Valoraciones y reseñas de turistas que dan reputación",
+     "Conocimiento histórico y relatos que aporta la guía",
+     "Confianza de familias y profesorado en que la ruta es segura y apta",
+     "Contactos con guías de otras ciudades a quien derivar"
+    ],
+    "noInventar": [
+     "Precio de la ruta",
+     "Porcentaje de comisión de las plataformas",
+     "Nombres de los hoteles o de la agencia",
+     "Número de reseñas o valoración media"
+    ],
+    "dudas": [
+     "Si da algo a los hoteles a cambio (comisión, descuento) o es solo buena relación",
+     "Si las entradas a monumentos están incluidas",
+     "Si tiene red con guías de otras ciudades para derivar a quien le escribe",
+     "Cómo llegan los grupos de colegios"
+    ]
+   }
+  }
+ ]
+}

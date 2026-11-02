@@ -1,0 +1,3943 @@
+{
+ "versio": 1,
+ "estat": "esborrany",
+ "generat": "2026-11-02",
+ "webs": [
+  {
+   "id": "estudi_creatiu",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Nos sentamos contigo, escuchamos tu historia y la convertimos en una marca que se te parezca."
+     },
+     {
+      "nom": "Directo",
+      "exemple": "Marca, comunicación y piezas gráficas. Plazos claros, sin rodeos y con el resultado que acordamos."
+     },
+     {
+      "nom": "Inspirador",
+      "exemple": "Cada marca guarda una idea que aún no se ha contado. Vamos a encontrarla juntos."
+     }
+    ],
+    "menu": [
+     "Proyectos",
+     "Qué hacemos",
+     "Cómo trabajamos",
+     "El estudio",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Damos forma a marcas que la gente recuerda",
+      "presentacio": "Somos un estudio pequeño que crea identidad, comunicación y piezas visuales para empresas e instituciones. Trabajamos cerca de ti, de la primera idea a la pieza terminada.",
+      "boto": "Cuéntanos tu proyecto"
+     },
+     {
+      "lema": "Diseño con criterio para quien quiere comunicar mejor",
+      "presentacio": "Te ayudamos a ordenar lo que quieres decir y a contarlo con una imagen coherente. Mirada externa, oficio y acompañamiento en cada paso.",
+      "boto": "Ver proyectos"
+     },
+     {
+      "lema": "Tu marca, contada con claridad y hecha con cuidado",
+      "presentacio": "Escuchamos, investigamos y diseñamos hasta que la marca encaja con quien eres. Después te acompañamos para que funcione en el día a día.",
+      "boto": "Pide una primera reunión"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Cliente",
+      "nom": "Empresas e instituciones",
+      "intro": "Si necesitas una marca nueva, renovar tu imagen o lanzar una campaña, empezamos por entender tu contexto. Te damos una mirada externa y un proyecto entregado tal como lo acordamos.",
+      "boto": "Cuéntanos tu encargo"
+     },
+     {
+      "quien": "Equipo creativo",
+      "nom": "Trabaja con nosotros",
+      "intro": "Buscamos personas con ideas y criterio propio. Aquí encontrarás proyectos estables, espacio para crecer y reconocimiento por lo que haces.",
+      "boto": "Envía tu portfolio"
+     },
+     {
+      "quien": "Colaboradores freelance",
+      "nom": "Freelance y especialistas",
+      "intro": "¿Ilustras, fotografías, programas o animas? Te llamamos para proyectos concretos, con encargos claros y pagados, y compartimos lo que aprendemos juntos.",
+      "boto": "Únete a la red"
+     },
+     {
+      "quien": "Proveedores de producción",
+      "nom": "Imprentas y talleres",
+      "intro": "Tu consejo sobre papeles, acabados y materiales hace mejores nuestros proyectos. A cambio, te enviamos pedidos bien preparados y archivos listos para producir.",
+      "boto": "Habla con producción"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Si nos recomiendas",
+      "intro": "Gracias por pensar en nosotros cuando alguien te pide un estudio. Cuidaremos a quien nos envíes para que tú quedes bien.",
+      "boto": "Envíanos un contacto"
+     },
+     {
+      "quien": "Comunidad del sector",
+      "nom": "Comunidad y oficio",
+      "intro": "Compartimos procesos, aprendizajes y proyectos porque el oficio crece en abierto. Si organizas charlas, jurados o publicaciones, hablemos.",
+      "boto": "Ver lo que compartimos"
+     }
+    ],
+    "proves": [
+     "Casos de proyecto con el reto, el proceso y el resultado contados paso a paso",
+     "Palabras de clientes junto a cada proyecto, siempre con su permiso",
+     "Créditos visibles del equipo y de las personas colaboradoras en cada trabajo",
+     "Premios, publicaciones y charlas en las que ha participado el estudio",
+     "Logos de empresas e instituciones con las que has trabajado, con su permiso"
+    ],
+    "connecta": [
+     {
+      "eina": "Portfolio en línea",
+      "per": "Mostrar los proyectos destacados en la web y añadir nuevos sin rehacer páginas"
+     },
+     {
+      "eina": "Formulario de briefing",
+      "per": "Recoger el encargo con preguntas guiadas antes de la primera reunión"
+     },
+     {
+      "eina": "Agenda de reuniones",
+      "per": "Dejar que el cliente reserve una primera llamada en tus huecos libres"
+     },
+     {
+      "eina": "Redes sociales visuales",
+      "per": "Mostrar las últimas publicaciones del estudio y enlazarlas con cada proyecto"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Recoger suscripciones y avisar de proyectos o artículos nuevos"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué quieres que haga primero quien entra en tu web?",
+      "opciones": [
+       "Ver proyectos",
+       "Pedir una reunión",
+       "Enviar un briefing"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Para quién trabajas sobre todo?",
+      "opciones": [
+       "Empresas",
+       "Instituciones públicas",
+       "Entidades sociales y culturales"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Qué servicios quieres destacar?",
+      "opciones": [
+       "Identidad de marca",
+       "Comunicación y campañas",
+       "Diseño editorial",
+       "Web y digital"
+      ],
+      "varias": true
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Seiem amb tu, escoltem la teva història i la convertim en una marca que se t'assembli."
+     },
+     {
+      "nom": "Directe",
+      "exemple": "Marca, comunicació i peces gràfiques. Terminis clars, sense embuts i amb el resultat que acordem."
+     },
+     {
+      "nom": "Inspirador",
+      "exemple": "Cada marca amaga una idea que encara no s'ha explicat. Anem a trobar-la junts."
+     }
+    ],
+    "menu": [
+     "Projectes",
+     "Què fem",
+     "Com treballem",
+     "L'estudi",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Donem forma a marques que la gent recorda",
+      "presentacio": "Som un estudi petit que crea identitat, comunicació i peces visuals per a empreses i institucions. Treballem a prop teu, de la primera idea a la peça acabada.",
+      "boto": "Explica'ns el teu projecte"
+     },
+     {
+      "lema": "Disseny amb criteri per a qui vol comunicar millor",
+      "presentacio": "T'ajudem a endreçar el que vols dir i a explicar-ho amb una imatge coherent. Mirada externa, ofici i acompanyament a cada pas.",
+      "boto": "Veure projectes"
+     },
+     {
+      "lema": "La teva marca, explicada amb claredat i feta amb cura",
+      "presentacio": "Escoltem, investiguem i dissenyem fins que la marca encaixa amb qui ets. Després t'acompanyem perquè funcioni en el dia a dia.",
+      "boto": "Demana una primera reunió"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Client",
+      "nom": "Empreses i institucions",
+      "intro": "Si necessites una marca nova, renovar la teva imatge o llançar una campanya, comencem per entendre el teu context. Et donem una mirada externa i un projecte lliurat tal com l'hem acordat.",
+      "boto": "Explica'ns el teu encàrrec"
+     },
+     {
+      "quien": "Equip creatiu",
+      "nom": "Treballa amb nosaltres",
+      "intro": "Busquem persones amb idees i criteri propi. Aquí trobaràs projectes estables, espai per créixer i reconeixement pel que fas.",
+      "boto": "Envia el teu portfolio"
+     },
+     {
+      "quien": "Col·laboradors freelance",
+      "nom": "Freelance i especialistes",
+      "intro": "Il·lustres, fotografies, programes o animes? Et truquem per a projectes concrets, amb encàrrecs clars i pagats, i compartim el que aprenem junts.",
+      "boto": "Uneix-te a la xarxa"
+     },
+     {
+      "quien": "Proveïdors de producció",
+      "nom": "Impremtes i tallers",
+      "intro": "El teu consell sobre papers, acabats i materials fa millors els nostres projectes. A canvi, t'enviem comandes ben preparades i arxius a punt per produir.",
+      "boto": "Parla amb producció"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Si ens recomanes",
+      "intro": "Gràcies per pensar en nosaltres quan algú et demana un estudi. Cuidarem qui ens enviïs perquè tu quedis bé.",
+      "boto": "Envia'ns un contacte"
+     },
+     {
+      "quien": "Comunitat del sector",
+      "nom": "Comunitat i ofici",
+      "intro": "Compartim processos, aprenentatges i projectes perquè l'ofici creix en obert. Si organitzes xerrades, jurats o publicacions, parlem-ne.",
+      "boto": "Veure el que compartim"
+     }
+    ],
+    "proves": [
+     "Casos de projecte amb el repte, el procés i el resultat explicats pas a pas",
+     "Paraules de clients al costat de cada projecte, sempre amb el seu permís",
+     "Crèdits visibles de l'equip i de les persones col·laboradores a cada treball",
+     "Premis, publicacions i xerrades en què ha participat l'estudi",
+     "Logos d'empreses i institucions amb qui has treballat, amb el seu permís"
+    ],
+    "connecta": [
+     {
+      "eina": "Portfolio en línia",
+      "per": "Mostrar els projectes destacats a la web i afegir-ne de nous sense refer pàgines"
+     },
+     {
+      "eina": "Formulari de briefing",
+      "per": "Recollir l'encàrrec amb preguntes guiades abans de la primera reunió"
+     },
+     {
+      "eina": "Agenda de reunions",
+      "per": "Deixar que el client reservi una primera trucada en les teves hores lliures"
+     },
+     {
+      "eina": "Xarxes socials visuals",
+      "per": "Mostrar les últimes publicacions de l'estudi i enllaçar-les amb cada projecte"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Recollir subscripcions i avisar de projectes o articles nous"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Què vols que faci primer qui entra a la teva web?",
+      "opciones": [
+       "Veure projectes",
+       "Demanar una reunió",
+       "Enviar un briefing"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Per a qui treballes sobretot?",
+      "opciones": [
+       "Empreses",
+       "Institucions públiques",
+       "Entitats socials i culturals"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Quins serveis vols destacar?",
+      "opciones": [
+       "Identitat de marca",
+       "Comunicació i campanyes",
+       "Disseny editorial",
+       "Web i digital"
+      ],
+      "varias": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "productora_cultural",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano y apasionado",
+      "exemple": "Nos mueve lo mismo que a ti: que una canción llene la sala y la gente salga cantándola."
+     },
+     {
+      "nom": "Profesional y resolutivo",
+      "exemple": "Te enviamos la propuesta cerrada, con rider, fechas y condiciones claras desde el primer correo."
+     },
+     {
+      "nom": "Cultural y con criterio",
+      "exemple": "Elegimos cada proyecto porque tiene algo que contar, y lo acompañamos para que llegue lejos."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Artistas",
+     "Agenda",
+     "Para salas",
+     "Quiénes somos",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Llevamos la música adonde tiene que sonar",
+      "presentacio": "Conectamos artistas, escenarios y público con proyectos cuidados de principio a fin. Tú pones la música; nosotros hacemos que todo encaje.",
+      "boto": "Ver la agenda"
+     },
+     {
+      "lema": "Giras bien hechas, conciertos que se recuerdan",
+      "presentacio": "Nos ocupamos del booking, la producción y la comunicación para que cada fecha salga redonda. Trabajamos con salas, festivales e instituciones de todo el territorio.",
+      "boto": "Pide una propuesta"
+     },
+     {
+      "lema": "Cultura en directo, con criterio y con oficio",
+      "presentacio": "Producimos conciertos y espectáculos que tienen algo que decir. Cuidamos a los artistas, a los equipos y a quien viene a verlos.",
+      "boto": "Descubre nuestros proyectos"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Artistas",
+      "nom": "Para artistas",
+      "intro": "Si tienes un proyecto con alma y quieres crecer sin perder el rumbo, hablemos. Te acompañamos en la gira, los contratos y las decisiones de carrera.",
+      "boto": "Cuéntanos tu proyecto"
+     },
+     {
+      "quien": "Programadores y salas",
+      "nom": "Para salas y festivales",
+      "intro": "Te proponemos conciertos cerrados, con técnica, fechas y condiciones claras. Cumplimos lo que firmamos para que tú solo pienses en tu público.",
+      "boto": "Pide el dossier"
+     },
+     {
+      "quien": "Público",
+      "nom": "Próximos conciertos",
+      "intro": "Encuentra lo próximo que vas a querer vivir en directo. Apúntate y te avisamos antes que a nadie.",
+      "boto": "Ver agenda y entradas"
+     },
+     {
+      "quien": "Equipo técnico y producción",
+      "nom": "Para técnicos y producción",
+      "intro": "Planificamos con tiempo, compartimos horarios y riders claros y tratamos bien a quien hace posible el directo. Si quieres trabajar con nosotros, escríbenos.",
+      "boto": "Únete al equipo"
+     },
+     {
+      "quien": "Instituciones y patrocinadores",
+      "nom": "Instituciones y patrocinio",
+      "intro": "Diseñamos proyectos culturales con impacto real en el territorio y te lo justificamos con memorias claras. Construyamos juntos algo que valga la pena.",
+      "boto": "Habla con nosotros"
+     },
+     {
+      "quien": "Medios y prescriptores",
+      "nom": "Prensa y medios",
+      "intro": "Aquí tienes dossieres, fotos y vídeos listos para usar, y acceso a entrevistas y ensayos. Pídenos acreditación para cubrir nuestros conciertos.",
+      "boto": "Ir a la sala de prensa"
+     }
+    ],
+    "proves": [
+     "Galería de fotos y vídeos de conciertos reales, con sala y fecha",
+     "Palabras de artistas que han girado contigo y de salas que repiten",
+     "Recortes de prensa y reseñas de los conciertos producidos",
+     "Mapa de salas, festivales y ciudades donde has trabajado",
+     "Logos de instituciones y entidades colaboradoras, con su permiso"
+    ],
+    "connecta": [
+     {
+      "eina": "Plataforma de venta de entradas",
+      "per": "Mostrar el botón de compra en cada fecha y avisar cuando quedan pocas entradas."
+     },
+     {
+      "eina": "Calendario compartido de agenda",
+      "per": "Publicar las fechas confirmadas y mantener la agenda siempre al día."
+     },
+     {
+      "eina": "Plataforma de música en streaming",
+      "per": "Incrustar canciones y listas de cada artista para escucharlas sin salir de la web."
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Recoger los correos del público y enviarle novedades de conciertos."
+     },
+     {
+      "eina": "Carpeta compartida de materiales",
+      "per": "Ofrecer la descarga de dossieres, fotos en alta resolución y riders técnicos."
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿A qué te dedicas principalmente?",
+      "opciones": [
+       "Booking y giras",
+       "Producción de eventos",
+       "Promoción de conciertos",
+       "Festival propio"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿A quién quieres llegar primero con la web?",
+      "opciones": [
+       "Salas y programadores",
+       "Público",
+       "Artistas nuevos",
+       "Instituciones"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cómo vendes las entradas?",
+      "opciones": [
+       "Desde la propia web",
+       "Enlazo a otra plataforma",
+       "No vendo entradas"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper i apassionat",
+      "exemple": "Ens mou el mateix que a tu: que una cançó ompli la sala i la gent surti cantant-la."
+     },
+     {
+      "nom": "Professional i resolutiu",
+      "exemple": "T'enviem la proposta tancada, amb rider, dates i condicions clares des del primer correu."
+     },
+     {
+      "nom": "Cultural i amb criteri",
+      "exemple": "Triem cada projecte perquè té alguna cosa a explicar, i l'acompanyem perquè arribi lluny."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Artistes",
+     "Agenda",
+     "Per a sales",
+     "Qui som",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Portem la música allà on ha de sonar",
+      "presentacio": "Connectem artistes, escenaris i públic amb projectes cuidats de principi a fi. Tu poses la música; nosaltres fem que tot encaixi.",
+      "boto": "Veure l'agenda"
+     },
+     {
+      "lema": "Gires ben fetes, concerts que es recorden",
+      "presentacio": "Ens ocupem del booking, la producció i la comunicació perquè cada data surti rodona. Treballem amb sales, festivals i institucions de tot el territori.",
+      "boto": "Demana una proposta"
+     },
+     {
+      "lema": "Cultura en directe, amb criteri i amb ofici",
+      "presentacio": "Produïm concerts i espectacles que tenen alguna cosa a dir. Cuidem els artistes, els equips i qui ve a veure'ls.",
+      "boto": "Descobreix els nostres projectes"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Artistes",
+      "nom": "Per a artistes",
+      "intro": "Si tens un projecte amb ànima i vols créixer sense perdre el rumb, parlem-ne. T'acompanyem en la gira, els contractes i les decisions de carrera.",
+      "boto": "Explica'ns el teu projecte"
+     },
+     {
+      "quien": "Programadors i sales",
+      "nom": "Per a sales i festivals",
+      "intro": "Et proposem concerts tancats, amb tècnica, dates i condicions clares. Complim el que signem perquè tu només pensis en el teu públic.",
+      "boto": "Demana el dossier"
+     },
+     {
+      "quien": "Públic",
+      "nom": "Propers concerts",
+      "intro": "Troba el proper que voldràs viure en directe. Apunta't i t'avisarem abans que ningú.",
+      "boto": "Veure agenda i entrades"
+     },
+     {
+      "quien": "Equip tècnic i producció",
+      "nom": "Per a tècnics i producció",
+      "intro": "Planifiquem amb temps, compartim horaris i riders clars i tractem bé qui fa possible el directe. Si vols treballar amb nosaltres, escriu-nos.",
+      "boto": "Uneix-te a l'equip"
+     },
+     {
+      "quien": "Institucions i patrocinadors",
+      "nom": "Institucions i patrocini",
+      "intro": "Dissenyem projectes culturals amb impacte real al territori i te'l justifiquem amb memòries clares. Construïm junts alguna cosa que valgui la pena.",
+      "boto": "Parla amb nosaltres"
+     },
+     {
+      "quien": "Mitjans i prescriptors",
+      "nom": "Premsa i mitjans",
+      "intro": "Aquí tens dossiers, fotos i vídeos a punt per fer servir, i accés a entrevistes i assajos. Demana'ns acreditació per cobrir els nostres concerts.",
+      "boto": "Anar a la sala de premsa"
+     }
+    ],
+    "proves": [
+     "Galeria de fotos i vídeos de concerts reals, amb sala i data",
+     "Paraules d'artistes que han girat amb tu i de sales que repeteixen",
+     "Retalls de premsa i ressenyes dels concerts produïts",
+     "Mapa de sales, festivals i ciutats on has treballat",
+     "Logos d'institucions i entitats col·laboradores, amb el seu permís"
+    ],
+    "connecta": [
+     {
+      "eina": "Plataforma de venda d'entrades",
+      "per": "Mostrar el botó de compra a cada data i avisar quan queden poques entrades."
+     },
+     {
+      "eina": "Calendari compartit d'agenda",
+      "per": "Publicar les dates confirmades i mantenir l'agenda sempre al dia."
+     },
+     {
+      "eina": "Plataforma de música en streaming",
+      "per": "Incrustar cançons i llistes de cada artista per escoltar-les sense sortir del web."
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Recollir els correus del públic i enviar-li novetats de concerts."
+     },
+     {
+      "eina": "Carpeta compartida de materials",
+      "per": "Oferir la descàrrega de dossiers, fotos en alta resolució i riders tècnics."
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "A què et dediques principalment?",
+      "opciones": [
+       "Booking i gires",
+       "Producció d'esdeveniments",
+       "Promoció de concerts",
+       "Festival propi"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "A qui vols arribar primer amb el web?",
+      "opciones": [
+       "Sales i programadors",
+       "Públic",
+       "Artistes nous",
+       "Institucions"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Com vens les entrades?",
+      "opciones": [
+       "Des del mateix web",
+       "Enllaço a una altra plataforma",
+       "No venc entrades"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "escola_idiomes",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Aquí te conocemos por tu nombre y sabemos en qué te atascas, así que avanzamos juntos."
+     },
+     {
+      "nom": "Profesional",
+      "exemple": "Preparamos exámenes oficiales con método, grupos reducidos y un seguimiento detallado de cada alumno."
+     },
+     {
+      "nom": "Animado",
+      "exemple": "¿Te cuesta arrancar a hablar? Ven a probar una clase y verás que el idioma también se disfruta."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Cursos",
+     "Exámenes oficiales",
+     "Empresas",
+     "Equipo",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Aprende idiomas en grupos pequeños, a tu ritmo y con seguimiento",
+      "presentacio": "Somos una academia cercana donde cada alumno cuenta. Te acompañamos desde el primer nivel hasta el examen oficial.",
+      "boto": "Pide una prueba de nivel"
+     },
+     {
+      "lema": "Prepara tu examen oficial con quien conoce cada prueba",
+      "presentacio": "Trabajamos todas las partes del examen con simulacros y correcciones detalladas. Sabrás en qué punto estás antes de inscribirte.",
+      "boto": "Ver cursos de examen"
+     },
+     {
+      "lema": "Idiomas para toda la familia y para tu empresa",
+      "presentacio": "Clases para niños, jóvenes y adultos, y cursos a medida para equipos de trabajo. Un mismo equipo que te acompaña curso tras curso.",
+      "boto": "Habla con nosotros"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Alumnos",
+      "nom": "Para alumnos",
+      "intro": "Te hacemos una prueba de nivel y te proponemos el grupo que mejor encaja contigo. Siempre sabrás cómo vas y qué te toca trabajar.",
+      "boto": "Reservar prueba de nivel"
+     },
+     {
+      "quien": "Familias",
+      "nom": "Para familias",
+      "intro": "Recibirás informes de progreso claros y podrás hablar con el profesor cuando lo necesites. Así sabes en todo momento cómo avanza tu hijo o tu hija.",
+      "boto": "Ver cursos para niños y jóvenes"
+     },
+     {
+      "quien": "Equipo docente",
+      "nom": "Trabaja con nosotros",
+      "intro": "Si te gusta enseñar en grupos pequeños y seguir aprendiendo, aquí tendrás formación continua y un equipo que comparte ideas.",
+      "boto": "Enviar candidatura"
+     },
+     {
+      "quien": "Centros examinadores",
+      "nom": "Centros examinadores",
+      "intro": "Preparamos a nuestros candidatos con cuidado y gestionamos sus inscripciones a las convocatorias oficiales. Si quieres colaborar con nosotros, hablemos.",
+      "boto": "Contactar para colaborar"
+     },
+     {
+      "quien": "Empresas",
+      "nom": "Formación para empresas",
+      "intro": "Diseñamos cursos a medida para tu equipo, en vuestras instalaciones o en línea, con horarios que encajan con vuestro trabajo.",
+      "boto": "Pedir propuesta"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Recomiéndanos",
+      "intro": "Si nos recomiendas a alguien de confianza, queremos agradecértelo como se merece. Gracias por hablar bien de nosotros.",
+      "boto": "Recomendar a alguien"
+     }
+    ],
+    "proves": [
+     "Opiniones de alumnos y familias, con su permiso, junto a cada curso",
+     "Historias de alumnos que han conseguido su certificado oficial, contadas por ellos mismos",
+     "Distintivo de centro preparador o examinador reconocido, si lo tienes",
+     "Ejemplo de informe de progreso para que las familias vean cómo informas",
+     "Fotos reales de las aulas y presentación del equipo docente con su experiencia"
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de reservas en línea",
+      "per": "Que reserven la prueba de nivel o una clase de prueba sin tener que llamar"
+     },
+     {
+      "eina": "Aula virtual",
+      "per": "Enlazar materiales y clases en línea desde la ficha de cada curso"
+     },
+     {
+      "eina": "Programa de gestión de la academia",
+      "per": "Recoger matrículas desde la web y pasarlas directamente a tu lista de alumnos"
+     },
+     {
+      "eina": "Mensajería instantánea",
+      "per": "Un botón para que alumnos y familias te escriban sus dudas al momento"
+     },
+     {
+      "eina": "Reseñas en mapas",
+      "per": "Mostrar las opiniones que te dejan y pedir nuevas al terminar cada curso"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué parte de tu actividad quieres destacar más?",
+      "opciones": [
+       "Cursos generales",
+       "Exámenes oficiales",
+       "Formación para empresas",
+       "Niños y jóvenes"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Cómo das las clases?",
+      "opciones": [
+       "Solo presenciales",
+       "Presenciales y en línea",
+       "Solo en línea"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Qué quieres que haga primero quien entra en tu web?",
+      "opciones": [
+       "Reservar prueba de nivel",
+       "Pedir información",
+       "Matricularse directamente",
+       "Escribir por mensaje"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Aquí et coneixem pel teu nom i sabem on t'encalles, així que avancem plegats."
+     },
+     {
+      "nom": "Professional",
+      "exemple": "Preparem exàmens oficials amb mètode, grups reduïts i un seguiment detallat de cada alumne."
+     },
+     {
+      "nom": "Animat",
+      "exemple": "Et costa arrencar a parlar? Vine a provar una classe i veuràs que l'idioma també es gaudeix."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Cursos",
+     "Exàmens oficials",
+     "Empreses",
+     "Equip",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Aprèn idiomes en grups petits, al teu ritme i amb seguiment",
+      "presentacio": "Som una acadèmia propera on cada alumne compta. T'acompanyem des del primer nivell fins a l'examen oficial.",
+      "boto": "Demana una prova de nivell"
+     },
+     {
+      "lema": "Prepara el teu examen oficial amb qui coneix cada prova",
+      "presentacio": "Treballem totes les parts de l'examen amb simulacres i correccions detallades. Sabràs en quin punt ets abans d'inscriure't.",
+      "boto": "Veure cursos d'examen"
+     },
+     {
+      "lema": "Idiomes per a tota la família i per a la teva empresa",
+      "presentacio": "Classes per a nens, joves i adults, i cursos a mida per a equips de feina. Un mateix equip que t'acompanya curs rere curs.",
+      "boto": "Parla amb nosaltres"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Alumnes",
+      "nom": "Per a alumnes",
+      "intro": "Et fem una prova de nivell i et proposem el grup que millor encaixa amb tu. Sempre sabràs com vas i què et toca treballar.",
+      "boto": "Reservar prova de nivell"
+     },
+     {
+      "quien": "Famílies",
+      "nom": "Per a famílies",
+      "intro": "Rebràs informes de progrés clars i podràs parlar amb el professor quan ho necessitis. Així saps en tot moment com avança el teu fill o la teva filla.",
+      "boto": "Veure cursos per a nens i joves"
+     },
+     {
+      "quien": "Equip docent",
+      "nom": "Treballa amb nosaltres",
+      "intro": "Si t'agrada ensenyar en grups petits i continuar aprenent, aquí tindràs formació contínua i un equip que comparteix idees.",
+      "boto": "Enviar candidatura"
+     },
+     {
+      "quien": "Centres examinadors",
+      "nom": "Centres examinadors",
+      "intro": "Preparem els nostres candidats amb cura i gestionem les seves inscripcions a les convocatòries oficials. Si vols col·laborar amb nosaltres, parlem-ne.",
+      "boto": "Contactar per col·laborar"
+     },
+     {
+      "quien": "Empreses",
+      "nom": "Formació per a empreses",
+      "intro": "Dissenyem cursos a mida per al teu equip, a les vostres instal·lacions o en línia, amb horaris que encaixen amb la vostra feina.",
+      "boto": "Demanar proposta"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Recomana'ns",
+      "intro": "Si ens recomanes a algú de confiança, volem agrair-t'ho com cal. Gràcies per parlar bé de nosaltres.",
+      "boto": "Recomanar algú"
+     }
+    ],
+    "proves": [
+     "Opinions d'alumnes i famílies, amb el seu permís, al costat de cada curs",
+     "Històries d'alumnes que han aconseguit el seu certificat oficial, explicades per ells mateixos",
+     "Distintiu de centre preparador o examinador reconegut, si el tens",
+     "Exemple d'informe de progrés perquè les famílies vegin com informes",
+     "Fotos reals de les aules i presentació de l'equip docent amb la seva experiència"
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de reserves en línia",
+      "per": "Que reservin la prova de nivell o una classe de prova sense haver de trucar"
+     },
+     {
+      "eina": "Aula virtual",
+      "per": "Enllaçar materials i classes en línia des de la fitxa de cada curs"
+     },
+     {
+      "eina": "Programa de gestió de l'acadèmia",
+      "per": "Recollir matrícules des del web i passar-les directament a la teva llista d'alumnes"
+     },
+     {
+      "eina": "Missatgeria instantània",
+      "per": "Un botó perquè alumnes i famílies t'escriguin els seus dubtes al moment"
+     },
+     {
+      "eina": "Ressenyes en mapes",
+      "per": "Mostrar les opinions que et deixen i demanar-ne de noves en acabar cada curs"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Quina part de la teva activitat vols destacar més?",
+      "opciones": [
+       "Cursos generals",
+       "Exàmens oficials",
+       "Formació per a empreses",
+       "Nens i joves"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Com fas les classes?",
+      "opciones": [
+       "Només presencials",
+       "Presencials i en línia",
+       "Només en línia"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Què vols que faci primer qui entra al teu web?",
+      "opciones": [
+       "Reservar prova de nivell",
+       "Demanar informació",
+       "Matricular-se directament",
+       "Escriure per missatge"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "allotjament_rural",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Te esperamos con la chimenea encendida y un café recién hecho."
+     },
+     {
+      "nom": "Sereno",
+      "exemple": "Aquí el tiempo va más despacio: despiértate con el sonido del campo."
+     },
+     {
+      "nom": "Explorador",
+      "exemple": "Cada camino que sale de casa te lleva a algo que vale la pena descubrir."
+     }
+    ],
+    "menu": [
+     "La casa",
+     "Habitaciones",
+     "El entorno",
+     "Desayunos",
+     "Cómo llegar",
+     "Reservar"
+    ],
+    "portades": [
+     {
+      "lema": "Una casa con alma en el corazón del territorio",
+      "presentacio": "Abrimos nuestra casa para que descanses como en la tuya. Y te contamos todo lo que vale la pena ver, probar y caminar por aquí.",
+      "boto": "Consulta disponibilidad"
+     },
+     {
+      "lema": "Despierta con calma y desayuna producto de aquí",
+      "presentacio": "Habitaciones tranquilas, luz natural y un desayuno casero con lo que cultivan y elaboran nuestros vecinos. Lo justo para empezar bien el día.",
+      "boto": "Ver habitaciones"
+     },
+     {
+      "lema": "Ven a descansar y quédate a descubrir el entorno",
+      "presentacio": "La casa es el punto de partida: rutas, pueblos, mesas y gente que conocemos de cerca. Te ayudamos a vivir el territorio como alguien de aquí.",
+      "boto": "Descubre el entorno"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Huéspedes",
+      "nom": "Si vienes a alojarte",
+      "intro": "Aquí tienes todo para preparar tu estancia: habitaciones, desayuno, cómo llegar y nuestros sitios favoritos de la zona.",
+      "boto": "Reserva tu estancia"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Si nos recomiendas",
+      "intro": "Si nos envías a alguien que encaja con la casa, gracias de corazón. Dinos a quién y le recibiremos con un cariño especial.",
+      "boto": "Recomienda la casa"
+     },
+     {
+      "quien": "Equipo de limpieza y mantenimiento",
+      "nom": "Quien cuida la casa",
+      "intro": "Tu mirada hace que todo esté a punto. Aquí tienes las entradas y salidas previstas y un canal para avisar de cualquier detalle.",
+      "boto": "Avisar de un detalle"
+     },
+     {
+      "quien": "Productores locales",
+      "nom": "Productores de la zona",
+      "intro": "Lo que sirves en nuestro desayuno lo nota quien se aloja aquí. Si produces cerca y quieres estar en nuestra mesa, hablemos.",
+      "boto": "Ofrece tu producto"
+     },
+     {
+      "quien": "Actividades y restaurantes del entorno",
+      "nom": "Vecinos del territorio",
+      "intro": "Recomendamos a nuestros huéspedes los sitios en los que confiamos. Si tienes una actividad o un restaurante cerca, conozcámonos y recomendémonos.",
+      "boto": "Proponer colaboración"
+     },
+     {
+      "quien": "Plataformas de reserva",
+      "nom": "Para plataformas",
+      "intro": "Aquí tienes fotos, descripciones y calendario de la casa siempre actualizados, listos para tu ficha.",
+      "boto": "Descargar material"
+     },
+     {
+      "quien": "Ente de turismo local",
+      "nom": "Turismo del territorio",
+      "intro": "Compartimos las ganas de dar a conocer la comarca. Cuenta con nosotros para rutas, jornadas y propuestas que hagan crecer el territorio.",
+      "boto": "Hablar de colaborar"
+     }
+    ],
+    "proves": [
+     "Reseñas de huéspedes con su comentario completo y enlace a donde las dejaron",
+     "Fotos de las notas escritas a mano en el libro de visitas",
+     "Mapa de productores y sitios recomendados, con quién está detrás de cada uno",
+     "Historias de huéspedes que repiten, contadas con su permiso",
+     "Distintivos o adhesiones al turismo del territorio, si los tienes"
+    ],
+    "connecta": [
+     {
+      "eina": "Calendario de disponibilidad",
+      "per": "Mostrar las fechas libres reales y evitar reservas dobles"
+     },
+     {
+      "eina": "Sincronización con plataformas de reserva",
+      "per": "Bloquear automáticamente las fechas reservadas en otros canales"
+     },
+     {
+      "eina": "Pago en línea seguro",
+      "per": "Cobrar la reserva directa sin intermediarios"
+     },
+     {
+      "eina": "Mensajería instantánea",
+      "per": "Enviar indicaciones de llegada y consejos antes de la estancia"
+     },
+     {
+      "eina": "Mapa interactivo",
+      "per": "Enseñar cómo llegar, rutas y sitios recomendados del entorno"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Cómo quieres que te reserven?",
+      "opciones": [
+       "Solo directo en la web",
+       "Web y plataformas",
+       "Que me escriban y lo cerramos"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Qué quieres destacar del entorno?",
+      "opciones": [
+       "Naturaleza y rutas",
+       "Gastronomía y producto local",
+       "Pueblos y patrimonio",
+       "Actividades al aire libre"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Cómo alquilas la casa?",
+      "opciones": [
+       "Por habitaciones",
+       "Casa entera",
+       "Las dos opciones"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "T'esperem amb la llar de foc encesa i un cafè acabat de fer."
+     },
+     {
+      "nom": "Serè",
+      "exemple": "Aquí el temps va més a poc a poc: desperta't amb el so del camp."
+     },
+     {
+      "nom": "Explorador",
+      "exemple": "Cada camí que surt de casa et porta a alguna cosa que val la pena descobrir."
+     }
+    ],
+    "menu": [
+     "La casa",
+     "Habitacions",
+     "L'entorn",
+     "Esmorzars",
+     "Com arribar",
+     "Reservar"
+    ],
+    "portades": [
+     {
+      "lema": "Una casa amb ànima al cor del territori",
+      "presentacio": "Obrim casa nostra perquè descansis com a la teva. I t'expliquem tot el que val la pena veure, tastar i caminar per aquí.",
+      "boto": "Consulta disponibilitat"
+     },
+     {
+      "lema": "Desperta't amb calma i esmorza producte d'aquí",
+      "presentacio": "Habitacions tranquil·les, llum natural i un esmorzar casolà amb el que conreen i elaboren els nostres veïns. El just per començar bé el dia.",
+      "boto": "Veure habitacions"
+     },
+     {
+      "lema": "Vine a descansar i queda't a descobrir l'entorn",
+      "presentacio": "La casa és el punt de partida: rutes, pobles, taules i gent que coneixem de prop. T'ajudem a viure el territori com algú d'aquí.",
+      "boto": "Descobreix l'entorn"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Hostes",
+      "nom": "Si véns a allotjar-te",
+      "intro": "Aquí tens tot per preparar la teva estada: habitacions, esmorzar, com arribar i els nostres llocs preferits de la zona.",
+      "boto": "Reserva la teva estada"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Si ens recomanes",
+      "intro": "Si ens envies algú que encaixa amb la casa, gràcies de tot cor. Digues-nos qui és i el rebrem amb un afecte especial.",
+      "boto": "Recomana la casa"
+     },
+     {
+      "quien": "Equip de neteja i manteniment",
+      "nom": "Qui cuida la casa",
+      "intro": "La teva mirada fa que tot estigui a punt. Aquí tens les entrades i sortides previstes i un canal per avisar de qualsevol detall.",
+      "boto": "Avisar d'un detall"
+     },
+     {
+      "quien": "Productors locals",
+      "nom": "Productors de la zona",
+      "intro": "El que serveixes al nostre esmorzar ho nota qui s'allotja aquí. Si produeixes a prop i vols ser a la nostra taula, parlem-ne.",
+      "boto": "Ofereix el teu producte"
+     },
+     {
+      "quien": "Activitats i restaurants de l'entorn",
+      "nom": "Veïns del territori",
+      "intro": "Recomanem als nostres hostes els llocs en què confiem. Si tens una activitat o un restaurant a prop, coneguem-nos i recomanem-nos.",
+      "boto": "Proposar col·laboració"
+     },
+     {
+      "quien": "Plataformes de reserva",
+      "nom": "Per a plataformes",
+      "intro": "Aquí tens fotos, descripcions i calendari de la casa sempre actualitzats, a punt per a la teva fitxa.",
+      "boto": "Descarregar material"
+     },
+     {
+      "quien": "Ens de turisme local",
+      "nom": "Turisme del territori",
+      "intro": "Compartim les ganes de donar a conèixer la comarca. Compta amb nosaltres per a rutes, jornades i propostes que facin créixer el territori.",
+      "boto": "Parlar de col·laborar"
+     }
+    ],
+    "proves": [
+     "Ressenyes d'hostes amb el comentari complet i enllaç a on les van deixar",
+     "Fotos de les notes escrites a mà al llibre de visites",
+     "Mapa de productors i llocs recomanats, amb qui hi ha darrere de cadascun",
+     "Històries d'hostes que repeteixen, explicades amb el seu permís",
+     "Distintius o adhesions al turisme del territori, si en tens"
+    ],
+    "connecta": [
+     {
+      "eina": "Calendari de disponibilitat",
+      "per": "Mostrar les dates lliures reals i evitar reserves dobles"
+     },
+     {
+      "eina": "Sincronització amb plataformes de reserva",
+      "per": "Bloquejar automàticament les dates reservades en altres canals"
+     },
+     {
+      "eina": "Pagament en línia segur",
+      "per": "Cobrar la reserva directa sense intermediaris"
+     },
+     {
+      "eina": "Missatgeria instantània",
+      "per": "Enviar indicacions d'arribada i consells abans de l'estada"
+     },
+     {
+      "eina": "Mapa interactiu",
+      "per": "Ensenyar com arribar, rutes i llocs recomanats de l'entorn"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Com vols que et reservin?",
+      "opciones": [
+       "Només directe a la web",
+       "Web i plataformes",
+       "Que m'escriguin i ho tanquem"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Què vols destacar de l'entorn?",
+      "opciones": [
+       "Natura i rutes",
+       "Gastronomia i producte local",
+       "Pobles i patrimoni",
+       "Activitats a l'aire lliure"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Com llogues la casa?",
+      "opciones": [
+       "Per habitacions",
+       "Casa sencera",
+       "Les dues opcions"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "formacio_professionals",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Sabemos que el lunes vuelves al aula: por eso lo que verás aquí lo podrás probar esa misma semana."
+     },
+     {
+      "nom": "Riguroso",
+      "exemple": "Cada propuesta se apoya en investigación actual y se contrasta en aulas reales antes de llegar a ti."
+     },
+     {
+      "nom": "Inspirador",
+      "exemple": "La formación que vale la pena no se queda en un certificado: se nota en cómo enseñas al día siguiente."
+     }
+    ],
+    "menu": [
+     "Formaciones",
+     "Para centros educativos",
+     "Cómo trabajamos",
+     "Formadores",
+     "Recursos",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Formación que se nota en el aula al día siguiente",
+      "presentacio": "Diseñamos cursos para docentes y profesionales que quieren cambiar su práctica, no solo sumar horas. Te acompañamos también después, cuando llega el momento de aplicarlo.",
+      "boto": "Ver formaciones"
+     },
+     {
+      "lema": "Formamos a tu claustro a partir de lo que de verdad necesita",
+      "presentacio": "Escuchamos al equipo directivo y al profesorado antes de proponer nada. Así la formación encaja con vuestro proyecto y vuestro tiempo.",
+      "boto": "Pide una propuesta a medida"
+     },
+     {
+      "lema": "Aprende con quien también pisa el aula",
+      "presentacio": "Nuestros formadores trabajan con casos reales y evidencia actualizada. Aprendes entre compañeros, con tiempo para probar y volver a preguntar.",
+      "boto": "Encuentra tu curso"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Docentes en formación",
+      "nom": "Si eres docente",
+      "intro": "Buscas ideas que funcionen en tu aula, no teoría para archivar. Aquí tienes cursos certificados, materiales que puedes usar y acompañamiento cuando lo pongas en marcha.",
+      "boto": "Ver cursos abiertos"
+     },
+     {
+      "quien": "Escuelas y equipos directivos",
+      "nom": "Para centros educativos",
+      "intro": "Cuéntanos qué necesita tu claustro y diseñamos una formación a medida, pensada para que haya tiempo de aplicarla y hacer seguimiento.",
+      "boto": "Pedir formación a medida"
+     },
+     {
+      "quien": "Administración educativa",
+      "nom": "Administración y reconocimiento",
+      "intro": "Preparamos cada actividad con su memoria y su asistencia justificada. Aquí encontrarás la información para valorarla.",
+      "boto": "Consultar documentación"
+     },
+     {
+      "quien": "Equipo de formadores",
+      "nom": "Forma con nosotros",
+      "intro": "Si formas a profesionales y te gusta mejorar los materiales con lo que pasa en el aula, nos encantará conocerte.",
+      "boto": "Proponer colaboración"
+     },
+     {
+      "quien": "Docentes que recomiendan",
+      "nom": "Recomienda a un compañero",
+      "intro": "Si un curso te sirvió, compártelo con quien lo necesite. Te contaremos las novedades antes que a nadie y agradeceremos tu ayuda.",
+      "boto": "Recomendar un curso"
+     },
+     {
+      "quien": "Universidades y expertos",
+      "nom": "Investigación y colaboración",
+      "intro": "Si investigas en educación, colaboremos para que la evidencia llegue a aulas reales y vuelva con lo aprendido.",
+      "boto": "Hablar de un proyecto"
+     }
+    ],
+    "proves": [
+     "Testimonios de docentes contando qué cambiaron en su aula después del curso",
+     "Ejemplos de prácticas aplicadas: materiales y experiencias compartidas por participantes, con su permiso",
+     "Centros que repiten y explican cómo ha evolucionado su claustro",
+     "Actividades reconocidas por la administración educativa y colaboraciones con universidades",
+     "Perfiles de los formadores con su experiencia real en el aula"
+    ],
+    "connecta": [
+     {
+      "eina": "Plataforma de aprendizaje en línea",
+      "per": "Dar acceso a materiales y al acompañamiento posterior desde la propia web"
+     },
+     {
+      "eina": "Formulario de inscripción y control de asistencia",
+      "per": "Inscribir a participantes y preparar los listados para las memorias"
+     },
+     {
+      "eina": "Calendario de formaciones",
+      "per": "Mostrar fechas y plazas disponibles siempre actualizadas"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Avisar de novedades y primicias a quienes recomiendan"
+     },
+     {
+      "eina": "Emisión de certificados",
+      "per": "Enviar el certificado a cada participante al terminar el curso"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿A quién formas sobre todo?",
+      "opciones": [
+       "Docentes a título individual",
+       "Claustros y centros",
+       "Otros profesionales"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Cómo das tus formaciones?",
+      "opciones": [
+       "Presencial",
+       "En línea",
+       "Mixta"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Qué quieres que haga primero quien entra?",
+      "opciones": [
+       "Inscribirse en un curso",
+       "Pedir una propuesta a medida",
+       "Suscribirse a novedades"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Sabem que dilluns tornes a l'aula: per això el que veuràs aquí ho podràs provar aquella mateixa setmana."
+     },
+     {
+      "nom": "Rigorós",
+      "exemple": "Cada proposta es basa en recerca actual i es contrasta en aules reals abans d'arribar a tu."
+     },
+     {
+      "nom": "Inspirador",
+      "exemple": "La formació que val la pena no es queda en un certificat: es nota en com ensenyes l'endemà."
+     }
+    ],
+    "menu": [
+     "Formacions",
+     "Per a centres educatius",
+     "Com treballem",
+     "Formadors",
+     "Recursos",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Formació que es nota a l'aula l'endemà",
+      "presentacio": "Dissenyem cursos per a docents i professionals que volen canviar la seva pràctica, no només sumar hores. T'acompanyem també després, quan arriba el moment d'aplicar-ho.",
+      "boto": "Veure formacions"
+     },
+     {
+      "lema": "Formem el teu claustre a partir del que realment necessita",
+      "presentacio": "Escoltem l'equip directiu i el professorat abans de proposar res. Així la formació encaixa amb el vostre projecte i el vostre temps.",
+      "boto": "Demana una proposta a mida"
+     },
+     {
+      "lema": "Aprèn amb qui també trepitja l'aula",
+      "presentacio": "Els nostres formadors treballen amb casos reals i evidència actualitzada. Aprens entre companys, amb temps per provar i tornar a preguntar.",
+      "boto": "Troba el teu curs"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Docents en formació",
+      "nom": "Si ets docent",
+      "intro": "Busques idees que funcionin a la teva aula, no teoria per arxivar. Aquí tens cursos certificats, materials que pots fer servir i acompanyament quan ho posis en marxa.",
+      "boto": "Veure cursos oberts"
+     },
+     {
+      "quien": "Escoles i equips directius",
+      "nom": "Per a centres educatius",
+      "intro": "Explica'ns què necessita el teu claustre i dissenyem una formació a mida, pensada perquè hi hagi temps d'aplicar-la i fer-ne seguiment.",
+      "boto": "Demanar formació a mida"
+     },
+     {
+      "quien": "Administració educativa",
+      "nom": "Administració i reconeixement",
+      "intro": "Preparem cada activitat amb la seva memòria i l'assistència justificada. Aquí trobaràs la informació per valorar-la.",
+      "boto": "Consultar documentació"
+     },
+     {
+      "quien": "Equip de formadors",
+      "nom": "Forma amb nosaltres",
+      "intro": "Si formes professionals i t'agrada millorar els materials amb el que passa a l'aula, ens encantarà conèixer-te.",
+      "boto": "Proposar col·laboració"
+     },
+     {
+      "quien": "Docents que recomanen",
+      "nom": "Recomana a un company",
+      "intro": "Si un curs et va servir, comparteix-lo amb qui el necessiti. T'explicarem les novetats abans que ningú i agrairem la teva ajuda.",
+      "boto": "Recomanar un curs"
+     },
+     {
+      "quien": "Universitats i experts",
+      "nom": "Recerca i col·laboració",
+      "intro": "Si investigues en educació, col·laborem perquè l'evidència arribi a aules reals i torni amb el que s'hi ha après.",
+      "boto": "Parlar d'un projecte"
+     }
+    ],
+    "proves": [
+     "Testimonis de docents que expliquen què han canviat a l'aula després del curs",
+     "Exemples de pràctiques aplicades: materials i experiències compartides pels participants, amb el seu permís",
+     "Centres que repeteixen i expliquen com ha evolucionat el seu claustre",
+     "Activitats reconegudes per l'administració educativa i col·laboracions amb universitats",
+     "Perfils dels formadors amb la seva experiència real a l'aula"
+    ],
+    "connecta": [
+     {
+      "eina": "Plataforma d'aprenentatge en línia",
+      "per": "Donar accés als materials i a l'acompanyament posterior des del mateix web"
+     },
+     {
+      "eina": "Formulari d'inscripció i control d'assistència",
+      "per": "Inscriure els participants i preparar els llistats per a les memòries"
+     },
+     {
+      "eina": "Calendari de formacions",
+      "per": "Mostrar dates i places disponibles sempre actualitzades"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Avisar de novetats i primícies a qui recomana"
+     },
+     {
+      "eina": "Emissió de certificats",
+      "per": "Enviar el certificat a cada participant en acabar el curs"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "A qui formes sobretot?",
+      "opciones": [
+       "Docents a títol individual",
+       "Claustres i centres",
+       "Altres professionals"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Com fas les teves formacions?",
+      "opciones": [
+       "Presencial",
+       "En línia",
+       "Mixta"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Què vols que faci primer qui entra?",
+      "opciones": [
+       "Inscriure's a un curs",
+       "Demanar una proposta a mida",
+       "Subscriure's a les novetats"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "coworking",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano y de comunidad",
+      "exemple": "Aquí no vienes solo a trabajar: vienes a encontrarte con gente que hace cosas parecidas a las tuyas."
+     },
+     {
+      "nom": "Profesional y sereno",
+      "exemple": "Un espacio tranquilo, bien equipado y listo para que te concentres desde el primer día."
+     },
+     {
+      "nom": "Desenfadado con chispa",
+      "exemple": "Adiós a la mesa de la cocina. Hola café compartido y wifi que no se cae."
+     }
+    ],
+    "menu": [
+     "Espacios",
+     "Salas",
+     "Comunidad",
+     "Agenda",
+     "Visítanos"
+    ],
+    "portades": [
+     {
+      "lema": "Tu sitio para trabajar, con gente con quien crecer",
+      "presentacio": "Puestos y salas listos para que te pongas a trabajar sin preocuparte de nada más. Y una comunidad que te presenta a quien necesitas conocer.",
+      "boto": "Ven a conocernos"
+     },
+     {
+      "lema": "Trabaja en remoto, pero no trabajes solo",
+      "presentacio": "Si eres autónomo o trabajas a distancia, aquí tienes mesa, luz y compañía. Pruébalo un día y decide con calma.",
+      "boto": "Reserva un día de prueba"
+     },
+     {
+      "lema": "Un espacio cuidado para concentrarte, reunirte y avanzar",
+      "presentacio": "Ofrecemos puestos flexibles, puestos fijos y salas para reuniones. Todo pensado para que tu jornada fluya sin complicaciones.",
+      "boto": "Mira los espacios"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Equipo de comunidad",
+      "nom": "Trabaja con nosotros",
+      "intro": "Si te gusta conectar personas y cuidar un espacio vivo, aquí tu día a día marca la diferencia. Cuéntanos qué te mueve.",
+      "boto": "Envía tu candidatura"
+     },
+     {
+      "quien": "Miembros",
+      "nom": "Para quien trabaja aquí",
+      "intro": "Tienes tu puesto, tus compañeros y alguien pendiente de que todo funcione. Reserva salas, consulta la agenda y conoce a la comunidad.",
+      "boto": "Entra a tu área"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Recomienda el espacio",
+      "intro": "Si conoces a alguien que busca dónde trabajar a gusto, preséntanoslo. Te lo agradeceremos y daremos visibilidad a lo que haces.",
+      "boto": "Recomienda a alguien"
+     },
+     {
+      "quien": "Empresas que alquilan salas",
+      "nom": "Salas para tu equipo",
+      "intro": "¿Necesitas un sitio para una reunión, una formación o una entrevista? Te recibimos, lo dejamos todo preparado y tú solo te ocupas de lo tuyo.",
+      "boto": "Reserva una sala"
+     },
+     {
+      "quien": "Propiedad del local",
+      "nom": "Propietarios de locales",
+      "intro": "Buscamos relaciones largas y cuidadas con quien nos confía su local. Si tienes un espacio y te interesa un inquilino estable, hablemos.",
+      "boto": "Propón tu local"
+     },
+     {
+      "quien": "Red local de emprendimiento",
+      "nom": "Entidades y emprendimiento",
+      "intro": "Si acompañas a personas que emprenden, nuestro espacio puede ser su casa y el lugar de tus actividades. Colaboremos.",
+      "boto": "Propón una colaboración"
+     }
+    ],
+    "proves": [
+     "Testimonios de miembros, con su permiso, contando cómo trabajan aquí",
+     "Muro de proyectos y oficios que comparten el espacio",
+     "Fotos reales del día a día y de los encuentros de comunidad",
+     "Reseñas públicas de quien ha trabajado o se ha reunido aquí",
+     "Actividades hechas junto a entidades del barrio y de emprendimiento"
+    ],
+    "connecta": [
+     {
+      "eina": "Calendario de reservas",
+      "per": "Que miembros y empresas vean las salas libres y reserven al momento"
+     },
+     {
+      "eina": "Programa de facturación de cuotas",
+      "per": "Enviar a cada miembro su cuota y sus reservas sin papeleo"
+     },
+     {
+      "eina": "Control de acceso",
+      "per": "Dar acceso a las personas nuevas en cuanto se dan de alta"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Avisar de eventos, novedades y nuevos miembros a quien se apunte"
+     },
+     {
+      "eina": "Gestor de eventos",
+      "per": "Publicar la agenda y recoger inscripciones a charlas y encuentros"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué ofreces en tu espacio?",
+      "opciones": [
+       "Puestos flexibles",
+       "Puestos fijos",
+       "Despachos privados",
+       "Salas por horas"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Cómo prefieres que dé el primer paso quien te descubre?",
+      "opciones": [
+       "Visita guiada",
+       "Día de prueba",
+       "Llamada o mensaje"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cuánto quieres que se vea la comunidad en tu web?",
+      "opciones": [
+       "Mucho: es lo que nos define",
+       "Algo: un buen complemento",
+       "Poco: prima la tranquilidad"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper i de comunitat",
+      "exemple": "Aquí no véns només a treballar: véns a trobar-te amb gent que fa coses semblants a les teves."
+     },
+     {
+      "nom": "Professional i serè",
+      "exemple": "Un espai tranquil, ben equipat i a punt perquè et concentris des del primer dia."
+     },
+     {
+      "nom": "Desenfadat amb gràcia",
+      "exemple": "Adeu a la taula de la cuina. Hola cafè compartit i wifi que no cau."
+     }
+    ],
+    "menu": [
+     "Espais",
+     "Sales",
+     "Comunitat",
+     "Agenda",
+     "Visita'ns"
+    ],
+    "portades": [
+     {
+      "lema": "El teu lloc per treballar, amb gent amb qui créixer",
+      "presentacio": "Llocs i sales a punt perquè et posis a treballar sense preocupar-te de res més. I una comunitat que et presenta qui necessites conèixer.",
+      "boto": "Vine a conèixer-nos"
+     },
+     {
+      "lema": "Treballa en remot, però no treballis sol",
+      "presentacio": "Si ets autònom o treballes a distància, aquí tens taula, llum i companyia. Prova-ho un dia i decideix amb calma.",
+      "boto": "Reserva un dia de prova"
+     },
+     {
+      "lema": "Un espai cuidat per concentrar-te, reunir-te i avançar",
+      "presentacio": "Oferim llocs flexibles, llocs fixos i sales per a reunions. Tot pensat perquè la teva jornada vagi rodona i sense complicacions.",
+      "boto": "Mira els espais"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Equip de comunitat",
+      "nom": "Treballa amb nosaltres",
+      "intro": "Si t'agrada connectar persones i cuidar un espai viu, aquí el teu dia a dia marca la diferència. Explica'ns què et mou.",
+      "boto": "Envia la teva candidatura"
+     },
+     {
+      "quien": "Membres",
+      "nom": "Per a qui treballa aquí",
+      "intro": "Tens el teu lloc, els teus companys i algú pendent que tot funcioni. Reserva sales, consulta l'agenda i coneix la comunitat.",
+      "boto": "Entra a la teva àrea"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Recomana l'espai",
+      "intro": "Si coneixes algú que busca on treballar a gust, presenta-ens-el. T'ho agrairem i donarem visibilitat a allò que fas.",
+      "boto": "Recomana algú"
+     },
+     {
+      "quien": "Empreses que lloguen sales",
+      "nom": "Sales per al teu equip",
+      "intro": "Necessites un lloc per a una reunió, una formació o una entrevista? Et rebem, ho deixem tot preparat i tu només t'ocupes del que és teu.",
+      "boto": "Reserva una sala"
+     },
+     {
+      "quien": "Propietat del local",
+      "nom": "Propietaris de locals",
+      "intro": "Busquem relacions llargues i cuidades amb qui ens confia el seu local. Si tens un espai i t'interessa un llogater estable, parlem-ne.",
+      "boto": "Proposa el teu local"
+     },
+     {
+      "quien": "Xarxa local d'emprenedoria",
+      "nom": "Entitats i emprenedoria",
+      "intro": "Si acompanyes persones que emprenen, el nostre espai pot ser casa seva i el lloc de les teves activitats. Col·laborem.",
+      "boto": "Proposa una col·laboració"
+     }
+    ],
+    "proves": [
+     "Testimonis de membres, amb el seu permís, explicant com treballen aquí",
+     "Mur de projectes i oficis que comparteixen l'espai",
+     "Fotos reals del dia a dia i de les trobades de comunitat",
+     "Ressenyes públiques de qui hi ha treballat o s'hi ha reunit",
+     "Activitats fetes amb entitats del barri i d'emprenedoria"
+    ],
+    "connecta": [
+     {
+      "eina": "Calendari de reserves",
+      "per": "Que membres i empreses vegin les sales lliures i reservin al moment"
+     },
+     {
+      "eina": "Programa de facturació de quotes",
+      "per": "Enviar a cada membre la seva quota i les seves reserves sense paperassa"
+     },
+     {
+      "eina": "Control d'accés",
+      "per": "Donar accés a les persones noves tan bon punt es donen d'alta"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Avisar d'esdeveniments, novetats i nous membres a qui s'hi apunti"
+     },
+     {
+      "eina": "Gestor d'esdeveniments",
+      "per": "Publicar l'agenda i recollir inscripcions a xerrades i trobades"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Què ofereixes al teu espai?",
+      "opciones": [
+       "Llocs flexibles",
+       "Llocs fixos",
+       "Despatxos privats",
+       "Sales per hores"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Com prefereixes que faci el primer pas qui et descobreix?",
+      "opciones": [
+       "Visita guiada",
+       "Dia de prova",
+       "Trucada o missatge"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Quant vols que es vegi la comunitat a la teva web?",
+      "opciones": [
+       "Molt: és el que ens defineix",
+       "Una mica: un bon complement",
+       "Poc: prima la tranquil·litat"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "experiencies_turistiques",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano y entusiasta",
+      "exemple": "Te espero en la plaza con un café y muchas ganas de enseñarte mi rincón favorito."
+     },
+     {
+      "nom": "Sereno y experto",
+      "exemple": "Cada parada tiene su historia, y te la contamos con calma y con rigor."
+     },
+     {
+      "nom": "Aventurero y divertido",
+      "exemple": "Botas puestas, mochila ligera y a descubrir lo que no sale en las guías."
+     }
+    ],
+    "menu": [
+     "Experiencias",
+     "Calendario",
+     "Quiénes somos",
+     "Opiniones",
+     "Para alojamientos",
+     "Reservar"
+    ],
+    "portades": [
+     {
+      "lema": "Descubre el territorio con quien lo vive cada día",
+      "presentacio": "Diseñamos y guiamos visitas, rutas y experiencias en grupos pequeños. Te llevamos a los lugares, las personas y las historias que hacen único este rincón.",
+      "boto": "Ver experiencias"
+     },
+     {
+      "lema": "Rutas guiadas con alma local y grupos pequeños",
+      "presentacio": "Caminamos contigo, te presentamos a quien elabora lo que pruebas y te contamos lo que no viene en los folletos. Elige fecha y nosotros nos ocupamos del resto.",
+      "boto": "Consultar fechas"
+     },
+     {
+      "lema": "Más que una visita: un día que vas a recordar",
+      "presentacio": "Cada salida está pensada para que disfrutes, aprendas y conectes con el lugar. Atención personal antes, durante y después de la experiencia.",
+      "boto": "Reservar mi plaza"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Viajero",
+      "nom": "Viajeros y familias",
+      "intro": "Elige la experiencia que te apetece y reserva en un momento. Te acompañamos desde el primer mensaje hasta la última recomendación.",
+      "boto": "Reservar experiencia"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Alojamientos y recomendadores",
+      "intro": "Si tienes huéspedes que quieren conocer la zona, aquí tienes nuestras salidas siempre al día. Los cuidaremos como tú lo harías.",
+      "boto": "Ver calendario de salidas"
+     },
+     {
+      "quien": "Equipo de guías",
+      "nom": "Guías que se suman",
+      "intro": "Buscamos personas que amen el territorio y disfruten contándolo. Ofrecemos formación, turnos claros y un trato justo.",
+      "boto": "Quiero guiar con vosotros"
+     },
+     {
+      "quien": "Plataforma de reservas",
+      "nom": "Plataformas y agencias",
+      "intro": "Si quieres ofrecer nuestras experiencias a tus clientes, te explicamos cómo trabajamos y qué podemos ofrecer juntos.",
+      "boto": "Hablar de colaboración"
+     },
+     {
+      "quien": "Proveedores locales",
+      "nom": "Productores y espacios locales",
+      "intro": "Bodegas, talleres, masías y espacios que abren sus puertas a nuestros grupos. Si quieres formar parte de nuestras rutas, hablemos.",
+      "boto": "Proponer colaboración"
+     },
+     {
+      "quien": "Comunidad y territorio",
+      "nom": "Vecinos y territorio",
+      "intro": "Guiamos con respeto por el lugar y por quien vive en él. Queremos que cada visita deje algo bueno en el pueblo.",
+      "boto": "Conocer nuestro compromiso"
+     }
+    ],
+    "proves": [
+     "Reseñas de viajeros con las fotos que compartieron tras la salida",
+     "Alojamientos y comercios de la zona que nos recomiendan a sus huéspedes",
+     "Diario de salidas con imágenes reales de cada grupo",
+     "Mapa de productores y espacios locales con los que trabajamos",
+     "Presentación del equipo de guías con su formación y su vínculo con el territorio"
+    ],
+    "connecta": [
+     {
+      "eina": "Calendario de reservas en línea",
+      "per": "Mostrar plazas libres por fecha y permitir reservar sin esperar respuesta"
+     },
+     {
+      "eina": "Pasarela de pago",
+      "per": "Cobrar la reserva o una señal de forma segura en el momento"
+     },
+     {
+      "eina": "Mensajería instantánea",
+      "per": "Resolver dudas al momento y enviar el punto de encuentro el día antes"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Avisar de nuevas rutas y salidas de temporada a quien ya vino"
+     },
+     {
+      "eina": "Mapas interactivos",
+      "per": "Enseñar el recorrido, la duración y el punto de salida de cada experiencia"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Cómo te llegan sobre todo las reservas?",
+      "opciones": [
+       "Desde mi web",
+       "Por plataformas externas",
+       "Por teléfono o mensaje",
+       "A través de alojamientos"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿En qué idiomas guías?",
+      "opciones": [
+       "Castellano y catalán",
+       "También en inglés",
+       "Tres idiomas o más"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Qué tipo de grupos atiendes más?",
+      "opciones": [
+       "Particulares y familias",
+       "Grupos organizados",
+       "Empresas",
+       "Escuelas"
+      ],
+      "varias": true
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper i entusiasta",
+      "exemple": "T'espero a la plaça amb un cafè i moltes ganes d'ensenyar-te el meu racó preferit."
+     },
+     {
+      "nom": "Serè i expert",
+      "exemple": "Cada parada té la seva història, i te l'expliquem amb calma i amb rigor."
+     },
+     {
+      "nom": "Aventurer i divertit",
+      "exemple": "Botes posades, motxilla lleugera i a descobrir el que no surt a les guies."
+     }
+    ],
+    "menu": [
+     "Experiències",
+     "Calendari",
+     "Qui som",
+     "Opinions",
+     "Per a allotjaments",
+     "Reservar"
+    ],
+    "portades": [
+     {
+      "lema": "Descobreix el territori amb qui el viu cada dia",
+      "presentacio": "Dissenyem i guiem visites, rutes i experiències en grups petits. Et portem als llocs, les persones i les històries que fan únic aquest racó.",
+      "boto": "Veure experiències"
+     },
+     {
+      "lema": "Rutes guiades amb ànima local i grups petits",
+      "presentacio": "Caminem amb tu, et presentem qui elabora el que tastes i t'expliquem el que no surt als fullets. Tria data i nosaltres ens ocupem de la resta.",
+      "boto": "Consultar dates"
+     },
+     {
+      "lema": "Més que una visita: un dia que recordaràs",
+      "presentacio": "Cada sortida està pensada perquè gaudeixis, aprenguis i connectis amb el lloc. Atenció personal abans, durant i després de l'experiència.",
+      "boto": "Reservar la meva plaça"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Viatger",
+      "nom": "Viatgers i famílies",
+      "intro": "Tria l'experiència que et ve de gust i reserva en un moment. T'acompanyem des del primer missatge fins a l'última recomanació.",
+      "boto": "Reservar experiència"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Allotjaments i recomanadors",
+      "intro": "Si tens hostes que volen conèixer la zona, aquí tens les nostres sortides sempre al dia. Els cuidarem com ho faries tu.",
+      "boto": "Veure calendari de sortides"
+     },
+     {
+      "quien": "Equip de guies",
+      "nom": "Guies que s'hi sumen",
+      "intro": "Busquem persones que estimin el territori i gaudeixin explicant-lo. Oferim formació, torns clars i un tracte just.",
+      "boto": "Vull guiar amb vosaltres"
+     },
+     {
+      "quien": "Plataforma de reserves",
+      "nom": "Plataformes i agències",
+      "intro": "Si vols oferir les nostres experiències als teus clients, t'expliquem com treballem i què podem oferir junts.",
+      "boto": "Parlar de col·laboració"
+     },
+     {
+      "quien": "Proveïdors locals",
+      "nom": "Productors i espais locals",
+      "intro": "Cellers, tallers, masies i espais que obren les portes als nostres grups. Si vols formar part de les nostres rutes, parlem-ne.",
+      "boto": "Proposar col·laboració"
+     },
+     {
+      "quien": "Comunitat i territori",
+      "nom": "Veïns i territori",
+      "intro": "Guiem amb respecte pel lloc i per qui hi viu. Volem que cada visita deixi alguna cosa bona al poble.",
+      "boto": "Conèixer el nostre compromís"
+     }
+    ],
+    "proves": [
+     "Ressenyes de viatgers amb les fotos que van compartir després de la sortida",
+     "Allotjaments i comerços de la zona que ens recomanen als seus hostes",
+     "Diari de sortides amb imatges reals de cada grup",
+     "Mapa de productors i espais locals amb qui treballem",
+     "Presentació de l'equip de guies amb la seva formació i el seu vincle amb el territori"
+    ],
+    "connecta": [
+     {
+      "eina": "Calendari de reserves en línia",
+      "per": "Mostrar places lliures per data i permetre reservar sense esperar resposta"
+     },
+     {
+      "eina": "Passarel·la de pagament",
+      "per": "Cobrar la reserva o una paga i senyal de manera segura al moment"
+     },
+     {
+      "eina": "Missatgeria instantània",
+      "per": "Resoldre dubtes al moment i enviar el punt de trobada el dia abans"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Avisar de noves rutes i sortides de temporada a qui ja va venir"
+     },
+     {
+      "eina": "Mapes interactius",
+      "per": "Ensenyar el recorregut, la durada i el punt de sortida de cada experiència"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Com et arriben sobretot les reserves?",
+      "opciones": [
+       "Des de la meva web",
+       "Per plataformes externes",
+       "Per telèfon o missatge",
+       "A través d'allotjaments"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "En quins idiomes guies?",
+      "opciones": [
+       "Català i castellà",
+       "També en anglès",
+       "Tres idiomes o més"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Quin tipus de grups atens més?",
+      "opciones": [
+       "Particulars i famílies",
+       "Grups organitzats",
+       "Empreses",
+       "Escoles"
+      ],
+      "varias": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "celler",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano y familiar",
+      "exemple": "Pasa cuando quieras: te enseñamos la viña y abrimos una botella contigo en la mesa de casa."
+     },
+     {
+      "nom": "De tierra y calma",
+      "exemple": "Cada añada guarda el tiempo que hizo, la mano que podó y la tarde en que decidimos vendimiar."
+     },
+     {
+      "nom": "Claro y profesional",
+      "exemple": "Fichas técnicas, disponibilidad por añada y entrega cercana: todo lo que tu carta necesita, sin rodeos."
+     }
+    ],
+    "menu": [
+     "Nuestros vinos",
+     "Visítanos",
+     "La viña y la familia",
+     "Para restaurantes",
+     "Club",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Vino de nuestras viñas, hecho en casa y servido cerca",
+      "presentacio": "Somos una bodega familiar que elabora con uva propia y de vecinos que conocemos. Ven a probarlo donde nace o pídelo para tu mesa.",
+      "boto": "Reserva una visita"
+     },
+     {
+      "lema": "Cada botella cuenta de qué parcela viene",
+      "presentacio": "Trabajamos pocas hectáreas y las conocemos una a una. Por eso podemos contarte qué hay detrás de cada vino.",
+      "boto": "Descubre los vinos"
+     },
+     {
+      "lema": "Una familia, unas viñas y la puerta abierta",
+      "presentacio": "Te recibimos en la bodega para pasear, catar y preguntar todo lo que quieras. Y si te gusta, te lo llevas a casa o lo encuentras en restaurantes de la zona.",
+      "boto": "Ven a conocernos"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Equipo",
+      "nom": "Quienes lo hacen posible",
+      "intro": "Tu oficio y lo que sabes de cada cosecha están en cada vino. Aquí cuentas, decides con nosotros y sabes qué viene en el calendario.",
+      "boto": "Trabaja con nosotros"
+     },
+     {
+      "quien": "Viticultores vecinos",
+      "nom": "Viticultores de la zona",
+      "intro": "Si cuidas viña cerca, valoramos tu uva y compartimos lo que aprendemos en el campo. Hablemos de tu parcela antes de la próxima vendimia.",
+      "boto": "Ofrece tu uva"
+     },
+     {
+      "quien": "Restaurantes y vinotecas",
+      "nom": "Restaurantes y vinotecas",
+      "intro": "Te servimos vino con fichas claras y te ayudamos a explicarlo en sala. Formamos a tu equipo y escuchamos qué dicen tus clientes.",
+      "boto": "Pide tarifa y muestras"
+     },
+     {
+      "quien": "Visitantes de enoturismo",
+      "nom": "Visitas y catas",
+      "intro": "Pasea la viña, baja a la bodega y cata con quien elabora el vino. Una tarde tranquila que luego te apetecerá contar.",
+      "boto": "Reserva tu visita"
+     },
+     {
+      "quien": "Club de clientes",
+      "nom": "Club de amigos",
+      "intro": "Recibe nuestras añadas antes que nadie y vive la bodega por dentro durante el año. Gracias por llevar nuestro vino a tu mesa y a tu gente.",
+      "boto": "Únete al club"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Sumilleres y prensa",
+      "intro": "Si recomiendas vino o escribes sobre él, aquí tienes la viña y al elaborador a tu alcance. Ven, pregunta y prueba sin prisa.",
+      "boto": "Concierta una visita"
+     }
+    ],
+    "proves": [
+     "Diario de cada añada con fotos de vendimia, parcelas y decisiones tomadas",
+     "Mapa de restaurantes y vinotecas de la zona donde encontrar nuestros vinos, con su permiso",
+     "Reseñas y fotos de visitantes enlazadas desde la página de visitas",
+     "Menciones reales en guías y opiniones de sumilleres, con fuente y año",
+     "Presentación de los viticultores vecinos y de sus parcelas, si quieren aparecer"
+    ],
+    "connecta": [
+     {
+      "eina": "Tienda online o catálogo de venta",
+      "per": "Mostrar vinos y añadas disponibles y dejar comprar o encargar para recoger"
+     },
+     {
+      "eina": "Sistema de reservas de visitas",
+      "per": "Enseñar horarios libres y confirmar catas y visitas sin llamadas"
+     },
+     {
+      "eina": "Programa de pedidos y facturación",
+      "per": "Recibir pedidos de restaurantes desde un formulario y pasarlos directo a preparación"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Avisar al club y a clientes de nuevas añadas, vendimia y actividades"
+     },
+     {
+      "eina": "Ficha de empresa en mapas y reseñas",
+      "per": "Recoger opiniones de visitantes y mostrarlas en la web"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué quieres que haga sobre todo quien entra en tu web?",
+      "opciones": [
+       "Reservar una visita",
+       "Comprar vino",
+       "Pedir para su restaurante",
+       "Unirse al club"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cómo vendes hoy el vino fuera de la bodega?",
+      "opciones": [
+       "Tienda online propia",
+       "Por teléfono o mensaje",
+       "A través de distribuidor",
+       "Solo en la bodega"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Qué visitas ofreces o quieres ofrecer?",
+      "opciones": [
+       "Visita con cata",
+       "Paseo por la viña",
+       "Jornadas de vendimia",
+       "Aún no hacemos visitas"
+      ],
+      "varias": true
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper i familiar",
+      "exemple": "Passa quan vulguis: t'ensenyem la vinya i obrim una ampolla amb tu a la taula de casa."
+     },
+     {
+      "nom": "De terra i calma",
+      "exemple": "Cada collita guarda el temps que va fer, la mà que va podar i la tarda que vam decidir veremar."
+     },
+     {
+      "nom": "Clar i professional",
+      "exemple": "Fitxes tècniques, disponibilitat per collita i entrega propera: tot el que la teva carta necessita, sense embolics."
+     }
+    ],
+    "menu": [
+     "Els nostres vins",
+     "Visita'ns",
+     "La vinya i la família",
+     "Per a restaurants",
+     "Club",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Vi de les nostres vinyes, fet a casa i servit a prop",
+      "presentacio": "Som un celler familiar que elabora amb raïm propi i de veïns que coneixem. Vine a tastar-lo on neix o demana'l per a la teva taula.",
+      "boto": "Reserva una visita"
+     },
+     {
+      "lema": "Cada ampolla explica de quina parcel·la ve",
+      "presentacio": "Treballem poques hectàrees i les coneixem una a una. Per això et podem explicar què hi ha darrere de cada vi.",
+      "boto": "Descobreix els vins"
+     },
+     {
+      "lema": "Una família, unes vinyes i la porta oberta",
+      "presentacio": "T'acollim al celler per passejar, tastar i preguntar tot el que vulguis. I si t'agrada, te l'emportes a casa o el trobes en restaurants de la zona.",
+      "boto": "Vine a conèixer-nos"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Equip",
+      "nom": "Qui ho fa possible",
+      "intro": "El teu ofici i el que saps de cada collita són a cada vi. Aquí comptes, decideixes amb nosaltres i saps què ve al calendari.",
+      "boto": "Treballa amb nosaltres"
+     },
+     {
+      "quien": "Viticultors veïns",
+      "nom": "Viticultors de la zona",
+      "intro": "Si cuides vinya a prop, valorem el teu raïm i compartim el que aprenem al camp. Parlem de la teva parcel·la abans de la propera verema.",
+      "boto": "Ofereix el teu raïm"
+     },
+     {
+      "quien": "Restaurants i vinoteques",
+      "nom": "Restaurants i vinoteques",
+      "intro": "Et servim vi amb fitxes clares i t'ajudem a explicar-lo a sala. Formem el teu equip i escoltem què diuen els teus clients.",
+      "boto": "Demana tarifa i mostres"
+     },
+     {
+      "quien": "Visitants d'enoturisme",
+      "nom": "Visites i tasts",
+      "intro": "Passeja per la vinya, baixa al celler i tasta amb qui elabora el vi. Una tarda tranquil·la que després et vindrà de gust explicar.",
+      "boto": "Reserva la teva visita"
+     },
+     {
+      "quien": "Club de clients",
+      "nom": "Club d'amics",
+      "intro": "Rep les nostres collites abans que ningú i viu el celler per dins durant l'any. Gràcies per portar el nostre vi a la teva taula i a la teva gent.",
+      "boto": "Uneix-te al club"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Sommeliers i premsa",
+      "intro": "Si recomanes vi o n'escrius, aquí tens la vinya i l'elaborador a l'abast. Vine, pregunta i tasta sense presses.",
+      "boto": "Concerta una visita"
+     }
+    ],
+    "proves": [
+     "Diari de cada collita amb fotos de verema, parcel·les i decisions preses",
+     "Mapa de restaurants i vinoteques de la zona on trobar els nostres vins, amb el seu permís",
+     "Ressenyes i fotos de visitants enllaçades des de la pàgina de visites",
+     "Mencions reals en guies i opinions de sommeliers, amb font i any",
+     "Presentació dels viticultors veïns i de les seves parcel·les, si volen sortir-hi"
+    ],
+    "connecta": [
+     {
+      "eina": "Botiga en línia o catàleg de venda",
+      "per": "Mostrar vins i collites disponibles i deixar comprar o encarregar per recollir"
+     },
+     {
+      "eina": "Sistema de reserves de visites",
+      "per": "Ensenyar horaris lliures i confirmar tasts i visites sense trucades"
+     },
+     {
+      "eina": "Programa de comandes i facturació",
+      "per": "Rebre comandes de restaurants des d'un formulari i passar-les directament a preparació"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Avisar el club i els clients de noves collites, verema i activitats"
+     },
+     {
+      "eina": "Fitxa d'empresa en mapes i ressenyes",
+      "per": "Recollir opinions de visitants i mostrar-les al web"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Què vols que faci sobretot qui entra al teu web?",
+      "opciones": [
+       "Reservar una visita",
+       "Comprar vi",
+       "Demanar per al seu restaurant",
+       "Unir-se al club"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Com vens avui el vi fora del celler?",
+      "opciones": [
+       "Botiga en línia pròpia",
+       "Per telèfon o missatge",
+       "A través de distribuïdor",
+       "Només al celler"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Quines visites ofereixes o vols oferir?",
+      "opciones": [
+       "Visita amb tast",
+       "Passeig per la vinya",
+       "Jornades de verema",
+       "Encara no fem visites"
+      ],
+      "varias": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "esdeveniments",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Cuéntame qué celebras y me encargo de que tú solo tengas que disfrutarlo."
+     },
+     {
+      "nom": "Sereno y profesional",
+      "exemple": "Planificamos cada detalle con antelación para que el día del evento todo esté bajo control."
+     },
+     {
+      "nom": "Festivo",
+      "exemple": "¿Una idea en la cabeza y ganas de fiesta? Vamos a convertirla en un día que se recuerde."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Qué organizo",
+     "Eventos realizados",
+     "Cómo trabajo",
+     "Colabora",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Tú disfrutas del día; yo me ocupo de que todo encaje",
+      "presentacio": "Organizo eventos de principio a fin, desde actos pequeños hasta congresos. Coordino espacio, proveedores y equipo para que llegues al gran día con tranquilidad.",
+      "boto": "Cuéntame tu evento"
+     },
+     {
+      "lema": "Eventos bien pensados, coordinados al detalle",
+      "presentacio": "Cada evento tiene un objetivo y un público, y lo diseño a partir de ahí. Te acompaño en cada decisión y me encargo de la coordinación el día clave.",
+      "boto": "Pide una primera reunión"
+     },
+     {
+      "lema": "De la idea al aplauso final, con una sola persona al mando",
+      "presentacio": "Una sola persona de referencia para todo: presupuesto, proveedores, horarios e imprevistos. Menos llamadas para ti y más tiempo para lo que importa.",
+      "boto": "Empecemos a organizarlo"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Cliente",
+      "nom": "Organiza tu evento",
+      "intro": "Me explicas qué quieres celebrar y para quién, y te propongo cómo hacerlo realidad. Tú decides lo importante; yo me ocupo del resto.",
+      "boto": "Solicita tu propuesta"
+     },
+     {
+      "quien": "Asistentes",
+      "nom": "Si vienes al evento",
+      "intro": "Aquí encontrarás horarios, cómo llegar y todo lo que necesitas saber. Y después, las fotos para recordarlo.",
+      "boto": "Ver información práctica"
+     },
+     {
+      "quien": "Proveedores",
+      "nom": "Proveedores",
+      "intro": "Busco proveedores serios y puntuales con quienes trabajar a largo plazo. Si compartes esa forma de trabajar, me gustará conocerte.",
+      "boto": "Preséntame tu servicio"
+     },
+     {
+      "quien": "Equipo y colaboradores",
+      "nom": "Trabaja conmigo",
+      "intro": "Azafatas, técnicos, coordinadores: si te gusta que las cosas salgan bien y aprender en cada evento, hablemos.",
+      "boto": "Únete al equipo"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Recomiéndame",
+      "intro": "Si alguien de tu entorno prepara un evento y piensas en mí, gracias de corazón. Aquí tienes una forma fácil de ponernos en contacto.",
+      "boto": "Pasa mi contacto"
+     },
+     {
+      "quien": "Patrocinadores",
+      "nom": "Patrocina un evento",
+      "intro": "Conecta tu marca con un público concreto en un evento bien organizado. Pactamos juntos la visibilidad y la información que recibirás.",
+      "boto": "Consulta oportunidades"
+     }
+    ],
+    "proves": [
+     "Galería de eventos realizados, con fotos reales y permiso de los clientes",
+     "Opiniones de clientes recogidas después de cada evento",
+     "Proveedores habituales con quienes trabajas y que te avalan",
+     "Explicación paso a paso de tu método, del primer encuentro al cierre",
+     "Mensajes de agradecimiento de asistentes y colaboradores"
+    ],
+    "connecta": [
+     {
+      "eina": "Formulario de solicitud de presupuesto",
+      "per": "Recoger fecha, tipo de evento, número aproximado de personas y estilo antes de la primera llamada"
+     },
+     {
+      "eina": "Agenda de citas en línea",
+      "per": "Que el cliente reserve directamente su primera reunión según tu disponibilidad"
+     },
+     {
+      "eina": "Plataforma de inscripciones y entradas",
+      "per": "Gestionar el registro de asistentes y enviarles la información práctica"
+     },
+     {
+      "eina": "Encuestas de satisfacción",
+      "per": "Pedir opinión tras el evento y mostrar las mejores valoraciones en la web"
+     },
+     {
+      "eina": "Galería de fotos compartida",
+      "per": "Publicar las imágenes del evento para que los asistentes las vean y compartan"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué eventos organizas sobre todo?",
+      "opciones": [
+       "Bodas y celebraciones privadas",
+       "Eventos de empresa",
+       "Congresos y jornadas",
+       "Actos culturales y festivos"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Dónde trabajas?",
+      "opciones": [
+       "En mi ciudad y alrededores",
+       "En toda Cataluña",
+       "En toda España",
+       "También fuera de España"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cómo prefieres el primer contacto?",
+      "opciones": [
+       "Formulario con detalles del evento",
+       "Llamada o mensaje",
+       "Reserva directa de reunión"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Explica'm què celebres i m'encarrego que tu només l'hagis de gaudir."
+     },
+     {
+      "nom": "Serè i professional",
+      "exemple": "Planifiquem cada detall amb antelació perquè el dia de l'esdeveniment tot estigui sota control."
+     },
+     {
+      "nom": "Festiu",
+      "exemple": "Tens una idea al cap i ganes de festa? Fem-ne un dia per recordar."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Què organitzo",
+     "Esdeveniments fets",
+     "Com treballo",
+     "Col·labora",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Tu gaudeixes del dia; jo m'ocupo que tot encaixi",
+      "presentacio": "Organitzo esdeveniments de cap a peus, des d'actes petits fins a congressos. Coordino espai, proveïdors i equip perquè arribis al gran dia amb tranquil·litat.",
+      "boto": "Explica'm el teu esdeveniment"
+     },
+     {
+      "lema": "Esdeveniments ben pensats, coordinats al detall",
+      "presentacio": "Cada esdeveniment té un objectiu i un públic, i el dissenyo a partir d'aquí. T'acompanyo en cada decisió i m'encarrego de la coordinació el dia clau.",
+      "boto": "Demana una primera reunió"
+     },
+     {
+      "lema": "De la idea a l'aplaudiment final, amb una sola persona al capdavant",
+      "presentacio": "Una sola persona de referència per a tot: pressupost, proveïdors, horaris i imprevistos. Menys trucades per a tu i més temps per al que importa.",
+      "boto": "Comencem a organitzar-ho"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Client",
+      "nom": "Organitza el teu esdeveniment",
+      "intro": "M'expliques què vols celebrar i per a qui, i et proposo com fer-ho realitat. Tu decideixes el que és important; jo m'ocupo de la resta.",
+      "boto": "Demana la teva proposta"
+     },
+     {
+      "quien": "Assistents",
+      "nom": "Si vens a l'esdeveniment",
+      "intro": "Aquí trobaràs horaris, com arribar-hi i tot el que necessites saber. I després, les fotos per recordar-ho.",
+      "boto": "Veure informació pràctica"
+     },
+     {
+      "quien": "Proveïdors",
+      "nom": "Proveïdors",
+      "intro": "Busco proveïdors seriosos i puntuals amb qui treballar a llarg termini. Si comparteixes aquesta manera de fer, m'agradarà conèixer-te.",
+      "boto": "Presenta'm el teu servei"
+     },
+     {
+      "quien": "Equip i col·laboradors",
+      "nom": "Treballa amb mi",
+      "intro": "Hostesses, tècnics, coordinadors: si t'agrada que les coses surtin bé i aprendre a cada esdeveniment, parlem-ne.",
+      "boto": "Uneix-te a l'equip"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Recomana'm",
+      "intro": "Si algú del teu entorn prepara un esdeveniment i penses en mi, gràcies de tot cor. Aquí tens una manera fàcil de posar-nos en contacte.",
+      "boto": "Passa el meu contacte"
+     },
+     {
+      "quien": "Patrocinadors",
+      "nom": "Patrocina un esdeveniment",
+      "intro": "Connecta la teva marca amb un públic concret en un esdeveniment ben organitzat. Pactem junts la visibilitat i la informació que rebràs.",
+      "boto": "Consulta oportunitats"
+     }
+    ],
+    "proves": [
+     "Galeria d'esdeveniments fets, amb fotos reals i permís dels clients",
+     "Opinions de clients recollides després de cada esdeveniment",
+     "Proveïdors habituals amb qui treballes i que t'avalen",
+     "Explicació pas a pas del teu mètode, de la primera trobada al tancament",
+     "Missatges d'agraïment d'assistents i col·laboradors"
+    ],
+    "connecta": [
+     {
+      "eina": "Formulari de sol·licitud de pressupost",
+      "per": "Recollir data, tipus d'esdeveniment, nombre aproximat de persones i estil abans de la primera trucada"
+     },
+     {
+      "eina": "Agenda de cites en línia",
+      "per": "Que el client reservi directament la primera reunió segons la teva disponibilitat"
+     },
+     {
+      "eina": "Plataforma d'inscripcions i entrades",
+      "per": "Gestionar el registre d'assistents i enviar-los la informació pràctica"
+     },
+     {
+      "eina": "Enquestes de satisfacció",
+      "per": "Demanar opinió després de l'esdeveniment i mostrar les millors valoracions al web"
+     },
+     {
+      "eina": "Galeria de fotos compartida",
+      "per": "Publicar les imatges de l'esdeveniment perquè els assistents les vegin i les comparteixin"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Quins esdeveniments organitzes sobretot?",
+      "opciones": [
+       "Casaments i celebracions privades",
+       "Esdeveniments d'empresa",
+       "Congressos i jornades",
+       "Actes culturals i festius"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "On treballes?",
+      "opciones": [
+       "A la meva ciutat i rodalia",
+       "A tot Catalunya",
+       "A tot Espanya",
+       "També fora d'Espanya"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Com prefereixes el primer contacte?",
+      "opciones": [
+       "Formulari amb detalls de l'esdeveniment",
+       "Trucada o missatge",
+       "Reserva directa de reunió"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "restaurant",
+   "es": {
+    "tons": [
+     {
+      "nom": "De toda la vida",
+      "exemple": "Pasa, que el café ya está saliendo y hoy hay lentejas como las de casa."
+     },
+     {
+      "nom": "Cuidado y tranquilo",
+      "exemple": "Cocinamos con calma lo que nos trae la temporada, para que comer aquí sea un rato tuyo."
+     },
+     {
+      "nom": "Alegre y con chispa",
+      "exemple": "¿Vermut, croquetas y un poco de charla? Te guardamos la barra."
+     }
+    ],
+    "menu": [
+     "Menú del día",
+     "La carta",
+     "Quiénes somos",
+     "El barrio",
+     "Reservar",
+     "Dónde estamos"
+    ],
+    "portades": [
+     {
+      "lema": "Tu bar de siempre, a la vuelta de la esquina",
+      "presentacio": "Aquí se viene a desayunar, a comer y a charlar con los de siempre. Cocina sencilla, producto de cerca y un trato que se recuerda.",
+      "boto": "Ver el menú de hoy"
+     },
+     {
+      "lema": "Cocina de barrio con producto de temporada",
+      "presentacio": "Compramos cerca y cocinamos lo que toca cada época del año. Cada día cambia el menú, pero no cambia el cariño.",
+      "boto": "Reservar mesa"
+     },
+     {
+      "lema": "Donde el barrio se encuentra cada día",
+      "presentacio": "Somos el sitio del café de la mañana, del menú del mediodía y de la caña de la tarde. Ven, que siempre hay un hueco para uno más.",
+      "boto": "Cómo llegar"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Clientela habitual",
+      "nom": "Los de siempre",
+      "intro": "Ya sabes dónde está tu sitio y cómo te gusta el café. Aquí tienes el menú de hoy y los horarios, para no tener que preguntar.",
+      "boto": "Ver el menú de hoy"
+     },
+     {
+      "quien": "Vecindario que recomienda",
+      "nom": "Si nos recomiendas",
+      "intro": "Cuando hablas bien de nosotros a un vecino, nos llega. Cuéntanos qué te gusta y trae a quien quieras, que lo trataremos como a uno más.",
+      "boto": "Deja tu opinión"
+     },
+     {
+      "quien": "Equipo de sala y cocina",
+      "nom": "Trabaja con nosotros",
+      "intro": "Aquí nos llamamos por el nombre y los horarios se hablan. Si te gusta el trato con la gente del barrio, charlemos.",
+      "boto": "Envía tu contacto"
+     },
+     {
+      "quien": "Proveedores de proximidad",
+      "nom": "Producto de aquí",
+      "intro": "Si produces o vendes cerca y tienes buen género de temporada, nos interesa. Nos gusta contar de dónde viene lo que servimos.",
+      "boto": "Ofrece tu producto"
+     },
+     {
+      "quien": "Comercio y entidades del barrio",
+      "nom": "Hagamos barrio juntos",
+      "intro": "Si llevas una tienda, una asociación o una peña, nuestro local puede ser vuestro punto de encuentro. Proponnos una actividad y lo hablamos.",
+      "boto": "Propón una actividad"
+     },
+     {
+      "quien": "Gestoría",
+      "nom": "Datos para gestiones",
+      "intro": "Aquí tienes los datos del local y el contacto para facturas, permisos y papeles. Así lo llevamos todo al día sin vueltas.",
+      "boto": "Ver datos del local"
+     }
+    ],
+    "proves": [
+     "Opiniones cortas de clientes habituales, publicadas con su permiso y con su nombre de pila",
+     "Un mapa de dónde viene cada producto, con los proveedores del entorno que quieran salir",
+     "Fotos de las fiestas, partidos y encuentros del barrio que se han hecho en el local",
+     "La historia del bar contada por quien lo lleva: desde cuándo abre y qué se ha vivido aquí",
+     "Recomendaciones de comercios y entidades vecinas que colaboran con el bar"
+    ],
+    "connecta": [
+     {
+      "eina": "Libro de reservas en línea",
+      "per": "Recoger reservas desde la web y mostrar si queda mesa libre"
+     },
+     {
+      "eina": "Mensajería instantánea",
+      "per": "Poner un botón para pedir mesa o encargar comida para llevar"
+     },
+     {
+      "eina": "Ficha de negocio en mapas",
+      "per": "Enseñar cómo llegar, los horarios y las reseñas del local"
+     },
+     {
+      "eina": "Red social de fotos",
+      "per": "Mostrar en la portada el plato del día que se publica cada mañana"
+     },
+     {
+      "eina": "Hoja de cálculo compartida",
+      "per": "Actualizar el menú del día y la carta sin tener que tocar la web"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué quieres que haga sobre todo quien entra en tu web?",
+      "opciones": [
+       "Reservar mesa",
+       "Ver el menú del día",
+       "Encargar para llevar",
+       "Saber cómo llegar"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cada cuánto cambia lo que ofreces?",
+      "opciones": [
+       "Cada día",
+       "Cada semana",
+       "Por temporada",
+       "Casi nunca"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Qué más pasa en tu local además de comer y beber?",
+      "opciones": [
+       "Partidos y retransmisiones",
+       "Actividades del barrio",
+       "Celebraciones privadas",
+       "Música o actuaciones"
+      ],
+      "varias": true
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "De tota la vida",
+      "exemple": "Passa, que el cafè ja surt i avui hi ha llenties com les de casa."
+     },
+     {
+      "nom": "Acurat i tranquil",
+      "exemple": "Cuinem amb calma el que ens porta la temporada, perquè dinar aquí sigui una estona teva."
+     },
+     {
+      "nom": "Alegre i amb gràcia",
+      "exemple": "Vermut, croquetes i una mica de xerrada? Et guardem la barra."
+     }
+    ],
+    "menu": [
+     "Menú del dia",
+     "La carta",
+     "Qui som",
+     "El barri",
+     "Reservar",
+     "On som"
+    ],
+    "portades": [
+     {
+      "lema": "El teu bar de sempre, a la cantonada",
+      "presentacio": "Aquí es ve a esmorzar, a dinar i a fer petar la xerrada amb els de sempre. Cuina senzilla, producte de prop i un tracte que es recorda.",
+      "boto": "Veure el menú d'avui"
+     },
+     {
+      "lema": "Cuina de barri amb producte de temporada",
+      "presentacio": "Comprem a prop i cuinem el que toca cada època de l'any. Cada dia canvia el menú, però no canvia l'estima.",
+      "boto": "Reservar taula"
+     },
+     {
+      "lema": "On el barri es troba cada dia",
+      "presentacio": "Som el lloc del cafè del matí, del menú del migdia i de la canya de la tarda. Vine, que sempre hi ha lloc per a un més.",
+      "boto": "Com arribar-hi"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Clientela habitual",
+      "nom": "Els de sempre",
+      "intro": "Ja saps on és el teu lloc i com t'agrada el cafè. Aquí tens el menú d'avui i els horaris, per no haver de preguntar.",
+      "boto": "Veure el menú d'avui"
+     },
+     {
+      "quien": "Veïnat que recomana",
+      "nom": "Si ens recomanes",
+      "intro": "Quan parles bé de nosaltres a un veí, ens arriba. Explica'ns què t'agrada i porta qui vulguis, que el tractarem com un més.",
+      "boto": "Deixa la teva opinió"
+     },
+     {
+      "quien": "Equip de sala i cuina",
+      "nom": "Treballa amb nosaltres",
+      "intro": "Aquí ens diem pel nom i els horaris es parlen. Si t'agrada el tracte amb la gent del barri, parlem-ne.",
+      "boto": "Envia el teu contacte"
+     },
+     {
+      "quien": "Proveïdors de proximitat",
+      "nom": "Producte d'aquí",
+      "intro": "Si produeixes o vens a prop i tens bon gènere de temporada, ens interessa. Ens agrada explicar d'on ve el que servim.",
+      "boto": "Ofereix el teu producte"
+     },
+     {
+      "quien": "Comerç i entitats del barri",
+      "nom": "Fem barri junts",
+      "intro": "Si portes una botiga, una associació o una colla, el nostre local pot ser el vostre punt de trobada. Proposa'ns una activitat i en parlem.",
+      "boto": "Proposa una activitat"
+     },
+     {
+      "quien": "Gestoria",
+      "nom": "Dades per a gestions",
+      "intro": "Aquí tens les dades del local i el contacte per a factures, permisos i papers. Així ho portem tot al dia sense embolics.",
+      "boto": "Veure dades del local"
+     }
+    ],
+    "proves": [
+     "Opinions curtes de clients habituals, publicades amb el seu permís i el seu nom de pila",
+     "Un mapa d'on ve cada producte, amb els proveïdors de l'entorn que hi vulguin sortir",
+     "Fotos de les festes, partits i trobades del barri que s'han fet al local",
+     "La història del bar explicada per qui el porta: des de quan obre i què s'hi ha viscut",
+     "Recomanacions de comerços i entitats veïnes que col·laboren amb el bar"
+    ],
+    "connecta": [
+     {
+      "eina": "Llibre de reserves en línia",
+      "per": "Recollir reserves des del web i mostrar si queda taula lliure"
+     },
+     {
+      "eina": "Missatgeria instantània",
+      "per": "Posar un botó per demanar taula o encarregar menjar per emportar"
+     },
+     {
+      "eina": "Fitxa de negoci als mapes",
+      "per": "Ensenyar com arribar-hi, els horaris i les ressenyes del local"
+     },
+     {
+      "eina": "Xarxa social de fotos",
+      "per": "Mostrar a la portada el plat del dia que es publica cada matí"
+     },
+     {
+      "eina": "Full de càlcul compartit",
+      "per": "Actualitzar el menú del dia i la carta sense haver de tocar el web"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Què vols que faci sobretot qui entra al teu web?",
+      "opciones": [
+       "Reservar taula",
+       "Veure el menú del dia",
+       "Encarregar per emportar",
+       "Saber com arribar-hi"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Cada quant canvia el que ofereixes?",
+      "opciones": [
+       "Cada dia",
+       "Cada setmana",
+       "Per temporada",
+       "Gairebé mai"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Què més passa al teu local a part de menjar i beure?",
+      "opciones": [
+       "Partits i retransmissions",
+       "Activitats del barri",
+       "Celebracions privades",
+       "Música o actuacions"
+      ],
+      "varias": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "botiga",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano de siempre",
+      "exemple": "Pasa cuando quieras, que ya sabemos lo que te gusta y te lo guardamos."
+     },
+     {
+      "nom": "Alegre y con chispa",
+      "exemple": "¡Han llegado los tomates de la huerta y vuelan! Ven antes de que se los lleve tu vecina."
+     },
+     {
+      "nom": "Sereno y cuidadoso",
+      "exemple": "Elegimos cada producto con calma y te contamos de dónde viene para que compres tranquilo."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Qué tenemos hoy",
+     "De aquí cerca",
+     "Encargos",
+     "El barrio",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Tu tienda de siempre, a dos pasos de casa",
+      "presentacio": "Producto fresco, gente que te conoce y tiempo para una charla. Aquí comprar sigue siendo cosa de vecinos.",
+      "boto": "Ver qué hay hoy"
+     },
+     {
+      "lema": "Lo bueno del barrio, elegido para ti cada mañana",
+      "presentacio": "Trabajamos con productores de cerca y producto de temporada. Te contamos quién lo hace y cómo se disfruta.",
+      "boto": "Conoce nuestros productores"
+     },
+     {
+      "lema": "Encárgalo y pasa a recogerlo cuando te vaya bien",
+      "presentacio": "Dinos qué necesitas y te lo dejamos preparado. Sin colas, sin prisas y con el trato de siempre.",
+      "boto": "Hacer un encargo"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Clientes del barrio",
+      "nom": "Para los vecinos",
+      "intro": "Te guardamos lo que te gusta y te avisamos cuando llega lo de temporada. Cuéntanos qué echas de menos y lo buscamos.",
+      "boto": "Ver qué hay hoy"
+     },
+     {
+      "quien": "Equipo",
+      "nom": "Quienes te atienden",
+      "intro": "Detrás del mostrador hay personas que conocen a cada vecino por su nombre. Si quieres formar parte, nos encantará conocerte.",
+      "boto": "Trabaja con nosotros"
+     },
+     {
+      "quien": "Vecino que recomienda",
+      "nom": "Si nos recomiendas",
+      "intro": "Cada vez que hablas bien de nosotros, el barrio sigue vivo. Queremos darte las gracias como se merece.",
+      "boto": "Recomendar la tienda"
+     },
+     {
+      "quien": "Proveedores",
+      "nom": "Para proveedores",
+      "intro": "Buscamos relaciones largas, con pedidos claros y pagos a tiempo. Si tienes novedades que encajen con el barrio, cuéntanoslas.",
+      "boto": "Proponer un producto"
+     },
+     {
+      "quien": "Productores de proximidad",
+      "nom": "Productores de aquí cerca",
+      "intro": "Tu producto merece que se sepa quién lo hace. En nuestra tienda y en esta web contamos tu historia a los vecinos.",
+      "boto": "Quiero vender aquí"
+     },
+     {
+      "quien": "Comercios vecinos",
+      "nom": "Nuestros vecinos de calle",
+      "intro": "Juntos hacemos un barrio donde da gusto comprar. Nos recomendamos y nos echamos una mano.",
+      "boto": "Ver comercios amigos"
+     }
+    ],
+    "proves": [
+     "Fotos y pequeñas historias de cada productor de proximidad con el producto que nos trae",
+     "Comentarios de vecinos escritos a mano en la pizarra de la tienda y recogidos en la web",
+     "Una lista de lo que los vecinos nos pidieron y ya tenemos en la tienda",
+     "Un mapa con los comercios vecinos que recomendamos y que nos recomiendan",
+     "La historia de la tienda en el barrio, con fotos de antes y de ahora"
+    ],
+    "connecta": [
+     {
+      "eina": "Mensajería instantánea del móvil",
+      "per": "Recibir encargos con un toque y avisar cuando están listos para recoger"
+     },
+     {
+      "eina": "Ficha en buscadores de mapas",
+      "per": "Mostrar horario, cómo llegar y las opiniones de los vecinos siempre al día"
+     },
+     {
+      "eina": "Redes sociales con fotos",
+      "per": "Enseñar en la web lo que acaba de llegar sin tener que publicarlo dos veces"
+     },
+     {
+      "eina": "Hoja de cálculo de existencias",
+      "per": "Mantener actualizada la lista de qué hay hoy y qué es de temporada"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Avisar a los vecinos apuntados de novedades, temporada y encargos especiales"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Cómo quieres recibir los encargos?",
+      "opciones": [
+       "Por mensaje",
+       "Por teléfono",
+       "Solo en la tienda",
+       "Con reparto a casa"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Qué quieres que se note primero en tu web?",
+      "opciones": [
+       "El producto fresco",
+       "Los productores de cerca",
+       "El trato con los vecinos",
+       "La comodidad de encargar"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cada cuánto podrás poner novedades?",
+      "opciones": [
+       "Cada día",
+       "Cada semana",
+       "Solo cuando cambia la temporada"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper de sempre",
+      "exemple": "Passa quan vulguis, que ja sabem què t'agrada i t'ho guardem."
+     },
+     {
+      "nom": "Alegre i amb gràcia",
+      "exemple": "Han arribat els tomàquets de l'hort i volen! Vine abans que se'ls endugui la teva veïna."
+     },
+     {
+      "nom": "Serè i curós",
+      "exemple": "Triem cada producte amb calma i t'expliquem d'on ve perquè compris tranquil."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Què tenim avui",
+     "D'aquí a prop",
+     "Encàrrecs",
+     "El barri",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "La teva botiga de sempre, a dues passes de casa",
+      "presentacio": "Producte fresc, gent que et coneix i temps per fer petar la xerrada. Aquí comprar continua sent cosa de veïns.",
+      "boto": "Veure què hi ha avui"
+     },
+     {
+      "lema": "El millor del barri, triat per a tu cada matí",
+      "presentacio": "Treballem amb productors d'aquí a prop i producte de temporada. T'expliquem qui ho fa i com es gaudeix.",
+      "boto": "Coneix els nostres productors"
+     },
+     {
+      "lema": "Encarrega-ho i passa a recollir-ho quan et vagi bé",
+      "presentacio": "Digues-nos què necessites i t'ho deixem preparat. Sense cues, sense presses i amb el tracte de sempre.",
+      "boto": "Fer un encàrrec"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Clients del barri",
+      "nom": "Per als veïns",
+      "intro": "Et guardem el que t'agrada i t'avisem quan arriba el de temporada. Explica'ns què trobes a faltar i ho busquem.",
+      "boto": "Veure què hi ha avui"
+     },
+     {
+      "quien": "Equip",
+      "nom": "Qui t'atén",
+      "intro": "Darrere el taulell hi ha persones que coneixen cada veí pel seu nom. Si vols formar-ne part, ens encantarà conèixer-te.",
+      "boto": "Treballa amb nosaltres"
+     },
+     {
+      "quien": "Veí que recomana",
+      "nom": "Si ens recomanes",
+      "intro": "Cada cop que parles bé de nosaltres, el barri continua viu. Volem donar-te les gràcies com cal.",
+      "boto": "Recomanar la botiga"
+     },
+     {
+      "quien": "Proveïdors",
+      "nom": "Per a proveïdors",
+      "intro": "Busquem relacions llargues, amb comandes clares i pagaments a temps. Si tens novetats que encaixin amb el barri, explica-les-hi.",
+      "boto": "Proposar un producte"
+     },
+     {
+      "quien": "Productors de proximitat",
+      "nom": "Productors d'aquí a prop",
+      "intro": "El teu producte mereix que se sàpiga qui el fa. A la botiga i en aquesta web expliquem la teva història als veïns.",
+      "boto": "Vull vendre aquí"
+     },
+     {
+      "quien": "Comerços veïns",
+      "nom": "Els nostres veïns de carrer",
+      "intro": "Junts fem un barri on fa goig comprar. Ens recomanem i ens donem un cop de mà.",
+      "boto": "Veure comerços amics"
+     }
+    ],
+    "proves": [
+     "Fotos i petites històries de cada productor de proximitat amb el producte que ens porta",
+     "Comentaris de veïns escrits a mà a la pissarra de la botiga i recollits a la web",
+     "Una llista del que els veïns ens van demanar i ja tenim a la botiga",
+     "Un mapa amb els comerços veïns que recomanem i que ens recomanen",
+     "La història de la botiga al barri, amb fotos d'abans i d'ara"
+    ],
+    "connecta": [
+     {
+      "eina": "Missatgeria instantània del mòbil",
+      "per": "Rebre encàrrecs amb un toc i avisar quan estan a punt per recollir"
+     },
+     {
+      "eina": "Fitxa en cercadors de mapes",
+      "per": "Mostrar l'horari, com arribar-hi i les opinions dels veïns sempre al dia"
+     },
+     {
+      "eina": "Xarxes socials amb fotos",
+      "per": "Ensenyar a la web el que acaba d'arribar sense haver-ho de publicar dues vegades"
+     },
+     {
+      "eina": "Full de càlcul d'existències",
+      "per": "Mantenir al dia la llista de què hi ha avui i què és de temporada"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Avisar els veïns apuntats de novetats, temporada i encàrrecs especials"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Com vols rebre els encàrrecs?",
+      "opciones": [
+       "Per missatge",
+       "Per telèfon",
+       "Només a la botiga",
+       "Amb repartiment a casa"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Què vols que es noti primer a la teva web?",
+      "opciones": [
+       "El producte fresc",
+       "Els productors d'aquí a prop",
+       "El tracte amb els veïns",
+       "La comoditat d'encarregar"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Cada quan podràs posar novetats?",
+      "opciones": [
+       "Cada dia",
+       "Cada setmana",
+       "Només quan canvia la temporada"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "salut_autonoma",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Cuéntame qué te pasa con calma; aquí no hay prisas ni preguntas tontas."
+     },
+     {
+      "nom": "Sereno y profesional",
+      "exemple": "Cada tratamiento parte de una valoración cuidadosa y se ajusta a tu evolución."
+     },
+     {
+      "nom": "Directo y práctico",
+      "exemple": "Primera visita, plan claro y ejercicios que puedes hacer en casa desde el primer día."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Cómo trabajo",
+     "Primera visita",
+     "Para profesionales",
+     "Preguntas frecuentes",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Te escucho, te explico y avanzamos juntos a tu ritmo",
+      "presentacio": "Atiendo a cada persona con tiempo y sin juicios. Salimos de la primera visita con un plan pensado para ti.",
+      "boto": "Pedir primera visita"
+     },
+     {
+      "lema": "Un plan claro para cuidarte, sesión a sesión",
+      "presentacio": "Valoro lo que te pasa y te explico qué vamos a hacer y por qué. Sabrás en todo momento cómo vas.",
+      "boto": "Reservar cita"
+     },
+     {
+      "lema": "Cuidado profesional cerca de ti, en consulta u online",
+      "presentacio": "Trabajo por mi cuenta para dedicarte la atención que mereces. Elige el formato y el horario que mejor te encaje.",
+      "boto": "Ver horarios disponibles"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Paciente",
+      "nom": "Si vienes a consulta",
+      "intro": "Aquí puedes contarme lo que te pasa con total confianza. Te escucho sin prisas y te explico cada paso del tratamiento.",
+      "boto": "Pedir primera visita"
+     },
+     {
+      "quien": "Profesional que deriva",
+      "nom": "Para colegas que derivan",
+      "intro": "Si me envías a alguien, lo cuido como tú lo harías. Te devuelvo un informe de evolución claro para que sigas al tanto.",
+      "boto": "Derivar un paciente"
+     },
+     {
+      "quien": "Equipo de consulta",
+      "nom": "Únete al equipo",
+      "intro": "Si te gusta organizar y tratar bien a la gente, aquí compartimos criterio y cada paciente tiene nombre propio.",
+      "boto": "Escribir a la consulta"
+     },
+     {
+      "quien": "Familia o cuidador",
+      "nom": "Si acompañas a alguien",
+      "intro": "Lo que ves en el día a día nos ayuda muchísimo. A cambio te damos pautas sencillas para acompañar en casa.",
+      "boto": "Hablar con la consulta"
+     },
+     {
+      "quien": "Mutua o aseguradora",
+      "nom": "Mutuas y aseguradoras",
+      "intro": "Trabajamos con facturas e informes en el formato que acordemos, completos y a tiempo.",
+      "boto": "Proponer un concierto"
+     },
+     {
+      "quien": "Colegio y formación",
+      "nom": "Formación y colegiación",
+      "intro": "Si organizas cursos o jornadas del sector, me interesa participar, seguir aprendiendo y compartir experiencia con colegas.",
+      "boto": "Proponer una colaboración"
+     }
+    ],
+    "proves": [
+     "Número de colegiación visible y fácil de comprobar",
+     "Opiniones de pacientes publicadas con su permiso y sin datos de salud",
+     "Profesionales con los que colaboro y que derivan a la consulta",
+     "Formación continua y cursos recientes explicados en lenguaje sencillo",
+     "Explicación honesta de qué esperar del tratamiento, sin promesas"
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de citas online",
+      "per": "Que los pacientes reserven la primera visita y reciban recordatorios automáticos"
+     },
+     {
+      "eina": "Historia clínica digital",
+      "per": "Recoger un cuestionario previo a la primera visita que llegue de forma segura"
+     },
+     {
+      "eina": "Programa de facturación",
+      "per": "Enviar facturas a pacientes y mutuas sin trabajo manual"
+     },
+     {
+      "eina": "Videollamada segura",
+      "per": "Ofrecer sesiones online con enlace directo desde la reserva"
+     },
+     {
+      "eina": "Correo o mensajería",
+      "per": "Mandar pautas y ejercicios entre sesiones y pedir opinión tras el alta"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Cómo atiendes a tus pacientes?",
+      "opciones": [
+       "En consulta",
+       "Online",
+       "A domicilio"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Trabajas con mutuas?",
+      "opciones": [
+       "Sí, con concierto",
+       "No, solo privado",
+       "Lo estoy valorando"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cómo te llegan más pacientes?",
+      "opciones": [
+       "Recomendación de pacientes",
+       "Derivación de profesionales",
+       "Búsqueda en internet",
+       "A través de la mutua"
+      ],
+      "varias": true
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Explica'm què et passa amb calma; aquí no hi ha presses ni preguntes tontes."
+     },
+     {
+      "nom": "Serè i professional",
+      "exemple": "Cada tractament parteix d'una valoració acurada i s'ajusta a la teva evolució."
+     },
+     {
+      "nom": "Directe i pràctic",
+      "exemple": "Primera visita, pla clar i exercicis que pots fer a casa des del primer dia."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Com treballo",
+     "Primera visita",
+     "Per a professionals",
+     "Preguntes freqüents",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "T'escolto, t'explico i avancem junts al teu ritme",
+      "presentacio": "Atenc cada persona amb temps i sense judicis. Sortim de la primera visita amb un pla pensat per a tu.",
+      "boto": "Demanar primera visita"
+     },
+     {
+      "lema": "Un pla clar per cuidar-te, sessió a sessió",
+      "presentacio": "Valoro què et passa i t'explico què farem i per què. Sabràs en tot moment com vas.",
+      "boto": "Reservar cita"
+     },
+     {
+      "lema": "Cura professional a prop teu, a la consulta o en línia",
+      "presentacio": "Treballo pel meu compte per dedicar-te l'atenció que mereixes. Tria el format i l'horari que millor t'encaixi.",
+      "boto": "Veure horaris disponibles"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Pacient",
+      "nom": "Si vens a la consulta",
+      "intro": "Aquí pots explicar-me què et passa amb tota confiança. T'escolto sense presses i t'explico cada pas del tractament.",
+      "boto": "Demanar primera visita"
+     },
+     {
+      "quien": "Professional que deriva",
+      "nom": "Per a col·legues que deriven",
+      "intro": "Si m'envies algú, el cuido com tu ho faries. Et retorno un informe d'evolució clar perquè estiguis al corrent.",
+      "boto": "Derivar un pacient"
+     },
+     {
+      "quien": "Equip de consulta",
+      "nom": "Uneix-te a l'equip",
+      "intro": "Si t'agrada organitzar i tractar bé la gent, aquí compartim criteri i cada pacient té nom propi.",
+      "boto": "Escriure a la consulta"
+     },
+     {
+      "quien": "Família o cuidador",
+      "nom": "Si acompanyes algú",
+      "intro": "El que veus en el dia a dia ens ajuda moltíssim. A canvi et donem pautes senzilles per acompanyar a casa.",
+      "boto": "Parlar amb la consulta"
+     },
+     {
+      "quien": "Mútua o asseguradora",
+      "nom": "Mútues i asseguradores",
+      "intro": "Treballem amb factures i informes en el format que acordem, complets i a temps.",
+      "boto": "Proposar un concert"
+     },
+     {
+      "quien": "Col·legi i formació",
+      "nom": "Formació i col·legiació",
+      "intro": "Si organitzes cursos o jornades del sector, m'interessa participar, continuar aprenent i compartir experiència amb col·legues.",
+      "boto": "Proposar una col·laboració"
+     }
+    ],
+    "proves": [
+     "Número de col·legiació visible i fàcil de comprovar",
+     "Opinions de pacients publicades amb el seu permís i sense dades de salut",
+     "Professionals amb qui col·laboro i que deriven a la consulta",
+     "Formació contínua i cursos recents explicats en llenguatge senzill",
+     "Explicació honesta de què esperar del tractament, sense promeses"
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de cites en línia",
+      "per": "Que els pacients reservin la primera visita i rebin recordatoris automàtics"
+     },
+     {
+      "eina": "Història clínica digital",
+      "per": "Recollir un qüestionari previ a la primera visita que arribi de manera segura"
+     },
+     {
+      "eina": "Programa de facturació",
+      "per": "Enviar factures a pacients i mútues sense feina manual"
+     },
+     {
+      "eina": "Videotrucada segura",
+      "per": "Oferir sessions en línia amb enllaç directe des de la reserva"
+     },
+     {
+      "eina": "Correu o missatgeria",
+      "per": "Enviar pautes i exercicis entre sessions i demanar opinió després de l'alta"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Com atens els teus pacients?",
+      "opciones": [
+       "A la consulta",
+       "En línia",
+       "A domicili"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Treballes amb mútues?",
+      "opciones": [
+       "Sí, amb concert",
+       "No, només privat",
+       "M'ho estic plantejant"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Com t'arriben més pacients?",
+      "opciones": [
+       "Recomanació de pacients",
+       "Derivació de professionals",
+       "Cerca a internet",
+       "A través de la mútua"
+      ],
+      "varias": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "serveis_professionals",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Cuéntanos qué te preocupa de tu negocio y lo miramos juntos, sin prisas y sin tecnicismos."
+     },
+     {
+      "nom": "Riguroso",
+      "exemple": "Analizamos tu situación con método, te explicamos lo que vemos y te proponemos pasos concretos y justificados."
+     },
+     {
+      "nom": "Directo",
+      "exemple": "Te decimos lo que hay, lo que haríamos y lo que no. Tú decides."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Servicios",
+     "Cómo trabajamos",
+     "Casos",
+     "Quiénes somos",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Criterio honesto para decidir mejor en tu empresa",
+      "presentacio": "Te ayudamos a entender dónde estás y qué te conviene hacer ahora. Con un diagnóstico claro, una propuesta concreta y acompañamiento después.",
+      "boto": "Pide una primera conversación"
+     },
+     {
+      "lema": "Te acompañamos de la duda a la decisión",
+      "presentacio": "Escuchamos tu contexto antes de opinar. Luego te damos una propuesta que puedas entender, aplicar y revisar con nosotros.",
+      "boto": "Cuéntanos tu caso"
+     },
+     {
+      "lema": "Conocimiento experto, trato cercano y total confidencialidad",
+      "presentacio": "Trabajamos con empresas y particulares que necesitan a alguien de confianza a su lado. Lo que nos cuentas se queda entre nosotros.",
+      "boto": "Reserva una llamada"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Cliente",
+      "nom": "Para empresas y particulares",
+      "intro": "Si tienes una decisión importante entre manos, empezamos por escucharte. Te damos un diagnóstico claro y seguimos a tu lado cuando el proyecto termina.",
+      "boto": "Pide una primera conversación"
+     },
+     {
+      "quien": "Equipo consultor",
+      "nom": "Trabaja con nosotros",
+      "intro": "Buscamos personas con criterio propio que quieran crecer con autonomía y mentoría. Aquí tus ideas para mejorar el método cuentan.",
+      "boto": "Envía tu candidatura"
+     },
+     {
+      "quien": "Prescriptor",
+      "nom": "Si nos recomiendas",
+      "intro": "Cuando nos confías a alguien de tu entorno, lo cuidamos como si fuera tuyo y te mantenemos al tanto. Gracias por pensar en nosotros.",
+      "boto": "Recomienda a alguien"
+     },
+     {
+      "quien": "Colaboradores especialistas",
+      "nom": "Especialistas colaboradores",
+      "intro": "Si eres especialista en un ámbito que complementa el nuestro, trabajemos juntos. Te derivamos clientes y reconocemos tu trabajo.",
+      "boto": "Propón una colaboración"
+     },
+     {
+      "quien": "Proveedores y herramientas",
+      "nom": "Proveedores y herramientas",
+      "intro": "Usamos software y fuentes de datos que nos ayudan a trabajar mejor. Si tu solución encaja con nuestra forma de trabajar, cuéntanosla.",
+      "boto": "Preséntanos tu propuesta"
+     },
+     {
+      "quien": "Red profesional y sector",
+      "nom": "Colegas y sector",
+      "intro": "Compartimos lo que aprendemos en artículos, charlas y encuentros. Si organizas algo o quieres intercambiar ideas, hablemos.",
+      "boto": "Lee nuestros artículos"
+     }
+    ],
+    "proves": [
+     "Testimonios de clientes publicados con su permiso, explicando qué les aportó el acompañamiento",
+     "Casos explicados paso a paso sin datos confidenciales: situación de partida, qué propusimos y qué cambió",
+     "Artículos, guías y charlas sobre novedades normativas y del sector que demuestran conocimiento al día",
+     "Pertenencia a colegios y asociaciones profesionales y formación continua del equipo",
+     "Compromiso visible de confidencialidad y forma de trabajar explicada antes de empezar"
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de citas en línea",
+      "per": "Que cualquiera reserve una primera conversación desde la web en los huecos libres"
+     },
+     {
+      "eina": "Gestión de clientes y contactos",
+      "per": "Guardar cada consulta del formulario con su origen, incluido quién te recomendó"
+     },
+     {
+      "eina": "Firma electrónica",
+      "per": "Enviar la propuesta y la hoja de encargo para firmar sin papeles"
+     },
+     {
+      "eina": "Boletín por correo",
+      "per": "Avisar a clientes y colegas de cada artículo o novedad normativa que publiques"
+     },
+     {
+      "eina": "Espacio de documentos compartidos",
+      "per": "Dar a cada cliente un acceso privado para intercambiar documentos de forma segura"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿A quién atiendes sobre todo?",
+      "opciones": [
+       "Empresas",
+       "Particulares",
+       "Ambos por igual"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "¿Cómo te llega la mayoría de clientes?",
+      "opciones": [
+       "Por recomendación",
+       "Por búsquedas en internet",
+       "Por contenidos y charlas",
+       "Por contacto directo"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Qué quieres que haga primero quien visita tu web?",
+      "opciones": [
+       "Reservar una llamada",
+       "Escribirte un mensaje",
+       "Leer tus artículos",
+       "Descargar una guía"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Explica'ns què et preocupa del teu negoci i ho mirem junts, sense presses i sense tecnicismes."
+     },
+     {
+      "nom": "Rigorós",
+      "exemple": "Analitzem la teva situació amb mètode, t'expliquem què veiem i et proposem passos concrets i justificats."
+     },
+     {
+      "nom": "Directe",
+      "exemple": "Et diem el que hi ha, el que faríem i el que no. Tu decideixes."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Serveis",
+     "Com treballem",
+     "Casos",
+     "Qui som",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Criteri honest per decidir millor a la teva empresa",
+      "presentacio": "T'ajudem a entendre on ets i què et convé fer ara. Amb un diagnòstic clar, una proposta concreta i acompanyament després.",
+      "boto": "Demana una primera conversa"
+     },
+     {
+      "lema": "T'acompanyem del dubte a la decisió",
+      "presentacio": "Escoltem el teu context abans d'opinar. Després et donem una proposta que puguis entendre, aplicar i revisar amb nosaltres.",
+      "boto": "Explica'ns el teu cas"
+     },
+     {
+      "lema": "Coneixement expert, tracte proper i confidencialitat total",
+      "presentacio": "Treballem amb empreses i particulars que necessiten algú de confiança al seu costat. El que ens expliques es queda entre nosaltres.",
+      "boto": "Reserva una trucada"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Client",
+      "nom": "Per a empreses i particulars",
+      "intro": "Si tens una decisió important entre mans, comencem per escoltar-te. Et donem un diagnòstic clar i seguim al teu costat quan el projecte acaba.",
+      "boto": "Demana una primera conversa"
+     },
+     {
+      "quien": "Equip consultor",
+      "nom": "Treballa amb nosaltres",
+      "intro": "Busquem persones amb criteri propi que vulguin créixer amb autonomia i mentoria. Aquí les teves idees per millorar el mètode compten.",
+      "boto": "Envia la teva candidatura"
+     },
+     {
+      "quien": "Prescriptor",
+      "nom": "Si ens recomanes",
+      "intro": "Quan ens confies algú del teu entorn, el cuidem com si fos teu i et mantenim al corrent. Gràcies per pensar en nosaltres.",
+      "boto": "Recomana algú"
+     },
+     {
+      "quien": "Col·laboradors especialistes",
+      "nom": "Especialistes col·laboradors",
+      "intro": "Si ets especialista en un àmbit que complementa el nostre, treballem junts. Et derivem clients i reconeixem la teva feina.",
+      "boto": "Proposa una col·laboració"
+     },
+     {
+      "quien": "Proveïdors i eines",
+      "nom": "Proveïdors i eines",
+      "intro": "Fem servir programari i fonts de dades que ens ajuden a treballar millor. Si la teva solució encaixa amb la nostra manera de treballar, explica-la'ns.",
+      "boto": "Presenta'ns la teva proposta"
+     },
+     {
+      "quien": "Xarxa professional i sector",
+      "nom": "Col·legues i sector",
+      "intro": "Compartim el que aprenem en articles, xerrades i trobades. Si organitzes alguna cosa o vols intercanviar idees, parlem-ne.",
+      "boto": "Llegeix els nostres articles"
+     }
+    ],
+    "proves": [
+     "Testimonis de clients publicats amb el seu permís, explicant què els va aportar l'acompanyament",
+     "Casos explicats pas a pas sense dades confidencials: situació de partida, què vam proposar i què va canviar",
+     "Articles, guies i xerrades sobre novetats normatives i del sector que demostren coneixement al dia",
+     "Pertinença a col·legis i associacions professionals i formació contínua de l'equip",
+     "Compromís visible de confidencialitat i manera de treballar explicada abans de començar"
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de cites en línia",
+      "per": "Que qualsevol reservi una primera conversa des del web en les hores lliures"
+     },
+     {
+      "eina": "Gestió de clients i contactes",
+      "per": "Desar cada consulta del formulari amb el seu origen, inclòs qui t'ha recomanat"
+     },
+     {
+      "eina": "Signatura electrònica",
+      "per": "Enviar la proposta i el full d'encàrrec per signar sense papers"
+     },
+     {
+      "eina": "Butlletí per correu",
+      "per": "Avisar clients i col·legues de cada article o novetat normativa que publiquis"
+     },
+     {
+      "eina": "Espai de documents compartits",
+      "per": "Donar a cada client un accés privat per intercanviar documents de manera segura"
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "A qui atens sobretot?",
+      "opciones": [
+       "Empreses",
+       "Particulars",
+       "Tots dos per igual"
+      ],
+      "varias": false
+     },
+     {
+      "pregunta": "Com t'arriben la majoria de clients?",
+      "opciones": [
+       "Per recomanació",
+       "Per cerques a internet",
+       "Per continguts i xerrades",
+       "Per contacte directe"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Què vols que faci primer qui visita el teu web?",
+      "opciones": [
+       "Reservar una trucada",
+       "Escriure't un missatge",
+       "Llegir els teus articles",
+       "Descarregar una guia"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  },
+  {
+   "id": "taller",
+   "es": {
+    "tons": [
+     {
+      "nom": "Cercano",
+      "exemple": "Tráelo, lo miramos juntos y te contamos qué le pasa antes de tocar nada."
+     },
+     {
+      "nom": "Técnico y claro",
+      "exemple": "Primero diagnosticamos, después te explicamos la avería y te damos presupuesto por escrito antes de reparar."
+     },
+     {
+      "nom": "Desenfadado",
+      "exemple": "¿Hace ruidos raros? Tranquilo, aquí ya lo hemos oído casi todo."
+     }
+    ],
+    "menu": [
+     "Inicio",
+     "Qué reparamos",
+     "Cómo trabajamos",
+     "Pide cita",
+     "Consejos",
+     "Contacto"
+    ],
+    "portades": [
+     {
+      "lema": "Volvemos a hacer funcionar lo que usas cada día",
+      "presentacio": "Te explicamos qué tiene antes de tocar nada. Sabes qué se hace, por qué y cuándo estará listo.",
+      "boto": "Pide cita"
+     },
+     {
+      "lema": "Un diagnóstico honesto vale más que una pieza nueva",
+      "presentacio": "Antes de cambiar nada, buscamos la causa real de la avería. Si tiene un arreglo sencillo, te lo decimos.",
+      "boto": "Cuéntanos qué le pasa"
+     },
+     {
+      "lema": "Tu taller de barrio, de los de toda la vida",
+      "presentacio": "Nos conoces de pasar por la calle y por lo que cuentan tus vecinos. Ven cuando quieras, aunque solo sea a preguntar.",
+      "boto": "Ven a vernos"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Cliente",
+      "nom": "Si traes una reparación",
+      "intro": "Cuéntanos qué notas, desde cuándo y cómo falla: con eso vamos más rápido. Te llamamos con el diagnóstico antes de reparar.",
+      "boto": "Pide cita"
+     },
+     {
+      "quien": "Equipo técnico",
+      "nom": "Trabaja con nosotros",
+      "intro": "Buscamos manos con oficio y ganas de aprender con casos difíciles. Aquí compartimos lo que sabemos y cuidamos a quien trabaja.",
+      "boto": "Envía tu candidatura"
+     },
+     {
+      "quien": "Proveedor de repuestos",
+      "nom": "Proveedores de recambios",
+      "intro": "Si sirves piezas a tiempo y nos avisas de alternativas fiables, hablemos. Te contamos con sinceridad cómo rinden en el taller.",
+      "boto": "Escríbenos"
+     },
+     {
+      "quien": "Quien recomienda",
+      "nom": "Si nos recomiendas",
+      "intro": "Gracias por mandarnos a gente de confianza. Cuidaremos a quien venga de tu parte como te cuidamos a ti.",
+      "boto": "Comparte el taller"
+     },
+     {
+      "quien": "Fabricante o servicio oficial",
+      "nom": "Marcas y servicios oficiales",
+      "intro": "Trabajamos siguiendo la documentación técnica de cada fabricante. Si te interesa saber qué fallos vemos en el día a día, lo compartimos contigo.",
+      "boto": "Contacta con el taller"
+     },
+     {
+      "quien": "Comunidad de barrio",
+      "nom": "Vecinos del barrio",
+      "intro": "Pásate a preguntar aunque no traigas nada roto. Aquí tienes consejos sencillos para que tus cosas duren más.",
+      "boto": "Ver consejos"
+     }
+    ],
+    "proves": [
+     "Fotos del antes y el después de reparaciones reales, con permiso de cada cliente.",
+     "Opiniones de clientes que han vuelto, contadas con sus propias palabras.",
+     "Casos explicados: qué avería traía, qué encontramos y por qué lo arreglamos así.",
+     "Historias de reparaciones que acabaron siendo más sencillas de lo que parecía.",
+     "Consejos de mantenimiento gratuitos escritos por el propio equipo."
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de citas en línea",
+      "per": "Que el cliente reserve hueco para el diagnóstico sin tener que llamar."
+     },
+     {
+      "eina": "Mensajería instantánea",
+      "per": "Recibir fotos o vídeos de la avería y avisar cuando la reparación esté lista."
+     },
+     {
+      "eina": "Programa de gestión del taller",
+      "per": "Mostrar en qué punto está cada reparación con su número de orden."
+     },
+     {
+      "eina": "Ficha del negocio en mapas y reseñas",
+      "per": "Enseñar las opiniones de clientes y cómo llegar al taller."
+     },
+     {
+      "eina": "Formulario de presupuesto",
+      "per": "Recoger la descripción de la avería antes de que el cliente venga."
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "¿Qué reparas sobre todo?",
+      "opciones": [
+       "Bicis y patinetes",
+       "Coches y motos",
+       "Electrónica y móviles",
+       "Electrodomésticos"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Cómo prefieres que te pidan cita?",
+      "opciones": [
+       "Por teléfono",
+       "Por mensaje",
+       "Reserva en la web",
+       "Sin cita, en el taller"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "¿Qué quieres destacar primero?",
+      "opciones": [
+       "El diagnóstico honesto",
+       "La rapidez",
+       "La cercanía de barrio",
+       "La experiencia del equipo"
+      ],
+      "varias": false
+     }
+    ]
+   },
+   "ca": {
+    "tons": [
+     {
+      "nom": "Proper",
+      "exemple": "Porta'l, el mirem junts i t'expliquem què li passa abans de tocar res."
+     },
+     {
+      "nom": "Tècnic i clar",
+      "exemple": "Primer diagnostiquem, després t'expliquem l'avaria i et donem pressupost per escrit abans de reparar."
+     },
+     {
+      "nom": "Desenfadat",
+      "exemple": "Fa sorolls estranys? Tranquil, aquí ja ho hem sentit gairebé tot."
+     }
+    ],
+    "menu": [
+     "Inici",
+     "Què reparem",
+     "Com treballem",
+     "Demana cita",
+     "Consells",
+     "Contacte"
+    ],
+    "portades": [
+     {
+      "lema": "Tornem a fer funcionar el que fas servir cada dia",
+      "presentacio": "T'expliquem què té abans de tocar res. Saps què es fa, per què i quan estarà llest.",
+      "boto": "Demana cita"
+     },
+     {
+      "lema": "Un diagnòstic honest val més que una peça nova",
+      "presentacio": "Abans de canviar res, busquem la causa real de l'avaria. Si té un arranjament senzill, t'ho diem.",
+      "boto": "Explica'ns què li passa"
+     },
+     {
+      "lema": "El teu taller de barri, dels de tota la vida",
+      "presentacio": "Ens coneixes de passar pel carrer i pel que expliquen els teus veïns. Vine quan vulguis, encara que només sigui a preguntar.",
+      "boto": "Vine a veure'ns"
+     }
+    ],
+    "seccions": [
+     {
+      "quien": "Client",
+      "nom": "Si portes una reparació",
+      "intro": "Explica'ns què notes, des de quan i com falla: així anem més de pressa. Et truquem amb el diagnòstic abans de reparar.",
+      "boto": "Demana cita"
+     },
+     {
+      "quien": "Equip tècnic",
+      "nom": "Treballa amb nosaltres",
+      "intro": "Busquem mans amb ofici i ganes d'aprendre amb casos difícils. Aquí compartim el que sabem i cuidem qui hi treballa.",
+      "boto": "Envia la teva candidatura"
+     },
+     {
+      "quien": "Proveïdor de recanvis",
+      "nom": "Proveïdors de recanvis",
+      "intro": "Si serveixes peces a temps i ens avises d'alternatives fiables, parlem-ne. T'expliquem amb sinceritat com rendeixen al taller.",
+      "boto": "Escriu-nos"
+     },
+     {
+      "quien": "Qui recomana",
+      "nom": "Si ens recomanes",
+      "intro": "Gràcies per enviar-nos gent de confiança. Cuidarem qui vingui de part teva com et cuidem a tu.",
+      "boto": "Comparteix el taller"
+     },
+     {
+      "quien": "Fabricant o servei oficial",
+      "nom": "Marques i serveis oficials",
+      "intro": "Treballem seguint la documentació tècnica de cada fabricant. Si t'interessa saber quines avaries veiem en el dia a dia, ho compartim amb tu.",
+      "boto": "Contacta amb el taller"
+     },
+     {
+      "quien": "Comunitat de barri",
+      "nom": "Veïns del barri",
+      "intro": "Passa a preguntar encara que no portis res espatllat. Aquí tens consells senzills perquè les teves coses durin més.",
+      "boto": "Veure consells"
+     }
+    ],
+    "proves": [
+     "Fotos de l'abans i el després de reparacions reals, amb permís de cada client.",
+     "Opinions de clients que han tornat, explicades amb les seves paraules.",
+     "Casos explicats: quina avaria portava, què vam trobar i per què ho vam arreglar així.",
+     "Històries de reparacions que van acabar sent més senzilles del que semblava.",
+     "Consells de manteniment gratuïts escrits pel mateix equip."
+    ],
+    "connecta": [
+     {
+      "eina": "Agenda de cites en línia",
+      "per": "Que el client reservi hora per al diagnòstic sense haver de trucar."
+     },
+     {
+      "eina": "Missatgeria instantània",
+      "per": "Rebre fotos o vídeos de l'avaria i avisar quan la reparació estigui llesta."
+     },
+     {
+      "eina": "Programa de gestió del taller",
+      "per": "Mostrar en quin punt és cada reparació amb el seu número d'ordre."
+     },
+     {
+      "eina": "Fitxa del negoci en mapes i ressenyes",
+      "per": "Ensenyar les opinions de clients i com arribar al taller."
+     },
+     {
+      "eina": "Formulari de pressupost",
+      "per": "Recollir la descripció de l'avaria abans que el client vingui."
+     }
+    ],
+    "preguntes": [
+     {
+      "pregunta": "Què repares sobretot?",
+      "opciones": [
+       "Bicis i patinets",
+       "Cotxes i motos",
+       "Electrònica i mòbils",
+       "Electrodomèstics"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Com prefereixes que et demanin cita?",
+      "opciones": [
+       "Per telèfon",
+       "Per missatge",
+       "Reserva al web",
+       "Sense cita, al taller"
+      ],
+      "varias": true
+     },
+     {
+      "pregunta": "Què vols destacar primer?",
+      "opciones": [
+       "El diagnòstic honest",
+       "La rapidesa",
+       "La proximitat de barri",
+       "L'experiència de l'equip"
+      ],
+      "varias": false
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -33,7 +33,8 @@ const fals = (respostes) => {
 const DADES = { casa: 'Formadores', inicial: 'Formo a profesores de español', alrededor: [
   { quien: 'Profesores nuevos', meDa: 'matrículas', meDaEs: 'tangible', leDoy: 'un curso', leDoyEs: 'tangible' },
   { quien: 'Escuelas', meDa: 'ofertas de trabajo', meDaEs: 'intangible', leDoy: 'profesores preparados', leDoyEs: 'intangible' }] };
-const RESP_MAPA = { resumen: 'Tu red se apoya en la confianza.', preguntas: ['¿Quién te recomienda?', '¿Qué te dan tus antiguos alumnos?', '¿Quién te avala?', 'Una cuarta de más'], sugerencias: [
+const RESP_MAPA = { resumen: 'Tu red se apoya en la confianza.', preguntas: [{ pregunta: '¿Quién te recomienda?', opciones: ['Antiguos alumnos', 'Escuelas', 'Escuelas', '', 'Colegas', 'Nadie todavía', 'Una quinta'], varias: true },
+  { pregunta: '¿Quién te avala?', opciones: ['El Instituto Cervantes', 'Una universidad'], varias: false }, '¿Una tercera de más?'], sugerencias: [
   { tipo: 'nuevo', fila: -1, quien: 'Antiguos alumnos', meDa: 'recomendaciones', meDaEs: 'intangible', leDoy: 'comunidad', leDoyEs: 'intangible', porque: 'Suelen traer a otros.' },
   { tipo: 'cambia', fila: 0, quien: 'Profesores nuevos', meDa: 'matrículas del curso', meDaEs: 'tangible', leDoy: 'el curso FELE', leDoyEs: 'tangible', porque: 'Más concreto.' },
   { tipo: 'cambia', fila: 9, quien: 'X', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'tangible', porque: 'fila que no existe' },
@@ -89,15 +90,20 @@ console.log('\n3 · Una volta del mapa');
   const r = await pule({ sessio: ses(), pas: 'mapa', dades: DADES }, ENV, reg, f);
   const req = JSON.parse(f.crides[0].opts.body), h = f.crides[0].opts.headers;
   ok(r.estat === 'fet' && r.resultat.sugerencias.length === 2, 'passen les dues propostes aplicables; la fila que no existeix i el tipus estrany, no');
-  ok(r.resultat.resumen && r.resultat.preguntas.length === 3 && r.resultat.pregunta === r.resultat.preguntas[0], 'amb el resum i com a molt tres preguntes per a la volta següent (la primera també sola)');
+  const pq = r.resultat.preguntas;
+  ok(r.resultat.resumen && pq.length === 2 && r.resultat.pregunta === pq[0].pregunta, 'amb el resum i com a molt dues preguntes per a la volta següent (la primera també en text)');
+  ok(pq[0].opciones.join('|') === 'Antiguos alumnos|Escuelas|Colegas|Nadie todavía' && pq[0].varias === true && pq[1].varias === false, 'cada pregunta amb dues a quatre opcions per triar, sense repetides ni buides, i si se\'n pot triar més d\'una');
+  ok(ESQUEMA.mapa.properties.preguntas.items.required.join() === 'pregunta,opciones,varias', "l'esquema demana pregunta, opcions i si se'n poden triar diverses");
   const sa = r.resultat.salut;
   ok(sa && sa.abans.punts >= 0 && sa.abans.punts <= 100 && Array.isArray(sa.abans.falten) && sa.abans.falten.every(f => f.id && f.diu), 'diu com està el dibuix abans, amb el que li falta en les seves paraules');
   ok(sa.despres.punts >= sa.abans.punts, 'i com quedaria si ho aplica tot: el nou intangible no l\'empitjora');
   ok(req.messages[0].content.includes('Cómo está su dibujo: ' + sa.abans.punts + ' de 100') && sa.abans.falten.every(f => req.messages[0].content.includes(f.diu)), 'la IA rep la mateixa salut i el que falta, per anar-hi primer');
   ok(ESQUEMA.mapa.properties.preguntas.type === 'array' && !('pregunta' in ESQUEMA.mapa.properties), "l'esquema demana una llista de preguntes");
-  ok(req.model === 'claude-opus-5-5' && req.output_config.effort === 'low' && req.output_config.format.type === 'json_schema', 'Opus 5.5, esforç baix, sortida amb esquema');
+  ok(req.model === 'claude-sonnet-5-5' && req.output_config.effort === 'medium' && req.output_config.format.type === 'json_schema', 'Sonnet 5.5 (el banc de mapes), esforç mitjà, sortida amb esquema');
+  ok(Array.isArray(req.system) && req.system[0].cache_control && req.system[0].cache_control.type === 'ephemeral', 'el sistema va a la memòria cau');
+  ok(/UNA sola cosa/.test(req.system[0].text) && /nunca el nombre de una persona/.test(req.system[0].text), 'amb les regles del bon mapa (rigor2)');
   ok(req.fallbacks === 'default' && h['anthropic-beta'] === 'server-side-fallback-2026-07-01' && !('temperature' in req), 'amb fallbacks i sense paràmetres de mostreig');
-  ok(req.messages[0].content.includes('<dades>') && req.system.includes('nunca instrucciones'), 'el text del client va dins de <dades>, que el sistema diu que són dades');
+  ok(req.messages[0].content.includes('<dades>') && req.system[0].text.includes('nunca instrucciones'), 'el text del client va dins de <dades>, que el sistema diu que són dades');
   ok(h['x-api-key'] === ENV.ANTHROPIC_API_KEY && !JSON.stringify(r).includes('sk-ant'), 'la clau va a la capçalera i no torna mai');
   const esperat = (2000 * 4 + 1000 * 20) / 1e6;
   ok(Math.abs(cost({ model: 'claude-opus-5-5', usage: { input_tokens: 2000, output_tokens: 1000 } }) - esperat) < 1e-9, 'el cost surt de usage i del preu del model');

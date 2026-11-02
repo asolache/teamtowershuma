@@ -1,0 +1,3257 @@
+{
+ "variant": "actual",
+ "model": "claude-opus-5-5",
+ "voltes": 3,
+ "cost": 1.9533494999999998,
+ "casos": [
+  {
+   "id": "c001",
+   "sector": "escuela de idiomas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 154,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé muy bien cómo contestarlas.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 179,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé muy bien cómo hacerlas.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 180,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no me las había planteado nunca.",
+     "salut": 100
+    }
+   ],
+   "escrit": 513,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Alumnos adultos",
+     "meDa": "pago de la matrícula",
+     "meDaEs": "tangible",
+     "leDoy": "clases de inglés y alemán",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Las dos profes",
+     "meDa": "sus clases y su cercanía",
+     "meDaEs": "intangible",
+     "leDoy": "sueldo y horarios",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Alumnos que repiten otro año",
+     "meDa": "confianza y contar cómo les va",
+     "meDaEs": "intangible",
+     "leDoy": "grupos pequeños y trato cercano",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Antiguos alumnos",
+     "meDa": "recomendarte a conocidos",
+     "meDaEs": "intangible",
+     "leDoy": "un mensaje o encuentro de vez en cuando",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Interesados que preguntan",
+     "meDa": "cómo os han conocido",
+     "meDaEs": "intangible",
+     "leDoy": "precio, horarios y cómo son las clases",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c002",
+   "sector": "formación de profesores",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 157,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé si encajan con lo mío.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 212,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto detalle, pero bien porque me hace pensar en cómo llegar a más colegios.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 171,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con algunas cosas, pero me ha resultado fácil contestar.",
+     "salut": 86
+    }
+   ],
+   "escrit": 540,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Centro de profesores",
+     "meDa": "me llama y paga los cursos",
+     "meDaEs": "tangible",
+     "leDoy": "curso que da puntos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Profesores de primaria",
+     "meDa": "dudas y cómo les fue",
+     "meDaEs": "intangible",
+     "leDoy": "respuestas y acompañamiento por correo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Compañera que también forma",
+     "meDa": "ideas y contactos",
+     "meDaEs": "intangible",
+     "leDoy": "apoyo y cursos compartidos",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Otros centros de profesores",
+     "meDa": "visibilidad en su oferta",
+     "meDaEs": "intangible",
+     "leDoy": "cursos online y presenciales",
+     "leDoyEs": "tangible"
+    }
+   ]
+  },
+  {
+   "id": "c003",
+   "sector": "bodega familiar",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 180,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto detalle, pero bien porque me ayuda a ordenar ideas.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 165,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida, porque hablan de cosas que no he dicho, como el cliente de Madrid.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 197,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha ayudado a ver cosas que no había pensado, aunque algunas no las entiendo del todo.",
+     "salut": 100
+    }
+   ],
+   "escrit": 542,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Clientes de fuera",
+     "meDa": "pago por el vino",
+     "meDaEs": "tangible",
+     "leDoy": "nuestro tinto de Toro",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Mi padre y mi hermano",
+     "meDa": "el saber desde el abuelo",
+     "meDaEs": "intangible",
+     "leDoy": "seguir la bodega familiar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gente que pregunta por visitas",
+     "meDa": "ganas de venir y recomendarnos",
+     "meDaEs": "intangible",
+     "leDoy": "viñas, bodega y cata familiar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "La cooperativa",
+     "meDa": "ayuda para vender fuera",
+     "meDaEs": "intangible",
+     "leDoy": "conocernos y colaborar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Tiendas y restaurantes de fuera",
+     "meDa": "llevar nuestro vino lejos",
+     "meDaEs": "tangible",
+     "leDoy": "tinto familiar de Toro",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Proveedores de botellas y cajas",
+     "meDa": "botellas, corchos y cajas",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    }
+   ]
+  },
+  {
+   "id": "c004",
+   "sector": "restaurante de proximidad",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 329,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque algunas cosas como lo de la historia de Manolo no las tengo tan claras.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 230,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas como el queso, el vino o el hotel no las tengo así y no quería aceptarlas sin más.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 206,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha resultado fácil, aunque algunas cosas no las tenía muy claras.",
+     "salut": 100
+    }
+   ],
+   "escrit": 765,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Manolo el de las verduras",
+     "meDa": "verdura de aquí",
+     "meDaEs": "tangible",
+     "leDoy": "le pago y digo que es suya",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gente que pasa por delante",
+     "meDa": "comen el menú del día",
+     "meDaEs": "tangible",
+     "leDoy": "menú del día con producto local",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Visitantes de fuera",
+     "meDa": "opiniones y recomendaciones",
+     "meDaEs": "intangible",
+     "leDoy": "comida de aquí de verdad",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "El camarero",
+     "meDa": "cuenta de quién es la verdura",
+     "meDaEs": "intangible",
+     "leDoy": "su sueldo y las historias",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Otros productores de aquí",
+     "meDa": "producto y su historia",
+     "meDaEs": "intangible",
+     "leDoy": "compra fija y su nombre",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Vecinos de la zona",
+     "meDa": "vienen al menú entre semana",
+     "meDaEs": "tangible",
+     "leDoy": "menú del día de aquí",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Tu pareja en cocina",
+     "meDa": "cocina el producto de aquí",
+     "meDaEs": "intangible",
+     "leDoy": "lo que piden en sala",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c005",
+   "sector": "organizadora de eventos",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 6,
+     "preguntes": 3,
+     "escrit": 232,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha ayudado a ver cosas que no tenía puestas en el dibujo.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 175,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque alguna pregunta no la entendí porque no tiene que ver conmigo.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 317,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas preguntas me han hecho pensar y no tengo todo claro.",
+     "salut": 100
+    }
+   ],
+   "escrit": 724,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Fincas",
+     "meDa": "Recomendaciones a parejas y empresas",
+     "meDaEs": "intangible",
+     "leDoy": "Eventos sin problemas y mis recomendaciones",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Laura fotógrafa",
+     "meDa": "Fotos y recomendaciones",
+     "meDaEs": "intangible",
+     "leDoy": "Clientes y que la recomiendo siempre",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Catering",
+     "meDa": "Coordinación y confianza el día",
+     "meDaEs": "intangible",
+     "leDoy": "Clientes y todo bien organizado",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Parejas que se casan",
+     "meDa": "Pago, fotos y reseñas",
+     "meDaEs": "tangible",
+     "leDoy": "Su boda sin preocupaciones",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Empresas pequeñas",
+     "meDa": "Encargo y recomendación a otras empresas",
+     "meDaEs": "tangible",
+     "leDoy": "Que no se preocupen de nada",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Freelances de apoyo",
+     "meDa": "Manos de confianza",
+     "meDaEs": "intangible",
+     "leDoy": "Trabajo claro y bien organizado",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Seguidores de Instagram",
+     "meDa": "Visibilidad y consultas",
+     "meDaEs": "intangible",
+     "leDoy": "Ideas e inspiración",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c006",
+   "sector": "cooperativa de consumo",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 378,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien en general, aunque lo de las asambleas me ha hecho pensar que no lo tenemos resuelto.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 284,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha ayudado a ver lo que nos hace distintos de una tienda.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 248,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien en general, aunque algunas ideas no son lo que hacemos ahora y me ha tocado pensar.",
+     "salut": 100
+    }
+   ],
+   "escrit": 910,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Los socios",
+     "meDa": "cuota y pedido semanal",
+     "meDaEs": "tangible",
+     "leDoy": "verdura de Paco y del barrio",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Paco el de la huerta",
+     "meDa": "saber de temporada y cultivo",
+     "meDaEs": "intangible",
+     "leDoy": "pedidos fijos, visitas y recomendarle",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Los socios",
+     "meDa": "turnos de reparto",
+     "meDaEs": "tangible",
+     "leDoy": "descuento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Asociación de vecinos",
+     "meDa": "local para asambleas",
+     "meDaEs": "tangible",
+     "leDoy": "vida y gente en el local",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Amigos de los socios",
+     "meDa": "traen familias nuevas",
+     "meDaEs": "intangible",
+     "leDoy": "probar la coope sin compromiso",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias nuevas con críos",
+     "meDa": "curiosidad y preguntas",
+     "meDaEs": "intangible",
+     "leDoy": "respuestas claras sobre turnos y cuota",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Los socios",
+     "meDa": "ganas de participar",
+     "meDaEs": "intangible",
+     "leDoy": "conocer vecinos y sentirse parte",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias con críos",
+     "meDa": "venir al reparto con críos",
+     "meDaEs": "intangible",
+     "leDoy": "críos que juegan juntos",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Los socios que vienen a asambleas",
+     "meDa": "ideas y decisiones",
+     "meDaEs": "intangible",
+     "leDoy": "sentir que la coope es suya",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c007",
+   "sector": "consultora de personas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 98,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida porque no tengo muy claro de dónde vienen mis clientes, pero bien.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 136,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque me ha hecho pensar en cosas que no tenía claras.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 122,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto detalle, pero bien porque me ha hecho pensar en cómo llegó mi último cliente.",
+     "salut": 100
+    }
+   ],
+   "escrit": 356,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Pymes que te contratan",
+     "meDa": "pago por la consultoría",
+     "meDaEs": "tangible",
+     "leDoy": "equipos que se hablan mejor",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Pymes que ya trabajaron contigo",
+     "meDa": "opinión: «el ambiente mejora»",
+     "meDaEs": "intangible",
+     "leDoy": "seguimiento y confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gestorías y asesorías de pymes",
+     "meDa": "contactos de empresas pequeñas",
+     "meDaEs": "intangible",
+     "leDoy": "ayuda en temas de equipo y reconocimiento",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Conocidas que te recomiendan",
+     "meDa": "clientes nuevos y confianza",
+     "meDaEs": "intangible",
+     "leDoy": "agradecimiento y novedades primero",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Antiguas compañeras de trabajo",
+     "meDa": "recomendaciones a empresas que conocen",
+     "meDaEs": "intangible",
+     "leDoy": "agradecimiento y contarles lo que hago",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c008",
+   "sector": "tienda de barrio",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 322,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Cómoda, aunque algunas palabras no las entiendo del todo y me he quedado pensando en cómo llegar a la gente nueva.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 238,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco despistada con tanta cosa, pero bien porque habla de mi tienda.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 257,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto detalle, pero tranquila porque las preguntas eran sobre mi día a día.",
+     "salut": 100
+    }
+   ],
+   "escrit": 817,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Señoras mayores del barrio",
+     "meDa": "compra de todos los días",
+     "meDaEs": "tangible",
+     "leDoy": "productos y fiado a fin de mes",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Señoras mayores del barrio",
+     "meDa": "me cuentan lo del barrio",
+     "meDaEs": "intangible",
+     "leDoy": "trato de toda la vida y compra a casa",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Bar de la esquina",
+     "meDa": "habla de mi género a sus clientes",
+     "meDaEs": "intangible",
+     "leDoy": "embutido y queso de la tierra",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Distribuidor",
+     "meDa": "género",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Panadería",
+     "meDa": "pan para vender",
+     "meDaEs": "tangible",
+     "leDoy": "pago y le mando clientes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Vecinos nuevos del barrio",
+     "meDa": "pasan por la puerta",
+     "meDaEs": "intangible",
+     "leDoy": "productos de la tierra y consejo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Vecinas que te recomiendan",
+     "meDa": "me mandan gente nueva",
+     "meDaEs": "intangible",
+     "leDoy": "un detalle y las novedades antes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Clientes de siempre",
+     "meDa": "me piden lo que no tengo",
+     "meDaEs": "intangible",
+     "leDoy": "se lo busco y traigo",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c009",
+   "sector": "estudio de diseño",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 207,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas como las recomendaciones de la imprenta no sé si pasan de verdad.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 238,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, me ha hecho caer en que nunca pedimos que nos recomienden.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 213,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque algunas cosas no las tengo claras todavía.",
+     "salut": 100
+    }
+   ],
+   "escrit": 658,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Clientes",
+     "meDa": "dinero y su opinión",
+     "meDaEs": "tangible",
+     "leDoy": "marca explicada sin liarles",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Agencia de marketing",
+     "meDa": "encargos y experiencia con marcas",
+     "meDaEs": "intangible",
+     "leDoy": "diseños fiables y a tiempo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Imprenta",
+     "meDa": "impresión",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Jon fotógrafo",
+     "meDa": "fotos y proyectos más completos",
+     "meDaEs": "tangible",
+     "leDoy": "factura y recomendarle",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Seguidores de Instagram",
+     "meDa": "visibilidad y primeros contactos",
+     "meDaEs": "intangible",
+     "leDoy": "cómo trabajamos, sin liar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Clientes que vuelven al año",
+     "meDa": "encargos más grandes y recomendaciones",
+     "meDaEs": "intangible",
+     "leDoy": "seguimiento tras el logo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Quien os recomienda",
+     "meDa": "clientes nuevos y confianza",
+     "meDaEs": "intangible",
+     "leDoy": "agradecimiento y novedades primero",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c010",
+   "sector": "fisioterapeuta autónoma",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 241,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque algunas cosas no encajan con lo mío y no sé qué contestar de la matrona.",
+     "salut": 71
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 210,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con algunas cosas, pero bien porque veo que se entiende lo que hago.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 6,
+     "preguntes": 3,
+     "escrit": 271,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, las sugerencias se parecen a lo que ya hago y me dan ideas.",
+     "salut": 100
+    }
+   ],
+   "escrit": 722,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Pacientes",
+     "meDa": "pago sesión",
+     "meDaEs": "tangible",
+     "leDoy": "tratamiento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Pacientes",
+     "meDa": "pago pilates",
+     "meDaEs": "tangible",
+     "leDoy": "clases para seguir tras las sesiones",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Matrona",
+     "meDa": "recomienda mujeres tras el parto",
+     "meDaEs": "intangible",
+     "leDoy": "le cuento cómo van sus mujeres",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Club de atletismo",
+     "meDa": "me recomienda a sus corredores",
+     "meDaEs": "intangible",
+     "leDoy": "precio especial y consejos de prevención",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Buscadores y directorio",
+     "meDa": "que me encuentren cerca",
+     "meDaEs": "intangible",
+     "leDoy": "reseñas de pacientes y ficha al día",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Mi web",
+     "meDa": "que me encuentren las mujeres",
+     "meDaEs": "intangible",
+     "leDoy": "cuántas sesiones y qué pasa con la mutua",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gimnasio",
+     "meDa": "me manda a sus socios",
+     "meDaEs": "intangible",
+     "leDoy": "charla para sus socios",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Pacientes contentas",
+     "meDa": "me recomiendan a otras mujeres",
+     "meDaEs": "intangible",
+     "leDoy": "trato cercano y seguimiento",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c011",
+   "sector": "casa rural",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 255,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha hecho pensar en cosas que ya tenía pero no había mirado así.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 182,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé muy bien cómo hacerlas.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 234,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco despistada, porque hablan de gente que yo no conozco, pero las preguntas eran fáciles.",
+     "salut": 100
+    }
+   ],
+   "escrit": 671,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Huéspedes que repiten",
+     "meDa": "recomendaciones y volver otra vez",
+     "meDaEs": "intangible",
+     "leDoy": "trato de familia, rutas y saber de la zona",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Webs de reservas",
+     "meDa": "reservas de gente nueva",
+     "meDaEs": "tangible",
+     "leDoy": "comisión por reserva",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Bar del pueblo",
+     "meDa": "comidas y ambiente de pueblo",
+     "meDaEs": "tangible",
+     "leDoy": "clientes que le mando",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Tu sobrino",
+     "meDa": "la página web",
+     "meDaEs": "tangible",
+     "leDoy": "agradecimiento y confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Ayuntamiento",
+     "meDa": "fiestas, ferias y promoción del pueblo",
+     "meDaEs": "intangible",
+     "leDoy": "visitantes fuera de verano",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Alguien que haga rutas por la zona",
+     "meDa": "rutas guiadas por río y pinares",
+     "meDaEs": "tangible",
+     "leDoy": "huéspedes que quieren caminar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Huéspedes con perro",
+     "meDa": "reservas fuera de temporada y recomendaciones",
+     "meDaEs": "intangible",
+     "leDoy": "casa tranquila que admite perros",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c012",
+   "sector": "asociación cultural",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 180,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas preguntas me han hecho dudar porque no lo tenemos pensado.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 222,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha parecido sencillo y me ha dado alguna idea, aunque no estoy segura de lo de ser socio.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 225,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, es fácil de seguir aunque en alguna cosa no estoy segura.",
+     "salut": 100
+    }
+   ],
+   "escrit": 627,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Ayuntamiento",
+     "meDa": "local cedido y respaldo",
+     "meDaEs": "tangible",
+     "leDoy": "vida cultural en Delicias",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Voluntarios",
+     "meDa": "tiempo y ganas por las tardes",
+     "meDaEs": "intangible",
+     "leDoy": "sentirse parte del barrio",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Junta",
+     "meDa": "organización y decisiones",
+     "meDaEs": "intangible",
+     "leDoy": "confianza del barrio",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gente joven del barrio",
+     "meDa": "ideas nuevas y traer amigos",
+     "meDaEs": "intangible",
+     "leDoy": "pasarlo bien cerca de casa",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Vecinos que participan",
+     "meDa": "recomendaciones y preguntas",
+     "meDaEs": "intangible",
+     "leDoy": "horarios claros y cultura cerca",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Comercios del barrio",
+     "meDa": "sitio para nuestros carteles",
+     "meDaEs": "intangible",
+     "leDoy": "gente del barrio que pasa",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Institutos del barrio",
+     "meDa": "llegar a la gente joven",
+     "meDaEs": "intangible",
+     "leDoy": "actividades por las tardes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Otras asociaciones del barrio",
+     "meDa": "difusión y público compartido",
+     "meDaEs": "intangible",
+     "leDoy": "actividades para su gente",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Socios de la asociación",
+     "meDa": "cuota y apoyo fijo",
+     "meDaEs": "tangible",
+     "leDoy": "ser parte de la asociación",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c013",
+   "sector": "colla castellera",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 165,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, las preguntas son fáciles de entender y se parecen a mi colla.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 158,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, aunque lo de los comercios no sé si lo veo claro.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 239,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante tranquila, me ha parecido que habla de lo que de verdad pasa en la colla.",
+     "salut": 100
+    }
+   ],
+   "escrit": 562,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Jordi (alcalde)",
+     "meDa": "subvención",
+     "meDaEs": "tangible",
+     "leDoy": "actuaciones en fiestas",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "otras collas",
+     "meDa": "diadas y compañerismo",
+     "meDaEs": "intangible",
+     "leDoy": "diadas y apoyo mutuo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "castellers",
+     "meDa": "traen a amigos y conocidos",
+     "meDaEs": "intangible",
+     "leDoy": "una colla como una familia",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "castellers nuevos",
+     "meDa": "ganas, martes y viernes",
+     "meDaEs": "intangible",
+     "leDoy": "acogida sin necesitar experiencia",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias de los niños",
+     "meDa": "confianza para traer a sus hijos",
+     "meDaEs": "intangible",
+     "leDoy": "niños desde unos 5 años, sin experiencia",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Patrocinador del pueblo",
+     "meDa": "apoyo económico",
+     "meDaEs": "tangible",
+     "leDoy": "su nombre ligado a la colla",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "bares y tiendas de la plaza",
+     "meDa": "ayuda en fiestas y diadas",
+     "meDaEs": "tangible",
+     "leDoy": "gente y ambiente en su calle",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "vecinos que os ven actuar",
+     "meDa": "aplausos y curiosidad por probar",
+     "meDaEs": "intangible",
+     "leDoy": "la invitación a un ensayo",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c014",
+   "sector": "productora musical",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 166,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, aunque no tengo todo muy claro todavía.",
+     "salut": 71
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 157,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Algo perdida con tanto término, pero las preguntas son fáciles de contestar.",
+     "salut": 71
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 157,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto nombre, pero me reconozco en lo del trato cercano.",
+     "salut": 71
+    }
+   ],
+   "escrit": 480,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Artistas y grupos",
+     "meDa": "pago y contactos nuevos",
+     "meDaEs": "tangible",
+     "leDoy": "grabaciones con producción cuidada",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Artistas y grupos",
+     "meDa": "hablan de mí a otros grupos",
+     "meDaEs": "intangible",
+     "leDoy": "buen rollo y mucho cuidado",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Técnicos y músicos colaboradores",
+     "meDa": "su oficio en las sesiones",
+     "meDaEs": "tangible",
+     "leDoy": "trabajo y pago justo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Salas y locales del barrio",
+     "meDa": "artistas que buscan grabar",
+     "meDaEs": "intangible",
+     "leDoy": "directos grabados y apoyo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Músicos que buscan dónde grabar",
+     "meDa": "me escriben para grabar",
+     "meDaEs": "intangible",
+     "leDoy": "un sitio cercano, sin postureo",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c015",
+   "sector": "huerto ecológico con cestas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 349,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Cómoda, me ha parecido bastante cercano a mi huerto, aunque alguna pregunta me ha hecho pensar.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 181,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco liada pero bien, me hace pensar en cosas que no había mirado.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 250,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha parecido fácil y algunas ideas me sirven, aunque algunas no las veo claras.",
+     "salut": 100
+    }
+   ],
+   "escrit": 780,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Suscriptores de la cesta",
+     "meDa": "Su cuota semanal y fidelidad",
+     "meDaEs": "tangible",
+     "leDoy": "Cesta de verdura ecológica",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Tienda punto de recogida",
+     "meDa": "Sitio para recoger cestas",
+     "meDaEs": "tangible",
+     "leDoy": "Gente que entra cada semana y la conoce",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Amigos que te recomiendan",
+     "meDa": "Recomendaciones a conocidos",
+     "meDaEs": "intangible",
+     "leDoy": "Verdura de confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Suscriptores de la cesta",
+     "meDa": "Dudas y sugerencias",
+     "meDaEs": "intangible",
+     "leDoy": "Aviso por WhatsApp de cada cesta",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Ayudante de temporada",
+     "meDa": "Manos en el huerto",
+     "meDaEs": "tangible",
+     "leDoy": "Pago y oficio aprendido",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Vecinos de los suscriptores",
+     "meDa": "Ganas de probar la cesta",
+     "meDaEs": "intangible",
+     "leDoy": "Verdura que sabe de verdad",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Tu pareja",
+     "meDa": "Trabajo y cuidado del huerto",
+     "meDaEs": "intangible",
+     "leDoy": "Proyecto compartido",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Suscriptores de la cesta",
+     "meDa": "Quedarse también en verano",
+     "meDaEs": "intangible",
+     "leDoy": "Cesta de verano a su medida",
+     "leDoyEs": "tangible"
+    }
+   ]
+  },
+  {
+   "id": "c016",
+   "sector": "academia de baile",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 6,
+     "preguntes": 3,
+     "escrit": 274,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha resultado fácil y me he sentido entendida.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 246,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas que decía no las tenía claras, como lo de los carteles en comercios.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 282,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Cómoda, aunque algunas cosas como las clases de las 8 o 9 no las he dicho yo y me suenan raras.",
+     "salut": 100
+    }
+   ],
+   "escrit": 802,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Lucía (profe de salsa)",
+     "meDa": "clases",
+     "meDaEs": "tangible",
+     "leDoy": "dinero por hora",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "alumnas",
+     "meDa": "cuota y traen a sus amigas",
+     "meDaEs": "tangible",
+     "leDoy": "clases y buen rollo sin pareja",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "madres de las niñas",
+     "meDa": "cuota y lo cuentan a otras madres",
+     "meDaEs": "tangible",
+     "leDoy": "niñas contentas y festival",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "bar de al lado",
+     "meDa": "el sitio para las fiestas",
+     "meDaEs": "intangible",
+     "leDoy": "clientes y vida al barrio",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "amigas de alumnas",
+     "meDa": "vienen a probar una clase",
+     "meDaEs": "intangible",
+     "leDoy": "sentirse a gusto, sin pareja",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "grupo de competición",
+     "meDa": "orgullo y ganas de seguir",
+     "meDaEs": "intangible",
+     "leDoy": "entrenos y metas nuevas",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "segunda profe por horas",
+     "meDa": "clases",
+     "meDaEs": "tangible",
+     "leDoy": "dinero por hora",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "seguidoras de Instagram",
+     "meDa": "ven vídeos y lo comparten",
+     "meDaEs": "intangible",
+     "leDoy": "ver el ambiente de clase",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c017",
+   "sector": "escuela de idiomas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 6,
+     "preguntes": 3,
+     "escrit": 170,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante tranquila, aunque algo perdida con lo de llegar a los adultos.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 193,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha hecho ver que las madres que preguntan ya son un primer paso.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 139,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no las había pensado nunca.",
+     "salut": 100
+    }
+   ],
+   "escrit": 502,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Niños y niñas alumnos",
+     "meDa": "Pago del curso y seguir cada año",
+     "meDaEs": "tangible",
+     "leDoy": "Perder la vergüenza para hablar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias de los alumnos",
+     "meDa": "Recomendarte a otros padres",
+     "meDaEs": "intangible",
+     "leDoy": "Confianza y saber cómo va su hijo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Tu compañera profe",
+     "meDa": "Clases y otra mirada",
+     "meDaEs": "intangible",
+     "leDoy": "Trabajo y equipo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Adultos que quieren aprender",
+     "meDa": "Pago de su curso",
+     "meDaEs": "tangible",
+     "leDoy": "Horarios pensados para adultos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Padres y madres que preguntan por clases",
+     "meDa": "Ganas de hablar sin vergüenza",
+     "meDaEs": "intangible",
+     "leDoy": "Grupo de mañana o última hora",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Gente que pregunta",
+     "meDa": "Dudas de precios y horarios",
+     "meDaEs": "intangible",
+     "leDoy": "Respuesta rápida y clara",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c018",
+   "sector": "formación de profesores",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 289,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, me ha ayudado a ver mis cosas más claras, aunque hay preguntas que no sé contestar.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 209,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, las preguntas son claras y me hacen pensar en cosas que no había valorado.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 297,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Entendida y con ideas prácticas, aunque lo de los directores me suena un poco lejano.",
+     "salut": 100
+    }
+   ],
+   "escrit": 795,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Profes de primaria y secundaria",
+     "meDa": "Pago y dudas reales",
+     "meDaEs": "tangible",
+     "leDoy": "Herramientas para el día siguiente",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Centros de formación del profesorado",
+     "meDa": "Grupos y homologación para sexenios",
+     "meDaEs": "tangible",
+     "leDoy": "Cursos prácticos para usar mañana",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Compañeros de los profes",
+     "meDa": "Recomendaciones de boca a boca",
+     "meDaEs": "intangible",
+     "leDoy": "Confianza para apuntarse",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Profes que ya hicieron tu curso",
+     "meDa": "Casos concretos que se complican",
+     "meDaEs": "intangible",
+     "leDoy": "Acompañamiento meses después",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Compañero psicólogo",
+     "meDa": "Su mirada de psicólogo",
+     "meDaEs": "intangible",
+     "leDoy": "Espacio para enseñar contigo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Profes contentos con tu curso",
+     "meDa": "Lo que les sirvió, por escrito",
+     "meDaEs": "intangible",
+     "leDoy": "Reconocimiento a su trabajo",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c019",
+   "sector": "bodega familiar",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 206,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanta cosa, pero me ha gustado ver la bodega así contada.",
+     "salut": 71
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 165,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanta cosa, pero bien porque me van preguntando cosas de mi bodega.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 130,
+     "toc": 0,
+     "esforc": 3,
+     "sent": "Un poco perdida con tanto término, pero contenta de que se vea lo del abuelo.",
+     "salut": 86
+    }
+   ],
+   "escrit": 501,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Viticultores de la zona",
+     "meDa": "uva de Cariñena",
+     "meDaEs": "tangible",
+     "leDoy": "compra estable y pago justo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Tiendas y restaurantes de otras ciudades",
+     "meDa": "pedidos y recomendación a su clientela",
+     "meDaEs": "tangible",
+     "leDoy": "un vino de verdad con historia",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Denominación de Origen Cariñena",
+     "meDa": "prestigio del origen",
+     "meDaEs": "intangible",
+     "leDoy": "vino que cuida la zona",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Tu familia",
+     "meDa": "la forma de hacer desde el abuelo",
+     "meDaEs": "intangible",
+     "leDoy": "una bodega con futuro",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gente que compra por internet",
+     "meDa": "pedidos desde casa",
+     "meDaEs": "tangible",
+     "leDoy": "vino de toda la vida",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Tiendas de vinos que conoce un familiar",
+     "meDa": "una primera puerta fuera",
+     "meDaEs": "intangible",
+     "leDoy": "vino de la familia y su historia",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c020",
+   "sector": "restaurante de proximidad",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 322,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Cómoda, las preguntas se entienden bien aunque alguna me ha hecho pensar.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 174,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, aunque algunas cosas me suenan raras.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 216,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con algunas cosas, pero bien, me ha hecho pensar en el pescado y la pizarra.",
+     "salut": 100
+    }
+   ],
+   "escrit": 712,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Pescadería del mercado",
+     "meDa": "Pescado del día de aquí",
+     "meDaEs": "tangible",
+     "leDoy": "Pago y contar de dónde viene",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Manolo de la huerta",
+     "meDa": "Verdura de la huerta",
+     "meDaEs": "tangible",
+     "leDoy": "Pago y darle a conocer",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gente del barrio",
+     "meDa": "Reseñas y boca a boca",
+     "meDaEs": "intangible",
+     "leDoy": "Cocina de mercado",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Clientes del menú",
+     "meDa": "Vuelven y nos dicen qué tal",
+     "meDaEs": "intangible",
+     "leDoy": "Menú con producto del mercado",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Oficinas cercanas",
+     "meDa": "Grupos y reservas",
+     "meDaEs": "tangible",
+     "leDoy": "Menú rápido y reserva fácil",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Cocinero y camarera",
+     "meDa": "Su trabajo y buen trato",
+     "meDaEs": "tangible",
+     "leDoy": "Sueldo y comida del día",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Gente que lee las reseñas",
+     "meDa": "Primera visita por curiosidad",
+     "meDaEs": "intangible",
+     "leDoy": "Respuesta a sus reseñas",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Quien pasa por delante",
+     "meDa": "Entra al ver la pizarra",
+     "meDaEs": "intangible",
+     "leDoy": "Pescado del día en la pizarra",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c021",
+   "sector": "organizadora de eventos",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 154,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha resultado fácil y me ha ayudado a ver mejor a quién tengo alrededor.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 199,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha resultado fácil y me he sentido entendida.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 147,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha parecido fácil de contestar, aunque alguna cosa no la tenía clara.",
+     "salut": 86
+    }
+   ],
+   "escrit": 500,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Fotógrafo",
+     "meDa": "fotos para enseñar mi trabajo",
+     "meDaEs": "intangible",
+     "leDoy": "encargos y recomendaciones",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Parejas que se casan",
+     "meDa": "me escriben y cuentan su boda",
+     "meDaEs": "intangible",
+     "leDoy": "una charla cercana y su presupuesto",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Parejas que ya celebraron",
+     "meDa": "fotos, reseñas y recomendaciones",
+     "meDaEs": "intangible",
+     "leDoy": "implicación y un recuerdo cuidado",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Floristería",
+     "meDa": "flores y parejas recomendadas",
+     "meDaEs": "intangible",
+     "leDoy": "encargos y recomendaciones",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Seguidores de Instagram",
+     "meDa": "visibilidad y preguntas por precio",
+     "meDaEs": "intangible",
+     "leDoy": "ideas y un sitio donde escribirme",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias que celebran cumpleaños",
+     "meDa": "pago de la organización",
+     "meDaEs": "tangible",
+     "leDoy": "un cumpleaños sin preocupaciones",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c022",
+   "sector": "cooperativa de consumo",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 300,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Me ha parecido bastante claro y me ha hecho ver cosas que no habíamos pensado, como lo de explicar bien la cuota.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 245,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante entendida, aunque no tengo claro quién tendría tiempo para todo esto.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 274,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque algunas cosas no las veo claras y me da cosa que suene a mucho lío.",
+     "salut": 100
+    }
+   ],
+   "escrit": 819,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Pili la del huerto",
+     "meDa": "saber de temporada y visitas al huerto",
+     "meDaEs": "intangible",
+     "leDoy": "compra estable y confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "los socios",
+     "meDa": "cuota y boca a boca",
+     "meDaEs": "tangible",
+     "leDoy": "la cesta y conocer al productor",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "socios",
+     "meDa": "turnos de reparto",
+     "meDaEs": "intangible",
+     "leDoy": "descuento y sentirse parte",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "asociación de vecinos",
+     "meDa": "local y difusión en el barrio",
+     "meDaEs": "intangible",
+     "leDoy": "vida en el local los jueves",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "familias nuevas del barrio",
+     "meDa": "ganas de probar",
+     "meDaEs": "intangible",
+     "leDoy": "alguien de la junta que explique",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "centro cívico",
+     "meDa": "sitio para el cartel",
+     "meDaEs": "intangible",
+     "leDoy": "actividades para el barrio",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "socios entre ellos",
+     "meDa": "conocer a otros vecinos",
+     "meDaEs": "intangible",
+     "leDoy": "un rato juntos los jueves",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "AMPA del cole y escuela infantil",
+     "meDa": "llegar a familias con niños",
+     "meDaEs": "intangible",
+     "leDoy": "comida de temporada del barrio",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c023",
+   "sector": "consultora de personas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 137,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas ideas no sé si encajan con mi negocio.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 192,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque algunas cosas no las tengo muy claras.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 178,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto término, pero las preguntas se entienden bien.",
+     "salut": 86
+    }
+   ],
+   "escrit": 507,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Empresas clientas",
+     "meDa": "pago por el servicio",
+     "meDaEs": "tangible",
+     "leDoy": "apoyo en su gente",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Empresas clientas",
+     "meDa": "recomendaciones y opiniones para tu web",
+     "meDaEs": "intangible",
+     "leDoy": "trato cercano y confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Empresas que te contactan",
+     "meDa": "preguntas por el precio",
+     "meDaEs": "intangible",
+     "leDoy": "qué incluye y qué les aporto",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Conocidos que te recomiendan",
+     "meDa": "contactos de empresas",
+     "meDaEs": "intangible",
+     "leDoy": "buen trato a quien envían",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c024",
+   "sector": "tienda de barrio",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 264,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanta cosa, pero bien porque me ha hecho pensar en mi tienda.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 233,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Cómoda, me ha hecho pensar en cosas que ya hago sin darme cuenta.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 228,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, son preguntas fáciles de contestar, aunque algunas cosas no las entendí del todo.",
+     "salut": 100
+    }
+   ],
+   "escrit": 725,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "clientas",
+     "meDa": "compra diaria y lo que opinan",
+     "meDaEs": "tangible",
+     "leDoy": "productos, consejo y fiar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "clientas mayores",
+     "meDa": "confianza de muchos años",
+     "meDaEs": "intangible",
+     "leDoy": "la compra en casa y fiar",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "distribuidor",
+     "meDa": "género",
+     "meDaEs": "tangible",
+     "leDoy": "pago",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "panadero",
+     "meDa": "pan del día",
+     "meDaEs": "tangible",
+     "leDoy": "pago y clientela fiel",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "obreros de mediodía",
+     "meDa": "compran a diario",
+     "meDaEs": "tangible",
+     "leDoy": "trato cercano y rápido",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "grupo de WhatsApp",
+     "meDa": "pedidos y lo que les apetece",
+     "meDaEs": "intangible",
+     "leDoy": "avisos del pan y la compra en casa",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "vecinas que recomiendan",
+     "meDa": "gente nueva que viene a ver",
+     "meDaEs": "intangible",
+     "leDoy": "trato de toda la vida",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "hijos y nietos de clientas",
+     "meDa": "compras y que me conozcan otros jóvenes",
+     "meDaEs": "intangible",
+     "leDoy": "tranquilidad y trato de cuando eran pequeños",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c025",
+   "sector": "estudio de diseño",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 285,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque me ha hecho ver que no sé quién nos recomienda.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 224,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, aunque me ha hecho darme cuenta de que no sé quién nos recomienda.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 1,
+     "preguntes": 3,
+     "escrit": 240,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Algo confusa porque varias cosas inventaban detalles que no son míos, pero las preguntas sí me han hecho pensar.",
+     "salut": 100
+    }
+   ],
+   "escrit": 749,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "clientes",
+     "meDa": "encargos y pago",
+     "meDaEs": "tangible",
+     "leDoy": "un proceso, no solo un logo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "imprenta",
+     "meDa": "impresión",
+     "meDaEs": "tangible",
+     "leDoy": "trabajo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Javi fotógrafo",
+     "meDa": "fotos",
+     "meDaEs": "tangible",
+     "leDoy": "le pasamos clientes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "instagram",
+     "meDa": "visibilidad",
+     "meDaEs": "intangible",
+     "leDoy": "publicaciones",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Quien nos recomienda",
+     "meDa": "nos manda clientes nuevos",
+     "meDaEs": "intangible",
+     "leDoy": "quedar bien recomendándonos",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Marcas que repiten",
+     "meDa": "confianza y nos dejan hacer más",
+     "meDaEs": "intangible",
+     "leDoy": "conocer su marca a fondo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Bodegas",
+     "meDa": "proyectos de packaging completos",
+     "meDaEs": "tangible",
+     "leDoy": "etiquetas que cuentan su vino",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Quien cuenta nuestro trabajo",
+     "meDa": "que se conozca el proceso",
+     "meDaEs": "intangible",
+     "leDoy": "la historia de cada proyecto",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c026",
+   "sector": "fisioterapeuta autónoma",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 6,
+     "preguntes": 3,
+     "escrit": 212,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha ayudado a ver que el boca a boca es lo que más me trae.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 210,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha hecho pensar en cosas que no me había planteado, aunque algunas no sé si valen para mí.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 195,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé si son para mí, como lo del centro de mayores.",
+     "salut": 100
+    }
+   ],
+   "escrit": 617,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "pacientes con dolor de espalda",
+     "meDa": "pagan sesión y me recomiendan",
+     "meDaEs": "tangible",
+     "leDoy": "ven que mejoran y ejercicios para casa",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "pacientes mayores",
+     "meDa": "pagan y confían en mí",
+     "meDaEs": "tangible",
+     "leDoy": "voy a su casa",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "gimnasio",
+     "meDa": "me manda socios",
+     "meDaEs": "intangible",
+     "leDoy": "descuento y consejos para sus socios",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "médico de cabecera",
+     "meDa": "me manda pacientes",
+     "meDaEs": "intangible",
+     "leDoy": "le cuento cómo evolucionan",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "conocidos que me recomiendan",
+     "meDa": "personas nuevas que confían",
+     "meDaEs": "intangible",
+     "leDoy": "agradecimiento y buen trato",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "pacientes con bono",
+     "meDa": "vienen de forma continuada",
+     "meDaEs": "tangible",
+     "leDoy": "bono de sesiones y seguimiento",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "pacientes que dejan de venir",
+     "meDa": "me cuentan por qué paran",
+     "meDaEs": "intangible",
+     "leDoy": "llamada para ver cómo siguen",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c027",
+   "sector": "casa rural",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 184,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con algunas cosas, pero me ha parecido sencillo contestar.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 150,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con algunas cosas, pero me ha parecido sencillo y me ha dado ideas.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 177,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no las tengo claras todavía.",
+     "salut": 100
+    }
+   ],
+   "escrit": 511,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Huéspedes de fin de semana",
+     "meDa": "pago y opinión de la estancia",
+     "meDaEs": "tangible",
+     "leDoy": "descanso y tranquilidad en el pueblo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Huéspedes que repiten",
+     "meDa": "opiniones y recomendaciones a conocidos",
+     "meDaEs": "intangible",
+     "leDoy": "trato cercano y petición de opinión",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Mi sobrino",
+     "meDa": "la página web y sus arreglos",
+     "meDaEs": "tangible",
+     "leDoy": "agradecimiento y confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Personas que viajan con perro",
+     "meDa": "reservas de gente con perro",
+     "meDaEs": "tangible",
+     "leDoy": "respuesta clara sobre perros en la web",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Páginas de reservas por internet",
+     "meDa": "reservas de gente nueva",
+     "meDaEs": "tangible",
+     "leDoy": "fotos y opiniones de la casa",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c028",
+   "sector": "asociación cultural",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 206,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Algo perdida con algunas cosas, pero bien porque me ayuda a ordenar ideas.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 180,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto detalle, pero bien acompañada porque me ha ayudado a pensar en los jóvenes.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 170,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Algo perdida con tanta cosa, pero va bien que me hagan preguntas fáciles.",
+     "salut": 100
+    }
+   ],
+   "escrit": 556,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Ayuntamiento",
+     "meDa": "nos deja el local",
+     "meDaEs": "tangible",
+     "leDoy": "vida cultural y vecinos que participan",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Voluntarios",
+     "meDa": "tiempo de tardes y fines de semana",
+     "meDaEs": "intangible",
+     "leDoy": "sentirse parte y aprender organizando",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Vecindario",
+     "meDa": "boca a boca y presencia",
+     "meDaEs": "intangible",
+     "leDoy": "pasarlo bien y conocer vecinos",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Socios",
+     "meDa": "cuota de socio",
+     "meDaEs": "tangible",
+     "leDoy": "descuentos y poder proponer actividades",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Gente joven del barrio",
+     "meDa": "ganas, ideas y nuevas caras",
+     "meDaEs": "intangible",
+     "leDoy": "un sitio donde quedar y proponer",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c029",
+   "sector": "colla castellera",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 298,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, las preguntas son fáciles aunque no sé si lo hacemos bien con los nuevos.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 234,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Algo perdida con tanta cosa, pero bien porque me ha hecho pensar en lo que ya hacemos.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 177,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto detalle, pero me ha hecho pensar en cosas que no había mirado.",
+     "salut": 100
+    }
+   ],
+   "escrit": 709,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Ayuntamiento",
+     "meDa": "subvención y visibilidad",
+     "meDaEs": "tangible",
+     "leDoy": "actuaciones en fiestas",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Bar de la plaza",
+     "meDa": "dinero para camisas y viajes",
+     "meDaEs": "tangible",
+     "leDoy": "actuar en su puerta y foto con la colla",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Jordi",
+     "meDa": "una mano cuando hace falta",
+     "meDaEs": "intangible",
+     "leDoy": "agradecimiento y pertenencia",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Bar donde vamos después de ensayar",
+     "meDa": "descuento y sitio para juntarnos",
+     "meDaEs": "tangible",
+     "leDoy": "clientes fijos dos días por semana",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Gente que nos ve actuar",
+     "meDa": "ganas de probar",
+     "meDaEs": "intangible",
+     "leDoy": "saber que no hace falta experiencia",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Gente que viene a probar",
+     "meDa": "tiempo en los ensayos",
+     "meDaEs": "intangible",
+     "leDoy": "pasarlo bien sin que nadie exija",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Junta y equipo técnico",
+     "meDa": "organización y ensayos preparados",
+     "meDaEs": "intangible",
+     "leDoy": "confianza de la colla",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Negocios del pueblo que podrían patrocinar",
+     "meDa": "dinero y apoyo",
+     "meDaEs": "tangible",
+     "leDoy": "su nombre en camisas y actuaciones",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c030",
+   "sector": "productora musical",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 171,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanta pregunta, pero se entiende lo básico.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 4,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 156,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas preguntas me hacen pensar un poco.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 212,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco despistada, porque algunas cosas no encajan con lo mío, pero las preguntas se entienden.",
+     "salut": 86
+    }
+   ],
+   "escrit": 539,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Grupos que producen contigo",
+     "meDa": "pago por la producción",
+     "meDaEs": "tangible",
+     "leDoy": "trato cercano y precio majo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Conocidos que te recomiendan",
+     "meDa": "recomendaciones a otros grupos",
+     "meDaEs": "intangible",
+     "leDoy": "buen rollo y confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Salas y conciertos",
+     "meDa": "grupos que buscan grabar",
+     "meDaEs": "intangible",
+     "leDoy": "grupos que suenan mejor en directo",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Amigos músicos",
+     "meDa": "boca a boca entre grupos",
+     "meDaEs": "intangible",
+     "leDoy": "consejos y buen rollo",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c031",
+   "sector": "huerto ecológico con cestas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 239,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, me ha resultado fácil, aunque lo de los comedores no lo veo claro.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 5,
+     "acceptades": 1,
+     "preguntes": 3,
+     "escrit": 146,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé si encajan con lo que hacemos nosotros.",
+     "salut": 86
+    },
+    {
+     "n": 3,
+     "sug": 4,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 140,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque algunas cosas como lo del restaurante no las veo claras.",
+     "salut": 86
+    }
+   ],
+   "escrit": 525,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Tienda del barrio",
+     "meDa": "punto de recogida y nuevos clientes",
+     "meDaEs": "tangible",
+     "leDoy": "verdura y gente que entra",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Familias de las cestas",
+     "meDa": "pago de la cesta semanal",
+     "meDaEs": "tangible",
+     "leDoy": "cesta ecológica cada jueves",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Amigos que os recomiendan",
+     "meDa": "recomendaciones a conocidos",
+     "meDaEs": "intangible",
+     "leDoy": "confianza en lo que cultiváis",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias de las cestas",
+     "meDa": "ideas y qué les gusta",
+     "meDaEs": "intangible",
+     "leDoy": "aviso de qué viene cada semana",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Familias de las cestas",
+     "meDa": "seguir también en invierno",
+     "meDaEs": "intangible",
+     "leDoy": "qué se cultiva en invierno y por qué",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c032",
+   "sector": "academia de baile",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 330,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Cómoda, me ha hecho pensar en cosas que no me había parado a mirar.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 301,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, me da ideas sencillas, aunque alguna cosa no la termino de entender.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 242,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, la mayoría me suena a cosas que yo ya pensaba, aunque el tema del centro cultural me pilla de nuevas.",
+     "salut": 100
+    }
+   ],
+   "escrit": 873,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "alumnos",
+     "meDa": "la cuota y recomendaciones",
+     "meDaEs": "tangible",
+     "leDoy": "clases y buen ambiente",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Lucía y Andrés (profes)",
+     "meDa": "las clases",
+     "meDaEs": "tangible",
+     "leDoy": "sueldo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Lucía",
+     "meDa": "coreografías para el festival",
+     "meDaEs": "tangible",
+     "leDoy": "dinero extra",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "el bar",
+     "meDa": "el local para las sociales",
+     "meDaEs": "tangible",
+     "leDoy": "clientela fiel y ambiente",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "las amigas que recomiendan",
+     "meDa": "traen gente nueva",
+     "meDaEs": "intangible",
+     "leDoy": "venir juntas y pasarlo bien",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "los alumnos que se quedan años",
+     "meDa": "presentan a los nuevos",
+     "meDaEs": "intangible",
+     "leDoy": "un sitio donde sentirse a gusto",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Instagram",
+     "meDa": "visibilidad en el barrio",
+     "meDaEs": "intangible",
+     "leDoy": "vídeos del ambiente y los martes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "gente que viene a probar",
+     "meDa": "ganas de empezar",
+     "meDaEs": "intangible",
+     "leDoy": "clase de prueba sin pareja",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "los que vienen un trimestre",
+     "meDa": "cuentan por qué se van",
+     "meDaEs": "intangible",
+     "leDoy": "social para nuevos y mensaje cercano",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "gente que sale del trabajo los martes",
+     "meDa": "llenan los martes",
+     "meDaEs": "tangible",
+     "leDoy": "bachata principiantes sin pareja",
+     "leDoyEs": "tangible"
+    }
+   ]
+  },
+  {
+   "id": "c033",
+   "sector": "gestoría",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 182,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto término, pero bien porque las preguntas eran fáciles de contestar.",
+     "salut": 71
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 1,
+     "preguntes": 3,
+     "escrit": 110,
+     "toc": 0,
+     "esforc": 3,
+     "sent": "Un poco perdida, hay cosas que no sé bien qué significan.",
+     "salut": 57
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 120,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco perdida con tanto término, pero bien, se entiende lo que preguntan.",
+     "salut": 71
+    }
+   ],
+   "escrit": 412,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "Autónomos",
+     "meDa": "sus papeles por WhatsApp",
+     "meDaEs": "tangible",
+     "leDoy": "la renta y los papeles",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Autónomos",
+     "meDa": "sus cuotas de la gestoría",
+     "meDaEs": "tangible",
+     "leDoy": "tranquilidad con Hacienda",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Hacienda y Seguridad Social",
+     "meDa": "avisos y cambios de normas",
+     "meDaEs": "intangible",
+     "leDoy": "declaraciones presentadas a tiempo",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "Clientes que te recomiendan",
+     "meDa": "nuevos clientes recomendados",
+     "meDaEs": "intangible",
+     "leDoy": "trato cercano y de confianza",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Personas que preguntan por la renta",
+     "meDa": "sus dudas sobre la renta",
+     "meDaEs": "intangible",
+     "leDoy": "respuestas claras y sencillas",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c034",
+   "sector": "taller de bicicletas",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 186,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé muy bien a qué vienen.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 218,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas no sé contestarlas del todo.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 5,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 204,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Un poco despistada con lo del grupo de carretera, pero lo de las reseñas y el tiempo sí lo veo claro.",
+     "salut": 100
+    }
+   ],
+   "escrit": 608,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "gente que va al trabajo en bici",
+     "meDa": "dinero, volver y recomendarme",
+     "meDaEs": "tangible",
+     "leDoy": "arreglo rápido y saber cuánto tarda",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes de carretera",
+     "meDa": "dinero",
+     "meDaEs": "tangible",
+     "leDoy": "puesta a punto",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "distribuidor",
+     "meDa": "piezas que me faltan, rápido",
+     "meDaEs": "tangible",
+     "leDoy": "pago y pedidos fijos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "la tienda grande",
+     "meDa": "bicis para arreglar",
+     "meDaEs": "tangible",
+     "leDoy": "arreglos",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "clientes que dejan reseña",
+     "meDa": "estrellas y reseñas en el mapa",
+     "meDaEs": "intangible",
+     "leDoy": "gracias y respuesta a su reseña",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "gente que pasa por la calle",
+     "meDa": "curiosidad y una primera visita",
+     "meDaEs": "intangible",
+     "leDoy": "charla y consejo en la puerta",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "estudiantes",
+     "meDa": "arreglos y boca a boca",
+     "meDaEs": "intangible",
+     "leDoy": "consejo y arreglo sin cobrar de más",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c035",
+   "sector": "espacio de coworking",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 5,
+     "preguntes": 3,
+     "escrit": 324,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, las preguntas se entienden y reflejan lo que hacemos, aunque la cafetería no la veo tan así.",
+     "salut": 100
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 238,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, aunque alguna cosa del ayuntamiento no me encajaba.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 279,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, aunque algunas cosas como lo de los fijos que cuentan su experiencia no sé si es tan así.",
+     "salut": 86
+    }
+   ],
+   "escrit": 841,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "coworkers fijos",
+     "meDa": "cuota, recomendaciones y conocidos",
+     "meDaEs": "tangible",
+     "leDoy": "su sitio, buen ambiente y colaboraciones",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "coworkers por días",
+     "meDa": "pago por día y ganas de repetir",
+     "meDaEs": "tangible",
+     "leDoy": "conocer a los fijos y sus historias",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "cafetería",
+     "meDa": "café",
+     "meDaEs": "tangible",
+     "leDoy": "factura",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "empresas que alquilan la sala",
+     "meDa": "alquiler y conocer el espacio",
+     "meDaEs": "tangible",
+     "leDoy": "sala con proyector, wifi bueno y café",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "ayuntamiento",
+     "meDa": "ayudas a emprendedores",
+     "meDaEs": "tangible",
+     "leDoy": "emprendedores con sitio donde crecer",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "gente que viene a los eventos",
+     "meDa": "nos conocen y vuelven",
+     "meDaEs": "intangible",
+     "leDoy": "contactos y conocer el espacio",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "gente que busca coworking en Bilbao",
+     "meDa": "sus preguntas: precio, sala, perro",
+     "meDaEs": "intangible",
+     "leDoy": "respuestas claras y fotos al día",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "gente que trabaja junta en La Nave",
+     "meDa": "proyectos que nacen aquí",
+     "meDaEs": "intangible",
+     "leDoy": "un sitio donde encontrarse y colaborar",
+     "leDoyEs": "intangible"
+    }
+   ]
+  },
+  {
+   "id": "c036",
+   "sector": "guía turística",
+   "voltes": [
+    {
+     "n": 1,
+     "sug": 6,
+     "acceptades": 3,
+     "preguntes": 3,
+     "escrit": 230,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante cómoda, aunque algunas cosas como lo de los guías de otras ciudades no las tengo claras.",
+     "salut": 86
+    },
+    {
+     "n": 2,
+     "sug": 6,
+     "acceptades": 2,
+     "preguntes": 3,
+     "escrit": 230,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bien, aunque algunas cosas que dice no las he dicho yo y no me encajan.",
+     "salut": 100
+    },
+    {
+     "n": 3,
+     "sug": 6,
+     "acceptades": 4,
+     "preguntes": 3,
+     "escrit": 204,
+     "toc": 0,
+     "esforc": 2,
+     "sent": "Bastante bien, me ha ayudado a ver que tengo más cosas de las que pensaba.",
+     "salut": 100
+    }
+   ],
+   "escrit": 664,
+   "toc": 0,
+   "final": [
+    {
+     "quien": "turistas",
+     "meDa": "valoraciones, repetir y recomendarme",
+     "meDaEs": "intangible",
+     "leDoy": "rutas con historia por el casco",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "plataforma de reservas",
+     "meDa": "reservas",
+     "meDaEs": "tangible",
+     "leDoy": "comisión",
+     "leDoyEs": "tangible"
+    },
+    {
+     "quien": "hotel",
+     "meDa": "me recomienda a sus huéspedes",
+     "meDaEs": "intangible",
+     "leDoy": "huéspedes contentos con la visita",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "hotel",
+     "meDa": "clientes",
+     "meDaEs": "tangible",
+     "leDoy": "buen servicio a sus huéspedes",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "Pedro de la agencia",
+     "meDa": "grupos y confianza en mi trabajo",
+     "meDaEs": "intangible",
+     "leDoy": "grupos bien atendidos",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "profes de colegios",
+     "meDa": "repiten y me pasan a compañeros",
+     "meDaEs": "intangible",
+     "leDoy": "ruta donde los niños no se aburren",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "tu web",
+     "meDa": "reservas directas sin comisión",
+     "meDaEs": "tangible",
+     "leDoy": "precios, qué incluye, entradas y niños",
+     "leDoyEs": "intangible"
+    },
+    {
+     "quien": "guías de otras ciudades",
+     "meDa": "me mandan gente a Toledo",
+     "meDaEs": "intangible",
+     "leDoy": "les paso quien quiere otra ciudad",
+     "leDoyEs": "intangible"
+    }
+   ]
+  }
+ ]
+}

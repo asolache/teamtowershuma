@@ -173,6 +173,7 @@ aquesta llista i res més.
 - `SOS/knowledge/legal` · saber · Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js)
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
 - `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
+- `SOS/knowledge/vna/banc-mapes` · prova · El banc de mapes: casos de negoci, la rúbrica del jutge, les variants del prompt de /cliente/ i els resultats de cada passada (SOS/tools/banc-mapes.mjs)
 - `SOS/prompts` · saber · Un fitxer per intent d'IA: el que se li demana, versionat
 - `SOS/tools` · prova · Les guardes que peten al CI quan una promesa deixa de ser certa
 - `SOS/tests` · prova · Playwright contra les pàgines de debò, per `file://`

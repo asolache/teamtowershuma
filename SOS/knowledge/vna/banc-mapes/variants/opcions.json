@@ -1,0 +1,4 @@
+{
+ "esquema": "opcions",
+ "pasExtra": "Cambio en «preguntas»: cada una es un objeto {pregunta, opciones, varias}. «opciones»: de dos a cuatro respuestas probables para su caso, cortas (hasta cinco palabras), que no se solapen; la página añade sola «Otra» para escribir. «varias»: true si puede elegir más de una. Pregunta solo lo que no puedas deducir; si puedes proponer algo razonable, propónlo en «sugerencias» en lugar de preguntarlo."
+}
