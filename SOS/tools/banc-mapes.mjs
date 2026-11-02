@@ -169,7 +169,9 @@ async function main() {
     console.log(ordre + ': ' + ps.length + ' peticions · pitjor cas ' + max.toFixed(2) + ' $ · tope ' + tope + ' $');
     if (max > tope) throw new Error('el pitjor cas passa del tope');
     if (a.sec) return null;
-    if (!clau.startsWith('sk-ant-api')) throw new Error('falta ANTHROPIC_API_KEY (sk-ant-api…)');
+    if (!clau) throw new Error('falta ANTHROPIC_API_KEY');
+    /* Només el tipus de clau (fins al tercer guió), mai la clau. */
+    if (!clau.startsWith('sk-ant-api')) console.log('  avís: la clau és del tipus «' + clau.split('-').slice(0, 3).join('-').slice(0, 12) + '», no «sk-ant-api…»; ho provem igualment');
     return lotOn ? lot(ps, clau) : sincron(ps, clau);
   };
   const OPUS = 'claude-opus-5-5';
