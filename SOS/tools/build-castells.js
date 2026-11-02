@@ -512,6 +512,7 @@ const FR_CAP = (v, n, l) => l === 'es'
   : `${v.dims.length} dimensions sobre ${n} rengles`;
 const kPl = (f, variable) => `ct.pl.${f.id}${variable ? '-' + variable.id : ''}`;
 
+const TITOLS_PL = {};
 function planta(f, variable) {
   const rep = variable ? repartiment(f, variable) : null;
   const dirs = rep ? rep.dirs : direccions(f.baixos);
@@ -546,7 +547,9 @@ function planta(f, variable) {
     p.push(`<circle class="pl-baix" cx="${(PC + Math.cos(a) * r).toFixed(1)}" `
       + `cy="${(PC + Math.sin(a) * r).toFixed(1)}" r="7"/>`);
   }
-  const tid = `plT-${f.id}${variable ? '-' + variable.id : ''}`;
+  /* La mateixa pinya pot sortir dues vegades a la pàgina: l'id del títol ha de ser únic (W3C). */
+  const base = `plT-${f.id}${variable ? '-' + variable.id : ''}`;
+  const tid = TITOLS_PL[base] ? `${base}-${++TITOLS_PL[base]}` : (TITOLS_PL[base] = 1, base);
   return `<svg class="pl-svg" viewBox="0 0 ${P} ${P}" role="img" aria-labelledby="${tid}">`
     + `<title id="${tid}" data-i18n="${kPl(f, variable)}">${esc(FR_PL(f, variable, 'ca'))}</title>`
     + `${p.join('')}</svg>`;
@@ -1565,7 +1568,9 @@ if (!fails) {
   }
 }
 
+let pagina = null;
 if (!fails) DESTINS.forEach(d => {
+  if (d.f !== pagina) { pagina = d.f; Object.keys(TITOLS_PL).forEach(k => delete TITOLS_PL[k]); }
   if (!existsSync(d.f)) { bad('no existeix ' + d.nom); return; }
   const src = readFileSync(d.f, 'utf8');
   const a = src.indexOf(`<!--${d.marca}-->`), b = src.indexOf(`<!--/${d.marca}-->`);
