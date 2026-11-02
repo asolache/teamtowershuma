@@ -21,14 +21,14 @@
 
 const NIVELLS = [
   { id: 'pagina', nom: 'Una página', per: 'Para estar y que te encuentren',
-    te: ['Portada y contacto, en un idioma', 'Sale del borrador de tu mapa', 'Tuya: en tu GitHub y tu Netlify'],
-    ca: { nom: 'Una pàgina', per: 'Per ser-hi i que et trobin', te: ['Portada i contacte, en un idioma', "Surt de l'esborrany del teu mapa", 'Teva: al teu GitHub i el teu Netlify'] } },
-  { id: 'mapa', nom: 'La web de tu mapa', per: 'Para que cada rol encuentre su puerta',
-    te: ['Todo lo anterior', 'Hasta tres puertas del flujo que importa ahora', 'Formularios que te llegan por correo', 'Datos para buscadores e IA en cada página'],
-    ca: { nom: 'La web del teu mapa', per: 'Perquè cada rol trobi la seva porta', te: ["Tot l'anterior", 'Fins a tres portes del flux que importa ara', 'Formularis que et arriben per correu', 'Dades per a cercadors i IA a cada pàgina'] } },
+    te: ['Portada y contacto, en un idioma', 'Sale del borrador de tu mapa', 'Tuya, a tu nombre: el código y el alojamiento'],
+    ca: { nom: 'Una pàgina', per: 'Per ser-hi i que et trobin', te: ['Portada i contacte, en un idioma', "Surt de l'esborrany del teu mapa", 'Teva, al teu nom: el codi i l\'allotjament'] } },
+  { id: 'mapa', nom: 'La web de tu mapa', per: 'Para que cada persona encuentre lo suyo',
+    te: ['Todo lo anterior', 'Hasta tres páginas, para quien más te importa ahora', 'Formularios que te llegan por correo', 'Datos para buscadores e IA en cada página'],
+    ca: { nom: 'La web del teu mapa', per: 'Perquè cada persona hi trobi el seu', te: ["Tot l'anterior", 'Fins a tres pàgines, per a qui més t\'importa ara', 'Formularis que et arriben per correu', 'Dades per a cercadors i IA a cada pàgina'] } },
   { id: 'conectada', nom: 'La web conectada', per: 'Para dejar de copiar y pegar',
-    te: ['Todo lo anterior', 'Tu CRM, tus reservas o tus matrículas', 'La web avisa a tu IA, con MCP o con una función', 'Más idiomas o más puertas, como flujos'],
-    ca: { nom: 'La web connectada', per: 'Per deixar de copiar i enganxar', te: ["Tot l'anterior", 'El teu CRM, les teves reserves o les teves matrícules', 'La web avisa la teva IA, amb MCP o amb una funció', 'Més idiomes o més portes, com a fluxos'] } },
+    te: ['Todo lo anterior', 'Tu CRM, tus reservas o tus matrículas', 'La web avisa a tu asistente de IA cuando llega algo', 'Más idiomas o más puertas, cuando las necesites'],
+    ca: { nom: 'La web connectada', per: 'Per deixar de copiar i enganxar', te: ["Tot l'anterior", 'El teu CRM, les teves reserves o les teves matrícules', 'La web avisa el teu assistent d\'IA quan arriba alguna cosa', 'Més idiomes o més portes, quan les necessitis'] } },
   { id: 'viva', nom: 'La web viva', per: 'Para que el sistema mejore cada mes', cuota: true,
     te: ['Todo lo anterior', 'Tus procesos repetitivos, definidos y gestionados', 'El tablero del día y el informe del mes', 'Comprobaciones automáticas y cambios pequeños'],
     ca: { nom: 'La web viva', per: 'Perquè el sistema millori cada mes', te: ["Tot l'anterior", 'Els teus processos repetitius, definits i gestionats', 'El tauler del dia i l\'informe del mes', 'Comprovacions automàtiques i canvis petits'] } }
@@ -88,7 +88,10 @@ function pinta(sagnat) {
 /* Els nivells com a tria, per a l'espai de client (/cliente/): una targeta
    amb el seu botó de ràdio, i el que porta cadascun. El valor del botó és el
    nom en castellà a totes dues llengües: és el que arriba a la casa. */
-const TRIA = { es: { n: 'Nivel ', q: ' · cuota mensual', f: ' · por flujos' }, ca: { n: 'Nivell ', q: ' · quota mensual', f: ' · per fluxos' } };
+/* Sense «per fluxos» a la targeta (02/11/2026): és com pressupostem nosaltres,
+   no una paraula que la clienta conegui. El pressupost per fluxos s'explica a
+   «Lo que viene después». */
+const TRIA = { es: { n: 'Nivel ', q: ' · cuota mensual', f: '' }, ca: { n: 'Nivell ', q: ' · quota mensual', f: '' } };
 function pintaTria(sagnat, llengua) {
   const ind = sagnat || '', ll = TRIA[llengua] ? llengua : 'es', K = TRIA[ll];
   return NIVELLS.map((n, i) => { const t = ll === 'ca' ? n.ca : n;

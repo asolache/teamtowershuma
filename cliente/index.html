@@ -530,21 +530,21 @@
         <div class="cabeza">
             <p class="eyebrow">2 · Qué web quieres</p>
             <h2 id="t-web">Elige hasta dónde, y mira el boceto.</h2>
-            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública es una landing con lo que aporta valor a cada uno de los principales, y puedes sumar la extranet para clientes y aliados y la intranet del equipo. Es un borrador para hablarlo, no la web final.</p>
+            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.</p>
         </div>
         <div class="nivells" id="cl-nivells" role="radiogroup" aria-label="Nivel de web">
 <!--TT-NIVELLS-->
-            <label class="nivell" for="cl-n-pagina"><span class="k">Nivel 1 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-pagina" value="Una página"> <b>Una página</b></span><span>Para estar y que te encuentren</span><ul><li>Portada y contacto, en un idioma</li><li>Sale del borrador de tu mapa</li><li>Tuya: en tu GitHub y tu Netlify</li></ul></label>
-            <label class="nivell" for="cl-n-mapa"><span class="k">Nivel 2 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-mapa" value="La web de tu mapa"> <b>La web de tu mapa</b></span><span>Para que cada rol encuentre su puerta</span><ul><li>Todo lo anterior</li><li>Hasta tres puertas del flujo que importa ahora</li><li>Formularios que te llegan por correo</li><li>Datos para buscadores e IA en cada página</li></ul></label>
-            <label class="nivell" for="cl-n-conectada"><span class="k">Nivel 3 · por flujos</span><span><input type="radio" name="nivel" id="cl-n-conectada" value="La web conectada"> <b>La web conectada</b></span><span>Para dejar de copiar y pegar</span><ul><li>Todo lo anterior</li><li>Tu CRM, tus reservas o tus matrículas</li><li>La web avisa a tu IA, con MCP o con una función</li><li>Más idiomas o más puertas, como flujos</li></ul></label>
+            <label class="nivell" for="cl-n-pagina"><span class="k">Nivel 1</span><span><input type="radio" name="nivel" id="cl-n-pagina" value="Una página"> <b>Una página</b></span><span>Para estar y que te encuentren</span><ul><li>Portada y contacto, en un idioma</li><li>Sale del borrador de tu mapa</li><li>Tuya, a tu nombre: el código y el alojamiento</li></ul></label>
+            <label class="nivell" for="cl-n-mapa"><span class="k">Nivel 2</span><span><input type="radio" name="nivel" id="cl-n-mapa" value="La web de tu mapa"> <b>La web de tu mapa</b></span><span>Para que cada persona encuentre lo suyo</span><ul><li>Todo lo anterior</li><li>Hasta tres páginas, para quien más te importa ahora</li><li>Formularios que te llegan por correo</li><li>Datos para buscadores e IA en cada página</li></ul></label>
+            <label class="nivell" for="cl-n-conectada"><span class="k">Nivel 3</span><span><input type="radio" name="nivel" id="cl-n-conectada" value="La web conectada"> <b>La web conectada</b></span><span>Para dejar de copiar y pegar</span><ul><li>Todo lo anterior</li><li>Tu CRM, tus reservas o tus matrículas</li><li>La web avisa a tu asistente de IA cuando llega algo</li><li>Más idiomas o más puertas, cuando las necesites</li></ul></label>
             <label class="nivell" for="cl-n-viva"><span class="k">Nivel 4 · cuota mensual</span><span><input type="radio" name="nivel" id="cl-n-viva" value="La web viva"> <b>La web viva</b></span><span>Para que el sistema mejore cada mes</span><ul><li>Todo lo anterior</li><li>Tus procesos repetitivos, definidos y gestionados</li><li>El tablero del día y el informe del mes</li><li>Comprobaciones automáticas y cambios pequeños</li></ul></label>
 <!--/TT-NIVELLS-->
         </div>
         <h3 style="margin-top:1.6rem">Qué hacemos</h3>
         <div class="vistes" id="cl-capes" role="group" aria-label="Qué partes de la web hacemos">
-            <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
-            <label><input type="checkbox" data-capa="extranet"> <b>La extranet</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
-            <label><input type="checkbox" data-capa="intranet"> <b>La intranet</b><span>Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
+            <label><input type="checkbox" checked disabled> <b>La web pública</b><span>La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.</span></label>
+            <label><input type="checkbox" data-capa="extranet"> <b>El espacio de clientes y aliados</b><span>Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.</span></label>
+            <label><input type="checkbox" data-capa="intranet"> <b>El espacio de tu equipo</b><span>Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.</span></label>
         </div>
         <div class="ia" id="cl-ia-llig" hidden data-per="Para leer tu web, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos.">
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
@@ -897,12 +897,12 @@
         '¿Está listo para dibujarlo?': 'Està a punt per dibuixar-lo?',
         '2 · Qué web quieres': '2 · Quina web vols',
         'Elige hasta dónde, y mira el boceto.': "Tria fins on, i mira l'esbós.",
-        'Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública es una landing con lo que aporta valor a cada uno de los principales, y puedes sumar la extranet para clientes y aliados y la intranet del equipo. Es un borrador para hablarlo, no la web final.': "Comença pel mínim que et serveix. L'esbós surt del teu dibuix: la web pública és una landing amb el que aporta valor a cadascun dels principals, i hi pots sumar l'extranet per a clients i aliats i la intranet de l'equip. És un esborrany per parlar-ne, no la web final.",
+        'Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.': "Comença pel mínim que et serveix. L'esbós surt del teu dibuix: la web pública té una part per a cada persona important del teu dibuix, i si vols hi sumes un espai privat per a clients i aliats i un altre per al teu equip. És un esborrany per parlar-ne, no la web final.",
         'Qué hacemos': 'Què fem',
         'La web pública': 'La web pública',
-        'La landing: una sección para cada uno de los principales, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.': "La landing: una secció per a cadascun dels principals, amb el que ve a buscar, l'avís legal i el teu correu amagat als robots. Hi va sempre.",
+        'La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.': "La portada: una part per a cada persona important, amb el que ve a buscar, l'avís legal i el teu correu amagat als robots. Hi va sempre.",
         'Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.': "Un espai amb compte per als teus clients i aliats: el que els dones i el que et donen, cadascun a la seva porta.",
-        'Tu parte interna, con el SOS: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.': "La teva part interna, amb el SOS: primer per a tu (el teu tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb el teu equip.",
+        'Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.': "La teva part interna: primer per a tu (el teu tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb el teu equip.",
         'Escribe tus textos con IA': 'Escriu els teus textos amb IA',
         'A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en el boceto.': "A partir del teu dibuix: la frase que diu el que fas, la presentació i el que troba cadascú a la seva secció. Canvia'ls al teu gust i mira'ls a l'esbós.",
         '✦ Escribir mis textos': '✦ Escriure els meus textos',
@@ -968,7 +968,7 @@
         'Dónde está el foco ahora': 'On és el focus ara',
         'Tu mapa puede ir por el mismo camino: primero se define cada intercambio (quién, qué, con qué); lo que está definido se puede automatizar, y lo que no se paga lo lleva siempre una persona.': "El teu mapa pot fer el mateix camí: primer es defineix cada intercanvi (qui, què, amb què); el que està definit es pot automatitzar, i el que no es paga ho porta sempre una persona.",
         /* Tu propuesta (#299) */
-        'La extranet': "L'extranet", 'La intranet': 'La intranet',
+        'El espacio de clientes y aliados': "L'espai de clients i aliats", 'El espacio de tu equipo': "L'espai del teu equip",
         '7 · Tu propuesta': '7 · La teva proposta',
         'Quién trabaja en tu proyecto, y lo que te cuesta a ti.': 'Qui treballa al teu projecte, i el que et costa a tu.',
         'Tu proyecto lo llevan personas de tres niveles, con formación y mentoría entre ellas. Tu precio sale de las horas de cada nivel que necesita tu proyecto, más la IA y las herramientas. No lo publicamos: lo ves solo tú, aquí, cuando entras.': "El teu projecte el porten persones de tres nivells, amb formació i mentoria entre elles. El teu preu surt de les hores de cada nivell que necessita el teu projecte, més la IA i les eines. No el publiquem: el veus només tu, aquí, quan hi entres.",
@@ -1087,25 +1087,25 @@
         "Tu web, viva": "La teva web, viva",
         "Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.": "Si vols, una quota mensual sense permanència: les teves automatitzacions definides i gestionades, comprovacions i el mapa al dia.",
         "Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.": "Cada mes, l'informe del teu mapa: què es mou, què s'atura i què s'ha automatitzat.",
-        "Nivel 1 · por flujos": "Nivell 1 · per fluxos",
+        "Nivel 1": "Nivell 1",
         "Una página": "Una pàgina",
         "Para estar y que te encuentren": "Per ser-hi i que et trobin",
         "Portada y contacto, en un idioma": "Portada i contacte, en un idioma",
         "Sale del borrador de tu mapa": "Surt de l'esborrany del teu mapa",
-        "Tuya: en tu GitHub y tu Netlify": "Teva: al teu GitHub i el teu Netlify",
-        "Nivel 2 · por flujos": "Nivell 2 · per fluxos",
+        "Tuya, a tu nombre: el código y el alojamiento": "Teva, al teu nom: el codi i l'allotjament",
+        "Nivel 2": "Nivell 2",
         "La web de tu mapa": "La web del teu mapa",
-        "Para que cada rol encuentre su puerta": "Perquè cada rol trobi la seva porta",
+        "Para que cada persona encuentre lo suyo": "Perquè cada persona hi trobi el seu",
         "Todo lo anterior": "Tot l'anterior",
-        "Hasta tres puertas del flujo que importa ahora": "Fins a tres portes del flux que importa ara",
+        "Hasta tres páginas, para quien más te importa ahora": "Fins a tres pàgines, per a qui més t'importa ara",
         "Formularios que te llegan por correo": "Formularis que et arriben per correu",
         "Datos para buscadores e IA en cada página": "Dades per a cercadors i IA a cada pàgina",
-        "Nivel 3 · por flujos": "Nivell 3 · per fluxos",
+        "Nivel 3": "Nivell 3",
         "La web conectada": "La web connectada",
         "Para dejar de copiar y pegar": "Per deixar de copiar i enganxar",
         "Tu CRM, tus reservas o tus matrículas": "El teu CRM, les teves reserves o les teves matrícules",
-        "La web avisa a tu IA, con MCP o con una función": "La web avisa la teva IA, amb MCP o amb una funció",
-        "Más idiomas o más puertas, como flujos": "Més idiomes o més portes, com a fluxos",
+        "La web avisa a tu asistente de IA cuando llega algo": "La web avisa el teu assistent d'IA quan arriba alguna cosa",
+        "Más idiomas o más puertas, cuando las necesites": "Més idiomes o més portes, quan les necessitis",
         "Nivel 4 · cuota mensual": "Nivell 4 · quota mensual",
         "Para que el sistema mejore cada mes": "Perquè el sistema millori cada mes",
         "Tus procesos repetitivos, definidos y gestionados": "Els teus processos repetitius, definits i gestionats",
