@@ -94,7 +94,7 @@
      endevina carpetes: llegeix el manifest i, si no n'hi ha, prova on la matriu
      té el codex. PECES és la llista de les claus que compten com a peces. */
   var PECES = [
-    ['codex', 'El codex', 'la llei: els errors pagats, escrits com a vedes'],
+    ['codex', 'La cultura', 'el codex: el que el projecte ha après i com vol treballar'],
     ['taxonomia', 'La taxonomia', 'on va cada cosa'],
     ['mapa', 'El mapa', 'què hi ha, generat'],
     ['backlog', 'El backlog', 'què queda per fer'],
@@ -162,16 +162,65 @@
         return x ? { codex: x, ruta: ruta } : null;
       });
     }).then(function (f) {
+      /* Un cervell amb manifest i sense codex encara té àrees i documents:
+         qui ho demana (`senseCodex`) el rep igualment, amb el codex a null. */
+      if (!f && conf && op.senseCodex) f = { codex: null, ruta: null };
       if (!f) return null;
       var fill = f.ruta !== RUTA_CODEX;
       return Promise.all([cru(repo, RUTA_HERENCIA), fill ? lector()(MATRIU, RUTA_PLANTILLA) : null]).then(function (v) {
         var her = null; try { her = v[0] ? JSON.parse(v[0]) : null; } catch (e) {}
         var peces = {};
-        PECES.forEach(function (p) { var r = conf && conf[p[0]]; peces[p[0]] = r ? (Array.isArray(r) ? r.length + ' fitxers' : String(r)) : (p[0] === 'codex' ? f.ruta : null); });
+        PECES.forEach(function (p) { var r = conf && conf[p[0]]; peces[p[0]] = r && (p[0] !== 'codex' || f.codex) ? (Array.isArray(r) ? r.length + ' fitxers' : String(r)) : (p[0] === 'codex' ? f.ruta : null); });
         return { codex: f.codex, fill: fill, nom: conf && conf.nom, herencia: her, plantilla: plantilla(v[1]), conf: conf, peces: peces };
       });
     });
   }
 
-  return { CAPAS: CAPAS, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
+  /* Els documents del cervell: els que el manifest declara (`documents`) i els
+     de la carpeta d'àrees (`arees`), amb la capçalera del tronc comú. De cada
+     un, el títol, l'àrea (el `rol` o la carpeta), el tipus, l'estat i les vedes
+     que cita. Una sola crida per l'arbre i una per document, fins a MAX_DOCS. */
+  var MAX_DOCS = 120;
+  function capcalera(text) {
+    var m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text || ''), cap = {};
+    if (m) m[1].split(/\r?\n/).forEach(function (l) {
+      var k = /^([\w-]+):\s*(.*)$/.exec(l); if (!k) return;
+      var v = k[2].replace(/\s+#.*$/, '').trim();
+      cap[k[1].toLowerCase()] = /^\[.*\]$/.test(v) ? v.slice(1, -1).split(',').map(function (x) { return x.trim().replace(/^["']|["']$/g, ''); }).filter(Boolean) : v;
+    });
+    return cap;
+  }
+  function documents(repo, conf, op) {
+    op = op || {};
+    var arrels = [].concat(conf && conf.documents || [], conf && conf.arees ? [conf.arees] : []).map(function (r) { return String(r).replace(/^\.?\//, '').replace(/\/$/, ''); });
+    if (!arrels.length) return Promise.resolve([]);
+    var cap = { accept: 'application/vnd.github+json' };
+    if (op.token) cap.authorization = 'Bearer ' + op.token;
+    var cru = op.llegeix || lector(op.token);
+    var arbre = op.arbre ? Promise.resolve(op.arbre) : fetch('https://api.github.com/repos/' + repo + '/git/trees/HEAD?recursive=1', { headers: cap, cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { return j && j.tree ? j.tree.filter(function (t) { return t.type === 'blob'; }).map(function (t) { return t.path; }) : []; })
+      .catch(function () { return []; });
+    return arbre.then(function (fs) {
+      var dins = fs.filter(function (f) {
+        return /\.md$/i.test(f) && !/(^|\/)README\.md$/i.test(f) &&
+          arrels.some(function (a) { return f === a || f.indexOf(a + '/') === 0; });
+      }).slice(0, MAX_DOCS);
+      return Promise.all(dins.map(function (f) {
+        return cru(repo, f).then(function (t) {
+          if (t == null) return null;
+          var c = capcalera(t), un = function (v) { return Array.isArray(v) ? v : v ? [v] : []; };
+          var cos = t.replace(/^---[\s\S]*?\n---\r?\n/, '');
+          var tit = c.titulo || c.title || c.titol || ((/^#\s+(.+)$/m.exec(cos) || [])[1]) || f.split('/').pop().replace(/\.md$/i, '');
+          var trossos = f.split('/'), area = conf.arees && f.indexOf(String(conf.arees).replace(/\/$/, '') + '/') === 0 && trossos.length > 2 ? trossos[trossos.length - 2] : null;
+          var vedes = {}; (cos.match(/\b[Vv]edas?\s+\d+/g) || []).forEach(function (v) { vedes[+v.replace(/\D/g, '')] = 1; });
+          var rol = un(c.rol || c.roles || c.rols || c.area || c.role);
+          return { ruta: f, titol: String(tit).trim(), rols: area ? [area].concat(rol) : rol, tipus: c.tipo || c.mena || c.type || null,
+            estat: c.estado || c.estat || c.status || null, visible: c.visible || c.visibilitat || c.visibilidad || null,
+            vedes: Object.keys(vedes).map(Number) };
+        });
+      })).then(function (ds) { return ds.filter(Boolean); });
+    });
+  }
+
+  return { CAPAS: CAPAS, documents: documents, capcalera: capcalera, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
 });

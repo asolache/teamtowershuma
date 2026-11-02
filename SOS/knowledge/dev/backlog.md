@@ -5505,8 +5505,14 @@ codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
 - **Fet (pas 1 de l'arbre estàndard, 23/10):** `SOS/knowledge/cervell/estructura.md`
   i la plantilla amb `areas/`, `proyectos/`, `recursos/` i `mapa/`; la guarda
   comprova que cada àrea és un dels dotze rols. No s'ha mogut res existent.
-- **Pendent (pas 2):** a la pàgina del cervell, la cobertura per àrees: quins
-  rols tenen documents i quins són buits.
+- **Fet (pas 2, 02/11):** la porta d'entrada de `SOS/cervell.html` és la vista
+  «L'organització» (`SOS/cervell/organitzacio.js`): la cultura (el codex) al
+  centre i les dotze àrees amb els seus documents, que diuen quins
+  aprenentatges citen. Les vistes de les vedes (3D…) queden a un clic. L'Àlvar:
+  «les vedes no són un concepte intuïtiu». El codex de la plantilla es
+  presenta com la cultura i el coneixement acumulat del projecte.
+- **Pendent:** posar els documents també al 3D, i instal·lar el cervell a
+  teamtowershuma-sos i teamtowers-matriu (no en tenen), amb el sí de l'Àlvar.
 - **Pendent (pas 3):** portar-ho als cervells que ja hi són (pàgina de l'Àlvar,
   Events Penedès) amb `--actualitza`, sense moure fitxers sense el seu sí.
 - **A explorar:** espais al núvol perquè un mentor creï i comparteixi un
