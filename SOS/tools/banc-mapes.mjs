@@ -231,12 +231,20 @@ async function lot(peticions, clau, fetchFn = globalThis.fetch) {
   const txt = await (await fetchFn(e.results_url, { headers: h })).text();
   return txt.split('\n').filter(Boolean).map(l => JSON.parse(l)).map(x => ({ id: x.custom_id, r: x.result && x.result.message, error: x.result && x.result.type !== 'succeeded' ? x.result.type : null }));
 }
-async function sincron(peticions, clau, fetchFn = globalThis.fetch) {
-  const h = capcaleres(clau, { fallbacks: false }), out = [];
-  for (const p of peticions) {
-    const r = await fetchFn(API, { method: 'POST', headers: h, body: JSON.stringify(p.params) }), j = await r.json();
-    out.push({ id: p.custom_id, r: r.ok ? j : null, error: r.ok ? null : ((j.error && j.error.type) || r.status) });
-  }
+async function sincron(peticions, clau, fetchFn = globalThis.fetch, alhora = 8) {
+  /* Sense lot: més car (preu sencer) però en minuts. `alhora` crides en paral·lel, amb reintents si l'API diu que va plena. */
+  const h = capcaleres(clau, { fallbacks: false }), out = new Array(peticions.length);
+  let i = 0;
+  const un = async p => {
+    for (let n = 0; n < 4; n++) {
+      const r = await fetchFn(API, { method: 'POST', headers: h, body: JSON.stringify(p.params) }), j = await r.json().catch(() => ({}));
+      if (r.ok) return { id: p.custom_id, r: j, error: null };
+      if (![429, 500, 529].includes(r.status)) return { id: p.custom_id, r: null, error: (j.error && j.error.type) || r.status };
+      await espera(5000 * (n + 1));
+    }
+    return { id: p.custom_id, r: null, error: 'reintents' };
+  };
+  await Promise.all(Array.from({ length: alhora }, async () => { while (i < peticions.length) { const k = i++; out[k] = await un(peticions[k]); } }));
   return out;
 }
 const jsonDe = r => JSON.parse((r.content || []).filter(b => b.type === 'text').map(b => b.text).join(''));
@@ -274,7 +282,7 @@ async function main() {
     if (!clau) throw new Error('falta ANTHROPIC_API_KEY');
     /* Només el tipus de clau (fins al tercer guió), mai la clau. */
     if (!clau.startsWith('sk-ant-api')) console.log('  avís: la clau és del tipus «' + clau.split('-').slice(0, 3).join('-').slice(0, 12) + '», no «sk-ant-api…»; ho provem igualment');
-    return lotOn ? lot(ps, clau) : sincron(ps, clau);
+    return lotOn ? lot(ps, clau) : sincron(ps, clau, globalThis.fetch, Number(a.alhora || 8));
   };
   const OPUS = 'claude-opus-5-5';
   if (ordre === 'casos') {
@@ -325,7 +333,7 @@ async function main() {
     console.log('simula: ' + casos.length + ' casos × ' + voltes + ' voltes · pitjor cas ~' + (una * voltes).toFixed(2) + ' $ · tope ' + tope + ' $');
     if (una * voltes > tope) throw new Error('el pitjor cas passa del tope');
     if (a.sec) return;
-    const crida2 = async ps => (lotOn ? lot(ps, clau) : sincron(ps, clau));
+    const crida2 = async ps => (lotOn ? lot(ps, clau) : sincron(ps, clau, globalThis.fetch, Number(a.alhora || 8)));
     const R = await simula(casos, v, t, voltes, crida2);
     const tot = Object.assign({ variant: v.nom, model: t.model, voltes }, R, { cost: R.cost * (lotOn ? 0.5 : 1) });
     writeFileSync(join(sortida, 'simulacio.json'), JSON.stringify(tot, null, 1));
