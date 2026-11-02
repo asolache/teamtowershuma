@@ -111,8 +111,8 @@ const L = {
     T('On ets i què et falta, en 3 minuts', 'Dónde estás y qué te falta, en 3 minutos')],
   vna: ['vna.html', T('El mètode', 'El método'),
     T('Què és un mapa de valor, sobre un cas', 'Qué es un mapa de valor, sobre un caso')],
-  editor: ['vna-suport.html', T('Fer-ne un', 'Hacer uno'),
-    T('L\'editor visual: rols, lliuraments, real i ideal', 'El editor visual: roles, entregables, real e ideal')],
+  editor: ['/cliente/#alrededor', T('Fer-ne un', 'Hacer uno'),
+    T('Dibuixa qui t\'envolta i què us doneu, gratis', 'Dibuja quién te rodea y qué os dais, gratis')],
   cataleg: ['cataleg.html', T('El catàleg', 'El catálogo'),
     T('Paquets per fluxos: hores i IA', 'Paquetes por flujos: horas e IA')],
   preus: ['pressupost.html', T('Preus i contractació', 'Precios y contratación'),
@@ -162,6 +162,12 @@ const SOS_GRUPS = [
   { id: 'sos', lbl: T('Les eines', 'Las herramientas'), ic: '🖥', links: [
     ['intro.html', T('De què va', 'De qué va'),
       T('El SOS en setze plans', 'El SOS en dieciséis planos')],
+    /* L'editor del mapa per a qui ja coneix el mètode. A la barra del lloc,
+       «Fer-ne un» porta a l'editor de `/cliente/#alrededor` (02/11/2026,
+       l'Àlvaro: «fer un mapa ha de portar a fer un mapa»); a dins del SOS,
+       aquest. */
+    ['vna-suport.html', T('L\'editor del mapa', 'El editor del mapa'),
+      T('Rols, lliuraments, real i ideal: la vista avançada', 'Roles, entregables, real e ideal: la vista avanzada')],
     ['matriu.html', T('La MATRIU', 'La MATRIU'),
       T('La incubadora: etapes, portes i propietat', 'La incubadora: etapas, puertas y propiedad')],
     ['banc-temps.html', T('El Banc de Temps', 'El Banco de Tiempo'),
@@ -239,7 +245,7 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
    Àlvaro: «la primera acció, fer el teu mapa de valor». És el pas 1 del camí
    de client (`camiClient`), torna valor abans de demanar res i és la mateixa
    crida principal de la portada. El diagnòstic segueix al grup «Mapa de valor». */
-const CTA = ['/cliente/', T('Crea el teu mapa', 'Crea tu mapa')];
+const CTA = ['/cliente/#alrededor', T('Crea el teu mapa', 'Crea tu mapa')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 /* ── A dins del SOS ──────────────────────────────────────────────────────────
    L'acció és obrir-lo i la marca porta a la seva portada, que és l'embut de
@@ -444,7 +450,8 @@ const clauDe = h => {
   if (h === '/SOS/') return 'app';
   /* Una carpeta del lloc (`/mapa-web/`) es nomena per la carpeta: les barres
      dins d'una clau no les llegeix la guarda del diccionari. */
-  if (h.startsWith('/')) return 'carpeta-' + h.replace(/^\/|\/$/g, '').replace(/\//g, '-');
+  /* L'àncora no forma part del nom: `/cliente/#alrededor` és `carpeta-cliente`. */
+  if (h.startsWith('/')) return 'carpeta-' + h.replace(/#.*$/, '').replace(/^\/|\/$/g, '').replace(/\//g, '-');
   return (esArrel(h) ? 'arrel-' : '') + h.replace(/\.html$/, '');
 };
 
@@ -1277,7 +1284,7 @@ if (CHECK) {
      mateix marcatge val a l'arrel i a `/SOS/`. Es resolen contra la raíz del
      lloc, i una adreça que acaba en `/` és l'`index.html` d'aquella carpeta:
      `/SOS/` és un destí viu i comprovar-lo com a fitxer el donava per mort. */
-  const fitxerDe = u => join(ARREL, u.replace(/^\//, '').replace(/\/$/, '/index.html'));
+  const fitxerDe = u => join(ARREL, u.replace(/#.*$/, '').replace(/^\//, '').replace(/\/$/, '/index.html'));
   /* Els destins de l'altra casa no es poden comprovar contra el disc —no són
      nostres— i la política de xarxa d'aquest entorn no hi arriba. El que **sí**
      es comprova és que siguin exactament les pàgines que `frontera-molekulon.md`

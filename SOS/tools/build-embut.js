@@ -260,7 +260,7 @@ const blocCami = () => {
     '    <ol class="cami-r">',
     CAMI.passos.map((p, i) => `      <li><b${a(`cami.${i + 1}t`)}>${t(`cami.${i + 1}t`)}</b> <span${a(`cami.${i + 1}d`)}>${t(`cami.${i + 1}d`)}</span></li>`).join('\n'),
     '    </ol>',
-    `    <p class="cami-acc"><a class="btn-primary" href="/cliente/"${a('cami.a')}>${t('cami.a')}</a> <span class="cami-n"${a('cami.n')}>${t('cami.n')}</span></p>`,
+    `    <p class="cami-acc"><a class="btn-primary" href="/cliente/#alrededor"${a('cami.a')}>${t('cami.a')}</a> <span class="cami-n"${a('cami.n')}>${t('cami.n')}</span></p>`,
     '  </div>',
     '</section>', CT].join('\n');
 };
