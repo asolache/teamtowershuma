@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 456 · 22883 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 456 · 22884 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 10 · 153 KB |
@@ -38,7 +38,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 41 KB |
 | `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 134 · 1752 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 76 · 1618 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 76 · 1619 KB |
 
 ## saber
 

@@ -226,10 +226,12 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
    I a 73 KB el mateix dia, a petició de l'Àlvaro: «La intel·ligència que hi
    ha darrere» (mètode, cervell amb l'exemple viu, codex, IA) i «El que ja
    automatitzem», cada flux amb el seu estat. El dibuix del cervell no pesa
-   aquí: és de `SOS/cervell/`, que ja es carregava. */
+   aquí: és de `SOS/cervell/`, que ja es carregava.
+   I a 74 KB el 03/11/2026, a petició de l'Àlvaro: el cinquè «Què t'emportes»,
+   que fet en equip el mapa alinea l'equip i el fa pensar en sistema. */
 const SOSTRES = [
   ['SOS/vna.html', 95, 'el mètode sencer: el llenç, les vuit lectures, les construccions i el mapa de la casa'],
-  ['index.html', 73, 'la portada ven el mapa de valor, el que t\'emportes, el teu camí, la intel·ligència i el que ja automatitzem, i porta a les altres tres pàgines'],
+  ['index.html', 74, 'la portada ven el mapa de valor, el que t\'emportes (també l\'equip alineat), el teu camí, la intel·ligència i el que ja automatitzem, i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
   ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
   ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut'],

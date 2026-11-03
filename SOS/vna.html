@@ -340,6 +340,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 .mv-pas li.allee .mv-pk{color:var(--intang)}
 
 .mv-ent{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.8rem}
+.mv-e:nth-child(5){grid-column:1/-1}
 .mv-e{background:var(--card);border:1px solid var(--vora);border-top:3px solid var(--verd);
   border-radius:12px;padding:.9rem 1rem}
 .mv-e b{font-size:var(--t1)}
@@ -947,6 +948,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 <div class="mv-e"><b data-i18n="vn.e1.t">Les tres anàlisis</b><p data-i18n="vn.e1.d">Intercanvi, impacte i creació de valor, escrites: què hi ha, no què n'opinem.</p></div>
 <div class="mv-e"><b data-i18n="vn.e2.t">Els tres moviments</b><p data-i18n="vn.e2.d">Què es pot cobrar, què s'ha de repartir i quin vincle s'ha de reparar. Amb nom i data.</p></div>
 <div class="mv-e"><b data-i18n="vn.e3.t">El mapa viu</b><p data-i18n="vn.e3.d">Carregat al SOS, editable per la casa i sense dependre de nosaltres per tornar-lo a mirar.</p></div>
+<div class="mv-e"><b data-i18n="vn.e4.t">Un equip alineat</b><p data-i18n="vn.e4.d">Fet amb l'equip adequat a la sala, el mapa és una conversa: cadascú veu què aporta i què rep, s'entén la feina de l'altre i es pensa en sistema, no en departaments. L'equip en surt més alineat i es comunica millor.</p></div>
 </div>
 <p class="mv-nota" data-i18n-html="vn.ent.nota">El mapa no és l'entregable: el mapa és l'eina. L'entregable és <b>el que se'n decideix</b>. Un mapa preciós del qual no surt cap moviment és una feina ben feta que no ha servit de res.</p>
 </section>
@@ -1499,6 +1501,8 @@ const VN_I18N = {
   'vn.e2.d':'Què es pot cobrar, què s\'ha de repartir i quin vincle s\'ha de reparar. Amb nom i data.',
   'vn.e3.t':'El mapa viu',
   'vn.e3.d':'Carregat al SOS, editable per la casa i sense dependre de nosaltres per tornar-lo a mirar.',
+  'vn.e4.t':'Un equip alineat',
+  'vn.e4.d':'Fet amb l\'equip adequat a la sala, el mapa és una conversa: cadascú veu què aporta i què rep, s\'entén la feina de l\'altre i es pensa en sistema, no en departaments. L\'equip en surt més alineat i es comunica millor.',
   'vn.ent.sub':'El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.',
   'vn.lg.must.t':'«Must» · verd',
   'vn.lg.must.d':'Contractual i exigible: el que es dona per fet que arribarà.',
@@ -2050,6 +2054,8 @@ const VN_I18N = {
   'vn.e2.d':'Qué se puede cobrar, qué hay que repartir y qué vínculo hay que reparar. Con nombre y fecha.',
   'vn.e3.t':'El mapa vivo',
   'vn.e3.d':'Cargado en el SOS, editable por la casa y sin depender de nosotros para volverlo a mirar.',
+  'vn.e4.t':'Un equipo alineado',
+  'vn.e4.d':'Hecho con el equipo adecuado en la sala, el mapa es una conversación: cada cual ve qué aporta y qué recibe, se entiende el trabajo del otro y se piensa en sistema, no en departamentos. El equipo sale más alineado y se comunica mejor.',
   'vn.ent.sub':'El mapa de los intercambios reales, tangibles e intangibles, y dónde se pierde valor sin que lo vea nadie. Método VNA de Verna Allee.',
   'vn.lg.must.t':'«Must» · verde',
   'vn.lg.must.d':'Contractual y exigible: lo que se da por hecho que llegará.',
