@@ -14824,7 +14824,13 @@ function applyRoute(){
 function closeModal(){$('#modalRoot').innerHTML='';
   const h=_modalHist;_modalHist=false;
   if(_routeModal){_routeModal=null;syncRoute(true);}
-  else if(h){try{if(history.state&&history.state.sosModal)history.back();}catch(e){}}}
+  /* L'enrere es fa al tic següent: si just després s'obre una altra pantalla
+     (el patró «closeModal();openX()», a desenes de llocs), reaprofita aquesta
+     entrada de l'historial i l'enrere no arriba a sortir. Abans l'enrere
+     arribava tard i tancava la pantalla nova: la cadena es quedava en blanc. */
+  else if(h){_tornaPend=setTimeout(()=>{_tornaPend=0;
+    try{if(history.state&&history.state.sosModal){_tornaPropi++;history.back();}}catch(e){}},0);}}
+let _tornaPend=0,_tornaPropi=0;
 // Obrir una vista enllaçable sempre passa per la ruta: així el clic i l'URL
 // recorren exactament el mateix camí i la barra d'adreces mai queda desincronitzada.
 function routeTo(name){
@@ -14855,6 +14861,7 @@ function modal(html,botons){
   $('#modalRoot').innerHTML='';$('#modalRoot').appendChild(bg);
   /* Una entrada a l'historial perquè «enrere» tanqui la pantalla. Les que
      tenen ruta ja en tenen una (el canvi de #/…). */
+  if(_tornaPend){clearTimeout(_tornaPend);_tornaPend=0;if(!_routeModal)_modalHist=true;}
   if(!_modalHist&&!_routeModal){_modalHist=true;try{history.pushState({sosModal:1},'',location.href);}catch(e){}}
   return bg;
 }
@@ -14876,7 +14883,9 @@ function pantallaCompleta(bg){
   amaga();try{new MutationObserver(amaga).observe(bg,{childList:true,subtree:true});}catch(e){}
 }
 // «Enrere» del mòbil o del navegador tanca la pantalla i no surt de l'app.
-addEventListener('popstate',()=>{if(_modalHist){_modalHist=false;$('#modalRoot').innerHTML='';}});
+/* L'enrere que fa el mateix closeModal no tanca res: la pantalla ja és tancada,
+   i si mentrestant se n'ha obert una altra, és aquesta la que es veu. */
+addEventListener('popstate',()=>{if(_tornaPropi){_tornaPropi--;return;}if(_modalHist){_modalHist=false;$('#modalRoot').innerHTML='';}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modalOpen()&&!e.defaultPrevented){const c=document.querySelector('#modalRoot .mc-torna');if(c)c.click();}});
 
 // Motor de suggeriment determinista: coneixement del nivell + dolors triats + biaix pel prompt lliure
