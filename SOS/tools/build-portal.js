@@ -62,26 +62,25 @@ const nav = f => {
    del menú; el que s'hi declara aquí és **què s'hi guanya**, que és el que la
    portada de teamtowershuma.com deia a la secció de beneficis i que aquí és on
    serveix: al costat del botó que l'obre. */
+/* 03/11/2026 · el SOS és el sistema operatiu social: aquí només hi ha el que
+   es gestiona en comunitat. Cada eina porta el mòdul de formació que la
+   sosté (`m`, l'àncora de formacio.html). Els mapes de valor de negoci van a
+   TeamTowers Humà; el mètode, a «Aprèn fent». */
 const MUNTAR = [
-  { p: 'banc-temps.html', ic: '⏳',
+  { p: 'banc-temps.html', ic: '⏳', m: 'm4',
     guanya: 'Accés a serveis sense diners: cada hora rebuda és una hora que no es paga al mercat. I el saldo de tothom a la vista, que és el que evita que les de sempre es cremin.' },
-  { p: 'biblioteca.html', ic: '🔧',
+  { p: 'biblioteca.html', ic: '🔧', m: 'm4',
     guanya: 'Compartir el que es fa servir dos cops l\'any estalvia centenars d\'euros per llar i treu residus. Cada préstec val el desgast, no el preu.' },
-  { p: 'compra.html', ic: '🛒',
+  { p: 'compra.html', ic: '🛒', m: 'm6',
     guanya: 'Agregar la demanda abarateix el que sol comprar-se car i sol, i deixa el marge al poble en comptes de al camió.' },
-  { p: 'energia.html', ic: '⚡',
+  { p: 'energia.html', ic: '⚡', m: 'm13',
     guanya: 'La teulada és de qui hi viu. Es reparteix l\'excedent, es veu qui hi ha posat què i la factura deixa de decidir-la un altre.' },
-  { p: 'habitatge.html', ic: '🏘',
+  { p: 'habitatge.html', ic: '🏘', m: 'm13',
     guanya: 'Quota d\'ús per sota del mercat i sense especulació: accés estable i llarg, amb l\'entrada i la sortida escrites abans de necessitar-les.' },
-  { p: 'matriu.html', ic: '🌱',
-    guanya: 'Una idea sap en quina etapa és i què li falta per passar a la següent. I no va sola: el valor circula entre els projectes germans de la xarxa.' },
-  { p: 'vna.html', ic: '🕸',
-    guanya: 'El mapa de qui sosté què, amb els favors i la confiança que no compta ningú. És el pas que va abans de tots els altres.' },
-  /* La pàgina explica el mètode; aquesta el fa. Van juntes aquí pel mateix
-     motiu que al menú: qui acaba d'entendre què és un mapa de valor ha de
-     trobar on fer-ne un, i no a la pàgina següent. */
-  { p: 'vna-suport.html', ic: '🧭',
-    guanya: 'Les sis passes amb deu regles que revisen el mapa mentre s\'escriu, i el text que se li dona a una IA perquè ajudi amb el mètode i no només amb la forma.' }
+  { p: 'online.html', ic: '🤝', m: 'm11',
+    guanya: 'La xarxa de suport del territori: qui hi ha, què ofereix i què busca. Cadascú signa la seva fitxa i ningú publica en nom d\'un altre.' },
+  { p: 'matriu.html', ic: '🌱', m: 'm6',
+    guanya: 'Una idea del poble sap en quina etapa és i què li falta per passar a la següent. I no va sola: el valor circula entre els projectes germans de la xarxa.' }
 ];
 
 /* Els beneficis que no són d'una dinàmica sinó del conjunt. Venien de la
@@ -95,6 +94,8 @@ const PSICO = [
 
 /* ══ COM S'APRÈN ═════════════════════════════════════════════════════════════ */
 const APREN = [
+  { p: 'vna.html', ic: '🕸', guanya: 'El mapa de qui sosté què a la teva comunitat, amb els favors i la confiança que no compta ningú.' },
+  { p: 'vna-suport.html', ic: '🧭', guanya: 'Les sis passes per dibuixar-lo, amb deu regles que revisen el mapa mentre s\'escriu.' },
   { p: 'formacio.html', ic: '🎓', guanya: 'De N0 a N3. El que fas queda al teu registre i el certificat és teu, no del projecte.' },
   { p: 'escola.html', ic: '🏫', guanya: 'El mateix a l\'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.' },
   { p: 'ia.html', ic: '🤖', guanya: 'Automatitzar el tangible i valorar l\'intangible, amb IA que proposa i mai decideix.' },
@@ -123,8 +124,7 @@ const MON = [
      pont**, que és el que una porta ha de tenir. */
   { p: 'molekulandia.html', ic: '🏘', guanya: 'El poble sencer en una pantalla: cada edifici és un tipus de projecte i de cadascun s\'entra a l\'eina que el porta.' },
   { p: 'molekulon.html', ic: '🌀', guanya: 'El mateix SOS amb un món diferent a dins: un estat líquid on el nivell del mig és un tema i no un tros de terra.' },
-  { p: 'joc.html', ic: '🎮', guanya: 'La plaça a ritme. La manera més curta d\'entendre per què un castell no l\'aguanta qui hi puja.' },
-  { p: 'online.html', ic: '🌐', guanya: 'Qui hi ha al territori, què ofereix i què busca. Cadascú signa la seva fitxa: ningú publica en nom d\'un altre.' }
+  { p: 'joc.html', ic: '🎮', guanya: 'La plaça a ritme. La manera més curta d\'entendre per què un castell no l\'aguanta qui hi puja.' }
 ];
 
 /* Les pàgines del menú que **no** surten a la portada, amb el motiu. Una
@@ -137,18 +137,23 @@ const FORA = {
 };
 
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
+const MODUL = { m4: 'Recursos comunitaris', m6: 'Intercooperació', m11: 'Cures i relleu', m13: 'Formes jurídiques' };
 const fitxa = (x, cls) => {
   const n = nav(x.p);
-  return `<a class="pg ${cls}" href="${x.p}"><span class="pg-ic">${x.ic}</span>` +
+  const cos = `<span class="pg-ic">${x.ic}</span>` +
     `<span class="pg-n">${esc(n.nom)}</span>` +
     `<span class="pg-q">${esc(n.que)}</span>` +
-    `<span class="pg-g">${esc(x.guanya)}</span></a>`;
+    `<span class="pg-g">${esc(x.guanya)}</span>`;
+  if (!x.m) return `<a class="pg ${cls}" href="${x.p}">${cos}</a>`;
+  /* Amb mòdul, la fitxa porta dos camins: l'eina i la formació que la sosté. */
+  return `<div class="pg ${cls}"><a class="pg-a" href="${x.p}">${cos}</a>` +
+    `<span class="pg-l"><a href="${x.p}">Obre-la →</a><a href="formacio.html#${x.m}">🎓 Aprèn-ne · ${esc(MODUL[x.m] || x.m)}</a></span></div>`;
 };
 
 function blocMuntar() {
   const f = ['<section class="ob-sec">'];
-  f.push('<h2>Què hi pots muntar</h2>');
-  f.push('<p class="ob-sub2">Set dinàmiques, cadascuna amb la seva pàgina i el seu full de ruta. ' +
+  f.push('<h2>Què podeu gestionar al vostre poble</h2>');
+  f.push('<p class="ob-sub2">Cada eina té la seva pàgina i el seu mòdul de formació. ' +
     'No cal fer-les totes ni fer-les en ordre: la majoria de pobles en comencen una i les altres arriben soles.</p>');
   f.push('<div class="pg-grid">' + MUNTAR.map(x => fitxa(x, 'm')).join('') + '</div>');
   f.push('<div class="ob-psico"><div class="ob-psico-k">I el que no surt a cap factura</div><ul>' +
@@ -161,9 +166,9 @@ function blocMuntar() {
 
 function blocApren() {
   const f = ['<section class="ob-sec">'];
-  f.push('<h2>Com s\'aprèn</h2>');
-  f.push('<p class="ob-sub2">No hi ha cursos sobre casos inventats: s\'aprèn portant un projecte de veritat. ' +
-    'Tot això és obert i es pot mirar per dins abans de contractar res.</p>');
+  f.push('<h2>Aprèn fent</h2>');
+  f.push('<p class="ob-sub2">No hi ha cursos sobre casos inventats: s\'aprèn portant un projecte de la teva comunitat. ' +
+    'Tot és obert, de N0 a N3, i el certificat és de la persona.</p>');
   f.push('<div class="pg-grid">' + APREN.map(x => fitxa(x, 'a')).join('') + '</div>');
   f.push('<div class="ob-mots"><div class="ob-mots-k">Tres paraules que farem servir</div>' +
     PARAULES.map(([t, s, d]) => `<div class="ob-mot"><b>${esc(t)}</b><span>${esc(s)}</span><p>${esc(d)}</p></div>`).join('') +
@@ -208,19 +213,16 @@ const OPCIONS = [
 ];
 
 function blocPaquets() {
-  const f = ['<section class="ob-sec" id="obOferta">'];
-  f.push('<h2>I si el voleu muntat i funcionant</h2>');
-  f.push('<p class="ob-sub2">L\'eina és lliure i funciona sense nosaltres: això no és una versió de prova. ' +
-    'El que es contracta és <b>no haver de descobrir sols com es munta</b>, i un criteri humà a la sala que cap sistema substitueix.</p>');
-  f.push('<a class="ob-op" href="/#operatiu"><span class="ob-op-k">La proposta</span>' +
-    '<b>El teu negoci operatiu</b>' +
-    '<span class="ob-op-d">Dos mapes dibuixats amb l\'equip —el de la direcció i el de l\'àrea on el valor s\'encalla—, ' +
-    'el cervell del projecte ordenat per rol, la web de xarxa, les eines de cada rol i 30 dies d\'acompanyament. ' +
-    'Surts amb el negoci funcionant, no amb un informe.</span>' +
-    '<span class="ob-op-cta">Què inclou →</span></a>');
-  f.push('<div class="ob-pq">' + OPCIONS.map(([n, d, l]) =>
-    `<div class="pq"><div class="pq-o"><b>${esc(n)}</b> · ${esc(d)}</div><ul class="pq-e">` +
-    l.map(x => `<li>${esc(x)}</li>`).join('') + '</ul><div class="pq-p">Preu<span>a confirmar amb els pilots</span></div></div>').join('') + '</div>');
+  /* 03/11/2026 · el negoci té casa pròpia. Qui arriba aquí amb una empresa o
+     una entitat que vol el seu mapa de valor o la seva web, troba el pont. */
+  const f = ['<section class="ob-sec ob-pont" id="obOferta">'];
+  f.push('<h2>Tens un negoci o una entitat?</h2>');
+  f.push('<p class="ob-sub2">El mapa de valor de la teva organització i la teva web es fan a <b>TeamTowers Humà</b>: ' +
+    'comences gratis, amb el teu mapa en cinc minuts, i si vols t\'hi acompanyem.</p>');
+  f.push('<p class="ob-sub2"><a class="op-cta-b" href="/cliente/">Fes el teu mapa gratis →</a> ' +
+    '<a href="../index.html#cataleg">Què fem a TeamTowers Humà</a></p>');
+  /* I els tres serveis al voltant de l'eina, per a ajuntaments i entitats que
+     el volen muntat. Sense preu: es pressuposta per fluxos. */
   f.push('<div class="ob-pq">');
   SOS_PAQUETS.forEach(p => {
     f.push(`<div class="pq"><div class="pq-h"><b>${esc(p.nom)}</b><span class="pq-d">${esc(p.dura)}</span></div>` +
@@ -228,10 +230,7 @@ function blocPaquets() {
       `<div class="pq-p qui">Per a qui<span>${esc(p.qui)}</span></div></div>`);
   });
   f.push('</div>');
-  f.push('<p class="ob-pq-n"><b>Com es pressuposta:</b> per fluxos. Cada flux porta les hores de criteri humà i el cost d\'IA ' +
-    'que fa servir, amb el model adequat a cada tasca, i el pressupost ho diu línia per línia. ' +
-    '<a href="pressupost.html">Demana el teu pressupost →</a> · El catàleg sencer és a ' +
-    '<a href="../index.html#cataleg">teamtowershuma.com</a>.</p>');
+  f.push('<p class="ob-pq-n">Es pressuposta per fluxos: les hores de criteri humà i el cost d\'IA de cada flux. <a href="pressupost.html">Demana el teu pressupost →</a></p>');
   f.push('</section>');
   return f.join('\n');
 }
@@ -297,6 +296,14 @@ const TOTES = MUNTAR.concat(APREN, MON);
   else ok('les ' + TOTES.length + ' fitxes diuen què és i què s\'hi guanya');
 })();
 
+// 4 bis · Cada eina de la comunitat porta el seu mòdul, i el mòdul existeix.
+(() => {
+  const F = readFileSync(join(SOS, 'formacio.html'), 'utf8');
+  const sense = MUNTAR.filter(x => !x.m || F.indexOf('id="' + x.m + '"') < 0).map(x => x.p);
+  if (sense.length) bad('eines sense mòdul de formació (o mòdul inexistent): ' + sense.join(', '));
+  else ok(`les ${MUNTAR.length} eines porten el seu mòdul de formació`);
+})();
+
 // 5 · Els paquets porten durada, per a qui i què s'hi endú, llegits del
 //     catàleg. I **cap preu en euros**: des de l'octubre del 2026 es
 //     pressuposta per fluxos i el catàleg públic no n'ensenya.
@@ -321,6 +328,7 @@ const TOTES = MUNTAR.concat(APREN, MON);
 //     de fer-ho, però qui hi arriba i en vol ha de saber on és.
 (() => {
   if (!/index\.html#cataleg/.test(blocPaquets())) bad('no hi ha camí cap al catàleg sencer de la portada');
+  else if (!/href="\/cliente\/"/.test(blocPaquets())) bad('el pont cap al negoci no porta a /cliente/');
   else ok('i el camí cap al catàleg sencer hi és');
 })();
 

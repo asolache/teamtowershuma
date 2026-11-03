@@ -17,7 +17,7 @@ await page.goto(APP);
 await page.waitForFunction(() => window.__SOS && window.__SOS.visibleTabs);
 
 const TDEFS = [['resum', '◧ Resum', 0], ['map', '◉ Mapa', 0], ['kanban', '▤ Tauler', 0],
-  ['ledger', '⊞ Comptes', 0], ['xat', '💬 Conversa', 0], ['socis', '👥 Socis', 0],
+  ['ledger', '⊞ Aportacions', 0], ['xat', '💬 Conversa', 0], ['socis', '👥 Socis', 0],
   ['banctemps', '⏳ Ofertes', 0], ['equity', '🥧 Equity', 0]];
 
 console.log('\n1 · Cada rol comença pel seu');

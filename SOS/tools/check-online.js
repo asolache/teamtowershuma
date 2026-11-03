@@ -160,6 +160,22 @@ if (/iterations:210000/.test(CODI) && /iterations:210000/.test(CODI_APP))
   ok('entrar amb la identitat fa servir els mateixos paràmetres que l\'app (PBKDF2 210 000)');
 else bad('els paràmetres de la còpia d\'identitat difereixen: un fitxer fet a l\'app no s\'obriria aquí');
 
+/* 7 · L'app llegeix la fitxa de /online amb `lib/directori.js` («Entra» → porta
+       la teva fitxa). URL, clau i taula han de ser les d'aquí: si se separen,
+       l'app buscaria la persona en un altre directori sense que res petés. */
+{
+  const LIB = readFileSync(join(ARREL, 'SOS', 'lib', 'directori.js'), 'utf8');
+  const de = (src, re) => (src.match(re) || [])[1];
+  const iguals = [['URL', /const SUPA_URL\s*=\s*'([^']*)'/, /var URL = '([^']*)'/],
+    ['KEY', /const SUPA_KEY\s*=\s*'([^']*)'/, /var KEY = '([^']*)'/],
+    ['TAULA', /const TAULA\s*=\s*'([^']*)'/, /var TAULA = '([^']*)'/]]
+    .filter(([, a, b]) => !de(WEB, a) || de(WEB, a) !== de(LIB, b)).map(x => x[0]);
+  if (iguals.length) bad('lib/directori.js no apunta al mateix directori que online.html: ' + iguals.join(', '));
+  else ok('lib/directori.js llegeix el mateix directori que online.html');
+  if (/method:\s*'POST'|supaPut/.test(LIB)) bad('lib/directori.js escriu al directori: des de l\'app només es llegeix');
+  else ok('i només llegeix: la fitxa la publica la persona a /online');
+}
+
 console.log(fails ? `\n❌ ${pl(fails, 'problema', 'problemes')} al directori.`
   : '\n✅ Un sol did, unes soles categories, i res que surti de casa sense dir-ho.');
 process.exit(fails ? 1 : 0);

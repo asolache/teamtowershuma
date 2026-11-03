@@ -447,7 +447,9 @@ console.log('\n8 · El que encara no existeix, es diu');
       .find(x => /contractes/i.test(x.textContent));
     return pq ? pq.textContent.replace(/\s+/g, ' ') : '';
   });
+  const pont = await p2.evaluate(() => !!document.querySelector('#onboarding a[href="/cliente/"]'));
   await p2.close();
+  ok(pont, 'a la portada del SOS, el negoci té un pont cap a /cliente/ (03/11/2026)');
   ok(/estudi de viabilitat/i.test(c),
     'els contractes intel·ligents es venen com a estudi, no com a eina');
   ok(/encara no|no est(à|an) constru/i.test(c),

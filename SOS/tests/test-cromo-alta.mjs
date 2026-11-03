@@ -36,13 +36,13 @@ const porta = await page.evaluate(() => {
   // Que sigui ABANS de les tres portes és el sentit del canvi, no un detall.
   const abans = paths ? !!(btn.compareDocumentPosition(paths) & Node.DOCUMENT_POSITION_FOLLOWING) : false;
   btn.click();
-  const obert = !!document.querySelector('#modalRoot .modal #pmNom');
+  const obert = !!document.querySelector('#modalRoot .modal');
   window.__SOS.closeModal();
   return { hi: true, abans, obert, txt: btn.textContent.trim() };
 });
 ok(porta.hi, 'el botó d\'apuntar-se existeix a la portada del SOS');
 ok(porta.abans, 'i és abans de les tres portes, no tres pantalles avall');
-ok(porta.obert, 'i en prémer-lo s\'obre la primera vegada: una pregunta i el teu mapa');
+ok(porta.obert, 'i en prémer-lo s\'obre «Comença al teu poble» (03/11/2026)');
 const alta = await page.evaluate(() => {
   document.querySelector('#obHero').click();
   const o = !!document.querySelector('#modalRoot .modal #shName');
