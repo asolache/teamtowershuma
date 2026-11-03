@@ -99,10 +99,13 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.fill('#cl-casa', 'Equipo de formación');
   ok(await p.locator('#cl-salut li:not(.ok)').count() === 0, 'el diagnóstico dice que ya se puede dibujar');
 
-  await p.click('#alrededor .js-dibuix');
+  ok(await p.isVisible('#cl-man-form') && await p.isVisible('#cl-man-dib'), 'el paso 1 deja elegir: con preguntas o dibujándolo');
+  await p.click('#cl-man-dib');
   await p.waitForFunction(() => { const w = document.getElementById('cl-ed-marc').contentWindow; return w && w.__VS_ED && w.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
   const fr = p.frames().find(f => /vna-suport/.test(f.url()));
   ok(p.url().split('#')[0] === URL_ && await p.isVisible('#cl-ed'), 'el dibujo se abre dentro de la página, sin salir de ella');
+  const ple = await p.evaluate(() => { const r = document.getElementById('cl-ed').getBoundingClientRect(); return r.top === 0 && r.left === 0 && Math.round(r.width) === innerWidth && Math.round(r.height) === innerHeight && document.body.classList.contains('ed-obert'); });
+  ok(ple, 'y a pantalla completa');
   await fr.waitForFunction(() => document.documentElement.lang === 'es', null, { timeout: 10000 });
   await fr.waitForTimeout(300);
   const vist = await fr.evaluate(() => {
@@ -114,9 +117,16 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(!ca, 'el editor sale en castellano' + (ca ? ': queda «' + ca[0] + '»' : ''));
   ok((await fr.evaluate(() => window.__VS_ED.exporta().roles.length)) === 7, 'el editor tiene el dibujo de la ficha (el centro y seis más)');
   await fr.evaluate(() => window.__VS_ED.flux('Quien me recomienda', 'Quien quiere ser profesor', 'intangible', 'confianza'));
-  await p.click('#cl-ed-desa');
+  /* Sin botón de guardar: el cambio del editor llega solo a la ficha. */
+  await p.waitForFunction(() => { const f = JSON.parse(localStorage.getItem('tt.cliente.v1') || '{}'); return f.extra && f.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'); }, null, { timeout: 8000 }).catch(() => {});
   const fitxa = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
-  ok(fitxa.alrededor.length === 6 && fitxa.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'), 'lo que cambia en el editor vuelve a la ficha, también lo que pasa entre los demás');
+  ok(fitxa.alrededor.length === 6 && fitxa.extra && fitxa.extra.pairs.some(x => x[0] === 'Quien me recomienda' && x[3] === 'confianza'), 'lo que cambia en el editor vuelve solo a la ficha, sin guardar, también lo que pasa entre los demás');
+  await fr.evaluate(() => window.__VS_ED.rol('Quien publica reseñas'));
+  await fr.evaluate(() => window.__VS_ED.flux('Quien publica reseñas', 'Equipo de formación', 'intangible', 'opiniones'));
+  await p.waitForFunction(() => [...document.querySelectorAll('#cl-files .fila input')].some(i => i.value === 'Quien publica reseñas'), null, { timeout: 8000 }).catch(() => {});
+  ok(await p.evaluate(() => [...document.querySelectorAll('#cl-files .fila input')].some(i => i.value === 'Quien publica reseñas')), 'quien añades en el dibujo aparece como fila del formulario mientras dibujas');
+  await fr.evaluate(() => window.__VS_ED.esborra('Quien publica reseñas'));
+  await p.waitForFunction(() => ![...document.querySelectorAll('#cl-files .fila input')].some(i => i.value === 'Quien publica reseñas'), null, { timeout: 8000 }).catch(() => {});
   ok(await p.locator('#cl-files .fila').count() === 6, 'y las filas siguen ahí');
   await p.click('#cl-ed-avz');
   await p.waitForFunction(() => { const f = document.getElementById('cl-ed-marc'); return /[?&]ple\b/.test(f.contentWindow.location.search) && f.contentWindow.document.readyState === 'complete' && f.contentWindow.__VS_ED && f.contentWindow.__VS_ED.exporta().roles.length > 1; }, null, { timeout: 20000 });
@@ -126,7 +136,7 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(await fr2.evaluate(() => !(document.querySelector('header.cap') || {}).offsetParent && !(document.querySelector('body > nav') || {}).offsetParent && !(document.querySelector('.tt-peu') || {}).offsetParent),
     'y sin la web alrededor: ni la barra, ni la cabecera, ni el pie dentro del marco');
   await p.click('#cl-ed-tanca');
-  ok(!(await p.isVisible('#cl-ed')), 'el editor se cierra y sigues donde estabas');
+  ok(!(await p.isVisible('#cl-ed')) && !(await p.evaluate(() => document.body.classList.contains('ed-obert'))), 'el editor se cierra y vuelves al formulario');
 
   await p.fill('#cl-casa', '');
   /* Con el dibujo empezado, un modelo no lo pisa: enseña quién suele estar, para añadirlos uno a uno. */

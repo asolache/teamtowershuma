@@ -205,6 +205,23 @@
         .boceto .barra { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; padding: .5rem .7rem; border-bottom: 1px solid var(--border); background: var(--panel); font-size: var(--t0); }
         .boceto iframe { display: block; width: 100%; height: 34rem; border: 0; background: #fff; }
         .boceto.editor iframe { height: min(44rem, 82vh); }
+        /* El dibujo a pantalla completa (03/11/2026): una capa sobre la página, unida a las filas. */
+        .boceto.editor:not([hidden]) { position: fixed; inset: 0; z-index: 150; margin: 0; border: 0; border-radius: 0; display: flex; flex-direction: column; }
+        .boceto.editor iframe { flex: 1; height: auto; min-height: 0; }
+        .boceto.editor .barra { padding: .55rem .9rem; gap: .5rem; }
+        .ed-cap { flex: 1 1 14rem; display: grid; gap: .1rem; min-width: 0; }
+        .ed-cap b { font-size: var(--t1, 1rem); }
+        .ed-cap span { color: var(--muted); }
+        body.ed-obert { overflow: hidden; }
+        body.ed-obert .viu-b, body.ed-obert .avanc-pill { display: none; }
+        .manera { margin: 1.2rem 0 .4rem; }
+        .manera .et { margin: 0 0 .5rem; font-weight: 600; }
+        .manera-b { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); max-width: 46rem; }
+        .manera-o { display: grid; gap: .25rem; text-align: left; padding: .85rem 1rem; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--card); color: var(--text); font: inherit; text-decoration: none; cursor: pointer; min-height: 44px; }
+        .manera-o b { font-size: var(--t1, 1rem); }
+        .manera-o span { font-size: var(--t0); color: var(--muted); line-height: 1.4; }
+        .manera-o:hover, .manera-o:focus-visible { border-color: var(--indigo); }
+        .manera-o.js-dibuix { border: 2px solid var(--indigo); }
 
         /* Tu mapa y tu web, en vivo (24/10/2026). Un panel que se abre al lado
            (a pantalla entera en el móvil, el diseño estándar) y se repinta solo
@@ -536,6 +553,13 @@
             <div class="camp" id="cl-area-c" hidden><label for="cl-area">Qué área</label><input id="cl-area" data-c="area" placeholder="Los cursos de verano, la tienda, la formación de profes…"><small>Hacemos zoom en lo que estáis trabajando ahora; el resto de la organización queda fuera del dibujo.</small></div>
         </div>
         <p class="mapa-tit" id="cl-mapa-tit" aria-live="polite"></p>
+        <div class="manera" role="group" aria-labelledby="cl-man-t">
+            <p class="et" id="cl-man-t">Cómo prefieres hacerlo</p>
+            <div class="manera-b">
+                <a class="manera-o" id="cl-man-form" href="#cl-casa"><b>✎ Con preguntas</b><span>Escribe quién está y qué os dais, fila a fila, aquí debajo.</span></a>
+                <button type="button" class="manera-o js-dibuix" id="cl-man-dib"><b>◎ Dibujándolo</b><span>En pantalla completa: mueve, añade a alguien, une con flechas. Lo que dibujas pasa solo a las filas.</span></button>
+            </div>
+        </div>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
@@ -548,7 +572,7 @@
             <div class="rols-model" id="cl-rols" aria-live="polite" hidden></div>
         </div>
         <div class="files" id="cl-files"></div>
-        <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">Ver y mover el dibujo aquí</button></div>
+        <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">◎ Dibujarlo en pantalla completa</button></div>
         <div class="ia" id="cl-ia" hidden>
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
                 <div><h3>Pule tu dibujo con IA</h3><p>Lee lo que nos has contado y te propone mejoras: quién falta, qué se da que no se paga, cómo decirlo más claro. Tú decides qué se queda.</p></div></div>
@@ -557,11 +581,10 @@
             <button type="button" class="btn btn-primary ia-boto" id="cl-ia-pule" hidden>✦ Pulir mi dibujo</button>
             <div id="cl-ia-res" aria-live="polite"></div>
         </div>
-        <div class="boceto editor" id="cl-ed" hidden>
-            <div class="barra"><span>Tu dibujo, con el mismo editor que usamos en la sesión. Mueve, añade a alguien o una flecha, y guárdalo en tu ficha.</span>
-                <button type="button" class="btn btn-sm btn-primary" id="cl-ed-desa">Guardar en mi ficha</button>
+        <div class="boceto editor" id="cl-ed" role="dialog" aria-modal="true" aria-labelledby="cl-ed-tit" hidden>
+            <div class="barra"><div class="ed-cap"><b id="cl-ed-tit">Tu mapa de valor</b><span id="cl-ed-diu" aria-live="polite">Lo que dibujas pasa solo a tu formulario.</span></div>
                 <button type="button" class="btn btn-sm btn-ghost" id="cl-ed-avz" aria-pressed="false">Vista avanzada</button>
-                <button type="button" class="btn btn-sm btn-ghost" id="cl-ed-tanca">Cerrar</button></div>
+                <button type="button" class="btn btn-sm btn-primary" id="cl-ed-tanca">Listo, volver al formulario</button></div>
             <iframe id="cl-ed-marc" title="El editor de tu dibujo"></iframe>
         </div>
         <h3 style="margin-top:1.6rem">¿Está listo para dibujarlo?</h3>
@@ -923,6 +946,17 @@
         'Tu nombre': 'El teu nom',
         'Tu correo': 'El teu correu',
         'Tu organización': 'La teva organització',
+        'Cómo prefieres hacerlo': 'Com prefereixes fer-ho',
+        '✎ Con preguntas': '✎ Amb preguntes',
+        'Escribe quién está y qué os dais, fila a fila, aquí debajo.': 'Escriu qui hi ha i què us doneu, fila a fila, aquí sota.',
+        '◎ Dibujándolo': '◎ Dibuixant-lo',
+        'En pantalla completa: mueve, añade a alguien, une con flechas. Lo que dibujas pasa solo a las filas.': "A pantalla completa: mou, afegeix algú, uneix amb fletxes. El que dibuixes passa sol a les files.",
+        '◎ Dibujarlo en pantalla completa': '◎ Dibuixar-lo a pantalla completa',
+        'Tu mapa de valor': 'El teu mapa de valor',
+        'Lo que dibujas pasa solo a tu formulario.': 'El que dibuixes passa sol al teu formulari.',
+        'Listo, volver al formulario': 'Fet, torna al formulari',
+        'Guardado en tu formulario.': 'Desat al teu formulari.',
+        'Tu dibujo ya está en el formulario': 'El teu dibuix ja és al formulari',
         'El nombre de tu escuela, tu empresa, tu asociación…': "El nom de la teva escola, la teva empresa, la teva associació…",
         'Es el nombre del mapa.': 'És el nom del mapa.',
         'De qué es este mapa': "De què és aquest mapa",
@@ -967,12 +1001,9 @@
         'Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.': "Tria el model que més s'assembla al que fas: omple qui sol haver-hi al voltant i què es donen. Després canvia el que no encaixi i posa-ho amb les teves paraules.",
         'O por sector, si tu proyecto mira al territorio:': 'O per sector, si el teu projecte mira al territori:',
         'Añadir a alguien': 'Afegir algú',
-        'Ver y mover el dibujo aquí': 'Veure i moure el dibuix aquí',
         'Pule tu dibujo con IA': 'Poleix el teu dibuix amb IA',
         'Lee lo que nos has contado y te propone mejoras: quién falta, qué se da que no se paga, cómo decirlo más claro. Tú decides qué se queda.': "Llegeix el que ens has explicat i et proposa millores: qui falta, què es dona que no es paga, com dir-ho més clar. Tu decideixes què es queda.",
         '✦ Pulir mi dibujo': '✦ Polir el meu dibuix',
-        'Tu dibujo, con el mismo editor que usamos en la sesión. Mueve, añade a alguien o una flecha, y guárdalo en tu ficha.': "El teu dibuix, amb el mateix editor que fem servir a la sessió. Mou, afegeix algú o una fletxa, i desa-ho a la teva fitxa.",
-        'Guardar en mi ficha': 'Desar a la meva fitxa',
         'Vista avanzada': 'Vista avançada',
         'Vista sencilla': 'Vista senzilla',
         'Cerrar': 'Tancar',
@@ -1072,8 +1103,6 @@
         'Qué incluye': 'Què inclou', 'Nivel': 'Nivell', 'Horas': 'Hores', 'Importe': 'Import',
         'Total (IVA incluido)': 'Total (IVA inclòs)', 'Total (sin IVA)': 'Total (sense IVA)',
         'Actualizada el {0}': 'Actualitzada el {0}', 'válida hasta el {0}': 'vàlida fins al {0}', 'Solo la ves tú.': 'Només la veus tu.',
-        'El editor todavía se está abriendo': "L'editor encara s'està obrint",
-        'Guardado en tu ficha: {0} personas o grupos': 'Desat a la teva fitxa: {0} persones o grups',
         'Primero crea tu cuenta (paso 5): así sabemos a quién contestar.': 'Primer crea el teu compte (pas 5): així sabem a qui contestar.',
         'Marca la casilla de privacidad para poder enviarlo.': 'Marca la casella de privacitat per poder enviar-ho.',
         'Enviando…': 'Enviant…',
@@ -1930,15 +1959,48 @@
        ficha por el mismo camino que «✎ Obre'l a l'editor» de la app, y
        «Guardar en mi ficha» lo devuelve con D.desDe. */
     var ED = $('#cl-ed'), MARC = $('#cl-ed-marc');
+    /* El dibujo a pantalla completa, unido a las filas (03/11/2026, l'Àlvaro: «que se
+       traslade también al formulario»). Al abrir, el editor recibe lo que dicen las filas;
+       mientras dibujas, cada cambio que el editor guarda (vs.arbre.v1, el evento storage
+       llega a esta página) vuelve a las filas. Sin botón de guardar. */
+    var ED_TORNA = null, ED_DES = null;
+    function edSincronitza(final) {
+        var w = MARC.contentWindow && MARC.contentWindow.__VS_ED;
+        if (!w) return false;
+        var m, d; try { m = w.exporta(); d = D.desDe(m, S.casa); } catch (e) { return false; }
+        if (!d.alrededor.length && !final) return true;
+        var canvi = JSON.stringify([d.alrededor, d.extra]) !== JSON.stringify([S.alrededor, S.extra || null]);
+        if (canvi) { S.alrededor = d.alrededor; S.extra = d.extra; }
+        /* L'abast de l'editor és el «qué quieres conseguir» de la fitxa (D.mapa el fa servir així). */
+        var ab = (m.abast || '').trim();
+        if (ab && ab !== (S.respuestas.objetivo || '').trim()) { S.respuestas.objetivo = ab; canvi = true; if (typeof pintaPreguntes === 'function') pintaPreguntes(); }
+        if (canvi) { desa(); pintaFiles(); pintaSalut(); $('#cl-ed-diu').textContent = t('Guardado en tu formulario.'); }
+        return true;
+    }
+    window.addEventListener('storage', function (e) {
+        if (ED.hidden || e.key !== 'vs.arbre.v1') return;
+        clearTimeout(ED_DES); ED_DES = setTimeout(function () { edSincronitza(false); }, 250);
+    });
+    function tancaEditor() {
+        if (ED.hidden) return;
+        var n = edSincronitza(true);
+        ED.hidden = true; MARC.src = 'about:blank'; document.body.classList.remove('ed-obert');
+        if (n) aviso(t('Tu dibujo ya está en el formulario'));
+        var f = $('#cl-files'); if (f) f.scrollIntoView({ block: 'start' });
+        if (ED_TORNA && ED_TORNA.focus) ED_TORNA.focus();
+    }
     document.querySelectorAll('.js-dibuix').forEach(function (b) {
         b.addEventListener('click', function () {
             try { localStorage.setItem('sos-mapa-cap-editor', JSON.stringify(D.mapa(S))); } catch (e) { /* el editor se abrirá con lo último que tenía */ }
-            b.closest('.accions').after(ED);
-            ED.hidden = false;
+            ED_TORNA = b;
+            $('#cl-ed-tit').textContent = ($('#cl-mapa-tit').textContent || '').trim() || t('Tu mapa de valor');
+            $('#cl-ed-diu').textContent = t('Lo que dibujas pasa solo a tu formulario.');
+            ED.hidden = false; document.body.classList.add('ed-obert');
             obreEditor(false);
-            ED.scrollIntoView({ block: 'start' });
+            $('#cl-ed-tanca').focus();
         });
     });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ED.hidden) tancaEditor(); });
     /* Sencilla: solo el dibujo y la ficha de lo que eliges. Avanzada: el editor
        entero, con lo que explica el método. Al cambiar, el mapa sigue: el editor
        lo guarda en este navegador a cada cambio. */
@@ -1949,17 +2011,11 @@
         MARC.src = '/SOS/vna-suport.html?app&lang=' + LL + '&incrustat' + (avanzada ? '&ple' : '') + '&t=' + Date.now();
     }
     $('#cl-ed-avz').addEventListener('click', function () {
-        try { localStorage.removeItem('sos-mapa-cap-editor'); } catch (e) { /* nada que quitar */ }
+        edSincronitza(false);
+        try { localStorage.setItem('sos-mapa-cap-editor', JSON.stringify(D.mapa(S))); } catch (e) { /* el editor se abrirá con lo último que tenía */ }
         obreEditor(this.getAttribute('aria-pressed') !== 'true');
     });
-    $('#cl-ed-desa').addEventListener('click', function () {
-        var w = MARC.contentWindow && MARC.contentWindow.__VS_ED;
-        if (!w) { aviso(t('El editor todavía se está abriendo')); return; }
-        var d = D.desDe(w.exporta(), S.casa);
-        S.alrededor = d.alrededor; S.extra = d.extra; desa(); pintaFiles();
-        aviso(t('Guardado en tu ficha: {0} personas o grupos', d.alrededor.length));
-    });
-    $('#cl-ed-tanca').addEventListener('click', function () { ED.hidden = true; MARC.src = 'about:blank'; });
+    $('#cl-ed-tanca').addEventListener('click', tancaEditor);
 
     /* 6 · El envío. Es la única llamada que saca datos de este navegador. */
     $('#cl-envia').addEventListener('click', function () {
