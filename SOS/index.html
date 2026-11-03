@@ -648,7 +648,8 @@ a{color:var(--blue);text-decoration:none}
 .metaskill{margin-top:1rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem}
 .ms-row{display:flex;gap:.6rem;margin-bottom:.55rem;font-size:var(--t0);align-items:baseline}
 .ms-row:last-child{margin-bottom:0}
-.ms-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);width:66px;flex-shrink:0;padding-top:.15rem}
+.ms-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;text-transform:uppercase;color:var(--indigo);width:7.5rem;flex-shrink:0;padding-top:.15rem}
+@media(max-width:600px){.ms-row{flex-direction:column;gap:.15rem}.ms-k{width:auto}}
 .ms-v{flex:1;color:var(--light);line-height:1.5}
 .ms-v[contenteditable]{outline:none;border-radius:4px;padding:.1rem .3rem;margin:-.1rem -.3rem}
 .ms-v[contenteditable]:hover{background:var(--bg-hover)}
@@ -751,16 +752,17 @@ body.sos-taller .lent-z{min-width:56px}
 .vna-zn:hover rect,.vna-zn:focus rect{stroke-opacity:1;fill:var(--bg-hover)}
 .vna-zn:focus{outline:none}
 .vna-zn:focus rect{stroke-width:2.2}
-/* La molla de pa va **a sobre** del llenç i no en una fila pròpia: el llenç ja
-   és `position:relative` i afegir-hi una fila canviava la graella de la vista
-   sencera. Un zoom sense sortida visible és un cul-de-sac —veda 62. */
-.vna-molla{position:absolute;top:.5rem;left:.6rem;right:.6rem;z-index:2;display:flex;
+/* La molla de pa, en una fila pròpia a dalt del llenç: posada a sobre
+   tapava la barra de lents (02/11/2026). Un zoom sense sortida visible és un
+   cul-de-sac —veda 62. */
+.vna-molla{padding:.6rem .7rem 0;display:flex;
   flex-wrap:wrap;align-items:center;gap:.25rem;font-family:var(--mono);font-size:var(--t0)}
 .vm-b{background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;
   color:var(--muted);cursor:pointer;padding:.12rem .4rem;font-family:inherit;font-size:inherit}
 .vm-b:hover{color:var(--text);border-color:var(--indigo)}
 .vm-s{color:var(--muted);opacity:.5}
 .vm-ara{color:var(--text);padding:.12rem .2rem}
+.vna-acc{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0}.vna-acc .btn{margin:0}
 .vna-side h3{font-size:var(--t0);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
 .role-list{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
 .role-item{display:flex;align-items:center;gap:.5rem;background:var(--bg-panel);border:1px solid var(--border);border-radius:7px;padding:.5rem .65rem;font-size:var(--t0)}
@@ -770,7 +772,7 @@ body.sos-taller .lent-z{min-width:56px}
    més d'aconseguir. Dues línies i el nom del rol retallat, si cal, però qui el
    porta es llegeix. */
 .role-item{flex-wrap:wrap}
-.role-item .nm{flex:1 1 100%;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem}
+.role-item .nm{flex:1 1 calc(100% - 1.6rem);min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem}
 .role-item .rl-nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
 .role-item .del{margin-left:auto;opacity:0;color:var(--muted);cursor:pointer;font-size:var(--t0)}
 .role-item:hover .del{opacity:1}.role-item .del:hover{color:var(--red)}
@@ -11046,7 +11048,7 @@ function renderVNA(body,node){
       await persist(node);renderWorkspace();
       toast('Xarxa real: '+c.rols+' nodes i '+c.fluxos+' fluxos nous, '+c.fets+' fets'+(c.altres?', '+c.altres+' d\'altres marques fora':''));}
     catch(e){toast(e.message||'No s\'ha pogut llegir el paquet');}};
-  side.appendChild(xr);
+  const acc=el('div','vna-acc');side.appendChild(acc);acc.appendChild(xr);
   carregaLib('flux-viu').then(()=>{const m=FluxViu.triaMarca(node,()=>persist(node));if(m)xr.before(m);}).catch(()=>{});
   /* El mapa de l'editor entra i surt tal com és (lib/mapa-valor.js). */
   const om=el('label','btn btn-ghost btn-sm vna-xr','⇪ Obre un mapa');om.id='vnaObre';
@@ -11055,12 +11057,12 @@ function renderVNA(body,node){
   of.onchange=async()=>{const f=of.files[0];if(!f)return;
     try{const r=await obreMapa(node,await f.text());renderWorkspace();toast('Mapa obert: '+r.rols+' rols i '+r.fluxos+' fluxos nous');}
     catch(e){toast(e.message||'No s\'ha pogut llegir el mapa');}};
-  side.appendChild(om);
+  acc.appendChild(om);
   if(node.vna.roles.length){const cm=el('button','btn btn-ghost btn-sm','⧉ Copia el mapa');cm.id='vnaCopia';
-    cm.title='En la forma de l\'editor: s\'hi enganxa tal com és';cm.onclick=()=>copiaMapa(node);side.appendChild(cm);
+    cm.title='En la forma de l\'editor: s\'hi enganxa tal com és';cm.onclick=()=>copiaMapa(node);acc.appendChild(cm);
     const ae=el('button','btn btn-ghost btn-sm','✎ Obre\'l a l\'editor');ae.id='vnaEditor';
-    ae.title='Processos, seqüència, ideal i nivells: les sis passes amb les deu regles';ae.onclick=()=>aEditor(node);side.appendChild(ae);}
-  if(!node.exempleViu){const xe=el('button','btn btn-ghost btn-sm','🫀 Mira un exemple viu');xe.onclick=obreExempleViu;side.appendChild(xe);}
+    ae.title='Processos, seqüència, ideal i nivells: les sis passes amb les deu regles';ae.onclick=()=>aEditor(node);acc.appendChild(ae);}
+  if(!node.exempleViu){const xe=el('button','btn btn-ghost btn-sm','▶ Mira un exemple viu');xe.onclick=obreExempleViu;acc.appendChild(xe);}
   // role list
   /* Assignar-los d'un cop. Només omple els que no tenen ningú: una proposta
      no pot desfer una decisió que ja ha pres algú. */
@@ -11199,7 +11201,7 @@ function modeTaller(on,quiet){document.body.classList.toggle('sos-taller',on);
   const d=document,fs=d.fullscreenElement;
   if(!quiet)try{if(on&&!fs&&d.documentElement.requestFullscreen)d.documentElement.requestFullscreen().catch(()=>{});
     if(!on&&fs&&d.exitFullscreen)d.exitFullscreen().catch(()=>{});}catch(e){}
-  d.querySelectorAll('#lnTaller').forEach(b=>{b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on?'true':'false');b.textContent=on?'✕ Surt del taller':'⛶ Taller';});}
+  d.querySelectorAll('#lnTaller').forEach(b=>{b.classList.toggle('sel',on);b.setAttribute('aria-pressed',on?'true':'false');b.textContent=on?'✕ Surt del taller':'▣ Taller';});}
 document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&enTaller())modeTaller(false);});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&enTaller()&&!modalOpen())modeTaller(false);});
 /* Preguntar a la IA des del mapa (lib/mapa-ia.js, intenció «millora_mapa»). */
@@ -11245,7 +11247,7 @@ function barraLents(node,canvas,svg0){
     db.disabled=!(DESFES[node.id]||[]).length;db.onclick=()=>desfesMapa(node);barra.insertBefore(db,eb.nextSibling);}
   if(canWrite(node).ok){const ib=el('button','lent lent-ta','✨ IA');ib.type='button';ib.id='lnIa';ib.title='Pregunta a la IA què hi falta o com millorar el mapa';
     ib.onclick=()=>openIaMapa(node);barra.appendChild(ib);}
-  const tb=el('button','lent lent-ta','⛶ Taller');tb.type='button';tb.id='lnTaller';tb.title='El mapa a pantalla completa, amb botons grans, per treballar-lo en grup';
+  const tb=el('button','lent lent-ta','▣ Taller');tb.type='button';tb.id='lnTaller';tb.title='El mapa a pantalla completa, amb botons grans, per treballar-lo en grup';
   tb.onclick=()=>modeTaller(!enTaller());barra.appendChild(tb);
   [['＋','Apropa el mapa','mes'],['－','Allunya el mapa','menys'],['⤢','Torna el mapa a la mida de sempre','torna']].forEach(([t,a,f])=>{
     const b=el('button','lent lent-z',t);b.type='button';b.setAttribute('aria-label',a);b.title=a;b.dataset.zoom=f;b.onclick=()=>zm&&zm[f]();barra.appendChild(b);});
@@ -11663,7 +11665,13 @@ function buildVNASvg(node,ara){
     defs.appendChild(m);
   });
   svg.appendChild(defs);svg.appendChild(mk('rect',{width:W,height:H,fill:'url(#vnaPunts)',class:'vna-fons'}));
-  const pairSeen={},placed=[];
+  /* Les etiquetes dels fluxos no trepitgen cap rol, cap nom ni cap altra
+     etiqueta: proven amunt i avall, i si no hi caben es callen (el flux les
+     diu igualment al passar-hi per sobre o tocar-lo). */
+  const fe=estret?12:9,cw=fe*.6,placed=[];
+  roles.forEach(r=>{const p=pos[r.id];if(!p)return;placed.push([p.x,p.r+3,p.y,p.r+3]);
+    const nl=Math.min(17,r.name.length)>15?2:1;placed.push([p.x,Math.min(17,r.name.length)*(estret?4.6:3.3),p.y+p.r+(estret?12:9)+nl*5,nl*(estret?8:6)]);});
+  const pairSeen={};
   ex.forEach(e=>{const a=pos[e.from],b=pos[e.to];if(!a||!b)return;
     /* Cada flux paral·lel es corba una mica més (el contrari ja cau a l'altre costat). */
     const key=e.from+'|'+e.to,k=pairSeen[key]||0;pairSeen[key]=k+1;
@@ -11681,9 +11689,11 @@ function buildVNASvg(node,ara){
     const tt=mk('title',{});tt.textContent=(roles.find(r=>r.id===e.from)||{}).name+' → '+(roles.find(r=>r.id===e.to)||{}).name+(e.label?' · '+e.label:'');
     path.appendChild(tt);
     svg.appendChild(path);
-    if(e.label){const lb=e.label.length>22?e.label.slice(0,21)+'…':e.label,hw=lb.length*2.7,lx=(x1+x2)/4+mx/2;let ly=(y1+y2)/4+my/2-3;
-      for(let i=0;i<6&&placed.some(q=>Math.abs(q[0]-lx)<q[1]+hw&&Math.abs(q[2]-ly)<10);i++)ly+=10;placed.push([lx,hw,ly]);
-      const t=mk('text',{x:lx,y:ly,'text-anchor':'middle',class:'vna-el','font-size':estret?12:9,style:'fill:var(--'+(tang?'green':'indigo')+')'});t.textContent=lb;svg.appendChild(t);}
+    if(e.label){const lb=e.label.length>22?e.label.slice(0,21)+'…':e.label,hw=lb.length*cw/2+2,hh=fe*.6,lx=(x1+x2)/4+mx/2,y0=(y1+y2)/4+my/2-3;
+      const lliure=y=>!placed.some(q=>Math.abs(q[0]-lx)<q[1]+hw&&Math.abs(q[2]-(y-fe*.35))<q[3]+hh);
+      const ly=[0,-1,1,-2,2,-3,3].map(i=>y0+i*fe*1.25).find(lliure);
+      if(ly!=null){placed.push([lx,hw,ly-fe*.35,hh]);
+        const t=mk('text',{x:lx,y:ly,'text-anchor':'middle',class:'vna-el','font-size':fe,style:'fill:var(--'+(tang?'green':'indigo')+')'});t.textContent=lb;svg.appendChild(t);}}
   });
   if(fills.length)svg.appendChild(zoom());
   // nodes
@@ -20900,7 +20910,7 @@ function renderAvui(body){
     c.appendChild(el('div','av-k','El pols'));
     c.appendChild(el('p','av-d','Encara no circula res. Quan dibuixis qui dona què a qui i ho apuntis, aquí veuràs el teu negoci respirar.'));
     const pm=el('button','btn btn-primary','✦ Dibuixa el teu negoci');pm.id='avPrimer';pm.onclick=openPrimerMapa;c.appendChild(pm);
-    const b=el('button','btn btn-ghost btn-sm','🫀 Mira un exemple viu');b.id='avExemple';b.onclick=obreExempleViu;c.appendChild(b);
+    const b=el('button','btn btn-ghost btn-sm','▶ Mira un exemple viu');b.id='avExemple';b.onclick=obreExempleViu;c.appendChild(b);
     box.appendChild(c);return;
   }
   carregaLib('flux-viu').then(()=>{
