@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 463 · 23914 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 464 · 23922 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 10 · 154 KB |
@@ -37,7 +37,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 43 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 134 · 1752 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 135 · 1756 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 78 · 1635 KB |
 
 ## saber
@@ -122,4 +122,4 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 
 ---
 
-*44 carpetes declarades · generat des de l'arbre, no escrit.*
+*43 carpetes declarades · generat des de l'arbre, no escrit.*

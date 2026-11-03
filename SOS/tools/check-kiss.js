@@ -170,7 +170,11 @@ const src = readFileSync(APP, 'utf8');
    torna a 550, amb 11 KB de marge. */
 const MAX_GZIP_KB = 550;   // baixat un cop i cachejat (sw.js), no a cada visita
 const MAX_HOME_VIEWS = 5;  // portades que competeixen entre elles
-const MAX_MODAL_ROUTES = 20;
+/* 20 → 30 (03/11/2026) · pantalla completa: el diagnòstic d'UX passa totes les
+   finestretes a pàgina, i una pàgina sense enllaç trenca «la màxima de todo es
+   un link». El sostre segueix: obliga a agrupar (fase 3) i no a fer-ne una per
+   pantalla. */
+const MAX_MODAL_ROUTES = 30;
 const MAX_MENU_ITEMS = 12;
 const MAX_LAUNCHER = 36;   // la superfície més gran de totes, i la que ningú mirava
 const MIN_LAUNCHER_GROUPS = 5;  // sense grups, una llista llarga és un directori
