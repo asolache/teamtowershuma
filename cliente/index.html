@@ -368,6 +368,18 @@
         .fila.nou { animation: ia-llum 1.6s ease-out; }
         @keyframes ia-llum { from { box-shadow: 0 0 0 3px var(--indigo); background: #f3f1ff; } }
         @media (prefers-reduced-motion: reduce) { .ia *, .ia, .fila.nou { animation: none !important; transition: none !important; } }
+        .mapes { display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-start; margin: 0 0 1.2rem; }
+        .mapes-d { flex: 1 1 100%; border: 1px solid var(--border); border-radius: 10px; padding: .5rem .8rem; }
+        .mapes-d summary { cursor: pointer; font-weight: 600; }
+        .mapes-l { list-style: none; margin: .6rem 0 .2rem; padding: 0; display: grid; gap: .4rem; }
+        .mapes-l li { display: flex; flex-wrap: wrap; gap: .3rem .6rem; align-items: center; padding: .4rem 0; border-top: 1px solid var(--border); }
+        .mapes-l li > a, .mapes-l li > b { flex: 1 1 12rem; overflow-wrap: anywhere; }
+        .mapes-l small { color: var(--muted); }
+        .mapes-l button { font: inherit; font-size: var(--t0); background: none; border: 0; color: var(--indigo); cursor: pointer; padding: .2rem .3rem; text-decoration: underline; }
+        .mapes-nou { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; border: 1px solid var(--indigo); border-radius: 10px; padding: .7rem .8rem; }
+        .mapes-nou[hidden] { display: none; }
+        .mapes-nou p { flex: 1 1 100%; margin: 0; }
+        .aviso button { font: inherit; margin-left: .6rem; background: none; border: 0; color: inherit; text-decoration: underline; cursor: pointer; }
         .aviso { position: fixed; left: 50%; bottom: 5rem; transform: translateX(-50%); max-width: calc(100vw - 2rem); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 10px; font-size: var(--t0); z-index: 300; }
 /*TT-PROCES*/
 .pr{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:0;counter-reset:pr}.pr-p{counter-increment:pr;position:relative;display:grid;align-content:start;grid-template-columns:2.6rem minmax(0,1fr);column-gap:1rem;padding:0 0 1.4rem}.pr-p::before{content:counter(pr);display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;border:2px solid var(--indigo,var(--acc,#3b3fb6));color:var(--indigo,var(--acc,#3b3fb6));font-weight:600;background:var(--bg,#fff);position:relative;z-index:1}.pr-p::after{content:"";position:absolute;left:1.2rem;top:2.4rem;bottom:0;width:2px;margin-left:-1px;background:var(--border,var(--lin,#d6d6e0))}.pr-p:last-child::after{display:none}.pr-p h3{font-size:1.125rem;line-height:1.3;margin:.35rem 0 .35rem}.pr-p p{margin:.2rem 0;line-height:1.55;max-width:62ch}.pr-reps{color:var(--muted,var(--mut,#555))}.pr-q{display:inline-flex;flex-wrap:wrap;gap:.35rem;margin:.1rem 0 .3rem}.pr-q span,.pr-e{font-size:.9375rem;border:1px solid var(--border-strong,var(--lin,#bbb));border-radius:999px;padding:.05rem .55rem}.pr .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.pr-p.opc::before{border-style:dashed}.pr-p.fet::before{content:"✓";background:var(--indigo,var(--acc,#3b3fb6));color:#fff}.pr-p.ara::before{box-shadow:0 0 0 4px color-mix(in srgb,var(--indigo,var(--acc,#3b3fb6)) 25%,transparent)}.pr-p.ara h3::after{content:attr(data-ara);margin-left:.5rem;font-size:.9375rem;font-weight:500;color:var(--indigo,var(--acc,#3b3fb6))}@media (min-width:60rem){.pr{grid-template-columns:repeat(7,minmax(0,1fr));gap:1rem}.pr-p{grid-template-columns:1fr;row-gap:.4rem;padding:0}.pr-p::after{left:2.4rem;right:-1rem;top:1.2rem;bottom:auto;width:auto;height:2px;margin:-1px 0 0}}
@@ -527,6 +539,20 @@
             <p class="eyebrow">1 · Quién está a tu alrededor</p>
             <h2 id="t-alrededor">Con quién trabajas, qué te da y qué le das.</h2>
             <p>Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.</p>
+        </div>
+        <div class="mapes" id="cl-mapes">
+            <details class="mapes-d" id="cl-mapes-d"><summary>📁 Mis mapas <span id="cl-mapes-n"></span></summary>
+                <ul class="mapes-l" id="cl-mapes-l"></ul>
+                <p class="nota">Sin cuenta, tus mapas viven en este navegador (hasta 10). Cada uno tiene su enlace: ábrelo aquí mismo cuando quieras.</p>
+            </details>
+            <button type="button" class="btn btn-ghost btn-sm" id="cl-nou">＋ Mapa nuevo</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="cl-mapa-link">🔗 Enlace de este mapa</button>
+            <div class="mapes-nou" id="cl-nou-p" role="group" aria-labelledby="cl-nou-t" hidden>
+                <p id="cl-nou-t"><b>¿Qué hacemos con el mapa que tienes ahora?</b></p>
+                <button type="button" class="btn btn-primary btn-sm" id="cl-nou-desa">Guardarlo y empezar otro</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="cl-nou-borra">Borrarlo y empezar de cero</button>
+                <button type="button" class="btn btn-ghost btn-sm" id="cl-nou-no">Cancelar</button>
+            </div>
         </div>
         <div class="camps dos">
             <div class="camp"><label for="cl-org">Tu organización</label><input id="cl-org" autocomplete="organization" data-c="org" placeholder="El nombre de tu escuela, tu empresa, tu asociación…"><small>Es el nombre del mapa.</small></div>
@@ -1015,6 +1041,18 @@
         'mi-ficha-teamtowers.json': 'la-meva-fitxa-teamtowers.json',
         'Ficha descargada': 'Fitxa descarregada',
         'Ficha cargada': 'Fitxa carregada',
+        /* Mis mapas */
+        'Mis mapas': 'Els meus mapes', '＋ Mapa nuevo': '＋ Mapa nou', '🔗 Enlace de este mapa': "🔗 Enllaç d'aquest mapa",
+        'Sin cuenta, tus mapas viven en este navegador (hasta 10). Cada uno tiene su enlace: ábrelo aquí mismo cuando quieras.': 'Sense compte, els teus mapes viuen en aquest navegador (fins a 10). Cadascun té el seu enllaç: obre-ho aquí mateix quan vulguis.',
+        '¿Qué hacemos con el mapa que tienes ahora?': 'Què fem amb el mapa que tens ara?',
+        'Guardarlo y empezar otro': "Desar-lo i començar-ne un altre", 'Borrarlo y empezar de cero': 'Esborrar-lo i començar de zero', 'Cancelar': 'Cancel·lar',
+        'Mapa sin nombre': 'Mapa sense nom', 'Deshacer': 'Desfer', 'abierto': 'obert', 'Duplicar': 'Duplicar', 'Borrar': 'Esborrar', '(copia)': '(còpia)',
+        'Ese mapa no está en este navegador. Aquí tienes el último que abriste.': "Aquest mapa no és en aquest navegador. Aquí tens l'últim que vas obrir.",
+        'Tienes {0} mapas guardados. Borra uno de «Mis mapas» para hacer otro.': "Tens {0} mapes desats. Esborra'n un d'«Els meus mapes» per fer-ne un altre.",
+        'Aún no tienes ninguno: empieza a dibujar y se guarda solo.': "Encara no en tens cap: comença a dibuixar i es desa sol.",
+        'Copia guardada en «Mis mapas»': "Còpia desada a «Els meus mapes»", 'Mapa borrado.': 'Mapa esborrat.', 'Mapa borrado. Este es uno nuevo.': "Mapa esborrat. Aquest és un de nou.",
+        'Este mapa está vacío: empieza a dibujar aquí.': 'Aquest mapa és buit: comença a dibuixar aquí.',
+        'Enlace copiado. Abre este mapa en este navegador.': "Enllaç copiat. Obre aquest mapa en aquest navegador.",
         'Esa ficha no se puede leer': 'Aquesta fitxa no es pot llegir',
         'Copiado: pégalo en tu IA': 'Copiat: enganxa-ho a la teva IA',
         'Selecciona el texto y cópialo': 'Selecciona el text i copia\'l',
@@ -1317,9 +1355,46 @@
     var CLAU = 'tt.cliente.v1';
     var S = { nom: '', mail: '', org: '', alcance: 'global', area: '', web: '', inicial: '', casa: '', nivel: '', automatiza: false, respuestas: {}, alrededor: [], cuenta: false };
     try { Object.assign(S, JSON.parse(localStorage.getItem(CLAU) || 'null') || {}); } catch (e) { /* sin memoria: se empieza de cero */ }
+    /* Mis mapas: cada mapa es un proyecto con su enlace (?mapa=<id>). El abierto vive
+       en CLAU, como siempre; la lista guarda una copia de cada uno en este navegador. */
+    var CLAU_M = 'tt.cliente.mapas', MAX_M = 10, M = { mapes: {} }, AVIS_INICI = '';
+    try { M = JSON.parse(localStorage.getItem(CLAU_M) || 'null') || M; } catch (e) { /* sin memoria */ }
+    if (!M.mapes || typeof M.mapes !== 'object') M.mapes = {};
+    function base() { return { nom: '', mail: '', org: '', alcance: 'global', area: '', web: '', inicial: '', casa: '', nivel: '', automatiza: false, respuestas: {}, alrededor: [], cuenta: false }; }
+    function nouId() { return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function clona(x) { return JSON.parse(JSON.stringify(x)); }
+    function mapaBuit(x) { return !(x.org || '').trim() && !(x.inicial || '').trim() && !(x.alrededor || []).some(function (f) { return f && (f.quien || '').trim(); }) && !((x.extra || {}).roles || []).length; }
+    function nomMapa(x) { var o = (x.org || '').trim(), a = (x.area || '').trim(); return (o ? o + (x.alcance === 'zoom' && a ? ' · ' + a : '') : (x.casa || '').trim()) || t('Mapa sin nombre'); }
+    function desaM() { try { localStorage.setItem(CLAU_M, JSON.stringify(M)); return true; } catch (e) { return false; } }
+    function quants() { return Object.keys(M.mapes).length; }
+    /* Lo de quien hace el mapa (nombre, correo, cuenta) pasa de un mapa a otro: es la misma persona. */
+    function persona() { return { nom: S.nom || '', mail: S.mail || '', cuenta: !!S.cuenta }; }
+    function posa(nou) { Object.keys(S).forEach(function (k) { delete S[k]; }); Object.assign(S, base(), nou); if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }]; }
+    function escriuMapa() { try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ } }
+    function urlMapa(id) { var u = new URL(location.href); u.searchParams.set('mapa', id); u.hash = 'alrededor'; return u.toString(); }
+    function guardaM() { if (!S.mapaId) { if (mapaBuit(S)) return; S.mapaId = nouId(); escriuMapa(); }
+        if (!M.mapes[S.mapaId] && (mapaBuit(S) || quants() >= MAX_M)) return;
+        var n = document.getElementById('cl-avanc-n');
+        M.mapes[S.mapaId] = { s: clona(S), avanc: n ? n.textContent : '' };
+        desaM();
+    }
+    /* El mapa de antes de esta versión pasa a ser el primero de la lista: nadie pierde nada. */
+    if (!S.mapaId && !mapaBuit(S)) { S.mapaId = nouId(); escriuMapa(); }
+    (function () {
+        var id = new URLSearchParams(location.search).get('mapa');
+        if (M.paperera && !(M.paperera.fins > Date.now())) { delete M.paperera; desaM(); }
+        if (!id || id === S.mapaId) return;
+        if (!M.mapes[id]) { AVIS_INICI = t('Ese mapa no está en este navegador. Aquí tienes el último que abriste.'); return; }
+        if (S.mapaId && !mapaBuit(S) && (M.mapes[S.mapaId] || quants() < MAX_M)) M.mapes[S.mapaId] = { s: clona(S), avanc: (M.mapes[S.mapaId] || {}).avanc || '' };
+        var p = persona();
+        posa(clona(M.mapes[id].s)); S.mapaId = id;
+        if (p.mail && !S.mail) { S.nom = p.nom; S.mail = p.mail; S.cuenta = p.cuenta; }
+        /* Abrirlo cuenta como tocarlo: así, con cuenta, es el que se guarda allí. */
+        S.actualitzada = new Date().toISOString(); escriuMapa(); desaM();
+    })();
     /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
     var PUJA = null;
-    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); pintaAvanc(); if (PUJA) PUJA(); }
+    function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); pintaAvanc(); guardaM(); if (typeof MAPES !== 'undefined' && MAPES) MAPES.pinta(); if (PUJA) PUJA(); }
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
@@ -1359,7 +1434,7 @@
     });
     $('#cl-carrega').addEventListener('change', function (ev) {
         var f = ev.target.files[0]; if (!f) return;
-        f.text().then(function (tx) { Object.assign(S, JSON.parse(tx)); desa(); pintaTot(); aviso(t('Ficha cargada')); }).catch(function () { aviso(t('Esa ficha no se puede leer')); });
+        f.text().then(function (tx) { var x = JSON.parse(tx), id = S.mapaId; Object.assign(S, x); S.mapaId = id; desa(); pintaTot(); aviso(t('Ficha cargada')); }).catch(function () { aviso(t('Esa ficha no se puede leer')); });
     });
 
     /* 2 · El texto para su IA, y su respuesta */
@@ -2078,7 +2153,7 @@
             if (!I.sessio || I.sense) return;
             fitxa({}).then(function (r) {
                 if (r.estat !== 'fet' && r.estat !== 'cap') return;
-                if (r.estat === 'fet' && (buida(S) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
+                if (r.estat === 'fet' && ((buida(S) && !S.mapaId) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
                     Object.assign(S, r.fitxa); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
                     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
                     pintaTot(); viu(); aviso(t('Hemos recuperado tu dibujo guardado'));
@@ -2373,6 +2448,77 @@
         fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
         pinta(); sincronitza();
         return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
+    })();
+
+    /* Mis mapas: la lista, «Mapa nuevo» (guardar o borrar, con «Deshacer») y el enlace. */
+    var MAPES = (function () {
+        function avis(tx, desfer) {
+            var a = el('div', { class: 'aviso', role: 'status' }, tx);
+            if (desfer) { var b = el('button', { type: 'button' }, t('Deshacer')); b.addEventListener('click', function () { a.remove(); desfer(); }); a.appendChild(b); }
+            document.body.appendChild(a); setTimeout(function () { a.remove(); }, desfer ? Math.max(1000, (M.paperera ? M.paperera.fins : Date.now() + 10000) - Date.now()) : 2600);
+        }
+        function data(x) { if (!x || isNaN(new Date(x))) return ''; try { return new Date(x).toLocaleDateString(LL === 'ca' ? 'ca-ES' : 'es-ES', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } }
+        function obre(id) { location.assign(urlMapa(id)); }
+        function ple() { if (quants() >= MAX_M) { aviso(t('Tienes {0} mapas guardados. Borra uno de «Mis mapas» para hacer otro.', MAX_M)); return true; } return false; }
+        function aLaPaperera(x) { M.paperera = { s: clona(x), fins: Date.now() + 10000 }; }
+        function recupera() {
+            var p = M.paperera; if (!p) return; delete M.paperera;
+            M.mapes[p.s.mapaId] = { s: p.s, avanc: '' }; desaM();
+            if (p.s.mapaId !== S.mapaId && mapaBuit(S)) obre(p.s.mapaId); else pinta();
+        }
+        function pinta() {
+            var ids = Object.keys(M.mapes);
+            if (S.mapaId && !M.mapes[S.mapaId]) ids.unshift(S.mapaId);
+            ids.sort(function (a, b) { return a === S.mapaId ? -1 : b === S.mapaId ? 1 : ((M.mapes[b].s.actualitzada || '') > (M.mapes[a].s.actualitzada || '') ? 1 : -1); });
+            $('#cl-mapes-n').textContent = '(' + ids.length + ')';
+            var ul = $('#cl-mapes-l'); ul.textContent = '';
+            if (!ids.length) ul.appendChild(el('li', {}, t('Aún no tienes ninguno: empieza a dibujar y se guarda solo.')));
+            ids.forEach(function (id) {
+                var ara = id === S.mapaId, m = ara ? { s: S, avanc: ($('#cl-avanc-n') || {}).textContent || '' } : M.mapes[id], li = el('li');
+                li.appendChild(ara ? el('b', {}, nomMapa(m.s)) : el('a', { href: urlMapa(id) }, nomMapa(m.s)));
+                li.appendChild(el('small', {}, [ara ? t('abierto') : '', m.avanc, data(m.s.actualitzada)].filter(Boolean).join(' · ')));
+                var du = el('button', { type: 'button' }, t('Duplicar'));
+                du.addEventListener('click', function () {
+                    if (ple()) return;
+                    var c = clona(m.s); c.mapaId = nouId(); c.org = (c.org || nomMapa(m.s)) + ' ' + t('(copia)'); c.enviat = false; c.actualitzada = new Date().toISOString();
+                    M.mapes[c.mapaId] = { s: c, avanc: m.avanc }; desaM(); pinta(); aviso(t('Copia guardada en «Mis mapas»'));
+                });
+                li.appendChild(du);
+                if (!ara) {
+                    var bo = el('button', { type: 'button' }, t('Borrar'));
+                    bo.addEventListener('click', function () { aLaPaperera(M.mapes[id].s); delete M.mapes[id]; desaM(); pinta(); avis(t('Mapa borrado.'), recupera); });
+                    li.appendChild(bo);
+                }
+                ul.appendChild(li);
+            });
+        }
+        function nou(guardant) {
+            var p = persona(), id = nouId();
+            if (!guardant && S.mapaId) { aLaPaperera(S); delete M.mapes[S.mapaId]; }
+            else if (S.mapaId && !mapaBuit(S)) M.mapes[S.mapaId] = { s: clona(S), avanc: ($('#cl-avanc-n') || {}).textContent || '' };
+            desaM();
+            posa(p); S.mapaId = id; S.actualitzada = new Date().toISOString(); escriuMapa();
+            obre(id);
+        }
+        $('#cl-nou').addEventListener('click', function () {
+            if (mapaBuit(S)) { aviso(t('Este mapa está vacío: empieza a dibujar aquí.')); $('#cl-org').focus(); return; }
+            $('#cl-nou-p').hidden = false; $('#cl-nou-desa').focus();
+        });
+        $('#cl-nou-no').addEventListener('click', function () { $('#cl-nou-p').hidden = true; $('#cl-nou').focus(); });
+        $('#cl-nou-desa').addEventListener('click', function () { if (!M.mapes[S.mapaId] && ple()) return; nou(true); });
+        $('#cl-nou-borra').addEventListener('click', function () { nou(false); });
+        $('#cl-mapa-link').addEventListener('click', function () {
+            if (!S.mapaId) { S.mapaId = nouId(); escriuMapa(); }
+            var u = urlMapa(S.mapaId);
+            history.replaceState(null, '', u);
+            (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { aviso(t('Enlace copiado. Abre este mapa en este navegador.')); }, function () { aviso(u); });
+        });
+        /* La barra de direcciones enseña siempre el enlace del mapa abierto. */
+        if (S.mapaId) history.replaceState(null, '', urlMapa(S.mapaId).replace(/#alrededor$/, location.hash));
+        if (M.paperera && M.paperera.fins > Date.now()) avis(t('Mapa borrado. Este es uno nuevo.'), recupera);
+        else if (AVIS_INICI) aviso(AVIS_INICI);
+        pinta();
+        return { pinta: pinta };
     })();
 
     function pintaTot() { EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }

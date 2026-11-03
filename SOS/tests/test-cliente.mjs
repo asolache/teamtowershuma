@@ -479,6 +479,38 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
+/* Mis mapas: guardar y empezar otro, borrar con «Deshacer», el enlace de cada mapa */
+{
+  console.log('\n══ Mis mapas ══');
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const p = await ctx.newPage(), errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
+  await p.addInitScript(() => { if (!sessionStorage.getItem('fet')) { sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es'); localStorage.setItem('tt.cliente.v1', JSON.stringify({ org: 'Escuela Vieja', nom: 'Ana', mail: 'ana@x.test', alrededor: [{ quien: 'quien aprende', meDa: 'la cuota', meDaEs: 'tangible', leDoy: 'las clases', leDoyEs: 'tangible' }] })); } });
+  await p.goto(URL_ + '#alrededor');
+  await p.waitForFunction(() => /\?mapa=m/.test(location.search));
+  const id1 = await p.evaluate(() => new URLSearchParams(location.search).get('mapa'));
+  ok(await p.evaluate(() => /Escuela Vieja/.test(document.querySelector('#cl-mapes-l').textContent)), 'el mapa de antes es el primero de «Mis mapas» y la barra lleva su enlace');
+  await p.click('#cl-nou');
+  await p.click('#cl-nou-desa');
+  await p.waitForFunction(id => new URLSearchParams(location.search).get('mapa') !== id, id1);
+  ok(await p.inputValue('#cl-org') === '' && await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).mail === 'ana@x.test'), '«Guardarlo y empezar otro» abre un mapa vacío y conserva el nombre y el correo');
+  await p.fill('#cl-org', 'Prueba nueva'); await p.dispatchEvent('#cl-org', 'input');
+  ok(await p.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).length) === 2, 'los dos mapas están en la lista');
+  await p.click('#cl-mapes-d summary');
+  await p.click('#cl-mapes-l a');
+  await p.waitForFunction(id => new URLSearchParams(location.search).get('mapa') === id, id1);
+  ok(await p.inputValue('#cl-org') === 'Escuela Vieja', 'el enlace de la lista vuelve a abrir el mapa guardado');
+  await p.click('#cl-nou'); await p.click('#cl-nou-borra');
+  await p.waitForFunction(id => new URLSearchParams(location.search).get('mapa') !== id, id1);
+  ok(await p.inputValue('#cl-org') === '' && await p.isVisible('.aviso button'), '«Borrarlo y empezar de cero» deja un mapa vacío y ofrece «Deshacer»');
+  await p.click('.aviso button');
+  await p.waitForFunction(id => new URLSearchParams(location.search).get('mapa') === id, id1);
+  ok(await p.inputValue('#cl-org') === 'Escuela Vieja', '«Deshacer» lo recupera');
+  ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'en el móvil no se desplaza de lado');
+  ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
 await b.close(); srv.close();
 console.log(`\n${pass} ✓  ${fail} ✗`);
 process.exit(fail ? 1 : 0);
