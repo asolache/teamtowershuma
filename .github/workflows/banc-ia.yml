@@ -12,7 +12,7 @@ on:
         required: false
         default: ''
       eina:
-        description: 'banc-ia (models) o banc-mapes (mapes de valor)'
+        description: 'banc-ia (models), banc-mapes (mapes de valor) o diagnosi-ux (pantalles del SOS)'
         required: false
         default: 'banc-ia'
       ordres:
@@ -64,8 +64,33 @@ jobs:
           # Si una altra execució ha tocat el mateix fitxer (oficis.json), guanya la d'ara.
           ok=0; for i in 1 2 3 4 5; do git rebase --abort 2>/dev/null || true; git pull --rebase -X theirs -q origin "${GITHUB_REF_NAME}" && node SOS/tools/cervell.js > /dev/null && { git diff --quiet SOS/knowledge/MAPA.md || git commit -qam "Cervell: MAPA.md al dia"; } && git push -q origin "HEAD:${GITHUB_REF_NAME}" && ok=1 && break; sleep $((i*3)); done
           [ "$ok" = 1 ] || { echo "no s'han pogut desar els resultats"; exit 1; }
+      # Diagnòstic d'UX: captura totes les pantalles de l'app i les fa mirar a la IA.
+      # L'informe torna a la branca (mai a main); les captures, com a artefacte.
+      - name: Diagnòstic d'UX
+        if: ${{ inputs.eina == 'diagnosi-ux' }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORDRES: ${{ inputs.ordres }}
+        run: |
+          mkdir -p /tmp/pw && (cd /tmp/pw && npm init -y >/dev/null && npm i -s playwright@1.63.0 && npx playwright install --with-deps chromium >/dev/null)
+          ln -sfn /tmp/pw/node_modules node_modules
+          node SOS/tools/captura-ux.mjs banc-ia/captures
+          read -ra A <<< "$ORDRES"
+          node SOS/tools/diagnosi-ux.mjs banc-ia/captures "${A[@]}"
+          cat banc-ia/captures/informe-ux.md >> "$GITHUB_STEP_SUMMARY"
+          rm -f node_modules
+          if [ "${GITHUB_REF_NAME}" != "main" ]; then
+            R="SOS/knowledge/dev/diagnosi-ux/$(date -u +%Y%m%d-%H%M)-${{ github.run_id }}"
+            mkdir -p "$R" && cp banc-ia/captures/informe-ux.md banc-ia/captures/diagnosi-ux.json banc-ia/captures/inventari.json "$R/"
+            git config user.name "diagnosi-ux"
+            git config user.email "diagnosi-ux@users.noreply.github.com"
+            node SOS/tools/cervell.js > /dev/null
+            git add "$R" SOS/knowledge/MAPA.md
+            git commit -qm "diagnosi-ux: informe de ${{ github.run_id }}"
+            for i in 1 2 3 4 5; do git pull --rebase -q origin "${GITHUB_REF_NAME}" && node SOS/tools/cervell.js > /dev/null && { git diff --quiet SOS/knowledge/MAPA.md || git commit -qam "Cervell: MAPA.md al dia"; } && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep $((i*3)); done
+          fi
       - name: El banc
-        if: ${{ inputs.eina != 'banc-mapes' }}
+        if: ${{ inputs.eina != 'banc-mapes' && inputs.eina != 'diagnosi-ux' }}
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
