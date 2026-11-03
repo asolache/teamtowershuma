@@ -25,49 +25,25 @@ page.on('pageerror', e => { fail++; console.log('  ✗ pageerror: ' + e.message)
 await page.goto(APP);
 await page.waitForFunction(() => window.__SOS && window.__SOS.ORACLE_FMV_DEFAULTS);
 
-console.log('\n1 · El bloc hi és, i és el primer que es llegeix després del dolor');
+console.log('\n1 · El bloc hi és, després de les eines i de les portes');
+/* 03/11/2026 · el SOS és el sistema operatiu social. La portada ja no obre
+   amb el dolor d'un equip de direcció ni amb «el repte» (això és el negoci, i
+   viu a TeamTowers Humà): obre amb què es pot gestionar al poble, les dues
+   portes i l'aprenentatge. Els beneficis segueixen sencers, després. */
 const on = await page.evaluate(() => {
   const bl = document.querySelector('.ob-benef');
   if (!bl) return null;
-  const rp = document.querySelector('.ob-repte');
-  const ordre = [...document.querySelectorAll('#onboarding .ob-pains, #onboarding .ob-repte, #onboarding .ob-benef, #onboarding .ob-paths')]
-    .map(e => e.className.split(' ')[0]);
+  const ordre = [...document.querySelectorAll('#onboarding .pg-grid, #onboarding .ob-paths, #onboarding .ob-benef')]
+    .map(e => e.className.split(' ')[0]).filter((x, i, a) => a.indexOf(x) === i);
   return { n: bl.querySelectorAll('.obb').length, ordre, xifres: bl.querySelectorAll('.obb-n').length,
-    repte: !!rp, veus: rp ? rp.querySelectorAll('.obr-q').length : 0,
-    cols: rp ? rp.querySelectorAll('.obr-c').length : 0,
-    txt: rp ? rp.innerText : '' };
+    repte: !!document.querySelector('.ob-repte'), pains: !!document.querySelector('.ob-pains') };
 });
 ok(!!on, 'la portada porta el bloc de beneficis');
 ok(on && on.n === 3, 'amb tres beneficis: el fons, el que s\'aprèn i el que s\'estalvia');
 ok(on && on.xifres >= 5, `i ${on ? on.xifres : 0} xifres, no adjectius`);
-/* L'ordre va canviar a posta el 28/09/2026, i val la pena dir per què: el
-   bloc de beneficis anava entre el dolor i les portes, i fa quatre pantalles
-   de mòbil. Qui obre això no ve a llegir-se un argumentari —ve a veure si hi
-   té lloc—, i les tres portes són justament la resposta. Ara van primer i
-   l'argumentari queda sencer per a qui el necessiti.
-
-   El que la prova segueix vigilant és el que no pot canviar: que el bloc
-   existeixi, que sigui DESPRÉS del dolor (un benefici abans de nomenar el
-   problema no vol dir res) i que les portes no quedin enterrades. */
-ok(on && on.ordre.join(',') === 'ob-pains,ob-paths,ob-repte,ob-benef',
-  'l\'ordre és dolor → portes → repte → argumentari: primer per on s\'entra, i el perquè per a qui el vulgui');
-
-/* EL REPTE, VINGUT DE LA PORTADA (01/10/2026).
-   Viu aquí perquè aquí és on és l'eina que el resol: a la portada competia amb
-   el que allà s'ha de dir —què venem i d'on surt—, i qui obre el SOS ja sap
-   que té un problema.
-
-   El que es prova és **que no s'hagi perdut res pel camí**, que és el que passa
-   sempre que una cosa canvia de pàgina: les dues frases, les dues columnes, i
-   que segueixi parlant dels dos mons. Una pàgina que es queda la meitat d'un
-   argument no peta i es llegeix bé. */
-ok(on && on.repte, 'el repte ha arribat al SOS');
-ok(on && on.veus === 2, `i les dues frases que el tanquen també (${on && on.veus})`);
-ok(on && on.cols === 2, 'amb les dues columnes: el que es veu i el que ho sosté de debò');
-ok(on && /comitè de direcció/i.test(on.txt) && /ajuntament/i.test(on.txt),
-  'i segueix parlant dels dos mons, no d\'un');
-ok(on && /qui dona què a qui/i.test(on.txt),
-  'i diu el que el mapa de valor resol, amb les seves paraules');
+ok(on && on.ordre.join(',') === 'pg-grid,ob-paths,ob-benef',
+  'l\'ordre és eines → portes → beneficis (' + (on && on.ordre.join(',')) + ')');
+ok(on && !on.repte && !on.pains, 'i ni el dolor de negoci ni «el repte»: això viu a TeamTowers Humà');
 
 console.log('\n2 · Les xifres de la pantalla són les que l\'app calcula');
 const x = await page.evaluate(() => {
@@ -127,18 +103,19 @@ ok(r.rsc, 'es diu que serveix per a un programa de RSC amb les pròpies persones
 ok(r.qui, 'i a qui: empresa, cooperativa i federació d\'entitats');
 ok(r.registre, 'i que el que aporta cada persona queda al seu registre, no al de l\'empresa');
 
-console.log('\n5 · El mateix esquelet per a una pime, una cooperativa i el veïnat');
-/* Fins al 09/10/2026 aquí es comprovava que el focus fos comunitari. Amb
-   l'estratègia del negoci operatiu, el hero parla primer a l'organització
-   —que el mapa acordat a la sala segueixi funcionant— i el veïnat hi segueix
-   sent: el que no pot passar és que se'n perdi cap dels tres. */
+console.log('\n5 · La portada parla de comunitat, i el negoci hi té un pont');
 const c = await page.evaluate(() => {
-  const ob = document.getElementById('onboarding').innerText;
-  return { veinal: /veïnal/i.test(ob), pime: /\bpime/i.test(ob), coop: /cooperativa/i.test(ob),
-    obre: /organització|xarxa d'entitats/i.test(ob) };
+  const ob = document.getElementById('onboarding');
+  const t = ob.innerText;
+  return { social: /sistema operatiu social/i.test(t), poble: /poble/i.test(t) && /barri/i.test(t),
+    eines: ['banc-temps.html', 'biblioteca.html', 'compra.html', 'energia.html', 'habitatge.html'].every(h => ob.querySelector('a[href="' + h + '"]')),
+    formacio: ob.querySelectorAll('a[href^="formacio.html#m"]').length,
+    pont: !!ob.querySelector('a[href="/cliente/"]'), negoci: /negoci operatiu/i.test(t) };
 });
-ok(c.pime && c.coop && c.veinal, 'la portada diu les tres: pime, cooperativa i xarxa veïnal');
-ok(c.obre, 'i obre l\'esquelet a una organització o una xarxa sense deixar-ho');
+ok(c.social && c.poble, 'diu que és el sistema operatiu social, per al poble i el barri');
+ok(c.eines, 'porta a la pàgina de cada eina: temps, coses, compra, energia i habitatge');
+ok(c.formacio >= 7, `i cada eina, al seu mòdul de formació (${c.formacio})`);
+ok(c.pont && !c.negoci, 'el negoci, un pont cap a /cliente/ i prou');
 
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));

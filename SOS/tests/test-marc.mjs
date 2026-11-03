@@ -180,7 +180,7 @@ const flux = await page.evaluate(async (s) => {
   const accions = document.querySelectorAll('#workspace .tab-body button').length;
   return { normal, plegat, accions };
 }, seed);
-ok(flux.normal && flux.normal.obert, 'sense mode flux, la guia s\'obre sola quan hi ha pas pendent');
+ok(flux.normal && !flux.normal.obert, 'la guia neix plegada: primer el contingut (diagnòstic d\'UX, 3/11/2026)');
 ok(flux.plegat && !flux.plegat.obert, 'amb mode flux, neix plegada');
 ok(flux.plegat && flux.plegat.teToca,
   'i el «et toca» segueix llegint-se sense desplegar res: ' + flux.plegat.resum.replace(/\s+/g, ' ').slice(0, 70));
