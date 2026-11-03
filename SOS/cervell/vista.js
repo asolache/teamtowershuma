@@ -73,10 +73,14 @@
     var byId = {}; D.nodos.forEach(function (n) { byId[n.id] = n; });
     var capaDe = {}; D.capas.forEach(function (c) { capaDe[c.id] = c; });
     var AN = F.analiza(D), col = function (k) { return 'var(--k-' + k + ')'; };
+    /* El nom de cada capa: la paraula de tothom i, al costat, el de la kosha
+       («Cos · Annamaya»), perquè el lector entengui de què parla (03/11/2026). */
+    var PAR = raiz.CervellPla && raiz.CervellPla.PARAULES, par = PAR && (PAR[(op.lang || 'ca').slice(0, 2)] || PAR.ca);
+    function nomCapa(c) { var w = (par && par[c.id]) || c.n; return w && w !== c.s ? w + ' · ' + c.s : c.s; }
     caixa.innerHTML =
       '<div class="cv-3d"><canvas tabindex="0" role="img" aria-label="' + esc(t.ley) + '"></canvas>' +
       '<div class="cv-z"><button type="button" data-z="mes" aria-label="' + t.mes + '">+</button><button type="button" data-z="menys" aria-label="' + t.menys + '">−</button><button type="button" data-z="tot">' + t.tot + '</button></div>' +
-      '<div class="cv-k" aria-hidden="true">' + D.capas.map(function (c) { return '<span style="--c:' + col(c.id) + '"><i></i>' + esc(c.s) + '</span>'; }).join('') + '</div></div>' +
+      '<div class="cv-k" aria-hidden="true">' + D.capas.map(function (c) { return '<span style="--c:' + col(c.id) + '"><i></i>' + esc(nomCapa(c)) + '</span>'; }).join('') + '</div></div>' +
       '<p class="cv-now" aria-live="polite"></p><p class="cv-ley">' + esc(t.ley) + '</p>' +
       '<div class="cv-p" aria-live="polite"><p>' + t.tria + '</p></div><div class="cv-f"></div>';
     var panel = caixa.querySelector('.cv-p'), now = caixa.querySelector('.cv-now');
@@ -97,7 +101,7 @@
       var ent = AN.cuanticos.filter(function (e) { return e.a === id || e.b === id; }).map(function (e) { return e.a === id ? e.b : e.a; });
       var a = AN.alcance[id];
       panel.style.setProperty('--c', col(n.capa));
-      panel.innerHTML = '<p class="cv-m">' + (op.mot || 'Veda') + ' ' + n.n + ' · ' + esc(capaDe[n.capa].s) + (n.fecha ? ' · ' + esc(n.fecha) : '') + '</p><h3>' + esc(n.t) + '</h3>' +
+      panel.innerHTML = '<p class="cv-m">' + (op.mot || 'Veda') + ' ' + n.n + ' · ' + esc(nomCapa(capaDe[n.capa])) + (n.fecha ? ' · ' + esc(n.fecha) : '') + '</p><h3>' + esc(n.t) + '</h3>' +
         (n.aprende ? '<p><b>' + esc(n.aprende) + '</b></p>' : '') + '<p>' + esc(n.txt) + '</p>' +
         chips(cita, t.cita) + chips(citen, t.citen) + chips(ent, t.ent) +
         '<p class="cv-m" style="margin-top:10px">' + t.massa + ' ' + AN.masa[id] + ' · ' + t.pot + ' ' + AN.potencial[id] + ' · ' + t.enc(a.vedas, a.capas) + '</p>' +

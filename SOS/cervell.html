@@ -439,7 +439,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   function dibuixa(codex, op) {
     var L = CP.lee(codex, op);
     if (vista) vista.atura();
-    D = { nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS };
+    D = { nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS.map(function (c) { var w = CervellPla.PARAULES.ca[c.id]; return w ? Object.assign({}, c, { n: w }) : c; }) };
     meta = { nom: op.nom, font: op.font, id: op.nom.replace(/[^\w-]/g, '-'), lang: 'ca', data: new Date().toISOString().slice(0, 10), url: 'teamtowershuma.com/SOS/cervell.html' };
     vista = CervellVista.munta(caixa, D, { lang: 'ca' });
     AN = vista && vista.analisi;
