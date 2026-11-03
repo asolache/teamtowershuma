@@ -791,6 +791,7 @@
         .apf-l { list-style:none; padding:0; margin:0; display:flex; flex-wrap:wrap; gap:.6rem; }
         .apf-l a { display:inline-flex; align-items:center; min-height:44px; padding:0 1rem; border:1px solid var(--border); border-radius:999px; color:var(--light); text-decoration:none; font-weight:600; font-size:var(--t0); }
         .apf-l a:hover, .apf-l a:focus-visible { border-color:var(--indigo); color:var(--text); }
+        .av-equip { grid-column:1/-1; }
         @media (max-width:1080px) { .av-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
         @media (max-width:620px) { .av-grid { grid-template-columns:1fr; } .avantatges { padding:4rem 0 3rem; } .hero-actions .btn-primary { width:100%; justify-content:center; } }
         .intel { padding:5rem 0 4rem; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
@@ -1134,6 +1135,11 @@
                 <span class="av-i" aria-hidden="true">🌱</span>
                 <h3 class="targeta-t" data-i18n="av.4t">I es manté viu</h3>
                 <p class="targeta-d" data-i18n="av.4d">Cada lliurament queda registrat i el mapa et diu com va, mes a mes. No has de tornar a començar cada any.</p>
+            </article>
+            <article class="av av-equip targeta">
+                <span class="av-i" aria-hidden="true">🤝</span>
+                <h3 class="targeta-t" data-i18n="av.5t">I l'equip s'alinea</h3>
+                <p class="targeta-d" data-i18n="av.5d">Fet amb l'equip adequat, el mapa és una conversa: cadascú veu què aporta i què rep, s'entén la feina de l'altre i es pensa en sistema. L'equip en surt alineat i es comunica millor.</p>
             </article>
         </div>
     </div>
@@ -1881,6 +1887,7 @@ ca: {
   'aut.6d':'Targeta, Apple Pay o Google Pay, i el mes es tanca sol: el que s\'ha cobrat queda apuntat sense fulls de càlcul.',
   'av.4d':'Cada lliurament queda registrat i el mapa et diu com va, mes a mes. No has de tornar a començar cada any.',
   'av.4t':'I es manté viu',
+  'av.5t':'I l\'equip s\'alinea','av.5d':'Fet amb l\'equip adequat, el mapa és una conversa: cadascú veu què aporta i què rep, s\'entén la feina de l\'altre i es pensa en sistema. L\'equip en surt alineat i es comunica millor.',
   'av.3d':'Cada persona que t\'importa hi troba la seva porta: qui compra, qui col·labora, qui t\'ajuda. L\'esbós surt en minuts i l\'afinem junts.',
   'av.3t':'La teva web surt del mapa',
   'av.2d':'El mapa marca on s\'encalla la feina, qui carrega massa i què falta, perquè decideixis amb dades i no a ulls clucs.',
@@ -2334,6 +2341,7 @@ es: {
   'aut.6d':'Tarjeta, Apple Pay o Google Pay, y el mes se cierra solo: lo cobrado queda apuntado sin hojas de cálculo.',
   'av.4d':'Cada entrega queda registrada y el mapa te dice cómo va, mes a mes. No tienes que volver a empezar cada año.',
   'av.4t':'Y se mantiene vivo',
+  'av.5t':'Y el equipo se alinea','av.5d':'Hecho con el equipo adecuado, el mapa es una conversación: cada cual ve qué aporta y qué recibe, se entiende el trabajo del otro y se piensa en sistema. El equipo sale alineado y se comunica mejor.',
   'av.3d':'Cada persona que te importa encuentra su puerta: quien compra, quien colabora, quien te ayuda. El boceto sale en minutos y lo afinamos juntos.',
   'av.3t':'Tu web sale del mapa',
   'av.2d':'El mapa marca dónde se atasca el trabajo, quién carga demasiado y qué falta, para que decidas con datos y no a ciegas.',

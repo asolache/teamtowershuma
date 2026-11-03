@@ -954,7 +954,12 @@ const ENTREGABLES = [
     dEs: 'Qué se puede cobrar, qué hay que repartir y qué vínculo hay que reparar. Con nombre y fecha.' },
   { t: 'El mapa viu', tEs: 'El mapa vivo',
     d: 'Carregat al SOS, editable per la casa i sense dependre de nosaltres per tornar-lo a mirar.',
-    dEs: 'Cargado en el SOS, editable por la casa y sin depender de nosotros para volverlo a mirar.' }
+    dEs: 'Cargado en el SOS, editable por la casa y sin depender de nosotros para volverlo a mirar.' },
+  /* 03/11/2026 · Àlvaro: fet en equip, el mapa alinea. No és un paper: és el
+     que passa a la sala quan hi ha les persones adequades. */
+  { t: 'Un equip alineat', tEs: 'Un equipo alineado',
+    d: 'Fet amb l\'equip adequat a la sala, el mapa és una conversa: cadascú veu què aporta i què rep, s\'entén la feina de l\'altre i es pensa en sistema, no en departaments. L\'equip en surt més alineat i es comunica millor.',
+    dEs: 'Hecho con el equipo adecuado en la sala, el mapa es una conversación: cada cual ve qué aporta y qué recibe, se entiende el trabajo del otro y se piensa en sistema, no en departamentos. El equipo sale más alineado y se comunica mejor.' }
 ];
 
 /* ══ EL QUE ES COMPTA ════════════════════════════════════════════════════════ */
