@@ -49,6 +49,16 @@ for (const vp of [{ width: 1366, height: 900 }, { width: 390, height: 844 }]) {
   await page.waitForTimeout(300);
   ok(await page.evaluate(() => !window.__SOS.modalOpen() && !!window.__SOS), 'enrere la tanca i seguim a l\'app');
 
+  // Una pantalla que n'obre una altra («closeModal();openX()») no es queda en
+  // blanc: l'enrere del primer tancament no s'emporta la segona.
+  const cadena = await page.evaluate(async () => { const S = window.__SOS, w = ms => new Promise(r => setTimeout(r, ms));
+    S.openLangModal(); await w(200); S.closeModal(); S.openCopiaAvis(); await w(500);
+    return { obert: S.modalOpen(), h2: (document.querySelector('#modalRoot h2') || {}).textContent || '' }; });
+  ok(cadena.obert && /còpia/i.test(cadena.h2), 'una pantalla que n\'obre una altra la deixa oberta (' + cadena.h2 + ')');
+  await page.goBack();
+  await page.waitForTimeout(300);
+  ok(await page.evaluate(() => !window.__SOS.modalOpen()), 'i un sol enrere la tanca');
+
   // Escape
   await page.evaluate(() => window.__SOS.openLangModal());
   await page.waitForTimeout(200);
