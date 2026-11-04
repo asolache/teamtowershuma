@@ -115,10 +115,9 @@ const hook = await page.evaluate(() => {
 });
 ok(hook.n === hook.unique, hook.n + ' exports, cap repetit');
 
-/* `openLauncher(true)`: el llançador ara ensenya per defecte només el que ara
-   serveix, i el que aquí es mesura és que la llista **sencera** es pugui
-   recórrer amb la vista. Que el filtrat hi porti ho comprova
-   `test-tauler-persona.mjs`; que el sencer no sigui una llista plana, això. */
+/* `openLauncher(true)`: el llançador ara és la llista de sota de la Cerca
+   (diagnòstic d'UX, 3/11/2026). Aquí es mesura que la llista **sencera** es
+   pugui recórrer amb la vista i que el mateix camp de la Cerca hi porti. */
 console.log('\n6 · El llançador s\'ha de poder recórrer amb la vista');
 await page.evaluate(() => window.__SOS.openLauncher(true));
 await page.waitForSelector('.modal #lchBody .lch-it');
@@ -127,25 +126,26 @@ const lch = await page.evaluate(() => {
   return {
     items: body.querySelectorAll('.lch-it').length,
     groups: body.querySelectorAll('.ent-grp-lbl').length,
-    hasFilter: !!document.querySelector('.modal #lchQ')
+    hasFilter: !!document.querySelector('.modal #spQ')
   };
 });
 ok(lch.items >= 30, lch.items + ' accions al llançador');
 ok(lch.groups >= 5, 'repartides en ' + lch.groups + ' grups, no en una llista plana');
-ok(lch.hasFilter, 'i amb filtre per a qui ja sap què busca');
+ok(lch.hasFilter, 'i amb el camp de la Cerca per a qui ja sap què busca');
 
 const filtered = await page.evaluate(async () => {
-  const q = document.querySelector('.modal #lchQ');
+  const q = document.querySelector('.modal #spQ');
   q.value = 'ancoratge'; q.dispatchEvent(new Event('input'));
   await new Promise(r => setTimeout(r, 220));
-  const body = document.querySelector('.modal #lchBody');
-  const n = body.querySelectorAll('.lch-it').length;
+  const res = document.querySelector('.modal #spResults');
+  const n = res.querySelectorAll('.sp-hit').length;
+  const llistaAmagada = document.querySelector('.modal #spTotes').hidden;
   q.value = 'paracaigudes'; q.dispatchEvent(new Event('input'));
   await new Promise(r => setTimeout(r, 220));
-  return { n, empty: body.querySelectorAll('.lch-it').length, saysNone: /cap acci[óo]/i.test(body.innerText) };
+  return { n, llistaAmagada, nomesAprop: res.querySelectorAll('.sp-hit').length === 1 && /a prop/.test(res.innerText), saysNone: /Res per/i.test(res.innerText) };
 });
-ok(filtered.n > 0 && filtered.n < lch.items, 'filtrar retalla la llista: ' + filtered.n + ' amb «ancoratge»');
-ok(filtered.empty === 0 && filtered.saysNone, 'i si no hi ha res, ho diu en comptes de deixar-ho en blanc');
+ok(filtered.n > 1 && filtered.llistaAmagada, 'escriure retalla: ' + filtered.n + ' resultats amb «ancoratge», i la llista sencera s\'aparta');
+ok(filtered.nomesAprop && filtered.saysNone, 'i si no hi ha res, ho diu i ofereix buscar-ho a prop');
 await page.evaluate(() => window.__SOS.closeModal());
 
 console.log('\n7 · La feina que no és de ningú també es veu');

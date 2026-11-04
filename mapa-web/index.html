@@ -6,11 +6,11 @@
     <!-- BORRADOR · no se indexa hasta que Álvaro valide textos y precios, y hasta que exista la versión en catalán. -->
     <meta name="robots" content="noindex, follow">
     <title>Mapa de valor y web para toda tu red | TeamTowers Humà</title>
-    <meta name="description" content="Dibujamos contigo quién da qué a quién en tu negocio, con el método de Verna Allee. De ese mapa sale una web con una puerta para clientes, tiendas, quien te recomienda, tu equipo y tus proveedores, publicada en la sesión y a tu nombre.">
+    <meta name="description" content="Una web para todos los que sostienen tu negocio, no solo para quien compra. Haz gratis tu mapa de valor y de ahí sale tu web: una puerta para cada uno, publicada y a tu nombre.">
     <meta name="author" content="Álvaro Solache · TeamTowers">
     <link rel="canonical" href="https://teamtowershuma.com/mapa-web/">
     <meta property="og:title" content="Una web para todos los que sostienen tu negocio. No solo para quien compra.">
-    <meta property="og:description" content="Mapa de valor y web publicada en una sesión de 2 h 30. Una puerta para cada rol que sostiene tu negocio. Por TeamTowers.">
+    <meta property="og:description" content="Haz gratis tu mapa de valor y de ahí sale tu web: una puerta para cada rol que sostiene tu negocio. Por TeamTowers.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/mapa-web/">
     <meta property="og:locale" content="es_ES">
@@ -647,7 +647,10 @@
         @media (min-width: 1000px) { .valores { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
         .valores li { background: var(--card); padding: 1rem 1.15rem; font-family: var(--mono); font-size: var(--t0); line-height: 1.6; color: var(--light); }
         .valores strong { display: block; font-family: var(--sans); font-size: var(--t1); color: var(--text); margin-bottom: .15rem; }
-        .faq { margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 54rem; }
+        .faq { margin-top: 1.5rem; max-width: 54rem; }
+        .procesos-vivos { margin-top: 2rem; }
+        .procesos-vivos > summary { cursor: pointer; }
+        .procesos-vivos > summary h3 { display: inline; }
         .faq > h3 { font-size: var(--t3); margin-bottom: 1rem; }
         .faq details { border-top: 1px solid var(--border); }
         .faq details:last-of-type { border-bottom: 1px solid var(--border); }
@@ -838,11 +841,10 @@
     <div class="container">
         <nav aria-label="Secciones de esta página">
             <ul>
-                <li><a href="#red">La red</a></li>
+                <li><a href="#red">Ejemplo</a></li>
                 <li><a href="#como">Cómo</a></li>
-                <li><a href="#precios">Precios</a></li>
+                <li><a href="#viva">Qué web</a></li>
                 <li><a href="#preguntas">Preguntas</a></li>
-                <li><a href="#puertas">Otras puertas</a></li>
             </ul>
         </nav>
     </div>
@@ -850,24 +852,23 @@
 
 <main id="contingut">
 
-<div class="borrador" role="note"><p class="container"><strong>Borrador.</strong> Textos pendientes de validar. Sin precios cerrados: todo se presupuesta por flujos. Esta página no se indexa todavía.</p></div>
+<div class="borrador" role="note"><p class="container"><strong>Borrador.</strong> Textos pendientes de validar. Esta página no se indexa todavía.</p></div>
 
-<!-- 1 · Promesa -->
+<!-- 1 · Promesa: la web; el mapa y lo demás se hacen en /cliente/ -->
 <section id="inicio" class="inicio" aria-labelledby="t-inicio">
     <div class="container">
         <div class="inicio-grid">
             <div>
-                <p class="eyebrow con-sello"><svg class="sello" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12 Q12 2 21 12" fill="none" stroke="#005795" stroke-width="2.2" stroke-linecap="round"/><path d="M3 12 Q12 22 21 12" fill="none" stroke="#a3187f" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 3"/></svg>Mapa de valor y web · Una hora para cada uno, en una sesión de 2 h 30</p>
+                <p class="eyebrow con-sello"><svg class="sello" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12 Q12 2 21 12" fill="none" stroke="#005795" stroke-width="2.2" stroke-linecap="round"/><path d="M3 12 Q12 22 21 12" fill="none" stroke="#a3187f" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="3 3"/></svg>Tu web, hecha desde tu mapa de valor</p>
                 <h1 id="t-inicio">Una web para todos los que sostienen tu negocio. <span>No solo para quien compra.</span></h1>
-                <p class="lead">Clientes, tiendas, quien te recomienda, tu equipo, tus proveedores y tu pueblo. Dibujamos contigo qué da y qué recibe cada uno. De ese mapa sale tu web: una puerta para cada uno, publicada en la sesión y a tu nombre.</p>
-                <p class="ahora">Hoy una IA hace una web correcta en minutos, y por eso tantas se parecen. Lo que hace tuya la tuya no está escrito: lo sacamos en la sesión.</p>
-                <p class="criterio"><strong>La IA hace lo que se repite. Una persona con más de veinte años de oficio con equipos pone el criterio.</strong></p>
+                <p class="lead">Clientes, tiendas, quien te recomienda, tu equipo, tus proveedores. Dibujas quién te rodea y qué os dais, y de ahí sale tu web: una puerta para cada uno, publicada y a tu nombre.</p>
+                <p class="criterio"><strong>La IA hace lo que se repite. Una persona con veinte años de oficio pone el criterio.</strong></p>
                 <div class="accions">
                     <div class="cta">
-                        <a class="btn btn-primary" href="/cliente/#alrededor">Hacer mi mapa gratis</a>
-                        <p class="micro">Gratis · en tres días laborables · Se abre tu correo con cuatro preguntas. Basta con la dirección de tu web.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+                        <a class="btn btn-primary" href="/cliente/#alrededor">Haz tu mapa gratis</a>
+                        <p class="micro">Gratis y sin llamada. Es el primer paso de tu web.</p>
                     </div>
-                    <a class="btn btn-ghost" href="#red">Ver la red en un ejemplo</a>
+                    <a class="btn btn-ghost" href="#red">Ver un ejemplo</a>
                 </div>
             </div>
             <figure class="tuweb">
@@ -888,16 +889,16 @@
 
         <h2 class="sr">Lo que te llevas</h2>
         <ul class="triada">
-            <li><b>Un mapa de valor.</b><span>Quién da qué a quién, lo que se paga y lo que no, y dónde se atasca.</span></li>
-            <li><b>Una web publicada, con tu cara.</b><span>Una puerta para cada rol del flujo elegido, con tu color, tu letra, tu logo y tus textos, en tu dominio y a tu nombre. La leen bien buscadores, lectores de pantalla e IA.</span></li>
-            <li><b>El cerebro de tu negocio.</b><span>Tu mapa, tu marca y tu historia por escrito, en archivos tuyos, con las reglas para que cualquier IA trabaje bien después. Y una comprobación que avisa sola cuando algo de lo escrito deja de ser cierto.</span></li>
+            <li><b>Tu web, publicada.</b><span>Una puerta para cada rol, con tu marca, en tu dominio y a tu nombre.</span></li>
+            <li><b>Tu mapa de valor.</b><span>Quién da qué a quién, lo que se paga y lo que no, y dónde se atasca.</span></li>
+            <li><b>El cerebro de tu negocio.</b><span>Tu mapa, tu marca y tu historia por escrito, para que cualquier IA trabaje bien contigo después.</span></li>
         </ul>
-        <p class="aval"><span><b>Método:</b> Value Network Analysis, de Verna Allee</span><span>Consultoría con el método en Pantheon Work, desde 2019</span><span>Más de 20 años con equipos en TeamTowers y Fent Pinya</span></p>
+        <p class="aval"><span><b>Método:</b> Value Network Analysis, de Verna Allee</span><span>Más de 20 años con equipos en TeamTowers y Fent Pinya</span></p>
         <p class="atajos"><span>¿Vienes por otro motivo?</span> <a href="#puerta-agencias">Lo quiero para un cliente mío</a> <a href="#puerta-grupos">Represento a un grupo de negocios</a> <a href="#puerta-recomendar">Quiero recomendaros</a></p>
     </div>
 </section>
 
-<!-- 2 · Dolor -->
+<!-- 2 · Dolor, y la tesis de la pinya en una línea -->
 <section id="dolor" class="alt" aria-labelledby="t-dolor">
     <div class="container">
         <div class="cabeza">
@@ -908,29 +909,18 @@
             <li><p class="frase">«Las tiendas me piden la ficha y la tarifa por mensaje. Cada semana.»</p><p class="quien">Con las tiendas</p></li>
             <li><p class="frase">«Me recomiendan mucho. Y quien me recomienda no tiene nada que reenviar.»</p><p class="quien">Con quien te recomienda</p></li>
             <li><p class="frase">«Cada persona nueva me pregunta lo mismo. Lo sé yo, y solo yo.»</p><p class="quien">Con tu equipo</p></li>
-            <li><p class="frase">«Mis proveedores no saben qué busco. Me ofrecen siempre lo mismo.»</p><p class="quien">Con tus proveedores</p></li>
-            <li><p class="frase">«En el pueblo nos conocen de siempre. En la web parecemos recién llegados.»</p><p class="quien">Con tu pueblo</p></li>
-            <li><p class="frase">«Mido visitas y formularios. Lo que de verdad nos trae trabajo no sale en ningún informe.»</p><p class="quien">Con tu web</p></li>
         </ul>
-        <p class="cierre">No es un problema de diseño. Tu web se pensó para quien compra. Y para un solo gesto: dejar sus datos. El resto de tu red también entra, y no encuentra nada para ella.</p>
-    </div>
-</section>
-
-<!-- La pinya: la tesis con la imagen de la casa -->
-<section id="pinya" class="gran" aria-labelledby="t-pinya">
-    <div class="container">
-        <p class="gran-a">En un <span lang="ca">castell</span>, la foto se la lleva quien corona. Lo sostiene la <span lang="ca">pinya</span>, y casi nunca sale en la foto.</p>
-        <h2 id="t-pinya" class="gran-b">Tu negocio también tiene <span lang="ca">pinya</span>. Esta web la pone en la foto.</h2>
+        <p class="cierre">Como en un <span lang="ca">castell</span>: la foto se la lleva quien corona, y lo sostiene la <span lang="ca">pinya</span>. Tu negocio también tiene <span lang="ca">pinya</span>. Esta web la pone en la foto.</p>
     </div>
 </section>
 
 <!-- 3 · La red: elemento distintivo. Funciona entero sin JS (radios, casilla y :has()). -->
-<section id="red" class="alt" aria-labelledby="t-red">
+<section id="red" aria-labelledby="t-red">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Tu red, a la vista</p>
             <h2 id="t-red">Lo que ve una web embudo. Lo que ve una web de red.</h2>
-            <p class="lead">Un ejemplo genérico: un negocio pequeño y los seis roles que lo sostienen. Cambia la vista para ver cómo lo mira cada web. Elige un rol para ver qué le das, qué te devuelve y qué puerta tiene en tu web.</p>
+            <p class="lead">Un negocio de ejemplo y los seis roles que lo sostienen. Cambia la vista o elige un rol: verás qué le das, qué te devuelve y qué puerta tiene en tu web.</p>
         </div>
 
         <div class="red">
@@ -1130,231 +1120,96 @@
                 </table>
             </div>
             <p class="cierre">Una web de red no deja de vender. La venta es uno de sus flujos, y muchas veces el principal. Lo que cambia es que también atiende a quien hace que la venta llegue.</p>
-            <p class="esta">Esta página hace lo mismo: tiene <a href="#puertas">puertas para agencias, grupos, quien nos recomienda y quien quiere aprender el método</a>.</p>
-            <p class="esta">La sesión se presupuesta por flujos, con las horas y el coste de IA desglosados. <a href="#precios">Ver qué incluye</a>.</p>
+            <p class="esta">¿Cómo sería la red de tu negocio? <a href="/cliente/#alrededor">Haz tu mapa gratis</a>.</p>
         </div>
     </div>
 </section>
 
-<!-- 4 · Cómo, con quién hace qué -->
+<!-- 4 · Cómo: tres pasos; el mapa y las preguntas, en /cliente/ -->
 <section id="como" aria-labelledby="t-como">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Cómo se hace</p>
-            <h2 id="t-como">Primero el mapa. Luego la web. Después, la memoria.</h2>
-            <p class="lead">Una sesión de dos horas y media, en remoto o presencial: una hora para el mapa, una para la web y veinte minutos para cerrar. Lo repetible se hace antes, con IA. La sala se dedica a lo que solo se decide entre personas.</p>
+            <h2 id="t-como">Tu mapa, tu web y todo a tu nombre. En tres pasos.</h2>
         </div>
         <ol class="pasos">
             <li class="paso">
-                <div class="paso-meta"><span class="cuando">Antes · sin gastar sesión</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-al">Álvaro</span></span></div>
+                <div class="paso-meta"><span class="cuando">Hoy · gratis, en tu espacio</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-tu">Tú</span><span class="q q-ia">IA</span></span></div>
                 <div>
-                    <h3>Llegas a revisar, no a empezar.</h3>
-                    <p>Nos mandas lo que ya tengas: tu web, el catálogo, documentos que puedas compartir o un audio de diez minutos, que antes pasamos a texto. La IA propone los roles, los intercambios y el esqueleto de la web. La <a href="/SOS/vna-suport.html">consola de mapa de valor</a> lo revisa con diez reglas. Álvaro lo lee, lo corrige y añade lo que no está en tus papeles: tu historia, tu lugar y cómo se habla en tu sector.</p>
+                    <h3>Haces tu mapa.</h3>
+                    <p>Dibujas quién te rodea y qué os dais, y contestas unas pocas preguntas: qué web quieres, cómo es tu marca y qué te gustaría que fuera solo. La IA te ayuda a pulirlo y una persona lo lee y te contesta. <a href="/cliente/#alrededor">Empezar ahora</a></p>
                 </div>
             </li>
             <li class="paso">
-                <div class="paso-meta"><span class="cuando">Primera hora · el mapa</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-tu">Tú</span><span class="q q-al">Álvaro</span></span></div>
+                <div class="paso-meta"><span class="cuando">La sesión · 2 h 30</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-tu">Tú</span><span class="q q-al">Álvaro</span><span class="q q-ia">IA</span></span></div>
                 <div>
-                    <h3>Lo que ningún documento dice.</h3>
-                    <ul>
-                        <li>Dónde acaba tu negocio, en una frase.</li>
-                        <li>Entre seis y doce roles, dichos por lo que hacen y no por el cargo.</li>
-                        <li>Lo intangible, que casi nunca está escrito: quién te recomienda sin que se lo pidas, qué te avisa un proveedor, qué sabe tu equipo.</li>
-                        <li>El flujo que más importa ahora: el que trae clientes, el que hace vender a las tiendas o el que hoy se pierde. Ese flujo es el guion de la web.</li>
-                        <li>A veces aparece un rol que hace falta y hoy no es de nadie. También es un hallazgo.</li>
-                    </ul>
+                    <h3>Tu web se publica delante de ti.</h3>
+                    <p>Una hora para afinar el mapa con lo que ningún documento dice. Otra para construir la web desde él: cada rol, una puerta. Antes de acabar, haces tú tu primer cambio.</p>
                 </div>
             </li>
             <li class="paso">
-                <div class="paso-meta"><span class="cuando">Segunda hora · la web, en directo</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-tu">Tú</span><span class="q q-al">Álvaro</span></span></div>
+                <div class="paso-meta"><span class="cuando">Después</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-al">Álvaro</span></span></div>
                 <div>
-                    <h3>Tu web se publica delante de ti. Y antes de acabar, la cambias tú.</h3>
-                    <p>Cada rol es una puerta. Cada intercambio tangible, una acción. Cada intangible, contenido que da confianza. Claude Code construye desde el esqueleto, que ya sigue tu mapa. Tú decides textos, tono y fotos. Álvaro revisa en la sala cada cambio antes de publicarlo. El repositorio está en tu GitHub y conectado a tu Netlify: cada cambio aceptado se publica solo.</p>
-                </div>
-            </li>
-            <li class="paso">
-                <div class="paso-meta"><span class="cuando">Al cerrar · 20 min, y a las dos semanas</span><span class="quienes"><span class="sr">Lo hacen: </span><span class="q q-ia">IA</span><span class="q q-al">Álvaro</span></span></div>
-                <div>
-                    <h3>La memoria, por escrito.</h3>
-                    <p>El mapa, el flujo, las decisiones, tu marca, tu lugar y tu historia quedan en Markdown dentro del repositorio. Y un <code>CLAUDE.md</code> con las reglas de tu proyecto: Claude Code empieza leyendo eso, y para otras IA se deja el mismo texto en <code>AGENTS.md</code>. A las dos semanas, media hora para revisar los cambios que hayas hecho tú.</p>
+                    <h3>Todo se queda contigo.</h3>
+                    <p>La web, tu dominio y el cerebro de tu negocio, en tus cuentas. Si un día te vas, te lo llevas todo. Y si quieres, tu web sigue viva: lo que se repite deja de depender de ti.</p>
                 </div>
             </li>
         </ol>
-
-        <h3 class="sub" id="quien-hace-que">Por qué cabe en una sesión</h3>
-        <div class="tres">
-            <div class="col-q q-al">
-                <h3>Lo hace una persona <span>(hoy, Álvaro)</span></h3>
-                <ul>
-                    <li>Leer la sala: lo que se dice y lo que se calla.</li>
-                    <li>Hacer salir lo intangible, que nunca está en los documentos.</li>
-                    <li>Escuchar la marca que no está escrita, el lugar y la historia.</li>
-                    <li>Decidir contigo qué flujo importa ahora y qué se deja fuera.</li>
-                    <li>Decir que no cuando algo no encaja.</li>
-                    <li>Revisar en la sala cada cambio antes de publicarlo.</li>
-                </ul>
-            </div>
-            <div class="col-q q-tu">
-                <h3>Lo haces tú</h3>
-                <ul>
-                    <li>Contar lo que solo tú sabes.</li>
-                    <li>Decidir qué entra y qué no.</li>
-                    <li>Hacer tu primer cambio antes de acabar.</li>
-                </ul>
-            </div>
-            <div class="col-q q-ia">
-                <h3>Lo hace la IA</h3>
-                <ul>
-                    <li>Leer tu material y proponer el mapa.</li>
-                    <li>Montar la web desde el mapa y dejar cada cambio listo para publicar.</li>
-                    <li>Pasar las comprobaciones de enlaces, código y accesibilidad.</li>
-                    <li>Dejar por escrito la memoria y las reglas.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="regla">
-            <p class="estados"><span class="chip-e prop"><span aria-hidden="true">?</span> propuesta</span><span class="flecha-d" aria-hidden="true">→</span><span class="chip-e ok"><span aria-hidden="true">✓</span> validado</span></p>
-            <p>Lo que propone la IA entra en naranja. Solo pasa a verde cuando lo valida una persona. El historial del repositorio guarda qué cambio hizo la IA y quién lo aprobó.</p>
-        </div>
-
-        <p class="cierre">Por eso cabe en una sesión. Y por eso no pagas semanas de maquetación: pagas la parte que no se repite.</p>
-
-        <div class="notas-q">
-            <p class="mono-nota">Lo que la IA nunca hace aquí: inventar tu historia, opiniones de clientes o cifras. Publicar sin revisión. Tocar los datos de tu CRM. Las diez reglas las aplica la consola, no la IA: el mismo mapa da siempre el mismo resultado. Y publica Netlify, al aceptar un cambio.</p>
-            <p class="peque">Trabajamos con Claude, de Anthropic, mediante Claude Code. Tu material pasa por esa IA para preparar el borrador. Si quieres mandar un audio, antes te decimos qué herramienta lo pasa a texto y dónde, y no nos lo mandas hasta que estés de acuerdo. Por eso solo pedimos lo que colgarías en un tablón.</p>
-        </div>
-        <a class="enlace-consola flecha" href="/SOS/vna-suport.html">Ver la consola que prepara el borrador</a>
     </div>
 </section>
 
-<!-- 5 · Lo que pone una persona -->
+<!-- 5 · Lo que la IA sola no ve -->
 <section id="sutil" class="alt" aria-labelledby="t-sutil">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Lo que no está en ningún documento</p>
-            <p class="gran-cita">«Probé a hacerla con una IA. Salió rápido, y salió una web que no es mía.»</p>
             <h2 id="t-sutil">Una web puede ser correcta y no ser tuya.</h2>
-            <p class="lead">Una IA lee lo que hay publicado y te devuelve la media. Lo que hace que tu casa sea tu casa casi nunca está escrito. Lo pregunta una persona en la sesión, y queda escrito para que la IA lo respete después.</p>
+            <p class="lead">Una IA lee lo publicado y te devuelve la media. Lo que hace tuya tu casa no está escrito: lo pregunta una persona, y queda escrito para que la IA lo respete después.</p>
         </div>
         <div class="sutiles">
             <article class="sutil marca-s" aria-labelledby="s-marca">
                 <h3 id="s-marca">Marca</h3>
                 <dl>
-                    <div><dt>La pregunta</dt><dd><q>¿Qué no dirías nunca, aunque vendiera?</q> y <q>¿Qué palabra usáis aquí que en otro sitio no se entendería?</q></dd></div>
-                    <div><dt>Cómo se ve en la web</dt><dd>La paleta y la tipografía salen de lo que ya es tuyo (el rótulo, la furgoneta, el envoltorio), no de una plantilla. Las palabras también: las que usan quienes hablan de ti.</dd></div>
-                    <div><dt>Dónde queda escrito</dt><dd><code>cerebro/marca.md</code>, y las variables de color del CSS con su nombre y su porqué.</dd></div>
+                    <div><dt>La pregunta</dt><dd><q>¿Qué no dirías nunca, aunque vendiera?</q></dd></div>
+                    <div><dt>En tu web</dt><dd>Colores, letra y palabras que ya son tuyas, no de una plantilla.</dd></div>
                 </dl>
             </article>
             <article class="sutil entorno" aria-labelledby="s-entorno">
-                <h3 id="s-entorno">Entorno</h3>
+                <h3 id="s-entorno">Lugar</h3>
                 <dl>
-                    <div><dt>La pregunta</dt><dd><q>¿Qué nota quien entra por tu puerta que no sale en ninguna foto?</q> y <q>¿Qué lengua se habla en tu casa?</q></dd></div>
-                    <div><dt>Cómo se ve en la web</dt><dd>Fotos del lugar y no de banco de imágenes, la luz y los materiales del sitio, cómo llegar, y la lengua de tu red.</dd></div>
-                    <div><dt>Dónde queda escrito</dt><dd><code>cerebro/lugar.md</code>.</dd></div>
+                    <div><dt>La pregunta</dt><dd><q>¿Qué nota quien entra por tu puerta que no sale en ninguna foto?</q></dd></div>
+                    <div><dt>En tu web</dt><dd>Fotos del sitio, no de banco de imágenes, y la lengua de tu gente.</dd></div>
                 </dl>
             </article>
             <article class="sutil historia" aria-labelledby="s-historia">
                 <h3 id="s-historia">Historia</h3>
                 <dl>
                     <div><dt>La pregunta</dt><dd><q>¿De dónde viene el negocio y qué se ha conservado?</q></dd></div>
-                    <div><dt>Cómo se ve en la web</dt><dd>Una página de historia que sirve a tres roles a la vez. A quien compra le da confianza, con el lugar crea arraigo y al equipo le da sentido.</dd></div>
-                    <div><dt>Dónde queda escrito</dt><dd><code>cerebro/historia.md</code>, con fechas y fuentes. Nada inventado.</dd></div>
+                    <div><dt>En tu web</dt><dd>Una historia con fechas y fuentes, sin nada inventado.</dd></div>
                 </dl>
             </article>
         </div>
-        <p class="cierre">Si tu red habla dos lenguas, tu web también debería. Se deja previsto desde el primer día.</p>
     </div>
 </section>
 
-<!-- 6 · Qué se queda contigo -->
-<section id="cerebro" aria-labelledby="t-cerebro">
+<!-- 6 · Quién está detrás -->
+<section id="prueba" aria-labelledby="t-prueba">
     <div class="container">
         <div class="cabeza">
-            <p class="eyebrow">Lo que se queda contigo</p>
-            <h2 id="t-cerebro">La web, su memoria y el oficio. Las tres cosas se quedan contigo.</h2>
-            <p class="lead">Sales sabiendo tres cosas: pedir un cambio con contexto, escribir las reglas que la IA debe seguir y comprobar lo que hace antes de creértelo. Sirve con Claude Code y, por API, con otros modelos.</p>
+            <p class="eyebrow">Quién está detrás</p>
+            <h2 id="t-prueba">Una persona con oficio, y lo puedes comprobar.</h2>
         </div>
-        <div class="cerebro-grid">
-            <div>
-                <div class="dues">
-                    <div class="caixa repo">
-                        <h3>Va al repositorio</h3>
-                        <ul>
-                            <li>El mapa de valor y sus versiones</li>
-                            <li>Roles, procesos y flujos</li>
-                            <li>Decisiones y su motivo</li>
-                            <li>Marca, lugar e historia</li>
-                            <li>Textos, guías y preguntas frecuentes</li>
-                            <li>Las reglas para la IA <span class="nw">(<code>CLAUDE.md</code>)</span></li>
-                        </ul>
-                    </div>
-                    <div class="caixa crm">
-                        <h3>Se queda en tu CRM</h3>
-                        <ul>
-                            <li>Datos personales de clientes y contactos</li>
-                            <li>Contratos, precios pactados y facturas</li>
-                            <li>Conversaciones comerciales</li>
-                            <li>Contraseñas y claves, nunca en el repositorio</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="tablon">
-                    <strong>Si no lo colgarías en un tablón, no va al repositorio.</strong>
-                    <p>Queda escrito en tu <code>CLAUDE.md</code> para que la IA también lo siga.</p>
-                </div>
-            </div>
-            <figure class="arbol">
-                <figcaption class="sr">Estructura de ejemplo del repositorio</figcaption>
-<pre><code><span class="d">tu-negocio/</span>
-├── index.html<span class="h">              </span><span class="c"># la web
-</span>├── <span class="d">para/</span><span class="h">                   </span><span class="c"># una puerta por rol del mapa
-</span>│   ├── tiendas.html
-│   ├── recomendar.html
-│   └── proveedores.html
-├── historia.html<span class="h">           </span><span class="c"># para quien compra, el equipo y el lugar
-</span>├── <span class="m">CLAUDE.md</span><span class="h">               </span><span class="c"># reglas para Claude Code: qué no debe tocar
-</span>├── <span class="m">AGENTS.md</span><span class="h">               </span><span class="c"># las mismas reglas, para otras IA
-</span>├── <span class="d">cerebro/</span>
-│   ├── mapa-de-valor.md<span class="h">    </span><span class="c c2"># roles e intercambios, con sus versiones
-</span>│   ├── mapa-de-valor.json<span class="h">  </span><span class="c c2"># el mismo mapa, para la consola
-</span>│   ├── flujo-de-valor.md<span class="h">   </span><span class="c c2"># el recorrido que guía la web
-</span>│   ├── decisiones.md<span class="h">       </span><span class="c c2"># qué se decidió y por qué
-</span>│   ├── marca.md<span class="h">            </span><span class="c c2"># colores, palabras y tono, con el porqué
-</span>│   ├── lugar.md<span class="h">            </span><span class="c c2"># lengua, paisaje, materiales
-</span>│   └── historia.md<span class="h">         </span><span class="c c2"># de dónde venís, con fuentes
-</span>└── netlify.toml<span class="h">            </span><span class="c"># configuración de publicación en Netlify</span></code></pre>
-            </figure>
-        </div>
-        <div class="viene">
-            <h3>Lo que viene: un cerebro en tu propio ordenador.</h3>
-            <p class="futur">La siguiente fase es que el cerebro de tu proyecto pueda consultarse con un modelo de lenguaje que corre en local, sin que nada salga de tu equipo. Como todo está en Markdown y en estándares abiertos, está pensado para que el paso no obligue a rehacer nada. Lo estamos preparando y todavía no lo ofrecemos.</p>
-        </div>
-    </div>
-</section>
-
-<!-- 7 · Prueba -->
-<section id="prueba" class="alt" aria-labelledby="t-prueba">
-    <div class="container">
-        <div class="cabeza">
-            <p class="eyebrow">Prueba</p>
-            <h2 id="t-prueba">Quién está detrás, y qué puedes comprobar.</h2>
-        </div>
-
         <div class="bio">
             <div class="bio-intro">
                 <h3>Álvaro Solache</h3>
-                <p>Psicólogo social y consultor estratégico sistémico. Vive en el Penedès. Es CEO de TeamTowers.</p>
+                <p>Psicólogo social y consultor estratégico. Vive en el Penedès y dirige TeamTowers.</p>
             </div>
             <dl>
-                <div><dt>Método</dt><dd>Trabaja con el análisis de redes de valor (VNA) de Verna Allee. Fue beta-tester y coach de la metodología en la cocreación de Pantheon Work, donde dirige proyectos de consultoría desde 2019.</dd></div>
-                <div><dt>Personas</dt><dd>Responsable de RRHH de InfoJobs en el 2000 y director de RRHH en GEC–UOC. Community manager del grupo de benchmarking del Fòrum de RRHH de Foment del Treball.</dd></div>
-                <div><dt>Redes</dt><dd>Cofundador de comunitats.org, con la UOC, La Salle, la Universidad de León y la Agencia de Desarrollo Económico de la Junta de Castilla y León.</dd></div>
-                <div><dt>Software</dt><dd>Ha dirigido desarrollo de software. Esa experiencia sostiene hoy el SOS de TeamTowers.</dd></div>
-                <div><dt>Equipos</dt><dd>Dinamiza el taller Fent Pinya, creado en Vilafranca por su socio Fèlix Miret.<span class="cifras"><span>Fent Pinya: más de 20 años</span><span>más de 60.000 participantes</span><span>más de 150 organizaciones</span></span></dd></div>
+                <div><dt>Método</dt><dd>Análisis de redes de valor de Verna Allee. Dirige proyectos de consultoría con el método en Pantheon Work desde 2019.</dd></div>
+                <div><dt>Personas</dt><dd>Responsable de RRHH de InfoJobs y director de RRHH en GEC–UOC.</dd></div>
+                <div><dt>Equipos</dt><dd>Dinamiza el taller Fent Pinya, creado en Vilafranca por su socio Fèlix Miret.<span class="cifras"><span>más de 20 años</span><span>más de 60.000 participantes</span><span>más de 150 organizaciones</span></span></dd></div>
             </dl>
         </div>
-
         <div class="bloque">
             <h3>Hecho con este método</h3>
             <!-- eventspenedes.com y labodegadesara.com: sin descripción hasta que Álvaro la valide (sector y qué rol ganó puerta). -->
@@ -1362,164 +1217,47 @@
                 <li><a href="https://eventspenedes.com" rel="noopener"><span class="dom">eventspenedes.com</span><span class="sello-pend">Descripción a validar</span></a></li>
                 <li><a href="https://labodegadesara.com" rel="noopener"><span class="dom">labodegadesara.com</span><span class="sello-pend">Descripción a validar</span></a></li>
                 <li><a href="https://www.teamtowers.eu" rel="noopener"><span class="dom">teamtowers.eu</span><span class="desc">La consultora.</span></a></li>
-                <li><a href="https://teamtowershuma.com" rel="noopener"><span class="dom">teamtowershuma.com</span><span class="desc">La app y el SOS. Varias versiones y varias IA probadas por API antes de quedarnos con este método.</span></a></li>
-                <li><a href="https://molekulon.org" rel="noopener"><span class="dom">molekulon.org</span><span class="desc">El Comando Molekulon, una tribu creativa pensada para los 27 pueblos del Alt Penedès y los 6 del Garraf.</span></a></li>
+                <li><a href="https://molekulon.org" rel="noopener"><span class="dom">molekulon.org</span><span class="desc">Una tribu creativa para los pueblos del Alt Penedès y el Garraf.</span></a></li>
             </ul>
         </div>
-
-        <div class="bloque">
-            <h3>Compruébalo tú</h3>
-            <ul class="comprueba">
-                <li>La consola con la que se revisa tu mapa está publicada, con sus diez reglas y el motivo de cada una.<br><a class="flecha" href="/SOS/vna-suport.html">Probar la consola</a></li>
-                <li>Un mapa de valor sobre nuestra propia red.<br><a class="flecha" href="/SOS/vna.html">Ver el ejemplo</a></li>
-                <li>Esta página se ha hecho con el mismo método: Claude Code, GitHub y Netlify, en HTML sin frameworks. Puedes ver su código fuente.</li>
-            </ul>
-            <!-- Fuente: cataleg-teamtowers-2026.md §2.5. Fue una revisión con la guía de estilo, no un VNA formal. Lo valida Álvaro antes de publicar. -->
-            <div class="en-casa">
-                <h3>Lo aplicamos primero en casa <span class="sello-pend">A validar</span></h3>
-                <p>Revisamos nuestro propio catálogo, el que va a las agencias de eventos. No contestaba lo primero que pregunta una agencia: qué pasa si llueve, cuándo se puede cancelar y cuánto cuesta el desplazamiento más allá de dos horas de Barcelona. Una agencia es quien revende, y le faltaba su puerta.</p>
-            </div>
-        </div>
-        <p class="peque bloque">En esta página no hay testimonios. Los primeros casos se publicarán cuando las personas implicadas los hayan revisado.</p>
+        <p class="peque bloque">Sin testimonios todavía: los primeros casos saldrán cuando sus protagonistas los hayan revisado. Mientras, puedes ver <a href="/SOS/vna.html?lang=es">un mapa sobre nuestra propia red</a>.</p>
     </div>
 </section>
 
-<!-- 8 · Oferta -->
-<section id="precios" aria-labelledby="t-precios">
-    <div class="container">
-        <div class="cabeza">
-            <p class="eyebrow">Precios · por flujos · borrador</p>
-            <h2 id="t-precios">Por flujos. Ves el desglose antes de empezar.</h2>
-            <p class="lead">Cada flujo de la sesión con sus horas y su coste de IA. Cuando lo aceptas, el presupuesto ya no cambia aunque la sesión se alargue.</p>
-        </div>
-
-        <p class="ancla"><span><strong>Una web a medida de <a href="/cataleg.html#pk-web-ia">nuestro catálogo</a>:</strong> presupuestada por flujos, de 4 a 10 semanas</span> <span><strong>Aquí:</strong> una sesión, presupuestada igual.</span></p>
-
-        <p class="franja-0"><strong>Borrador de tu mapa · gratis.</strong> Nos mandas la dirección de tu web y dos líneas, y en tres días laborables recibes el borrador de tu mapa y las preguntas que tu web no contesta. Lo prepara la IA y lo revisa una persona. Es un borrador, no un diagnóstico. Si después contratas, la sesión empieza desde ahí.</p>
-
-        <div class="preus">
-            <article class="preu destacat" aria-labelledby="p-sesion">
-                <p class="etiqueta">Para empezar</p>
-                <h3 id="p-sesion">Sesión individual</h3>
-                <p class="per">Para una persona que lleva su negocio, o un equipo de hasta tres · 2 h 30 min, en remoto o presencial</p>
-                <div class="importe">
-                    <p class="xifra">Por flujos <small>horas e IA</small></p>
-                    <p class="sello-pend">Piloto</p>
-                    <p class="despues">El presupuesto desglosa cada flujo con sus horas y su coste de IA.</p>
-                </div>
-                <p class="incl">Incluye</p>
-                <ul>
-                    <li>El borrador y su revisión en la sala</li>
-                    <li>Tu mapa de valor y tu flujo, en dibujo y en texto</li>
-                    <li>Web publicada en la sesión: portada, hasta tres puertas del flujo elegido y contacto, en un idioma</li>
-                    <li>Los archivos en tu cuenta de GitHub y la web en tu cuenta de Netlify: todo a tu nombre</li>
-                    <li>Tu dominio, si nos das acceso. Mientras se actualiza, la web se ve en su dirección de Netlify</li>
-                    <li>El cerebro de tu negocio por escrito: las reglas para la IA y la comprobación que avisa cuando algo deja de ser cierto</li>
-                    <li>Guía de una página: cómo pedir un cambio y cómo deshacerlo</li>
-                    <li>Informe de comprobaciones: código, enlaces y accesibilidad</li>
-                    <li>Media hora de revisión a las dos semanas</li>
-                </ul>
-            </article>
-            <article class="preu" aria-labelledby="p-taller">
-                <h3 id="p-taller">Taller de equipo</h3>
-                <p class="per">De 4 a 12 personas · media jornada (4 h), mejor presencial</p>
-                <div class="importe">
-                    <p class="xifra">Por flujos <small>horas e IA</small></p>
-                    <p class="sello-pend">Piloto</p>
-                    <p class="despues">El presupuesto desglosa cada flujo con sus horas y su coste de IA.</p>
-                </div>
-                <p class="incl">Incluye</p>
-                <ul>
-                    <li>Todo lo de la sesión individual, con hasta cuatro puertas</li>
-                    <li>Antes del taller, 15 minutos de conversación con dos o tres personas clave</li>
-                    <li>Un mapa hecho entre todo el equipo</li>
-                    <li>Cada persona hace al menos un cambio real, con su nombre en el historial</li>
-                    <li>Guía de buenas prácticas para trabajar con IA en equipo: revisión de cambios, y qué va a los archivos y qué al CRM</li>
-                    <li>Una hora de revisión con el equipo a las dos semanas</li>
-                </ul>
-            </article>
-        </div>
-
-        <div class="accions">
-            <div class="cta">
-                <a class="btn btn-primary js-mail" href="/qui-som" data-asunto="Reserva · Mapa y web">Escribir para reservar sesión o taller</a>
-                <p class="micro">Se abre tu correo.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
-            </div>
-            <a class="btn btn-ghost" href="#contratar">Ver los siete pasos</a>
-        </div>
-
-        <div class="despues-f">
-            <h3>Después, si quieres <span class="sello-pend">A validar</span></h3>
-            <p>Sin permanencia. Nada de esto hace falta para que la web funcione. Las cuotas del <a href="/conecta/#modelo">Sistema vivo</a> se deciden con los pilotos. Qué incluye cada nivel, <a href="#viva">aquí</a>.</p>
-            <div class="extras">
-                <div class="extra">
-                    <h4>Acompañamiento <b>3 meses · por flujos</b></h4>
-                    <p>Seis sesiones de 1 h, una cada dos semanas. Una revisión semanal de los cambios que hagáis, con su informe. El mapa se pone al día y la web se conecta con tus procesos: formularios, reservas, CRM.</p>
-                    <p>El primer día fijamos una función que se pueda comprobar en la web. Si a los tres meses no funciona por causa nuestra, seguimos un mes más sin coste.</p>
-                </div>
-                <div class="extra">
-                    <h4>Guardas <b>cuota mensual</b></h4>
-                    <p>Cada mes, comprobaciones automáticas de enlaces, accesibilidad, código, datos estructurados y formularios. Si una falla, te llega el aviso con la causa y cómo arreglarlo. Arreglarlo entra en Cerebro al día.</p>
-                    <p><span class="sello-pend">Por construir</span></p>
-                </div>
-                <div class="extra">
-                    <h4>Cerebro al día <b>cuota mensual</b></h4>
-                    <p>Lo mismo, más dos cambios pequeños al mes y una revisión del mapa cada trimestre.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="precios-pie">
-            <div class="caja-p">
-                <h3>Qué es un piloto</h3>
-                <p>Las primeras sesiones y los primeros talleres son pilotos, con un presupuesto por flujos de piloto. A cambio nos das 20 minutos contándonos qué funcionó y qué no. Publicar tu caso es opcional, y solo después de que lo hayas revisado.</p>
-            </div>
-        </div>
-
-        <ul class="notas-p">
-            <li>Presupuestos sin IVA, con la escala horaria del <a href="/cataleg.html#cost">mapa de coste</a>. Se revisa con los pilotos.</li>
-            <li>No incluyen el dominio ni la suscripción a la IA, que van a tu nombre para que todo sea tuyo. GitHub y Netlify tienen plan gratuito a octubre de 2026. Sus condiciones las fijan ellos.</li>
-            <li>Presencial en el Penedès, sin coste de desplazamiento. Fuera, el desplazamiento se cobra a precio de factura, sin margen.</li>
-            <li>Extras, como una puerta más o un segundo idioma: entran en el mismo presupuesto como un flujo más.</li>
-            <li>Si contratas la web a medida del catálogo en los 60 días siguientes, descontamos lo que pagaste por la sesión o el taller.</li>
-        </ul>
-    </div>
-</section>
-
-<!-- 8b · Cómo se contrata: generat per SOS/tools/build-proces.js -->
+<!-- 7 · Cómo se contrata y qué web quieres: generat per SOS/tools/build-proces.js -->
 <!--TT-PROCES-->
-<section id="contratar" class="alt" aria-labelledby="t-contratar">
+<section id="contratar" aria-labelledby="t-contratar">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Cómo se contrata</p>
             <h2 id="t-contratar">Siete pasos. En cada uno sabes quién hace qué y qué recibes.</h2>
-            <p class="lead">Es el mismo camino para todos los proyectos. Los tres primeros no cuestan nada, y desde el borrador ves en tu backoffice en qué paso está el tuyo.</p>
+            <p class="lead">Los tres primeros no cuestan nada. Desde tu espacio ves siempre en qué paso estás.</p>
         </div>
         <ol class="pr" aria-label="Los pasos">
-          <li class="pr-p" id="pas-escribes"><div><h3>Nos escribes</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Tú</span></p><p>Tu web, si la tienes, y dos líneas sobre qué haces.</p><p class="pr-reps"><strong>Recibes: </strong>Te contesta una persona, con unas preguntas para empezar tu mapa.</p></div></li>
+          <li class="pr-p" id="pas-escribes"><div><h3>Haces tu mapa</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Tú</span></p><p>En tu espacio, gratis: quién te rodea, qué os dais y qué web quieres.</p><p class="pr-reps"><strong>Recibes: </strong>Te contesta una persona, con lo que falta para tu web.</p></div></li>
           <li class="pr-p" id="pas-leemos"><div><h3>Leemos lo que ya tienes</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Con tu permiso, tu web, su diseño y sus imágenes, y lo que nos mandes.</p><p class="pr-reps"><strong>Recibes: </strong>Tu marca por escrito, las imágenes que sirven y lo que tu web no dice.</p></div></li>
           <li class="pr-p" id="pas-borrador"><div><h3>El borrador de tu mapa</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Gratis, en tres días laborables. Lo prepara la IA y lo revisa una persona.</p><p class="pr-reps"><strong>Recibes: </strong>El borrador del mapa, las preguntas abiertas y una página privada con lo que ya está hecho.</p></div></li>
           <li class="pr-p" id="pas-presupuesto"><div><h3>El presupuesto, por flujos</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Álvaro</span><span>Tú</span></p><p>Cada flujo con sus horas y su coste de IA. Lo aceptas y ya no cambia.</p><p class="pr-reps"><strong>Recibes: </strong>El presupuesto desglosado y la fecha de la sesión.</p></div></li>
           <li class="pr-p" id="pas-sesion"><div><h3>La sesión: mapa y web</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>Tú</span><span>Álvaro</span><span>IA</span></p><p>Una hora para el mapa y otra para la web, que se publica delante de ti.</p><p class="pr-reps"><strong>Recibes: </strong>Tu mapa validado y tu web publicada, con tu primer cambio hecho por ti.</p></div></li>
-          <li class="pr-p" id="pas-entrega"><div><h3>Todo a tu nombre</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.</p><p class="pr-reps"><strong>Recibes: </strong>El cerebro de tu negocio por escrito, tu espacio con su acceso (con GitHub o con correo y contraseña) y media hora de revisión a las dos semanas.</p></div></li>
+          <li class="pr-p" id="pas-entrega"><div><h3>Todo a tu nombre</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span></p><p>La web, sus archivos y tu dominio, en tus cuentas.</p><p class="pr-reps"><strong>Recibes: </strong>El cerebro de tu negocio por escrito, tu espacio con su acceso y media hora de revisión a las dos semanas.</p></div></li>
           <li class="pr-p opc" id="pas-viva"><div><h3>Tu web, viva</h3><p class="pr-q"><span class="sr">Lo hacen: </span><span>IA</span><span>Álvaro</span><span class="pr-e">Opcional</span></p><p>Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.</p><p class="pr-reps"><strong>Recibes: </strong>Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.</p></div></li>
         </ol>
         <div class="accions">
             <div class="cta">
-                <a class="btn btn-primary" href="/cliente/">Empezar por el paso 1</a>
-                <p class="micro">Tu espacio de cliente: te creas la cuenta y nos cuentas qué quieres.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+                <a class="btn btn-primary" href="/cliente/#alrededor">Haz tu mapa gratis</a>
+                <p class="micro">Es el paso 1, y lo haces en tu espacio.</p>
             </div>
             <a class="btn btn-ghost" href="#viva">Qué web quieres</a>
         </div>
     </div>
 </section>
 
-<section id="viva" aria-labelledby="t-viva">
+<section id="viva" class="alt" aria-labelledby="t-viva">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Qué web quieres · hasta dónde</p>
             <h2 id="t-viva">Empieza por lo mínimo que te sirve. Crece cuando lo necesites.</h2>
-            <p class="lead">Cuatro niveles. Los tres primeros se presupuestan por flujos y son tuyos sin cuota. El cuarto es la web viva: lo que se repite en tu negocio deja de depender de ti.</p>
+            <p class="lead">Los tres primeros niveles son tuyos, sin cuota. El cuarto mantiene viva tu web: lo que se repite deja de depender de ti.</p>
         </div>
         <div class="vv-n">
           <article class="" id="nivel-pagina"><p class="vv-k">Nivel 1 · por flujos</p><h3>Una página</h3><p>Para estar y que te encuentren</p><ul><li>Portada y contacto, en un idioma</li><li>Sale del borrador de tu mapa</li><li>Tuya, a tu nombre: el código y el alojamiento</li></ul></article>
@@ -1528,195 +1266,119 @@
           <article class="cuota" id="nivel-viva"><p class="vv-k">Nivel 4 · cuota mensual</p><h3>La web viva</h3><p>Para que el sistema mejore cada mes</p><ul><li>Todo lo anterior</li><li>Tus procesos repetitivos, definidos y gestionados</li><li>El tablero del día y el informe del mes</li><li>Comprobaciones automáticas y cambios pequeños</li></ul></article>
         </div>
         <p class="vv-g"><strong>Lo que garantiza la cuota.</strong> Con la cuota de la web viva, cada automatización que necesites se define contigo, tiene quien la lleva (una persona o un agente con tu IA), se ve en tu mapa y se mide cada mes. Si un proceso deja de funcionar, te llega el aviso y se arregla dentro de la cuota.</p>
-        <h3 class="sub" id="procesos">Los procesos que se repiten, y se quedan vivos</h3>
-        <p>Un proyecto tiene sus pasos. Un negocio, además, tiene procesos que no acaban nunca. Los ordenamos en tres: crear lo que todavía no existe, sostener lo que ya funciona y transformar lo que se ha quedado corto.</p>
+        <details class="procesos-vivos">
+        <summary><h3 class="sub" id="procesos">Los procesos que se quedan vivos: crear, sostener y transformar</h3></summary>
         <div class="vv-t">
           <section aria-labelledby="vv-crear"><h4 id="vv-crear">Crear <span>· Lo que todavía no existe</span></h4><ul><li><b>Creatividad</b>Cada mes, una idea que sale de tu mapa: un rol que nadie cubre o algo que das y nadie te reconoce. <span class="vv-e">Se define contigo</span></li><li><b>Desarrollo</b>Cambios en tu web y en tus herramientas, propuestos por la IA y revisados antes de publicar. <span class="vv-e hoy">Funciona hoy, con GitHub y Netlify</span></li><li><b>Nuevos mercados</b>A quién más le sirve lo que das: nuevos roles, nuevos idiomas, nuevos lugares. <span class="vv-e">Se define contigo</span></li></ul></section>
           <section aria-labelledby="vv-sostener"><h4 id="vv-sostener">Sostener <span>· Lo que ya funciona, sin que dependa de ti</span></h4><ul><li><b>Marketing</b>Publicar una vez y que salga en la web, en el boletín y en las redes. <span class="vv-e">Se define contigo</span></li><li><b>Finanzas</b>El cierre del mes: lo cobrado, lo pendiente y lo que ha costado la IA de cada flujo. <span class="vv-e">Se define contigo</span></li><li><b>Auditoría</b>Las diez reglas de tu mapa, la web y los servicios comprobados, con el aviso si algo falla. <span class="vv-e hoy">Funciona hoy, con la consola del mapa y una tarea programada</span></li></ul></section>
           <section aria-labelledby="vv-transformar"><h4 id="vv-transformar">Transformar <span>· Lo que se ha quedado corto</span></h4><ul><li><b>Competencia y oportunidades</b>Qué cambia fuera y qué encaja con tu mapa: convocatorias, clientes, colaboraciones. <span class="vv-e">Se define contigo</span></li><li><b>Organización</b>Quién da y no recibe, quién lleva demasiados roles y qué zonas se calientan. <span class="vv-e hoy">Funciona hoy, con el diagnóstico del mapa</span></li><li><b>Flujos de valor</b>Los flujos que se paran, con su aviso y su orden del día: responder, cobrar, producir. <span class="vv-e hoy">Funciona hoy, con el tablero del día</span></li></ul></section>
         </div>
+        </details>
     </div>
 </section>
 <!--/TT-PROCES-->
 
-<!-- 9 · CTA final -->
+<!-- 8 · CTA final -->
 <section id="empezar" class="oscuro" aria-labelledby="t-empezar">
     <div class="container">
-        <h2 id="t-empezar">Mándanos tu web. En tres días te devolvemos tu red.</h2>
-        <p class="lead">Con la dirección de tu web y dos líneas basta: a qué te dedicas y si serías tú o un equipo. En tres días laborables tendrás el borrador de tu mapa y las preguntas que tu web no contesta. Sin llamada y sin pagar nada. Te contesta una persona.</p>
+        <h2 id="t-empezar">Tu web empieza por tu mapa. Y el mapa es gratis.</h2>
+        <p class="lead">Unos minutos en tu espacio: quién te rodea, qué os dais y qué web quieres. Sin llamada y sin pagar nada. Te contesta una persona.</p>
         <div class="accions">
             <div class="cta">
-                <a class="btn btn-primary" href="/cliente/#alrededor">Hacer mi mapa gratis</a>
-                <p class="micro">Se abre tu correo con cuatro preguntas.<span class="js-dir" hidden> O escribe a <a href="/qui-som">la dirección de contacto</a>.</span></p>
+                <a class="btn btn-primary" href="/cliente/#alrededor">Haz tu mapa gratis</a>
+                <p class="micro">¿Prefieres escribir?<span class="js-dir" hidden> <a href="/qui-som">La dirección de contacto</a>.</span></p>
             </div>
-            <a class="btn btn-ghost" href="/SOS/vna.html?lang=es">Ver cómo se hace un mapa</a>
+            <a class="btn btn-ghost" href="/SOS/vna.html?lang=es">Qué es un mapa de valor</a>
         </div>
-        <p class="peque">El borrador lo prepara una IA. No mandes datos personales de clientes ni contratos: el mapa habla de roles, no de personas.</p>
+        <p class="peque">El mapa habla de roles, no de personas: no hace falta ningún dato de tus clientes.</p>
     </div>
 </section>
 
-<!-- 10 · Objeciones -->
+<!-- 8 · Preguntas -->
 <section id="preguntas" aria-labelledby="t-preguntas">
     <div class="container">
         <div class="cabeza">
-            <p class="eyebrow">Objeciones</p>
-            <h2 id="t-preguntas">Lo que no hacemos, lo que garantizamos y lo que suele preguntarse.</h2>
+            <p class="eyebrow">Preguntas</p>
+            <h2 id="t-preguntas">Lo que suele preguntarse.</h2>
         </div>
-        <div class="objeciones">
-            <div class="no-hacemos">
-                <h3>Lo que no hacemos</h3>
-                <ul>
-                    <li>No hacemos tiendas online con pasarela de pago y stock en una sesión. Eso es el proyecto de 4 a 10 semanas.</li>
-                    <li>No llevamos redes sociales ni campañas de anuncios.</li>
-                    <li>No hacemos logotipo ni identidad desde cero, ni fotografía.</li>
-                    <li>No redactamos textos legales. Te avisamos de lo que falta, y los firma tu asesoría.</li>
-                    <li>No escribimos tu historia sin ti. No inventamos opiniones de clientes ni cifras.</li>
-                    <li>No guardamos datos de tus clientes. El repositorio no es un CRM.</li>
-                    <li>No hacemos webs que solo podamos cambiar nosotros.</li>
-                </ul>
-            </div>
-            <div class="garantias">
-                <h3>Lo que garantizamos, y lo que no.</h3>
-                <h4>Garantizamos <span class="sello-pend">A validar</span></h4>
-                <ul class="si">
-                    <li>Sales de la sesión con la web publicada. Si no lo está por causa nuestra, la terminamos en tres días laborables. Si tampoco entonces, te devolvemos lo pagado.</li>
-                    <li>Todo está a tu nombre desde el primer minuto: repositorio, Netlify y dominio. Si te vas, te lo llevas todo.</li>
-                    <li>Antes de entregarla, la web pasa las comprobaciones automáticas de código, enlaces y accesibilidad AA. Una persona revisa lo que la máquina no puede comprobar. Te dejamos el informe.</li>
-                    <li>Cuando aceptas el presupuesto por flujos, ya no cambia. No hay horas extra.</li>
-                    <li>Si con el borrador vemos que no encajamos, te lo decimos antes de cobrar nada.</li>
-                </ul>
-                <h4>No garantizamos</h4>
-                <ul class="no">
-                    <li>Ventas, contactos ni posiciones en buscadores. Dependen de tu negocio y de tu red. La web ayuda a que el valor circule, pero no lo crea.</li>
-                    <li>Que sea la web definitiva. Es la primera versión de algo que ya sabes cambiar.</li>
-                    <li>Que el mapa no cambie. Cambiará, y por eso vive en Markdown y no en un PDF.</li>
-                </ul>
-            </div>
-        </div>
-
-        <p class="valores-t">Nuestros cuatro valores vienen del mundo casteller. Aquí son criterios, no adornos:</p>
-        <ul class="valores">
-            <li><strong lang="ca">Força</strong>nada depende de una sola persona, tampoco de nosotros.</li>
-            <li><strong lang="ca">Equilibri</strong>cada tangible con su intangible.</li>
-            <li><strong>Valor</strong>lo que se entrega se puede comprobar.</li>
-            <li><strong lang="ca">Seny</strong>una web que funciona hoy vale más que tres empezadas.</li>
-        </ul>
-
         <div class="faq">
-            <h3>Preguntas</h3>
             <details>
-                <summary>¿De verdad hay una web en una hora?</summary>
-                <p>Una hora de construcción, dentro de una sesión de dos horas y media. Es posible porque llegamos con el borrador del mapa y el esqueleto ya hechos a partir de tu material. Sale una web sencilla, bien hecha y publicada. No es la definitiva: es la primera versión de algo que ya sabes cambiar.</p>
+                <summary>¿Cuánto cuesta?</summary>
+                <p>El mapa es gratis. La sesión, tú solo o con tu equipo, se presupuesta por flujos: ves las horas y el coste de IA de cada uno antes de aceptar, y después ya no cambia. Las primeras sesiones son pilotos.</p>
             </details>
             <details>
-                <summary>¿No será una plantilla?</summary>
-                <p>No. El esqueleto sale de tu mapa: tus roles, tus intercambios y tu flujo. La marca, el lugar y la historia salen de la sesión. Una plantilla no sabe quién te recomienda.</p>
+                <summary>¿De verdad hay una web en una sesión?</summary>
+                <p>Sí, porque llegamos con tu mapa y el esqueleto de la web ya preparados. Sale una web sencilla, bien hecha y publicada. No es la definitiva: es la primera versión de algo que ya sabes cambiar.</p>
             </details>
             <details>
-                <summary>Lo que necesito es vender. ¿Por qué una red?</summary>
-                <p>La venta está en el mapa, y muchas veces es el flujo principal. Pero quien compra suele llegar por alguien: por quien recomienda, por quien revende o por el lugar. Una web que solo atiende el último paso pierde los anteriores.</p>
+                <summary>Lo que necesito es vender. ¿Por qué pensar en toda la red?</summary>
+                <p>Porque quien compra casi siempre llega por alguien: quien te recomienda, quien te revende o tu pueblo. Una web que solo atiende el último paso pierde los anteriores.</p>
             </details>
             <details>
-                <summary>Si lo hace una IA, ¿por qué cuesta esto?</summary>
-                <p>Porque la IA hace la parte que menos vale. Lo que pagas es saber a quién tiene que hablar tu web, qué tiene que darle a cada uno y qué no decir. Eso sale de la sesión, no de una instrucción. La IA nos permite no cobrarte semanas de ir y venir.</p>
-            </details>
-            <details>
-                <summary>¿Y si me la hago yo con una IA?</summary>
-                <p>Puedes, y la sesión te enseña a hacerlo. Lo que no sale de una instrucción es el mapa. Si quieres probar sin pagar, la <a href="/SOS/vna-suport.html">consola de mapa de valor</a> está abierta.</p>
+                <summary>Si lo hace una IA, ¿por qué no me la hago yo?</summary>
+                <p>Puedes, y la sesión te enseña a hacerlo. Lo que no sale de una instrucción es el mapa: a quién tiene que hablar tu web, qué darle a cada uno y qué no decir. Eso es lo que pagas; la IA nos ahorra semanas de ir y venir.</p>
             </details>
             <details>
                 <summary>Ya tengo web.</summary>
-                <p>Mejor: es material para el borrador. A veces lo que falta es una puerta, como una zona para tiendas o una página para reenviar, y no hace falta rehacerlo todo. Si tu web está en un repositorio, trabajamos encima. Si no, empezamos una nueva y decides qué pasa con la antigua.</p>
+                <p>Mejor: es material para el mapa. A veces solo falta una puerta, como una zona para tiendas, y no hace falta rehacerlo todo.</p>
             </details>
             <details>
-                <summary>¿Necesito saber programar?</summary>
-                <p>No. Necesitas saber explicar tu negocio, que es lo que hacemos en el mapa. La sesión te enseña a pedir cambios a la IA y a comprobarlos.</p>
-            </details>
-            <details>
-                <summary>¿Y si la IA se equivoca?</summary>
-                <p>Pasa. Por eso cada cambio se revisa antes de publicarse y se puede deshacer. El mapa pasa por diez reglas. El <code>CLAUDE.md</code> deja escrito lo que la IA no debe tocar. Para impedirlo, y no solo pedirlo, se usan los permisos de Claude Code y una rama protegida en GitHub.</p>
+                <summary>¿Necesito saber de tecnología?</summary>
+                <p>No. Necesitas saber explicar tu negocio, que es justo lo que hacemos en el mapa. Te enseñamos a pedir cambios y a comprobarlos.</p>
             </details>
             <details>
                 <summary>¿De quién es todo?</summary>
-                <p>Tuyo. El repositorio, la cuenta de Netlify, el dominio y la suscripción a la IA van a tu nombre. Si un día dejas de trabajar con nosotros, no pierdes nada.</p>
+                <p>Tuyo: la web, el dominio y las cuentas van a tu nombre. Los datos de tus clientes nunca entran en la web ni en el cerebro. Si un día dejas de trabajar con nosotros, no pierdes nada.</p>
             </details>
             <details>
-                <summary>¿Qué pasa con la información confidencial?</summary>
-                <p>No entra en el repositorio. Los datos personales, los contratos y las conversaciones comerciales se quedan en tu CRM. La regla queda escrita para que la IA también la siga. Para el borrador, no nos mandes nada de eso: te decimos qué IA lo procesa.</p>
+                <summary>¿Qué no hacéis?</summary>
+                <p>Tiendas online con pago y stock en una sesión, redes sociales o anuncios, logotipos desde cero, fotografía y textos legales. Tampoco inventamos opiniones de clientes ni cifras, ni hacemos webs que solo podamos cambiar nosotros.</p>
             </details>
             <details>
-                <summary>¿Por qué Claude?</summary>
-                <p>Probamos varias IA por API en versiones anteriores de nuestras herramientas, y el resultado no nos convenció. Hoy trabajamos con Claude Code. Tu memoria está en Markdown y sirve para cualquier IA que elijas mañana.</p>
-            </details>
-            <details>
-                <summary>¿En qué lengua?</summary>
-                <p>En la de tu red. La sesión entrega la web en un idioma y deja preparado el segundo. Traducirlo y revisarlo es un flujo más, que va en el presupuesto.</p>
-            </details>
-            <details>
-                <summary>¿Cuánto cuesta después?</summary>
-                <p>El dominio y, si quieres seguir cambiando la web con IA, la suscripción. GitHub y Netlify tienen plan gratuito a octubre de 2026. Con nosotros no hay cuota, salvo que contrates el acompañamiento o el mantenimiento.</p>
-            </details>
-            <details>
-                <summary>¿Qué es un mapa de valor?</summary>
-                <p>Un dibujo de los roles de tu negocio y de lo que se dan entre ellos, tangible e intangible, según el análisis de redes de valor de Verna Allee. Tienes un <a href="/SOS/vna.html">ejemplo sobre nuestra propia red</a>.</p>
+                <summary>¿Qué garantizáis? <span class="sello-pend">A validar</span></summary>
+                <p>Que sales de la sesión con la web publicada; si no, la acabamos en tres días laborables o te devolvemos lo pagado. Que el presupuesto aceptado no cambia. Y que, si con tu mapa vemos que no encajamos, te lo decimos antes de cobrar nada. Ventas y posiciones en buscadores dependen de tu negocio: la web ayuda a que el valor circule, pero no lo crea.</p>
             </details>
         </div>
     </div>
 </section>
 
-<!-- 11 · La página aplica su método -->
+<!-- 9 · Otras puertas -->
 <section id="puertas" class="alt" aria-labelledby="t-puertas">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Esta página también es una red</p>
-            <h2 id="t-puertas">Si vienes por otro motivo, también hay una puerta para ti.</h2>
-            <p class="lead">Lo que proponemos a tu negocio lo aplicamos aquí. Cada puerta dice qué te damos y qué te pedimos.</p>
+            <h2 id="t-puertas">Si vienes por otro motivo, también tienes puerta.</h2>
         </div>
         <div class="puertas">
             <article class="puerta" id="puerta-agencias" aria-labelledby="pu-agencias">
                 <h3 id="pu-agencias">Lo quiero para un cliente mío</h3>
                 <p class="para">Agencias, estudios de diseño, consultoras</p>
-                <dl>
-                    <div><dt>Te damos</dt><dd>El método, la consola, la revisión del mapa y una entrega que se puede revisar línea a línea.</dd><dd>Precio de partner y tu margen, por escrito antes de empezar. Puedes presentarlo con tu marca. <span class="sello-pend">A validar</span></dd></div>
-                    <div><dt>Nos das</dt><dd>La relación con tu cliente y lo que sabes de su sector.</dd></div>
-                </dl>
-                <p>La web y el repositorio quedan a nombre de tu cliente. Ya trabajamos con seis agencias que llevan el taller Fent Pinya a sus clientes. Este servicio, todavía no.</p>
+                <p>Tú pones la relación y el sector; nosotros el método y la revisión del mapa. La web queda a nombre de tu cliente, y puedes presentarlo con tu marca. <span class="sello-pend">A validar</span></p>
                 <div class="accions">
                     <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Agencia · Mapa y web">Proponer una colaboración</a>
                 </div>
             </article>
             <article class="puerta" id="puerta-grupos" aria-labelledby="pu-grupos">
                 <h3 id="pu-grupos">Represento a un grupo de negocios</h3>
-                <p class="para">Asociaciones de comerciantes, cooperativas, espacios de trabajo compartido, agentes de desarrollo local</p>
-                <dl>
-                    <div><dt>Te damos</dt><dd>Un taller común sobre el método y, después, una sesión de web por negocio. Cada negocio sale con su mapa y su web, y el grupo con el mapa de lo que se dan entre ellos.</dd></div>
-                    <div><dt>Nos das</dt><dd>El grupo, el lugar y lo que sabes del territorio.</dd></div>
-                </dl>
-                <p>Precio de grupo, por debajo de la sesión individual, por escrito antes de empezar.</p>
+                <p class="para">Asociaciones de comerciantes, cooperativas, desarrollo local</p>
+                <p>Un taller común y una sesión por negocio. Cada uno sale con su mapa y su web, y el grupo con el mapa de lo que se dan entre ellos.</p>
                 <div class="accions">
                     <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Grupo · Mapa y web">Proponer un taller para mi grupo</a>
                 </div>
             </article>
             <article class="puerta" id="puerta-recomendar" aria-labelledby="pu-recomendar">
                 <h3 id="pu-recomendar">Quiero recomendaros</h3>
-                <dl>
-                    <div><dt>Te damos</dt><dd>Un texto que puedes reenviar tal cual y, si tu cliente lo permite, te contamos cómo ha ido.</dd><dd>Por cada presentación que acabe en sesión, media hora de revisión de tu propia web. <span class="sello-pend">A validar</span></dd></div>
-                    <div><dt>Nos das</dt><dd>Una presentación a quien lo necesita.</dd></div>
-                </dl>
-                <blockquote>«TeamTowers hace contigo el mapa de valor de tu negocio, quién da qué a quién, y en la misma sesión publica una web que sirve a toda esa red, no solo a quien compra. La web y el repositorio quedan a tu nombre. teamtowershuma.com/mapa-web»</blockquote>
+                <p>Un texto para reenviar tal cual:</p>
+                <blockquote>«TeamTowers te ayuda a dibujar quién sostiene tu negocio y te hace una web para toda esa gente, no solo para quien compra. Todo a tu nombre. teamtowershuma.com/mapa-web»</blockquote>
                 <div class="accions">
-                    <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Recomendación · Mapa y web">Escribir para presentar a alguien</a>
+                    <a class="btn btn-ghost btn-sm js-mail" href="/qui-som" data-asunto="Recomendación · Mapa y web">Presentar a alguien</a>
                 </div>
             </article>
             <article class="puerta" id="puerta-facilitar" aria-labelledby="pu-facilitar">
-                <h3 id="pu-facilitar">Quiero aprender el método, o facilitarlo</h3>
-                <dl>
-                    <div><dt>Te damos</dt><dd>La consola de mapa de valor, abierta y sin cuenta, con sus diez reglas.</dd></div>
-                    <div><dt>Nos das</dt><dd>Tu mirada. Si encuentras un fallo en las reglas, nos lo dices.</dd></div>
-                </dl>
-                <p>Estamos preparando cómo formar a otras personas para que esto no dependa de una sola. Todavía no lo ofrecemos.</p>
+                <h3 id="pu-facilitar">Quiero aprender el método</h3>
+                <p>El editor de mapas de valor está abierto y sin cuenta. La formación para facilitarlo, todavía no la ofrecemos.</p>
                 <div class="accions">
-                    <a class="btn btn-ghost btn-sm" href="/SOS/vna-suport.html">Abrir la consola</a>
+                    <a class="btn btn-ghost btn-sm" href="/SOS/vna-suport.html">Abrir el editor</a>
                     <a class="enlace js-mail" href="/qui-som" data-asunto="Facilitar · Mapa y web">Avisadme cuando esté</a>
                 </div>
             </article>
@@ -1727,7 +1389,7 @@
 </main>
 
 <div class="container nota-final">
-    <p class="mono-nota">Esta página se ha hecho con su propio método: un borrador hecho por IA a partir del material y un repositorio con su cerebro dentro. Falta la revisión final de una persona: por eso es un borrador.</p>
+    <p class="mono-nota">Esta página se ha hecho con su propio método. Falta la revisión final de una persona: por eso es un borrador.</p>
 </div>
 
 <!--TT-PEU-->
