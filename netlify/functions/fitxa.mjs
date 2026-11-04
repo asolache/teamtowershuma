@@ -72,7 +72,10 @@ export function tauler(f) {
     camps: (Array.isArray(x.camps) ? x.camps : []).slice(0, 14).filter(c => c && CAMPS.includes(c.tipus)).map(c => ({ id: t(c.id, 40), etiqueta: t(c.etiqueta, 80), tipus: c.tipus, obligatori: c.obligatori === true, opcions: llistaT(c.opcions, 60, 12) })).filter(c => c.etiqueta) }))
     .filter(x => x.camps.length);
   const integrades = (Array.isArray(f.integrades) ? f.integrades : []).slice(0, 3).map(g => ({ url: /^https?:\/\//.test(net(g && g.url)) ? t(g.url, 300) : '', nom: t(g && g.nom, 80) })).filter(g => g.url && g.nom);
-  return { programes, formularis, integrades };
+  const inv = f.invitacio && typeof f.invitacio === 'object' ? { para: t(f.invitacio.para, 60), data: t(f.invitacio.data, 10), tancada: f.invitacio.tancada === true } : null;
+  return { programes, formularis, integrades, procesos: (Array.isArray(f.procesos) ? f.procesos : []).filter(x => x === 'programas'), invitacio: inv, programesAuto: f.programesAuto === true,
+    /* Sense formularis triats encara (undefined), el tauler li'n proposa dos: no és el mateix que haver-los tret tots. */
+    ...(Array.isArray(f.formularis) ? {} : { formularis: undefined }) };
 }
 
 function dissenyRevisat(x) {

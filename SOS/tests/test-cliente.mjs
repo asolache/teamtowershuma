@@ -267,7 +267,8 @@ console.log('\n══ /cliente/ · la IA ══');
     if (r.request().method() === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', body: '{"actiu":true}' });
     const c = JSON.parse(r.request().postData()); pets.push(['ia', c]); volta++;
     await new Promise(x => setTimeout(x, 400));
-    const res = c.pas === 'pagines' ? { pagines: [{ url: '/', quien: 'Quien quiere ser profesor', porque: 'Es la portada que ven primero.' }, { url: '/cursos', quien: '', porque: 'Habla de todo a la vez.' }],
+    const res = c.pas === 'programes' ? { programes: [{ nom: 'Curso FELE Intensivo', perQui: 'Quien empieza a dar clases', durada: '4 semanas', modalitat: 'Presencial', dates: ['2 febrero', '6 abril'], places: '8 por grupo', certificat: '', preu: '', resum: 'El curso más completo.', url: '/cursos', enllac: '' }] }
+      : c.pas === 'pagines' ? { pagines: [{ url: '/', quien: 'Quien quiere ser profesor', porque: 'Es la portada que ven primero.' }, { url: '/cursos', quien: '', porque: 'Habla de todo a la vez.' }],
         falta: [{ quien: 'Antiguos alumnos', falta: 'Que pueden recomendar la escuela y volver a formarse.' }] }
       : c.pas === 'web'
       ? { lema: 'Formamos a los profesores que las escuelas buscan', presentacion: 'Cursos intensivos en Barcelona.', secciones: [{ quien: 'Quien quiere ser profesor', nombre: 'Futuros profes', intro: 'Aquí empieza tu camino como profesor de español.' }] }
@@ -397,6 +398,27 @@ console.log('\n══ /cliente/ · la IA ══');
   ok(/Antiguos alumnos: Que pueden recomendar/.test(await p.textContent('#cl-llig-falta')), 'y lo que su web todavía no le dice a cada uno');
   const pw = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).portesWeb);
   ok(pw && pw.origen === 'https://escuela.example' && pw.pagines.length === 2 && pw.falta.length === 1, 'queda en su ficha, para la sesión');
+  /* Sus programas (04/11/2026, ELE): con su web leída, se sacan solos una vez; los edita aquí y salen en su web. */
+  await p.waitForSelector('#cl-progs li', { timeout: 8000 });
+  const pP = ia().filter(x => x[1].pas === 'programes');
+  ok(pP.length === 1 && pP[0][1].dades.pagines.length === 3 && /Curso FELE Intensivo/.test(await p.textContent('#cl-progs')), 'con su web leída, sus programas se rellenan solos (una vez)');
+  ok(/He encontrado 1 programas/.test(await p.textContent('#cl-prog-res')) && await p.isVisible('#cl-espai a[href="#programas"]'), 'se lo dice, y «Programas» sale en la barra de su espacio');
+  await p.click('#cl-progs summary'); await p.fill('#cl-p0-dates', '2 febrero 2027\n6 abril 2027');
+  const sP = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(sP.programes[0].dates.join('|') === '2 febrero 2027|6 abril 2027' && sP.formularis.length === 2 && sP.formularis[1].camps.some(c => c.tipus === 'programa'), 'cambia las fechas en su ficha, y tiene los dos formularios de siempre');
+  await p.click('#cl-forms li:nth-child(1) summary'); await p.click('#cl-forms li:nth-child(1) button:has-text("Otra pregunta")');
+  await p.locator('#cl-forms li:nth-child(1) .fcamp').last().locator('input').first().fill('Cómo nos conociste');
+  ok((await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).formularis[0].camps.map(c => c.etiqueta))).includes('Cómo nos conociste'), 'añade una pregunta a su formulario');
+  await p.fill('#cl-pie-nom', 'Mi escuela de idiomas'); await p.fill('#cl-pie-url', 'idiomas.example');
+  await p.click('#cl-espai a[href="#vista"]');
+  await p.waitForSelector('#cl-marc-caixa.pantalla #cl-pags button', { timeout: 15000 });
+  ok(await p.locator('#cl-pags button:has-text("Programas")').count() === 1 && await p.locator('#cl-pags button:has-text("Contacto")').count() === 1, 'la vista previa, a pantalla completa (#vista): con su página de programas y la de contacto');
+  await p.click('#cl-pags button:has-text("Programas")');
+  const fP = p.frameLocator('#cl-marc');
+  ok(/Curso FELE Intensivo/.test(await fP.locator('main').textContent()) && /Mi escuela de idiomas/.test(await fP.locator('footer').textContent()), 'sus programas en su web, y su otra web en el pie');
+  await p.click('#cl-vista-torna');
+  await p.waitForFunction(() => !document.querySelector('#cl-marc-caixa').classList.contains('pantalla'), null, { timeout: 5000 });
+  ok(true, '«← Volver» sale de la vista previa');
   /* El documento de diseño (MotorWeb.disseny): el entregable de la web, no el boceto. */
   await p.click('#cl-disseny-fes');
   await p.waitForSelector('#cl-disseny-pags li', { timeout: 15000 });
@@ -409,6 +431,7 @@ console.log('\n══ /cliente/ · la IA ══');
   const [dj] = await Promise.all([p.waitForEvent('download'), p.click('#cl-disseny-json')]);
   const dJ = JSON.parse((await import('node:fs')).readFileSync(await dj.path(), 'utf8'));
   ok(dJ.tipus === 'sos-disseny-web' && dJ.v === 1 && dJ.redireccions.some(x => x.de === '/blog/viejo'), 'y en JSON, sos-disseny-web v1, sin perder ninguna dirección vieja');
+  ok(dJ.programes.length === 1 && dJ.formularis.length === 2 && dJ.integrades[0].nom === 'Mi escuela de idiomas', 'el documento lleva sus programas, sus formularios y la web del pie, para construirla con Claude Code');
   await p.fill('#cl-disseny-nota', 'Más fotos de las clases'); await p.click('#cl-disseny-desa');
   const dzS = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).disseny);
   ok(dzS && dzS.nota === 'Más fotos de las clases' && dzS.pagines === dz.length && /Guardado en tu ficha/.test(await p.textContent('#cl-disseny-res')), 'lo que cambiaría queda en su ficha, para la sesión');
@@ -518,6 +541,30 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   await p.waitForFunction(id => new URLSearchParams(location.search).get('mapa') === id, id1);
   ok(await p.inputValue('#cl-org') === 'Escuela Vieja', '«Deshacer» lo recupera');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'en el móvil no se desplaza de lado');
+  ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+/* El enlace de invitación (04/11/2026, María): llega con todo puesto, y la barra de su espacio. */
+console.log('\n══ El enlace de invitación ══');
+{
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const p = await ctx.newPage(); const errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
+  await p.addInitScript(() => { if (!sessionStorage.getItem('fet')) { sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es'); localStorage.setItem('tt.cliente.v1', JSON.stringify({ org: 'Otra escuela', alrededor: [{ quien: 'quien aprende', meDa: 'la cuota', meDaEs: 'tangible', leDoy: 'las clases', leDoyEs: 'tangible' }] })); } });
+  await p.goto(URL_ + '?org=Escuela%20Sol&web=escuela.example&pie=idiomas.example&pieNom=Idiomas%20Sol&para=Mar%C3%ADa&procesos=programas#inicio');
+  await p.waitForFunction(() => /\?mapa=m/.test(location.search));
+  const S = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(S.org === 'Escuela Sol' && S.web === 'https://escuela.example' && S.integrades[0].url === 'https://idiomas.example' && S.integrades[0].nom === 'Idiomas Sol', 'llega con su organización, su web y la otra web del pie ya puestas');
+  ok(!/org=|para=/.test(await p.evaluate(() => location.search)) && await p.evaluate(() => Object.values(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).some(m => m.s.org === 'Otra escuela')), 'la barra queda limpia (su mapa, con su enlace) y el mapa que había se guarda en «Mis mapas»');
+  ok(await p.isVisible('#cl-benvinguda') && /Hola, María/.test(await p.textContent('#cl-benvinguda')) && await p.locator('#cl-benvinguda li').count() === 6, 'la bienvenida, con su nombre y los seis pasos enlazados');
+  ok(await p.isVisible('#cl-espai a[href="#programas"]') && await p.isVisible('#programas') && await p.inputValue('#cl-pie-url') === 'https://idiomas.example', 'su barra lleva «Programas» porque es su proceso, y el pie ya tiene su otra web');
+  ok(/Ponerlos en mi web/.test(await p.textContent('#cl-forms')), 'los formularios, propuestos hasta que los pone');
+  await p.reload(); await p.waitForTimeout(300);
+  ok(await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).org) === 'Escuela Sol' && await p.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).length) === 2, 'al volver con su enlace, sigue en su mapa sin duplicarlo');
+  await p.click('#cl-benvinguda button:has-text("Entendido")');
+  ok(await p.isHidden('#cl-benvinguda'), '«Entendido» cierra la bienvenida');
+  ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'en el móvil, la barra de su espacio no hace desplazar la página de lado');
   ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

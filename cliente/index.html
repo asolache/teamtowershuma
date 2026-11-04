@@ -171,6 +171,31 @@
         .fila .treu { min-height: 44px; }
         .salut li a { margin-left: .3rem; white-space: nowrap; }
         .auto { margin-top: 1.4rem; max-width: 70ch; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+        /* La barra de su espacio (04/11/2026): sus procesos, cada uno con su enlace. */
+        .espai { position: sticky; top: var(--navh, 0px); z-index: 90; background: var(--bg); border-bottom: 1px solid var(--border); }
+        .espai ul { display: flex; gap: .3rem; list-style: none; margin: 0 auto; padding: .4rem var(--gutter); max-width: var(--max, 72rem); overflow-x: auto; scrollbar-width: none; }
+        .espai a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .85rem; border: 1px solid var(--border); border-radius: 999px; white-space: nowrap; text-decoration: none; color: var(--text); background: var(--card); font-size: var(--t0); }
+        .espai a[aria-current="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+        .benvinguda { margin: 1.2rem 0; padding: 1rem 1.2rem; border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: 12px; background: var(--card); max-width: 70ch; }
+        .benvinguda ol { margin: .5rem 0; padding-left: 1.2rem; display: grid; gap: .25rem; }
+        .bloc-web { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--border); max-width: 72ch; }
+        .progs, .forms { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: .6rem; }
+        .progs details, .forms details { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .2rem .9rem .8rem; }
+        .progs summary, .forms summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; font-weight: 600; }
+        .progs summary small, .forms summary small { font-weight: 400; color: var(--muted); }
+        .progs .camps, .forms .camps { margin-top: .4rem; }
+        .fcamp { display: grid; grid-template-columns: 1fr; gap: .4rem; padding: .6rem 0; border-top: 1px dashed var(--border); }
+        @media (min-width: 700px) { .fcamp { grid-template-columns: 1.4fr 1fr auto auto; align-items: end; } }
+        .fcamp input, .fcamp select { width: 100%; min-height: 44px; padding: .45rem .6rem; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--card); }
+        .fcamp label { font-size: var(--t0); color: var(--muted); display: grid; gap: .2rem; }
+        .fcamp .chk { display: flex; align-items: center; gap: .4rem; min-height: 44px; }
+        .fcamp .chk input { width: auto; min-height: auto; }
+        .on-xips { display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+        .on-xips label { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; font-weight: 400; }
+        .boceto.pantalla { position: fixed; inset: 0; z-index: 200; margin: 0; border-radius: 0; display: flex; flex-direction: column; background: var(--bg); }
+        .boceto.pantalla iframe { flex: 1; height: auto; min-height: 0; }
+        .boceto .tornar { display: none; }
+        .boceto.pantalla .tornar { display: inline-flex; }
         .tablero { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
         .tablero > p { max-width: 70ch; }
         .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
@@ -205,6 +230,7 @@
         .boceto { margin-top: 1.5rem; border: 1px solid var(--border-strong); border-radius: var(--radius); overflow: hidden; background: var(--card); }
         .boceto[hidden] { display: none; }
         .boceto .barra { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; padding: .5rem .7rem; border-bottom: 1px solid var(--border); background: var(--panel); font-size: var(--t0); }
+        .boceto .pags { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
         .boceto iframe { display: block; width: 100%; height: 34rem; border: 0; background: #fff; }
         .boceto.editor iframe { height: min(44rem, 82vh); }
         /* El dibujo a pantalla completa (03/11/2026): una capa sobre la página, unida a las filas. */
@@ -536,11 +562,22 @@
 <!--/TT-NAV-->
 
 <main id="contenido">
+<nav class="espai" id="cl-espai" aria-label="Tu espacio">
+    <ul>
+        <li><a href="#alrededor" data-e="alrededor">Tu mapa</a></li>
+        <li><a href="#web" data-e="web">Tu web</a></li>
+        <li><a href="#programas" data-e="programas">Programas</a></li>
+        <li><a href="#formularios" data-e="formularios">Formularios</a></li>
+        <li><a href="#tablero" data-e="tablero">Tablero</a></li>
+        <li><a href="#vista" data-e="vista">Vista previa</a></li>
+    </ul>
+</nav>
 
 <section id="inicio">
     <div class="container">
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
+        <div class="benvinguda" id="cl-benvinguda" role="region" aria-labelledby="cl-benv-t" hidden></div>
         <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
         <div class="avanc" id="avance" aria-labelledby="avanc-t">
             <p class="avanc-n" id="avanc-t"><b id="cl-avanc-n">0%</b> <span>hacia un mapa bien definido y que puede ir solo</span></p>
@@ -665,6 +702,25 @@
             </div>
             <div id="cl-llig-res" aria-live="polite"></div>
         </div>
+        <div class="bloc-web" id="programas" aria-labelledby="t-programas">
+            <h3 id="t-programas">Tus programas</h3>
+            <p>Los cursos o programas que quieres promocionar. Cada uno tiene su página en tu web, con las fechas y un formulario para pedir información. Los cambias aquí cuando quieras: tu web los lee de aquí.</p>
+            <div class="accions"><button type="button" class="btn btn-primary" id="cl-prog-ia" hidden>✦ Sacarlos de mi web</button><button type="button" class="btn btn-ghost" id="cl-prog-nou">＋ Añadir un programa</button></div>
+            <div id="cl-prog-res" aria-live="polite"></div>
+            <ol class="progs" id="cl-progs"></ol>
+        </div>
+        <div class="bloc-web" id="formularios" aria-labelledby="t-formularios">
+            <h3 id="t-formularios">Tus formularios</h3>
+            <p>Lo que preguntas a quien te escribe. Empiezas con dos, el de contacto y el de información de un programa, y los cambias a tu gusto: qué campos, cuáles son obligatorios y dónde salen. Lo que te escriben te llega por correo.</p>
+            <ol class="forms" id="cl-forms"></ol>
+            <div class="accions"><button type="button" class="btn btn-ghost" id="cl-form-nou">＋ Otro formulario</button></div>
+        </div>
+        <div class="bloc-web" id="cl-pie">
+            <h3>Otra web tuya, enlazada en el pie</h3>
+            <p>Si tienes otra web (tu escuela de idiomas, tu tienda…), ponemos un enlace en el pie de esta. Solo el enlace.</p>
+            <div class="camps dos"><div class="camp"><label for="cl-pie-nom">Cómo se llama</label><input id="cl-pie-nom" placeholder="Mi escuela de idiomas"></div>
+                <div class="camp"><label for="cl-pie-url">Su dirección</label><input id="cl-pie-url" type="url" inputmode="url" placeholder="https://"></div></div>
+        </div>
         <div class="ia" id="cl-ia-web" hidden>
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
                 <div><h3>Escribe tus textos con IA</h3><p>A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en el boceto.</p></div></div>
@@ -685,8 +741,9 @@
             <button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button>
         </div>
         <p class="nota" id="cl-boceto-r" role="status"></p>
+        <span id="vista" aria-hidden="true"></span>
         <div class="boceto" id="cl-marc-caixa" hidden>
-            <div class="barra" id="cl-pags" aria-label="Páginas del boceto"></div>
+            <div class="barra"><button type="button" class="btn btn-sm btn-primary tornar" id="cl-vista-torna">← Volver</button><div class="pags" id="cl-pags" role="group" aria-label="Páginas del boceto"></div></div>
             <iframe id="cl-marc" title="Boceto de tu web" sandbox="allow-same-origin"></iframe>
         </div>
     </div>
@@ -961,6 +1018,97 @@
         'Qué web quieres': 'Quina web vols',
         'Que lo que se repite vaya solo': 'Que el que es repeteix vagi sol',
         'Tu tablero: que lo que se repite vaya solo': 'El teu tauler: que el que es repeteix vagi sol',
+        'Tu espacio': 'El teu espai',
+        'Tu mapa': 'El teu mapa',
+        'Tu web': 'La teva web',
+        'Programas': 'Programes',
+        'Formularios': 'Formularis',
+        'Tablero': 'Tauler',
+        'Vista previa': 'Vista prèvia',
+        'Tus programas': 'Els teus programes',
+        'Los cursos o programas que quieres promocionar. Cada uno tiene su página en tu web, con las fechas y un formulario para pedir información. Los cambias aquí cuando quieras: tu web los lee de aquí.': 'Els cursos o programes que vols promocionar. Cadascun té la seva pàgina a la teva web, amb les dates i un formulari per demanar informació. Els canvies aquí quan vulguis: la teva web els llegeix d\'aquí.',
+        '✦ Sacarlos de mi web': '✦ Treure-los de la meva web',
+        '✦ Volver a sacarlos de mi web': '✦ Tornar a treure-los de la meva web',
+        '＋ Añadir un programa': '＋ Afegir un programa',
+        'Tus formularios': 'Els teus formularis',
+        'Lo que preguntas a quien te escribe. Empiezas con dos, el de contacto y el de información de un programa, y los cambias a tu gusto: qué campos, cuáles son obligatorios y dónde salen. Lo que te escriben te llega por correo.': 'El que preguntes a qui t\'escriu. Comences amb dos, el de contacte i el d\'informació d\'un programa, i els canvies al teu gust: quins camps, quins són obligatoris i on surten. El que t\'escriuen t\'arriba per correu.',
+        '＋ Otro formulario': '＋ Un altre formulari',
+        'Otra web tuya, enlazada en el pie': 'Una altra web teva, enllaçada al peu',
+        'Si tienes otra web (tu escuela de idiomas, tu tienda…), ponemos un enlace en el pie de esta. Solo el enlace.': 'Si tens una altra web (la teva escola d\'idiomes, la teva botiga…), posem un enllaç al peu d\'aquesta. Només l\'enllaç.',
+        'Cómo se llama': 'Com es diu',
+        'Mi escuela de idiomas': 'La meva escola d\'idiomes',
+        'Su dirección': 'La seva adreça',
+        '← Volver': '← Tornar',
+        'Texto corto': 'Text curt',
+        'Texto largo': 'Text llarg',
+        'Correo': 'Correu',
+        'Teléfono': 'Telèfon',
+        'Fecha': 'Data',
+        'Elegir de una lista': 'Triar d\'una llista',
+        'Uno de tus programas': 'Un dels teus programes',
+        'Casilla (sí o no)': 'Casella (sí o no)',
+        'En la página de contacto': 'A la pàgina de contacte',
+        'En cada programa': 'A cada programa',
+        'En el inicio': 'A l\'inici',
+        'Nombre del programa': 'Nom del programa',
+        'Para quién es': 'Per a qui és',
+        'Duración': 'Durada',
+        'Modalidad': 'Modalitat',
+        'Próximas fechas (una por línea)': 'Properes dates (una per línia)',
+        'Plazas': 'Places',
+        'Certificado': 'Certificat',
+        'Precio (si quieres que salga)': 'Preu (si vols que surti)',
+        'Resumen para quien no lo conoce': 'Resum per a qui no el coneix',
+        'Enlace para apuntarse o saber más (opcional)': 'Enllaç per apuntar-s\'hi o saber-ne més (opcional)',
+        'Nombre': 'Nom',
+        'Correo electrónico': 'Correu electrònic',
+        'Tu mensaje': 'El teu missatge',
+        'Pide información': 'Demana informació',
+        'Programa': 'Programa',
+        'Cuándo te gustaría empezar': 'Quan t\'agradaria començar',
+        'Tu pregunta': 'La teva pregunta',
+        'Escríbenos': 'Escriu-nos',
+        'Programa sin nombre': 'Programa sense nom',
+        'no sale en la web': 'no surt a la web',
+        'Revisa que las fechas sigan vigentes: es lo primero que mira quien quiere apuntarse.': 'Revisa que les dates segueixin vigents: és el primer que mira qui s\'hi vol apuntar.',
+        'Sale en la web': 'Surt a la web',
+        '↑ Subir': '↑ Pujar',
+        'Quitar': 'Treure',
+        '¿Quitamos «{0}»?': 'Traiem «{0}»?',
+        'Presencial': 'Presencial',
+        'Online': 'En línia',
+        'Presencial y online': 'Presencial i en línia',
+        'He encontrado {0} programas en tu web. Revísalos, sobre todo las fechas, y quita los que no quieras promocionar.': 'He trobat {0} programes a la teva web. Revisa-los, sobretot les dates, i treu els que no vulguis promocionar.',
+        'No he encontrado programas nuevos en tu web. Añádelos a mano.': 'No he trobat programes nous a la teva web. Afegeix-los a mà.',
+        'Te proponemos dos: «Escríbenos» (nombre, correo, teléfono y mensaje) y «Pide información» (con el programa que le interesa).': 'Te\'n proposem dos: «Escriu-nos» (nom, correu, telèfon i missatge) i «Demana informació» (amb el programa que li interessa).',
+        'Ponerlos en mi web': 'Posar-los a la meva web',
+        'Formulario': 'Formulari',
+        '{0} campos': '{0} camps',
+        'Título': 'Títol',
+        'Texto del botón': 'Text del botó',
+        'Una frase antes (opcional)': 'Una frase abans (opcional)',
+        'Enviar': 'Envia',
+        'Dónde sale': 'On surt',
+        'Pregunta': 'Pregunta',
+        'Tipo': 'Tipus',
+        'Obligatoria': 'Obligatòria',
+        'Quitar «{0}»': 'Treure «{0}»',
+        'Opciones, separadas por punto y coma': 'Opcions, separades per punt i coma',
+        '＋ Otra pregunta': '＋ Una altra pregunta',
+        'Quitar el formulario': 'Treure el formulari',
+        'Hola': 'Hola',
+        'Este es tu espacio para preparar la web nueva de {0}. Lo que cambias se guarda solo; puedes volver cuando quieras con este mismo enlace.': 'Aquest és el teu espai per preparar la web nova de {0}. El que canvies es desa sol; pots tornar quan vulguis amb aquest mateix enllaç.',
+        'tu proyecto': 'el teu projecte',
+        'Entra con tu correo: así lo que haces se guarda con tu cuenta.': 'Entra amb el teu correu: així el que fas es desa amb el teu compte.',
+        'Leemos tu web de ahora, con tu permiso, para no perder lo que Google ya conoce.': 'Llegim la teva web d\'ara, amb el teu permís, per no perdre el que Google ja coneix.',
+        'Revisa tus programas, sobre todo las fechas.': 'Revisa els teus programes, sobretot les dates.',
+        'Elige qué te preguntan en los formularios.': 'Tria què et pregunten als formularis.',
+        'Mira tu web nueva en la vista previa.': 'Mira la teva web nova a la vista prèvia.',
+        'En tu tablero, lo que se repite y puede ir solo.': 'Al teu tauler, el que es repeteix i pot anar sol.',
+        'Entendido': 'Entesos',
+        'Buscando tus programas en tus páginas…': 'Buscant els teus programes a les teves pàgines…',
+        'Apuntando fechas, duración y modalidad…': 'Apuntant dates, durada i modalitat…',
+        'Sin inventar nada que no diga tu web…': 'Sense inventar res que no digui la teva web…',
         'Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.': "Cada cosa que dones o reps al teu mapa és una targeta. Defineix-la amb tres coses (quan passa, què necessita i qui la revisa) i passa a «Definit». Si la pot preparar una màquina, demana-la a «Que vagi sol» i la deixem funcionant amb tu. Es desa amb el teu mapa i ens arriba quan l'envies.",
         'Marcamos en tu mapa lo que puede preparar una máquina (avisos, informes, presupuestos, reservas) y lo dejamos funcionando, con una persona que lo revisa. Lo que no se paga y el dinero los lleva siempre una persona.': "Marquem al teu mapa el que pot preparar una màquina (avisos, informes, pressupostos, reserves) i ho deixem funcionant, amb una persona que ho revisa. El que no es paga i els diners els porta sempre una persona.",
         '¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en': 'Ja treballes amb nosaltres? La teva pàgina, el teu pla i la nostra conversa són al',
@@ -1431,6 +1579,31 @@
         /* Abrirlo cuenta como tocarlo: así, con cuenta, es el que se guarda allí. */
         S.actualitzada = new Date().toISOString(); escriuMapa(); desaM();
     })();
+    /* El enlace de invitación (04/11/2026, María, la primera clienta): llega con su
+       organización, su web y la otra web que va en el pie ya puestas, sin escribir
+       nada. ?org=&web=&pie=&pieNom=&para=&procesos=programas. Solo rellena lo que
+       está vacío; si es otra organización, abre un mapa nuevo y guarda el de antes.
+       Nada de esto está en el repositorio: va en el enlace que le mandamos. */
+    (function () {
+        var q = new URLSearchParams(location.search), org = (q.get('org') || '').trim().slice(0, 160), web = (q.get('web') || '').trim().slice(0, 300);
+        if (!org && !web) return;
+        var https = function (u) { return u && !/^https?:\/\//.test(u) ? 'https://' + u : u; };
+        if (!mapaBuit(S) && org && (S.org || '').trim().toLowerCase() !== org.toLowerCase()) {
+            if (S.mapaId && (M.mapes[S.mapaId] || quants() < MAX_M)) M.mapes[S.mapaId] = { s: clona(S), avanc: (M.mapes[S.mapaId] || {}).avanc || '' };
+            var p = persona(); posa({}); S.mapaId = nouId(); if (p.mail) { S.nom = p.nom; S.mail = p.mail; S.cuenta = p.cuenta; }
+        }
+        if (org && !S.org) S.org = org;
+        if (web && !S.web) S.web = https(web);
+        var pie = https((q.get('pie') || '').trim().slice(0, 300));
+        if (pie && !(S.integrades || []).length) S.integrades = [{ url: pie, nom: (q.get('pieNom') || '').trim().slice(0, 80) || pie.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '') }];
+        if ((q.get('procesos') || '').split(',').indexOf('programas') >= 0) S.procesos = ['programas'];
+        if (!S.invitacio) S.invitacio = { para: (q.get('para') || '').trim().slice(0, 60), data: new Date().toISOString().slice(0, 10) };
+        if (!S.mapaId) S.mapaId = nouId();
+        S.actualitzada = new Date().toISOString(); escriuMapa();
+        if (M.mapes[S.mapaId] || quants() < MAX_M) { M.mapes[S.mapaId] = { s: clona(S), avanc: (M.mapes[S.mapaId] || {}).avanc || '' }; desaM(); }
+        /* La barra se queda limpia: el mapa ya es suyo y tiene su propio enlace. */
+        history.replaceState(null, '', location.pathname + '?mapa=' + S.mapaId + (q.get('lang') ? '&lang=' + q.get('lang') : '') + location.hash);
+    })();
     /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
     var PUJA = null;
     function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); pintaAvanc(); guardaM(); if (typeof MAPES !== 'undefined' && MAPES) MAPES.pinta(); if (PUJA) PUJA(); }
@@ -1779,7 +1952,7 @@
             var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
                 f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: LL, url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes(), marca: S.marca || null,
                     /* La web d'ara (punt 12) i a quina porta va cada pàgina (punt 14): el motor no perd cap adreça vella. */
-                    foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null });
+                    foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null, programes: S.programes, formularis: S.formularis, integrades: S.integrades });
             PAGS = {}; f.forEach(function (x) { PAGS[x.ruta] = x.cos; });
             var bar = $('#cl-pags'); bar.textContent = '';
             f.filter(function (x) { return /^[^/]+\.html$/.test(x.ruta) && !/^(404|gracies|registre)\.html$/.test(x.ruta) && (x.ruta !== 'equip.html' || capes().indexOf('intranet') >= 0); }).forEach(function (x) {
@@ -1810,7 +1983,7 @@
         motor().then(function (html) {
             b.disabled = false;
             DOC = MotorWeb.disseny(m, html, { nom: S.org || S.nom, url: S.web, casa: [m.roles[0]], llengua: LL, capes: capes(), marca: S.marca || null,
-                foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null });
+                foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null, programes: S.programes, formularis: S.formularis, integrades: S.integrades });
             pintaDisseny(DOC.json);
             b.textContent = t('Preparar otra vez');
         }).catch(function () { b.disabled = false; r.textContent = t('No he podido preparar el documento ahora.'); });
@@ -2252,6 +2425,7 @@
         var FRASES = { mapa: ['Leyendo quién está a tu alrededor…', 'Buscando lo que se da y no se paga…', 'Pensando en quién te falta…', 'Poniéndolo con tus palabras…'].map(t),
             web: ['Leyendo tu dibujo…', 'Buscando la frase que dice lo que haces…', 'Escribiendo para cada uno…', 'Ajustando el tono…'].map(t),
             pagines: ['Leyendo tus páginas…', 'Buscando a quién habla cada una…', 'Mirando a quién no le habla ninguna…'].map(t),
+            programes: ['Buscando tus programas en tus páginas…', 'Apuntando fechas, duración y modalidad…', 'Sin inventar nada que no diga tu web…'].map(t),
             llig: ['Leyendo tu web con calma, una página cada vez…', 'Mirando qué páginas deja leer…', 'Apuntando títulos y encabezados…', 'Quitando correos y teléfonos…'].map(t) };
         function pensant(res, pas, cx) {
             res.textContent = ''; cx.classList.add('ia-pensa');
@@ -2426,6 +2600,7 @@
             var res = $('#cl-llig-res'); res.textContent = '';
             if (!L || L.estat !== 'fet' || !L.foto) { if (L && L.estat === 'error') final(res, t(L.motiu || 'No hemos podido leer tu web ahora.')); return; }
             FOTO = L.foto; $('#cl-llig').textContent = t('Leer otra vez');
+            if (window.TTWebClient) setTimeout(window.TTWebClient.foto, 0);
             var ps = ordena(FOTO.pagines), dom = FOTO.origen.replace(/^https?:\/\//, '');
             res.appendChild(el('p', { class: 'ia-resum' }, t('{0} páginas leídas de {1}, el {2}', ps.length, dom, FOTO.data.split('-').reverse().join('/'))));
             var ul = el('ul', { class: 'ia-pags', id: 'cl-llig-pags' }), pw = S.portesWeb && S.portesWeb.origen === FOTO.origen ? S.portesWeb : null;
@@ -2525,7 +2700,220 @@
         fetch('/.netlify/functions/identitat').then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
         fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
         pinta(); sincronitza();
-        return { foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
+        /* Sus programas, de su web de ahora (pule-mapa, pas 'programes'): rellenan las fichas que luego edita. */
+        function programes(boto, res) {
+            if (!FOTO) return Promise.resolve(null);
+            return crida('programes', '', $('#programas'), res, boto, { pagines: ordena(FOTO.pagines).map(function (p) { return { url: p.url, titol: p.titol, h1: p.h1, text: (p.text || '').slice(0, 700) }; }) });
+        }
+        return { programes: programes, pot: function () { return ACTIVA && !!I.sessio && !!FOTO; }, foto: function () { return FOTO; }, resum: function () { return I.voltes ? I.voltes + ' vueltas · ' + Number(I.usd || 0).toFixed(3) + ' USD · ' + (I.via || '') : ''; } };
+    })();
+
+    /* Su web, desde su tablero (Álvaro, 04/11/2026, para la web de ELE): los
+       programas que quiere promocionar, los formularios que se hace a medida y
+       otra web suya enlazada en el pie. Todo vive en su ficha (S.programes,
+       S.formularis, S.integrades), viaja con su cuenta y lo lee el motor de la
+       web (webClientNet): la vista previa, el documento de diseño y su repositorio
+       (cerebro/programes.json, formularis.json). Arriba, la barra de su espacio. */
+    var TTWebClient = window.TTWebClient = (function () {
+        var TIPUS = [['text', 'Texto corto'], ['textarea', 'Texto largo'], ['correu', 'Correo'], ['telefon', 'Teléfono'], ['data', 'Fecha'],
+            ['tria', 'Elegir de una lista'], ['programa', 'Uno de tus programas'], ['casella', 'Casilla (sí o no)']];
+        var ON = [['contacte', 'En la página de contacto'], ['programes', 'En cada programa'], ['inici', 'En el inicio']];
+        var PCAMPS = [['nom', 'Nombre del programa', 'input'], ['perQui', 'Para quién es', 'textarea'], ['durada', 'Duración', 'input'], ['modalitat', 'Modalidad', 'input'],
+            ['dates', 'Próximas fechas (una por línea)', 'dates'], ['places', 'Plazas', 'input'], ['certificat', 'Certificado', 'input'], ['preu', 'Precio (si quieres que salga)', 'input'],
+            ['resum', 'Resumen para quien no lo conoce', 'textarea'], ['enllac', 'Enlace para apuntarse o saber más (opcional)', 'url']];
+        function campsBase() { return [{ etiqueta: t('Nombre'), tipus: 'text', obligatori: true }, { etiqueta: t('Correo electrónico'), tipus: 'correu', obligatori: true }]; }
+        function perDefecte() {
+            return [{ id: 'contacto', titol: t('Escríbenos'), on: ['contacte'], camps: campsBase().concat([{ etiqueta: t('Teléfono'), tipus: 'telefon' }, { etiqueta: t('Tu mensaje'), tipus: 'textarea', obligatori: true }]) },
+                { id: 'informacion', titol: t('Pide información'), on: ['programes'], camps: campsBase().concat([{ etiqueta: t('Programa'), tipus: 'programa', obligatori: true },
+                    { etiqueta: t('Cuándo te gustaría empezar'), tipus: 'text' }, { etiqueta: t('Tu pregunta'), tipus: 'textarea' }]) }];
+        }
+        /* Sus procesos deciden qué sale en su barra: los programas, si forma o da cursos. */
+        function teProgrames() {
+            if ((S.programes || []).length || (S.procesos || []).indexOf('programas') >= 0) return true;
+            var m = D.mapa(S), tx = [S.inicial, S.org, S.casa].concat(m.roles, m.pairs.map(function (p) { return p[3] + ' ' + p[5]; })).join(' ');
+            return /curs|program|formaci|clase|classe|taller|escuela|escola|academ|course|lesson/i.test(tx);
+        }
+        function canvia() { desa(); }
+        function camp(et, el2) { var c = el('div', { class: 'camp' }); c.appendChild(et); c.appendChild(el2); return c; }
+
+        /* ── Los programas ── */
+        function pintaProgs() {
+            var ol = $('#cl-progs'), ps = S.programes || []; ol.textContent = '';
+            $('#programas').hidden = !teProgrames();
+            ps.forEach(function (p, i) {
+                var li = el('li'), d = el('details'), sm = el('summary'), id = 'cl-p' + i + '-';
+                if (p.nou) { d.open = true; delete p.nou; }
+                var titol = el('span', {}, p.nom || t('Programa sin nombre')), resum = el('small', {}, [p.durada, p.modalitat, (p.dates || [])[0]].filter(Boolean).join(' · ') + (p.visible === false ? ' · ' + t('no sale en la web') : ''));
+                sm.appendChild(titol); sm.appendChild(resum); d.appendChild(sm);
+                var g = el('div', { class: 'camps dos' });
+                PCAMPS.forEach(function (c) {
+                    var k = c[0], lb = el('label', { for: id + k }, t(c[1])), inp;
+                    if (c[2] === 'textarea' || c[2] === 'dates') { inp = el('textarea', { id: id + k, rows: c[2] === 'dates' ? '3' : '2' }); inp.value = k === 'dates' ? (p.dates || []).join('\n') : (p[k] || ''); }
+                    else { inp = el('input', { id: id + k, type: c[2] === 'url' ? 'url' : 'text' }); inp.value = p[k] || ''; if (k === 'modalitat') inp.setAttribute('list', 'cl-modalitats'); }
+                    inp.addEventListener('input', function () {
+                        p[k] = k === 'dates' ? inp.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean) : inp.value;
+                        if (k === 'nom') titol.textContent = inp.value || t('Programa sin nombre');
+                        canvia();
+                    });
+                    g.appendChild(camp(lb, inp));
+                });
+                d.appendChild(g);
+                if ((p.dates || []).length) d.appendChild(el('p', { class: 'nota' }, t('Revisa que las fechas sigan vigentes: es lo primero que mira quien quiere apuntarse.')));
+                var acc = el('div', { class: 'accions' }), vis = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox' });
+                ck.checked = p.visible !== false; ck.addEventListener('change', function () { p.visible = ck.checked; canvia(); pintaProgs(); });
+                vis.appendChild(ck); vis.appendChild(el('span', {}, ' ' + t('Sale en la web'))); acc.appendChild(vis);
+                if (i > 0) { var up = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('↑ Subir')); up.addEventListener('click', function () { ps.splice(i - 1, 0, ps.splice(i, 1)[0]); canvia(); pintaProgs(); }); acc.appendChild(up); }
+                var tr = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('Quitar'));
+                tr.addEventListener('click', function () { if (!confirm(t('¿Quitamos «{0}»?', p.nom || t('Programa sin nombre')))) return; ps.splice(i, 1); canvia(); pintaProgs(); });
+                acc.appendChild(tr); d.appendChild(acc); li.appendChild(d); ol.appendChild(li);
+            });
+            if (!document.getElementById('cl-modalitats')) {
+                var dl = el('datalist', { id: 'cl-modalitats' }); ['Presencial', 'Online', 'Presencial y online'].forEach(function (x) { dl.appendChild(el('option', { value: t(x) })); }); document.body.appendChild(dl);
+            }
+            foto();
+        }
+        function foto() {
+            var b = $('#cl-prog-ia'); if (!b) return;
+            b.hidden = !(IA && IA.pot && IA.pot());
+            b.textContent = t((S.programes || []).length ? '✦ Volver a sacarlos de mi web' : '✦ Sacarlos de mi web');
+            /* Autorrellenar: la primera vez que su web está leída y no tiene programas, se sacan solos. */
+            if (!b.hidden && !(S.programes || []).length && !S.programesAuto && teProgrames()) { S.programesAuto = true; desa(); saca(); }
+        }
+        function saca() {
+            var b = $('#cl-prog-ia'), res = $('#cl-prog-res');
+            IA.programes(b, res).then(function (r) {
+                if (!r) return;
+                var ja = {}; (S.programes || []).forEach(function (p) { ja[(p.nom || '').toLowerCase()] = 1; });
+                var nous = (r.programes || []).filter(function (p) { return p && p.nom && !ja[p.nom.toLowerCase()]; });
+                S.programes = (S.programes || []).concat(nous);
+                if (S.formularis === undefined) S.formularis = perDefecte();
+                canvia(); pintaProgs(); pintaForms(); pintaEspai();
+                res.textContent = '';
+                res.appendChild(el('p', { class: 'ia-resum' }, nous.length ? t('He encontrado {0} programas en tu web. Revísalos, sobre todo las fechas, y quita los que no quieras promocionar.', nous.length) : t('No he encontrado programas nuevos en tu web. Añádelos a mano.')));
+            });
+        }
+        $('#cl-prog-ia').addEventListener('click', saca);
+        $('#cl-prog-nou').addEventListener('click', function () {
+            S.programes = (S.programes || []).concat([{ nom: '', dates: [], visible: true, nou: true }]);
+            if (S.formularis === undefined) S.formularis = perDefecte();
+            canvia(); pintaProgs(); pintaForms(); var i = $('#cl-progs li:last-child input'); if (i) i.focus();
+        });
+
+        /* ── Los formularios ── */
+        function pintaForms() {
+            var ol = $('#cl-forms'); ol.textContent = '';
+            if (S.formularis === undefined) {
+                var li0 = el('li'), p0 = el('p', {}, t('Te proponemos dos: «Escríbenos» (nombre, correo, teléfono y mensaje) y «Pide información» (con el programa que le interesa).') + ' ');
+                var b0 = el('button', { type: 'button', class: 'btn btn-primary btn-sm' }, t('Ponerlos en mi web'));
+                b0.addEventListener('click', function () { S.formularis = perDefecte(); canvia(); pintaForms(); pintaEspai(); });
+                p0.appendChild(b0); li0.appendChild(p0); ol.appendChild(li0); return;
+            }
+            S.formularis.forEach(function (f, i) {
+                var li = el('li'), d = el('details'), sm = el('summary'), id = 'cl-f' + i + '-';
+                if (f.nou) { d.open = true; delete f.nou; }
+                var tt = el('span', {}, f.titol || t('Formulario')), on = el('small', {}, (f.on || []).map(function (w) { return t((ON.filter(function (o) { return o[0] === w; })[0] || [0, w])[1]); }).join(' · ') + ' · ' + t('{0} campos', f.camps.length));
+                sm.appendChild(tt); sm.appendChild(on); d.appendChild(sm);
+                var g = el('div', { class: 'camps dos' });
+                [['titol', 'Título'], ['boto', 'Texto del botón'], ['intro', 'Una frase antes (opcional)']].forEach(function (c) {
+                    var inp = el('input', { id: id + c[0], placeholder: c[0] === 'boto' ? t('Enviar') : '' }); inp.value = f[c[0]] || '';
+                    inp.addEventListener('input', function () { f[c[0]] = inp.value; if (c[0] === 'titol') tt.textContent = inp.value || t('Formulario'); canvia(); });
+                    g.appendChild(camp(el('label', { for: id + c[0] }, t(c[1])), inp));
+                });
+                d.appendChild(g);
+                var w = el('fieldset', { class: 'on-xips' }); w.appendChild(el('legend', {}, t('Dónde sale')));
+                ON.forEach(function (o) {
+                    var lb = el('label'), ck = el('input', { type: 'checkbox' }); ck.checked = (f.on || []).indexOf(o[0]) >= 0;
+                    ck.addEventListener('change', function () { f.on = ON.map(function (x) { return x[0]; }).filter(function (x) { return x === o[0] ? ck.checked : (f.on || []).indexOf(x) >= 0; }); canvia(); });
+                    lb.appendChild(ck); lb.appendChild(document.createTextNode(' ' + t(o[1]))); w.appendChild(lb);
+                });
+                d.appendChild(w);
+                f.camps.forEach(function (c, j) {
+                    var r = el('div', { class: 'fcamp' }), cid = id + 'c' + j;
+                    var l1 = el('label', { for: cid + 'e' }, t('Pregunta')), i1 = el('input', { id: cid + 'e' }); i1.value = c.etiqueta || '';
+                    i1.addEventListener('input', function () { c.etiqueta = i1.value; canvia(); }); l1.appendChild(i1); r.appendChild(l1);
+                    var l2 = el('label', { for: cid + 't' }, t('Tipo')), s2 = el('select', { id: cid + 't' });
+                    TIPUS.forEach(function (x) { var o = el('option', { value: x[0] }, t(x[1])); if (x[0] === c.tipus) o.selected = true; s2.appendChild(o); });
+                    s2.addEventListener('change', function () { c.tipus = s2.value; canvia(); pintaForms(); d.open = true; }); l2.appendChild(s2); r.appendChild(l2);
+                    var l3 = el('label', { class: 'chk' }), c3 = el('input', { type: 'checkbox' }); c3.checked = !!c.obligatori;
+                    c3.addEventListener('change', function () { c.obligatori = c3.checked; canvia(); }); l3.appendChild(c3); l3.appendChild(document.createTextNode(' ' + t('Obligatoria'))); r.appendChild(l3);
+                    var tr = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'aria-label': t('Quitar «{0}»', c.etiqueta || '') }, '✕');
+                    tr.addEventListener('click', function () { f.camps.splice(j, 1); canvia(); pintaForms(); $('#cl-forms').children[i].querySelector('details').open = true; }); r.appendChild(tr);
+                    if (c.tipus === 'tria') {
+                        var l4 = el('label', { for: cid + 'o' }, t('Opciones, separadas por punto y coma')), i4 = el('input', { id: cid + 'o' }); i4.value = (c.opcions || []).join('; ');
+                        i4.addEventListener('input', function () { c.opcions = i4.value.split(';').map(function (x) { return x.trim(); }).filter(Boolean); canvia(); });
+                        l4.appendChild(i4); l4.style.gridColumn = '1 / -1'; r.appendChild(l4);
+                    }
+                    d.appendChild(r);
+                });
+                var acc = el('div', { class: 'accions' }), mes = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('＋ Otra pregunta'));
+                mes.addEventListener('click', function () { f.camps.push({ etiqueta: '', tipus: 'text' }); canvia(); pintaForms(); var x = $('#cl-forms').children[i]; x.querySelector('details').open = true; var ins = x.querySelectorAll('.fcamp input'); if (ins.length) ins[ins.length - 1].focus(); });
+                var tr2 = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('Quitar el formulario'));
+                tr2.addEventListener('click', function () { if (!confirm(t('¿Quitamos «{0}»?', f.titol || t('Formulario')))) return; S.formularis.splice(i, 1); canvia(); pintaForms(); });
+                acc.appendChild(mes); acc.appendChild(tr2); d.appendChild(acc); li.appendChild(d); ol.appendChild(li);
+            });
+        }
+        $('#cl-form-nou').addEventListener('click', function () {
+            if (S.formularis === undefined) S.formularis = perDefecte();
+            S.formularis.push({ id: 'formulario-' + (S.formularis.length + 1), titol: t('Formulario'), on: ['contacte'], camps: campsBase(), nou: true });
+            canvia(); pintaForms();
+        });
+
+        /* ── Otra web suya, en el pie ── */
+        function pintaPie() {
+            var g = (S.integrades || [])[0] || {}; $('#cl-pie-nom').value = g.nom || ''; $('#cl-pie-url').value = g.url || '';
+        }
+        ['#cl-pie-nom', '#cl-pie-url'].forEach(function (q) {
+            $(q).addEventListener('input', function () {
+                var u = $('#cl-pie-url').value.trim(), n = $('#cl-pie-nom').value.trim();
+                if (u && !/^https?:\/\//.test(u)) u = 'https://' + u;
+                S.integrades = u ? [{ url: u, nom: n || u.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '') }] : []; canvia();
+            });
+        });
+
+        /* ── La barra de su espacio, y la vista previa a pantalla completa (#vista) ── */
+        function pintaEspai() {
+            var pr = teProgrames(), h = location.hash.slice(1);
+            document.querySelectorAll('#cl-espai a').forEach(function (a) {
+                if (a.dataset.e === 'programas') a.parentNode.hidden = !pr;
+                a.setAttribute('aria-current', String(a.dataset.e === h || (h.indexOf('tablero-') === 0 && a.dataset.e === 'tablero')));
+            });
+            $('#programas').hidden = !pr;
+        }
+        function vista(si) {
+            var c = $('#cl-marc-caixa');
+            if (si) { pintaWeb(false); c.classList.add('pantalla'); document.body.style.overflow = 'hidden'; var b = $('#cl-vista-torna'); setTimeout(function () { b.focus(); }, 50); }
+            else if (c.classList.contains('pantalla')) { c.classList.remove('pantalla'); document.body.style.overflow = ''; }
+        }
+        $('#cl-vista-torna').addEventListener('click', function () { history.back(); if (location.hash === '#vista') location.hash = 'web'; });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('#cl-marc-caixa').classList.contains('pantalla')) $('#cl-vista-torna').click(); });
+        window.addEventListener('hashchange', function () { vista(location.hash === '#vista'); pintaEspai(); });
+
+        /* ── La bienvenida de quien llega con su enlace (?org=…&web=…) ── */
+        function pintaBenvinguda() {
+            var c = $('#cl-benvinguda'), v = S.invitacio; c.textContent = '';
+            if (!v || v.tancada) { c.hidden = true; return; }
+            c.hidden = false;
+            c.appendChild(el('h2', { id: 'cl-benv-t', class: 'eyebrow' }, v.para ? t('Hola, {0}', v.para) : t('Hola')));
+            c.appendChild(el('p', {}, t('Este es tu espacio para preparar la web nueva de {0}. Lo que cambias se guarda solo; puedes volver cuando quieras con este mismo enlace.', S.org || t('tu proyecto'))));
+            var ol = el('ol');
+            [['#cuenta', 'Entra con tu correo: así lo que haces se guarda con tu cuenta.'], ['#web', 'Leemos tu web de ahora, con tu permiso, para no perder lo que Google ya conoce.'],
+                ['#programas', 'Revisa tus programas, sobre todo las fechas.'], ['#formularios', 'Elige qué te preguntan en los formularios.'],
+                ['#vista', 'Mira tu web nueva en la vista previa.'], ['#tablero', 'En tu tablero, lo que se repite y puede ir solo.']].forEach(function (x) {
+                if (x[0] === '#programas' && !teProgrames()) return;
+                var li = el('li'); li.appendChild(el('a', { href: x[0] }, t(x[1]))); ol.appendChild(li);
+            });
+            c.appendChild(ol);
+            var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost' }, t('Entendido'));
+            b.addEventListener('click', function () { v.tancada = true; desa(); pintaBenvinguda(); }); c.appendChild(b);
+        }
+
+        /* La barra de su espacio va pegada debajo de la del sitio (la primera, generada), que también se queda arriba. */
+        function altNav() { var n = document.querySelector('body > nav[aria-label]'); if (n) document.documentElement.style.setProperty('--navh', n.offsetHeight + 'px'); }
+        altNav(); window.addEventListener('resize', altNav);
+        function pinta() { pintaProgs(); pintaForms(); pintaPie(); pintaEspai(); pintaBenvinguda(); }
+        pinta();
+        if (location.hash === '#vista') setTimeout(function () { vista(true); }, 300);
+        return { pinta: pinta, foto: foto, espai: pintaEspai, perDefecte: perDefecte };
     })();
 
     /* Mis mapas: la lista, «Mapa nuevo» (guardar o borrar, con «Deshacer») y el enlace. */
@@ -2599,7 +2987,7 @@
         return { pinta: pinta };
     })();
 
-    function pintaTot() { EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { if (window.TTWebClient) TTWebClient.pinta(); EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 })();

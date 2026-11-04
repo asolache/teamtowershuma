@@ -29,11 +29,13 @@ function motor(html) {
    (['extranet', 'intranet']: el que es fa a més de la web pública) i marca
    (lema, presentacio i portes: els textos que /cliente/ escriu amb la IA) i
    foto i portesWeb (la web que el client ja té: es replica i les adreces
-   velles hi porten amb un 301). */
+   velles hi porten amb un 301) i programes, formularis i integrades (el que el
+   client edita des del seu tauler: webClientNet). */
 function site(m, html, opts) {
   var o = opts || {}, M = motor(html), casa = o.casa || [];
   return M.webASite(M.webDelMapa(m, { casa: casa }), { nom: o.nom || '', correu: o.correu || '', llengua: o.llengua || 'es',
-    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, acces: o.acces, marca: o.marca, foto: o.foto, portesWeb: o.portesWeb, mapa: m }).fitxers;
+    url: o.url || '', casa: casa, vista: o.vista, capes: o.capes, acces: o.acces, marca: o.marca, foto: o.foto, portesWeb: o.portesWeb,
+    programes: o.programes, formularis: o.formularis, integrades: o.integrades, mapa: m }).fitxers;
 }
 
 /* El document de disseny d'un mapa (27/10/2026): el que es revisa amb el
