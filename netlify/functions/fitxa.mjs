@@ -52,9 +52,27 @@ export function neteja(f, ara = new Date()) {
     portesWeb: portesWeb(f.portesWeb),
     /* El document de disseny: no el document (surt sempre del motor), sinó quan l'ha revisat i el que hi canviaria. */
     disseny: dissenyRevisat(f.disseny),
+    /* El que edita des del seu tauler (04/11/2026): els programes, els formularis i les webs germanes (un enllaç al peu).
+       Aquí només es guarda net i curt; el motor de la web (webClientNet) torna a passar el seu sedàs. */
+    ...tauler(f),
     actualitzada: ara.toISOString()
   };
   return JSON.stringify(o).length > MAX ? null : o;
+}
+
+const CAMPS = ['text', 'correu', 'telefon', 'textarea', 'tria', 'data', 'programa', 'casella'], ON = ['contacte', 'inici', 'programes'];
+const llistaT = (v, n, m) => (Array.isArray(v) ? v : []).slice(0, m).map(x => t(x, n)).filter(Boolean);
+export function tauler(f) {
+  const programes = (Array.isArray(f.programes) ? f.programes : []).slice(0, 20).map(p => p && typeof p === 'object' ? p : {}).map(p => ({
+    nom: t(p.nom, 120), perQui: t(p.perQui, 400), durada: t(p.durada, 80), modalitat: t(p.modalitat, 80), dates: llistaT(p.dates, 60, 12),
+    places: t(p.places, 60), certificat: t(p.certificat, 160), preu: t(p.preu, 60), resum: t(p.resum, 900),
+    enllac: /^https?:\/\//.test(net(p.enllac)) ? t(p.enllac, 400) : '', url: t(p.url, 300), visible: p.visible !== false })).filter(p => p.nom);
+  const formularis = (Array.isArray(f.formularis) ? f.formularis : []).slice(0, 8).map(x => x && typeof x === 'object' ? x : {}).map(x => ({
+    id: t(x.id, 40), titol: t(x.titol, 80), intro: t(x.intro, 300), boto: t(x.boto, 40), on: (Array.isArray(x.on) ? x.on : []).filter(w => ON.includes(w)),
+    camps: (Array.isArray(x.camps) ? x.camps : []).slice(0, 14).filter(c => c && CAMPS.includes(c.tipus)).map(c => ({ id: t(c.id, 40), etiqueta: t(c.etiqueta, 80), tipus: c.tipus, obligatori: c.obligatori === true, opcions: llistaT(c.opcions, 60, 12) })).filter(c => c.etiqueta) }))
+    .filter(x => x.camps.length);
+  const integrades = (Array.isArray(f.integrades) ? f.integrades : []).slice(0, 3).map(g => ({ url: /^https?:\/\//.test(net(g && g.url)) ? t(g.url, 300) : '', nom: t(g && g.nom, 80) })).filter(g => g.url && g.nom);
+  return { programes, formularis, integrades };
 }
 
 function dissenyRevisat(x) {

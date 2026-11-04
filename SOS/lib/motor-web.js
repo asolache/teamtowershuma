@@ -8,7 +8,7 @@
 (function (g) {
 'use strict';
 var BLOCS = ['VS-MOTOR', 'VS-DIAG', 'VS-MODEL', 'VS-WEB', 'VS-SITE', 'VS-TASQUES', 'VS-IMPORTA', 'VS-GENERA'];
-var EXPORTA = ['revisa', 'fluxos', 'creaDiagnosi', 'creaModel', 'webDelMapa', 'webASite', 'ambPermaweb', 'generaWeb', 'codiRepositori', 'KIT_TXT', 'rastreja', 'orfesFoto', 'dissenyWeb'];
+var EXPORTA = ['revisa', 'fluxos', 'creaDiagnosi', 'creaModel', 'webDelMapa', 'webASite', 'ambPermaweb', 'generaWeb', 'codiRepositori', 'KIT_TXT', 'rastreja', 'orfesFoto', 'dissenyWeb', 'webClientNet', 'FORMULARI_CAMPS'];
 
 /* El text entre `/*NOM*\/` i `/*\/NOM*\/`, sense la marca de tancament. */
 function bloc(html, nom) {

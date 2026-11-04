@@ -85,6 +85,10 @@ try {
   writeFileSync(join(tmp, 'cerebro', 'foto-web.json'), JSON.stringify(foto));
   let r = spawnSync(process.execPath, [join(tmp, 'eines', 'genera.mjs')], { encoding: 'utf8', env: Object.assign({}, process.env, { NETLIFY: '' }) });
   ok(r.status === 0 && existsSync(join(tmp, '_redirects')) && existsSync(join(tmp, 'cursos-intensivos.html')), 'amb totes les adreces amb destí, publica (' + r.status + ')' + (r.status ? ': ' + r.stderr.slice(0, 200) : ''));
+  writeFileSync(join(tmp, 'cerebro', 'programes.json'), JSON.stringify([{ nom: 'Curso de verano', durada: '2 semanas' }]));
+  r = spawnSync(process.execPath, [join(tmp, 'eines', 'genera.mjs')], { encoding: 'utf8', env: Object.assign({}, process.env, { NETLIFY: '' }) });
+  ok(r.status === 0 && existsSync(join(tmp, 'curso-de-verano.html')) && JSON.parse(readFileSync(join(tmp, 'cerebro', 'programes.json'), 'utf8'))[0].nom === 'Curso de verano',
+    'els programes que el client edita (cerebro/programes.json) fan la seva pàgina, i el fitxer no es trepitja');
   writeFileSync(join(tmp, 'cerebro', 'foto-web.json'), JSON.stringify(dolenta));
   r = spawnSync(process.execPath, [join(tmp, 'eines', 'genera.mjs')], { encoding: 'utf8' });
   ok(r.status === 1 && /sense destí/.test(r.stderr) && r.stderr.includes('altre.example/blog'), 'amb una adreça vella sense destí, s\'atura i diu quina (' + r.status + ')');
@@ -113,6 +117,36 @@ ok(R['/es/cursos'] === '/cursos.html' && R['/ca/cursos'] === '/ca/cursos.html' &
 ok(/^# Documento de diseño de la web · Escola/m.test(D.md) && /#### Textos · ca · Se conserva/.test(D.md) && /- \[ \] /.test(D.md) && /Claude Code/.test(D.md), 'el Markdown: per idioma, amb criteris d\'acceptació i com es construeix amb Claude Code');
 ok(/\*\*Color:\*\* #0a7|\*\*Color:\*\* #00aa77/i.test(D.md) && /Aprende hablando/.test(D.md), 'i la marca');
 ok(M.webASite(M.webDelMapa(mapa, { casa: ['Escola'] }), { nom: 'Escola', foto, mapa }).fitxers.some(f => f.ruta === 'cerebro/disseny-web.md'), 'el repositori del client el porta a cerebro/disseny-web.md i .json');
+
+console.log('\n7 · Posicionament (veda 183): el document de disseny ho demana');
+ok(J.requisits.some(r => /veda 183/.test(r) && /canonical/.test(r) && /sitemap/.test(r) && /nunca al inicio/.test(r)), 'requisit: canonical, sitemap, les pàgines que porten visites no van a l\'inici, la preview no s\'indexa');
+ok(J.acceptacio.some(r => /Search Console/.test(r) && /404/.test(r)), 'criteri: després de publicar, sitemap a Search Console i quatre setmanes mirant els 404');
+
+console.log('\n8 · El que porta el client des del seu tauler: programes, formularis i webs germanes');
+const programes = [
+  { nom: 'Curso intensivo de formación', perQui: 'Para quien empieza a dar clases', durada: '4 semanas', modalitat: 'Presencial', dates: ['2 de febrero de 2027', '6 de abril de 2027'], places: '8 por grupo', url: '/formacion/profesores/' },
+  { nom: 'Curso de una semana', resum: 'Para profes con experiencia que quieren renovarse.', durada: '1 semana', enllac: 'https://escola.example/inscripcion' },
+  { nom: 'Oculto', visible: false }];
+const formularis = [
+  { id: 'info', titol: 'Pide información', on: ['programes', 'contacte'], camps: [
+    { etiqueta: 'Nombre', tipus: 'text', obligatori: true }, { etiqueta: 'Correo', tipus: 'correu', obligatori: true },
+    { etiqueta: 'Programa', tipus: 'programa' }, { etiqueta: 'Cómo nos conociste', tipus: 'tria', opcions: ['Google', 'Un amigo'] },
+    { etiqueta: 'Acepto', tipus: 'casella', obligatori: true }, { etiqueta: 'Mal', tipus: 'script' }] }];
+const sP = M.webASite(M.webDelMapa(mapa, { casa: ['Escola'] }), { nom: 'Escola', casa: ['Escola'], llengua: 'es', foto, url: 'https://escola.example/', programes, formularis, mapa, integrades: [{ url: 'https://idiomas.example/', nom: 'Idiomas Example' }] });
+const fP = r => (sP.fitxers.find(x => x.ruta === r) || {}).cos || '';
+const prog = fP('curso-intensivo-de-formacion.html');
+ok(/<h1>Formación de profesores<\/h1>/.test(prog) && /<title>Formación de profesores ELE<\/title>/.test(prog), 'la pàgina vella del programa passa a ser la seva i en conserva el títol i l\'H1');
+ok(/\/formacion\/profesores \/curso-intensivo-de-formacion\.html 301!/.test(fP('_redirects')), 'i l\'adreça vella hi porta amb un 301, no a l\'inici');
+ok(/<dt>Duración<\/dt><dd>4 semanas<\/dd>/.test(prog) && /<li>6 de abril de 2027<\/li>/.test(prog) && /"@type":"Course"/.test(prog), 'la fitxa del programa: durada, dates i schema.org Course');
+ok(/<option selected>Curso intensivo de formación<\/option>/.test(prog) && /name="f-info"/.test(prog) && /data-netlify="true"/.test(prog), 'el formulari hi surt amb el programa ja triat (Netlify Forms)');
+ok(/<input type="checkbox"[^>]*name="acepto"[^>]*required>/.test(prog) && !/script/.test(prog.split('f-info')[1] || ''), 'cada tipus de camp, i el que no és un tipus conegut no surt');
+const cat = fP('programas.html');
+ok(/href="curso-de-una-semana\.html"/.test(cat) && !/Oculto/.test(cat) && /"@type":"ItemList"/.test(cat), 'la pàgina de programes, amb els visibles');
+ok(/href="programas\.html"/.test(fP('index.html')) && /href="contacto\.html"/.test(fP('index.html')), 'el menú porta a Programas i a Contacto');
+ok(/<footer>[\s\S]*href="https:\/\/idiomas\.example\/" rel="noopener">Idiomas Example</.test(fP('index.html')) && !/<main[\s\S]*idiomas\.example[\s\S]*<\/main>/.test(fP('index.html')), 'la web germana: només un enllaç al peu');
+ok(/programas\.html/.test(fP('sitemap.xml')) && /curso-de-una-semana\.html/.test(fP('sitemap.xml')), 'i al sitemap');
+ok(JSON.parse(fP('cerebro/programes.json')).length === 2 && JSON.parse(fP('cerebro/formularis.json'))[0].camps.length === 5, 'el repositori del client en guarda les fonts (cerebro/programes.json i formularis.json)');
+ok(M.webClientNet({ programes: [{ nom: 'X', perQui: 'escribe a ana@correo.example' }] }).programes[0].perQui.indexOf('@') < 0, 'el sedàs de dades personals també hi passa');
 
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
