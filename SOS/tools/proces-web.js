@@ -24,8 +24,8 @@
 
 const PASSOS = [
   { id: 'escribes', qui: ['tu'], zoho: 'Clasificación',
-    es: ['Nos escribes', 'Tu web, si la tienes, y dos líneas sobre qué haces.', 'Te contesta una persona, con unas preguntas para empezar tu mapa.'],
-    ca: ['Ens escrius', 'La teva web, si en tens, i dues línies sobre què fas.', 'Et contesta una persona, amb unes preguntes per començar el teu mapa.'] },
+    es: ['Haces tu mapa', 'En tu espacio, gratis: quién te rodea, qué os dais y qué web quieres.', 'Te contesta una persona, con lo que falta para tu web.'],
+    ca: ['Fas el teu mapa', 'Al teu espai, gratis: qui t\'envolta, què us doneu i quina web vols.', 'Et contesta una persona, amb el que falta per a la teva web.'] },
   { id: 'leemos', qui: ['ia', 'al'], zoho: 'Clasificación',
     es: ['Leemos lo que ya tienes', 'Con tu permiso, tu web, su diseño y sus imágenes, y lo que nos mandes.', 'Tu marca por escrito, las imágenes que sirven y lo que tu web no dice.'],
     ca: ['Llegim el que ja tens', 'Amb el teu permís, la teva web, el disseny i les imatges, i el que ens enviïs.', 'La teva marca per escrit, les imatges que serveixen i el que la web no diu.'] },
@@ -39,8 +39,8 @@ const PASSOS = [
     es: ['La sesión: mapa y web', 'Una hora para el mapa y otra para la web, que se publica delante de ti.', 'Tu mapa validado y tu web publicada, con tu primer cambio hecho por ti.'],
     ca: ['La sessió: mapa i web', 'Una hora per al mapa i una altra per a la web, que es publica davant teu.', 'El teu mapa validat i la teva web publicada, amb el primer canvi fet per tu.'] },
   { id: 'entrega', qui: ['ia', 'al'], zoho: 'Cerrado (ganado)',
-    es: ['Todo a tu nombre', 'Tu repositorio privado en tu GitHub, la web en tu Netlify y tu dominio.', 'El cerebro de tu negocio por escrito, tu espacio con su acceso (con GitHub o con correo y contraseña) y media hora de revisión a las dos semanas.'],
-    ca: ['Tot a nom teu', 'El teu repositori privat al teu GitHub, la web al teu Netlify i el teu domini.', 'El cervell del teu negoci per escrit, el teu espai amb el seu accés (amb GitHub o amb correu i contrasenya) i mitja hora de revisió a les dues setmanes.'] },
+    es: ['Todo a tu nombre', 'La web, sus archivos y tu dominio, en tus cuentas.', 'El cerebro de tu negocio por escrito, tu espacio con su acceso y media hora de revisión a las dos semanas.'],
+    ca: ['Tot a nom teu', 'La web, els seus fitxers i el teu domini, als teus comptes.', 'El cervell del teu negoci per escrit, el teu espai amb el seu accés i mitja hora de revisió a les dues setmanes.'] },
   { id: 'viva', qui: ['ia', 'al'], zoho: 'Cerrado (ganado)', opcional: true,
     es: ['Tu web, viva', 'Si quieres, una cuota mensual sin permanencia: tus automatizaciones definidas y gestionadas, comprobaciones y el mapa al día.', 'Cada mes, el informe de tu mapa: qué se mueve, qué se para y qué se ha automatizado.'],
     ca: ['La teva web, viva', 'Si vols, una quota mensual sense permanència: les teves automatitzacions definides i gestionades, comprovacions i el mapa al dia.', 'Cada mes, l\'informe del teu mapa: què es mou, què s\'atura i què s\'ha automatitzat.'] }
