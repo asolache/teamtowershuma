@@ -171,6 +171,8 @@
         .fila .treu { min-height: 44px; }
         .salut li a { margin-left: .3rem; white-space: nowrap; }
         .auto { margin-top: 1.4rem; max-width: 70ch; padding: 1rem 1.2rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+        .tablero { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
+        .tablero > p { max-width: 70ch; }
         .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
         /* El caso anónimo de un mapa que ya trabaja (cas-automatitzat.js) */
         .caso summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
@@ -618,6 +620,11 @@
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
         <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
         <details class="auto caso" id="cl-caso" hidden></details>
+        <div class="tablero" id="tablero" aria-labelledby="t-tablero">
+            <h3 id="t-tablero">Tu tablero: que lo que se repite vaya solo</h3>
+            <p>Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.</p>
+            <div id="cl-tauler"></div>
+        </div>
     </div>
 </section>
 
@@ -889,6 +896,7 @@
 <script src="/SOS/lib/diagnosi-client.js"></script>
 <script src="/SOS/lib/models-mapa.js"></script>
 <script src="/SOS/lib/cas-automatitzat.js"></script>
+<script src="/SOS/lib/tauler-client.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
 <script src="/SOS/lib/pinya.js"></script>
 <script>
@@ -952,6 +960,8 @@
         'Avance': 'Avanç',
         'Qué web quieres': 'Quina web vols',
         'Que lo que se repite vaya solo': 'Que el que es repeteix vagi sol',
+        'Tu tablero: que lo que se repite vaya solo': 'El teu tauler: que el que es repeteix vagi sol',
+        'Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.': "Cada cosa que dones o reps al teu mapa és una targeta. Defineix-la amb tres coses (quan passa, què necessita i qui la revisa) i passa a «Definit». Si la pot preparar una màquina, demana-la a «Que vagi sol» i la deixem funcionant amb tu. Es desa amb el teu mapa i ens arriba quan l'envies.",
         'Marcamos en tu mapa lo que puede preparar una máquina (avisos, informes, presupuestos, reservas) y lo dejamos funcionando, con una persona que lo revisa. Lo que no se paga y el dinero los lleva siempre una persona.': "Marquem al teu mapa el que pot preparar una màquina (avisos, informes, pressupostos, reserves) i ho deixem funcionant, amb una persona que ho revisa. El que no es paga i els diners els porta sempre una persona.",
         '¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en': 'Ja treballes amb nosaltres? La teva pàgina, el teu pla i la nostra conversa són al',
         'tu espacio': 'teu espai',
@@ -1540,6 +1550,18 @@
             li.appendChild(sp); c.appendChild(li);
         });
         pintaAuto();
+        pintaTauler();
+    }
+    /* El tablero (SOS/lib/tauler-client.js): las mismas flechas y la misma regla
+       que «Lo que puede ir solo», ahora como tarjetas que el cliente define y
+       mueve. Su estado va dentro de la ficha del mapa (S.tauler). */
+    function pintaTauler() {
+        var c = $('#cl-tauler'), TC = window.TaulerClient; if (!c || !TC) return;
+        var m = D.mapa(S);
+        TC.pinta(c, { pairs: m.pairs, auto: MM.automatitza ? function (q, k) { return MM.automatitza(q, k, LL); } : null, estat: S.tauler || {},
+            roles: m.roles, centre: m.roles[0], llengua: LL, onCanvi: function (e) { S.tauler = e; desa(); } });
+        var h = location.hash.slice(1), card = h.indexOf('tablero-') === 0 && document.getElementById(h);
+        if (card && !c._vist) { c._vist = 1; card.classList.add('tc-on'); card.scrollIntoView({ block: 'center' }); }
     }
     /* Lo que se puede automatizar de su mapa: la regla del tablero de la app
        (fluxAutomatitzable, en models-mapa.js), la misma que da el x % de la
@@ -1621,7 +1643,7 @@
             [10, ok.reciprocitat && ok.solts, '#cl-files', t('Con cada uno, algo va y algo vuelve')],
             [5, ok.rols && ok.noms && ok.xifres, '#cl-files', t('Cada uno por lo que hace, sin cifras')],
             [10, ok.abast, '#cl-p-objetivo', t('Qué quieres conseguir')],
-            [15, maq > 0, '#cl-auto', t('Lo que puede ir solo, señalado')],
+            [15, maq > 0, '#tablero', t('Lo que puede ir solo, señalado')],
             [10, !!S.nivel, '#web', t('Qué web quieres')],
             [10, !!S.cuenta, '#cuenta', t('Tu cuenta')],
             [15, !!S.enviat, '#enviar', t('Nos lo envías')]
@@ -2100,7 +2122,7 @@
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : ''),
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
