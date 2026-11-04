@@ -93,9 +93,11 @@ const files = bloc.split('\n').filter(l => /^\s*\{g:'/.test(l));
    Veda 62/63: ningú pot quedar tancat en una pantalla. Amagar accions només és
    acceptable mentre la clau per veure-les totes sigui a la mateixa pantalla. */
 {
-  const lch = (src.match(/^function openLauncher\(totes\)\{[\s\S]*?\n\}/m) || [''])[0];
-  if (!lch) bad('no es troba `openLauncher(totes)`: la sortida cap a la llista sencera no es pot comprovar');
-  else if (/id="lchAll"/.test(lch) && /openLauncher\(true\)/.test(lch))
+  /* Des del 4/11/2026 la llista és dins la Cerca: `pintaAccions(body,totes)`
+     pinta el filtrat i el botó #lchAll la torna a pintar sencera. */
+  const lch = (src.match(/^function pintaAccions\(body,totes\)\{[\s\S]*?\n\}/m) || [''])[0];
+  if (!lch) bad('no es troba `pintaAccions(body,totes)`: la sortida cap a la llista sencera no es pot comprovar');
+  else if (/b\.id='lchAll'/.test(lch) && /pintaAccions\(body,true\)/.test(lch))
     ok('i des del menú filtrat s\'arriba a les 36 amb un clic');
   else bad('el menú filtrat no porta a la llista sencera: amagar sense donar la clau és un calaix');
 }
