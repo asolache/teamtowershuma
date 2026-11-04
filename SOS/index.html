@@ -517,7 +517,7 @@ a{color:var(--blue);text-decoration:none}
 .tb-qn .tb-kbd{margin-left:auto}
 @media(max-width:820px){.tb-qn{min-width:0}}
 .qn-q{width:100%;font:inherit;font-size:var(--t1);padding:.8rem .9rem;background:var(--card);border:2px solid var(--indigo);border-radius:10px;color:var(--text);margin-bottom:.6rem}
-.qn-res{max-height:52vh;overflow-y:auto}
+.sp-totes{margin-top:1rem}.lch-it{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
 .qn-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:.2rem 0 .4rem}
 .sp-hit{display:flex;align-items:center;gap:.7rem;min-height:52px;padding:.5rem .7rem;border-radius:10px;cursor:pointer}
 .sp-hit.sel,.sp-hit:hover{background:var(--indigo-dim)}
@@ -6232,18 +6232,27 @@ function _qnCerca(idx,q){
     return{x,s};
   }).filter(o=>o.s).sort((a,b)=>b.s-a.s||ordre[a.x.k]-ordre[b.x.k]).slice(0,25).map(o=>o.x);
 }
-function openSearchPalette(){
+/* CERCA · una sola porta (diagnòstic d'UX, 3/11/2026). Abans hi havia tres
+   cercadors: «Què necessites?», «Totes les accions» (el llançador) i «Què hi ha
+   a prop». Ara és una pantalla, #/cerca: el camp a dalt; sense escriure, el que
+   ara et serveix i totes les accions agrupades; escrivint, llocs, persones i
+   accions, i l'última fila porta la mateixa paraula a «a prop». */
+function openSearchPalette(o){
+  o=o||{};
   const idx=_qnIndex();
   const bg=modal(`
-    <h2>🔍 Què necessites?</h2>
-    <p class="m-sub">Escriu-ho amb les teves paraules: un lloc, una persona o el que vols fer. També amb ⌘K / Ctrl+K des de qualsevol pantalla.</p>
+    <h2>🔍 Cerca</h2>
+    <p class="m-sub">Què necessites? Escriu-ho amb les teves paraules: un lloc, una persona o el que vols fer. També amb ⌘K / Ctrl+K des de qualsevol pantalla.</p>
     <input id="spQ" class="qn-q" placeholder="p. ex. registra hores, factura, Bodega, reunió…" autocomplete="off" aria-label="Què necessites?">
     <div id="spResults" class="qn-res" role="listbox"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" id="spTotes">☰ Totes les accions</button><button class="btn btn-primary" id="spClose">Tanca</button></div>
+    <section id="spTotes" class="sp-totes"><h3 class="qn-k">☰ Totes les accions</h3><div id="lchBody"></div></section>
+    <div class="modal-actions"><button class="btn btn-primary" id="spClose">Tanca</button></div>
   `);
   bg.querySelector('.modal').classList.add('wz-modal');
   bg.querySelector('#spClose').onclick=closeModal;
-  bg.querySelector('#spTotes').onclick=()=>{closeModal();setTimeout(()=>openLauncher(),50);};
+  const llista=bg.querySelector('#spTotes');
+  pintaAccions(bg.querySelector('#lchBody'),!!o.totes);
+  if(o.totes)setTimeout(()=>llista.scrollIntoView({block:'start'}),60);
   const inp=bg.querySelector('#spQ');inp.focus();
   const box=bg.querySelector('#spResults');
   const icon={node:'📍',person:'🦸',entity:'🏛',action:'⚡'};
@@ -6259,10 +6268,13 @@ function openSearchPalette(){
     +'<span class="qn-b"><span class="qn-t">'+esc(h.label)+'</span><span class="qn-s">'+esc(h.sub||'')+'</span></span></div>';
   const draw=()=>{
     const q=inp.value.trim();
+    llista.hidden=!!q;
     hits=q?_qnCerca(idx,q):suggeriments();
-    if(q&&!hits.length){box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>Res per «<strong>'+esc(q)+'</strong>». Prova amb una altra paraula o obre totes les accions.</span></div>';return;}
+    /* «A prop» és la mateixa paraula buscada en objectes, serveis i espais. */
+    if(q)hits=hits.concat([{k:'node',label:'Busca «'+q+'» a prop',sub:'Objectes, serveis i espais del teu territori',action:()=>openSupplySearch(q)}]);
+    const res=q&&hits.length===1?'<div class="ai-note"><span class="ic">🔎</span><span>Res per «<strong>'+esc(q)+'</strong>» entre llocs, persones i accions. Prova amb una altra paraula o mira si n\'hi ha a prop.</span></div>':'';
     cursor=Math.min(cursor,Math.max(0,hits.length-1));
-    box.innerHTML=(q?'':'<div class="qn-k">Ara et pot servir</div>')+hits.map(fila).join('');
+    box.innerHTML=res+(q?'':'<div class="qn-k">Ara et pot servir</div>')+hits.map(fila).join('');
     box.querySelectorAll('.sp-hit').forEach(e=>e.onclick=()=>{const h=hits[Number(e.dataset.i)];closeModal();setTimeout(()=>h.action(),50);});
   };
   inp.oninput=()=>{cursor=0;draw();};
@@ -8315,14 +8327,16 @@ function accionsAra(n,c){
     .sort((x,y)=>pesDe(y,c)-pesDe(x,c)).slice(0,n||4);
 }
 // Launcher global · totes les accions clau accessibles d'un clic (UX crítica).
-function openLauncher(totes){
+/* El llançador ja no és una pantalla a part: és la llista de sota de la Cerca. */
+function openLauncher(totes){openSearchPalette({totes:!!totes});}
+/* Totes les accions, agrupades per **de qui és la cosa** —el que és teu, el de
+   la teva comunitat, el de la xarxa—, perquè trenta-dues en una llista plana no
+   són un menú sinó un directori que ningú llegeix. Per defecte, les que ara
+   serveixen; les altres hi són a un clic, i es diu quantes i per què. */
+function pintaAccions(body,totes){
   const ctx=contextAccions();
   const items=totes?ACCIONS:ACCIONS.filter(a=>serveixAra(a,ctx));
   const amagades=ACCIONS.length-items.length;
-  /* Trenta-dues accions en una llista plana no són un menú: són un directori
-     que ningú llegeix. Agrupades per **de qui és la cosa** —el que és teu, el
-     de la teva comunitat, el de la xarxa— es poden recórrer amb la vista. I amb
-     un filtre a dalt, qui ja sap què busca no ha de recórrer res. */
   const GRUPS=[
     ['jo','👤 El que és teu'],
     ['comunitat','🤝 La teva comunitat'],
@@ -8332,45 +8346,26 @@ function openLauncher(totes){
     ['relat','🎬 Relat i captació'],
     ['sistema','⚙ Sistema']
   ];
-  /* Es diu **quantes n'hi ha i per què no surten**, i s'hi pot arribar amb un
-     clic. Amagar sense dir-ho no és progressiu: és un calaix, i un calaix fa
-     que qui busca una cosa que hi era deixi de fiar-se del menú. */
-  const bg=modal(`
-    <h2>☰ Menú d'accions</h2>
-    <p class="m-sub">${items.length} ${items.length===1?'acció que ara serveix':'accions que ara serveixen'}, agrupades pel que són. Escriu per filtrar-les.</p>
-    <input id="lchQ" placeholder="Filtra… (p. ex. ancoratge, mentoria, fons)" autocomplete="off">
-    <div id="lchBody" style="max-height:58vh;overflow-y:auto;margin-top:.6rem"></div>
-    ${amagades?`<button class="btn btn-ghost btn-sm" id="lchAll" style="margin-top:.6rem">▸ Ensenya-me-les totes (${ACCIONS.length})</button>
-    <p class="hint" style="margin:.35rem 0 0">N'hi ha ${amagades} que ara no farien res —demanen un perfil, un node o un registre que encara no hi és— i tornen soles quan el tinguis.</p>`:''}
-    <div class="modal-actions"><button class="btn btn-primary" id="lchClose">Tanca</button></div>
-  `);
-  bg.querySelector('.modal').classList.add('wz-modal');
-  bg.querySelector('#lchClose').onclick=closeModal;
-  const all=bg.querySelector('#lchAll');
-  if(all)all.onclick=()=>{closeModal();setTimeout(()=>openLauncher(true),50);};
-  const body=bg.querySelector('#lchBody'),qi=bg.querySelector('#lchQ');
-  const paint=()=>{
-    const t=norm(qi.value||'');
-    const hit=x=>!t||norm(x.t+' '+x.d).indexOf(t)>=0;
-    body.innerHTML='';let shown=0;
-    GRUPS.forEach(([g,lbl])=>{
-      const rows=items.map((x,i)=>({x,i})).filter(o=>o.x.g===g&&hit(o.x));
-      if(!rows.length)return;
-      shown+=rows.length;
-      body.appendChild(el('div','ent-grp-lbl',lbl+' · '+rows.length));
-      const grid=el('div','ent-grid');grid.style.gridTemplateColumns='repeat(auto-fill,minmax(230px,1fr))';
-      rows.forEach(({x,i})=>{
-        const c=el('div','ent-card lch-it');c.dataset.i=i;c.style.cursor='pointer';
-        c.innerHTML='<div class="ent-nm">'+x.ic+' '+esc(x.t)+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(x.d)+'</div>';
-        c.onclick=()=>{closeModal();setTimeout(()=>items[i].fn(),50);};
-        grid.appendChild(c);
-      });
-      body.appendChild(grid);
+  body.innerHTML='';
+  GRUPS.forEach(([g,lbl])=>{
+    const rows=items.map((x,i)=>({x,i})).filter(o=>o.x.g===g);
+    if(!rows.length)return;
+    body.appendChild(el('div','ent-grp-lbl',lbl+' · '+rows.length));
+    const grid=el('div','ent-grid');grid.style.gridTemplateColumns='repeat(auto-fill,minmax(230px,1fr))';
+    rows.forEach(({x,i})=>{
+      const c=el('button','ent-card lch-it');c.type='button';c.dataset.i=i;
+      c.innerHTML='<div class="ent-nm">'+x.ic+' '+esc(x.t)+'</div><div class="ent-desc" style="margin-top:.3rem">'+esc(x.d)+'</div>';
+      c.onclick=()=>{closeModal();setTimeout(()=>items[i].fn(),50);};
+      grid.appendChild(c);
     });
-    if(!shown)body.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>Cap acció amb «'+esc(qi.value)+'».</span></div>';
-  };
-  let tq=null;qi.oninput=()=>{clearTimeout(tq);tq=setTimeout(paint,120);};
-  paint();setTimeout(()=>qi.focus(),80);
+    body.appendChild(grid);
+  });
+  if(amagades){
+    const b=el('button','btn btn-ghost btn-sm','▸ Ensenya-me-les totes ('+ACCIONS.length+')');b.id='lchAll';b.type='button';b.style.marginTop='.6rem';
+    b.onclick=()=>pintaAccions(body,true);
+    body.appendChild(b);
+    body.appendChild(el('p','hint','N\'hi ha '+amagades+' que ara no farien res —demanen un perfil, un node o un registre que encara no hi és— i tornen soles quan el tinguis.'));
+  }
 }
 // ═══════════ Comando Molekulon · Cromo + Roster + Director filter ═══════════
 // Tot superheroi té el seu cromo. Comando Molekulon és la tribu que els aplega. La pel·lícula surt d'aquí.
@@ -14621,6 +14616,7 @@ const MODAL_ROUTES={
   /* Pantalles completes amb enllaç (diagnòstic d'UX, 3/11/2026). */
   config:{open:()=>openSettingsModal(),label:'Configuració i dades'},
   copia:{open:()=>openCopiaAvis(),label:'Còpia de seguretat'},
+  cerca:{open:()=>openSearchPalette(),label:'Cerca'},
   avisa:{open:()=>openIncidentReport(),label:'Digues què s\'ha trencat'},
   entra:{open:()=>openEntra(),label:'Ja tens perfil? Entra'}
 };

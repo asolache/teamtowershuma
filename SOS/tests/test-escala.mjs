@@ -167,7 +167,9 @@ const time = `
     out.positiveTab = [...document.querySelectorAll('[tabindex]')]
       .filter(e => Number(e.getAttribute('tabindex')) > 0).length;
     // Tot botó ha de tenir nom accessible
-    const named = e => !!((e.innerText || '').trim() || e.getAttribute('aria-label') || e.getAttribute('title') ||
+    /* textContent també: dins d'un <details> plegat, Chromium dona innerText buit
+       a un botó que sí que té nom (la guia del projecte neix plegada, #351). */
+    const named = e => !!((e.innerText || '').trim() || (e.textContent || '').trim() || e.getAttribute('aria-label') || e.getAttribute('title') ||
       (e.getAttribute('aria-labelledby') && document.getElementById(e.getAttribute('aria-labelledby'))));
     const btns = [...document.querySelectorAll('button')].filter(e => e.offsetParent !== null || e.id);
     out.unnamed = btns.filter(e => !named(e)).map(e => e.id || e.className).slice(0, 6);
