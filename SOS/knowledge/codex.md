@@ -5576,7 +5576,7 @@ quan la preview s'indexa i competeix amb la web de veritat.
 - **El mateix domini i les mateixes llengües:** una llengua per pàgina, `lang`,
   `hreflang` entre versions i `canonical` a l'adreça definitiva. Cap text
   barreja dues llengües.
-- **Per als cercadors i per a la IA:** `sitemap.xml`, `robots.txt` i JSON-LD de
+- **Per als cercadors i per a la IA:** el sitemap.xml, el robots.txt i JSON-LD de
   schema.org (Organization a l'inici; Course als programes; WebPage a la resta).
 - **La preview no s'indexa:** Netlify hi posa `X-Robots-Tag: noindex`, i la
   vista prèvia de /cliente/ és dins la pàgina, no és una web.
