@@ -482,7 +482,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
       if (vista && vista.activa) vista.activa(false);
       return pintaArbre();
     }
-    caixa.hidden = false; posaHash('');
+    caixa.hidden = false; posaHash(v === 'org' ? '' : v);
     var esOrg = v === 'org', es3d = v === '3d';
     caixa.classList.toggle('org', esOrg); cvOrg.hidden = !esOrg || !D;
     if (esOrg && D) org = CervellOrg.munta(cvOrg, { uni: UNI, docs: DOCS, nodos: D.nodos, repo: REPO,
@@ -547,8 +547,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   });
   var q = new URLSearchParams(location.search).get('repo') || MATRIU;
   document.getElementById('repo').value = q;
-  var hash = /^#repo(?:\/(.*))?$/.exec(location.hash);
+  /* Cada vista té el seu enllaç (#3d, #castellera…; #repo/<ruta> per al repositori). */
+  var hash = /^#repo(?:\/(.*))?$/.exec(location.hash), vh = location.hash.slice(1);
   if (hash) { ara = 'repo'; RUTA = decodeURIComponent(hash[1] || ''); }
+  else if (DIU[vh]) ara = vh;
   llegeix(q);
 })();
 </script>

@@ -232,10 +232,13 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
    automatitzem», cada flux amb el seu estat. El dibuix del cervell no pesa
    aquí: és de `SOS/cervell/`, que ja es carregava.
    I a 74 KB el 03/11/2026, a petició de l'Àlvaro: el cinquè «Què t'emportes»,
-   que fet en equip el mapa alinea l'equip i el fa pensar en sistema. */
+   que fet en equip el mapa alinea l'equip i el fa pensar en sistema.
+   I a 75 KB el 04/11/2026, a petició de l'Àlvaro: les vistes del cervell amb
+   el seu enllaç i l'esquema del sistema sencer (navegador, domini, Netlify,
+   GitHub, Google i els connectors), que porta a /conecta/. */
 const SOSTRES = [
   ['SOS/vna.html', 95, 'el mètode sencer: el llenç, les vuit lectures, les construccions i el mapa de la casa'],
-  ['index.html', 74, 'la portada ven el mapa de valor, el que t\'emportes (també l\'equip alineat), el teu camí, la intel·ligència i el que ja automatitzem, i porta a les altres tres pàgines'],
+  ['index.html', 75, 'la portada ven el mapa de valor, el que t\'emportes (també l\'equip alineat), el teu camí, la intel·ligència amb l\'esquema del sistema i el que ja automatitzem, i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
   ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
   ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut'],

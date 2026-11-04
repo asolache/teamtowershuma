@@ -822,6 +822,19 @@
         .cervell-top-tria button { font:inherit; font-weight:600; padding:.15rem .7rem; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--light); cursor:pointer; }
         .cervell-top-tria [aria-pressed="true"] { background:var(--text); color:var(--card); border-color:var(--text); }
         @media (max-width:700px) { .cervell-top .container, .cervell-ex { grid-template-columns:1fr; } }
+        .cv-vis { display:flex; flex-wrap:wrap; gap:.35rem .8rem; margin:.8rem 0 0; font-size:var(--t0); }
+        .cv-vis a { font-weight:600; }
+        .sis { margin-top:2rem; border:1px solid var(--border); border-radius:12px; background:var(--card); padding:1rem 1.2rem; }
+        .sis h3 { margin:0 0 .8rem; }
+        .sis-f { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(4,1fr); gap:1.6rem; counter-reset:s; }
+        .sis-f li { position:relative; border:1px solid var(--border); border-radius:10px; padding:.6rem .8rem; display:flex; flex-direction:column; gap:.15rem; }
+        .sis-f li+li::before { content:"⇄"; position:absolute; left:-1.35rem; top:50%; transform:translateY(-50%); color:var(--muted); }
+        .sis-f i { font-style:normal; font-size:1.3rem; }
+        .sis-f span, .sis-x span { color:var(--muted); font-size:var(--t0); line-height:1.4; }
+        .sis-n { margin:1rem 0 .4rem; color:var(--light); }
+        .sis-x { list-style:none; padding:0; margin:0 0 .8rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+        .sis-x li { border:1px dashed var(--border); border-radius:999px; padding:.3rem .8rem; }
+        @media (max-width:700px) { .sis-f { grid-template-columns:1fr; gap:1.4rem; } .sis-f li+li::before { content:"⇅"; left:50%; top:-1.15rem; transform:translateX(-50%); } }
     /*TT-CAMI-CSS*/
 /* GENERAT per SOS/tools/build-embut.js · «El teu camí» de la portada */
 .cami{padding:4rem 0;border-top:1px solid var(--border)}
@@ -1206,6 +1219,16 @@
         <p><b id="cvTopT" data-i18n="cvt.t">El cervell de cada projecte, construint-se com un castell</b><span class="cervell-top-tria" role="group" aria-labelledby="cvTopT"><button type="button" data-repo="" aria-pressed="true">SOS</button><button type="button" data-repo="asolache/alvarosolache" aria-pressed="false">Álvaro Solache</button></span><a id="cvTop3d" href="/SOS/cervell.html" data-i18n="cvt.a">Totes les vistes</a><a href="#cervell-xarxa" data-i18n="cvt.b">Crea el teu cervell de xarxa</a></p>
         <div class="cervell-top-g" id="cvTop" data-alt="280" data-universal></div>
         <p class="cervell-ex-n" data-i18n="int.cv">És el cervell de debò d'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.</p>
+        </div>
+        <p class="cv-vis"><b data-i18n="cvv.t">Mira el cervell per dins:</b> <a href="/SOS/cervell.html#org" data-i18n="cvv.org">L'organització</a> <a href="/SOS/cervell.html#3d" data-i18n="cvv.3d">En 3D</a> <a href="/SOS/cervell.html#castellera" data-i18n="cvv.castellera">Castellera</a> <a href="/SOS/cervell.html#capes" data-i18n="cvv.capes">Cinc capes</a> <a href="/SOS/cervell.html#mapa" data-i18n="cvv.mapa">Mapa</a> <a href="/SOS/cervell.html#pinya" data-i18n="cvv.pinya">Pinya</a> <a href="/SOS/cervell.html#repo" data-i18n="cvv.repo">El repositori</a></p>
+        <!-- El sistema sencer en un esquema (Àlvaro, 04/11/2026). Les peces són
+             les de debò; afegir-ne i automatitzar el flux és a /conecta/. -->
+        <div class="sis fade-up" aria-labelledby="sisT">
+        <h3 id="sisT" data-i18n="sis.t">Com està fet: el sistema sencer</h3>
+        <ol class="sis-f"><li><i aria-hidden="true">🧭</i><b data-i18n="sis.nav">El navegador</b><span data-i18n="sis.navd">Tu i els teus clients: la web, el mapa i el SOS</span></li><li><i aria-hidden="true">🔗</i><b data-i18n="sis.dom">El domini</b><span data-i18n="sis.domd">El teu nom a internet, al registre de dominis</span></li><li><i aria-hidden="true">▲</i><b data-i18n="sis.net">Netlify</b><span data-i18n="sis.netd">Publica la web i les seves funcions a cada canvi</span></li><li><i aria-hidden="true">🐙</i><b data-i18n="sis.gh">GitHub</b><span data-i18n="sis.ghd">El repositori: el codi i el cervell, amb tota la història</span></li></ol>
+        <p class="sis-n" data-i18n="sis.n">Cada canvi va del repositori a la web sol, i la IA hi treballa a través dels connectors:</p>
+        <ul class="sis-x"><li><b data-i18n="sis.gsc">Google Search Console</b> <span data-i18n="sis.gscd">que et trobin a Google</span></li><li><b data-i18n="sis.gw">Google Workspace</b> <span data-i18n="sis.gwd">correu, calendari i documents</span></li><li><b data-i18n="sis.mcp">Claude i els connectors (MCP)</b> <span data-i18n="sis.mcpd">la IA hi treballa: CRM, cobraments, correu…</span></li></ul>
+        <a class="int-a" href="/conecta/#t-flujos" data-i18n="sis.a">Afegeix els teus connectors i automatitza el teu flux de valor →</a>
         </div>
 <script src="/SOS/cervell/forces.js" defer></script>
 <script src="/SOS/lib/cas-automatitzat.js" defer></script>
@@ -1851,6 +1874,31 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
+  'cvv.t':'Mira el cervell per dins:',
+  'cvv.org':'L\'organització',
+  'cvv.3d':'En 3D',
+  'cvv.castellera':'Castellera',
+  'cvv.capes':'Cinc capes',
+  'cvv.mapa':'Mapa',
+  'cvv.pinya':'Pinya',
+  'cvv.repo':'El repositori',
+  'sis.t':'Com està fet: el sistema sencer',
+  'sis.nav':'El navegador',
+  'sis.navd':'Tu i els teus clients: la web, el mapa i el SOS',
+  'sis.dom':'El domini',
+  'sis.domd':'El teu nom a internet, al registre de dominis',
+  'sis.net':'Netlify',
+  'sis.netd':'Publica la web i les seves funcions a cada canvi',
+  'sis.gh':'GitHub',
+  'sis.ghd':'El repositori: el codi i el cervell, amb tota la història',
+  'sis.n':'Cada canvi va del repositori a la web sol, i la IA hi treballa a través dels connectors:',
+  'sis.gsc':'Google Search Console',
+  'sis.gscd':'que et trobin a Google',
+  'sis.gw':'Google Workspace',
+  'sis.gwd':'correu, calendari i documents',
+  'sis.mcp':'Claude i els connectors (MCP)',
+  'sis.mcpd':'la IA hi treballa: CRM, cobraments, correu…',
+  'sis.a':'Afegeix els teus connectors i automatitza el teu flux de valor →',
   'int.cv':'És el cervell de debò d\'aquest projecte: cada punt és una regla apresa, i pugen com un castell, de la base al pom de dalt. Tria un altre projecte i mira com hereta les regles de la casa.',
   'int.k':'La intel·ligència que hi ha darrere',
   'int.h2':'Mètode, memòria i IA, <em>treballant junts</em>',
@@ -2305,6 +2353,31 @@ ca: {
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.',
 },
 es: {
+  'cvv.t':'Mira el cerebro por dentro:',
+  'sis.t':'Cómo está hecho: el sistema entero',
+  'sis.nav':'El navegador',
+  'sis.navd':'Tú y tus clientes: la web, el mapa y el SOS',
+  'sis.dom':'El dominio',
+  'sis.domd':'Tu nombre en internet, en el registro de dominios',
+  'sis.net':'Netlify',
+  'sis.netd':'Publica la web y sus funciones con cada cambio',
+  'sis.gh':'GitHub',
+  'sis.ghd':'El repositorio: el código y el cerebro, con toda la historia',
+  'sis.n':'Cada cambio va solo del repositorio a la web, y la IA trabaja a través de los conectores:',
+  'sis.gsc':'Google Search Console',
+  'sis.gscd':'que te encuentren en Google',
+  'sis.gw':'Google Workspace',
+  'sis.gwd':'correo, calendario y documentos',
+  'sis.mcp':'Claude y los conectores (MCP)',
+  'sis.mcpd':'la IA trabaja ahí: CRM, cobros, correo…',
+  'sis.a':'Añade tus conectores y automatiza tu flujo de valor →',
+  'cvv.org':'La organización',
+  'cvv.3d':'En 3D',
+  'cvv.castellera':'Castellera',
+  'cvv.capes':'Cinco capas',
+  'cvv.mapa':'Mapa',
+  'cvv.pinya':'Pinya',
+  'cvv.repo':'El repositorio',
   'int.cv':'Es el cerebro de verdad de este proyecto: cada punto es una regla aprendida, y suben como un castell, de la base a lo más alto. Elige otro proyecto y mira cómo hereda las reglas de la casa.',
   'int.k':'La inteligencia que hay detrás',
   'int.h2':'Método, memoria e IA, <em>trabajando juntos</em>',
