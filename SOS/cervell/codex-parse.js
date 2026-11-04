@@ -190,17 +190,26 @@
     });
     return cap;
   }
+  /* Tots els fitxers del repositori (rutes), d'una sola crida a GitHub. El
+     llegeixen els documents del cervell i el mapa mental del repositori. Una
+     promesa per repo i testimoni, perquè les dues vistes no el demanin dos cops. */
+  var ARBRES = {};
+  function arbre(repo, op) {
+    op = op || {};
+    var k = repo + '|' + (op.token || '');
+    if (ARBRES[k]) return ARBRES[k];
+    var cap = { accept: 'application/vnd.github+json' };
+    if (op.token) cap.authorization = 'Bearer ' + op.token;
+    return (ARBRES[k] = fetch('https://api.github.com/repos/' + repo + '/git/trees/HEAD?recursive=1', { headers: cap, cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { return j && j.tree ? j.tree.filter(function (t) { return t.type === 'blob'; }).map(function (t) { return t.path; }) : []; })
+      .catch(function () { return []; }).then(function (fs) { if (!fs.length) delete ARBRES[k]; return fs; }));
+  }
   function documents(repo, conf, op) {
     op = op || {};
     var arrels = [].concat(conf && conf.documents || [], conf && conf.arees ? [conf.arees] : []).map(function (r) { return String(r).replace(/^\.?\//, '').replace(/\/$/, ''); });
     if (!arrels.length) return Promise.resolve([]);
-    var cap = { accept: 'application/vnd.github+json' };
-    if (op.token) cap.authorization = 'Bearer ' + op.token;
     var cru = op.llegeix || lector(op.token);
-    var arbre = op.arbre ? Promise.resolve(op.arbre) : fetch('https://api.github.com/repos/' + repo + '/git/trees/HEAD?recursive=1', { headers: cap, cache: 'no-store' })
-      .then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { return j && j.tree ? j.tree.filter(function (t) { return t.type === 'blob'; }).map(function (t) { return t.path; }) : []; })
-      .catch(function () { return []; });
-    return arbre.then(function (fs) {
+    return Promise.resolve(op.arbre || arbre(repo, op)).then(function (fs) {
       var dins = fs.filter(function (f) {
         return /\.md$/i.test(f) && !/(^|\/)README\.md$/i.test(f) &&
           arrels.some(function (a) { return f === a || f.indexOf(a + '/') === 0; });
@@ -222,5 +231,5 @@
     });
   }
 
-  return { CAPAS: CAPAS, documents: documents, capcalera: capcalera, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
+  return { CAPAS: CAPAS, arbre: arbre, documents: documents, capcalera: capcalera, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
 });
