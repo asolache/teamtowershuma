@@ -150,6 +150,35 @@ console.log('\n6 · La identitat es compta a part de tot el altre');
     'no esborra que abans sí que se n\'havia fet una');
 }
 
+console.log('\n7 · Una sola còpia de seguretat (diagnòstic d\'UX, 3/11/2026)');
+{
+  const w = ms => page.waitForTimeout(ms);
+  await page.evaluate(() => { location.hash = '#/copia'; });
+  await w(500);
+  const pant = await page.evaluate(() => ({ h2: (document.querySelector('#modalRoot h2') || {}).textContent || '',
+    prim: (document.querySelector('#modalRoot .btn-primary') || {}).textContent || '',
+    rest: !!document.querySelector('#cpRest'), nomesId: !!document.querySelector('#modalRoot details #cpId') }));
+  ok(/Còpia de seguretat/.test(pant.h2), '#/copia obre la pantalla única de la còpia (' + pant.h2 + ')');
+  ok(/Descarrega la còpia/.test(pant.prim) && pant.rest, 'amb una acció principal per baixar-la i una per restaurar-la');
+  ok(pant.nomesId, 'i «només la identitat», plegada a sota');
+  await page.click('#cpTot');
+  await w(500);
+  const exp = await page.evaluate(() => { const g = document.querySelector('#bkGo'); const r1 = { t: g.textContent, p: g.classList.contains('btn-primary') };
+    const p = document.querySelector('#bkPass'); p.value = 'una-contrasenya'; p.dispatchEvent(new Event('input'));
+    return { buit: r1, ple: { t: g.textContent, p: g.classList.contains('btn-primary') } }; });
+  ok(!exp.buit.p && /sense contrasenya/.test(exp.buit.t), 'sense contrasenya, baixar-la en clar no és el botó de color (' + exp.buit.t + ')');
+  ok(exp.ple.p && /protegida/.test(exp.ple.t), 'amb contrasenya, el botó de color és la còpia protegida');
+  await page.evaluate(() => window.__SOS.closeModal());
+  await w(300);
+  await page.evaluate(() => window.__SOS.openSettingsModal());
+  await w(300);
+  const cfg = await page.evaluate(() => ({ un: !!document.querySelector('#stCopia'), vells: !!document.querySelector('#stExport,#stImport') }));
+  ok(cfg.un && !cfg.vells, 'Configuració porta a la mateixa còpia, sense una exportació a part');
+  await page.click('#stCopia');
+  await w(500);
+  ok(await page.evaluate(() => /Còpia de seguretat/.test((document.querySelector('#modalRoot h2') || {}).textContent || '')), 'i el botó hi porta');
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);

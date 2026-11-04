@@ -6406,23 +6406,15 @@ async function openIdentityDashboard(){
       (owns.length?'<div class="ent-desc">Owner de: '+owns.slice(0,10).map(esc).join(', ')+'</div>':'')+
       (stewards.length?'<div class="ent-desc">Steward a: '+stewards.slice(0,10).map(esc).join(', ')+'</div>':'')+
       '<div class="ent-grp-lbl">🔓 Nodes on tinc accés desxifrat · '+decryptable.length+'</div>'+(decryptable.length?'<div class="ent-grid">'+decryptable.slice(0,10).map(d=>'<div class="ent-card"><div class="ent-nm">'+esc(d.name)+'</div><div class="ent-badges"><span class="ent-b">sender '+esc(d.sender)+'</span></div></div>').join('')+'</div>':'<div class="ent-desc">Cap encara. Comparteix la teva carta d\'intercanvi amb un owner perquè t\'obri accés.</div>')+
-      '<div class="ent-grp-lbl">💾 Còpia de la identitat · el mateix tu a tots els dispositius</div>'+
-      '<div class="ent-card"><div class="ent-desc">La clau privada viu en aquest navegador. Si esborres les dades, la perds; i al segon dispositiu series una altra persona al registre. Fes-ne una <strong>còpia xifrada amb contrasenya</strong> i porta-la a l\'altre aparell.</div>'+
-      '<div class="ent-badges" style="margin-top:.5rem"><button class="btn btn-primary btn-sm" id="idExport">⭳ Exporta còpia xifrada</button><button class="btn btn-ghost btn-sm" id="idImport">⭱ Restaura una còpia</button></div>'+
-      '<div class="wz-key-note" style="margin-top:.4rem">Sense la contrasenya el fitxer no serveix de res. Guarda\'l on guardaries una clau de casa.</div></div>'+
-      '<div class="ent-grp-lbl">🗄 Còpia de TOT el teu SOS</div>'+
-      '<div class="ent-card"><div class="ent-desc">La còpia d\'identitat salva <strong>qui ets</strong>, però no <strong>el que has fet</strong>. Aquesta s\'emporta nodes, socis, comptes, ventures, dossiers i ancoratges — tot el que hi ha en aquest navegador.</div>'+
-      '<div class="ent-badges" style="margin-top:.5rem"><button class="btn btn-primary btn-sm" id="idBkExp">🗄 Còpia completa</button><button class="btn btn-ghost btn-sm" id="idBkImp">⭱ Restaura-la</button></div>'+
-      '<div class="wz-key-note" style="margin-top:.4rem">Amb contrasenya va xifrada. En blanc es desa en clar i <strong>la clau privada hi és a la vista</strong>: qui tingui el fitxer podrà signar en el teu nom.</div></div>'+
+      '<div class="ent-grp-lbl">💾 Còpia de seguretat</div>'+
+      '<div class="ent-card"><div class="ent-desc">La clau privada viu en aquest navegador. Si esborres les dades, la perds. Una sola còpia protegida amb contrasenya s\'emporta qui ets i tot el que has fet.</div>'+
+      '<div class="ent-badges" style="margin-top:.5rem"><button class="btn btn-primary btn-sm" id="idCopia">💾 Còpia de seguretat</button></div></div>'+
       '<div class="ai-note" style="margin-top:.6rem"><span class="ic">🌱</span><span>Tot això és <strong>local i sobirà</strong>. La teva clau privada només surt d\'aquí si tu la xifres i te l\'emportes. Els envelopes ECDH t\'obren accés punt-a-punt sense servidor.</span></div>';
     bg.querySelector('#idCopyDid').onclick=async()=>{if(navigator.clipboard)await navigator.clipboard.writeText(id.did);toast('📋 DID copiat');};
     bg.querySelector('#idCopyExch').onclick=async()=>{const c=await myExchangeCard();if(navigator.clipboard)await navigator.clipboard.writeText(JSON.stringify(c));toast('🎫 Carta copiada');};
     bg.querySelector('#idPasskey').onclick=async()=>{try{if(passkey){await unbindPasskey();toast('Passkey desvinculat');}else{await bindPasskey();toast('Passkey vinculat ✓');}closeModal();openIdentityDashboard();}catch(e){toast(e.msg||'Error');}};
     bg.querySelector('#idNostr').onclick=()=>{closeModal();openNostrModal();};
-    bg.querySelector('#idBkExp').onclick=()=>{closeModal();openBackup('export');};
-    bg.querySelector('#idBkImp').onclick=()=>{closeModal();openBackup('import');};
-    bg.querySelector('#idExport').onclick=()=>{closeModal();openIdentityBackup('export');};
-    bg.querySelector('#idImport').onclick=()=>{closeModal();openIdentityBackup('import');};
+    bg.querySelector('#idCopia').onclick=()=>{closeModal();openCopiaAvis();};
   }catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Error: '+esc(e.msg||String(e))+'</span></div>';}
 }
 /* ═══════════ CÒPIA DE TOT EL SOS · el teu registre sencer en un fitxer ═══════════
@@ -6600,7 +6592,9 @@ function openBackup(mode,raw){
     const paint=()=>{
       const blank=!p1.value.length;
       warn.style.display=blank?'':'none';
-      go.textContent=blank?'⚠ Descarrega SENSE xifrar':'⭳ Descarrega la còpia xifrada';
+      /* El botó de color és la còpia protegida; sense contrasenya baixa de to. */
+      go.textContent=blank?'Descarrega sense contrasenya':'⭳ Descarrega la còpia protegida';
+      go.classList.toggle('btn-primary',!blank);go.classList.toggle('btn-ghost',blank);
     };
     p1.oninput=paint;paint();
     bg.querySelectorAll('.pick').forEach(l=>l.onclick=e=>{if(e.target.tagName!=='INPUT'){const c=l.querySelector('input');c.checked=!c.checked;}l.classList.toggle('sel',l.querySelector('input').checked);});
@@ -6634,6 +6628,7 @@ function openBackup(mode,raw){
       try{
         loaded=await readIn();
         if(!loaded)return;
+        if(loaded.type===IDENTITY_BACKUP_TYPE){closeModal();openIdentityBackup('import',JSON.stringify(loaded));return;}
         if(loaded.type!==SOS_BACKUP_TYPE){peek.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Això no és una còpia completa del SOS.</span></div>';return;}
         peek.innerHTML='<div class="ent-card"><div class="ent-nm">'+(loaded.enc?'🔒 Còpia xifrada':'🔓 Còpia en clar')+'</div>'+
           '<div class="ent-badges" style="margin-top:.3rem"><span class="ent-b">'+(loaded.count||0)+' registres</span>'+
@@ -14625,6 +14620,7 @@ const MODAL_ROUTES={
   node:{open:()=>openLocateWizard(),label:'Munta el teu node'},
   /* Pantalles completes amb enllaç (diagnòstic d'UX, 3/11/2026). */
   config:{open:()=>openSettingsModal(),label:'Configuració i dades'},
+  copia:{open:()=>openCopiaAvis(),label:'Còpia de seguretat'},
   avisa:{open:()=>openIncidentReport(),label:'Digues què s\'ha trencat'},
   entra:{open:()=>openEntra(),label:'Ja tens perfil? Entra'}
 };
@@ -16633,7 +16629,7 @@ function updateCopiaBadge(){
    —primer la identitat, que és la que no es pot refer. */
 function openCopiaAvis(){
   const bg=modal(`
-    <h2>💾 Fes-te una còpia</h2>
+    <h2>💾 Còpia de seguretat</h2>
     <p class="m-sub">Tot això viu <strong>en aquest navegador</strong>. Un mòbil perdut o unes dades
     esborrades se n'ho emporten, i <strong>la identitat és l'única part que no es pot refer</strong>:
     sense la clau, el que has signat segueix valent però ja no el pots continuar tu.</p>
@@ -16643,13 +16639,17 @@ function openCopiaAvis(){
     ho facis tu. Per això això és un recordatori i no una còpia automàtica — dir-te que ja està feta
     quan no ho està seria el pitjor que et podria fer aquesta pantalla.</div>
     <div class="modal-actions" style="flex-wrap:wrap;gap:.3rem">
-      <button class="btn btn-primary" id="cpId">🔑 Copia la identitat</button>
-      <button class="btn btn-ghost" id="cpTot">💾 Copia-ho tot</button>
+      <button class="btn btn-primary" id="cpTot">⭳ Descarrega la còpia</button>
+      <button class="btn btn-ghost" id="cpRest">⭱ Restaura una còpia</button>
       <button class="btn btn-ghost" id="cpClose">${t('Tanca')}</button>
-    </div>`);
+    </div>
+    <details class="ms-plec" style="margin-top:.6rem"><summary>Només la identitat</summary>
+      <p class="m-sub">Un fitxer petit amb la teva clau, per entrar com a tu en un altre dispositiu. No porta el que has fet.</p>
+      <button class="btn btn-ghost btn-sm" id="cpId">🔑 Copia només la identitat</button></details>`);
   bg.querySelector('#cpClose').onclick=closeModal;
   bg.querySelector('#cpId').onclick=()=>{closeModal();openIdentityBackup();};
   bg.querySelector('#cpTot').onclick=()=>{closeModal();openBackup();};
+  bg.querySelector('#cpRest').onclick=()=>{closeModal();openBackup('import');};
   const rec=bg.querySelector('#cpRecC');
   bg.querySelector('#cpRec').onclick=e=>{
     if(e.target.tagName!=='INPUT')rec.checked=!rec.checked;
@@ -16668,9 +16668,10 @@ function openCopiaAvis(){
         '</div><div class="l">nous des de llavors</div></div>')+
       '<div class="bib-tile"><div class="n" style="color:'+(e.identitat?'var(--green)':'var(--red)')+'">'+
         (e.identitat?'✓':'✗')+'</div><div class="l">identitat copiada</div></div></div>'+
-      '<div class="ai-note"><span class="ic">'+(e.cal?'⚠':'✅')+'</span><span>'+
-        (e.per?esc(e.per.charAt(0).toUpperCase()+e.per.slice(1))+'.':'Al dia.')+
-        (e.identitat?'':' <strong>I encara no has copiat la identitat</strong>, que és la part que no es pot refer.')+
+      '<div class="ai-note"><span class="ic">'+(e.cal||!e.identitat?'⚠':'✅')+'</span><span>'+
+        /* «Al dia» amb la clau sense copiar es contradeia (diagnòstic d'UX). */
+        (e.per?esc(e.per.charAt(0).toUpperCase()+e.per.slice(1))+'.':e.identitat?'Al dia.':'<strong>Falta copiar la teva clau</strong>, que és la part que no es pot refer.')+
+        (e.identitat||!e.per?'':' <strong>I encara no has copiat la identitat</strong>, que és la part que no es pot refer.')+
         '</span></div>'+
       /* Aquesta frase va SEMPRE i no dins del cas «ja n'has fet una». Estava a
          la branca de qui ja en tenia, o sigui que qui més la necessitava —el
@@ -21619,8 +21620,7 @@ function openSettingsModal(){
     </div>
     <div class="field"><label>Còpia de seguretat</label>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" id="stExport">⭳ Exporta tot (.json)</button>
-        <button class="btn btn-ghost btn-sm" id="stImport">⭱ Importa</button>
+        <button class="btn btn-ghost btn-sm" id="stCopia">💾 Fes o restaura una còpia</button>
       </div>
     </div>
     <div class="field"><label>Demostració d'impacte</label>
@@ -21701,8 +21701,7 @@ function openSettingsModal(){
     try{await carregaLib('marca');const m=Marca.desa(await f.text());toast(Object.keys(m).length?'Marca aplicada':'El fitxer no porta color, lletra ni forma');}catch(x){toast('No s\'ha pogut llegir la marca');}};
   bg.querySelector('#stMarcaTreu').onclick=async()=>{await carregaLib('marca');Marca.desa(null);toast('Torna la pell de sempre');};
   bg.querySelector('#stGeo').onclick=async()=>{const r=await loadCatalunyaSkeleton();closeModal();selectNode(r.pais.id);toast(r.created?('Catalunya carregada · '+r.created+' territoris'):'Catalunya ja hi era');};
-  bg.querySelector('#stExport').onclick=exportData;
-  bg.querySelector('#stImport').onclick=importData;
+  bg.querySelector('#stCopia').onclick=()=>{closeModal();openCopiaAvis();};
   bg.querySelector('#stAtlesPull').onclick=()=>{closeModal();updateAtles();};
   bg.querySelector('#stAtlesShare').onclick=()=>{closeModal();shareAtles();};
   (async()=>{const cur=await loadAiKey();const st=bg.querySelector('#stAiState'),inp=bg.querySelector('#stAiKey');
@@ -21712,25 +21711,6 @@ function openSettingsModal(){
   bg.querySelector('#stPurge').onclick=async()=>{if(confirm('Segur? S\'esborraran TOTES les dades locals del SOS en aquest navegador.')){await dbClear();state.nodes=[];state.entities=[];state.tombstones={};state.activeId=null;closeModal();render();toast('Dades esborrades');}};
 }
 
-function exportData(){
-  const pkg={app:'SOS',version:2,exported:now(),count:state.nodes.length,nodes:state.nodes,entities:state.entities};
-  const blob=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sos-backup-'+now().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);
-  toast('Còpia exportada');
-}
-function importData(){
-  const inp=document.createElement('input');inp.type='file';inp.accept='application/json,.json';
-  inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader();
-    r.onload=async()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.nodes))throw 0;
-      const ne=Array.isArray(d.entities)?d.entities.length:0;
-      if(!confirm('Importar '+d.nodes.length+' nodes'+(ne?' i '+ne+' entitats':'')+'? Es fusionaran amb els actuals (guanya la versió més recent).'))return;
-      for(const n of d.nodes){const cur=byId(n.id);if(!cur||(n.updatedAt||'')>(cur.updatedAt||'')){await dbPut(n);const i=state.nodes.findIndex(x=>x.id===n.id);if(i>=0)state.nodes[i]=n;else state.nodes.push(n);}}
-      for(const e of (d.entities||[])){if(!e||!e.id)continue;e.kind='entity';const cur=byEnt(e.id);if(!cur){await dbPut(e);state.entities.push(e);continue;}const m=mergeEntityInto(cur,e);if(m.touched){await dbPut(m.rec);state.entities[state.entities.findIndex(x=>x.id===e.id)]=m.rec;}}
-      closeModal();render();toast('Importació completada');
-    }catch(e){toast('Fitxer no vàlid');}};
-    r.readAsText(f);};
-  inp.click();
-}
 
 /* ═══════════ COMMONS · ATLES (directori públic compartit via Git+CDN) ═══════════
    Només surt la capa "directori": existència, tipus, ubicació i web pública.
