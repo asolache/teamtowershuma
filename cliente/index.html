@@ -6,10 +6,10 @@
     <!-- PROTOTIPO · no se indexa: es la entrada de los clientes que ya han hablado con nosotros. -->
     <meta name="robots" content="noindex, follow">
     <title>Empieza tu proyecto | TeamTowers Humà</title>
-    <meta name="description" content="Tu espacio para empezar la web: te creas tu cuenta, nos cuentas qué quieres y ves el primer dibujo de con quién trabajas y un boceto de tu web. Nada se envía hasta que tú lo digas.">
+    <meta name="description" content="Tu espacio para empezar la web: te creas tu cuenta, nos cuentas qué quieres y ves el primer dibujo de con quién trabajas y la estructura de tu web. Nada se envía hasta que tú lo digas.">
     <meta name="author" content="Álvaro Solache · TeamTowers">
     <link rel="canonical" href="https://teamtowershuma.com/cliente/">
-    <meta property="og:title" content="Empieza tu proyecto: tu cuenta, tu primer dibujo y el boceto de tu web">
+    <meta property="og:title" content="Empieza tu proyecto: tu cuenta, tu primer dibujo y la estructura de tu web">
     <meta property="og:description" content="Nos cuentas qué quieres, con tus palabras o con ayuda de tu IA, y en unos minutos ves con quién trabajas y cómo sería tu web.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://teamtowershuma.com/cliente/">
@@ -193,7 +193,53 @@
         .on-xips { display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
         .on-xips label { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; font-weight: 400; }
         .boceto.pantalla { position: fixed; inset: 0; z-index: 200; margin: 0; border-radius: 0; display: flex; flex-direction: column; background: var(--bg); }
-        .boceto.pantalla iframe { flex: 1; height: auto; min-height: 0; }
+        .boceto.pantalla .estructura { flex: 1; max-height: none; min-height: 0; }
+        /* La estructura de su web (04/11/2026): el plan, como un documento cuidado; nunca HTML sin maquetar. */
+        .estructura { --mc: var(--indigo); max-height: 34rem; overflow: auto; padding: 1.4rem clamp(1rem, 4vw, 2.4rem) 2rem; background: var(--card); scroll-behavior: smooth; }
+        .estructura > * { max-width: 46rem; margin-left: auto; margin-right: auto; }
+        .estructura .e-cap { padding-bottom: 1rem; border-bottom: 3px solid var(--mc); }
+        .estructura .e-ull { margin: 0; font-size: var(--t0); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+        .estructura h3 { margin: .2rem 0 .3rem; font-size: clamp(1.5rem, 4.5vw, 2.1rem); line-height: 1.15; }
+        .estructura .e-lema { margin: 0 0 .6rem; font-size: 1.1rem; color: var(--light); }
+        .estructura .e-xifres { margin: 0; font-size: var(--t0); color: var(--muted); }
+        .estructura .e-menu ol { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem; margin: 1rem auto 1.4rem; padding: 0; }
+        .estructura .e-menu a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 .9rem; border: 1px solid var(--border); border-bottom: 2px solid var(--mc); border-radius: 999px; text-decoration: none; color: var(--text); background: var(--bg); font-size: var(--t0); }
+        .estructura.recta .e-menu a, .estructura.recta .e-pag, .estructura.recta .e-prog, .estructura.recta .e-form, .estructura.recta .e-boto { border-radius: 3px; }
+        .estructura .e-pags { display: grid; gap: .9rem; }
+        .estructura .e-pag { position: relative; padding: 1rem 1.1rem 1.1rem; border: 1px solid var(--border); border-left: 4px solid var(--mc); border-radius: 14px; background: var(--bg); }
+        .estructura .e-grup { margin: 1.2rem 0 0; font-size: 1.2rem; }
+        .estructura .e-grup + .e-obj { margin-top: 0; }
+        .estructura .e-pag-cap { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .6rem; }
+        .estructura .e-num { display: inline-grid; place-items: center; width: 1.8rem; height: 1.8rem; border: 2px solid var(--mc); border-radius: 50%; font-size: var(--t0); font-weight: 700; }
+        .estructura h4 { margin: 0; font-size: 1.15rem; }
+        .estructura code { margin-left: auto; font-family: var(--mono); font-size: var(--t0); color: var(--muted); }
+        .estructura .e-etis { display: flex; flex-wrap: wrap; gap: .3rem; margin: .5rem 0 0; }
+        .estructura .e-etis span { padding: .1rem .55rem; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); font-size: var(--t0); }
+        .estructura .e-etis .priv { border-style: dashed; }
+        .estructura .e-obj { margin: .55rem 0 0; color: var(--light); }
+        .estructura .e-cita { margin: .7rem 0 0; padding: .1rem 0 .1rem .9rem; border-left: 2px solid var(--mc); font-style: italic; }
+        .estructura .e-secs { margin: .7rem 0 0; padding-left: 1.3rem; display: grid; gap: .3rem; }
+        .estructura .e-secs b { margin-right: .4rem; }
+        .estructura .e-secs span { color: var(--muted); }
+        .estructura .e-cta { margin: .8rem 0 0; }
+        .estructura .e-boto { display: inline-block; padding: .35rem .9rem; border-radius: 999px; border: 2px solid var(--mc); font-weight: 600; font-size: var(--t0); }
+        .estructura .e-ll { display: flex; flex-wrap: wrap; gap: .3rem .8rem; margin: .7rem 0 0; font-size: var(--t0); color: var(--orange); }
+        .estructura .e-ll .ok { color: var(--green); }
+        .estructura .e-abans { margin: .4rem 0 0; font-size: var(--t0); color: var(--muted); overflow-wrap: anywhere; }
+        .estructura .e-progs { display: grid; gap: .7rem; margin-top: .8rem; }
+        @media (min-width: 640px) { .estructura .e-progs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .estructura .e-prog, .estructura .e-form { display: grid; gap: .3rem; align-content: start; padding: .85rem .95rem; border: 1px solid var(--border); border-top: 3px solid var(--mc); border-radius: 12px; background: var(--card); }
+        .estructura .e-form { margin-top: .7rem; }
+        .estructura .e-prog .e-abans { margin: .2rem 0 0; }
+        .estructura .e-prog p { margin: 0; font-size: var(--t0); }
+        .estructura .e-qui, .estructura .e-dates { font-size: var(--t0); color: var(--muted); }
+        .estructura .e-form ul { margin: .2rem 0 0; padding-left: 1.1rem; font-size: var(--t0); display: grid; gap: .15rem; }
+        .estructura .e-pie { margin-top: 1.2rem; padding: .9rem 1.1rem; border-top: 3px solid var(--mc); background: var(--panel); border-radius: 0 0 12px 12px; font-size: var(--t0); }
+        .estructura .e-pie ul { list-style: none; display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; margin: .4rem 0 0; padding: 0; }
+        .estructura .e-red { margin-top: 1rem; font-size: var(--t0); }
+        .estructura .e-red summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+        .estructura .e-red ul { overflow-wrap: anywhere; }
+        .estructura .e-nota { margin-top: 1.2rem; font-size: var(--t0); color: var(--muted); }
         .boceto .tornar { display: none; }
         .boceto.pantalla .tornar { display: inline-flex; }
         .tablero { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
@@ -231,6 +277,9 @@
         .boceto[hidden] { display: none; }
         .boceto .barra { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; padding: .5rem .7rem; border-bottom: 1px solid var(--border); background: var(--panel); font-size: var(--t0); }
         .boceto .pags { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+        .boceto:has(.estructura) .barra { flex-wrap: nowrap; }
+        .boceto:has(.estructura) .pags { flex: 1; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+        .boceto:has(.estructura) .pags .btn { white-space: nowrap; flex: none; }
         .boceto iframe { display: block; width: 100%; height: 34rem; border: 0; background: #fff; }
         .boceto.editor iframe { height: min(44rem, 82vh); }
         /* El dibujo a pantalla completa (03/11/2026): una capa sobre la página, unida a las filas. */
@@ -314,7 +363,7 @@
         .viu-dis label { display: grid; gap: .2rem; font-size: var(--t0); color: var(--muted); }
         .viu-dis input[type=color] { width: 3.2rem; min-height: 44px; padding: 2px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
         .viu .boceto { margin-top: 0; }
-        .viu .boceto iframe { height: min(40rem, 70vh); }
+        .viu .boceto .estructura { max-height: min(40rem, 70vh); }
 
         .resposta { margin-top: 1rem; font-weight: 600; }
         .resposta.ko { color: var(--red); }
@@ -569,7 +618,7 @@
         <li><a href="#programas" data-e="programas">Programas</a></li>
         <li><a href="#formularios" data-e="formularios">Formularios</a></li>
         <li><a href="#tablero" data-e="tablero">Tablero</a></li>
-        <li><a href="#vista" data-e="vista">Vista previa</a></li>
+        <li><a href="#vista" data-e="vista">Estructura</a></li>
     </ul>
 </nav>
 
@@ -578,7 +627,7 @@
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
         <div class="benvinguda" id="cl-benvinguda" role="region" aria-labelledby="cl-benv-t" hidden></div>
-        <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
+        <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y la estructura de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
         <div class="avanc" id="avance" aria-labelledby="avanc-t">
             <p class="avanc-n" id="avanc-t"><b id="cl-avanc-n">0%</b> <span>hacia un mapa bien definido y que puede ir solo</span></p>
             <div class="avanc-barra" role="progressbar" aria-labelledby="avanc-t" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="cl-avanc-b"><i></i></div>
@@ -669,8 +718,8 @@
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">2 · Qué web quieres</p>
-            <h2 id="t-web">Elige hasta dónde, y mira el boceto.</h2>
-            <p>Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.</p>
+            <h2 id="t-web">Elige hasta dónde, y mira su estructura.</h2>
+            <p>Empieza por lo mínimo que te sirve. La estructura sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.</p>
         </div>
         <div class="nivells" id="cl-nivells" role="radiogroup" aria-label="Nivel de web">
 <!--TT-NIVELLS-->
@@ -723,7 +772,7 @@
         </div>
         <div class="ia" id="cl-ia-web" hidden>
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
-                <div><h3>Escribe tus textos con IA</h3><p>A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en el boceto.</p></div></div>
+                <div><h3>Escribe tus textos con IA</h3><p>A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en la estructura.</p></div></div>
             <div class="ia-qui" data-ia="qui"></div>
             <div class="ia-sessio" data-ia="sessio" hidden></div>
             <button type="button" class="btn btn-primary ia-boto" id="cl-ia-escriu" hidden>✦ Escribir mis textos</button>
@@ -735,16 +784,15 @@
             <div class="accions"><button type="button" class="btn btn-primary" id="cl-disseny-fes">Preparar mi documento de diseño</button></div>
             <div id="cl-disseny-res" aria-live="polite"></div>
         </div>
-        <p class="nota" style="margin-top:1.6rem">El boceto es solo una vista rápida de tu dibujo como web, no tu web final.</p>
+        <p class="nota" style="margin-top:1.6rem">Es el plano de tu web: qué páginas tiene, para quién y qué dicen. El diseño lo cuidamos juntos.</p>
         <div class="accions">
-            <button type="button" class="btn btn-ghost" id="cl-boceto">Ver el boceto de mi web</button>
+            <button type="button" class="btn btn-ghost" id="cl-boceto">Ver la estructura de mi web</button>
             <button type="button" class="btn btn-ghost js-dibuix">Ver mi dibujo aquí</button>
         </div>
         <p class="nota" id="cl-boceto-r" role="status"></p>
         <span id="vista" aria-hidden="true"></span>
         <div class="boceto" id="cl-marc-caixa" hidden>
-            <div class="barra"><button type="button" class="btn btn-sm btn-primary tornar" id="cl-vista-torna">← Volver</button><div class="pags" id="cl-pags" role="group" aria-label="Páginas del boceto"></div></div>
-            <iframe id="cl-marc" title="Boceto de tu web" sandbox="allow-same-origin"></iframe>
+            <div class="barra"><button type="button" class="btn btn-sm btn-primary tornar" id="cl-vista-torna">← Volver</button><div class="pags" id="cl-pags" role="group" aria-label="Las páginas de tu web"></div></div>
         </div>
     </div>
 </section>
@@ -1024,7 +1072,7 @@
         'Programas': 'Programes',
         'Formularios': 'Formularis',
         'Tablero': 'Tauler',
-        'Vista previa': 'Vista prèvia',
+        'Estructura': 'Estructura', 'Contacto': 'Contacte',
         'Tus programas': 'Els teus programes',
         'Los cursos o programas que quieres promocionar. Cada uno tiene su página en tu web, con las fechas y un formulario para pedir información. Los cambias aquí cuando quieras: tu web los lee de aquí.': 'Els cursos o programes que vols promocionar. Cadascun té la seva pàgina a la teva web, amb les dates i un formulari per demanar informació. Els canvies aquí quan vulguis: la teva web els llegeix d\'aquí.',
         '✦ Sacarlos de mi web': '✦ Treure-los de la meva web',
@@ -1103,7 +1151,7 @@
         'Leemos tu web de ahora, con tu permiso, para no perder lo que Google ya conoce.': 'Llegim la teva web d\'ara, amb el teu permís, per no perdre el que Google ja coneix.',
         'Revisa tus programas, sobre todo las fechas.': 'Revisa els teus programes, sobretot les dates.',
         'Elige qué te preguntan en los formularios.': 'Tria què et pregunten als formularis.',
-        'Mira tu web nueva en la vista previa.': 'Mira la teva web nova a la vista prèvia.',
+        'Mira cómo queda organizada tu web nueva.': 'Mira com queda organitzada la teva web nova.',
         'En tu tablero, lo que se repite y puede ir solo.': 'Al teu tauler, el que es repeteix i pot anar sol.',
         'Entendido': 'Entesos',
         'Buscando tus programas en tus páginas…': 'Buscant els teus programes a les teves pàgines…',
@@ -1117,12 +1165,12 @@
         '. ¿No sabes si te hace falta?': '. No saps si et cal?',
         'Hazte el diagnóstico de 3 minutos': 'Fes-te el diagnòstic de 3 minuts',
         'Empieza tu proyecto aquí, a tu ritmo.': 'Comença el teu projecte aquí, al teu ritme.',
-        'Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y un boceto de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».': "Comences dibuixant amb qui treballes i en uns minuts veus el teu mapa i un esbós de la teva web. El compte, només quan ens ho vulguis enviar. El que escrius es queda al teu navegador fins que premis «Enviar».",
+        'Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y la estructura de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».': "Comences dibuixant amb qui treballes i en uns minuts veus el teu mapa i l'estructura de la teva web. El compte, només quan ens ho vulguis enviar. El que escrius es queda al teu navegador fins que premis «Enviar».",
         'Tu cuenta': 'El teu compte',
         'Lo que quieres, con tus palabras': 'El que vols, amb les teves paraules',
         'Unas preguntas (o que las conteste tu IA)': 'Unes preguntes (o que les contesti la teva IA)',
         'Quién está a tu alrededor': 'Qui hi ha al teu voltant',
-        'Qué web quieres, y su boceto': 'Quina web vols, i el seu esbós',
+        'Qué web quieres, y su estructura': 'Quina web vols, i la seva estructura',
         'Nos lo envías': "Ens ho envies",
         '5 · Tu cuenta': '5 · El teu compte',
         'Quién eres y dónde te contestamos.': 'Qui ets i on et contestem.',
@@ -1193,17 +1241,17 @@
         'Cerrar': 'Tancar',
         '¿Está listo para dibujarlo?': 'Està a punt per dibuixar-lo?',
         '2 · Qué web quieres': '2 · Quina web vols',
-        'Elige hasta dónde, y mira el boceto.': "Tria fins on, i mira l'esbós.",
-        'Empieza por lo mínimo que te sirve. El boceto sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.': "Comença pel mínim que et serveix. L'esbós surt del teu dibuix: la web pública té una part per a cada persona important del teu dibuix, i si vols hi sumes un espai privat per a clients i aliats i un altre per al teu equip. És un esborrany per parlar-ne, no la web final.",
+        'Elige hasta dónde, y mira su estructura.': 'Tria fins on, i mira la seva estructura.',
+        'Empieza por lo mínimo que te sirve. La estructura sale de tu dibujo: la web pública tiene una parte para cada persona importante de tu dibujo, y si quieres le sumas un espacio privado para clientes y aliados y otro para tu equipo. Es un borrador para hablarlo, no la web final.': "Comença pel mínim que et serveix. L'estructura surt del teu dibuix: la web pública té una part per a cada persona important del teu dibuix, i si vols hi sumes un espai privat per a clients i aliats i un altre per al teu equip. És un esborrany per parlar-ne, no la web final.",
         'Qué hacemos': 'Què fem',
         'La web pública': 'La web pública',
         'La portada: una parte para cada persona importante, con lo que viene a buscar, el aviso legal y tu correo oculto a los robots. Va siempre.': "La portada: una part per a cada persona important, amb el que ve a buscar, l'avís legal i el teu correu amagat als robots. Hi va sempre.",
         'Un espacio con cuenta para tus clientes y aliados: lo que les das y lo que te dan, cada uno en su puerta.': "Un espai amb compte per als teus clients i aliats: el que els dones i el que et donen, cadascun a la seva porta.",
         'Tu parte interna: primero para ti (tu tablero, lo que entregas y lo que tienes pendiente) y, más adelante, espacios compartidos con tu equipo.': "La teva part interna: primer per a tu (el teu tauler, el que lliures i el que tens pendent) i, més endavant, espais compartits amb el teu equip.",
         'Escribe tus textos con IA': 'Escriu els teus textos amb IA',
-        'A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en el boceto.': "A partir del teu dibuix: la frase que diu el que fas, la presentació i el que troba cadascú a la seva secció. Canvia'ls al teu gust i mira'ls a l'esbós.",
+        'A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en la estructura.': "A partir del teu dibuix: la frase que diu el que fas, la presentació i el que troba cadascú a la seva secció. Canvia'ls al teu gust i mira'ls a l'estructura.",
         '✦ Escribir mis textos': '✦ Escriure els meus textos',
-        'Ver el boceto de mi web': "Veure l'esbós de la meva web",
+        'Ver la estructura de mi web': "Veure l'estructura de la meva web",
         '6 · Nos lo envías': '6 · Ens ho envies',
         'Cuando quieras, nos lo mandas y te contesta una persona.': "Quan vulguis, ens ho envies i et contesta una persona.",
         'Nos llega lo que has escrito, tu dibujo y el nivel de web que has elegido. Con eso preparamos tu borrador y el presupuesto, y te escribimos a tu correo.': "Ens arriba el que has escrit, el teu dibuix i el nivell de web que has triat. Amb això preparem el teu esborrany i el pressupost, i t'escrivim al teu correu.",
@@ -1221,7 +1269,7 @@
         'El editor de tu dibujo': 'L\'editor del teu dibuix',
         'Nivel de web': 'Nivell de web',
         'Qué partes de la web hacemos': 'Quines parts de la web fem',
-        'Páginas del boceto': "Pàgines de l'esbós",
+        'Las páginas de tu web': 'Les pàgines de la teva web',
         'Boceto de tu web': 'Esbós de la teva web',
         'Ir al contenido': 'Anar al contingut',
         /* Lo que pinta el script */
@@ -1253,12 +1301,8 @@
         'En tu web de verdad, esto te llega por correo': "A la teva web de debò, això t'arriba per correu",
         'Primero di al menos quién está a tu alrededor (paso 1).': 'Primer digues almenys qui hi ha al teu voltant (pas 1).',
         'Primero di al menos quién está a tu alrededor (paso 1)': 'Primer digues almenys qui hi ha al teu voltant (pas 1)',
-        'Preparando el boceto…': "Preparant l'esbós…",
         'Inicio': 'Inici',
-        'Este es tu boceto: una portada con una parte para cada persona importante de tu dibujo, y el aviso legal.': "Aquest és el teu esbós: una portada amb una part per a cada persona important del teu dibuix, i l'avís legal.",
-        'Este es tu boceto: una puerta para cada uno, con el espacio de clientes y aliados.': "Aquest és el teu esbós: una porta per a cadascú, amb l'espai de clients i aliats.",
         'El espacio de tu equipo está en «Intranet».': "L'espai del teu equip és a «Intranet».",
-        'No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.': "No he pogut preparar l'esbós ara. Pots enviar-ho igualment i ho mirem junts.",
         'Esto cambia quién está a tu alrededor por lo del modelo «{0}». ¿Seguimos?': 'Això canvia qui hi ha al teu voltant pel que diu el model «{0}». Continuem?',
         'Modelo «{0}»: ahora cámbialo con tus palabras': "Model «{0}»: ara canvia'l amb les teves paraules",
         'Por lo que cuentas, tu proyecto se parece a': "Pel que expliques, el teu projecte s'assembla a",
@@ -1352,7 +1396,23 @@
         'El cerebro de tu proyecto es una carpeta con tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar. Cualquier IA que la lea antes de trabajar contigo empieza sabiendo lo que ya hemos aprendido.': "El cervell del teu projecte és una carpeta amb el teu mapa, el que has decidit, les eines que fas servir i el que queda per parlar. Qualsevol IA que la llegeixi abans de treballar amb tu comença sabent el que ja hem après.",
         'cerebro-{0}.zip': 'cervell-{0}.zip', 'Cerebro descargado': 'Cervell descarregat', 'No se ha podido preparar ahora. Prueba en un rato.': "No s'ha pogut preparar ara. Prova-ho d'aquí a una estona.",
         'La frase de tu web': 'La frase de la teva web', 'La presentación': 'La presentació', 'Para {0}': 'Per a {0}',
-        'Cómo le llamas en la web': "Com l'anomenes a la web", 'Lo que le dices': 'El que li dius', 'Verlo en el boceto': "Veure-ho a l'esbós",
+        'Preparando la estructura de tu web…': "Preparant l'estructura de la teva web…",
+        'Esta es la estructura de tu web: cada página, para quién es y qué dice. El diseño lo cuidamos juntos.': "Aquesta és l'estructura de la teva web: cada pàgina, per a qui és i què diu. El disseny el cuidem junts.",
+        'No he podido preparar la estructura ahora. Puedes enviarlo igual y lo vemos juntos.': "No he pogut preparar l'estructura ara. Pots enviar-ho igualment i ho mirem junts.",
+        'La estructura de tu web': "L'estructura de la teva web", 'El menú de tu web': 'El menú de la teva web',
+        '{0} páginas': '{0} pàgines', '{0} programas': '{0} programes', 'idiomas: {0}': 'idiomes: {0}',
+        '{0} direcciones de siempre siguen funcionando': '{0} adreces de sempre segueixen funcionant',
+        'Con su cuenta': 'Amb el seu compte', 'Sus direcciones de antes llevan aquí:': "Les seves adreces d'abans porten aquí:",
+        'Una página con todos y una para cada uno. Los cambias tú desde «Programas».': 'Una pàgina amb tots i una per a cadascun. Els canvies tu des de «Programes».',
+        'Fechas:': 'Dates:', 'Formularios de contacto': 'Formularis de contacte',
+        'Cada mensaje te llega por correo. Los cambias tú desde «Formularios».': "Cada missatge t'arriba per correu. Els canvies tu des de «Formularis».",
+        'Sale en:': 'Surt a:', 'obligatorio': 'obligatori', 'texto': 'text', 'correo': 'correu', 'teléfono': 'telèfon', 'texto largo': 'text llarg',
+        'a elegir': 'a triar', 'fecha': 'data', 'casilla': 'casella',
+        'Una parte para cada persona de tu mapa': 'Una part per a cada persona del teu mapa', 'Lo que encuentra cada uno, dicho para él.': 'El que troba cadascú, dit per a ell.',
+        'En el pie': 'Al peu', 'Aviso legal y privacidad': 'Avís legal i privacitat', 'La entrada de tu equipo (intranet)': "L'entrada del teu equip (intranet)",
+        '{0} direcciones de siempre, y adónde llevan': '{0} adreces de sempre, i on porten',
+        'Esto es lo que tendrá tu web y en qué orden. El diseño, con tus fotos y tu logo, lo vemos juntos: no enseñamos una web hasta que está bonita.': "Això és el que tindrà la teva web i en quin ordre. El disseny, amb les teves fotos i el teu logo, el mirem junts: no ensenyem una web fins que és bonica.",
+        'Cómo le llamas en la web': "Com l'anomenes a la web", 'Lo que le dices': 'El que li dius', 'Verlo en la estructura': "Veure-ho a l'estructura",
         '¿Ya tienes web? La leemos': 'Ja tens web? La llegim',
         'Con tu permiso leemos las páginas públicas de tu web de ahora, para que la nueva no pierda lo que Google ya conoce de ti. Luego te decimos a quién va cada página y lo que tu web todavía no le dice a cada uno.': "Amb el teu permís llegim les pàgines públiques de la teva web d'ara, perquè la nova no perdi el que Google ja coneix de tu. Després et diem a qui va cada pàgina i el que la teva web encara no li diu a cadascú.",
         'Para leer tu web, dinos quién eres. Elige cómo:': 'Per llegir la teva web, digues-nos qui ets. Tria com:',
@@ -1360,7 +1420,7 @@
         'Leer mi web': 'Llegir la meva web', 'Leer otra vez': 'Llegir-la un altre cop', 'Marca que es tu web y que nos dejas leerla': 'Marca que és la teva web i que ens la deixes llegir',
         'Escribe la dirección de tu web': "Escriu l'adreça de la teva web",
         'Leyendo tu web con calma, una página cada vez…': 'Llegint la teva web amb calma, una pàgina cada cop…', 'Mirando qué páginas deja leer…': 'Mirant quines pàgines deixa llegir…',
-        'Apuntando títulos y encabezados…': 'Apuntant títols i encapçalaments…', 'Quitando correos y teléfonos…': 'Traient correus i telèfons…',
+        'Apuntando títulos y encabezados…': 'Apuntant títols i encapcalaments…', 'Quitando correos y teléfonos…': 'Traient correus i telèfons…',
         'Sigue leyendo. Vuelve en un rato y la verás aquí.': "Encara la llegeix. Torna d'aquí a una estona i la veuràs aquí.",
         'No hemos podido leer tu web ahora.': "No hem pogut llegir la teva web ara.", 'Hoy ya hemos leído tu web varias veces. Mañana, otra.': 'Avui ja hem llegit la teva web unes quantes vegades. Demà, una altra.',
         'Esa dirección no parece una web.': 'Aquesta adreça no sembla una web.', 'No hemos podido leer ninguna página de tu web.': 'No hem pogut llegir cap pàgina de la teva web.',
@@ -1373,7 +1433,7 @@
         'El documento de diseño de tu web': 'El document de disseny de la teva web',
         'Sale de tu dibujo y, si la hemos leído, de tu web de ahora: cada página, para quién es y qué tiene que conseguir; tus direcciones de siempre, que siguen funcionando; los textos de cada idioma por separado, y lo que tu web tiene que cumplir. Lo revisamos juntos en la sesión y con él construimos tu web.': "Surt del teu dibuix i, si l'hem llegida, de la teva web d'ara: cada pàgina, per a qui és i què ha d'aconseguir; les teves adreces de sempre, que continuen funcionant; els textos de cada idioma per separat, i el que la teva web ha de complir. El revisem junts a la sessió i amb ell construïm la teva web.",
         'Preparar mi documento de diseño': 'Preparar el meu document de disseny', 'Preparar otra vez': 'Preparar-lo un altre cop',
-        'El boceto es solo una vista rápida de tu dibujo como web, no tu web final.': "L'esbós és només una vista ràpida del teu dibuix com a web, no la teva web final.",
+        'Es el plano de tu web: qué páginas tiene, para quién y qué dicen. El diseño lo cuidamos juntos.': "És el plànol de la teva web: quines pàgines té, per a qui i què diuen. El disseny el cuidem junts.",
         'Preparando tu documento…': 'Preparant el teu document…', 'No he podido preparar el documento ahora.': "No he pogut preparar el document ara.",
         '{0} páginas · idiomas: {1}': '{0} pàgines · idiomes: {1}', '{0} direcciones de siempre que siguen funcionando': '{0} adreces de sempre que continuen funcionant',
         'Antes:': 'Abans:', 'Botón:': 'Botó:', 'Texto de tu web de ahora': "Text de la teva web d'ara", 'Por escribir': 'Per escriure',
@@ -1860,27 +1920,8 @@
         i.checked = i.value === S.nivel;
         i.addEventListener('change', function () { S.nivel = i.value; desa(); });
     });
-    var HTML = null, PAGS = null;
+    var HTML = null;
     function motor() { return HTML ? Promise.resolve(HTML) : fetch('/SOS/vna-suport.html').then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (tx) { HTML = tx; return tx; }); }
-    function mostra(ruta) {
-        var cos = PAGS[ruta] || PAGS['index.html'], css = PAGS['estil.css'] || '';
-        $('#cl-marc').srcdoc = cos.replace(/<link[^>]+href="estil\.css"[^>]*>/, '<style>' + css + '</style>');
-        ARA = PAGS[ruta] ? ruta : 'index.html';
-        document.querySelectorAll('#cl-pags button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.r === ruta)); });
-    }
-    $('#cl-marc').addEventListener('load', function () {
-        var d = this.contentDocument; if (!d) return;
-        d.addEventListener('click', function (ev) {
-            var a = ev.target.closest('a[href]'), s = ev.target.closest('button[type=submit]');
-            if (s) { ev.preventDefault(); aviso(t('En tu web de verdad, esto te llega por correo')); return; }
-            if (!a) return;
-            var hr = a.getAttribute('href'), h = hr.split('#')[0], ancla = hr.split('#')[1];
-            ev.preventDefault();
-            /* La vista básica enlaza secciones de la misma página. */
-            if (ancla && (!h || $('#cl-pags [aria-pressed="true"]').dataset.r === h)) { var on = d.getElementById(ancla); if (on) on.scrollIntoView(); return; }
-            if (PAGS[h]) mostra(h);
-        });
-    });
     /* Lo que hacemos: la web pública va siempre (la vista básica, la capa
        informativa); la extranet y la intranet se suman. Sin extranet, el boceto
        es la landing; con ella, una puerta para cada uno. */
@@ -1941,28 +1982,196 @@
         return { pinta: pinta, text: text };
     })();
 
-    /* El boceto: con el botón del paso 5, o en vivo (`enViu`) desde el panel
-       «Mi web» y cada vez que cambia algo, sin moverse de la página que miras. */
-    var ARA = 'index.html';
+    /* La estructura de su web (l'Àlvar, 04/11/2026: «cuando haya una web enseñamos
+       siempre algo bueno, porque la imagen es muy importante»): antes era el HTML
+       del motor sin maquetar en un iframe; ahora es el plan de su web, como un
+       documento cuidado, del mismo MotorWeb.disseny que el documento de diseño:
+       el menú, cada página con para quién es, qué consigue y sus secciones, sus
+       programas, sus formularios, el pie y las direcciones de siempre. La web con
+       diseño es la que construimos en Claude Code. Con el botón del paso 5, en
+       pantalla completa (#vista) o en vivo (`enViu`) desde el panel «Mi web». */
+    function optsDisseny(m) {
+        return { nom: S.org || S.nom, url: S.web, casa: [m.roles[0]], llengua: LL, capes: capes(), marca: S.marca || null,
+            /* La web d'ara (punt 12) i a quina porta va cada pàgina (punt 14): el motor no perd cap adreça vella. */
+            foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null, programes: S.programes, formularis: S.formularis, integrades: S.integrades };
+    }
+    function titolPag(p, J) {
+        var MP = (J.marca && J.marca.portes) || {};
+        return p.id === 'inici' ? t('Inicio') : p.rol ? ((MP[p.rol] && MP[p.rol].nom) || p.rol) : ((p.textos[J.llengues[0]] || {}).h1 || p.id);
+    }
+    var LLETRES = { sans: 'system-ui,-apple-system,"Segoe UI",sans-serif', serif: '"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif',
+        rodona: 'ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif', mono: 'ui-monospace,"SF Mono",Menlo,Consolas,monospace' };
+    var ON = { contacte: 'Contacto', inici: 'Inicio', programes: 'Programas' };
+    var TIPUS_CAMP = { text: 'texto', correu: 'correo', telefon: 'teléfono', textarea: 'texto largo', tria: 'a elegir', data: 'fecha', programa: 'programa', casella: 'casilla' };
+    function estructura(J) {
+        var MP = (J.marca && J.marca.portes) || {}, mc = J.marca || {};
+        var d = el('article', { class: 'estructura', id: 'cl-estructura', 'aria-label': t('La estructura de tu web') });
+        if (mc.color) d.style.setProperty('--mc', mc.color);
+        if (LLETRES[mc.lletra]) d.style.fontFamily = LLETRES[mc.lletra];
+        if (mc.forma === 'recta') d.classList.add('recta');
+        /* Qué es cada página (como hace el motor en webASite): la página vieja de un
+           programa pasa a ser la de ese programa, y la vieja de contacto, la de Contacto. */
+        var sl = function (u) { return String(u || '').replace(/^https?:\/\/[^/]+/i, '').replace(/\/+$/, '') || '/'; };
+        var ambContacte = J.formularis.some(function (f) { return f.on.indexOf('contacte') >= 0; });
+        var progAbans = {}, deProg = {}, contAbans = [], llocProg = [];
+        J.programes.forEach(function (q, i) {
+            if (!q.url) return;
+            J.pagines.forEach(function (p) {
+                if (p.id === 'inici' || p.rol || deProg[p.id] || !p.abans.some(function (a) { return sl(a) === sl(q.url); })) return;
+                deProg[p.id] = 1; progAbans[i] = (progAbans[i] || []).concat(p.abans); if (p.menu !== null) llocProg.push(p.menu);
+            });
+        });
+        /* El documento de diseño habla para Claude Code; aquí, en sus palabras: sin herramientas ni «roles». */
+        var neta = function (x) { x = String(x || '').replace(/\s*\(Netlify Forms\)/g, '').replace(/^(Formulario de alta|Formulari d'alta): /, '').replace(/\brol\b/g, 'persona'); return x.charAt(0).toUpperCase() + x.slice(1); };
+        var esCont = function (p) { return ambContacte && !p.rol && p.id !== 'inici' && /^contact/.test(p.id); };
+        var usa = J.pagines.filter(function (p) { if (esCont(p)) { contAbans = contAbans.concat(p.abans); return false; } return !deProg[p.id]; });
+        /* Sin web de ahora, el menú es el de su mapa: una puerta para cada uno. Con web, el de su web (no se pierde lo que ya conocen). */
+        var senseMenu = !J.pagines.some(function (p) { return p.id !== 'inici' && p.menu !== null; });
+        var alMenu = function (p) { return p.capa === 'publica' && (p.id === 'inici' || p.menu !== null || (senseMenu && !!p.rol)); };
+        var lloc = function (p) { return p.id === 'inici' ? -1 : p.menu === null ? 500 : p.menu; };
+        var menuP = usa.filter(alMenu), portes = usa.filter(function (p) { return !alMenu(p) && p.rol; }), altres = usa.filter(function (p) { return !alMenu(p) && !p.rol; });
+        /* La cabecera: su nombre, su frase y lo que hay en números. */
+        var cap = el('header', { class: 'e-cap' });
+        cap.appendChild(el('p', { class: 'e-ull' }, t('La estructura de tu web')));
+        cap.appendChild(el('h3', {}, J.nom));
+        if (mc.lema) cap.appendChild(el('p', { class: 'e-lema' }, mc.lema));
+        cap.appendChild(el('p', { class: 'e-xifres' }, [t('{0} páginas', usa.length + (J.programes.length ? 1 + J.programes.length : 0) + (ambContacte ? 1 : 0)),
+            J.programes.length ? t('{0} programas', J.programes.length) : '', t('idiomas: {0}', J.llengues.join(', ')),
+            J.redireccions.length ? t('{0} direcciones de siempre siguen funcionando', J.redireccions.length) : ''].filter(Boolean).join(' · ')));
+        d.appendChild(cap);
+        /* El menú, como lo verá quien entra: en el orden de su web de ahora. */
+        var menu = menuP.map(function (p) { return { id: 'e-' + p.id, t: titolPag(p, J), n: lloc(p), p: p }; });
+        if (J.programes.length) menu.push({ id: 'e-programas', t: t('Programas'), n: llocProg.length ? Math.min.apply(null, llocProg) : 0.5 });
+        if (ambContacte) menu.push({ id: 'e-contacto', t: t('Contacto'), n: 1e6 });
+        menu = menu.map(function (x, i) { x.i = i; return x; }).sort(function (a, b) { return (a.n - b.n) || (a.i - b.i); });
+        var nv = el('nav', { class: 'e-menu', 'aria-label': t('El menú de tu web') }), ol = el('ol');
+        menu.forEach(function (x) { var li = el('li'); li.appendChild(el('a', { href: '#' + x.id, 'data-salta': x.id }, x.t)); ol.appendChild(li); });
+        nv.appendChild(ol); d.appendChild(nv);
+        /* Cada página: una ficha, numerada en el orden en que se lee. */
+        var N = 0;
+        function antes(l) { return el('p', { class: 'e-abans' }, t('Sus direcciones de antes llevan aquí:') + ' ' + l.slice(0, 4).join(', ') + (l.length > 4 ? ' …' : '')); }
+        function capcal(id, tit, ruta) {
+            var h = el('div', { class: 'e-pag-cap' });
+            h.appendChild(el('span', { class: 'e-num', 'aria-hidden': 'true' }, String(++N)));
+            h.appendChild(el('h4', { id: 'e-t-' + id }, tit));
+            if (ruta) h.appendChild(el('code', {}, ruta));
+            return h;
+        }
+        function fitxa(p) {
+            var a = el('section', { class: 'e-pag', id: 'e-' + p.id, 'data-ruta': p.ruta, 'aria-labelledby': 'e-t-' + p.id });
+            a.appendChild(capcal(p.id, titolPag(p, J), p.ruta));
+            var et = el('p', { class: 'e-etis' });
+            if (p.rol) et.appendChild(el('span', {}, t('Para {0}', p.rol)));
+            if (p.capa !== 'publica') et.appendChild(el('span', { class: 'priv' }, t('Con su cuenta')));
+            if (et.childNodes.length) a.appendChild(et);
+            a.appendChild(el('p', { class: 'e-obj' }, neta(p.objectiu)));
+            var cita = p.id === 'inici' ? mc.presentacio : p.rol && MP[p.rol] && MP[p.rol].intro;
+            if (cita) a.appendChild(el('blockquote', { class: 'e-cita' }, cita));
+            var secs = p.seccions.filter(function (x) { return x.titol || x.que; });
+            if (secs.length) {
+                var so = el('ol', { class: 'e-secs' });
+                secs.forEach(function (x) { var li = el('li'); li.appendChild(el('b', {}, neta(x.titol))); if (x.que) li.appendChild(el('span', {}, x.que)); so.appendChild(li); });
+                a.appendChild(so);
+            }
+            if (p.cta) { var c = el('p', { class: 'e-cta' }); c.appendChild(el('span', { class: 'e-boto' }, neta(p.cta))); a.appendChild(c); }
+            var ll = el('p', { class: 'e-ll' });
+            J.llengues.forEach(function (k) { var x = p.textos[k] || {}; ll.appendChild(el('span', x.estat === 'conserva' ? { class: 'ok' } : {}, k + ' · ' + t(x.estat === 'conserva' ? 'Texto de tu web de ahora' : 'Por escribir'))); });
+            a.appendChild(ll);
+            if (p.abans.length) a.appendChild(antes(p.abans));
+            return a;
+        }
+        /* Sus programas: tarjetas, como las verá quien busca curso. */
+        function blocProgs() {
+            var pr = el('section', { class: 'e-pag', id: 'e-programas', 'aria-labelledby': 'e-t-programas' }), g = el('div', { class: 'e-progs' });
+            pr.appendChild(capcal('programas', t('Programas'), '/' + (LL === 'ca' ? 'programes' : 'programas') + '.html'));
+            pr.appendChild(el('p', { class: 'e-obj' }, t('Una página con todos y una para cada uno. Los cambias tú desde «Programas».')));
+            J.programes.forEach(function (q, i) {
+                var c = el('div', { class: 'e-prog' });
+                c.appendChild(el('b', {}, q.nom));
+                if (q.perQui) c.appendChild(el('span', { class: 'e-qui' }, q.perQui));
+                var et = el('p', { class: 'e-etis' });
+                [q.durada, q.modalitat, q.places, q.certificat].filter(Boolean).forEach(function (x) { et.appendChild(el('span', {}, x)); });
+                if (et.childNodes.length) c.appendChild(et);
+                if (q.dates.length) c.appendChild(el('span', { class: 'e-dates' }, t('Fechas:') + ' ' + q.dates.join(', ')));
+                if (q.resum) c.appendChild(el('p', {}, q.resum));
+                if (progAbans[i]) c.appendChild(antes(progAbans[i]));
+                g.appendChild(c);
+            });
+            pr.appendChild(g); return pr;
+        }
+        /* Sus formularios: qué pregunta cada uno y dónde sale. */
+        function blocForms() {
+            var fo = el('section', { class: 'e-pag', id: 'e-contacto', 'aria-labelledby': 'e-t-contacto' });
+            fo.appendChild(capcal('contacto', ambContacte ? t('Contacto') : t('Formularios de contacto'), ambContacte ? '/' + (LL === 'ca' ? 'contacte' : 'contacto') + '.html' : ''));
+            fo.appendChild(el('p', { class: 'e-obj' }, t('Cada mensaje te llega por correo. Los cambias tú desde «Formularios».')));
+            J.formularis.forEach(function (f) {
+                var c = el('div', { class: 'e-form' });
+                c.appendChild(el('b', {}, f.titol || f.id));
+                c.appendChild(el('span', { class: 'e-qui' }, t('Sale en:') + ' ' + f.on.map(function (x) { return t(ON[x] || x); }).join(', ')));
+                var u = el('ul');
+                f.camps.forEach(function (x) { u.appendChild(el('li', {}, x.etiqueta + ' · ' + t(TIPUS_CAMP[x.tipus] || x.tipus) + (x.obligatori ? ' · ' + t('obligatorio') : ''))); });
+                c.appendChild(u);
+                if (f.boto) { var bp = el('p', { class: 'e-cta' }); bp.appendChild(el('span', { class: 'e-boto' }, f.boto)); c.appendChild(bp); }
+                fo.appendChild(c);
+            });
+            if (contAbans.length) fo.appendChild(antes(contAbans));
+            return fo;
+        }
+        var sp = el('div', { class: 'e-pags' });
+        menu.forEach(function (x) { sp.appendChild(x.p ? fitxa(x.p) : x.id === 'e-programas' ? blocProgs() : blocForms()); });
+        if (J.formularis.length && !ambContacte) sp.appendChild(blocForms());
+        function grup(tit, nota, l) {
+            if (!l.length) return;
+            sp.appendChild(el('h4', { class: 'e-grup' }, tit));
+            if (nota) sp.appendChild(el('p', { class: 'e-obj' }, nota));
+            l.forEach(function (p) { sp.appendChild(fitxa(p)); });
+        }
+        grup(t('Una parte para cada persona de tu mapa'), t('Lo que encuentra cada uno, dicho para él.'), portes);
+        grup(t('Fuera del menú'), '', altres);
+        d.appendChild(sp);
+        /* El pie: el aviso legal siempre, y las webs hermanas con su enlace. */
+        var pie = el('footer', { class: 'e-pie' });
+        pie.appendChild(el('b', {}, t('En el pie')));
+        var pu = el('ul');
+        J.integrades.forEach(function (x) { var li = el('li'); li.appendChild(el('a', { href: x.url, rel: 'noopener', target: '_blank' }, x.nom)); if (x.descripcio) li.appendChild(document.createTextNode(' · ' + x.descripcio)); pu.appendChild(li); });
+        pu.appendChild(el('li', {}, t('Aviso legal y privacidad')));
+        if (capes().indexOf('intranet') >= 0) pu.appendChild(el('li', {}, t('La entrada de tu equipo (intranet)')));
+        pie.appendChild(pu); d.appendChild(pie);
+        if (J.redireccions.length) {
+            var rd = el('details', { class: 'e-red' }), ru = el('ul');
+            rd.appendChild(el('summary', {}, t('{0} direcciones de siempre, y adónde llevan', J.redireccions.length)));
+            J.redireccions.forEach(function (x) { ru.appendChild(el('li', {}, x.de + ' → ' + x.a)); });
+            rd.appendChild(ru); d.appendChild(rd);
+        }
+        d.appendChild(el('p', { class: 'e-nota' }, t('Esto es lo que tendrá tu web y en qué orden. El diseño, con tus fotos y tu logo, lo vemos juntos: no enseñamos una web hasta que está bonita.')));
+        d.addEventListener('click', function (ev) {
+            var a = ev.target.closest('a[data-salta]'); if (!a) return;
+            ev.preventDefault(); salta(a.dataset.salta);
+        });
+        return d;
+    }
+    function salta(id) {
+        var x = document.getElementById(id), c = $('#cl-estructura'); if (!x || !c) return;
+        c.scrollTo({ top: x.offsetTop - c.offsetTop - 8, behavior: 'smooth' });
+        document.querySelectorAll('#cl-pags button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.e === id)); });
+    }
     function pintaWeb(enViu) {
         var r = $('#cl-boceto-r'), m = D.mapa(S);
         if (m.roles.length < 2) { r.textContent = t(enViu ? 'Escribe arriba con quién trabajas (paso 1) y aquí aparece tu web.' : 'Primero di al menos quién está a tu alrededor (paso 1).'); $('#cl-marc-caixa').hidden = true; return; }
-        if (!enViu) r.textContent = t('Preparando el boceto…');
+        if (!enViu) r.textContent = t('Preparando la estructura de tu web…');
         motor().then(function (html) {
-            var casa = [m.roles[0]], basica = capes().indexOf('extranet') < 0,
-                f = MotorWeb.site(m, html, { nom: S.org || S.nom, correu: S.mail, llengua: LL, url: S.web, casa: casa, vista: basica ? 'basica' : '', capes: capes(), marca: S.marca || null,
-                    /* La web d'ara (punt 12) i a quina porta va cada pàgina (punt 14): el motor no perd cap adreça vella. */
-                    foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null, programes: S.programes, formularis: S.formularis, integrades: S.integrades });
-            PAGS = {}; f.forEach(function (x) { PAGS[x.ruta] = x.cos; });
+            var J = MotorWeb.disseny(m, html, optsDisseny(m)).json, caixa = $('#cl-marc-caixa'), vell = $('#cl-estructura'), sc = vell ? vell.scrollTop : 0;
+            var nou = estructura(J);
+            if (vell) vell.replaceWith(nou); else caixa.appendChild(nou);
+            if (enViu) nou.scrollTop = sc;
             var bar = $('#cl-pags'); bar.textContent = '';
-            f.filter(function (x) { return /^[^/]+\.html$/.test(x.ruta) && !/^(404|gracies|registre)\.html$/.test(x.ruta) && (x.ruta !== 'equip.html' || capes().indexOf('intranet') >= 0); }).forEach(function (x) {
-                var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'data-r': x.ruta }, x.ruta === 'index.html' ? t('Inicio') : x.ruta === 'equip.html' ? 'Intranet' : (x.cos.match(/<title>([^<|]+)/) || [0, x.ruta])[1].trim());
-                b.addEventListener('click', function () { mostra(x.ruta); }); bar.appendChild(b);
+            [].slice.call(nou.querySelectorAll('.e-menu a')).forEach(function (a) {
+                var b = el('button', { type: 'button', class: 'btn btn-sm btn-ghost', 'data-e': a.dataset.salta, 'aria-pressed': 'false' }, a.textContent);
+                b.addEventListener('click', function () { salta(a.dataset.salta); }); bar.appendChild(b);
             });
-            $('#cl-marc-caixa').hidden = false; mostra(enViu && PAGS[ARA] ? ARA : 'index.html');
-            r.textContent = t(basica ? 'Este es tu boceto: una portada con una parte para cada persona importante de tu dibujo, y el aviso legal.'
-                : 'Este es tu boceto: una puerta para cada uno, con el espacio de clientes y aliados.') + (capes().indexOf('intranet') >= 0 ? ' ' + t('El espacio de tu equipo está en «Intranet».') : '');
-        }).catch(function () { r.textContent = t('No he podido preparar el boceto ahora. Puedes enviarlo igual y lo vemos juntos.'); });
+            caixa.hidden = false;
+            r.textContent = t('Esta es la estructura de tu web: cada página, para quién es y qué dice. El diseño lo cuidamos juntos.');
+        }).catch(function () { r.textContent = t('No he podido preparar la estructura ahora. Puedes enviarlo igual y lo vemos juntos.'); });
     }
     $('#cl-boceto').addEventListener('click', function () { pintaWeb(false); });
 
@@ -1982,21 +2191,20 @@
         r.textContent = t('Preparando tu documento…'); b.disabled = true;
         motor().then(function (html) {
             b.disabled = false;
-            DOC = MotorWeb.disseny(m, html, { nom: S.org || S.nom, url: S.web, casa: [m.roles[0]], llengua: LL, capes: capes(), marca: S.marca || null,
-                foto: IA && IA.foto ? IA.foto() : null, portesWeb: S.portesWeb || null, programes: S.programes, formularis: S.formularis, integrades: S.integrades });
+            DOC = MotorWeb.disseny(m, html, optsDisseny(m));
             pintaDisseny(DOC.json);
             b.textContent = t('Preparar otra vez');
         }).catch(function () { b.disabled = false; r.textContent = t('No he podido preparar el documento ahora.'); });
     }
     function pintaDisseny(J) {
-        var r = $('#cl-disseny-res'), MP = (J.marca && J.marca.portes) || {}, L0 = J.llengues[0]; r.textContent = '';
+        var r = $('#cl-disseny-res'); r.textContent = '';
         var ps = J.pagines.slice().sort(function (x, y) { return (x.menu === null ? 999 : x.menu) - (y.menu === null ? 999 : y.menu); });
         r.appendChild(el('p', { class: 'ia-resum' }, t('{0} páginas · idiomas: {1}', ps.length, J.llengues.join(', ')) + (J.redireccions.length ? ' · ' + t('{0} direcciones de siempre que siguen funcionando', J.redireccions.length) : '')));
         var ul = el('ul', { class: 'ia-pags', id: 'cl-disseny-pags' });
         ps.forEach(function (p, n) {
             var li = el('li', { 'data-ruta': p.ruta }); li.style.animationDelay = (n * .05) + 's';
             li.appendChild(el('code', {}, p.ruta + (p.abans.length ? ' · ' + t('Antes:') + ' ' + p.abans.join(', ') : '')));
-            li.appendChild(el('b', {}, p.id === 'inici' ? t('Inicio') : p.rol ? ((MP[p.rol] && MP[p.rol].nom) || p.rol) : ((p.textos[L0] || {}).h1 || p.id)));
+            li.appendChild(el('b', {}, titolPag(p, J)));
             if (p.rol) li.appendChild(el('span', { class: 'porta' }, t('Para {0}', p.rol)));
             li.appendChild(el('span', { class: 'h' }, p.objectiu + (p.cta ? ' · ' + t('Botón:') + ' ' + p.cta : '')));
             var ll = el('span', { class: 'll' });
@@ -2579,7 +2787,7 @@
                     return { quien: s.quien, nom: nm[1], intro: it[1] };
                 });
                 res.appendChild(w);
-                var acc = el('div', { class: 'accions' }), us = el('button', { type: 'button', class: 'btn btn-primary' }, t('Verlo en el boceto'));
+                var acc = el('div', { class: 'accions' }), us = el('button', { type: 'button', class: 'btn btn-primary' }, t('Verlo en la estructura'));
                 us.addEventListener('click', function () {
                     var portes = {}; secs.forEach(function (s) { portes[s.quien] = { nom: s.nom.value, intro: s.intro.value }; });
                     S.marca = Object.assign({}, S.marca, { lema: lm[1].value, presentacio: pr[1].value, portes: portes }); desa();
@@ -2898,7 +3106,7 @@
             var ol = el('ol');
             [['#cuenta', 'Entra con tu correo: así lo que haces se guarda con tu cuenta.'], ['#web', 'Leemos tu web de ahora, con tu permiso, para no perder lo que Google ya conoce.'],
                 ['#programas', 'Revisa tus programas, sobre todo las fechas.'], ['#formularios', 'Elige qué te preguntan en los formularios.'],
-                ['#vista', 'Mira tu web nueva en la vista previa.'], ['#tablero', 'En tu tablero, lo que se repite y puede ir solo.']].forEach(function (x) {
+                ['#vista', 'Mira cómo queda organizada tu web nueva.'], ['#tablero', 'En tu tablero, lo que se repite y puede ir solo.']].forEach(function (x) {
                 if (x[0] === '#programas' && !teProgrames()) return;
                 var li = el('li'); li.appendChild(el('a', { href: x[0] }, t(x[1]))); ol.appendChild(li);
             });
