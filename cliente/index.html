@@ -99,6 +99,19 @@
         .salta:focus { left: 0; }
         main > section { padding-block: var(--sec); border-top: 1px solid var(--border); }
         main > section.alt { background: var(--panel); }
+        /* El panel de Álvaro (#panel): se queda solo en la página. */
+        body.modo-panel #contenido > :not(#panel), body.modo-panel .avanc-pill, body.modo-panel .viu-b { display: none; }
+        .pn-cos h3 { margin: 1.6rem 0 .6rem; }
+        .pn-si { color: var(--green); font-weight: 600; }
+        .pn-no { color: var(--orange); font-weight: 600; }
+        .pn-msg { background: var(--card); border: 1px solid var(--indigo); border-radius: 10px; padding: .7rem 1rem; margin: 0 0 1rem; }
+        .pn-llista { list-style: none; display: grid; gap: 1rem; padding: 0; }
+        .pn-conv { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; display: grid; gap: .35rem; }
+        .pn-conv h4 { font-size: var(--t2); margin: 0; }
+        .pn-gast { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+        .pn-gast .barra-e { width: 6rem; height: .5rem; border-radius: 99px; background: #e4e0fb; overflow: hidden; display: inline-block; }
+        .pn-gast .barra-e i { display: block; height: 100%; background: var(--indigo); }
+        .pn-form { margin-top: 1rem; }
         .eyebrow { display: flex; align-items: center; gap: .65rem; font-family: var(--mono); font-size: var(--t0); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: .8rem; }
         .eyebrow::before { content: ""; flex: none; width: 1.6rem; height: 1px; background: var(--border-strong); }
         h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.08; letter-spacing: -.03em; font-weight: 700; margin-bottom: 1.1rem; max-width: 22ch; }
@@ -626,6 +639,7 @@
     <div class="container">
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
+        <div class="benvinguda" id="cl-convit" role="region" aria-label="Entra con tu enlace" hidden></div>
         <div class="benvinguda" id="cl-benvinguda" role="region" aria-labelledby="cl-benv-t" hidden></div>
         <p class="lead">Empiezas por el dibujo de con quién trabajas y en unos minutos ves tu mapa y la estructura de tu web. La cuenta, solo cuando quieras enviárnoslo. Lo que escribes se queda en tu navegador hasta que tú pulses «Enviar».</p>
         <div class="avanc" id="avance" aria-labelledby="avanc-t">
@@ -909,6 +923,18 @@
             <button type="button" class="btn btn-primary ia-boto" id="cl-prop-veu" hidden>Ver mi propuesta</button>
             <div id="cl-prop-res" aria-live="polite"></div>
         </div>
+    </div>
+</section>
+
+<!-- El panel de Álvaro (05/11/2026): solo con #panel y su clave; panel.js no se carga para nadie más. -->
+<section id="panel" class="alt" aria-labelledby="t-panel" hidden>
+    <div class="container">
+        <div class="cabeza">
+            <p class="eyebrow">Solo para Álvaro</p>
+            <h2 id="t-panel">Tu panel</h2>
+            <p>Tus invitados, su enlace y cómo va cada espacio, y si la IA está funcionando.</p>
+        </div>
+        <div class="pn-cos" aria-live="polite"></div>
     </div>
 </section>
 
@@ -1353,6 +1379,8 @@
         'La IA que te regalamos': 'La IA que et regalem', 'Energía de IA que te queda': "Energia d'IA que et queda",
         'Sin energía': 'Sense energia', 'Te quedan unas {0} vueltas': "Et queden unes {0} voltes", 'Energía al {0} %': 'Energia al {0} %',
         'Hola, {0}': 'Hola, {0}', 'tú': 'tu', 'con GitHub': 'amb GitHub', 'con tu correo': 'amb el teu correu', 'Salir': 'Sortir',
+        'con tu enlace': 'amb el teu enllaç', 'Entrar': 'Entrar', 'Este enlace es tuyo: entras como {0} ({1}), sin contraseña.': 'Aquest enllaç és teu: hi entres com a {0} ({1}), sense contrasenya.',
+        'Este enlace ya no vale. Pide uno nuevo a quien te lo mandó.': 'Aquest enllaç ja no val. Demana\'n un de nou a qui te l\'ha enviat.',
         'Para usar la IA, dinos quién eres. Elige cómo:': 'Per fer servir la IA, digues-nos qui ets. Tria com:',
         'Con GitHub': 'Amb GitHub', 'Con mi correo': 'Amb el meu correu',
         'He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas, y mi dibujo se guarda con mi cuenta.': "He llegit com tracteu les meves dades. El que escric passa per Claude, la IA d'Anthropic, només per preparar les propostes, i el meu dibuix es desa amb el meu compte.",
@@ -1646,7 +1674,11 @@
        Nada de esto está en el repositorio: va en el enlace que le mandamos. */
     (function () {
         var q = new URLSearchParams(location.search), org = (q.get('org') || '').trim().slice(0, 160), web = (q.get('web') || '').trim().slice(0, 300);
-        if (!org && !web) return;
+        /* El enlace que hace Álvaro desde su panel (05/11/2026) lleva además `inv`:
+           dice quién es, para entrar sin escribir nada (lo usa el bloque 7). */
+        var inv = (q.get('inv') || '').trim();
+        if (/^[\w-]+\.[\w-]+$/.test(inv)) { try { localStorage.setItem('tt.cliente.inv', inv); } catch (e) { /* sin memoria */ } }
+        if (!org && !web) { if (inv) history.replaceState(null, '', location.pathname + location.hash); return; }
         var https = function (u) { return u && !/^https?:\/\//.test(u) ? 'https://' + u : u; };
         if (!mapaBuit(S) && org && (S.org || '').trim().toLowerCase() !== org.toLowerCase()) {
             if (S.mapaId && (M.mapes[S.mapaId] || quants() < MAX_M)) M.mapes[S.mapaId] = { s: clona(S), avanc: (M.mapes[S.mapaId] || {}).avanc || '' };
@@ -2561,7 +2593,7 @@
                 if (cx.id === 'cl-ia-llig' && !$('#cl-llig-web').value) $('#cl-llig-web').value = S.web || '';
                 if (I.sessio) {
                     qui.hidden = true; ses.hidden = false; boto.hidden = false;
-                    ses.appendChild(el('span', {}, t('Hola, {0}', I.nom || t('tú')) + ' · ' + t(I.via === 'github' ? 'con GitHub' : 'con tu correo')));
+                    ses.appendChild(el('span', {}, t('Hola, {0}', I.nom || t('tú')) + ' · ' + t(I.via === 'github' ? 'con GitHub' : I.via === 'convit' ? 'con tu enlace' : 'con tu correo')));
                     if (esIA) energia(ses);
                     var sb = el('button', { type: 'button' }, t('Salir')); sb.addEventListener('click', function () { I = {}; PUJA = null; desaI(); pinta(); }); ses.appendChild(sb);
                     if (PUJA && cx.id === (ACTIVA ? 'cl-ia' : 'cl-prop')) {
@@ -2596,6 +2628,42 @@
                 .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); sincronitza(); aviso(t(cx.id === 'cl-prop' ? 'Hola, {0}: ya puedes ver tu propuesta' : 'Hola, {0}: ya puedes usar la IA', j.nom)); })
                 .catch(function (e) { b.disabled = false; aviso(e.message); });
         }
+
+        /* El enlace de su invitación (lib/convidats.mjs): ya dice quién es. Solo
+           acepta la privacidad y entra, sin crear la cuenta a mano; y la IA le da
+           el tope que le puso Álvaro. Si el enlace ya no vale, se lo decimos. */
+        function convit() {
+            var c = $('#cl-convit'), inv = ''; try { inv = localStorage.getItem('tt.cliente.inv') || ''; } catch (e) { inv = ''; }
+            if (!c || !inv || I.via === 'convit') { if (c) c.hidden = true; return; }
+            var oblida = function () { try { localStorage.removeItem('tt.cliente.inv'); } catch (e) { /* sin memoria */ } };
+            fetch('/.netlify/functions/identitat?inv=' + encodeURIComponent(inv)).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+                c.textContent = '';
+                if (!x.ok || x.j.estat !== 'convit') { oblida(); if (x.j && x.j.motiu) { c.hidden = false; c.appendChild(el('p', {}, t(x.j.motiu))); } return; }
+                c.hidden = false;
+                c.appendChild(el('h2', { class: 'eyebrow' }, t('Hola, {0}', x.j.nom || '')));
+                c.appendChild(el('p', {}, t('Este enlace es tuyo: entras como {0} ({1}), sin contraseña.', x.j.nom || '', x.j.mail)));
+                var lp = el('label', { class: 'cl-priv' }), ck = el('input', { type: 'checkbox', id: 'cl-convit-priv' });
+                lp.appendChild(ck); lp.appendChild(el('span', {}, ' ' + t('He leído cómo tratáis mis datos. Lo que escribo pasa por Claude, la IA de Anthropic, solo para preparar las propuestas, y mi dibujo se guarda con mi cuenta.')));
+                c.appendChild(lp);
+                var nl = el('p', { class: 'nota' }); nl.appendChild(document.createTextNode(t('Más en el') + ' ')); nl.appendChild(el('a', { href: '/avis-legal.html?lang=' + LL }, t('aviso legal'))); nl.appendChild(document.createTextNode('.'));
+                c.appendChild(nl);
+                var b = el('button', { type: 'button', class: 'btn btn-primary' }, t('Entrar'));
+                b.addEventListener('click', function () {
+                    if (!ck.checked) { aviso(t('Marca la casilla de privacidad para usar la IA')); ck.focus(); return; }
+                    b.disabled = true;
+                    fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'convit', inv: inv, privacitat: true }) })
+                        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || t('No se ha podido')); return j; }); })
+                        .then(function (j) {
+                            I = { sessio: j.sessio, nom: j.nom, via: 'convit' }; desaI(); oblida();
+                            S.nom = S.nom || j.nom; S.mail = j.mail; S.cuenta = true; desa(); pintaCamps(); pintaCompte();
+                            c.hidden = true; pinta(); sincronitza(); aviso(t('Hola, {0}: ya puedes usar la IA', j.nom));
+                        })
+                        .catch(function (e) { b.disabled = false; aviso(e.message); });
+                });
+                var ac = el('div', { class: 'accions' }); ac.appendChild(b); c.appendChild(ac);
+            }).catch(function () { /* sin red: lo intenta la próxima vez */ });
+        }
+        convit();
 
         /* 10 · Su ficha, con su cuenta (fitxa.mjs): al entrar se queda la más reciente
            (la de este navegador o la que guardó en otro aparato, o la que le dejamos
@@ -3198,6 +3266,14 @@
     function pintaTot() { if (window.TTWebClient) TTWebClient.pinta(); EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
+
+    /* El panel de Álvaro: #panel enseña solo el panel y carga panel.js una vez. */
+    function panel() {
+        var on = location.hash === '#panel';
+        document.body.classList.toggle('modo-panel', on); $('#panel').hidden = !on;
+        if (on && !document.getElementById('cl-panel-js')) { var sc = document.createElement('script'); sc.id = 'cl-panel-js'; sc.src = '/cliente/panel.js'; document.body.appendChild(sc); }
+    }
+    window.addEventListener('hashchange', panel); panel();
 })();
 </script>
 </body>
