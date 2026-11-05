@@ -5552,3 +5552,41 @@ i ningú que sàpiga què gasta cada projecte. Va contra el compromís de
   claus són secrets de GitHub, no de Netlify; els seus preus, només amb font.
 
 **Guarda:** `test-ia-router.mjs` i `test-banc-ia.mjs`.
+
+## Veda 183 — Una web que ja posiciona no perd el posicionament
+
+**Adoptada el 04/11/2026** per l'Álvaro, en demanar la web nova d'ELE Barcelona
+a partir de la que ja té: «ten en cuenta que no perdamos SEO, añade esto a tu
+codex developer para clientes con posicionamiento».
+
+L'error que evita: refer la web d'un client i que, el dia que es publica,
+desapareixi dels cercadors. Passa quan les adreces velles donen 404, quan totes
+van a l'inici, quan les pàgines que posicionaven perden el títol o el text, o
+quan la preview s'indexa i competeix amb la web de veritat.
+
+- **Abans de tocar res, la foto:** es llegeix la web d'ara (`llegeix-web`) i,
+  si el client té Search Console, se n'exporten les pàgines i les cerques que
+  porten visites. Aquesta llista és la que no es pot perdre.
+- **Cada adreça vella té destí amb un 301**, a la pàgina nova que diu el mateix
+  (`_redirects`, que el motor escriu des de la foto). L'inici és l'últim recurs,
+  no la norma: una adreça que porta visites i va a l'inici es decideix a mà
+  (el document de disseny la posa a «Sin destino»).
+- **El que posiciona es conserva:** títol, descripció, H1 i el gruix del text de
+  les pàgines que porten visites. Es reescriu el que no en porta.
+- **El mateix domini i les mateixes llengües:** una llengua per pàgina, `lang`,
+  `hreflang` entre versions i `canonical` a l'adreça definitiva. Cap text
+  barreja dues llengües.
+- **Per als cercadors i per a la IA:** el sitemap.xml, el robots.txt i JSON-LD de
+  schema.org (Organization a l'inici; Course als programes; WebPage a la resta).
+- **La preview no s'indexa:** Netlify hi posa `X-Robots-Tag: noindex`, i la
+  vista prèvia de /cliente/ és dins la pàgina, no és una web.
+- **Després de publicar:** s'envia el sitemap a Search Console i durant quatre
+  setmanes es miren els 404 i les pàgines que perden visites.
+
+Val per a tota web de client que ja té posicionament, la faci el motor o la
+faci Claude Code a partir del document de disseny: la veda viatja amb el cervell
+de cada client.
+
+**Guarda:** `test-web-vella.mjs` (cada adreça vella de la foto surt al
+`_redirects`, la pàgina que es replica conserva títol, descripció i H1, i el
+document de disseny porta els requisits de posicionament).

@@ -82,5 +82,15 @@ console.log('\n5 · Per la xarxa');
   ok(p.statusCode === 401 && p.headers['Cache-Control'] === 'no-store', 'POST sense sessió: 401, i res a la memòria cau');
 }
 
+console.log('\n· El que edita des del seu tauler: programes, formularis i webs germanes');
+{
+  const n = neteja({ programes: [{ nom: 'FELE', dates: ['2 febrero', ''], enllac: 'javascript:alert(1)', visible: false }, { nom: '' }],
+    formularis: [{ id: 'info', on: ['contacte', 'portada'], camps: [{ etiqueta: 'Nombre', tipus: 'text', obligatori: true }, { etiqueta: 'X', tipus: 'html' }] }, { camps: [] }],
+    integrades: [{ url: 'https://languages.example/', nom: 'Languages' }, { url: 'ftp://x', nom: 'X' }] });
+  ok(n.programes.length === 1 && n.programes[0].dates.join() === '2 febrero' && n.programes[0].enllac === '' && n.programes[0].visible === false, 'els programes, nets (sense enllaços que no són web) i amb si es veuen');
+  ok(n.formularis.length === 1 && n.formularis[0].on.join() === 'contacte' && n.formularis[0].camps.length === 1 && n.formularis[0].camps[0].obligatori, 'els formularis, només amb tipus de camp coneguts');
+  ok(n.integrades.length === 1 && n.integrades[0].nom === 'Languages', 'les webs germanes, només amb adreça web');
+}
+
 console.log('\n' + pass + ' bé, ' + fail + ' malament');
 if (fail) process.exit(1);

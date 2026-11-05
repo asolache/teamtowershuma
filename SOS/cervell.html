@@ -259,6 +259,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     <button type="button" role="tab" data-v="capes" aria-selected="false">Cinc capes</button>
     <button type="button" role="tab" data-v="mapa" aria-selected="false">Mapa</button>
     <button type="button" role="tab" data-v="pinya" aria-selected="false">Pinya</button>
+    <button type="button" role="tab" data-v="repo" aria-selected="false">El repositori</button>
   </div>
   <p class="vistes-d" id="vistesD"></p>
   <div id="cvTemps" hidden></div>
@@ -266,6 +267,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   <div class="pinya-l" id="cvPinya" hidden aria-live="polite"></div>
   <div id="cv"></div>
   <div id="cvOrg" hidden></div>
+  <div id="cvArbre" hidden></div>
   <h2 id="altre">Mira un altre cervell</h2>
   <p>El cervell d'un projecte té dues parts: <b>la cultura</b> (el codex, el que ha après i com vol treballar) i <b>les àrees</b> de qualsevol organització (vendes, finances, persones…) amb els seus documents. Te l'emportes com a context per a les teves IA i com a paquet per al teu LMS.</p>
 
@@ -354,6 +356,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 <script src="cervell/pla.js"></script>
 <script src="cervell/exporta.js"></script>
 <script src="cervell/organitzacio.js"></script>
+<script src="cervell/arbre.js"></script>
 <script>
 (function () {
   var CP = window.CodexParse, estat = document.getElementById('estat'), caixa = document.getElementById('cv');
@@ -399,10 +402,14 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     repo = repo.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/+$/, '');
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { estat.textContent = 'Escriu-lo com a propietari/repositori.'; return; }
     estat.textContent = 'Llegint el codex de ' + repo + '…';
+    if (REPO && REPO !== repo) RUTA = '';
     var privat = !!(MEUS[repo] && MEUS[repo].privat);
     CP.deRepo(repo, { token: token(), senseCodex: true }).then(function (f) {
       peces(f);
-      if (!f) { estat.textContent = repo + ' encara no té cervell: ni cervell.json ni la cultura escrita (codex). Es crea amb cervell.js --nou, o puja el teu codex.md.'; return; }
+      if (!f) {
+        estat.textContent = repo + ' encara no té cervell: ni cervell.json ni la cultura escrita (codex). Es crea amb cervell.js --nou, o puja el teu codex.md. El seu repositori sí que el pots veure.';
+        REPO = repo; DOCS = []; mostra('repo'); return;
+      }
       REPO = repo; DOCS = [];
       /* El dibuix surt de seguida; els documents (una crida per fitxer) arriben
          després i tornen a pintar l'organització quan hi són. */
@@ -413,7 +420,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
         if (REPO !== repo) return;
         DOCS = ds;
         posaDocs();
-        if (ara === 'org') mostra('org');
+        if (ara === 'org' || ara === 'repo') mostra(ara);
         if (D && ds.length) estat.textContent = 'El cervell de ' + repo + ': ' + (D.nodos.length ? D.nodos.length + ' aprenentatges a la cultura' : 'encara sense cultura pròpia escrita') + ' i ' + ds.length + ' documents.';
       });
       return f;
@@ -422,7 +429,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
       dibuixa(f.codex || '', { nom: f.nom || repo.split('/')[1], font: repo, herencia: f.herencia, matriz: f.fill ? 'TeamTowers Humà' : null, plantilla: f.plantilla });
       D.privat = privat || !!(f.conf && f.conf.privat);
       /* El nom d'un repo privat no va a la barra d'adreces. */
-      try { history.replaceState(null, '', D.privat ? location.pathname : '?repo=' + encodeURIComponent(repo)); } catch (e) {}
+      try { history.replaceState(null, '', (D.privat ? location.pathname : '?repo=' + encodeURIComponent(repo)) + location.hash); } catch (e) {}
     }).catch(function (e) {
       if (e && e.sesion) return surt('La teva sessió de GitHub ha caducat. Torna a entrar.');
       estat.textContent = e && e.privat ? 'Aquest cervell és privat: entra amb GitHub per veure\'l, només a la teva pestanya.' : 'No he pogut llegir GitHub ara mateix. Torna-ho a provar d\'aquí a una estona.';
@@ -458,6 +465,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     castellera: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i criteri), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda.',
     capes: 'Les cinc koshas, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
     mapa: 'Com un mapa de valor: cada veda és un node i cada cita, un lliurament. El propòsit al centre i l\'obra a fora.',
+    repo: 'El repositori com un mapa mental: la carpeta on ets al centre i el que porta al voltant, amb els fills de cada carpeta més petits. Toca una carpeta per entrar-hi i el centre per tornar enrere; la vista d\'àguila de la cantonada és tot el repositori i et diu on ets. Els documents del cervell porten el color de la seva àrea.',
     pinya: 'La pinya vista des de dalt, com una xarxa d\'àrees. Cada àrea és un pilar, i cada veda s\'hi posa segons amb qui parla: les que sostenen la seva àrea, les que la lliguen amb una altra (rosa) i les que van soles (puntejades). Sota, el mateix en barres: com més rosa, més lligada; una àrea sense rosa és un silo.'
   };
   function mostra(v) {
@@ -466,6 +474,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     document.getElementById('vistesD').textContent = DIU[v];
     if (pla) { pla.treu(); pla = null; }
     if (org) { org.treu(); org = null; }
+    if (arb) { arb.treu(); arb = null; }
+    var esRepo = v === 'repo';
+    cvArbre.hidden = !esRepo;
+    if (esRepo) {
+      caixa.hidden = cvOrg.hidden = cvPla.hidden = temps.hidden = true; document.getElementById('cvPinya').hidden = true;
+      if (vista && vista.activa) vista.activa(false);
+      return pintaArbre();
+    }
+    caixa.hidden = false; posaHash(v === 'org' ? '' : v);
     var esOrg = v === 'org', es3d = v === '3d';
     caixa.classList.toggle('org', esOrg); cvOrg.hidden = !esOrg || !D;
     if (esOrg && D) org = CervellOrg.munta(cvOrg, { uni: UNI, docs: DOCS, nodos: D.nodos, repo: REPO,
@@ -477,6 +494,23 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
     if (es3d || esOrg || !D || !D.nodos.length) return;
     pla = CervellPla.munta(cvPla, D, { vista: v, mou: false, control: temps, lectura: v === 'pinya' ? lect : null, ara: document.getElementById('estat'),
       etiqueta: D.nodos.length + ' vedes en vista ' + v, alTriar: function (id) { if (id && vista) vista.tria(id); } });
+  }
+  /* El mapa mental del repositori: tots els fitxers, d'una crida a GitHub, i
+     els documents del cervell amb el color de la seva àrea. Cada carpeta té el
+     seu enllaç: #repo/<ruta>. */
+  var arb = null, cvArbre = document.getElementById('cvArbre'), RUTA = '';
+  function posaHash(h) { try { history.replaceState(null, '', location.pathname + location.search + (h ? '#' + h : '')); } catch (e) {} }
+  function pintaArbre() {
+    if (!REPO) { cvArbre.innerHTML = '<p>Primer llegeix un repositori.</p>'; return; }
+    var repo = REPO; cvArbre.innerHTML = '<p>Llegint els fitxers de ' + repo + '…</p>';
+    CP.arbre(repo, { token: token() }).then(function (fs) {
+      if (ara !== 'repo' || REPO !== repo) return;
+      if (!fs.length) { cvArbre.innerHTML = '<p>No he pogut llegir els fitxers de ' + repo + ' ara mateix. Torna-ho a provar d\'aquí a una estona.</p>'; return; }
+      var col = {}; CervellOrg.per3d(DOCS, UNI, D ? D.nodos : [], REPO).forEach(function (d) { col[d.ruta] = d.color; });
+      arb = CervellArbre.munta(cvArbre, { fitxers: fs, repo: repo, ruta: RUTA, docs: col,
+        alCanvi: function (r) { RUTA = r; posaHash(D && D.privat || !r ? 'repo' : 'repo/' + r); } });
+      posaHash(D && D.privat || !RUTA ? 'repo' : 'repo/' + RUTA);
+    });
   }
   document.querySelector('.vistes').addEventListener('click', function (e) { var b = e.target.closest('[data-v]'); if (b) mostra(b.getAttribute('data-v')); });
 
@@ -513,6 +547,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   });
   var q = new URLSearchParams(location.search).get('repo') || MATRIU;
   document.getElementById('repo').value = q;
+  /* Cada vista té el seu enllaç (#3d, #castellera…; #repo/<ruta> per al repositori). */
+  var hash = /^#repo(?:\/(.*))?$/.exec(location.hash), vh = location.hash.slice(1);
+  if (hash) { ara = 'repo'; RUTA = decodeURIComponent(hash[1] || ''); }
+  else if (DIU[vh]) ara = vh;
   llegeix(q);
 })();
 </script>

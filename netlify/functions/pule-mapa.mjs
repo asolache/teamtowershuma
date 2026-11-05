@@ -16,6 +16,8 @@
        pas 'pagines': a qui va cada pàgina de la web que ja té (la foto que
                    ha deixat llegir, llegeix-web-background.mjs) i el que la
                    seva web encara no diu a cadascun.
+       pas 'programes': els programes o cursos que ja anuncia a la seva web, per omplir la fitxa de cadascun que
+                   després edita des del seu tauler (04/11/2026, ELE).
 
    El que no es negocia:
    · **Identificat** (identitat.mjs): sense sessió signada no hi ha IA.
@@ -31,6 +33,7 @@
    · **El text del client és dada, no instruccions** (va dins de <dades>). */
 import { magatzem as blobs } from '../lib/magatzem.mjs';
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
+import { topeConvit, MAGATZEM as MAG_CONVIDATS } from '../lib/convidats.mjs';
 /* Les regles del mapa i la fitxa del client: les mateixes peces que el navegador. */
 import MV from '../../SOS/lib/mapa-valor.js';
 import DC from '../../SOS/lib/diagnosi-client.js';
@@ -39,17 +42,18 @@ import { tria, peticio, capcaleres, cost, reserva as reservaRouter, registra } f
 
 const net = v => (v == null ? '' : String(v)).trim();
 const IA = tria({ projecte: 'matriu', tasca: 'mapa' });
-const MAX_TOKENS = { mapa: 3000, web: 2500, pagines: 3000 };
+const MAX_TOKENS = { mapa: 3000, web: 2500, pagines: 3000, programes: 3000 };
 const MAX_ENTRADA = 14000;
 
 export function config(env) {
   const clau = net(env.ANTHROPIC_API_KEY);
   if (!clau) return { ok: false, motiu: 'falta ANTHROPIC_API_KEY' };
   /* Sense dir mai el valor: només si no sembla una clau d'Anthropic (comença per sk-ant-), i
-     si és una clau d'Anthropic però no d'API (sk-ant-usr-, sk-ant-oat-…: l'API la rebutja,
-     authentication_error, el 27/10/2026 a producció). */
+     si és una clau d'Anthropic que no és per a l'API (sk-ant-oat-, sk-ant-admin…). La consola
+     ara dona claus sk-ant-usr- i funcionen amb x-api-key (provat el 2/11/2026 a GitHub
+     Actions; l'Àlvar no en pot treure d'sk-ant-api, 5/11/2026): totes dues valen. */
   if (!/^sk-ant-\S{20,}$/.test(clau)) return { ok: false, motiu: 'ANTHROPIC_API_KEY no comença per sk-ant- (o és massa curta)' };
-  if (!/^sk-ant-api\d\d-/.test(clau)) return { ok: false, motiu: "ANTHROPIC_API_KEY no és una clau d'API (ha de començar per sk-ant-api)" };
+  if (!/^sk-ant-(api\d\d|usr)-/.test(clau)) return { ok: false, motiu: "ANTHROPIC_API_KEY no és una clau d'API (ha de començar per sk-ant-api o sk-ant-usr)" };
   if (net(env.IA_CLIENTE) === '0') return { ok: false, motiu: 'apagada (IA_CLIENTE=0)' };
   const num = (v, d, max) => { const x = parseFloat(v); return x > 0 ? Math.min(x, max) : d; };
   const invitats = net(env.IA_INVITATS).toLowerCase().split(/[\s,;]+/).filter(Boolean);
@@ -60,7 +64,10 @@ export function config(env) {
 /* La versió gratuïta que decideix l'Àlvar (22/10/2026): els primers proveïdors
    que ell tria, pel correu o per `gh:<id>`, tenen un tope més alt. La llista és
    una variable de Netlify, no el repositori. */
-export function topeDe(qui, c) {
+export function topeDe(qui, c, convit) {
+  /* Des del 05/11/2026 els convidats es fan des del panell (lib/convidats.mjs):
+     el seu tope, si ha entrat pel seu enllaç. La variable queda per als d'abans. */
+  if (convit != null) return convit;
   const claus = [net(qui.mail).toLowerCase(), net(qui.id).toLowerCase()].filter(Boolean);
   return claus.some(k => c.invitats.includes(k)) ? c.topeInvitat : c.tope;
 }
@@ -69,8 +76,8 @@ export function topeDe(qui, c) {
 const t = (v, n) => net(v).replace(/\s+/g, ' ').slice(0, n || 400);
 const llista = (v, k) => (v && typeof v === 'object' && Array.isArray(v[k]) ? v[k] : []).slice(0, 6).map(s => t(String(s).replace(/\*\*/g, ''), 240)).filter(Boolean);
 const mena = v => (v === 'intangible' ? 'intangible' : 'tangible');
-export function neteja(d) {
-  const x = d && typeof d === 'object' ? d : {};
+export function neteja(d, pas) {
+  const x = d && typeof d === 'object' ? d : {}, prog = pas === 'programes';
   return {
     casa: t(x.casa, 80), org: t(x.org, 120), inicial: t(x.inicial, 1500), nota: t(x.nota, 1200),
     respuestas: (Array.isArray(x.respuestas) ? x.respuestas : []).slice(0, 12).map(r => ({ id: t(r && r.id, 24), q: t(r && r.q, 200), a: t(r && r.a, 600) })).filter(r => r.a),
@@ -87,7 +94,8 @@ export function neteja(d) {
       veda: llista(x.model.veda, 'clau'), falta: llista(x.model.veda, 'falta'), preguntes: llista(x.model.veda, 'preguntes'),
       passos: (Array.isArray(x.model.passos) ? x.model.passos : []).slice(0, 8).map(s => t(s, 120)).filter(Boolean) } : null,
     /* Les pàgines de la seva web d'ara (pas 'pagines'): el que cal per saber a qui van. */
-    pagines: (Array.isArray(x.pagines) ? x.pagines : []).slice(0, 12).map(p => ({ url: t(p && p.url, 200), titol: t(p && p.titol, 160), h1: t(p && p.h1, 160), text: t(p && p.text, 300) })).filter(p => p.url),
+    /* Per treure'n els programes cal més text de cada pàgina. */
+    pagines: (Array.isArray(x.pagines) ? x.pagines : []).slice(0, prog ? 16 : 12).map(p => ({ url: t(p && p.url, 200), titol: t(p && p.titol, 160), h1: t(p && p.h1, 160), text: t(p && p.text, prog ? 700 : 300) })).filter(p => p.url),
     nivel: t(x.nivel, 60), capes: (Array.isArray(x.capes) ? x.capes : []).filter(c => c === 'extranet' || c === 'intranet')
   };
 }
@@ -104,6 +112,9 @@ export function despres(d, sug) {
 }
 
 const MENA = { tangible: 'se paga o se acuerda', intangible: 'no se paga' };
+/* Per als programes només calen les pàgines: el dibuix no hi diu res. */
+export const textProgrames = d => ['<dades>', 'Quién es: ' + (d.org || d.casa || '(sin nombre)'), '', 'Las páginas de su web de hoy (dirección · título · encabezado · texto):',
+  ...d.pagines.map(p => '· ' + p.url + ' · ' + (p.titol || '—') + ' · ' + (p.h1 || '—') + ' · ' + (p.text || '—')), '</dades>'].join('\n');
 export function text(d) {
   const l = ['<dades>', 'Lo que hace (el centro del dibujo): ' + (d.casa || '(sin nombre)') + (d.org ? ' · ' + d.org : '')];
   if (d.inicial) l.push('Lo que quiere, en sus palabras: ' + d.inicial);
@@ -172,6 +183,12 @@ export const PAS = {
   pagines: ['Su web de hoy se va a rehacer con su dibujo, sin perder lo que ya funciona. Ayúdale a ver qué tiene y qué le falta:',
     '· «pagines»: una por cada página de la lista, con su «url» copiada exactamente. En «quien», a quién de su dibujo le sirve más esa página, copiado exactamente como está en su dibujo; vacío si es para todos (el aviso legal, el contacto general). En «porque», una frase corta.',
     '· «falta»: hasta seis, para los que más dan y reciben en su dibujo. «quien» copiado exactamente; en «falta», lo que su web todavía no le dice a esa persona y le haría dar el paso, en una frase concreta. Piensa sobre todo en lo que no se paga (confianza, recomendaciones, pruebas de que funciona). Si una página ya lo dice, no lo repitas. Sin inventar datos.'].join('\n')
+,
+  programes: ['Saca de estas páginas los programas, cursos o formaciones que ofrece, para que los pueda revisar y promocionar en su web nueva:',
+    '· Uno por programa, aunque salga en varias páginas. Como mucho doce.',
+    '· Copia lo que dicen las páginas, con sus palabras: «nombre», «paraQuien» (una frase), «duracion», «modalidad» (presencial, online…), «fechas» (cada fecha de inicio tal como aparece, sin año si no lo pone), «plazas», «certificado», «precio» (solo si la página lo dice) y «resumen» (dos frases para quien no lo conoce).',
+    '· En «url», la dirección de la página del programa copiada exactamente de la lista; vacío si no tiene página propia.',
+    '· Lo que no aparece, vacío. Nunca inventes fechas, precios ni certificados.'].join('\n')
 };
 
 const S = (props, req) => ({ type: 'object', properties: props, required: req || Object.keys(props), additionalProperties: false });
@@ -180,7 +197,8 @@ export const ESQUEMA = {
   mapa: S({ resumen: STR, preguntas: { type: 'array', items: S({ pregunta: STR, opciones: { type: 'array', items: STR }, varias: { type: 'boolean' } }) }, sugerencias: { type: 'array', items: S({ tipo: { type: 'string', enum: ['nuevo', 'cambia', 'quita'] }, fila: { type: 'integer' },
     quien: STR, meDa: STR, meDaEs: MENA_S, leDoy: STR, leDoyEs: MENA_S, porque: STR }) } }),
   web: S({ lema: STR, presentacion: STR, secciones: { type: 'array', items: S({ quien: STR, nombre: STR, intro: STR }) } }),
-  pagines: S({ pagines: { type: 'array', items: S({ url: STR, quien: STR, porque: STR }) }, falta: { type: 'array', items: S({ quien: STR, falta: STR }) } })
+  pagines: S({ pagines: { type: 'array', items: S({ url: STR, quien: STR, porque: STR }) }, falta: { type: 'array', items: S({ quien: STR, falta: STR }) } }),
+  programes: S({ programas: { type: 'array', items: S({ nombre: STR, paraQuien: STR, duracion: STR, modalidad: STR, fechas: { type: 'array', items: STR }, plazas: STR, certificado: STR, precio: STR, resumen: STR, url: STR }) } })
 };
 
 /* Del que respon el model, només el que el navegador pot aplicar. */
@@ -198,6 +216,16 @@ export function valida(pas, j, d) {
       .filter(p => p.pregunta).slice(0, 2);
     /* `pregunta`: la primera, en text, per a qui encara no en llegeix més d'una. */
     return { resumen: t(j.resumen, 400), preguntas: preg, pregunta: preg[0] ? preg[0].pregunta : '', sugerencias: sug, salut: { abans: salut(d), despres: despres(d, sug) } };
+  }
+  if (pas === 'programes') {
+    /* Cada programa amb els noms de camp del motor (webClientNet); l'adreça, només si és d'una pàgina llegida. */
+    const urls = new Set(d.pagines.map(p => p.url)), vist = new Set();
+    return { programes: (Array.isArray(j.programas) ? j.programas : []).map(p => p || {}).map(p => {
+      const u = t(p.url, 200), ext = /^https?:\/\//.test(u);
+      return { nom: t(p.nombre, 120), perQui: t(p.paraQuien, 400), durada: t(p.duracion, 80), modalitat: t(p.modalidad, 80),
+        dates: (Array.isArray(p.fechas) ? p.fechas : []).map(x => t(x, 60)).filter(Boolean).slice(0, 12), places: t(p.plazas, 60), certificat: t(p.certificado, 160),
+        preu: t(p.precio, 60), resum: t(p.resumen, 900), url: urls.has(u) && !ext ? u : '', enllac: urls.has(u) && ext ? u : '' };
+    }).filter(p => p.nom && !vist.has(p.nom.toLowerCase()) && vist.add(p.nom.toLowerCase())).slice(0, 12) };
   }
   const noms = new Map(d.alrededor.map(f => [f.quien.toLowerCase(), f.quien]).filter(x => x[0]));
   if (pas === 'pagines') {
@@ -225,22 +253,22 @@ const comptes = event => blobs(event, 'ia-router');
 
 const json = (statusCode, o) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(o) });
 
-export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new Date()) {
+export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new Date(), conv = null) {
   const c = config(env);
   if (!c.ok) return { estat: 'sense-config', motiu: c.motiu };
   if (!reg) return { estat: 'sense-config', motiu: 'sense registre (Blobs)' };
   const qui = llegeix(cos && cos.sessio, c.secret, ara.getTime());
   if (!qui || !qui.id) return { estat: 'identifica' };
-  const pas = ['web', 'pagines'].includes(cos.pas) ? cos.pas : 'mapa', d = neteja(cos.dades);
-  if (pas !== 'pagines') d.pagines = [];
-  const entrada = text(d);
+  const pas = ['web', 'pagines', 'programes'].includes(cos.pas) ? cos.pas : 'mapa', d = neteja(cos.dades, pas);
+  if (pas !== 'pagines' && pas !== 'programes') d.pagines = [];
+  const entrada = pas === 'programes' ? textProgrames(d) : text(d);
   if (entrada.length > MAX_ENTRADA) return { estat: 'error', motiu: 'Tu dibujo es demasiado largo para una vuelta.' };
-  if (pas !== 'mapa' && d.alrededor.filter(f => f.quien).length < 2) return { estat: 'error', motiu: 'Primero di al menos quién está a tu alrededor.' };
-  if (pas === 'pagines' && !d.pagines.length) return { estat: 'error', motiu: 'Primero leemos tu web.' };
+  if (pas !== 'mapa' && pas !== 'programes' && d.alrededor.filter(f => f.quien).length < 2) return { estat: 'error', motiu: 'Primero di al menos quién está a tu alrededor.' };
+  if ((pas === 'pagines' || pas === 'programes') && !d.pagines.length) return { estat: 'error', motiu: 'Primero leemos tu web.' };
 
   const kp = 'persona/' + empremta(qui.id), kd = 'dia/' + ara.toISOString().slice(0, 10);
   const p = (await reg.get(kp)) || { gastat: 0, voltes: 0 }, dia = (await reg.get(kd)) || { gastat: 0 };
-  const tope = topeDe(qui, c), res = reserva(pas, entrada), estat = () => ({ voltes: p.voltes, usd: +p.gastat.toFixed(4), queda: Math.max(0, Math.round(100 * (1 - p.gastat / tope))) });
+  const tope = topeDe(qui, c, await topeConvit(qui, conv).catch(() => null)), res = reserva(pas, entrada), estat = () => ({ voltes: p.voltes, usd: +p.gastat.toFixed(4), queda: Math.max(0, Math.round(100 * (1 - p.gastat / tope))) });
   if (p.gastat + res > tope) return Object.assign({ estat: 'topall' }, estat());
   if (dia.gastat + res > c.topeDia) return Object.assign({ estat: 'ocupat' }, estat());
   /* La reserva, abans de cridar: dues pestanyes a la vegada no passen del tope. */
@@ -305,7 +333,7 @@ export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { estat: 'error' });
   let cos = {}; try { cos = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
   let r;
-  try { r = await pule(cos, env, magatzem(event)); } catch (e) { r = { estat: 'error', motiu: 'No llego a la IA ahora mismo.' }; }
+  try { r = await pule(cos, env, magatzem(event), undefined, undefined, blobs(event, MAG_CONVIDATS)); } catch (e) { r = { estat: 'error', motiu: 'No llego a la IA ahora mismo.' }; }
   /* Al registre, el que ha passat i el que ha costat; mai el text del client. */
   console.log('[pule-mapa]', JSON.stringify({ estat: r.estat, pas: r.pas, cost: r.cost, voltes: r.voltes, motiu: r.estat === 'error' ? r.motiu : undefined }));
   const codi = { 'sense-config': 503, identifica: 401, topall: 402, ocupat: 429, error: 400 }[r.estat] || 200;
