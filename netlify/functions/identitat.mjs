@@ -9,6 +9,10 @@
                                         torna la sessió signada (30 dies).
    · `GET  …/identitat?via=github`    porta a GitHub (OAuth) i, en tornar
      (`?code&state`), redirigeix a /cliente/#sessio=… amb la sessió signada.
+   · `GET  …/identitat?inv=…`         l'enllaç d'un convidat (lib/convidats.mjs):
+     a qui és, {nom, mail}, perquè només hagi d'acceptar la privacitat.
+   · `POST …/identitat` {via:'convit', inv, privacitat:true}
+                                        hi entra amb aquell compte (via `convit`).
 
    El correu no es verifica encara (cal un enviador); GitHub sí que diu qui és.
    Google, quan hi hagi el client OAuth, va igual que GitHub.
@@ -23,6 +27,8 @@
    · **No guardem res aquí.** La sessió és del navegador; el que es compta
      (pule-mapa.mjs) va a Netlify Blobs amb l'empremta, no amb el correu. */
 import { secret, signa, llegeix, empremta, nonce } from '../lib/signatura.mjs';
+import { magatzem } from '../lib/magatzem.mjs';
+import { MAGATZEM, deTestimoni, llista, desa, clauDe } from '../lib/convidats.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
 const DIES30 = 30 * 24 * 3600 * 1000;
@@ -46,7 +52,7 @@ const base = env => net(env.URL).replace(/\/+$/, '');
 const tornada = env => base(env) + '/.netlify/functions/identitat';
 
 export function sessio(d, env, ara = Date.now()) {
-  return signa({ via: d.via, id: d.id, nom: net(d.nom).slice(0, 80), mail: net(d.mail).slice(0, 200), exp: ara + DIES30 }, secret(env));
+  return signa(Object.assign({ via: d.via, id: d.id, nom: net(d.nom).slice(0, 80), mail: net(d.mail).slice(0, 200), exp: ara + DIES30 }, d.inv ? { inv: d.inv } : {}), secret(env));
 }
 
 /* Amb el correu: nom, correu i la casella de privacitat de /cliente/. */
@@ -56,6 +62,18 @@ export function perCorreu(b, env) {
   if (!nom || !CORREU.test(mail)) return { estat: 'error', motiu: 'Falta tu nombre o un correo válido.' };
   if (!(b && b.privacitat === true)) return { estat: 'error', motiu: 'Falta aceptar cómo tratamos tus datos.' };
   return { estat: 'fet', sessio: sessio({ via: 'correu', id: 'mail:' + empremta(mail), nom, mail }, env), via: 'correu', nom, mail };
+}
+
+/* Amb l'enllaç d'un convidat: l'enllaç diu qui és (el correu sol, no).
+   Sense `privacitat`, només diu a qui és, per ensenyar-ho abans d'entrar. */
+export async function perConvit(b, env, reg, ara = new Date()) {
+  if (!secret(env)) return { estat: 'sense-config' };
+  const c = await deTestimoni(b && b.inv, secret(env), reg);
+  if (!c) return { estat: 'error', motiu: 'Este enlace ya no vale. Pide uno nuevo a quien te lo mandó.' };
+  if (!(b && b.privacitat === true)) return { estat: 'convit', nom: c.nom, mail: c.mail };
+  const tots = await llista(reg), k = clauDe(c.mail);
+  if (tots[k]) { tots[k].entrat = ara.toISOString(); await desa(reg, tots).catch(() => {}); }
+  return { estat: 'fet', sessio: sessio({ via: 'convit', id: 'mail:' + empremta(c.mail), nom: c.nom, mail: c.mail, inv: c.v }, env, ara.getTime()), via: 'convit', nom: c.nom, mail: c.mail };
 }
 
 /* GitHub, pas 1: cap a la pàgina d'autorització, amb un `state` signat i la
@@ -90,8 +108,9 @@ export const handler = async (event) => {
   let r;
   if (event.httpMethod === 'POST') {
     let b = {}; try { b = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
-    r = b.via === 'correu' ? perCorreu(b, env) : { estat: 'error', motiu: 'via' };
-  } else if (q.via === 'github') r = aGithub(env);
+    r = b.via === 'correu' ? perCorreu(b, env) : b.via === 'convit' ? await perConvit(b, env, magatzem(event, MAGATZEM)).catch(() => ({ estat: 'error', motiu: 'blobs' })) : { estat: 'error', motiu: 'via' };
+  } else if (q.inv) r = await perConvit({ inv: q.inv }, env, magatzem(event, MAGATZEM)).catch(() => ({ estat: 'error', motiu: 'blobs' }));
+  else if (q.via === 'github') r = aGithub(env);
   else if (q.code || q.state) r = await deGithub(q, (event.headers || {}).cookie, env);
   else r = { estat: 'vies', vies: vies(env) };
   console.log('[identitat]', JSON.stringify({ metode: event.httpMethod, estat: r.estat, via: r.via || q.via || (q.code ? 'github' : ''), motiu: r.motiu }));

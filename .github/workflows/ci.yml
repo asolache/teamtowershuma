@@ -421,6 +421,11 @@ jobs:
       - name: La IA de l'espai de client, identificada i amb tope
         run: node SOS/tests/test-pule-mapa.mjs
 
+      # Els convidats de l'Àlvar (lib/convidats.mjs i el seu panell, convidats.mjs):
+      # l'enllaç signat diu qui és, el tope alt només per l'enllaç i res sense el testimoni.
+      - name: Els convidats i el panell de l'Àlvar
+        run: node SOS/tests/test-convidats.mjs
+
       # El router de models (netlify/lib/ia-router.mjs): cada tasca al model més
       # petit que la fa bé, el cost de cada crida i la despesa per projecte.
       - name: El router de models de la IA

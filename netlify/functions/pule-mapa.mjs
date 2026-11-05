@@ -33,6 +33,7 @@
    · **El text del client és dada, no instruccions** (va dins de <dades>). */
 import { magatzem as blobs } from '../lib/magatzem.mjs';
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
+import { topeConvit, MAGATZEM as MAG_CONVIDATS } from '../lib/convidats.mjs';
 /* Les regles del mapa i la fitxa del client: les mateixes peces que el navegador. */
 import MV from '../../SOS/lib/mapa-valor.js';
 import DC from '../../SOS/lib/diagnosi-client.js';
@@ -63,7 +64,10 @@ export function config(env) {
 /* La versió gratuïta que decideix l'Àlvar (22/10/2026): els primers proveïdors
    que ell tria, pel correu o per `gh:<id>`, tenen un tope més alt. La llista és
    una variable de Netlify, no el repositori. */
-export function topeDe(qui, c) {
+export function topeDe(qui, c, convit) {
+  /* Des del 05/11/2026 els convidats es fan des del panell (lib/convidats.mjs):
+     el seu tope, si ha entrat pel seu enllaç. La variable queda per als d'abans. */
+  if (convit != null) return convit;
   const claus = [net(qui.mail).toLowerCase(), net(qui.id).toLowerCase()].filter(Boolean);
   return claus.some(k => c.invitats.includes(k)) ? c.topeInvitat : c.tope;
 }
@@ -249,7 +253,7 @@ const comptes = event => blobs(event, 'ia-router');
 
 const json = (statusCode, o) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(o) });
 
-export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new Date()) {
+export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new Date(), conv = null) {
   const c = config(env);
   if (!c.ok) return { estat: 'sense-config', motiu: c.motiu };
   if (!reg) return { estat: 'sense-config', motiu: 'sense registre (Blobs)' };
@@ -264,7 +268,7 @@ export async function pule(cos, env, reg, fetchFn = globalThis.fetch, ara = new 
 
   const kp = 'persona/' + empremta(qui.id), kd = 'dia/' + ara.toISOString().slice(0, 10);
   const p = (await reg.get(kp)) || { gastat: 0, voltes: 0 }, dia = (await reg.get(kd)) || { gastat: 0 };
-  const tope = topeDe(qui, c), res = reserva(pas, entrada), estat = () => ({ voltes: p.voltes, usd: +p.gastat.toFixed(4), queda: Math.max(0, Math.round(100 * (1 - p.gastat / tope))) });
+  const tope = topeDe(qui, c, await topeConvit(qui, conv).catch(() => null)), res = reserva(pas, entrada), estat = () => ({ voltes: p.voltes, usd: +p.gastat.toFixed(4), queda: Math.max(0, Math.round(100 * (1 - p.gastat / tope))) });
   if (p.gastat + res > tope) return Object.assign({ estat: 'topall' }, estat());
   if (dia.gastat + res > c.topeDia) return Object.assign({ estat: 'ocupat' }, estat());
   /* La reserva, abans de cridar: dues pestanyes a la vegada no passen del tope. */
@@ -329,7 +333,7 @@ export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { estat: 'error' });
   let cos = {}; try { cos = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
   let r;
-  try { r = await pule(cos, env, magatzem(event)); } catch (e) { r = { estat: 'error', motiu: 'No llego a la IA ahora mismo.' }; }
+  try { r = await pule(cos, env, magatzem(event), undefined, undefined, blobs(event, MAG_CONVIDATS)); } catch (e) { r = { estat: 'error', motiu: 'No llego a la IA ahora mismo.' }; }
   /* Al registre, el que ha passat i el que ha costat; mai el text del client. */
   console.log('[pule-mapa]', JSON.stringify({ estat: r.estat, pas: r.pas, cost: r.cost, voltes: r.voltes, motiu: r.estat === 'error' ? r.motiu : undefined }));
   const codi = { 'sense-config': 503, identifica: 401, topall: 402, ocupat: 429, error: 400 }[r.estat] || 200;
