@@ -26,7 +26,7 @@ import { magatzem } from '../lib/magatzem.mjs';
 import IMP from '../../SOS/lib/importa.js';
 
 const net = v => (v == null ? '' : String(v)).trim();
-export const MAX_PAGINES = 12, LECTURES_DIA = 3;
+export const MAX_PAGINES = 20, LECTURES_DIA = 3;
 export const clau = id => 'foto/' + empremta(id);
 
 /* ─── On es pot anar ─── */

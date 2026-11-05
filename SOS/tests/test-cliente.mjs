@@ -5,9 +5,8 @@
      i el diagnòstic diu en paraules seves si el dibuix ja es pot fer.
    · **El dibuix s'obre dins de la pàgina** amb l'editor del mapa, i el que
      s'hi canvia torna a la fitxa (`desDe`).
-   · **El boceto** surt del mateix motor que l'editor (motor-web.js), en
-     castellà: la vista bàsica (una pàgina, una secció per rol principal) i la
-     completa (una porta per a cadascú).
+   · **L'estructura de la web** surt del mateix motor (MotorWeb.disseny), en
+     castellà, com un document cuidat: mai l'HTML del motor sense maquetar.
    · **L'enviament** és un sol POST al formulari `cliente-web`, i després el
      pas 2 queda marcat.
    · **Al mòbil** la pàgina no es desplaça de costat. */
@@ -191,23 +190,21 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.check('#cl-automatiza');
   ok((await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).automatiza)) === true, 'la opción «que lo que se repite vaya solo» queda en la ficha');
   await p.click('#cl-boceto');
-  await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
-  await p.waitForTimeout(300);
-  const bas = await p.getAttribute('#cl-marc', 'srcdoc');
-  ok(await p.locator('#cl-pags button').count() === 2 && (bas.match(/<section id=/g) || []).length === 7 && /Para quien quiere ser profesor/.test(bas) && /<h2[^>]*>La matrícula/.test(bas) === false && /Lo que encuentras aquí/.test(bas),
-    'de entrada, la web pública: una landing con una sección para cada uno de los principales, dicha para quien llega');
-  ok(!/<form /.test(bas) && !/maria@example\.test/.test(bas) && /href="&#109;&#97;&#105;&#108;/.test(bas) && /href="index.html#quien-quiere-ser-profesor"/.test(bas),
-    'sin formularios: el contacto es el correo, oculto a los robots, y el menú lleva a cada sección');
-  ok(await p.locator('#cl-pags button:has-text("Aviso legal")').count() === 1, 'y con su aviso legal');
+  await p.waitForSelector('#cl-estructura .e-pag', { timeout: 15000 });
+  /* La estructura de su web (l'Àlvar, 04/11/2026): nunca una web sin maquetar; el plan, como documento cuidado. */
+  const est = await p.textContent('#cl-estructura');
+  ok(await p.locator('#cl-marc').count() === 0 && await p.locator('#cl-estructura .e-pag').count() >= 4 && /Para Quien quiere ser profesor/.test(est) && /Inicio/.test(est),
+    'la vista de su web es su estructura, como un documento: cada página, para quién es y qué consigue (nunca HTML sin maquetar)');
+  ok(/En el pie/.test(est) && /Aviso legal y privacidad/.test(est) && !/maria@example\.test/.test(est), 'con el pie y su aviso legal, y sin su correo a la vista');
+  const nMenu = await p.locator('#cl-estructura .e-menu a').count();
+  ok(nMenu >= 4 && await p.locator('#cl-pags button').count() === nMenu, 'el menú de su web, y un botón para ir a cada página (' + nMenu + ')');
+  await p.click('#cl-pags button:nth-child(2)');
+  ok(await p.getAttribute('#cl-pags button:nth-child(2)', 'aria-pressed') === 'true', 'el botón lleva a esa página de la estructura');
   await p.check('#cl-capes [data-capa="extranet"]', { force: true });
   await p.check('#cl-capes [data-capa="intranet"]', { force: true });
-  await p.waitForFunction(() => document.querySelectorAll('#cl-pags button').length > 3, null, { timeout: 15000 });
-  ok(await p.locator('#cl-pags button:has-text("Intranet")').count() === 1, 'con la extranet y la intranet: una puerta para cada uno y la intranet');
-  await p.waitForTimeout(300);
-  const portes = await p.locator('#cl-pags button').count();
-  const txt = await p.frameLocator('#cl-marc').locator('body').textContent();
-  ok(portes >= 8, 'el boceto tiene inicio y una puerta para cada uno (' + portes + ' páginas)');
-  ok(/Quien quiere ser profesor/.test(txt) && /Una puerta para cada uno/.test(txt), 'el boceto sale en castellano, del mismo motor que el editor');
+  await p.waitForFunction(() => /intranet/.test((document.querySelector('#cl-estructura .e-pie') || {}).textContent || ''), null, { timeout: 15000 });
+  ok(true, 'con la intranet, la entrada de su equipo sale en el pie');
+  ok(/páginas/.test(await p.textContent('#cl-estructura .e-xifres')) && /estructura de tu web/.test(await p.textContent('#cl-boceto-r')), 'la estructura sale en castellano, con sus cifras');
 
   const ample = await p.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
   ok(ample[0] <= ample[1], 'sin desplazamiento horizontal (' + ample[0] + ' ≤ ' + ample[1] + ')');
@@ -225,14 +222,14 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.waitForFunction(() => /Escuela de profes/.test(document.getElementById('cl-viu-svg').textContent), null, { timeout: 3000 });
   ok(true, 'lo que escribes en la página se ve en el mapa al momento');
   await p.click('#cl-viu-t-web');
-  await p.waitForFunction(() => document.getElementById('cl-viu-boceto').contains(document.getElementById('cl-marc')) && !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
+  await p.waitForFunction(() => document.getElementById('cl-viu-boceto').contains(document.getElementById('cl-estructura')) && !document.getElementById('cl-marc-caixa').hidden, null, { timeout: 15000 });
   await p.click('#cl-viu-estils button:has-text("Clásico")');
-  await p.waitForFunction(() => /Palatino|Georgia/.test(document.getElementById('cl-marc').getAttribute('srcdoc') || ''), null, { timeout: 5000 });
-  ok(await p.getAttribute('#cl-viu-estils button:has-text("Clásico")', 'aria-pressed') === 'true', 'en «Mi web», un estilo de serie cambia la letra del boceto al momento');
+  await p.waitForFunction(() => /Palatino|Georgia/.test(document.getElementById('cl-estructura').style.fontFamily) && document.getElementById('cl-estructura').classList.contains('recta'), null, { timeout: 5000 });
+  ok(await p.getAttribute('#cl-viu-estils button:has-text("Clásico")', 'aria-pressed') === 'true', 'en «Mi web», un estilo de serie cambia la letra, el color y las esquinas de la estructura al momento');
   const mc = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).marca);
   ok(mc.color === '#1e3a8a' && mc.forma === 'recta', 'y queda en tu marca');
   await p.click('#cl-viu-tanca');
-  ok(await p.isHidden('#cl-viu') && await p.evaluate(() => document.getElementById('web').contains(document.getElementById('cl-marc'))), 'al cerrar, el boceto vuelve a su sitio (paso 5)');
+  ok(await p.isHidden('#cl-viu') && await p.evaluate(() => document.getElementById('web').contains(document.getElementById('cl-estructura'))), 'al cerrar, la estructura vuelve a su sitio (paso 5)');
   await p.fill('#cl-casa', 'Equipo de formación');
 
   await p.click('#cl-envia');
@@ -267,7 +264,8 @@ console.log('\n══ /cliente/ · la IA ══');
     if (r.request().method() === 'GET') return r.fulfill({ status: 200, contentType: 'application/json', body: '{"actiu":true}' });
     const c = JSON.parse(r.request().postData()); pets.push(['ia', c]); volta++;
     await new Promise(x => setTimeout(x, 400));
-    const res = c.pas === 'pagines' ? { pagines: [{ url: '/', quien: 'Quien quiere ser profesor', porque: 'Es la portada que ven primero.' }, { url: '/cursos', quien: '', porque: 'Habla de todo a la vez.' }],
+    const res = c.pas === 'programes' ? { programes: [{ nom: 'Curso FELE Intensivo', perQui: 'Quien empieza a dar clases', durada: '4 semanas', modalitat: 'Presencial', dates: ['2 febrero', '6 abril'], places: '8 por grupo', certificat: '', preu: '', resum: 'El curso más completo.', url: '/cursos', enllac: '' }] }
+      : c.pas === 'pagines' ? { pagines: [{ url: '/', quien: 'Quien quiere ser profesor', porque: 'Es la portada que ven primero.' }, { url: '/cursos', quien: '', porque: 'Habla de todo a la vez.' }],
         falta: [{ quien: 'Antiguos alumnos', falta: 'Que pueden recomendar la escuela y volver a formarse.' }] }
       : c.pas === 'web'
       ? { lema: 'Formamos a los profesores que las escuelas buscan', presentacion: 'Cursos intensivos en Barcelona.', secciones: [{ quien: 'Quien quiere ser profesor', nombre: 'Futuros profes', intro: 'Aquí empieza tu camino como profesor de español.' }] }
@@ -358,10 +356,10 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForSelector('#cl-ia-web .ia-textos', { timeout: 5000 });
   ok(ia()[2][1].pas === 'web', 'los textos de la web, con la misma sesión y sin buscar el botón');
   await p.fill('#cl-ia-web .ia-textos .fila:nth-child(2) textarea', 'Aquí empieza tu camino, a tu ritmo.');
-  await p.click('#cl-ia-web button:has-text("Verlo en el boceto")');
-  await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden && /Formamos a los profesores/.test(document.getElementById('cl-marc').getAttribute('srcdoc') || ''), null, { timeout: 15000 });
-  const bo = await p.getAttribute('#cl-marc', 'srcdoc');
-  ok(/Formamos a los profesores que las escuelas buscan/.test(bo) && /Cursos intensivos en Barcelona/.test(bo) && /Aquí empieza tu camino, a tu ritmo\./.test(bo) && /Para futuros profes/.test(bo), 'el boceto lleva la frase, la presentación y lo que ella ha retocado para cada uno');
+  await p.click('#cl-ia-web button:has-text("Verlo en la estructura")');
+  await p.waitForFunction(() => !document.getElementById('cl-marc-caixa').hidden && /Formamos a los profesores/.test((document.getElementById('cl-estructura') || {}).textContent || ''), null, { timeout: 15000 });
+  const bo = await p.textContent('#cl-estructura');
+  ok(/Formamos a los profesores que las escuelas buscan/.test(bo) && /Cursos intensivos en Barcelona/.test(bo) && /Aquí empieza tu camino, a tu ritmo\./.test(bo) && /Futuros profes/.test(bo), 'la estructura lleva la frase, la presentación y lo que ella ha retocado para cada uno');
   await p.check('#cl-priv'); await p.click('#cl-envia');
   await p.waitForFunction(() => /Enviado/.test(document.getElementById('cl-envia-r').textContent), null, { timeout: 5000 });
   const iaL = new URLSearchParams(enviat).get("ia"); ok(/^3 vueltas · 0\.120 USD · correu$/.test(iaL), 'el lead lleva cuánto ha usado la IA (para la cuenta de valor, no para ella)');
@@ -397,6 +395,28 @@ console.log('\n══ /cliente/ · la IA ══');
   ok(/Antiguos alumnos: Que pueden recomendar/.test(await p.textContent('#cl-llig-falta')), 'y lo que su web todavía no le dice a cada uno');
   const pw = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).portesWeb);
   ok(pw && pw.origen === 'https://escuela.example' && pw.pagines.length === 2 && pw.falta.length === 1, 'queda en su ficha, para la sesión');
+  /* Sus programas (04/11/2026, ELE): con su web leída, se sacan solos una vez; los edita aquí y salen en su web. */
+  await p.waitForSelector('#cl-progs li', { timeout: 8000 });
+  const pP = ia().filter(x => x[1].pas === 'programes');
+  ok(pP.length === 1 && pP[0][1].dades.pagines.length === 3 && /Curso FELE Intensivo/.test(await p.textContent('#cl-progs')), 'con su web leída, sus programas se rellenan solos (una vez)');
+  ok(/He encontrado 1 programas/.test(await p.textContent('#cl-prog-res')) && await p.isVisible('#cl-espai a[href="#programas"]'), 'se lo dice, y «Programas» sale en la barra de su espacio');
+  await p.click('#cl-progs summary'); await p.fill('#cl-p0-dates', '2 febrero 2027\n6 abril 2027');
+  const sP = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(sP.programes[0].dates.join('|') === '2 febrero 2027|6 abril 2027' && sP.formularis.length === 2 && sP.formularis[1].camps.some(c => c.tipus === 'programa'), 'cambia las fechas en su ficha, y tiene los dos formularios de siempre');
+  await p.click('#cl-forms li:nth-child(1) summary'); await p.click('#cl-forms li:nth-child(1) button:has-text("Otra pregunta")');
+  await p.locator('#cl-forms li:nth-child(1) .fcamp').last().locator('input').first().fill('Cómo nos conociste');
+  ok((await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).formularis[0].camps.map(c => c.etiqueta))).includes('Cómo nos conociste'), 'añade una pregunta a su formulario');
+  await p.fill('#cl-pie-nom', 'Mi escuela de idiomas'); await p.fill('#cl-pie-url', 'idiomas.example');
+  await p.click('#cl-espai a[href="#vista"]');
+  await p.waitForSelector('#cl-marc-caixa.pantalla #cl-pags button', { timeout: 15000 });
+  ok(await p.locator('#cl-pags button:has-text("Programas")').count() === 1 && await p.locator('#cl-pags button:has-text("Contacto")').count() === 1, 'su web a pantalla completa (#vista): con sus programas y su contacto en el menú');
+  await p.click('#cl-pags button:has-text("Programas")');
+  ok(/Curso FELE Intensivo/.test(await p.textContent('#e-programas')) && /2 febrero 2027/.test(await p.textContent('#e-programas')) && /Mi escuela de idiomas/.test(await p.textContent('#cl-estructura .e-pie')),
+    'sus programas, como tarjetas con sus fechas, y su otra web en el pie');
+  ok(/Cómo nos conociste/.test(await p.textContent('#e-contacto')), 'y sus formularios, con la pregunta que ha añadido');
+  await p.click('#cl-vista-torna');
+  await p.waitForFunction(() => !document.querySelector('#cl-marc-caixa').classList.contains('pantalla'), null, { timeout: 5000 });
+  ok(true, '«← Volver» sale de la pantalla completa');
   /* El documento de diseño (MotorWeb.disseny): el entregable de la web, no el boceto. */
   await p.click('#cl-disseny-fes');
   await p.waitForSelector('#cl-disseny-pags li', { timeout: 15000 });
@@ -409,6 +429,7 @@ console.log('\n══ /cliente/ · la IA ══');
   const [dj] = await Promise.all([p.waitForEvent('download'), p.click('#cl-disseny-json')]);
   const dJ = JSON.parse((await import('node:fs')).readFileSync(await dj.path(), 'utf8'));
   ok(dJ.tipus === 'sos-disseny-web' && dJ.v === 1 && dJ.redireccions.some(x => x.de === '/blog/viejo'), 'y en JSON, sos-disseny-web v1, sin perder ninguna dirección vieja');
+  ok(dJ.programes.length === 1 && dJ.formularis.length === 2 && dJ.integrades[0].nom === 'Mi escuela de idiomas', 'el documento lleva sus programas, sus formularios y la web del pie, para construirla con Claude Code');
   await p.fill('#cl-disseny-nota', 'Más fotos de las clases'); await p.click('#cl-disseny-desa');
   const dzS = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).disseny);
   ok(dzS && dzS.nota === 'Más fotos de las clases' && dzS.pagines === dz.length && /Guardado en tu ficha/.test(await p.textContent('#cl-disseny-res')), 'lo que cambiaría queda en su ficha, para la sesión');
@@ -518,6 +539,30 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   await p.waitForFunction(id => new URLSearchParams(location.search).get('mapa') === id, id1);
   ok(await p.inputValue('#cl-org') === 'Escuela Vieja', '«Deshacer» lo recupera');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'en el móvil no se desplaza de lado');
+  ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+/* El enlace de invitación (04/11/2026, María): llega con todo puesto, y la barra de su espacio. */
+console.log('\n══ El enlace de invitación ══');
+{
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const p = await ctx.newPage(); const errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
+  await p.addInitScript(() => { if (!sessionStorage.getItem('fet')) { sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es'); localStorage.setItem('tt.cliente.v1', JSON.stringify({ org: 'Otra escuela', alrededor: [{ quien: 'quien aprende', meDa: 'la cuota', meDaEs: 'tangible', leDoy: 'las clases', leDoyEs: 'tangible' }] })); } });
+  await p.goto(URL_ + '?org=Escuela%20Sol&web=escuela.example&pie=idiomas.example&pieNom=Idiomas%20Sol&para=Mar%C3%ADa&procesos=programas#inicio');
+  await p.waitForFunction(() => /\?mapa=m/.test(location.search));
+  const S = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(S.org === 'Escuela Sol' && S.web === 'https://escuela.example' && S.integrades[0].url === 'https://idiomas.example' && S.integrades[0].nom === 'Idiomas Sol', 'llega con su organización, su web y la otra web del pie ya puestas');
+  ok(!/org=|para=/.test(await p.evaluate(() => location.search)) && await p.evaluate(() => Object.values(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).some(m => m.s.org === 'Otra escuela')), 'la barra queda limpia (su mapa, con su enlace) y el mapa que había se guarda en «Mis mapas»');
+  ok(await p.isVisible('#cl-benvinguda') && /Hola, María/.test(await p.textContent('#cl-benvinguda')) && await p.locator('#cl-benvinguda li').count() === 6, 'la bienvenida, con su nombre y los seis pasos enlazados');
+  ok(await p.isVisible('#cl-espai a[href="#programas"]') && await p.isVisible('#programas') && await p.inputValue('#cl-pie-url') === 'https://idiomas.example', 'su barra lleva «Programas» porque es su proceso, y el pie ya tiene su otra web');
+  ok(/Ponerlos en mi web/.test(await p.textContent('#cl-forms')), 'los formularios, propuestos hasta que los pone');
+  await p.reload(); await p.waitForTimeout(300);
+  ok(await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).org) === 'Escuela Sol' && await p.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).length) === 2, 'al volver con su enlace, sigue en su mapa sin duplicarlo');
+  await p.click('#cl-benvinguda button:has-text("Entendido")');
+  ok(await p.isHidden('#cl-benvinguda'), '«Entendido» cierra la bienvenida');
+  ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'en el móvil, la barra de su espacio no hace desplazar la página de lado');
   ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

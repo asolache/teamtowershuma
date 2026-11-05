@@ -12,7 +12,7 @@
    · El pas 'pagines' de pule-mapa: a qui va cada pàgina, i el que no diu. */
 import { llegeixWeb, segur, hostBo, privada, web, menuDe, foto, clau, MAX_PAGINES, handler } from '../../netlify/functions/llegeix-web-background.mjs';
 import { client as fitxa } from '../../netlify/functions/fitxa.mjs';
-import { pule, neteja, valida, text, ESQUEMA } from '../../netlify/functions/pule-mapa.mjs';
+import { pule, neteja, valida, text, textProgrames, ESQUEMA } from '../../netlify/functions/pule-mapa.mjs';
 import { idDe } from '../../netlify/functions/proposta.mjs';
 import { sessio } from '../../netlify/functions/identitat.mjs';
 
@@ -93,7 +93,7 @@ console.log("\n2 · Amb la seva sessió i el seu sí");
   const L4 = (await fitxa({ sessio: MARIA, foto: true }, ENV, reg)).lectura;
   ok(L4.rebuig && /mañana/i.test(L4.rebuig.motiu) && L4.estat === 'fet' && L4.foto.pagines.length === 3, 'el «no» queda desat perquè la pàgina el vegi, sense perdre la lectura d\'abans');
   ok((await fitxa({ sessio: MARIA, esborra: true }, ENV, reg)).estat === 'esborrada' && !reg.m.size, 'esborrar la seva fitxa esborra també la foto');
-  ok(MAX_PAGINES === 12, 'un tope de pàgines');
+  ok(MAX_PAGINES === 20, 'un tope de pàgines (20: les que no es llegeixen anirien a l\'inici, i la veda 183 ho vol evitar)');
 }
 {
   const reg = memoria();
@@ -127,6 +127,27 @@ console.log("\n3 · A qui va cada pàgina (pule-mapa, pas 'pagines')");
   ok(r.voltes === 1, 'dins del mateix tope per persona');
   const r2 = await pule({ sessio: ses, pas: 'mapa', dades: { casa: 'Escuela', alrededor: d.alrededor, pagines: d.pagines } }, ENV, reg, async (u, o) => { cos = JSON.parse(o.body); return { ok: false, status: 500, json: async () => ({}) }; });
   ok(!cos.messages[0].content.includes('Las páginas de su web'), 'als altres passos, les pàgines no hi van');
+}
+
+console.log("\n4 · Els programes que ja anuncia (pule-mapa, pas 'programes')");
+{
+  const pags = [{ url: '/', titol: 'Escuela ELE', h1: 'Formamos profesores', text: 'x'.repeat(900) }, { url: '/cursos/fele', titol: 'Curso FELE', h1: 'Curso FELE Intensivo', text: '4 semanas, presencial.' }];
+  const d = neteja({ casa: 'Escuela', pagines: pags }, 'programes');
+  ok(d.pagines[0].text.length === 700 && neteja({ pagines: pags }).pagines[0].text.length === 300, 'per als programes, més text de cada pàgina');
+  ok(textProgrames(d).includes('/cursos/fele · Curso FELE · Curso FELE Intensivo') && !textProgrames(d).includes('Quién está alrededor'), 'només les pàgines, dins de <dades>');
+  const v = valida('programes', { programas: [
+    { nombre: 'Curso FELE Intensivo', paraQuien: 'Quien empieza', duracion: '4 semanas', modalidad: 'Presencial', fechas: ['2 febrero', ''], plazas: '8', certificado: '', precio: '', resumen: 'El curso completo.', url: '/cursos/fele' },
+    { nombre: 'curso fele intensivo', url: '/inventada' }, { nombre: 'Curso sin página', url: '/inventada' }, { nombre: '', url: '/' }] }, d);
+  const [a, b] = v.programes;
+  ok(v.programes.length === 2 && a.nom === 'Curso FELE Intensivo' && a.dates.join() === '2 febrero' && a.url === '/cursos/fele' && a.durada === '4 semanas', 'cada programa una vegada, amb els camps del motor');
+  ok(b.url === '' && b.enllac === '', 'una adreça que no és de cap pàgina llegida no hi va');
+  ok(ESQUEMA.programes.properties.programas.items.properties.fechas.type === 'array', 'amb el seu esquema');
+  const reg = memoria();
+  ok((await pule({ sessio: MARIA, pas: 'programes', dades: { casa: 'Escuela' } }, ENV, reg, async () => { throw new Error('no'); })).motiu.match(/leemos tu web/i), 'sense pàgines, primer llegim la web');
+  let cos = null;
+  const r = await pule({ sessio: MARIA, pas: 'programes', dades: { casa: 'Escuela', pagines: pags } }, ENV, reg, async (u, o) => { cos = JSON.parse(o.body); return { ok: true, status: 200, json: async () => ({ model: 'claude-haiku-4-5', stop_reason: 'end_turn', usage: { input_tokens: 800, output_tokens: 200 },
+    content: [{ type: 'text', text: JSON.stringify({ programas: [{ nombre: 'Curso FELE Intensivo', paraQuien: '', duracion: '4 semanas', modalidad: 'Presencial', fechas: [], plazas: '', certificado: '', precio: '', resumen: '', url: '/cursos/fele' }] }) }] }) }; });
+  ok(r.estat === 'fet' && r.resultat.programes[0].url === '/cursos/fele' && /Nunca inventes/.test(cos.messages[0].content), 'una volta, sense dibuix (no cal tenir ningú al voltant), i sense inventar');
 }
 
 console.log('\n' + pass + ' bé, ' + fail + ' malament');

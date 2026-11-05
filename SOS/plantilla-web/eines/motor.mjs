@@ -2566,6 +2566,10 @@ const SITE_TXT = {
     legalTxt: ['Aquesta web és de {titular}{nif}{adreca}.', 'És una web informativa: no fa servir galetes ni formularis, i no guarda res de qui la visita. L\'allotjament, com tots, registra l\'adreça IP per poder servir les pàgines.',
       'Si ens escrius un correu, fem servir les teves dades només per respondre\'t. Pots demanar veure-les, corregir-les o esborrar-les escrivint-nos, i reclamar a l\'Agència Espanyola de Protecció de Dades.'],
     escriu: 'Escriu-nos', nom: 'Nom', correu: 'Correu electrònic', missatge: 'Missatge', envia: 'Envia', alta: 'Demana el teu compte',
+    programes: 'Programes', programesId: 'programes', programesIntro: 'Els programes que fem ara. Cada un té la seva pàgina amb les dates i com apuntar-s\'hi.',
+    pPerQui: 'Per a qui', pDurada: 'Durada', pModalitat: 'Modalitat', pDates: 'Properes dates', pPlaces: 'Places', pCertificat: 'Certificat', pPreu: 'Preu', pMes: 'Més informació', pVeure: 'Veure el programa',
+    contacteId: 'contacte', contactePag: 'Contacte', privForm: 'Fem servir les teves dades només per respondre\'t. Pots demanar veure-les o esborrar-les quan vulguis.', triaUna: 'Tria\'n un',
+    legalForm: 'Els formularis d\'aquesta web ens envien el que hi escrius, només per respondre\'t; no ho fem servir per a res més ni ho cedim.',
     tambe: 'També ens pots escriure a', gracies: 'Gràcies', rebut: 'Ho hem rebut. Et respondrem per correu.', torna: 'Torna a l\'inici',
     peu: 'Feta a partir del mapa de valor.', dades: 'Les dades d\'aquesta web', buida: 'Encara no hi ha res entre nosaltres i aquest rol.',
     noHi: 'Aquesta pàgina no hi és', noHiD: 'Potser ha canviat de nom quan ha canviat el mapa.',
@@ -2634,6 +2638,10 @@ const SITE_TXT = {
     legalTxt: ['Esta web es de {titular}{nif}{adreca}.', 'Es una web informativa: no usa cookies ni formularios, y no guarda nada de quien la visita. El alojamiento, como todos, registra la dirección IP para poder servir las páginas.',
       'Si nos escribes un correo, usamos tus datos solo para contestarte. Puedes pedir verlos, corregirlos o borrarlos escribiéndonos, y reclamar ante la Agencia Española de Protección de Datos.'],
     escriu: 'Escríbenos', nom: 'Nombre', correu: 'Correo electrónico', missatge: 'Mensaje', envia: 'Enviar', alta: 'Pide tu cuenta',
+    programes: 'Programas', programesId: 'programas', programesIntro: 'Los programas que hacemos ahora. Cada uno tiene su página con las fechas y cómo apuntarse.',
+    pPerQui: 'Para quién', pDurada: 'Duración', pModalitat: 'Modalidad', pDates: 'Próximas fechas', pPlaces: 'Plazas', pCertificat: 'Certificado', pPreu: 'Precio', pMes: 'Más información', pVeure: 'Ver el programa',
+    contacteId: 'contacto', contactePag: 'Contacto', privForm: 'Usamos tus datos solo para contestarte. Puedes pedir verlos o borrarlos cuando quieras.', triaUna: 'Elige uno',
+    legalForm: 'Los formularios de esta web nos envían lo que escribes, solo para contestarte; no lo usamos para nada más ni lo cedemos.',
     tambe: 'También puedes escribirnos a', gracies: 'Gracias', rebut: 'Lo hemos recibido. Te responderemos por correo.', torna: 'Volver al inicio',
     peu: 'Hecha a partir del mapa de valor.', dades: 'Los datos de esta web', buida: 'Todavía no hay nada entre nosotros y este rol.',
     noHi: 'Esta página no existe', noHiD: 'Quizá cambió de nombre cuando cambió el mapa.',
@@ -2714,6 +2722,10 @@ const SITE_CSS = [
   'input,select,textarea,button{font:inherit;min-height:44px;padding:.5rem .7rem;border:1px solid var(--lin);border-radius:8px;background:var(--bg);color:var(--fg)}',
   'button{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600;cursor:pointer;justify-self:start}',
   '.ocult{display:none}',
+  '.fitxa{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;margin:1rem 0}.fitxa dt{font-weight:600}.fitxa dd{margin:0}.fitxa ul{margin:0;padding-left:1.1rem}',
+  '.programa{border:1px solid var(--lin);border-radius:8px;padding:.2rem 1rem .6rem;margin:1rem 0}.programa h2{margin-top:.8rem}',
+  'label.casella{display:flex;align-items:center;gap:.5rem;font-weight:400}label.casella input{min-height:auto}',
+  '@media (max-width:30rem){.fitxa{grid-template-columns:1fr}.fitxa dd{margin-bottom:.4rem}}',
   'footer{border-top:1px solid var(--lin);color:var(--mut);font-size:.9rem}'
 ].join('\n') + '\n';
 
@@ -3088,6 +3100,35 @@ function mdAHtml(md) {
  *    no publica mentre n'hi hagi cap: és la guarda que l'Àlvar va demanar.
  * Les dades personals que la lectura no hagi amagat, s'amaguen aquí. */
 const fotoTall = (x, n) => String(x == null ? '' : x).replace(/\s+/g, ' ').trim().slice(0, n);
+/* El que el client porta des del seu tauler (04/11/2026, l'Álvaro, per a la
+   web d'ELE): els programes que vol promocionar, els formularis de contacte
+   que es fa a mida i les webs germanes que van amb aquesta. Un sol sedàs per a
+   l'editor, /cliente/ i `eines/genera.mjs`: el que no és d'aquí no surt. Les webs
+   germanes són només un enllaç al peu (l'Álvaro, 04/11/2026: «solo enlace en el footer»). */
+const FORMULARI_CAMPS = ['text', 'correu', 'telefon', 'textarea', 'tria', 'data', 'programa', 'casella'];
+function webClientNet(o) {
+  const x = o || {}, tl = (v, n) => String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, n);
+  const lliure = (v, n) => (typeof amagaPersonal === 'function' ? amagaPersonal(tl(v, n)).text : tl(v, n));
+  const enllac = v => (/^https?:\/\/[^\s"<>]+$/.test(String(v || '').trim()) ? String(v).trim().slice(0, 400) : '');
+  const llista = (v, n, m) => (Array.isArray(v) ? v : String(v || '').split(/\n|;/)).map(d => tl(d, n)).filter(Boolean).slice(0, m);
+  const vist = {}, slug = (v, base) => { const b = webSlug(v || '') || base; let k = b, n = 2; while (vist[k]) k = b + '-' + n++; vist[k] = 1; return k; };
+  const programes = (Array.isArray(x.programes) ? x.programes : []).filter(p => p && tl(p.nom, 1) && p.visible !== false).slice(0, 20).map(p => ({
+    id: slug(p.id || p.nom, 'programa'), nom: tl(p.nom, 120), perQui: lliure(p.perQui, 400), durada: tl(p.durada, 80), modalitat: tl(p.modalitat, 80),
+    dates: llista(p.dates, 60, 12), places: tl(p.places, 60), certificat: tl(p.certificat, 160), preu: tl(p.preu, 60),
+    resum: lliure(p.resum, 900), enllac: enllac(p.enllac), url: tl(p.url, 300) }));
+  const formularis = (Array.isArray(x.formularis) ? x.formularis : []).filter(f => f && Array.isArray(f.camps)).slice(0, 8).map(f => {
+    const vc = {};
+    const camps = f.camps.filter(c => c && FORMULARI_CAMPS.includes(c.tipus) && tl(c.etiqueta, 1)).slice(0, 14).map(c => {
+      const b = webSlug(c.id || c.etiqueta) || c.tipus; let k = b, n = 2; while (vc[k]) k = b + '-' + n++; vc[k] = 1;
+      return { id: k, etiqueta: tl(c.etiqueta, 80), tipus: c.tipus, obligatori: c.obligatori === true, opcions: c.tipus === 'tria' ? llista(c.opcions, 60, 12) : [] };
+    });
+    return { id: slug(f.id || f.titol, 'formulari'), titol: tl(f.titol, 80), intro: tl(f.intro, 300), boto: tl(f.boto, 40),
+      on: (Array.isArray(f.on) ? f.on : [f.on]).filter(w => ['contacte', 'inici', 'programes'].includes(w)), camps };
+  }).filter(f => f.camps.length && f.on.length);
+  const integrades = (Array.isArray(x.integrades) ? x.integrades : []).map(g => ({ url: enllac(g && g.url), nom: tl(g && g.nom, 80), descripcio: tl(g && g.descripcio, 240) }))
+    .filter(g => g.url && g.nom).slice(0, 3);
+  return { programes, formularis, integrades };
+}
 function fotoNeta(f) {
   if (!f || f.tipus !== 'sos-foto-web' || f.v !== 1 || !Array.isArray(f.pagines)) return null;
   let origen; try { origen = new URL(f.origen); } catch (x) { return null; }
@@ -3152,6 +3193,8 @@ const DISSENY_TXT = {
     textos: 'Textos', conserva: 'Es conserva', escriure: 'Per escriure', titolP: 'Títol', descr: 'Descripció', h1: 'H1', text: 'Text',
     red: 'Les adreces velles, a la nova (301)', de: 'Adreça vella', a: 'Va a', orfes: 'Sense destí: cal decidir-ho abans de publicar',
     req: 'Requisits', acc: 'Criteris d\'acceptació', claude: 'Com es construeix',
+    progs: 'Els programes (els edita el client: `cerebro/programes.json`)', progsNota: 'Una pàgina per programa i una pàgina amb tots. Si un programa ja tenia pàgina, la conserva (títol, descripció i H1) i l\'adreça vella hi porta.',
+    forms: 'Els formularis (els edita el client: `cerebro/formularis.json`)', on: 'On', camps: 'Camps', oblig: 'obligatori', germanes: 'Les webs germanes (un enllaç al peu)',
     inici: 'Inici', serveis: 'Serveis', equip: 'Per a l\'equip',
     objInici: 'Qui arriba sap què fa {nom} i troba la seva porta en un toc.', objRol: 'Que {rol} trobi {rep} i ens doni {dona}.', objRolSol: 'Que {rol} trobi el que ve a buscar i ens escrigui.', objVella: 'Mantenir el que ja troben els cercadors: {h1}.',
     secPortes: 'Una porta per a cada rol', secRep: 'El que et donem', secDona: 'El que et demanem', secPassos: 'Com començar', secVella: 'El contingut d\'ara', secServeis: 'Els serveis, pas a pas', secContacte: 'Contacte',
@@ -3164,13 +3207,15 @@ const DISSENY_TXT = {
       'Sense JavaScript imprescindible; la web funciona sense.',
       'Les imatges són de la web (es copien a `img/`): la política de seguretat (CSP) no en deixa carregar de fora.',
       'Dades per a màquines: JSON-LD de schema.org (Organization a l\'inici, WebPage a cada pàgina).',
-      'Els formularis són de Netlify Forms; cap dada personal al repositori.'],
+      'Els formularis són de Netlify Forms; cap dada personal al repositori.',
+      'Posicionament (veda 183): `canonical` a l\'adreça definitiva, `sitemap.xml` i `robots.txt`; les pàgines que porten visites (Search Console) conserven l\'adreça o tenen un 301 a la que diu el mateix, mai a l\'inici; la preview no s\'indexa.'],
     acceptacio: ['`node eines/genera.mjs` acaba sense errors i sense adreces velles orfes.',
       'A la vista prèvia, cada adreça vella de la taula respon 301 cap a una pàgina que existeix.',
       'Cada pàgina té un sol idioma i el seu `lang`; les versions s\'enllacen amb `hreflang`.',
       'El títol, la descripció i l\'H1 de les pàgines que es conserven són els d\'aquest document.',
       'Cap error del validador del W3C, i l\'accessibilitat de Lighthouse és de 90 o més.',
-      'El client ha revisat els textos «Per escriure» i els ha acceptat.'],
+      'El client ha revisat els textos «Per escriure» i els ha acceptat.',
+      'Després de publicar, el sitemap s\'envia a Search Console i durant quatre setmanes es revisen els 404 i les pàgines que perden visites.'],
     construeix: ['Obre el repositori del client amb Claude Code.', 'Dona-li aquest document (`cerebro/disseny-web.md`, o el JSON `cerebro/disseny-web.json`) i demana-li que construeixi la web seguint-lo, pàgina a pàgina.',
       'Revisa-la a la vista prèvia de Netlify amb els criteris d\'acceptació, i mergeja quan els compleixi.'] },
   es: { titol: 'Documento de diseño de la web', perQui: 'Para revisar con el cliente y, una vez aceptado, construirla con Claude Code en el repositorio, con vista previa.',
@@ -3180,6 +3225,8 @@ const DISSENY_TXT = {
     textos: 'Textos', conserva: 'Se conserva', escriure: 'Por escribir', titolP: 'Título', descr: 'Descripción', h1: 'H1', text: 'Texto',
     red: 'Las direcciones antiguas, a la nueva (301)', de: 'Dirección antigua', a: 'Va a', orfes: 'Sin destino: hay que decidirlo antes de publicar',
     req: 'Requisitos', acc: 'Criterios de aceptación', claude: 'Cómo se construye',
+    progs: 'Los programas (los edita el cliente: `cerebro/programes.json`)', progsNota: 'Una página por programa y una página con todos. Si un programa ya tenía página, la conserva (título, descripción y H1) y la dirección antigua lleva a ella.',
+    forms: 'Los formularios (los edita el cliente: `cerebro/formularis.json`)', on: 'Dónde', camps: 'Campos', oblig: 'obligatorio', germanes: 'Las webs hermanas (un enlace en el pie)',
     inici: 'Inicio', serveis: 'Servicios', equip: 'Para el equipo',
     objInici: 'Quien llega sabe qué hace {nom} y encuentra su puerta en un toque.', objRol: 'Que {rol} encuentre {rep} y nos dé {dona}.', objRolSol: 'Que {rol} encuentre lo que viene a buscar y nos escriba.', objVella: 'Mantener lo que ya encuentran los buscadores: {h1}.',
     secPortes: 'Una puerta para cada rol', secRep: 'Lo que te damos', secDona: 'Lo que te pedimos', secPassos: 'Cómo empezar', secVella: 'El contenido actual', secServeis: 'Los servicios, paso a paso', secContacte: 'Contacto',
@@ -3192,19 +3239,22 @@ const DISSENY_TXT = {
       'Sin JavaScript imprescindible; la web funciona sin él.',
       'Las imágenes son de la web (se copian a `img/`): la política de seguridad (CSP) no deja cargarlas de fuera.',
       'Datos para máquinas: JSON-LD de schema.org (Organization en el inicio, WebPage en cada página).',
-      'Los formularios son de Netlify Forms; ningún dato personal en el repositorio.'],
+      'Los formularios son de Netlify Forms; ningún dato personal en el repositorio.',
+      'Posicionamiento (veda 183): `canonical` a la dirección definitiva, `sitemap.xml` y `robots.txt`; las páginas que traen visitas (Search Console) conservan la dirección o tienen un 301 a la que dice lo mismo, nunca al inicio; la vista previa no se indexa.'],
     acceptacio: ['`node eines/genera.mjs` termina sin errores y sin direcciones antiguas huérfanas.',
       'En la vista previa, cada dirección antigua de la tabla responde 301 hacia una página que existe.',
       'Cada página tiene un solo idioma y su `lang`; las versiones se enlazan con `hreflang`.',
       'El título, la descripción y el H1 de las páginas que se conservan son los de este documento.',
       'Ningún error del validador del W3C, y la accesibilidad de Lighthouse es de 90 o más.',
-      'El cliente ha revisado los textos «Por escribir» y los ha aceptado.'],
+      'El cliente ha revisado los textos «Por escribir» y los ha aceptado.',
+      'Después de publicar, el sitemap se envía a Search Console y durante cuatro semanas se revisan los 404 y las páginas que pierden visitas.'],
     construeix: ['Abre el repositorio del cliente con Claude Code.', 'Dale este documento (`cerebro/disseny-web.md`, o el JSON `cerebro/disseny-web.json`) y pídele que construya la web siguiéndolo, página a página.',
       'Revísala en la vista previa de Netlify con los criterios de aceptación, y mergea cuando los cumpla.'] }
 };
 const DISSENY_LLENGUES = ['ca', 'es', 'en', 'fr', 'de', 'it', 'pt', 'eu', 'gl'];
 function dissenyWeb(web, opts) {
   const o = opts || {}, F = fotoNeta(o.foto), MC = marcaNeta(o.marca), MP = MC.portes || {};
+  const WC = webClientNet({ programes: o.programes, formularis: o.formularis, integrades: o.integrades });
   const fonts = (F ? F.pagines : []);
   /* L'idioma de cada pàgina vella i la ruta sense el prefix de l'idioma. */
   const llenguaDe = (p, cami) => { const q = String(p.llengua || '').slice(0, 2).toLowerCase(), m = /^\/([a-z]{2})(\/|$)/.exec(cami);
@@ -3267,6 +3317,7 @@ function dissenyWeb(web, opts) {
   const orfes = F ? F.pagines.map(p => p.url).filter(u => fotoCami(u, F.origen) === null) : [];
   const json = { tipus: 'sos-disseny-web', v: 1, nom, url: /^https:\/\/[^\s"<>]+$/.test(o.url || '') ? o.url.replace(/\/*$/, '/') : '', origen: F ? F.origen : '', llengues,
     marca: Object.assign({}, MC, { logoSvg: undefined, logo: !!MC.logoSvg }), pagines: pags, redireccions: redir, orfes,
+    programes: WC.programes, formularis: WC.formularis, integrades: WC.integrades,
     requisits: T.requisits, acceptacio: T.acceptacio };
   /* El mateix, per llegir. */
   const md = [], cel = s => String(s == null ? '' : s).replace(/\|/g, '\\|').replace(/\n+/g, ' ');
@@ -3295,6 +3346,17 @@ function dissenyWeb(web, opts) {
       if (x.text) md.push(String(x.text).trim().split(/\n\s*\n/).map(par => '> ' + par.replace(/\s+/g, ' ').trim()).join('\n>\n'), '');
     });
   });
+  if (WC.programes.length) {
+    md.push('## ' + T.progs, '', T.progsNota, '');
+    WC.programes.forEach(q => md.push('- **' + q.nom + '**' + (q.url ? ' (`' + q.url + '`)' : '') + ': ' + [q.perQui, q.durada, q.modalitat, q.dates.join(', '), q.places, q.certificat, q.preu].filter(Boolean).join(' · ')));
+    md.push('');
+  }
+  if (WC.formularis.length) {
+    md.push('## ' + T.forms, '');
+    WC.formularis.forEach(f => md.push('- **' + (f.titol || f.id) + '** · ' + T.on + ': ' + f.on.join(', ') + ' · ' + T.camps + ': ' + f.camps.map(c => c.etiqueta + ' (' + c.tipus + (c.obligatori ? ', ' + T.oblig : '') + ')').join(', ')));
+    md.push('');
+  }
+  if (WC.integrades.length) md.push('## ' + T.germanes, '', ...WC.integrades.map(g => '- [' + g.nom + '](' + g.url + ')' + (g.descripcio ? ': ' + g.descripcio : '')), '');
   if (redir.length || orfes.length) {
     md.push('## ' + T.red, '', '| ' + T.de + ' | ' + T.a + ' |', '|---|---|');
     redir.forEach(r => md.push('| `' + cel(r.de) + '` | `' + cel(r.a) + '` |'));
@@ -3317,6 +3379,10 @@ function webASite(web, opts) {
   const etiqueta = p => (MP[p.rol] && MP[p.rol].nom) || p.rol;
   const descripcio = MC.presentacio ? MC.presentacio.slice(0, 160) : web.titol || nom;
   const ruta = id => (id === 'inici' ? 'index.html' : id + '.html');
+  /* El que porta el client des del seu tauler: programes, formularis i webs germanes. */
+  const WC = webClientNet({ programes: o.programes, formularis: o.formularis, integrades: o.integrades });
+  const formsA = on => WC.formularis.filter(f => f.on.includes(on));
+  const ambContacte = formsA('contacte').length > 0;
   /* La vista bàsica (demanada per l'Àlvar el 22/10/2026): la capa informativa
      en una sola pàgina. Per a cada rol principal —els que més donen i reben de
      la casa—, el que li aporta valor i el que li demanem, i un sol formulari.
@@ -3346,7 +3412,7 @@ function webASite(web, opts) {
   /* Els continguts (cerebro/continguts/<id>.md): el text que la casa vol dir,
      importat o escrit, dins de les pàgines que surten del mapa o en pàgines
      noves. El mapa en dona l'estructura i els continguts, les paraules. */
-  const RESERVATS = ['equip', 'registre', 'gracies', '404', 'estil', 'web', 'index'], cont = {}, avisa = typeof o.avisa === 'function' ? o.avisa : () => {};
+  const RESERVATS = ['equip', 'registre', 'gracies', '404', 'estil', 'web', 'index'].concat(WC.programes.length ? [L.programesId] : [], WC.programes.map(p => p.id), ambContacte ? [L.contacteId] : []), cont = {}, avisa = typeof o.avisa === 'function' ? o.avisa : () => {};
   /* Un sol sedàs per a les dades personals, el de l'importador (VS-IMPORTA):
      un contingut amb un correu o un telèfon (que no siguin els de la web), un DNI
      o un IBAN no surt. Bloqueja, no avisa només; i sense sedàs no surt cap. */
@@ -3370,6 +3436,9 @@ function webASite(web, opts) {
       const cami = fotoCami(p.url, F.origen);
       if (cami === null) return;
       let id = /^\/(index\.html?)?$/.test(cami) ? 'inici' : null;
+      /* La pàgina vella d'un programa passa a ser la seva: hi conserva el títol, la descripció i l'H1 (veda 183). */
+      const sl = c => String(c || '').replace(/\/+$/, '') || '/', prog = !id && WC.programes.find(q => q.url && sl(fotoCami(q.url, F.origen)) === sl(cami) && !cap[q.id]);
+      if (prog) id = prog.id;
       const pr = !id && !basica && (web.portes || []).find(x => x.rol === perRol[cami] && !cap[x.id]);
       if (pr) id = pr.id;
       if (!id) {
@@ -3382,9 +3451,12 @@ function webASite(web, opts) {
     });
   }
   const text = id => (cont[id] && deMapa.includes(id) ? mdAHtml(cont[id].cos) + '\n' : cap[id] && cap[id].text ? fotoHtml(cap[id].text) + '\n' : '');
-  const lloc = x => (cap[x.id] && cap[x.id].menu !== null ? cap[x.id].menu : x.id === 'inici' ? -1 : Infinity);
+  const llocProg = WC.programes.map(p => cap[p.id] && cap[p.id].menu).filter(Number.isInteger);
+  const lloc = x => (x.id === L.programesId ? (llocProg.length ? Math.min(...llocProg) : 0.5) : x.id === L.contacteId ? 1e6
+    : cap[x.id] && cap[x.id].menu !== null ? cap[x.id].menu : x.id === 'inici' ? -1 : Infinity);
   const menu = (web.menu || []).filter(x => x.id !== 'equip' && (!basica || !porta(x.id) || principals.includes(porta(x.id)))).concat(noves.filter(id => cont[id].meta.menu !== false).map(id => ({ id, t: titolNova(id) })),
-    replica.filter(id => cap[id].menu !== null).map(id => ({ id, t: cap[id].h1 || cap[id].titol || id })))
+    replica.filter(id => cap[id].menu !== null).map(id => ({ id, t: cap[id].h1 || cap[id].titol || id })),
+    WC.programes.length ? [{ id: L.programesId, t: L.programes }] : [], ambContacte ? [{ id: L.contacteId, t: L.contactePag }] : [])
     .map((x, i) => [x, i]).sort((a, b) => lloc(a[0]) - lloc(b[0]) || a[1] - b[1]).map(x => x[0]);
   const pagina = (id, titol, cos, dades, extra) => '<!DOCTYPE html>\n<html lang="' + llengua + '">\n<head>\n<meta charset="utf-8">\n'
     + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
@@ -3399,7 +3471,7 @@ function webASite(web, opts) {
     + menu.map(x => '<li><a href="' + enllac(x.id) + '"' + (x.id === id ? ' aria-current="page"' : '') + '>' + e(x.id === 'inici' ? L.inici : x.id === 'serveis' ? L.serveis : porta(x.id) ? etiqueta(porta(x.id)) : x.t) + '</a></li>').join('')
     + (acces ? '<li><a class="entra" href="' + e(acces) + '">' + e(L.entra) + '</a></li>' : '')
     + '</ul></nav>\n</header>\n<main id="contingut">\n<h1>' + e(cap[id] && cap[id].h1 || titol) + '</h1>\n' + cos + '\n</main>\n'
-    + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (basica ? ' · <a href="avis-legal.html">' + e(L.legal) + '</a>' + (ambIntranet ? ' · <a href="equip.html">' + e(L.intranet) + '</a>' : '') : '') + (correu ? ' · ' + enllacCorreu(L.escriuCorreu) : '') + '</p>\n</footer>\n</body>\n</html>\n';
+    + '<footer>\n<p>' + e(L.peu) + ' <a href="web.json">' + e(L.dades) + '</a>' + (basica ? ' · <a href="avis-legal.html">' + e(L.legal) + '</a>' + (ambIntranet ? ' · <a href="equip.html">' + e(L.intranet) + '</a>' : '') : '') + (correu ? ' · ' + enllacCorreu(L.escriuCorreu) : '') + WC.integrades.map(g => ' · <a href="' + e(g.url) + '" rel="noopener">' + e(g.nom) + '</a>').join('') + '</p>\n</footer>\n</body>\n</html>\n';
   const formulari = p => {
     const f = 'porta-' + p.id, demana = p.dona[0] ? p.dona[0].q : '';
     return '<h2 id="escriu">' + e(L.escriu) + '</h2>\n<form name="' + f + '" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">\n'
@@ -3411,6 +3483,37 @@ function webASite(web, opts) {
       + '<button type="submit">' + e(p.compte && ambExtranet ? L.alta : L.envia) + '</button>\n</form>'
       + (correu ? '\n<p>' + e(L.tambe) + ' <a href="mailto:' + e(correu) + '">' + e(correu) + '</a>.</p>' : '');
   };
+  /* Els formularis que el client es fa a mida (Netlify Forms, com els de les
+     portes): cada camp amb la seva etiqueta, i el camp «programa» tria entre
+     els programes que hi ha. A la pàgina d'un programa ja surt triat. */
+  const campForm = (n, c, prog) => {
+    const id = n + '-' + c.id, req = c.obligatori ? ' required' : '', lab = '<label for="' + id + '">' + e(c.etiqueta) + '</label>';
+    if (c.tipus === 'textarea') return lab + '<textarea id="' + id + '" name="' + c.id + '" rows="4"' + req + '></textarea>\n';
+    if (c.tipus === 'casella') return '<label class="casella" for="' + id + '"><input type="checkbox" id="' + id + '" name="' + c.id + '" value="si"' + req + '> ' + e(c.etiqueta) + '</label>\n';
+    if (c.tipus === 'tria' || c.tipus === 'programa') {
+      const ops = c.tipus === 'programa' ? WC.programes.map(q => q.nom) : c.opcions;
+      return lab + '<select id="' + id + '" name="' + c.id + '"' + req + '><option value="">' + e(L.triaUna) + '</option>'
+        + ops.map(x => '<option' + (prog && prog.nom === x ? ' selected' : '') + '>' + e(x) + '</option>').join('') + '</select>\n';
+    }
+    const ty = { text: 'text', correu: 'email', telefon: 'tel', data: 'date' }[c.tipus], ac = { correu: ' autocomplete="email"', telefon: ' autocomplete="tel"' }[c.tipus] || '';
+    return lab + '<input id="' + id + '" name="' + c.id + '" type="' + ty + '"' + ac + req + '>\n';
+  };
+  const formClient = (f, prog) => {
+    const n = 'f-' + f.id;
+    return '<section class="formulari" aria-labelledby="' + n + '-t">\n<h2 id="' + n + '-t">' + e(f.titol || L.escriu) + '</h2>\n' + (f.intro ? '<p>' + e(f.intro) + '</p>\n' : '')
+      + '<form name="' + n + '" method="post" action="gracies.html" data-netlify="true" data-netlify-honeypot="bot-field">\n<input type="hidden" name="form-name" value="' + n + '">\n'
+      + '<p class="ocult"><label>No omplis això <input type="text" name="bot-field" tabindex="-1" autocomplete="off"></label></p>\n'
+      + f.camps.map(c => campForm(n, c, prog)).join('') + '<p><small>' + e(L.privForm) + '</small></p>\n<button type="submit">' + e(f.boto || L.envia) + '</button>\n</form>\n</section>';
+  };
+  /* Els programes: la fitxa de cadascun, i com el llegeixen els cercadors (schema.org Course). */
+  const fitxaProg = q => '<dl class="fitxa">' + [[L.pPerQui, q.perQui], [L.pDurada, q.durada], [L.pModalitat, q.modalitat], [L.pPlaces, q.places], [L.pCertificat, q.certificat], [L.pPreu, q.preu]]
+    .filter(x => x[1]).map(x => '<dt>' + e(x[0]) + '</dt><dd>' + e(x[1]) + '</dd>').join('')
+    + (q.dates.length ? '<dt>' + e(L.pDates) + '</dt><dd><ul>' + q.dates.map(d => '<li>' + e(d) + '</li>').join('') + '</ul></dd>' : '') + '</dl>\n';
+  const curs = q => ({ '@type': 'Course', name: q.nom, description: q.resum || q.perQui || undefined, provider: { '@type': 'Organization', name: nom },
+    educationalCredentialAwarded: q.certificat || undefined, url: url ? abs(ruta(q.id)) : undefined,
+    hasCourseInstance: q.modalitat ? [{ '@type': 'CourseInstance', courseMode: q.modalitat }] : undefined });
+  const llistaProg = () => (WC.programes.length ? '<h2>' + e(L.programes) + '</h2>\n<ul>' + WC.programes.map(q => '<li><a href="' + ruta(q.id) + '">' + e(q.nom) + '</a>'
+    + ([q.durada, q.modalitat, q.dates[0]].filter(Boolean).length ? ' <small>' + e([q.durada, q.modalitat, q.dates[0]].filter(Boolean).join(' · ')) + '</small>' : '') + '</li>').join('') + '</ul>\n' : '');
   const fitxers = [];
   const posa = (r, cos, tipus) => fitxers.push({ ruta: r, tipus: tipus || 'text/html', cos });
   const servei = sv => ({ '@type': 'Service', name: sv.nom, description: sv.d || undefined, provider: { '@type': 'Organization', name: nom } });
@@ -3432,7 +3535,7 @@ function webASite(web, opts) {
     + (p.dona.length ? '<h3>' + e(L.demanem) + '</h3>\n' + llista(p.dona, f => lli(f)) + '\n' : '')
     + '<p><a href="#escriu">' + e(L.escriu) + '</a></p>\n</section>';
   posa('index.html', pagina('inici', nom,
-    (MC.presentacio ? '<p>' + e(MC.presentacio) + '</p>\n' : web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici')
+    (MC.presentacio ? '<p>' + e(MC.presentacio) + '</p>\n' : web.titol ? '<p>' + e(web.titol) + '</p>\n' : '') + text('inici') + llistaProg()
       + (basica ? principals.map(seccioRol).join('\n') + '\n'
         : '<h2>' + e(L.perCadascu) + '</h2>\n' + llista(web.portes || [], p => '<li><a href="' + ruta(p.id) + '">' + e(etiqueta(p)) + '</a>' + (p.rep[0] ? ' <small>' + e(p.rep[0].q) + '</small>' : '') + '</li>')
           + (ambExtranet || ambIntranet ? '\n<h2>' + e(L.acces) + '</h2>\n<ul>'
@@ -3443,7 +3546,7 @@ function webASite(web, opts) {
         + (CT.adreca ? '<li>' + e(L.adreca) + ': ' + e(CT.adreca) + '</li>' : '')
         + (CT.telefon ? '<li>' + e(L.telefon) + ': <a href="tel:' + e(CT.telefon.replace(/[^\d+]/g, '')) + '">' + e(CT.telefon) + '</a></li>' : '')
         + (CT.horari ? '<li>' + e(L.horari) + ': ' + e(CT.horari) + '</li>' : '') + '</ul>' : '')
-      + (basica ? '\n' + contacteBasic() : ''),
+      + (basica ? '\n' + contacteBasic() : '') + '\n' + formsA('inici').map(f => formClient(f)).join('\n'),
     { '@type': 'Organization', name: nom, description: MC.presentacio || web.titol || undefined, slogan: MC.lema || undefined,
       logo: MC.logoSvg && url ? url + 'logo.svg' : undefined, telephone: CT.telefon || undefined,
       address: CT.adreca ? { '@type': 'PostalAddress', streetAddress: CT.adreca } : undefined,
@@ -3466,6 +3569,21 @@ function webASite(web, opts) {
       { '@type': 'WebPage', name: p.rol, audience: { '@type': 'Audience', audienceType: p.rol },
         mainEntity: { '@type': 'ItemList', itemListElement: p.rep.map((f, i) => ({ '@type': 'ListItem', position: i + 1, name: f.q })) } }));
   });
+  WC.programes.forEach(q => posa(ruta(q.id), pagina(q.id, q.nom,
+    (q.resum ? '<p>' + e(q.resum) + '</p>\n' : '') + fitxaProg(q) + text(q.id)
+      + (q.enllac ? '<p><a href="' + e(q.enllac) + '" rel="noopener">' + e(L.pMes) + '</a></p>\n' : '')
+      + '<p><a href="' + ruta(L.programesId) + '">← ' + e(L.programes) + '</a></p>\n' + formsA('programes').map(f => formClient(f, q)).join('\n'), curs(q))));
+  if (WC.programes.length) posa(ruta(L.programesId), pagina(L.programesId, L.programes,
+    '<p>' + e(L.programesIntro) + '</p>\n' + WC.programes.map(q => '<article class="programa">\n<h2><a href="' + ruta(q.id) + '">' + e(q.nom) + '</a></h2>\n'
+      + (q.resum ? '<p>' + e(q.resum.length > 240 ? q.resum.slice(0, 237) + '…' : q.resum) + '</p>\n' : '')
+      + ([q.durada, q.modalitat, q.dates[0]].filter(Boolean).length ? '<p><small>' + e([q.durada, q.modalitat, q.dates[0]].filter(Boolean).join(' · ')) + '</small></p>\n' : '')
+      + '<p><a href="' + ruta(q.id) + '">' + e(L.pVeure) + '</a></p>\n</article>').join('\n') + '\n' + formsA('programes').map(f => formClient(f)).join('\n'),
+    { '@type': 'ItemList', name: L.programes, itemListElement: WC.programes.map((q, i) => ({ '@type': 'ListItem', position: i + 1, item: curs(q) })) }));
+  if (ambContacte) posa(ruta(L.contacteId), pagina(L.contacteId, L.contactePag,
+    (CT.adreca || CT.telefon || CT.horari ? '<ul>' + (CT.adreca ? '<li>' + e(L.adreca) + ': ' + e(CT.adreca) + '</li>' : '')
+      + (CT.telefon ? '<li>' + e(L.telefon) + ': <a href="tel:' + e(CT.telefon.replace(/[^\d+]/g, '')) + '">' + e(CT.telefon) + '</a></li>' : '')
+      + (CT.horari ? '<li>' + e(L.horari) + ': ' + e(CT.horari) + '</li>' : '') + '</ul>\n' : '')
+      + formsA('contacte').map(f => formClient(f)).join('\n'), { '@type': 'ContactPage', name: L.contactePag }));
   if ((web.serveis || []).length) {
     posa('serveis.html', pagina('serveis', L.serveis,
       text('serveis') + web.serveis.map(sv => '<h2>' + e(sv.nom) + '</h2>\n' + (sv.d ? '<p>' + e(sv.d) + '</p>\n' : '')
@@ -3476,7 +3594,7 @@ function webASite(web, opts) {
   noves.forEach(id => posa(ruta(id), pagina(id, titolNova(id), mdAHtml(cont[id].cos), { '@type': 'WebPage', name: titolNova(id) })));
   replica.forEach(id => posa(ruta(id), pagina(id, cap[id].h1 || cap[id].titol || id, text(id), { '@type': 'WebPage', name: cap[id].titol || cap[id].h1 || id })));
   /* El contenidor mínim de la vista bàsica: l'avís legal, amb el correu amagat. */
-  if (basica) posa('avis-legal.html', pagina('avis-legal', L.legal, L.legalTxt.map((x, i) => '<p>' + e(x.replace('{titular}', CT.titular || nom)
+  if (basica) posa('avis-legal.html', pagina('avis-legal', L.legal, L.legalTxt.map((x, i) => (i === 1 && WC.formularis.length ? L.legalForm : x)).map((x, i) => '<p>' + e(x.replace('{titular}', CT.titular || nom)
     .replace('{nif}', CT.nif ? ', NIF ' + CT.nif : '').replace('{adreca}', CT.adreca ? ', ' + CT.adreca : '')) + (i === 2 && correu ? ' ' + enllacCorreu(L.escriuCorreu) + '.' : '') + '</p>').join('\n'),
     { '@type': 'WebPage', name: L.legal }));
   /* L'equip no és per al públic: hi és perquè la web sencera surti del mapa,
@@ -3514,7 +3632,8 @@ function webASite(web, opts) {
      la configuració de Netlify. */
   posa('404.html', pagina('404', L.noHi, '<p>' + e(L.noHiD) + '</p>\n<p><a href="index.html">' + e(L.torna) + '</a></p>',
     { '@type': 'WebPage', name: L.noHi }, '<meta name="robots" content="noindex">\n'));
-  const publiques = ['index.html'].concat(basica ? ['avis-legal.html'] : [], (basica ? [] : web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta), replica.map(ruta));
+  const publiques = ['index.html'].concat(basica ? ['avis-legal.html'] : [], (basica ? [] : web.portes || []).map(p => ruta(p.id)), (web.serveis || []).length ? ['serveis.html'] : [], noves.map(ruta), replica.map(ruta),
+    WC.programes.length ? [ruta(L.programesId)] : [], WC.programes.map(q => ruta(q.id)), ambContacte ? [ruta(L.contacteId)] : []);
   /* Cada adreça vella que canvia, a la nova amb un 301. Amb «!» passa per
      davant d'un fitxer que es digui igual; si l'adreça vella ja és una pàgina
      de la web nova, no es toca. La foto viatja amb el repositori. */
@@ -3552,6 +3671,9 @@ function webASite(web, opts) {
     const desa = Object.assign({}, MC); delete desa.logoSvg; if (MC.logoSvg) desa.logo = '../logo.svg';
     posa('cerebro/marca.json', JSON.stringify(desa, null, 2) + '\n', 'application/json');
   }
+  /* Els programes i els formularis són del client: els edita des del seu tauler i `eines/genera.mjs` els llegeix d'aquí. */
+  if (WC.programes.length) posa('cerebro/programes.json', JSON.stringify(WC.programes.map(q => Object.assign({}, q, { id: undefined })), null, 2) + '\n', 'application/json');
+  if (WC.formularis.length) posa('cerebro/formularis.json', JSON.stringify(WC.formularis, null, 2) + '\n', 'application/json');
   /* I el que es va triar a l'editor, perquè `eines/genera.mjs` no ho perdi en
      refer la web: abans tornava al català, al rol que més lliura i sense correu.
      Només el que es va dir; el que es dedueix es torna a deduir. */
@@ -3565,6 +3687,7 @@ function webASite(web, opts) {
     if (basica) conf.vista = 'basica';
     if (Array.isArray(o.capes)) conf.capes = capes.filter(x => x === 'extranet' || x === 'intranet');
     if (acces && acces === o.acces) conf.acces = acces;
+    if ((o.integrades || []).length && WC.integrades.length) conf.integrades = WC.integrades;
     if (Object.keys(conf).length) posa('cerebro/configuracio.json', JSON.stringify(conf, null, 2) + '\n', 'application/json');
   }
   const md = a => a.join('\n').split('{nom}').join(nom) + '\n';
@@ -4469,16 +4592,17 @@ function codiRepositori(tros, exemple) {
     + '/* El que es va triar a l\'editor i la marca viatgen amb el repositori: sense llegir-los, refer la web la tornava al català, al rol que més lliura i sense marca. Les variables TT_* hi passen per sobre. */\n'
     + 'const prova = r => { try { return llegeix(r); } catch (x) { console.warn(\'⚠️  \' + r + \' no és JSON vàlid: no es fa servir.\'); return null; } };\n'
     + 'const conf = prova(\'cerebro/configuracio.json\') || {}, marca = prova(\'cerebro/marca.json\'), foto = prova(\'cerebro/foto-web.json\');\n'
+    + 'const programes = prova(\'cerebro/programes.json\'), formularis = prova(\'cerebro/formularis.json\');\n'
     + 'if (marca && marca.logo === \'../logo.svg\') {\n'
     + '  if (hi(\'logo.svg\')) marca.logoSvg = readFileSync(new URL(\'logo.svg\', arrel), \'utf8\');\n'
     + '  if (!marcaSvg(marca.logoSvg)) console.warn(\'⚠️  cerebro/marca.json demana logo.svg, però \' + (hi(\'logo.svg\') ? \'no és un SVG que es pugui posar (porta scripts o enllaços, o passa de 100 kB)\' : \'no hi és\') + \': la web surt sense logo.\');\n}\n'
     + 'let casa;\ntry { casa = e.TT_CASA ? JSON.parse(e.TT_CASA) : conf.casa; } catch (x) { casa = conf.casa; }\n'
-    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, foto: foto || undefined, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
+    + 'const fitxers = await genera(mapa, { nom: e.TT_NOM || conf.nom, correu: e.TT_CORREU || conf.correu, llengua: e.TT_LLENGUA || conf.llengua, url: e.TT_URL || conf.url || e.URL, casa: Array.isArray(casa) ? casa : undefined, vista: e.TT_VISTA || conf.vista, capes: conf.capes, marca: marca || undefined, foto: foto || undefined, programes: programes || undefined, formularis: formularis || undefined, integrades: conf.integrades, continguts, repo, sensemapa: exemple, avisa: m => console.warn(\'⚠️  \' + m) });\n'
     + '/* La guarda de la web vella: cap adreça que Google ja coneix es pot quedar sense destí. Si en queda alguna, no es publica. */\n'
     + 'const orfes = foto ? orfesFoto(foto, fitxers) : [];\n'
     + 'if (orfes.length) { console.error(\'❌ \' + orfes.length + \' adreces de la web vella es quedarien sense destí (cerebro/foto-web.json): \' + orfes.join(\', \')); process.exit(1); }\n'
     + '/* El que és del repositori no es trepitja: la configuració, el mapa, la marca, les decisions i el que s\'escriu (dossier, fonts, continguts, esborranys). */\n'
-    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/foto-web.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
+    + 'const propis = [\'netlify.toml\', \'cerebro/mapa-real.json\', \'cerebro/marca.json\', \'cerebro/foto-web.json\', \'cerebro/programes.json\', \'cerebro/formularis.json\', \'cerebro/mapa-ideal.json\', \'cerebro/decisiones.md\', \'cerebro/dossier.md\'];\n'
     + 'const escrit = r => /^cerebro\\/(fonts|continguts|esborranys)\\//.test(r);\n'
     + 'let n = 0;\n'
     + 'for (const f of fitxers) {\n'
