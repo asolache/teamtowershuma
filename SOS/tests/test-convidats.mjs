@@ -108,6 +108,14 @@ console.log('\nEl que ensenya el panell');
   ok(gs.ia.actiu === false && /no és una clau/.test(gs.ia.motiu), 'si la IA no va, diu per què');
 }
 
+console.log('\nEl tauler de clients: la fase');
+{
+  const r = await gestiona('PUT', {}, B, { mail: 'maria@elebarcelona.com', fase: 'propuesta' }, ENV, R), x = r.convidat;
+  ok(x.fase === 'propuesta' && x.nom === 'María' && x.params.org === 'ELE Barcelona' && x.enllac === M.enllac, 'moure-la de fase no canvia res més, ni el seu enllaç');
+  ok((await gestiona('PUT', {}, B, { mail: 'maria@elebarcelona.com', fase: 'qualsevol' }, ENV, R)).convidat.fase === 'propuesta', 'una fase que no existeix no esborra la que tenia');
+  ok((await gestiona('PUT', {}, B, { mail: 'maria@elebarcelona.com', nom: 'María' }, ENV, R)).convidat.fase === 'propuesta', 'canviar-li el nom la deixa a la seva fase');
+}
+
 console.log('\nTreure un convidat');
 {
   ok((await gestiona('DELETE', { mail: 'MARIA@elebarcelona.com' }, B, {}, ENV, R)).estat === 'tret', 'el treu');

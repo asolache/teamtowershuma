@@ -96,7 +96,7 @@
     }
 
     function fitxa(x) {
-        var li = el('li', { class: 'pn-conv' }), e = x.espai, gast = Math.min(100, Math.round(100 * (x.gastat || 0) / (x.tope || 1)));
+        var li = el('li', { class: 'pn-conv', id: idDe(x), tabindex: '-1' }), e = x.espai, gast = Math.min(100, Math.round(100 * (x.gastat || 0) / (x.tope || 1)));
         li.appendChild(el('h4', {}, (x.nom || x.mail) + (x.params && x.params.org ? ' · ' + x.params.org : '')));
         li.appendChild(el('p', { class: 'nota' }, x.mail + (x.nota ? ' · ' + x.nota : '')));
         var b = el('span', { class: 'barra-e', role: 'meter', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(gast), 'aria-label': 'IA gastada' }), i = el('i'); i.style.width = gast + '%'; b.appendChild(i);
@@ -120,11 +120,59 @@
         return li;
     }
 
+    /* El tablero de clientes (11/11/2026): «que vaya también en el iPhone».
+       Cada invitado es una tarjeta en su fase. La fase la pone él con las
+       flechas; si no la ha puesto, sale de lo que ha hecho (si ya hay gente
+       en su mapa, «Haciendo su mapa»). En el móvil las columnas se deslizan
+       de lado y los botones de arriba llevan a cada una. */
+    var FASES = [['invitado', 'Invitado'], ['mapa', 'Haciendo su mapa'], ['propuesta', 'Propuesta enviada'], ['marcha', 'En marcha'], ['entregado', 'Entregado']];
+    function faseDe(x) { return x.fase || (x.espai && x.espai.persones ? 'mapa' : 'invitado'); }
+    function idDe(x) { return 'pn-c-' + String(x.mail).replace(/[^a-z0-9]+/gi, '-'); }
+    function mou(x, f) {
+        var abans = x.fase; x.fase = f; pinta();
+        var t = caixa.querySelector('[data-mail="' + x.mail + '"] button'); if (t) t.focus({ preventScroll: true });
+        var cl = document.getElementById('pn-col-' + f); if (cl && window.matchMedia('(max-width: 899px)').matches) cl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        crida('PUT', { mail: x.mail, fase: f }).catch(function (er) { x.fase = abans; msg = 'No se ha movido: ' + er.message; pinta(); });
+    }
+    function tauler(c) {
+        var per = {}; FASES.forEach(function (f) { per[f[0]] = []; });
+        D.convidats.forEach(function (x) { per[faseDe(x)].push(x); });
+        c.appendChild(el('h3', { id: 'pn-t-tauler' }, 'Tus clientes'));
+        var xips = el('div', { class: 'pn-xips', role: 'group', 'aria-label': 'Ir a una fase' });
+        FASES.forEach(function (f) {
+            xips.appendChild(boto(f[1] + ' · ' + per[f[0]].length, function () { var cl = document.getElementById('pn-col-' + f[0]); if (cl) cl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }); }, 'pn-xip'));
+        });
+        c.appendChild(xips);
+        var t = el('div', { class: 'pn-tauler', 'aria-labelledby': 'pn-t-tauler' });
+        FASES.forEach(function (f, i) {
+            var col = el('section', { class: 'pn-col', id: 'pn-col-' + f[0], 'aria-label': f[1] });
+            col.appendChild(el('h4', {}, [el('span', {}, f[1]), el('b', {}, String(per[f[0]].length))]));
+            if (!per[f[0]].length) col.appendChild(el('p', { class: 'nota' }, 'Nadie.'));
+            per[f[0]].forEach(function (x) {
+                var e = x.espai, k = el('article', { class: 'pn-k', 'data-mail': x.mail });
+                k.appendChild(el('b', {}, x.nom || x.mail));
+                if (x.params && x.params.org) k.appendChild(el('span', {}, x.params.org));
+                var on = [x.entrat ? 'entró el ' + dia(x.entrat) : 'sin entrar'];
+                if (e && e.persones) on.push(e.persones + ' en su mapa');
+                if (e && e.actualitzada) on.push('último cambio ' + dia(e.actualitzada));
+                k.appendChild(el('small', {}, on.join(' · ')));
+                var a = el('div', { class: 'pn-ka' });
+                if (i < FASES.length - 1) a.appendChild(boto(FASES[i + 1][1] + ' →', function () { mou(x, FASES[i + 1][0]); }, 'btn-primary btn-sm'));
+                if (i > 0) { var ba = boto('←', function () { mou(x, FASES[i - 1][0]); }, 'btn-ghost btn-sm'); ba.setAttribute('aria-label', 'Volver a «' + FASES[i - 1][1] + '»'); a.appendChild(ba); }
+                a.appendChild(boto('Ficha', function () { var li = document.getElementById(idDe(x)); if (li) { li.scrollIntoView({ block: 'start' }); li.focus({ preventScroll: true }); } }, 'btn-ghost btn-sm'));
+                k.appendChild(a); col.appendChild(k);
+            });
+            t.appendChild(col);
+        });
+        c.appendChild(t);
+    }
+
     function pinta() {
         var c = caixa.querySelector('.pn-cos'); c.textContent = '';
         if (msg) c.appendChild(el('p', { class: 'pn-msg', role: 'status' }, msg));
         if (!clau) { entrada(c); return; }
         if (!D) { c.appendChild(el('p', {}, 'Cargando…')); return; }
+        tauler(c);
         estatIA(c);
         c.appendChild(el('h3', {}, 'Tus invitados (' + D.convidats.length + ')'));
         if (!D.convidats.length) c.appendChild(el('p', { class: 'nota' }, 'Todavía ninguno.'));
