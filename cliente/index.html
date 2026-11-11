@@ -114,12 +114,12 @@
         .pn-form { margin-top: 1rem; }
         /* El tablero de clientes: cinco columnas; en el móvil se deslizan de lado. */
         .pn-xips { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .8rem; }
-        .pn-xip { min-height: 44px; padding: .4rem .8rem; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--card); font-size: .9rem; font-weight: 600; cursor: pointer; }
+        .pn-xip { min-height: 44px; padding: .4rem .8rem; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--card); font-size: var(--t0); font-weight: 600; cursor: pointer; }
         .pn-tauler { display: grid; grid-auto-flow: column; grid-auto-columns: 85%; gap: .7rem; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: .5rem; -webkit-overflow-scrolling: touch; }
         .pn-col { scroll-snap-align: start; scroll-margin-left: 0; background: var(--panel, var(--card)); border: 1px dashed var(--border-strong); border-radius: 12px; padding: .7rem; display: grid; gap: .5rem; align-content: start; }
-        .pn-col h4 { margin: 0; display: flex; justify-content: space-between; gap: .5rem; font-family: var(--mono); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+        .pn-col h4 { margin: 0; display: flex; justify-content: space-between; gap: .5rem; font-family: var(--mono); font-size: var(--t0); text-transform: uppercase; letter-spacing: .05em; }
         .pn-k { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .6rem .7rem; display: grid; gap: .15rem; }
-        .pn-k span, .pn-k small { color: var(--muted); font-size: .88rem; }
+        .pn-k span, .pn-k small { color: var(--muted); font-size: var(--t0); }
         .pn-ka { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .35rem; }
         .pn-ka .btn { min-height: 44px; }
         @media (min-width: 900px) { .pn-tauler { grid-auto-flow: row; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: visible; } .pn-xips { display: none; } }
