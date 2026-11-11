@@ -72,7 +72,7 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.goto(URL_ + '#' + id); await p.waitForTimeout(300);
   ok(await p.locator('#' + id).evaluate(e => e.classList.contains('tc-on')), 'cada tarjeta tiene su enlace y se abre marcada');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'sin desplazamiento de lado');
-  const cols = await p.locator('#cl-tauler .tc-n a').evaluateAll(as => as.map(a => a.getAttribute('href')));
+  const cols = await p.locator('#cl-tauler .tc-ns a').evaluateAll(as => as.map(a => a.getAttribute('href')));
   ok(cols.length === 3 && (await p.evaluate(hs => hs.every(h => document.getElementById(h.slice(1))), cols)), 'los contadores llevan a cada columna');
   await p.goto(URL_.replace('index.html', 'index.html?lang=ca') + '#tablero');
   ok(/Que vagi sol/.test(await p.textContent('#cl-tauler')) && /El teu tauler/.test(await p.textContent('#tablero')), 'en catalán también');

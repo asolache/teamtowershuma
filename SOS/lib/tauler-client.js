@@ -144,11 +144,11 @@
       '.tc-per h3{margin:0 0 .2rem;font-size:.8rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em}' +
       '.tc-per p{margin:0 0 .4rem;font-size:.85rem;color:var(--light)}.tc-per ul{margin:0;padding-left:1.1rem;font-size:.85rem}' +
       '.tc-buit{padding:1rem;border:1px dashed var(--border-strong);border-radius:12px;color:var(--muted)}' +
-      '.tc-n a{color:inherit}.tc-col{scroll-margin-top:10rem}.tc-c{scroll-margin:10rem 0 6rem}' +
+      '.tc-ns a{color:inherit}.tc-col{scroll-margin-top:10rem}.tc-c{scroll-margin:10rem 0 6rem}' +
       /* iPhone: Safari amplia la pàgina si un camp té menys de 16 px; i en
          una columna sola, les tres caps porten a la seva columna. */
       '@media (max-width:760px){.tc-cols{grid-template-columns:1fr}.tc-col{min-height:0}.tc-f input,.tc-f textarea,.tc-f select{font-size:16px}.tc-acc button,.tc-f button{min-height:44px}' +
-      '.tc-n{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}.tc-n a{padding:.3rem .55rem;border:1px solid var(--border-strong);border-radius:999px;text-decoration:none;background:var(--card)}}';
+      '.tc-ns{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}.tc-ns a{padding:.3rem .55rem;border:1px solid var(--border-strong);border-radius:999px;text-decoration:none;background:var(--card)}}';
     document.head.appendChild(s);
   }
   function el(tag, at, txt) {
@@ -169,7 +169,7 @@
     if (!cs.length) { cont.appendChild(el('p', { class: 'tc-buit' }, t.buit)); return { cartes: cs, compte: compte(cs, estat) }; }
     var n = compte(cs, estat);
     /* Els comptes porten a cada columna: al mòbil són l'índex del tauler. */
-    var nn = el('p', { class: 'tc-n', 'aria-live': 'polite' });
+    var nn = el('p', { class: 'tc-n tc-ns', 'aria-live': 'polite' });
     f(t.comptes, n.c1, n.c2, n.c3).split(' · ').forEach(function (x, i) {
       if (i) nn.appendChild(document.createTextNode(' · '));
       nn.appendChild(el('a', { href: '#' + pre + 'col-c' + (i + 1) }, x));
