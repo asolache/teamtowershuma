@@ -334,6 +334,8 @@
         .avanc-pill { position: fixed; left: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; display: inline-flex; align-items: center; gap: .4rem; padding: .5rem .9rem; border-radius: 999px; background: var(--card); border: 1px solid var(--border-strong); color: var(--text); font-weight: 700; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.12); }
         .avanc-pill span { font-family: var(--mono); color: var(--indigo); }
         @media (max-width: 560px) { .avanc-pill { bottom: 4.4rem; } .aviso { bottom: 8.2rem; } }
+        /* iPhone: mientras se escribe, los dos botones flotantes no tapan el campo ni el teclado. */
+        @media (max-width: 760px) { body.escribe .avanc-pill, body.escribe .viu-b { display: none; } }
         @media (prefers-reduced-motion: reduce) { .avanc-barra i { transition: none; } }
         .viu-b { position: fixed; right: 1rem; bottom: 1rem; z-index: 90; min-height: 48px; padding: .6rem 1.1rem; border-radius: 999px; border: 0; background: var(--indigo); color: var(--on-accent, #fff); font: inherit; font-weight: 700; box-shadow: 0 10px 28px -12px rgba(0, 0, 0, .45); cursor: pointer; }
         .viu-b[aria-expanded="true"] { display: none; }
@@ -3274,6 +3276,10 @@
         if (on && !document.getElementById('cl-panel-js')) { var sc = document.createElement('script'); sc.id = 'cl-panel-js'; sc.src = '/cliente/panel.js'; document.body.appendChild(sc); }
     }
     window.addEventListener('hashchange', panel); panel();
+    /* Con el teclado abierto (iPhone) se esconden los botones flotantes. */
+    var esCamp = function (n) { return n && /^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName) && !/^(checkbox|radio|button|submit|color)$/.test(n.type); };
+    document.addEventListener('focusin', function (ev) { document.body.classList.toggle('escribe', esCamp(ev.target)); });
+    document.addEventListener('focusout', function () { setTimeout(function () { document.body.classList.toggle('escribe', esCamp(document.activeElement)); }, 0); });
 })();
 </script>
 </body>
