@@ -41,7 +41,21 @@
       enllac: 'Enlace a esta tarjeta',
       motiu: { intangible: 'no se paga', diners: 'es dinero o una decisión' },
       resum: 'Tablero: {0}', paquet: '{0} ({1} → {2}): cuándo «{3}», necesita «{4}», lo revisa {5}{6}',
-      vaSol: ' · que vaya solo'
+      vaSol: ' · que vaya solo',
+      fo: {
+        h: 'Lo que aprendes y lo que hacemos', d: 'Cada acción formativa te enseña a llevar una parte tú misma: la haces sobre tu proyecto, online o en persona, y queda la prueba de lo que ya sabes hacer. Lo que hacemos nosotros por ti también se apunta aquí, aparte.',
+        c: ['Propuesta', 'Programada', 'Hecha'], cd: ['La sugerimos para tu caso.', 'Tiene día y forma.', 'Ya está, con su prueba.'],
+        mod: { online: 'Online', presencial: 'Presencial' }, modL: 'Cómo', dia: 'Día', hores: 'Horas', hU: '{0} h',
+        tip: { formacion: 'Formación', consultoria: 'Consultoría', desarrollo: 'Desarrollo' }, tipL: 'Tipo',
+        qui: { cliente: 'Tú, con guía', equipo: 'Nosotros', maquina: 'La máquina' }, quiL: 'Quién lo hace',
+        ev: 'La prueba: qué has hecho tú', evP: 'Por ejemplo: «cambié las fechas del FELE y lo publiqué»', evS: 'Se espera: {0}',
+        programa: 'Programar', fet: 'Marcar como hecha', edita: 'Cambiar', enrere: '← Volver', guarda: 'Guardar', cancel: 'Cancelar',
+        faltaP: 'Falta decir cómo (online o presencial) y las horas.', faltaE: 'Falta la prueba de lo que has hecho.',
+        afegeix: '+ Añadir otra acción', nom: 'Qué se hace', nomP: 'Por ejemplo: conectar los formularios con tu programa de alumnos',
+        compte: '{0} h hechas de {1} h · {2}', perTipus: 'Hecho por tipo: {0}', parts: '{0} online · {1} presencial',
+        temari: 'Ver el contenido', cost: '{0} h · {1} €', costT: 'Tiempo hecho {0} h de {1} h · valor {2} € de {3} €',
+        resum: 'Acciones: {0}', linia: '{0} · {1} · {2} · {3} · {4} h{5}{6}', evR: ' · prueba: «{0}»'
+      }
     },
     ca: {
       c1: 'Per definir', c1d: 'Es repeteix, però encara no està dit com.',
@@ -61,7 +75,21 @@
       enllac: 'Enllaç a aquesta targeta',
       motiu: { intangible: 'no es paga', diners: 'són diners o una decisió' },
       resum: 'Tauler: {0}', paquet: '{0} ({1} → {2}): quan «{3}», necessita «{4}», ho revisa {5}{6}',
-      vaSol: ' · que vagi sol'
+      vaSol: ' · que vagi sol',
+      fo: {
+        h: 'El que aprens i el que fem', d: 'Cada acció formativa t\'ensenya a portar una part tu mateixa: la fas sobre el teu projecte, en línia o en persona, i en queda la prova del que ja saps fer. El que fem nosaltres per tu també s\'apunta aquí, a part.',
+        c: ['Proposada', 'Programada', 'Feta'], cd: ['La suggerim per al teu cas.', 'Té dia i forma.', 'Ja està, amb la seva prova.'],
+        mod: { online: 'En línia', presencial: 'Presencial' }, modL: 'Com', dia: 'Dia', hores: 'Hores', hU: '{0} h',
+        tip: { formacion: 'Formació', consultoria: 'Consultoria', desarrollo: 'Desenvolupament' }, tipL: 'Tipus',
+        qui: { cliente: 'Tu, amb guia', equipo: 'Nosaltres', maquina: 'La màquina' }, quiL: 'Qui ho fa',
+        ev: 'La prova: què has fet tu', evP: 'Per exemple: «vaig canviar les dates del FELE i ho vaig publicar»', evS: 'S\'espera: {0}',
+        programa: 'Programar', fet: 'Marcar com a feta', edita: 'Canviar', enrere: '← Torna', guarda: 'Desa', cancel: 'Cancel·la',
+        faltaP: 'Falta dir com (en línia o presencial) i les hores.', faltaE: 'Falta la prova del que has fet.',
+        afegeix: '+ Afegeix una altra acció', nom: 'Què es fa', nomP: 'Per exemple: connectar els formularis amb el teu programa d\'alumnes',
+        compte: '{0} h fetes de {1} h · {2}', perTipus: 'Fet per tipus: {0}', parts: '{0} en línia · {1} presencial',
+        temari: 'Mira el contingut', cost: '{0} h · {1} €', costT: 'Temps fet {0} h de {1} h · valor {2} € de {3} €',
+        resum: 'Accions: {0}', linia: '{0} · {1} · {2} · {3} · {4} h{5}{6}', evR: ' · prova: «{0}»'
+      }
     }
   };
   function f(s) { var a = arguments; return String(s).replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1] == null ? '' : a[+i + 1]; }); }
@@ -103,11 +131,83 @@
   /* El que arriba amb l'encàrrec: una línia per paquet definit. */
   function resum(cs, estat, L) {
     var t = T[L === 'ca' ? 'ca' : 'es'], n = compte(cs, estat);
-    if (!cs.length) return '';
+    var ra = resumAccions(estat, L);
+    if (!cs.length) return ra;
     var l = [f(t.resum, f(t.comptes, n.c1, n.c2, n.c3))];
     cs.forEach(function (c) {
       var e = (estat || {})[c.id], col = columna(c, e); if (col !== 'c2' && col !== 'c3') return;
       l.push('· ' + f(t.paquet, c.que, c.de, c.a, e.quan, e.porta || '—', e.revisa, col === 'c3' ? t.vaSol : ''));
+    });
+    if (ra) l.push(ra);
+    return l.join('\n');
+  }
+
+
+  /* ── Les accions formatives (11/11/2026) ─────────────────────────────────
+     Àlvaro: «quiero prototipar el tablero de proyecto con acciones formativas,
+     online y presenciales», amb el cas de la María. La idea del servei: no li
+     fem la feina, li ensenyem a fer-la (el seu mapa, el seu cervell, la seva
+     web, el seu Claude). Cada acció diu com es fa (en línia o presencial),
+     quantes hores, de quin tipus és (formació, consultoria o desenvolupament) i
+     qui la fa. Es dona per feta només amb una prova escrita del que ha fet ella:
+     és el mateix principi dels nivells del SOS (evidència, no examen), i és el
+     que separa la formació de la feina feta per nosaltres a l'hora de comptar.
+     L'itinerari és «Tu web viva con tu cerebro» (F1–F6); la font del temari és
+     SOS/formacio.html. L'estat viu a S.tauler._formacio i viatja amb el mapa. */
+  var FORMACIO = [
+    { id: 'f1', sec: 'm3', es: 'Tu mapa de valor', ca: 'El teu mapa de valor', h: 3, evEs: 'un mapa que pasa las diez reglas', evCa: 'un mapa que passa les deu regles' },
+    { id: 'f2', sec: 'm1', es: 'Tu cerebro y tu cultura', ca: 'El teu cervell i la teva cultura', h: 2, evEs: 'tu cerebro con tus primeras normas', evCa: 'el teu cervell amb les primeres normes' },
+    { id: 'f3', sec: 'itineraris', es: 'Tu web', ca: 'La teva web', h: 3, evEs: 'tu web en vista previa, sin perder Google', evCa: 'la teva web en vista prèvia, sense perdre Google' },
+    { id: 'f4', sec: 'itineraris', es: 'Editar y publicar sin romper', ca: 'Editar i publicar sense trencar', h: 1.5, evEs: 'un cambio publicado por ti', evCa: 'un canvi publicat per tu' },
+    { id: 'f5', sec: 'm14', es: 'Que vaya solo', ca: 'Que vagi sol', h: 2, evEs: 'una tarjeta de tu tablero en «Que vaya solo»', evCa: 'una targeta del teu tauler a «Que vagi sol»' },
+    { id: 'f6', sec: 'm8', es: 'Trabajar con tu Claude', ca: 'Treballar amb el teu Claude', h: 2, evEs: 'un cambio pedido a tu Claude y revisado por ti', evCa: 'un canvi demanat al teu Claude i revisat per tu' }
+  ];
+  /* `sec`: l'àncora de SOS/formacio.html on viu el contingut. Apunta als mòduls
+     que ja existeixen fins que el fil «Evolucionar el catálogo formativo» hi
+     posi #f1–#f6; llavors només canvia aquesta columna. */
+  var TEMARI = '/SOS/formacio.html#';
+  var TIPUS = ['formacion', 'consultoria', 'desarrollo'], QUI = ['cliente', 'equipo', 'maquina'], MOD = ['online', 'presencial'];
+  function accionsInicials(L) {
+    return FORMACIO.map(function (m) { return { id: m.id, modul: m.id, titol: L === 'ca' ? m.ca : m.es, hores: m.h, tipus: 'formacion', qui: 'cliente', col: 'prop' }; });
+  }
+  function accions(estat, L) {
+    var fo = estat && estat._formacio;
+    return fo && Array.isArray(fo.accions) ? fo.accions : accionsInicials(L);
+  }
+  /* El preu per hora no viu al codi (la web és pública i «todo sin precios»):
+     arriba amb el tauler de cada client (estat._formacio.tarifa), o per
+     paràmetre (?tarifa=) per ensenyar-lo en una sessió. Sense tarifa, només hores. */
+  function tarifa(o, estat) {
+    var t = +(o && o.tarifa) || +((estat && estat._formacio) || {}).tarifa || 0;
+    if (!t && typeof location !== 'undefined') { try { t = +new URLSearchParams(location.search).get('tarifa') || 0; } catch (e) { t = 0; } }
+    return t > 0 ? t : 0;
+  }
+  function eur(n) { return (Math.round(n * 100) / 100).toLocaleString('es-ES'); }
+  function programable(a) { return !!(a && MOD.indexOf(a.modalitat) >= 0 && +a.hores > 0); }
+  /* On va: «Hecha» només amb prova; «Programada» només amb forma i hores. */
+  function colAccio(a) {
+    if (a.col === 'fet' && programable(a) && String(a.evidencia || '').trim()) return 'fet';
+    if ((a.col === 'prog' || a.col === 'fet') && programable(a)) return 'prog';
+    return 'prop';
+  }
+  /* Hores per tipus i per forma: el que fa falta per comptar (i per facturar
+     cada tipus pel seu compte). Només compta el que està fet. */
+  function comptaAccions(ls) {
+    var n = { fetes: 0, total: 0, online: 0, presencial: 0, tipus: { formacion: 0, consultoria: 0, desarrollo: 0 } };
+    (ls || []).forEach(function (a) {
+      var h = +a.hores || 0; n.total += h;
+      if (colAccio(a) !== 'fet') return;
+      n.fetes += h; if (a.modalitat) n[a.modalitat] += h; if (n.tipus[a.tipus] != null) n.tipus[a.tipus] += h;
+    });
+    return n;
+  }
+  function resumAccions(estat, L) {
+    var t = T[L === 'ca' ? 'ca' : 'es'].fo, ls = accions(estat, L), n = comptaAccions(ls);
+    if (!(estat && estat._formacio)) return '';
+    var l = [f(t.resum, f(t.compte, n.fetes, n.total, f(t.parts, n.online, n.presencial)))];
+    ls.forEach(function (a) {
+      var c = colAccio(a);
+      l.push('· ' + f(t.linia, a.titol, t.c[['prop', 'prog', 'fet'].indexOf(c)], a.modalitat ? t.mod[a.modalitat] : '—', t.tip[a.tipus] || '—', a.hores, a.dia ? ' · ' + a.dia : '', c === 'fet' ? f(t.evR, a.evidencia) : ''));
     });
     return l.join('\n');
   }
@@ -144,6 +244,12 @@
       '.tc-per h3{margin:0 0 .2rem;font-size:.8rem;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em}' +
       '.tc-per p{margin:0 0 .4rem;font-size:.85rem;color:var(--light)}.tc-per ul{margin:0;padding-left:1.1rem;font-size:.85rem}' +
       '.tc-buit{padding:1rem;border:1px dashed var(--border-strong);border-radius:12px;color:var(--muted)}' +
+      '.tc-fo{margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--border)}.tc-fo>h3{margin:0 0 .2rem;font-size:1rem}.tc-fo>p{margin:0 0 .6rem;font-size:.88rem;color:var(--light);max-width:70ch}' +
+      '.tc-c[data-col="prog"]{border-left-color:var(--orange)}.tc-c[data-col="fet"]{border-left-color:var(--green)}' +
+      '.tc-et{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.35rem}.tc-et span{font-size:.72rem;font-family:var(--mono);padding:.1rem .4rem;border-radius:6px;border:1px solid var(--border-strong);color:var(--light)}' +
+      '.tc-et span.tc-presencial{border-color:var(--purple)}.tc-et span.tc-online{border-color:var(--blue)}' +
+      '.tc-c>a.tc-tem{display:inline-block;margin-top:.35rem;font-weight:600;font-size:.8rem;color:var(--indigo)}' +
+      '.tc-f .tc-2{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}' +
       '.tc-ns a{color:inherit}.tc-col{scroll-margin-top:10rem}.tc-c{scroll-margin:10rem 0 6rem}' +
       /* iPhone: Safari amplia la pàgina si un camp té menys de 16 px; i en
          una columna sola, les tres caps porten a la seva columna. */
@@ -166,7 +272,7 @@
     var estat = o.estat || {}, cs = cartes(o.pairs, o.auto), obert = cont._obert || null;
     var roles = (o.roles || []).filter(Boolean);
     cont.textContent = '';
-    if (!cs.length) { cont.appendChild(el('p', { class: 'tc-buit' }, t.buit)); return { cartes: cs, compte: compte(cs, estat) }; }
+    if (!cs.length) { cont.appendChild(el('p', { class: 'tc-buit' }, t.buit)); pintaFormacio(cont, o, estat, L); return { cartes: cs, compte: compte(cs, estat) }; }
     var n = compte(cs, estat);
     /* Els comptes porten a cada columna: al mòbil són l'índex del tauler. */
     var nn = el('p', { class: 'tc-n tc-ns', 'aria-live': 'polite' });
@@ -234,6 +340,7 @@
       var ul = el('ul'); pers.forEach(function (c) { ul.appendChild(el('li', { id: pre + c.id }, majus(c.que) + ' (' + c.de + ' → ' + c.a + ')')); });
       p.appendChild(ul); cont.appendChild(p);
     }
+    pintaFormacio(cont, o, estat, L);
 
     /* El paquet: quan passa, què necessita i qui ho revisa. */
     function form(c, e) {
@@ -273,7 +380,106 @@
     return { cartes: cs, compte: n };
   }
 
-  var API = { T: T, clau: clau, cartes: cartes, complet: complet, columna: columna, compte: compte, resum: resum, pinta: pinta };
+  /* La vista de les accions: tres columnes (proposada, programada, feta), amb
+     botons que funcionen amb el dit i el teclat, i una fitxa per acció. */
+  function pintaFormacio(cont, o, estat, L) {
+    var t = T[L].fo, pre = (o.prefix || 'tablero-') + 'accion-';
+    var ls = accions(estat, L).map(function (a) { return Object.assign({}, a); }), obert = cont._obertA || null;
+    var box = el('section', { class: 'tc-fo', 'aria-labelledby': pre + 'h' });
+    box.appendChild(el('h3', { id: pre + 'h' }, t.h)); box.appendChild(el('p', {}, t.d));
+    var n = comptaAccions(ls);
+    var tar = tarifa(o, estat);
+    box.appendChild(el('p', { class: 'tc-n', 'aria-live': 'polite' }, f(t.compte, n.fetes, n.total, f(t.parts, n.online, n.presencial))));
+    var pt = TIPUS.filter(function (k) { return n.tipus[k]; }).map(function (k) { return t.tip[k] + ' ' + n.tipus[k] + ' h'; });
+    if (pt.length) box.appendChild(el('p', { class: 'tc-n' }, f(t.perTipus, pt.join(' · '))));
+    if (tar) box.appendChild(el('p', { class: 'tc-n' }, f(t.costT, n.fetes, n.total, eur(n.fetes * tar), eur(n.total * tar))));
+    function desa(nou, focus) {
+      estat._formacio = Object.assign({}, estat._formacio || {}, { accions: nou }); if (o.onCanvi) o.onCanvi(estat);
+      cont._obertA = null; pinta(cont, o);
+      var c = focus && document.getElementById(pre + focus); if (c) { var a = c.querySelector('a'); if (a) a.focus(); }
+    }
+    function posa(a) { desa(ls.map(function (x) { return x.id === a.id ? a : x; }), a.id); }
+    var cols = el('div', { class: 'tc-cols' }), by = {};
+    ['prop', 'prog', 'fet'].forEach(function (k, i) {
+      var d = el('section', { class: 'tc-col', 'data-col': k, 'aria-label': t.c[i] }), h = el('h3');
+      h.appendChild(el('span', {}, t.c[i])); h.appendChild(el('b', {}, String(ls.filter(function (a) { return colAccio(a) === k; }).length)));
+      d.appendChild(h); d.appendChild(el('p', {}, t.cd[i])); by[k] = d; cols.appendChild(d);
+    });
+    ls.forEach(function (a) {
+      var col = colAccio(a), m = FORMACIO.filter(function (x) { return x.id === a.modul; })[0];
+      var card = el('article', { class: 'tc-c' + (obert === a.id ? ' tc-on' : ''), id: pre + a.id, 'data-col': col });
+      card.appendChild(el('a', { href: '#' + pre + a.id, title: T[L].enllac }, a.titol));
+      var et = el('div', { class: 'tc-et' });
+      et.appendChild(el('span', {}, t.tip[a.tipus] || a.tipus));
+      if (a.modalitat) et.appendChild(el('span', { class: 'tc-' + a.modalitat }, t.mod[a.modalitat]));
+      et.appendChild(el('span', {}, tar ? f(t.cost, a.hores, eur(a.hores * tar)) : f(t.hU, a.hores)));
+      et.appendChild(el('span', {}, t.qui[a.qui] || a.qui));
+      if (a.dia) et.appendChild(el('span', {}, a.dia));
+      card.appendChild(et);
+      if (col === 'fet') card.appendChild(el('span', { class: 'tc-q' }, '✓ ' + a.evidencia));
+      else if (m) card.appendChild(el('span', { class: 'tc-q' }, f(t.evS, L === 'ca' ? m.evCa : m.evEs)));
+      if (m && m.sec) { var lk = el('a', { class: 'tc-tem', href: TEMARI + m.sec, target: '_blank', rel: 'noopener' }, t.temari + ' ↗'); card.appendChild(lk); }
+      if (obert === a.id) card.appendChild(fitxa(a, col));
+      else {
+        var acc = el('div', { class: 'tc-acc' }), b = function (txt, fn, p) { var x = el('button', { type: 'button', class: p ? 'tc-p' : null }, txt); x.addEventListener('click', fn); acc.appendChild(x); };
+        var obre = function (mode) { return function () { cont._obertA = a.id; cont._modeA = mode; pinta(cont, o); }; };
+        if (col === 'prop') b(t.programa, obre('prog'), true);
+        if (col === 'prog') { b(t.fet, obre('fet'), true); b(t.edita, obre('prog')); b(t.enrere, function () { posa(Object.assign({}, a, { col: 'prop' })); }); }
+        if (col === 'fet') { b(t.edita, obre('fet')); b(t.enrere, function () { posa(Object.assign({}, a, { col: 'prog' })); }); }
+        card.appendChild(acc);
+      }
+      by[col].appendChild(card);
+    });
+    box.appendChild(cols);
+    /* Una acció nova: integracions, sessions extra… També pot ser consultoria
+       o desenvolupament, per comptar-ho tot al mateix lloc. */
+    if (obert === '_nova') box.appendChild(fitxa({ id: 'a' + Date.now().toString(36), titol: '', hores: 1, tipus: 'formacion', qui: 'cliente', col: 'prop', nova: true }, 'prop'));
+    else { var ad = el('div', { class: 'tc-acc' }), bn = el('button', { type: 'button' }, t.afegeix); bn.addEventListener('click', function () { cont._obertA = '_nova'; cont._modeA = 'prog'; pinta(cont, o); }); ad.appendChild(bn); box.appendChild(ad); }
+    cont.appendChild(box);
+
+    function tria(leg, ops, noms, val, on) {
+      var fs = el('fieldset'); fs.appendChild(el('legend', {}, leg));
+      var bs = ops.map(function (k) {
+        var x = el('button', { type: 'button', 'aria-pressed': String(k === val) }, noms[k]);
+        x.addEventListener('click', function () { on(k); bs.forEach(function (y) { y.setAttribute('aria-pressed', String(y === x)); }); });
+        fs.appendChild(x); return x;
+      });
+      return fs;
+    }
+    function fitxa(a, col) {
+      var fm = el('form', { class: 'tc-f' }), id = pre + a.id + '-', v = Object.assign({}, a), modeFet = cont._modeA === 'fet';
+      var nom = null;
+      if (a.nova) { fm.appendChild(el('label', { for: id + 'n' }, t.nom)); nom = el('input', { type: 'text', id: id + 'n', placeholder: t.nomP }); fm.appendChild(nom); }
+      fm.appendChild(tria(t.modL, MOD, t.mod, v.modalitat, function (k) { v.modalitat = k; }));
+      var g2 = el('div', { class: 'tc-2' }), w1 = el('div'), w2 = el('div');
+      w1.appendChild(el('label', { for: id + 'd' }, t.dia)); var dia = el('input', { type: 'date', id: id + 'd' }); dia.value = v.dia || ''; w1.appendChild(dia);
+      w2.appendChild(el('label', { for: id + 'h' }, t.hores)); var hs = el('input', { type: 'number', id: id + 'h', min: '0.5', step: '0.5', inputmode: 'decimal' }); hs.value = v.hores || ''; w2.appendChild(hs);
+      g2.appendChild(w1); g2.appendChild(w2); fm.appendChild(g2);
+      fm.appendChild(tria(t.tipL, TIPUS, t.tip, v.tipus, function (k) { v.tipus = k; }));
+      fm.appendChild(tria(t.quiL, QUI, t.qui, v.qui, function (k) { v.qui = k; }));
+      var ev = null;
+      if (modeFet || col === 'fet') { fm.appendChild(el('label', { for: id + 'e' }, t.ev)); ev = el('textarea', { id: id + 'e', placeholder: t.evP }); ev.value = v.evidencia || ''; fm.appendChild(ev); }
+      var err = el('p', { class: 'tc-err', role: 'alert' }); fm.appendChild(err);
+      var acc = el('div', { class: 'tc-acc' }), ok = el('button', { type: 'submit', class: 'tc-p' }, t.guarda), no = el('button', { type: 'button' }, t.cancel);
+      no.addEventListener('click', function () { cont._obertA = null; pinta(cont, o); });
+      acc.appendChild(ok); acc.appendChild(no); fm.appendChild(acc);
+      fm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        v.dia = dia.value || ''; v.hores = Math.max(0, parseFloat(String(hs.value).replace(',', '.')) || 0);
+        if (nom) { v.titol = nom.value.trim(); if (!v.titol) { err.textContent = t.nom; return; } }
+        if (!programable(v)) { err.textContent = t.faltaP; return; }
+        if (ev) { v.evidencia = ev.value.trim(); if (!v.evidencia) { err.textContent = t.faltaE; return; } v.col = 'fet'; }
+        else v.col = 'prog';
+        delete v.nova;
+        if (a.nova) desa(ls.concat([v]), v.id); else posa(v);
+      });
+      setTimeout(function () { var x = fm.querySelector('input,button'); if (x) x.focus(); }, 0);
+      return fm;
+    }
+  }
+
+  var API = { T: T, clau: clau, cartes: cartes, complet: complet, columna: columna, compte: compte, resum: resum, pinta: pinta,
+    FORMACIO: FORMACIO, accions: accions, colAccio: colAccio, comptaAccions: comptaAccions, resumAccions: resumAccions, tarifa: tarifa, TEMARI: TEMARI };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   else g.TaulerClient = API;
 })(typeof window !== 'undefined' ? window : this);
