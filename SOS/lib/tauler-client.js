@@ -250,7 +250,11 @@
       '.tc-et span.tc-presencial{border-color:var(--purple)}.tc-et span.tc-online{border-color:var(--blue)}' +
       '.tc-c>a.tc-tem{display:inline-block;margin-top:.35rem;font-weight:600;font-size:.8rem;color:var(--indigo)}' +
       '.tc-f .tc-2{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}' +
-      '@media (max-width:760px){.tc-cols{grid-template-columns:1fr}.tc-col{min-height:0}}';
+      '.tc-ns a{color:inherit}.tc-col{scroll-margin-top:10rem}.tc-c{scroll-margin:10rem 0 6rem}' +
+      /* iPhone: Safari amplia la pàgina si un camp té menys de 16 px; i en
+         una columna sola, les tres caps porten a la seva columna. */
+      '@media (max-width:760px){.tc-cols{grid-template-columns:1fr}.tc-col{min-height:0}.tc-f input,.tc-f textarea,.tc-f select{font-size:16px}.tc-acc button,.tc-f button{min-height:44px}' +
+      '.tc-ns{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}.tc-ns a{padding:.3rem .55rem;border:1px solid var(--border-strong);border-radius:999px;text-decoration:none;background:var(--card)}}';
     document.head.appendChild(s);
   }
   function el(tag, at, txt) {
@@ -270,8 +274,14 @@
     cont.textContent = '';
     if (!cs.length) { cont.appendChild(el('p', { class: 'tc-buit' }, t.buit)); pintaFormacio(cont, o, estat, L); return { cartes: cs, compte: compte(cs, estat) }; }
     var n = compte(cs, estat);
-    cont.appendChild(el('p', { class: 'tc-n', 'aria-live': 'polite' }, f(t.comptes, n.c1, n.c2, n.c3)));
-    function desa(id, e) { estat[id] = e; if (o.onCanvi) o.onCanvi(estat); cont._obert = null; pinta(cont, o); var c = document.getElementById(pre + id); if (c) { var a = c.querySelector('a'); if (a) a.focus(); } }
+    /* Els comptes porten a cada columna: al mòbil són l'índex del tauler. */
+    var nn = el('p', { class: 'tc-n tc-ns', 'aria-live': 'polite' });
+    f(t.comptes, n.c1, n.c2, n.c3).split(' · ').forEach(function (x, i) {
+      if (i) nn.appendChild(document.createTextNode(' · '));
+      nn.appendChild(el('a', { href: '#' + pre + 'col-c' + (i + 1) }, x));
+    });
+    cont.appendChild(nn);
+    function desa(id, e) { estat[id] = e; if (o.onCanvi) o.onCanvi(estat); cont._obert = null; pinta(cont, o); var c = document.getElementById(pre + id); if (c) { var a = c.querySelector('a'); if (a) a.focus({ preventScroll: true }); c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } }
     function mou(c, col) {
       var e = Object.assign({}, estat[c.id] || {});
       if (col === 'c1') { e.col = 'c1'; desa(c.id, e); return; }
@@ -281,7 +291,7 @@
     }
     var cols = el('div', { class: 'tc-cols' }), byCol = {};
     [['c1', t.c1, t.c1d], ['c2', t.c2, t.c2d], ['c3', t.c3, t.c3d]].forEach(function (k) {
-      var d = el('section', { class: 'tc-col', 'data-col': k[0], 'aria-label': k[1] }), h = el('h3');
+      var d = el('section', { class: 'tc-col', id: pre + 'col-' + k[0], 'data-col': k[0], 'aria-label': k[1] }), h = el('h3');
       h.appendChild(el('span', {}, k[1])); h.appendChild(el('b', {}, String(n[k[0]])));
       d.appendChild(h); d.appendChild(el('p', {}, k[2]));
       /* Arrossegar, a l'escriptori; els botons fan el mateix i són els que

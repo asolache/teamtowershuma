@@ -70,6 +70,11 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(await card.getAttribute('data-col') === 'c1', 'el presupuesto aparece en «Por definir»');
   ok(/Lo lleva una persona · 3/.test(await p.textContent('#cl-tauler')), 'y lo que no se paga y el dinero, aparte');
   await card.getByRole('button', { name: 'Definir' }).click();
+  if (nom === 'mòbil') {
+    ok(await p.evaluate(() => [...document.querySelectorAll('#cl-tauler form input, #cl-tauler form textarea, #cl-tauler form select')].every(e => parseFloat(getComputedStyle(e).fontSize) >= 16)), 'iPhone: los campos tienen 16 px, Safari no amplía la página al escribir');
+    await p.focus('#cl-tauler form textarea');
+    ok(await p.evaluate(() => getComputedStyle(document.querySelector('.viu-b')).display === 'none' && getComputedStyle(document.querySelector('.avanc-pill')).display === 'none'), 'iPhone: al escribir, los botones flotantes no tapan el campo');
+  }
   await p.locator('#cl-tauler form button[type=submit]').click();
   await p.locator('#cl-tauler form fieldset button', { hasText: 'Cada vez que alguien lo pide' }).click();
   await p.fill('#cl-tauler form textarea', 'las fechas y el número de alumnos');
@@ -106,6 +111,8 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.goto(URL_ + '#' + id); await p.waitForTimeout(300);
   ok(await p.locator('#' + id).evaluate(e => e.classList.contains('tc-on')), 'cada tarjeta tiene su enlace y se abre marcada');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'sin desplazamiento de lado');
+  const cols = await p.locator('#cl-tauler .tc-ns a').evaluateAll(as => as.map(a => a.getAttribute('href')));
+  ok(cols.length === 3 && (await p.evaluate(hs => hs.every(h => document.getElementById(h.slice(1))), cols)), 'los contadores llevan a cada columna');
   await p.goto(URL_.replace('index.html', 'index.html?lang=ca') + '#tablero');
   ok(/Que vagi sol/.test(await p.textContent('#cl-tauler')) && /El teu tauler/.test(await p.textContent('#tablero')), 'en catalán también');
   ok(!errs.length, 'sin errores' + (errs.length ? ': ' + errs.join(' | ') : ''));

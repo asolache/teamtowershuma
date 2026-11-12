@@ -21,6 +21,10 @@ const t = (v, n) => net(v).slice(0, n);
 export const MAGATZEM = 'convidats';
 export const DOC = 'llista';
 export const TOPE_MAX = 10;
+/* La fase de cada client al tauler del panell (11/11/2026, «tablero de gestión
+   de clientes que vaya en el iPhone»). La posa ell; si no, surt de les dades. */
+export const FASES = ['invitado', 'mapa', 'propuesta', 'marcha', 'entregado'];
+export const fase = (v, abans) => FASES.includes(net(v)) ? net(v) : (FASES.includes(net(abans)) ? net(abans) : '');
 const CORREU = /^[^\s@<>"]{1,64}@[^\s@<>"]{1,190}\.[^\s@<>"]{2,24}$/;
 export const clauDe = mail => empremta(net(mail).toLowerCase());
 
@@ -40,7 +44,7 @@ export function neteja(c, abans, ara = new Date()) {
   const a = abans || {};
   return { mail, nom: t(c.nom, 80) || a.nom || '', tope: tope(c.tope != null ? c.tope : a.tope), nota: t(c.nota != null ? c.nota : a.nota, 300),
     params: params(c.params || a.params), v: c.nou === true || !a.v ? nonce().slice(0, 10) : a.v,
-    creat: a.creat || ara.toISOString(), actualitzat: ara.toISOString(), entrat: a.entrat || '' };
+    fase: fase(c.fase, a.fase), creat: a.creat || ara.toISOString(), actualitzat: ara.toISOString(), entrat: a.entrat || '' };
 }
 
 export async function llista(reg) { const d = reg ? await reg.get(DOC) : null; return d && d.convidats && typeof d.convidats === 'object' ? d.convidats : {}; }
