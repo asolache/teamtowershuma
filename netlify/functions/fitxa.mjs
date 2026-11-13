@@ -22,6 +22,7 @@ import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 import { magatzem } from '../lib/magatzem.mjs';
 import { idDe } from './proposta.mjs';
 import { clau as clauFoto } from './llegeix-web-background.mjs';
+import K from '../../SOS/lib/kanban.js';
 
 const net = v => (v == null ? '' : String(v)).trim();
 const t = (v, n) => net(v).slice(0, n);
@@ -55,6 +56,11 @@ export function neteja(f, ara = new Date()) {
     /* El que edita des del seu tauler (04/11/2026): els programes, els formularis i les webs germanes (un enllaç al peu).
        Aquí només es guarda net i curt; el motor de la web (webClientNet) torna a passar el seu sedàs. */
     ...tauler(f),
+    /* El tauler del mapa i les accions formatives (S.tauler) i les tasques del
+       projecte (S.kanban, SOS/lib/kanban.js), 13/11/2026: fins ara no es
+       guardaven amb el compte i l'Àlvaro no els veia. */
+    tauler: taulerMapa(f.tauler),
+    kanban: K.neteja(f.kanban, 120),
     actualitzada: ara.toISOString()
   };
   return JSON.stringify(o).length > MAX ? null : o;
@@ -76,6 +82,26 @@ export function tauler(f) {
   return { programes, formularis, integrades, procesos: (Array.isArray(f.procesos) ? f.procesos : []).filter(x => x === 'programas'), invitacio: inv, programesAuto: f.programesAuto === true,
     /* Sense formularis triats encara (undefined), el tauler li'n proposa dos: no és el mateix que haver-los tret tots. */
     ...(Array.isArray(f.formularis) ? {} : { formularis: undefined }) };
+}
+
+const MOD = ['online', 'presencial'], TIP = ['formacion', 'consultoria', 'desarrollo', 'gestion'], QUI = ['cliente', 'equipo', 'maquina'];
+export function taulerMapa(x) {
+  const o = {};
+  if (!x || typeof x !== 'object') return o;
+  Object.keys(x).filter(k => /^[a-z0-9-]{1,80}$/.test(k)).slice(0, 60).forEach(k => {
+    const e = x[k] && typeof x[k] === 'object' ? x[k] : {};
+    o[k] = { col: ['c1', 'c2', 'c3'].includes(e.col) ? e.col : 'c1', quan: t(e.quan, 160), porta: t(e.porta, 400), revisa: t(e.revisa, 120) };
+  });
+  const fo = x._formacio && typeof x._formacio === 'object' ? x._formacio : null;
+  if (fo) {
+    o._formacio = {};
+    if (Array.isArray(fo.accions)) o._formacio.accions = fo.accions.slice(0, 30).map(a => a && typeof a === 'object' ? a : {}).map(a => ({
+      id: t(a.id, 40), modul: t(a.modul, 10), titol: t(a.titol, 160), hores: Math.max(0, Math.min(200, +a.hores || 0)),
+      tipus: TIP.includes(a.tipus) ? a.tipus : 'formacion', qui: QUI.includes(a.qui) ? a.qui : 'cliente', col: ['prop', 'prog', 'fet'].includes(a.col) ? a.col : 'prop',
+      modalitat: MOD.includes(a.modalitat) ? a.modalitat : '', dia: t(a.dia, 10), evidencia: t(a.evidencia, 500) })).filter(a => a.id && a.titol);
+    if (+fo.tarifa > 0) o._formacio.tarifa = Math.min(1000, +fo.tarifa);
+  }
+  return o;
 }
 
 function dissenyRevisat(x) {
@@ -102,8 +128,13 @@ export async function client(cos, env, reg, ara = new Date()) {
   if (cos.fitxa !== undefined) {
     const f = neteja(cos.fitxa, ara);
     if (!f) return { estat: 'error', motiu: 'Tu ficha es demasiado grande para guardarla.' };
+    /* Les tasques es fusionen amb les que hi havia: l'Àlvaro hi pot haver
+       afegit o validat alguna cosa des del seu panell mentre ella tenia la
+       pàgina oberta. */
+    const abans = await reg.get(k);
+    if (abans && abans.kanban) f.kanban = K.fusiona(abans.kanban, f.kanban);
     await reg.set(k, f);
-    return { estat: 'desada', actualitzada: f.actualitzada };
+    return { estat: 'desada', actualitzada: f.actualitzada, kanban: f.kanban };
   }
   const f = await reg.get(k);
   return f ? { estat: 'fet', fitxa: f } : { estat: 'cap' };
