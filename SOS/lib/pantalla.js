@@ -30,13 +30,17 @@
   var body = document.body;
   if (!body || !body.hasAttribute('data-pantalla') || document.documentElement.classList.contains('tt-pant-on')) return;
 
-  var lang = (document.documentElement.lang || 'ca').slice(0, 2);
-  var T = {
+  var TX = {
     ca: { inici: 'Inici', ant: 'Anterior', seg: 'Següent', pant: 'Pantalles d\'aquesta pàgina' },
     es: { inici: 'Inicio', ant: 'Anterior', seg: 'Siguiente', pant: 'Pantallas de esta página' },
     en: { inici: 'Start', ant: 'Previous', seg: 'Next', pant: 'Screens on this page' }
-  }[lang] || null;
-  if (!T) T = { inici: 'Inici', ant: 'Anterior', seg: 'Següent', pant: 'Pantalles' };
+  };
+  var lang, T;
+  function idioma() {
+    lang = (document.documentElement.lang || 'ca').slice(0, 2);
+    T = TX[lang] || { inici: 'Inici', ant: 'Anterior', seg: 'Següent', pant: 'Pantalles' };
+  }
+  idioma();
 
   var main = document.querySelector('main') || body;
   var seccions = [].filter.call(main.querySelectorAll('section[id]'), function (s) {
@@ -84,7 +88,10 @@
     grups.forEach(function (g, k) { grups[k] = g.filter(function (e) { return e !== amaga; }); });
   });
 
+  /* Pàgines bilingües: `data-pantalla-nom-ca`, `data-pantalla-nom-es`… guanyen
+     a `data-pantalla-nom`, i en canviar `<html lang>` els noms es refan. */
   function nomDe(s) {
+    if (s.getAttribute('data-pantalla-nom-' + lang)) return s.getAttribute('data-pantalla-nom-' + lang);
     if (s.getAttribute('data-pantalla-nom')) return s.getAttribute('data-pantalla-nom');
     if (nomIndex[s.id]) return nomIndex[s.id];
     var h = s.querySelector('h2,h1,h3');
@@ -94,7 +101,7 @@
     return t || s.id;
   }
 
-  var pantalles = seccions.map(function (s, i) { return { id: s.id, nom: nomDe(s), nodes: grups[i] }; });
+  var pantalles = seccions.map(function (s, i) { return { id: s.id, nom: nomDe(s), nodes: grups[i], sec: s }; });
   var cosPre = pre.reduce(function (n, e) { return n + (e.textContent || '').trim().length; }, 0);
   var heroPre = pre.some(function (e) { return e.matches('h1') || !!e.querySelector('h1'); });
   if (pre.length && (heroPre || cosPre > 240)) {
@@ -165,6 +172,13 @@
 
   /* ── 3 · Mostrar una pantalla ──────────────────────────────────────────── */
   var actual = -1;
+  function peu(i) {
+    var a = pantalles[i - 1], s = pantalles[i + 1];
+    aAnt.hidden = !a; aSeg.hidden = !s;
+    if (a) { aAnt.href = '#' + a.id; aAnt.textContent = '← ' + a.nom; aAnt.title = T.ant; }
+    if (s) { aSeg.href = '#' + s.id; aSeg.textContent = s.nom + ' →'; aSeg.title = T.seg; }
+    nPos.textContent = (i + 1) + ' / ' + pantalles.length;
+  }
   function mostra(i, desti) {
     if (i !== actual) {
       actual = i;
@@ -172,11 +186,7 @@
         p.nodes.forEach(function (e) { e.classList.toggle('tt-pant-fora', k !== i); });
         if (k === i) p.tab.setAttribute('aria-current', 'page'); else p.tab.removeAttribute('aria-current');
       });
-      var a = pantalles[i - 1], s = pantalles[i + 1];
-      aAnt.hidden = !a; aSeg.hidden = !s;
-      if (a) { aAnt.href = '#' + a.id; aAnt.textContent = '← ' + a.nom; aAnt.title = T.ant; }
-      if (s) { aSeg.href = '#' + s.id; aSeg.textContent = s.nom + ' →'; aSeg.title = T.seg; }
-      nPos.textContent = (i + 1) + ' / ' + pantalles.length;
+      peu(i);
       try { pantalles[i].tab.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {}
       /* Gràfics i canvas que es mesuren en carregar: ara tenen mida. */
       try { window.dispatchEvent(new Event('resize')); } catch (e) {}
@@ -212,6 +222,16 @@
     if (i >= 0 && i !== actual) mostra(i);
     return orig.apply(this, arguments);
   };
+
+  /* El selector d'idioma de la pàgina canvia `<html lang>`: pestanyes,
+     «anterior · següent» i etiquetes en el nou idioma, sense moure's. */
+  if (window.MutationObserver) new MutationObserver(function () {
+    var abans = lang; idioma(); if (lang === abans) return;
+    pantalles.forEach(function (p) { p.nom = p.virtual ? T.inici : nomDe(p.sec); p.tab.textContent = p.nom; });
+    tabs.setAttribute('aria-label', T.pant); pag.setAttribute('aria-label', T.pant);
+    window.TTPantalla.pantalles = pantalles.map(function (p) { return { id: p.id, nom: p.nom }; });
+    if (actual >= 0) peu(actual);
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
   document.documentElement.classList.add('tt-pant-on');
   window.addEventListener('hashchange', deHash);
