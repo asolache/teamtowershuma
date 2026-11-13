@@ -262,7 +262,7 @@
         .aviso { position: fixed; left: 50%; bottom: 1.2rem; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 10px; font-size: var(--t0); z-index: 300; max-width: calc(100% - 2rem); }
     </style>
 </head>
-<body>
+<body data-pantalla>
 <!--TT-NAV-->
 <style>
 /* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
@@ -411,7 +411,7 @@
 <div class="borrador" role="note"><p class="container"><strong>Prototipo para los pilotos.</strong> Sin precios cerrados: el modelo se valida con ellos. Esta página no se indexa todavía.</p></div>
 
 <!-- 1 · Promesa -->
-<section id="inicio" class="inicio" aria-labelledby="t-inicio">
+<section id="inicio" class="inicio" aria-labelledby="t-inicio" data-pantalla-nom="Inicio">
     <div class="container">
         <p class="eyebrow">Servicios conectables · Tu negocio operativo</p>
         <h1 id="t-inicio">Tu web conectada a tu IA y a lo que ya usas. <span>Con tus cuentas y tus claves.</span></h1>
@@ -437,7 +437,7 @@
 </section>
 
 <!-- 1b · Lo que ya funciona: los casos del bloc de dades -->
-<section id="casos" aria-labelledby="t-casos">
+<section id="casos" aria-labelledby="t-casos" data-pantalla-nom="Lo que ya funciona">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Casos reales · el piloto 1 somos nosotros</p>
@@ -1069,5 +1069,6 @@
     window.__CX = { datos: D, estado: S, pilaJSON: pilaJSON, techo: techo };
 })();
 </script>
+<script src="/SOS/lib/pantalla.js" defer></script>
 </body>
 </html>

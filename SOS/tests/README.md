@@ -28,6 +28,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-rol-persona.mjs` | veda 120 | Associar una persona a cada rol del mapa: el mateix vocabulari que a les pàgines de mapa, proposar sense imposar, i penalitzar concentrar rols en poca gent |
 | `test-publica.mjs` | V47 | Que el paquet públic sigui agregat i no filtri res |
 | `test-versions.mjs` | V48 | CID, pare, diferències i tornada enrere de les publicacions |
+| `test-pantalla.mjs` | 13/11/2026 | Pàgines com a pantalles: una sola a la vista, enllaç per pantalla, «Següent» i «Enrere», sense scroll de costat al mòbil |
 | `test-qr.mjs` | V49 | Lectura de QR, i que digui la veritat on no pot |
 | `test-escala.mjs` | V50 | 500 nodes i 5.000 apunts, i accessibilitat |
 | `test-missions.mjs` | V51 | La portada de missions |
