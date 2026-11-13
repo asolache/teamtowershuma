@@ -13,7 +13,7 @@
     var CT = 'tt.panel.clau', F = '/.netlify/functions/convidats', caixa = document.getElementById('panel');
     if (!caixa) return;
     var clau = ''; try { clau = localStorage.getItem(CT) || ''; } catch (e) { clau = ''; }
-    var D = null, edita = null, msg = '';
+    var D = null, edita = null, msg = '', proj = '*';
 
     function el(tag, at, fills) {
         var n = document.createElement(tag);
@@ -159,6 +159,7 @@
                 var a = el('div', { class: 'pn-ka' });
                 if (i < FASES.length - 1) a.appendChild(boto(FASES[i + 1][1] + ' →', function () { mou(x, FASES[i + 1][0]); }, 'btn-primary btn-sm'));
                 if (i > 0) { var ba = boto('←', function () { mou(x, FASES[i - 1][0]); }, 'btn-ghost btn-sm'); ba.setAttribute('aria-label', 'Volver a «' + FASES[i - 1][1] + '»'); a.appendChild(ba); }
+                a.appendChild(boto('Tareas', function () { proj = x.mail; pinta(); var b = document.getElementById('pn-tasques'); if (b) b.scrollIntoView({ block: 'start' }); }, 'btn-ghost btn-sm'));
                 a.appendChild(boto('Ficha', function () { var li = document.getElementById(idDe(x)); if (li) { li.scrollIntoView({ block: 'start' }); li.focus({ preventScroll: true }); } }, 'btn-ghost btn-sm'));
                 k.appendChild(a); col.appendChild(k);
             });
@@ -167,12 +168,61 @@
         c.appendChild(t);
     }
 
+    /* Tu backlog de todo (13/11/2026, SOS/lib/kanban.js). Álvaro: «con una
+       lógica fractal debería poderme conectar y ver mi Kanban filtrado siempre».
+       Un árbol: tus tareas arriba y, colgando, el tablero de cada cliente (el
+       mismo que ve ella en /cliente/). «Todo» los junta; elegir un proyecto lo
+       filtra. Lo que cambias aquí vuelve al tablero de donde salió; lo nuevo
+       en «Todo» o en «Lo mío» es tuyo. */
+    function arbre() {
+        return { id: '', projecte: 'Lo mío', kanban: D.meu || { cards: [] },
+            fills: D.convidats.filter(function (x) { return x.kanban; }).map(function (x) { return { id: x.mail, projecte: (x.params && x.params.org) || x.nom || x.mail, kanban: x.kanban }; }) };
+    }
+    function tasques(c) {
+        var K = window.Kanban; if (!K) return;
+        var box = el('section', { id: 'pn-tasques', class: 'pn-tasques', 'aria-labelledby': 'pn-t-tasques' });
+        box.appendChild(el('h3', { id: 'pn-t-tasques' }, 'Tu backlog de todo'));
+        var a = arbre(), fonts = [a].concat(a.fills);
+        if (proj !== '*' && !fonts.some(function (x) { return x.id === proj; })) proj = '*';
+        var w = el('div', { class: 'camp' }), sel = el('select', { id: 'pn-proj' });
+        sel.appendChild(el('option', { value: '*' }, 'Todo'));
+        fonts.forEach(function (x) { sel.appendChild(el('option', { value: x.id }, x.projecte + ' · ' + ((x.kanban && x.kanban.cards) || []).length)); });
+        sel.value = proj;
+        sel.addEventListener('change', function () { proj = sel.value; pinta(); });
+        w.appendChild(el('label', { for: 'pn-proj' }, 'Proyecto')); w.appendChild(sel); box.appendChild(w);
+        var tot = proj === '*', src = tot ? null : fonts.filter(function (x) { return x.id === proj; })[0];
+        var cards = tot ? K.ajunta([a]) : ((src.kanban && src.kanban.cards) || []), font = {}, nomP = {};
+        if (tot) cards.forEach(function (x) { font[x.id] = x._font; nomP[x.id] = x._projecte.replace(/^Lo mío › /, ''); });
+        var cont = el('div'); box.appendChild(cont); c.appendChild(box);
+        K.pinta(cont, { kanban: { cards: cards }, jo: 'equipo', llengua: 'es', prefix: 'pn-tarea-', pomoClau: 'tt.panel.pomo',
+            persones: [{ id: 'equipo', nom: 'Yo' }, { id: 'cliente', nom: 'El cliente' }, { id: 'maquina', nom: 'La máquina' }],
+            projecte: tot ? function (x) { return nomP[x.id] || ''; } : null,
+            onCanvi: function (k) {
+                /* Cada tarjeta vuelve a su tablero; las nuevas, al tuyo. */
+                var per = {};
+                (tot ? fonts : [src]).forEach(function (x) { per[x.id] = { cards: [], fora: k.fora || [] }; });
+                k.cards.forEach(function (x) { var f = tot ? (font[x.id] || '') : src.id; (per[f] || per[''] || (per[f] = { cards: [], fora: [] })).cards.push(x); });
+                Object.keys(per).forEach(function (f) {
+                    var x = fonts.filter(function (y) { return y.id === f; })[0];
+                    if (tot && x && JSON.stringify(K.neteja(x.kanban).cards) === JSON.stringify(per[f].cards) && !(k.fora || []).length) return;
+                    crida('PUT', f ? { mail: f, kanban: per[f] } : { kanban: per[f] }).then(function (j) {
+                        if (f) { var cv = D.convidats.filter(function (y) { return y.mail === f; })[0]; if (cv) cv.kanban = j.kanban; } else D.meu = j.kanban;
+                    }).catch(function (er) { msg = 'No se ha guardado: ' + er.message; pinta(); });
+                    /* Mientras llega, lo que ves ya es lo nuevo. */
+                    if (f) { var cv = D.convidats.filter(function (y) { return y.mail === f; })[0]; if (cv) cv.kanban = per[f]; } else D.meu = per[f];
+                });
+            } });
+        var sense = D.convidats.filter(function (x) { return !x.kanban; }).length;
+        if (sense) box.appendChild(el('p', { class: 'nota' }, sense + (sense === 1 ? ' cliente aún no tiene' : ' clientes aún no tienen') + ' su espacio guardado con su cuenta: su tablero aparecerá aquí cuando entre por su enlace.'));
+    }
+
     function pinta() {
         var c = caixa.querySelector('.pn-cos'); c.textContent = '';
         if (msg) c.appendChild(el('p', { class: 'pn-msg', role: 'status' }, msg));
         if (!clau) { entrada(c); return; }
         if (!D) { c.appendChild(el('p', {}, 'Cargando…')); return; }
         tauler(c);
+        tasques(c);
         estatIA(c);
         c.appendChild(el('h3', {}, 'Tus invitados (' + D.convidats.length + ')'));
         if (!D.convidats.length) c.appendChild(el('p', { class: 'nota' }, 'Todavía ninguno.'));

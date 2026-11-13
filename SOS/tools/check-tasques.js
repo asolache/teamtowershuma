@@ -155,12 +155,15 @@ else {
   if (/Ja està fet/.test(pomo)) ok('i es pot donar per fet abans que s\'acabi el temps');
   else bad('només es pot registrar quan el rellotge arriba a zero: el que compta és la feina, no el comptador');
 }
-if (/localStorage\.setItem\(POMO_ID/.test(CODI) && !/kanban\.cards[^\n]*pomo/i.test(CODI))
+/* Des del 13/11/2026 el rellotge i la memòria viuen a SOS/lib/pomodoro.js, el
+   mateix per al SOS i per al tauler de tasques de /cliente/. */
+const POMO = readFileSync(join(ARREL, 'SOS', 'lib', 'pomodoro.js'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+if (/PM\.desa\(POMO_ID/.test(CODI) && /s\.setItem\(clau/.test(POMO) && !/kanban\.cards[^\n]*pomo/i.test(CODI))
   ok('i viu al navegador, no al registre: un pomodoro a mitges no és cap fet');
 else bad('el pomodoro s\'escriu al node — el que va al registre és l\'hora feta, quan la persona ho confirma');
 /* Es desa l'hora d'acabar i no els minuts que falten: així el compte segueix
    sent cert encara que el temporitzador s'aturi perquè el mòbil s'ha adormit. */
-if (/fi:Date\.now\(\)\+/.test(CODI)) ok('i desa l\'hora d\'acabar, no els minuts que falten');
+if (/fi: t \+ m \* 60000/.test(POMO) && /PM\.comenca\(POMO_ID/.test(CODI)) ok('i desa l\'hora d\'acabar, no els minuts que falten');
 else bad('el pomodoro desa un compte enrere: si el mòbil s\'adorm, mentirà');
 
 /* ── 7 · L'oferta es pot navegar pels mateixos eixos que les tasques ───────

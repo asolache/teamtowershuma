@@ -734,6 +734,11 @@
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
         <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
         <details class="auto caso" id="cl-caso" hidden></details>
+        <div class="tablero" id="tareas" aria-labelledby="t-tareas">
+            <h3 id="t-tareas">Tus tareas: de la lista a lo validado</h3>
+            <p>Todo lo que hay que hacer en tu proyecto, lo tuyo y lo nuestro, en un solo sitio. Cada tarea pasa de «Por hacer» a «Haciendo», a «Hecho» (con la prueba de lo que se ha entregado) y a «Validado». Con el botón ⏱ trabajas 25 minutos seguidos y el tiempo queda apuntado en la tarea. Solo lo validado cuenta como trabajo hecho.</p>
+            <div id="cl-tareas"></div>
+        </div>
         <div class="tablero" id="tablero" aria-labelledby="t-tablero">
             <h3 id="t-tablero">Tu tablero: que lo que se repite vaya solo</h3>
             <p>Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.</p>
@@ -1042,6 +1047,8 @@
 <script src="/SOS/lib/models-mapa.js"></script>
 <script src="/SOS/lib/cas-automatitzat.js"></script>
 <script src="/SOS/lib/tauler-client.js"></script>
+<script src="/SOS/lib/pomodoro.js"></script>
+<script src="/SOS/lib/kanban.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
 <script src="/SOS/lib/pinya.js"></script>
 <script>
@@ -1106,6 +1113,9 @@
         'Qué web quieres': 'Quina web vols',
         'Que lo que se repite vaya solo': 'Que el que es repeteix vagi sol',
         'Tu tablero: que lo que se repite vaya solo': 'El teu tauler: que el que es repeteix vagi sol',
+        'Tus tareas: de la lista a lo validado': 'Les teves tasques: de la llista a allò validat',
+        'Todo lo que hay que hacer en tu proyecto, lo tuyo y lo nuestro, en un solo sitio. Cada tarea pasa de «Por hacer» a «Haciendo», a «Hecho» (con la prueba de lo que se ha entregado) y a «Validado». Con el botón ⏱ trabajas 25 minutos seguidos y el tiempo queda apuntado en la tarea. Solo lo validado cuenta como trabajo hecho.': 'Tot el que cal fer al teu projecte, el teu i el nostre, en un sol lloc. Cada tasca passa de «Per fer» a «Fent», a «Fet» (amb la prova del que s\'ha entregat) i a «Validat». Amb el botó ⏱ treballes 25 minuts seguits i el temps queda apuntat a la tasca. Només el que està validat compta com a feina feta.',
+        'La máquina': 'La màquina', 'Tú': 'Tu',
         'Tu espacio': 'El teu espai',
         'Tu mapa': 'El teu mapa',
         'Tu web': 'La teva web',
@@ -1830,6 +1840,7 @@
         });
         pintaAuto();
         pintaTauler();
+        pintaTareas();
     }
     /* El tablero (SOS/lib/tauler-client.js): las mismas flechas y la misma regla
        que «Lo que puede ir solo», ahora como tarjetas que el cliente define y
@@ -1841,6 +1852,19 @@
             roles: m.roles, centre: m.roles[0], llengua: LL, onCanvi: function (e) { S.tauler = e; desa(); } });
         var h = location.hash.slice(1), card = h.indexOf('tablero-') === 0 && document.getElementById(h);
         if (card && !c._vist) { c._vist = 1; card.classList.add('tc-on'); card.scrollIntoView({ block: 'center' }); }
+    }
+    /* Las tareas del proyecto (SOS/lib/kanban.js, 13/11/2026): el mismo motor que
+       el panel de Álvaro y el SOS. Lo suyo y lo nuestro en un tablero; viaja con
+       el mapa (S.kanban) y, con cuenta, se guarda con ella y lo vemos los dos. */
+    function personesTareas() {
+        return [{ id: 'cliente', nom: (S.nom || '').trim().split(/\s+/)[0] || t('Tú') }, { id: 'equipo', nom: 'Álvaro' }, { id: 'maquina', nom: t('La máquina') }];
+    }
+    function pintaTareas() {
+        var c = $('#cl-tareas'), K = window.Kanban; if (!c || !K) return;
+        K.pinta(c, { kanban: S.kanban || { cards: [] }, persones: personesTareas(), jo: 'cliente', llengua: LL, prefix: 'tarea-', pomoClau: 'tt.cliente.pomo',
+            tarifa: ((S.tauler || {})._formacio || {}).tarifa, onCanvi: function (k) { S.kanban = k; desa(); } });
+        var h = location.hash.slice(1), card = h.indexOf('tarea-') === 0 && document.getElementById(h);
+        if (card && !c._vist) { c._vist = 1; card.classList.add('kb-on'); card.scrollIntoView({ block: 'center' }); }
     }
     /* Lo que se puede automatizar de su mapa: la regla del tablero de la app
        (fluxAutomatitzable, en models-mapa.js), la misma que da el x % de la
@@ -2549,7 +2573,7 @@
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.Kanban && S.kanban ? '\n' + window.Kanban.resum(S.kanban, 'es', { cliente: S.nom || 'Cliente', equipo: 'Álvaro', maquina: 'La máquina' }) : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -2688,7 +2712,15 @@
                 .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); }, function () { return { estat: 'error' }; });
         }
         function buida(x) { return !x.inicial && !(x.alrededor || []).some(function (f) { return f.quien; }); }
-        function puja() { if (I.sessio && !I.sense) fitxa({ fitxa: S }); }
+        /* Al guardar, el servidor junta sus tareas con las que haya puesto Álvaro
+           desde su panel; si ha cambiado algo, se repinta el tablero. */
+        function puja() {
+            if (!I.sessio || I.sense) return;
+            fitxa({ fitxa: S }).then(function (r) {
+                if (!r || r.estat !== 'desada' || !r.kanban || JSON.stringify(r.kanban) === JSON.stringify(window.Kanban ? window.Kanban.neteja(S.kanban) : S.kanban)) return;
+                S.kanban = r.kanban; try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ } pintaTareas();
+            });
+        }
         function sincronitza() {
             PUJA = null;
             if (!I.sessio || I.sense) return;
