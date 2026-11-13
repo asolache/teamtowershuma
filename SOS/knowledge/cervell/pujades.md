@@ -32,6 +32,10 @@
 
 ### producte Tu red en el mapa · adoptada al catàleg (17/10/2026)
 
+### veda 11 · proposada
+
+> Ve d'un projecte privat: el text és al seu repositori i no surt d'allà. Per adoptar-la, llegeix-la allà i escriu aquí la lliçó sense res del client.
+
 ## Álvaro Solache
 
 ### veda 4 — El cerebro de la web lee el codex, no lo copia · proposada
