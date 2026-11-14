@@ -82,6 +82,28 @@ footer{padding:2rem 0 3rem;color:var(--mut);font-size:.9rem}
 .leyenda{font-size:.9rem;color:var(--mut);margin-top:.6rem}
 h3.sub{margin-top:2rem}
 @media (max-width:540px){.tabla th:first-child,.tabla td:first-child{width:2.4rem;padding-right:.2rem}}
+.hero{position:relative;overflow:hidden;min-height:82vh;display:flex;align-items:center}
+.hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-bg iframe{position:absolute;top:50%;left:50%;width:177.78vh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);border:0}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(160deg,rgba(8,52,76,.88),rgba(14,127,168,.45))}
+.hero .wrap{position:relative;z-index:2;width:100%}
+.hero a.sonido{color:#fff;font-weight:600;display:inline-block;margin:1.2rem 0 0 .8rem}
+@media (prefers-reduced-motion:reduce){.hero-bg{display:none}}
+nav.saltos{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--lin)}
+nav.saltos .wrap{display:flex;gap:1.1rem;overflow-x:auto;padding:.6rem 16px;font-size:.92rem;white-space:nowrap}
+nav.saltos a{text-decoration:none;color:var(--mut);font-weight:600}
+nav.saltos a:hover{color:var(--agua)}
+.servicios{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));margin-top:1.4rem}
+.servicio{background:var(--panel);border:1px solid var(--lin);border-radius:.6rem;padding:1.1rem 1.2rem}
+.servicio svg{width:2.4rem;height:2.4rem;color:var(--agua);display:block;margin-bottom:.5rem}
+.servicio p{margin:.2rem 0;font-size:1rem}
+.servicio .src{font-size:.8rem;color:var(--mut);margin-top:.5rem}
+.figura{margin:1.6rem 0 0;display:grid;gap:1.2rem;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);align-items:center}
+.figura .lamina{background:#fff;border-radius:.6rem;padding:1rem;display:grid;place-items:center}
+.figura img{max-width:100%;height:auto;display:block}
+.figura figcaption{font-size:.95rem;color:var(--mut)}
+.figura.sola{grid-template-columns:1fr;max-width:40rem;margin-left:auto;margin-right:auto}
+@media (max-width:700px){.figura{grid-template-columns:1fr}}
 @media (max-width:540px){body{font-size:16px}.hero{padding:3rem 0}section{padding:2.5rem 0}}
 </style>
 </head>
@@ -92,14 +114,17 @@ h3.sub{margin-top:2rem}
 </div>
 
 <div class="hero">
+  <div class="hero-bg" aria-hidden="true"><iframe src="https://player.vimeo.com/video/299937559?background=1&amp;autoplay=1&amp;loop=1&amp;muted=1&amp;dnt=1" title="Vídeo de fondo de Boreal Light, sin sonido" tabindex="-1" allow="autoplay; fullscreen"></iframe></div>
   <div class="wrap">
     <p class="kicker">Propuesta para Boreal Light GmbH</p>
     <h1>Agua potable con el sol. Y alrededor del agua, una red.</h1>
     <p>Queremos representar a Boreal Light en España. No solo vender plantas: cuidar todo lo que crece alrededor de cada una.</p>
     <p>Esta página es un borrador. La cerramos juntos en la primera conversación.</p>
-    <span class="borrador">Borrador · noviembre 2026</span>
+    <span class="borrador">Borrador · noviembre 2026</span><a class="sonido" href="https://vimeo.com/299937559" rel="noopener">Ver el vídeo con sonido ↗</a>
   </div>
 </div>
+
+<nav class="saltos" aria-label="Secciones"><div class="wrap"><a href="#boreal">Boreal Light</a><a href="#servicios">Servicios</a><a href="#nosotros">Quiénes somos</a><a href="#ecosistema">Ecosistema</a><a href="#flujo">Flujo de valor</a><a href="#sociedad">La sociedad</a><a href="#conversacion">Hablemos</a></div></nav>
 
 <main class="wrap">
 
@@ -119,10 +144,14 @@ h3.sub{margin-top:2rem}
     <div class="cifra"><div class="n">100 %</div><div class="l">con energía solar</div></div>
   </div>
   <p class="fuente">Cita y cifras: <a href="https://boreallight.com/" rel="noopener">boreallight.com</a>, consultado el 14/11/2026. Pioneer Award 2025 de la Solar Impulse Foundation, categoría agua (misma fuente). España figura entre los países con operaciones en el perfil de la <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a>.</p>
-  <div class="video">
-    <iframe src="https://player.vimeo.com/video/299937559" title="Boreal Light: agua potable y de riego para comunidades sin red, con desalinización solar" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
-  </div>
-  <p class="fuente">Vídeo de Boreal Light GmbH en <a href="https://vimeo.com/299937559" rel="noopener">Vimeo</a>.</p>
+  <p class="fuente">Vídeo de fondo: Boreal Light GmbH en <a href="https://vimeo.com/299937559" rel="noopener">Vimeo</a>.</p>
+</section>
+
+<section id="servicios">
+  <h2>Lo que ofrecen</h2>
+  <p class="lead">Una familia de soluciones para que haya agua buena donde no llega la red. Cada dato, con su fuente.</p>
+  <figure class="figura"><div class="lamina"><img src="img/planetcube.png" alt="Dibujo de la planta Winture PlanetCube: un armario técnico con dos puertas y pantalla." width="250" height="246" loading="lazy"></div><figcaption><b>La planta, en un armario.</b> Así presentaba Boreal Light el PlanetCube en 2019: todo el tratamiento dentro de un contenedor, listo para conectar y trabajar al aire libre. Dibujo de Boreal Light (Winture).</figcaption></figure>
+  <div class="servicios"><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="10" r="5"/><path d="M24 1v2M33 10h2M13 10h2M30 4l1.5-1.5M18 4l-1.5-1.5"/><rect x="8" y="20" width="32" height="22" rx="2"/><path d="M24 26c-3 4-4 6-4 8a4 4 0 0 0 8 0c0-2-1-4-4-8z"/></svg><h3>PlanetCube · desalinización solar</h3><p>Ósmosis inversa con energía solar, sin baterías ni inversor. De 1.000 a 40.000 L/h. Agua de mar, salobre o contaminada.</p><p class="src">Fuente: <a href="https://wacee.german-pavilion.com/en/exhibitors/94808" rel="noopener">WACEE</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10h36l-14 16v14l-8-4V26z"/></svg><h3>Ultrafiltración</h3><p>Para depurar agua de ríos y pozos.</p><p class="src">Fuente: <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 24 6l18 12"/><rect x="10" y="18" width="28" height="24"/><path d="M20 30h8v12h-8zM24 22v4"/></svg><h3>WaterKiosk</h3><p>Kioscos de agua que gestiona la propia comunidad.</p><p class="src">Fuente: <a href="https://impulse-foundation.com/solutions/ecosystem/boreal-light-gmbh" rel="noopener">Solar Impulse</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M24 4v40M7 14l34 20M7 34l34-20M19 6l5 5 5-5M19 42l5-5 5 5"/></svg><h3>Frío y hielo</h3><p>Enfriadores y fábricas de hielo para la cadena de frío.</p><p class="src">Fuente: <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="36" height="24" rx="2"/><path d="M12 24l6-6 6 4 8-8M18 40h12M24 32v8"/></svg><h3>Monitorización 24/7</h3><p>Cada planta, vigilada a distancia. UV y ozono, sin cloro.</p><p class="src">Fuente: <a href="https://wacee.german-pavilion.com/en/exhibitors/94808" rel="noopener">WACEE</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="5"/><circle cx="32" cy="16" r="5"/><path d="M6 38c0-6 4-10 10-10s10 4 10 10M22 38c0-6 4-10 10-10s10 4 10 10"/></svg><h3>Para quién</h3><p>Municipios, gobiernos, agencias de desarrollo, ONG, hoteles, hospitales, granjas e industria.</p><p class="src">Fuente: <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a> y <a href="https://boreallight.com/" rel="noopener">boreallight.com</a></p></div></div>
 </section>
 
 <section id="nosotros">
@@ -145,6 +174,7 @@ h3.sub{margin-top:2rem}
 <section id="ecosistema">
   <h2>Del agua, un ecosistema</h2>
   <p class="lead">Lo que más nos motiva es lo que aprendimos con vosotros: una planta de agua no es una máquina sola. A su alrededor crece una red.</p>
+  <figure class="figura sola"><div class="lamina"><img src="img/ecosistema.png" alt="Esquema de Winture: el sol y el viento dan energía a la planta, que saca agua de un pozo y da agua potable a la comunidad, además de carga para móviles y radios." width="547" height="435" loading="lazy"></div><figcaption>Del agua, todo lo demás: energía, salud, comunicación y una comunidad que la cuida. Esquema de Boreal Light (Winture, 2019).</figcaption></figure>
   <div class="anillo" role="img" aria-label="Ocho roles alrededor del agua: quien fabrica, quien representa e instala, quien necesita agua, quien hace la obra y el mantenimiento, quien autoriza y controla, quien financia, la gente que bebe y riega, y quien recomienda.">
     <svg viewBox="0 0 520 440" aria-hidden="true">
       <g>
@@ -202,6 +232,15 @@ h3.sub{margin-top:2rem}
     <li><h3>Cuidar y contar</h3><p>Mantener cada planta y contar lo que cambia. Para que cada sitio traiga el siguiente.</p></li>
   </ol>
   <p class="aviso">Aquí no hay precios ni condiciones. Eso lo hablamos en persona, cuando sepamos qué queréis vosotros.</p>
+</section>
+
+<section id="sociedad">
+  <h2>Crear juntos la sociedad en España</h2>
+  <p class="lead">Nos gustaría ayudar a crear la sociedad que distribuya Boreal Light en España. Como proyecto de familia, con inversión propia y pensado para durar. Y con vosotros dentro, si lo queréis.</p>
+  <ol class="linea"><li><h3>Conocernos</h3><p>La primera conversación: qué queréis vosotros y qué podemos aportar nosotros.</p></li><li><h3>Revisarnos</h3><p>Una revisión en los dos sentidos. Nosotros miramos productos y referencias. Vosotros, nuestra red y nuestro plan.</p></li><li><h3>Darle forma</h3><p>La sociedad, el territorio y el papel de cada uno. Se decide juntos.</p></li><li><h3>El primer piloto</h3><p>Un sitio real, con un socio instalador cerca.</p></li><li><h3>Crecer en red</h3><p>La escuela del agua, el mantenimiento y los casos que traen el siguiente sitio.</p></li></ol>
+  <h3 class="sub">Lo que ponemos sobre la mesa</h3>
+  <div class="grid g2"><div class="card"><h3>Sabemos crear organizaciones</h3><p>Mapas de valor, gobernanza y una incubadora de proyectos, <a href="https://teamtowershuma.com/SOS/matriu.html" rel="noopener">la MATRIU</a>.</p></div><div class="card"><h3>Una familia que invierte</h3><p>Capital paciente. Queremos que esto dure, no venderlo mañana.</p></div><div class="card"><h3>Una red en el territorio</h3><p>Más de 150 empresas y organizaciones acompañadas, universidades y administraciones.</p></div><div class="card"><h3>La escuela del agua</h3><p>Formar a técnicos, instaladores y comunidades es nuestro oficio.</p></div></div>
+  <p class="aviso" style="margin-top:1.4rem">La forma de la sociedad y las condiciones se hablan en persona. Aquí no hay cifras.</p>
 </section>
 
 <section id="conversacion">
