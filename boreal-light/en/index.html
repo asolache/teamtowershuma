@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Versió anglesa de ../index.html: es manté amb ella. La vista propuesta para Boreal Light GmbH (pedida por Álvaro el 14/11/2026).
+     Sigue la página en castellano de 2019 (asolache/Winture, boreallight-iberoamerica.netlify.app):
+     el agua primero, el vídeo del fabricante y frases cortas. Es un borrador para la
+     primera conversación: sin precios, sin comisiones, sin términos de acuerdo y sin
+     datos personales. Cada cifra del fabricante lleva su fuente. No se indexa. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Boreal Light in Spain · proposal | TeamTowers Humà</title>
+<meta name="description" content="A proposal from TeamTowers Humà to represent Boreal Light in Spain: solar water and the ecosystem that grows around it.">
+<style>
+:root{
+  --agua:#0b5f86;--agua-2:#0e7fa8;--sol:#ff4400;
+  --text:#333;--mut:#5d5d66;--lin:#d5e2e2;--bg:#efedf2;--panel:#fff;--hero-a:#0b4a6b;--hero-b:#0e7fa8;
+  color-scheme:light dark
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --agua:#7cc4e6;--agua-2:#9ad3ee;--sol:#ff7a45;
+  --text:#ececf1;--mut:#a9a9b3;--lin:#34404a;--bg:#13171c;--panel:#1c2229;--hero-a:#0a2f44;--hero-b:#0b4a6b
+}}
+:root[data-theme="dark"]{
+  --agua:#7cc4e6;--agua-2:#9ad3ee;--sol:#ff7a45;
+  --text:#ececf1;--mut:#a9a9b3;--lin:#34404a;--bg:#13171c;--panel:#1c2229;--hero-a:#0a2f44;--hero-b:#0b4a6b
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:18px/1.6 -apple-system,BlinkMacSystemFont,"Avenir Next","Avenir","Segoe UI","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--agua)}
+.wrap{max-width:60rem;margin:0 auto;padding:0 16px}
+header.barra{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 0;font-size:.95rem}
+header.barra b{color:var(--agua)}
+header.barra span{color:var(--mut)}
+.hero{background:linear-gradient(160deg,var(--hero-a),var(--hero-b));color:#fff;padding:4.5rem 0 4rem}
+.hero .kicker{text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;opacity:.85;margin:0}
+.hero h1{font-size:clamp(2rem,5.5vw,3.6rem);line-height:1.1;margin:.6rem 0 1rem;font-weight:700;max-width:18ch}
+.hero p{max-width:40rem;font-size:1.1rem;margin:.4rem 0;opacity:.95}
+.hero .borrador{display:inline-block;margin-top:1.2rem;border:1px solid rgba(255,255,255,.5);border-radius:2rem;padding:.25rem .9rem;font-size:.85rem}
+section{padding:3.5rem 0;border-bottom:1px solid var(--lin)}
+section:last-of-type{border-bottom:0}
+h2{font-size:clamp(1.5rem,3.5vw,2rem);line-height:1.2;margin:0 0 .4rem}
+h2 + .lead{color:var(--mut);margin-top:0;max-width:42rem}
+h3{font-size:1.15rem;margin:0 0 .3rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));margin-top:1.4rem}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr))}
+.card{background:var(--panel);border:1px solid var(--lin);border-radius:.6rem;padding:1.1rem 1.2rem}
+.card p{margin:.2rem 0;font-size:1rem}
+.cita{border-left:4px solid var(--agua);padding:.3rem 0 .3rem 1rem;margin:1.2rem 0;font-size:1.15rem;max-width:42rem}
+.cifras{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));margin-top:1.4rem}
+.cifra{background:var(--panel);border:1px solid var(--lin);border-radius:.6rem;padding:1rem}
+.cifra .n{font-size:1.7rem;font-weight:700;color:var(--agua);line-height:1.1}
+.cifra .l{font-size:.92rem;color:var(--mut);margin-top:.3rem}
+.fuente{font-size:.85rem;color:var(--mut);margin-top:.8rem}
+.video{position:relative;padding-top:56.25%;margin-top:1.4rem;border-radius:.6rem;overflow:hidden;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+ol.linea{list-style:none;padding:0;margin:1.4rem 0 0;counter-reset:p}
+ol.linea li{counter-increment:p;position:relative;padding:0 0 1.2rem 3rem;max-width:44rem}
+ol.linea li::before{content:counter(p);position:absolute;left:0;top:0;width:2rem;height:2rem;border-radius:50%;background:var(--agua);color:var(--bg);font-weight:700;display:grid;place-items:center;font-size:.95rem}
+ol.linea li p{margin:.1rem 0;font-size:1rem}
+.anillo{margin:1.6rem auto 0;max-width:34rem}
+.anillo svg{width:100%;height:auto;display:block}
+.anillo text{font:600 13px -apple-system,"Segoe UI",sans-serif;fill:var(--text)}
+.anillo .c{fill:var(--panel);stroke:var(--agua);stroke-width:1.5}
+.anillo .centro{fill:var(--agua)}
+.anillo .tc{fill:var(--bg);font-size:15px}
+.anillo .r{stroke:var(--lin);stroke-width:1.5}
+ul.preg{padding-left:1.2rem;max-width:44rem}
+ul.preg li{margin:.4rem 0}
+.aviso{background:var(--panel);border:1px solid var(--lin);border-left:4px solid var(--sol);border-radius:.4rem;padding:.8rem 1rem;max-width:44rem;font-size:1rem}
+.cta{display:inline-block;margin-top:1rem;background:var(--agua);color:var(--bg);font-weight:600;text-decoration:none;padding:.75rem 1.3rem;border-radius:.5rem}
+footer{padding:2rem 0 3rem;color:var(--mut);font-size:.9rem}
+@media (max-width:540px){body{font-size:16px}.hero{padding:3rem 0}section{padding:2.5rem 0}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="barra"><b>Boreal Light · Spain</b><span><a href="../" hreflang="es" lang="es">Español</a> · TeamTowers Humà</span></header>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <p class="kicker">Proposal for Boreal Light GmbH</p>
+    <h1>Drinking water from the sun. And around the water, a network.</h1>
+    <p>We want to represent Boreal Light in Spain. Not only to sell plants, but to look after everything that grows around each one.</p>
+    <p>This page is a draft. We will finish it together in our first conversation.</p>
+    <span class="borrador">Draft · November 2026</span>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="boreal">
+  <h2>What you do</h2>
+  <p class="lead">Boreal Light is a renewable energy engineering company based in Berlin. It builds solar plants that purify and desalinate water, off-grid and without diesel.</p>
+  <p class="cita">«Committed to Sustainable and Social Business, Ensuring Access to Safe Drinking and Irrigation Water.»</p>
+  <div class="grid">
+    <div class="card"><h3>Simplicity</h3><p>Plug-and-play container plants, built to work outdoors.</p></div>
+    <div class="card"><h3>Affordability</h3><p>In your words: reducing the cost of access to drinking water by 90%.</p></div>
+    <div class="card"><h3>Off-grid</h3><p>Powered by the sun. Water arrives where the power line does not.</p></div>
+  </div>
+  <div class="cifras">
+    <div class="cifra"><div class="n">8,000,000+</div><div class="l">people served every day</div></div>
+    <div class="cifra"><div class="n">80 M L+</div><div class="l">litres of installed capacity per day</div></div>
+    <div class="cifra"><div class="n">460+</div><div class="l">acres of land irrigated</div></div>
+    <div class="cifra"><div class="n">100%</div><div class="l">powered by solar energy</div></div>
+  </div>
+  <p class="fuente">Quote and figures: <a href="https://boreallight.com/" rel="noopener">boreallight.com</a>, checked on 14/11/2026. Solar Impulse Foundation Pioneer Award 2025, water category (same source). Spain is listed among the countries with operations in the profile at the <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a>.</p>
+  <div class="video">
+    <iframe src="https://player.vimeo.com/video/299937559" title="Boreal Light: drinking and irrigation water for off-grid communities through solar desalination" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <p class="fuente">Video by Boreal Light GmbH on <a href="https://vimeo.com/299937559" rel="noopener">Vimeo</a>.</p>
+</section>
+
+<section id="nosotros">
+  <h2>Who we are</h2>
+  <p class="lead">TeamTowers Humà: consulting, training and group facilitation, from the Penedès region near Barcelona. Always the same question: how a group that did not choose each other carries the weight together.</p>
+  <div class="cifras">
+    <div class="cifra"><div class="n">2005</div><div class="l">human-tower experiences with teams since</div></div>
+    <div class="cifra"><div class="n">60,000+</div><div class="l">people trained in collaboration and trust</div></div>
+    <div class="cifra"><div class="n">150+</div><div class="l">companies and organisations supported</div></div>
+  </div>
+  <p class="fuente">TeamTowers 2026 commercial catalogue, cited at <a href="https://teamtowershuma.com/qui-som.html" rel="noopener">teamtowershuma.com/qui-som</a>.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Álvaro Solache</h3><p>Social psychologist. More than twenty years training teams in companies, universities and public bodies. <a href="https://teamtowershuma.com/qui-som.html" rel="noopener">Full profile</a> (Catalan).</p></div>
+    <div class="card"><h3>The value map</h3><p>We work with Verna Allee's method: drawing who gives what to whom, including what is never invoiced. <a href="https://teamtowershuma.com/SOS/vna.html" rel="noopener">What it is</a> (Catalan).</p></div>
+    <div class="card"><h3>Action learning</h3><p>We train on a real assignment and close with evidence, not an attendance certificate. <a href="https://teamtowershuma.com/SOS/formacio.html" rel="noopener">The modules</a> (Catalan).</p></div>
+    <div class="card"><h3>A network of projects</h3><p>SOS, an open system for communities. Events Penedès, events and experiences in the region. And a family keen to invest in what it cares about.</p></div>
+  </div>
+</section>
+
+<section id="ecosistema">
+  <h2>From water, an ecosystem</h2>
+  <p class="lead">What motivates us most is what we learned from you: a water plant is not a machine on its own. A network grows around it.</p>
+  <div class="anillo" role="img" aria-label="Eight roles around the water: who manufactures, who represents and installs, who needs water, who builds and maintains, who authorises and inspects, who finances, the people who drink and irrigate, and who recommends.">
+    <svg viewBox="0 0 520 440" aria-hidden="true">
+      <g>
+        <line class="r" x1="260" y1="220" x2="260" y2="60"/><line class="r" x1="260" y1="220" x2="400" y2="105"/>
+        <line class="r" x1="260" y1="220" x2="445" y2="230"/><line class="r" x1="260" y1="220" x2="395" y2="350"/>
+        <line class="r" x1="260" y1="220" x2="260" y2="390"/><line class="r" x1="260" y1="220" x2="125" y2="350"/>
+        <line class="r" x1="260" y1="220" x2="75" y2="230"/><line class="r" x1="260" y1="220" x2="120" y2="105"/>
+      </g>
+      <circle class="centro" cx="260" cy="220" r="52"/><text class="tc" x="260" y="226" text-anchor="middle">Water</text>
+      <g text-anchor="middle">
+        <rect class="c" x="185" y="38" width="150" height="40" rx="20"/><text x="260" y="63">Manufacturer</text>
+        <rect class="c" x="330" y="83" width="170" height="40" rx="20"/><text x="415" y="108">Representative</text>
+        <rect class="c" x="370" y="210" width="145" height="40" rx="20"/><text x="442" y="235">Who needs water</text>
+        <rect class="c" x="320" y="330" width="170" height="40" rx="20"/><text x="405" y="355">Works and upkeep</text>
+        <rect class="c" x="180" y="370" width="160" height="40" rx="20"/><text x="260" y="395">People who drink</text>
+        <rect class="c" x="30" y="330" width="170" height="40" rx="20"/><text x="115" y="355">Authorities</text>
+        <rect class="c" x="5" y="210" width="140" height="40" rx="20"/><text x="75" y="235">Funders</text>
+        <rect class="c" x="30" y="83" width="160" height="40" rx="20"/><text x="110" y="108">Who recommends</text>
+      </g>
+    </svg>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>Water every day</h3><p>A town, a hotel, a farm or a community has good water. And keeps having it.</p></div>
+    <div class="card"><h3>Knowledge that stays</h3><p>A water school: training those who install, those who maintain, and the community that uses the plant.</p></div>
+    <div class="card"><h3>Constant care</h3><p>Whoever is close sees problems first. Together with your remote monitoring, that keeps each plant alive.</p></div>
+    <div class="card"><h3>A story worth telling</h3><p>Recovered water is a story. Told well, it opens the door to the next site.</p></div>
+  </div>
+</section>
+
+<section id="propuesta">
+  <h2>What we propose</h2>
+  <p class="lead">To be your representation in Spain. As a family project: unhurried, invested in, and built to last.</p>
+  <ol class="linea">
+    <li><h3>Speaking your language here</h3><p>A website and materials in Spanish and Catalan, with a site form for quote requests: water source, consumption, distances, and grid or solar.</p></li>
+    <li><h3>Finding the first site</h3><p>A real customer with a real water problem. A pilot people can visit.</p></li>
+    <li><h3>A local installation partner</h3><p>A water and solar engineering or installation firm, close to the site, for the works and the maintenance.</p></li>
+    <li><h3>The water school</h3><p>Training for technicians, installers and communities. It is what we do best.</p></li>
+    <li><h3>Care and tell</h3><p>Maintain each plant and tell what changes. So that each site brings the next one.</p></li>
+  </ol>
+  <p class="aviso">There are no prices or terms here. We will talk about that in person, once we know what you want.</p>
+</section>
+
+<section id="conversacion">
+  <h2>For our first conversation</h2>
+  <p class="lead">What we would like to ask you.</p>
+  <ul class="preg">
+    <li>Would you like a partner in Spain to represent, install and maintain?</li>
+    <li>Which products fit best here: brackish water, irrigation, hotels, towns?</li>
+    <li>How do you train installers and maintainers today? Could the water school add to that?</li>
+    <li>How would you like the brand to be presented in Spain?</li>
+    <li>Who on your team should we continue the conversation with?</li>
+  </ul>
+  <a class="cta" href="https://teamtowershuma.com/cliente/">Let's talk</a>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>A proposal from TeamTowers Humà for Boreal Light GmbH. Working draft, not indexed. What is said about Boreal Light comes from its public sources, cited alongside.</p>
+  </div>
+</footer>
+
+</body>
+</html>
