@@ -31,13 +31,13 @@
       qui: 'Qui el dona → qui el rep', quan: 'Quan passa i què porta',
       honest: 'Funciona avui al tauler d\'una productora d\'esdeveniments. A la teva web arrenca amb els pilots.',
       a11y: 'Mapa de valor animat: {0} rols i {1} lliuraments',
-      pl: { k: 'El valor, en moviment', cas: 'Un cas real: {0}. Els noms no hi són.', a11y: 'Pel·lícula del flux de valor en cinc escenes',
-        e: [['Els rols', 'Tot negoci és una xarxa de persones.'],
-          ['Els intercanvis', 'Es donen el que es factura… i confiança, idees i reputació, que no.'],
-          ['Les decisions', 'El dibuix diu on actuar.'],
-          ['El tauler', 'El que defineixes passa al tauler…'],
-          ['Va sol', '…i el que és definit va sol.']],
-        sols: 'lliuraments ja van sols', punt: 'i {0} més, a punt', cta: 'Fes el teu mapa, gratis →', q: 'Què vols fer? ↓',
+      pl: { k: 'El teu negoci, vist des de dalt', cas: 'Un cas real: {0}. Els noms no hi són.', a11y: 'Pel·lícula del flux de valor en cinc escenes', tu: 'Tu',
+        e: [['Qui ets', 'Ets aquí, al mig. I sé qui t\'envolta.'],
+          ['On ets', 'Això és el que passa de debò: el que cobres… i el que ningú et paga però t\'aguanta.'],
+          ['On se t\'escapa', 'Aquí se t\'escapa el valor.'],
+          ['Ho resolem', 'Ho definim i ho posem en marxa. En dies, no en mesos.'],
+          ['Va sol', 'El que va sol és temps que recuperes.']],
+        sols: 'lliuraments ja van sols', punt: 'i {0} més, a punt', val: 'Quant val això per a tu?', cta: 'Mira el teu en cinc minuts →', q: 'Què vols fer? ↓',
         pausa: 'Atura la pel·lícula', segueix: 'Continua la pel·lícula' } },
     es: { tots: 'entregables', sol: 'ya van solos', punt: 'listos para ir solos', muntar: 'por montar', persona: 'de persona a persona',
       tang: 'tangible: se puede reclamar', intang: 'intangible: confianza, ideas, reputación',
@@ -52,13 +52,13 @@
       qui: 'Quién lo da → quién lo recibe', quan: 'Cuándo pasa y qué lleva',
       honest: 'Funciona hoy en el tablero de una productora de eventos. En tu web arranca con los pilotos.',
       a11y: 'Mapa de valor animado: {0} roles y {1} entregables',
-      pl: { k: 'El valor, en movimiento', cas: 'Un caso real: {0}. Los nombres no están.', a11y: 'Película del flujo de valor en cinco escenas',
-        e: [['Los roles', 'Todo negocio es una red de personas.'],
-          ['Los intercambios', 'Se dan lo que se factura… y confianza, ideas y reputación, que no.'],
-          ['Las decisiones', 'El dibujo dice dónde actuar.'],
-          ['El tablero', 'Lo que defines pasa al tablero…'],
-          ['Va solo', '…y lo definido va solo.']],
-        sols: 'entregables ya van solos', punt: 'y {0} más, listos', cta: 'Haz tu mapa, gratis →', q: '¿Qué quieres hacer? ↓',
+      pl: { k: 'Tu negocio, visto desde arriba', cas: 'Un caso real: {0}. Los nombres no están.', a11y: 'Película del flujo de valor en cinco escenas', tu: 'Tú',
+        e: [['Quién eres', 'Estás aquí, en el centro. Y sé quién te rodea.'],
+          ['Dónde estás', 'Esto es lo que pasa de verdad: lo que cobras… y lo que nadie te paga pero te sostiene.'],
+          ['Dónde se te escapa', 'Aquí se te escapa el valor.'],
+          ['Lo resolvemos', 'Lo definimos y lo ponemos en marcha. En días, no en meses.'],
+          ['Va solo', 'Lo que va solo es tiempo que recuperas.']],
+        sols: 'entregables ya van solos', punt: 'y {0} más, listos', val: '¿Cuánto vale eso para ti?', cta: 'Mira el tuyo en cinco minutos →', q: '¿Qué quieres hacer? ↓',
         pausa: 'Para la película', segueix: 'Sigue la película' } }
   };
   var ICONA = [[/encarg/, '🏢'], [/reven/, '🤝'], [/produ/, '🎯'], [/acoge|acull/, '🏡'], [/vin|vi$/, '🍷'],
@@ -363,6 +363,10 @@
     var gran = el('p', { class: 'pl-gran' });
     gran.appendChild(el('b', {}, D.compte.sol)); gran.appendChild(document.createTextNode(' ' + P.sols));
     gran.appendChild(el('small', {}, f(P.punt, D.compte.punt)));
+    gran.appendChild(el('em', { class: 'pl-val' }, P.val));
+    /* «Tu»: el visitant es reconeix al mig del dibuix des de la primera escena. */
+    var cM = D.pos[D.R[D.mig]], tu = el('text', { x: cM[0], y: cM[1] - 48, class: 'pl-tu' }, P.tu);
+    svg.appendChild(tu);
     var cap = el('p', { class: 'pl-cap', 'aria-live': 'polite' }), sub = el('small', { class: 'pl-sub' });
     var fi = el('p', { class: 'pl-fi' });
     fi.appendChild(el('a', { class: 'btn-primary', href: cont.getAttribute('data-cta') || '/cliente/#alrededor' }, P.cta));
@@ -449,6 +453,8 @@
       '.pl-tl{grid-area:1/1;width:100%;max-width:46rem;opacity:0;pointer-events:none;transition:opacity .5s}[data-e="4"] .pl-tl{opacity:1;pointer-events:auto}' +
       '.pl-tl .ma-t{margin:0}.pl-tl .ma-cols{grid-template-columns:repeat(3,1fr)}.pl-tl .ma-col{min-height:9rem}' +
       '.pl-gran{display:block;margin:.3rem 0 0;font-size:1rem;animation:pl-in .6s .6s both}@keyframes pl-in{from{opacity:0;transform:translateY(.6rem)}}' +
+      '.pl-tu{font:800 20px var(--sans);fill:var(--green);paint-order:stroke;stroke:var(--bg);stroke-width:6px;text-anchor:middle;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .5s 1.2s}[data-e] .pl-tu{opacity:1}' +
+      '.pl-val{display:block;margin-top:.5rem;font-style:normal;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--text);animation:pl-in .6s 2s both}' +
       '.pl-gran b{font-size:2.4rem;color:var(--green);vertical-align:-.12em}.pl-gran small{display:block;font-weight:400;color:var(--muted)}' +
       '.pl-cap{min-height:4.2em;margin:.4rem auto 0;max-width:40rem;text-align:center;font-family:var(--sans);font-size:clamp(1.15rem,2.6vw,1.6rem);font-weight:700;line-height:1.25}' +
       '.pl-sub{display:block;margin-top:.35rem;font-family:var(--body,inherit);font-size:.95rem;font-weight:400;color:var(--light);line-height:1.4}' +
@@ -460,7 +466,7 @@
       '.pl-ch button.on{color:var(--text);font-weight:700}.pl-ch i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--green)}' +
       '.pl-pausa:focus-visible,.pl-ch button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}' +
       '.pl-cas{margin:.4rem 0 0;text-align:center;font-size:.75rem;color:var(--muted)}' +
-      '@media (max-width:800px){.pl-svg{max-height:46svh}.pl-ch span{font-size:.68rem}.pl-tl .ma-col{min-height:8rem;padding:.4rem}.pl-tl .ma-card{font-size:.68rem;padding:.35rem .4rem}.pl-tl .ma-card b{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pl-tl .ma-card small{display:none}.pl-tl .ma-card .ma-lv{font-size:.66rem}.pl-cas{font-size:.68rem}.pl-tl .ma-pas{font-size:.68rem}.pl-tl .ma-hon{display:none}.pl-gran b{font-size:2rem}.pl-fi .btn-primary{display:none}}' +
+      '@media (max-width:800px){.pl-svg{max-height:46svh}.pl-ch span{font-size:.68rem}.pl-tl .ma-col{min-height:8rem;padding:.4rem}.pl-tl .ma-card{font-size:.68rem;padding:.35rem .4rem}.pl-tl .ma-card b{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pl-tl .ma-card small{display:none}.pl-tl .ma-card .ma-lv{font-size:.66rem}.pl-cas{font-size:.68rem}.pl-tl .ma-pas{font-size:.68rem}.pl-tl .ma-hon{display:none}.pl-gran b{font-size:2rem}.pl-gran small{display:none}.pl-val{margin-top:.2rem}.pl-fi .btn-primary{display:none}}' +
       '@media (max-width:560px){.pl-ch li.on{flex:3.5}.pl-ch li:not(.on) span{display:none}.pl-ch button{text-align:center;white-space:nowrap;text-overflow:ellipsis}.pl-ch li.on button{text-align:left}}';
     document.head.appendChild(s);
   }
