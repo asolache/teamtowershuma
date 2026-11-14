@@ -37,7 +37,16 @@ export const FORMULARIS = {
   'visita': 'Visita des de la pàgina del lead (web)',
   /* L'espai de client (/cliente/): el primer diagnòstic d'un client web, amb
      les seves respostes, el mapa en JSON i el nivell de web que tria. */
-  'cliente-web': 'Espai de client · primer diagnòstic (web)'
+  'cliente-web': 'Espai de client · primer diagnòstic (web)',
+  /* «Habla con una persona» (14/11/2026): el formulari comú de totes les
+     pàgines del lloc (SOS/lib/recorrido.js), que substitueix els `mailto`
+     solts. Porta el perfil de qui escriu i la marca per on ha entrat. */
+  'contacto': 'Parla amb una persona (web)'
+};
+/* Els perfils del recorregut, en paraules del CRM. */
+const PERFIL = {
+  negocio: 'Té un negoci (pime o autònom)', empresa: 'Porta una empresa o un equip',
+  consultor: 'Consultor o formador', comunidad: 'Comunitat o entitat', cliente: 'Ja és client'
 };
 const RESPOSTA = { si: 'Vol la visita', no: 'Diu que el mapa no és així' };
 
@@ -64,7 +73,14 @@ export function aLead(formName, d, opts = {}) {
     Website: tall(d.web, 255),
     City: tall(d.municipi, 100),
     Description: tall([
+      /* La regla de marca de Zoho: «Marca: X» a la primera línia. */
+      d.marca && 'Marca: ' + tall(d.marca, 40),
       'Origen: ' + origen,
+      d.perfil && 'Perfil: ' + (PERFIL[net(d.perfil)] || tall(d.perfil, 40)),
+      d.de && 'Ve de: ' + tall(d.de, 40),
+      d.pagina && 'Des de: ' + tall(d.pagina, 120),
+      d.tema && 'Tema: ' + tall(d.tema, 120),
+      d.missatge && 'Missatge: ' + net(d.missatge),
       d.resposta && 'Resposta: ' + (RESPOSTA[net(d.resposta)] || tall(d.resposta, 40)),
       d.ref && 'Pàgina del lead: ' + tall(d.ref, 40),
       d.dediqueu && 'A què es dediquen: ' + net(d.dediqueu),

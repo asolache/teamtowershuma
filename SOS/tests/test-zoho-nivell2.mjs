@@ -130,5 +130,17 @@ console.log('\n5 · El registre');
   ok(/"camps":\["First_Name"/.test(txt), 'en mode prova, només els noms dels camps');
 }
 
+console.log('\n6 · «Habla con una persona» (contacto)');
+{
+  const l = aLead('contacto', { nom: 'Pau Roig', mail: 'pau@example.org', missatge: 'Vull un taller', tema: 'Jornada',
+    perfil: 'empresa', de: 'teamtowers', marca: 'TeamTowers', pagina: '/conecta/' });
+  ok(l && /^Marca: TeamTowers\n/.test(l.Description), 'la marca, a la primera línia');
+  ok(/Perfil: Porta una empresa o un equip/.test(l.Description), 'el perfil, en paraules del CRM');
+  ok(/Missatge: Vull un taller/.test(l.Description) && /Des de: \/conecta\//.test(l.Description), 'el missatge i la pàgina');
+  const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
+  ok(/<form name="contacto" data-netlify="true"/.test(html) && html.includes('/SOS/lib/recorrido.js'), 'la portada porta el formulari i el recorregut');
+  ok(!html.includes('Repte comunitari'), 'el correu de la portada ja no diu «Repte comunitari»');
+}
+
 console.log(`\n${fail ? '❌' : '✅'} ${pass} correctes, ${fail} errors`);
 process.exit(fail ? 1 : 0);
