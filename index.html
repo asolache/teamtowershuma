@@ -140,6 +140,13 @@
 
         /* HERO */
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
+        .pt:not(.pt-tot) main>:is(section,nav,.cta-band):not(.peli,.hero,.cl-mur,.cta-final,.pt-pant,.pt-vis),.pt:not(.pt-tot) :is(.hero-desc,.hero-av,.hero-actions,.hero-note,.hero-cos,.hero-visual){display:none}
+        .pt:not(.pt-tot) .hero{min-height:auto;padding:4rem 0 1rem}.pt:not(.pt-tot) .hero-grid{display:block}
+        .pt .hero-perfils{font-family:var(--sans);display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.7rem;margin:0 0 2rem;animation:none;opacity:1}
+        .pt .hero-perfils .hp-q{grid-column:1/-1;font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;letter-spacing:-.02em;text-align:center;margin:0 0 1rem}
+        .pt .hero-perfils a{display:flex;align-items:center;justify-content:space-between;min-height:3.6rem;padding:.8rem 1.1rem;border:1px solid var(--border);border-radius:16px;background:var(--card);color:var(--text);font-size:1.05rem;font-weight:600;transition:border-color .2s,transform .2s}
+        .pt .hero-perfils a::after{content:"→";color:var(--muted)}.pt .hero-perfils a:hover,.pt .hero-perfils a[aria-current=true]{border-color:var(--green);transform:translateY(-2px)}
+        .pt:not(.pt-tot) .hero h1{font-size:clamp(1rem,2.2vw,1.25rem);font-weight:500;color:var(--muted);text-align:center;max-width:40rem;margin:0 auto}
         .peli-v { min-height:calc(100vh - 4rem); min-height:calc(100svh - 4rem); }
         .peli-v:empty { min-height:0; }
         @media (max-width:860px) { .peli-v { min-height:calc(100vh - 12rem); min-height:calc(100svh - 12rem); } }
@@ -974,6 +981,7 @@
 </script>
 <!--/TT-NAV-->
 <main>
+<script>document.documentElement.classList.add('pt')</script>
 
 <!-- LA PEL·LÍCULA (14/11/2026): el primer que es veu no és text, és el flux
      de valor en cinc escenes. Ho pinta SOS/lib/mapa-anima.js amb el cas real. -->
@@ -984,12 +992,6 @@
     <div class="container">
         <div class="hero-grid">
             <div class="hero-cap">
-                <!-- LA HOME VEN (22/10/2026). Àlvaro: «enfocada directament a la venda
-                     i a la creació del teu mapa de valor, i totes les avantatges com
-                     a client». La primera pantalla diu què t'emportes i té una sola
-                     crida principal: crear el mapa a /cliente/, que dona valor abans
-                     de demanar res (camiClient, pas 1). La història de la casa i el
-                     finançament baixen a «Per què nosaltres»; el mètode, a sota. -->
                 <!-- «Què vols fer?» (14/11/2026): SOS/lib/recorrido.js -->
                 <nav class="hero-eyebrow hero-portes hero-perfils fade-up" aria-labelledby="heroQ">
                     <b class="hp-q" id="heroQ" data-i18n="hero.q">Què vols fer?</b>
@@ -1232,6 +1234,7 @@
 <script src="/SOS/lib/mapa-valor.js" defer></script>
 <script src="/SOS/lib/mapa-etiquetes.js" defer></script>
 <script src="/SOS/lib/mapa-anima.js" defer></script>
+<script src="/SOS/lib/portada.js" defer></script>
 <script src="/SOS/cervell/pla.js" defer></script>
 <script src="/SOS/cervell/franja.js" defer></script>
     </div>
@@ -1372,20 +1375,6 @@
 </nav>
 
 
-<!-- EL NEGOCI OPERATIU ─────────────────────────────────────────────────
-     L'estratègia d'octubre del 2026: el que funcionava a la sala —que un equip
-     vegi el mateix flux i s'acordi on ha de fluir millor— durava el que durava
-     el taller. Ara es queda com un sistema viu i es ven com a paquet, a un preu
-     de pime. La sala segueix sent humana; l'execució la fa el sistema.
-     Les xifres de l'escala són les de `/mapa-web/` (sessió i taller) i la del
-     paquet nou; cap altra xifra no surt aquí. -->
-<!-- ELS TRES SERVEIS (10/10/2026) ──────────────────────────────────────────
-     La portada parlava de moltes coses i Àlvaro va demanar que en digués tres:
-     el diagnòstic i la millora amb el mapa de valor, el desenvolupament web i
-     el SOS com a formació acció. Són les tres portes de la barra del lloc
-     (`build-nav.js`, `LLOC`), en el mateix ordre i amb el mateix destí; les
-     eines del SOS una per una viuen a dins del SOS. Substitueix «Tres camins»,
-     que repetia el menú amb el catàleg, qui som i el SOS. -->
 <section class="serveis" id="serveis">
     <div class="container">
         <div class="section-header fade-up">
@@ -1520,16 +1509,6 @@
 <section class="enfoc" id="enfoc">
     <div class="container">
 
-        <!-- LES DUES BANDES ────────────────────────────────────────────────
-             El hero obre tres portes i el catàleg filtra per sector; el repte
-             es continuava explicant només per a una. Qui ve del costat privat
-             llegia «voluntariat» i «hort comunitari» i concloïa que això no
-             anava amb ell — just després que el hero li hagués dit que sí.
-
-             Les tres columnes són el mateix patró amb tres vocabularis, i van
-             de costat a posta: llegides alhora es veu que és el mateix
-             problema, que és el que fa creïble que el mètode sigui un de sol.
-             Cada banda acaba a la seva porta del catàleg. -->
         <!-- El repte sencer —les veus, el que es veu i el que no— ha marxat a
              `/SOS/`, que és on viu l'eina que el resol: qui ha arribat fins
              aquí ja sap que té un problema, i el que li falta és veure que el
@@ -1540,12 +1519,6 @@
         </div>
         <div class="bandes fade-up">
             <p class="bandes-lead" data-i18n-html="enfoc.b.lead">Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l'organització estigui millor psicosocialment i econòmicament. I es mesura d'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.</p>
-            <!-- Tres columnes i no dues. La del mig és la que no existia: el
-                 contingut de l'antiga «sector públic i comunitari» —voluntàries,
-                 confiança veïnal, actes— era, llegit de prop, el d'una entitat
-                 i no el d'un ajuntament. Es queda al tercer sector, que és d'on
-                 parlava, i l'administració estrena el text que li toca: el
-                 mandat, la memòria del servei i el plec. -->
             <div class="bandes-grid">
                 <div class="banda" data-sec="admin">
                     <div class="banda-k" data-i18n="enfoc.b.adm.k">A l'administració pública</div>
@@ -1665,12 +1638,6 @@
         </div>
         <p class="dv-peu fade-up" data-i18n-html="dv.peu">I el que fa que això sigui consultoria sistèmica i no un dibuix: <b>el valor de fer el mapa és que el grup s’alinea dient en veu alta quina és la seva organització real</b>, i l’entén com un sistema i no com la suma del que fa cadascú.</p>
 
-        <!-- COM ES CONSTRUEIX ───────────────────────────────────────────────
-             Els cinc estats no són una metodologia nova: són el que ja passa
-             en una sessió, posat en ordre i amb una regla de moviment. La
-             regla és la que importa, i és la que es ven: **avança sol**. Qui
-             no diu res deixa que el sistema es construeixi; qui diu alguna
-             cosa el fa una mica més seu. -->
         <div class="dv-flux fade-up">
             <div class="dv-fk" data-i18n="dv.fk">I com es construeix: cinc estats i una regla</div>
             <ol class="dv-fl">
@@ -1726,10 +1693,6 @@
 
 
 <!-- COM FUNCIONA -->
-<!-- L'estructura de pàgina de venda de la guia d'estil demana un «com» de 3-4
-     passos, i era l'únic bloc que hi faltava. Sense ell, qui ha de defensar la
-     despesa davant d'una junta no sap ni quant dura, ni què li tocarà fer, ni
-     com s'acaba. Cada pas diu les tres coses. -->
 <section class="passos" id="com">
     <div class="container">
         <div class="section-header fade-up">
@@ -1766,10 +1729,6 @@
     </div>
 </section>
 
-<!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
-     i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
-     convençut a mig camí no té on clicar. La mateixa acció principal, ni més
-     ni diferent: una acció per pantalla. -->
 <div class="cta-band fade-up">
     <div class="container cta-band-inner">
         <p data-i18n="band.t">Ja saps com va. La pregunta és com és la teva xarxa: en cinc minuts en tens el primer dibuix, i te l'endús, l'enviïs o no.</p>
@@ -1780,10 +1739,6 @@
 <!-- FENT PINYA EN DETALL -->
 
 
-<!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
-     i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
-     convençut a mig camí no té on clicar. La mateixa acció principal, ni més
-     ni diferent: una acció per pantalla. -->
 <div class="cta-band fade-up">
     <div class="container cta-band-inner">
         <p data-i18n="band2.t">Amb el catàleg a la vista, el següent pas no és trucar: és dibuixar el teu mapa. D'aquí surt quin paquet et toca.</p>
@@ -1795,16 +1750,7 @@
 <!-- CTA FINAL -->
 <section class="cta-final">
     <div class="container">
-        <!-- El titular deia «el teu poble». Parlava a una sola de les dues cases i
-             deixava fora qui arriba des d'una empresa, que és qui compra la
-             meitat del catàleg. La línia comunitària no s'ha perdut: viu al SOS,
-             que és el projecte que la sosté. -->
         <h2 class="fade-up" data-i18n-html="cta.h2">Hi ha feina a la teva organització<br>que <em>s'aguanta amb pinces?</em></h2>
-        <!-- Aquí hi havia una cita entre cometes retolada com «el que un tècnic
-             POT dir»: una frase inventada, admesa com a inventada, al lloc de
-             més conversió de la pàgina. La guia d'estil demana prova amb el seu
-             rang i diu que reconèixer el que no tenim genera més confiança que
-             allargar la llista del que sí. Es canvia per fets comprovables. -->
         <div class="proves fade-up" style="animation-delay:.1s">
             <div class="prova"><div class="prova-n">2009</div><div class="prova-l" data-i18n="cta.pr1">Primer banc de temps de la ciutat de León, engegat i encara explicable pas a pas</div></div>
             <div class="prova"><div class="prova-n">60.000+</div><div class="prova-l" data-i18n="cta.pr2">Persones pel taller Fent Pinya des del 2005</div></div>
