@@ -886,7 +886,8 @@ function peu(pagina) {
     /* «Habla con una persona» (14/11/2026): el correo de todas las páginas del
        lugar pasa por SOS/lib/recorrido.js, que lo lleva a Zoho con marca y
        perfil. El formulario oculto es el que Netlify detecta al desplegar. */
-    + (lloc ? RECORRIDO + '\n' : '')
+    /* Al SOS, només el guió: el camí («paso N de M») i el contacte comú. */
+    + (lloc ? RECORRIDO + '\n' : '<script src="/SOS/lib/recorrido.js" defer></script>\n')
     + P_TANCA;
 }
 const RECORRIDO = '<form name="contacto" data-netlify="true" netlify-honeypot="bot-field" hidden>'

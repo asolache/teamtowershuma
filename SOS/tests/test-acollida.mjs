@@ -110,5 +110,16 @@ console.log('\n6 · El bot propone la respuesta y Álvaro la valida');
   ok(!(await reg.get(RS.DOC))[c.id] && k.cards.find(x => x.id === c.id).col === 'done', '«Ya está enviada»: sale de la lista y la tarjeta pasa a Hecho');
 }
 
+console.log('\n7 · «Tu camino: paso N de M»: cada paso existe');
+{
+  const { existsSync } = await import('node:fs');
+  const rc = readFileSync(new URL('../../SOS/lib/recorrido.js', import.meta.url), 'utf8');
+  const passos = [...rc.matchAll(/\{ a: '([^']+)'/g)].map(m => m[1].split('#')[0]);
+  const arrel = new URL('../../', import.meta.url).pathname;
+  const fitxer = a => [a, a + '.html', a + 'index.html', a + '/index.html'].some(x => existsSync(arrel + x.replace(/^\//, '')));
+  ok(passos.length >= 8 && passos.every(fitxer), `els ${passos.length} passos porten a una pàgina que hi és`);
+  ok(['negocio', 'empresa', 'consultor', 'comunidad', 'cliente'].every(p => rc.includes(p + ': [')), 'i hi ha camí per als cinc perfils');
+}
+
 console.log(`\n${fail ? '❌' : '✅'} ${pass} correctes, ${fail} errors`);
 process.exit(fail ? 1 : 0);

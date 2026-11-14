@@ -164,10 +164,64 @@
     if (contacta({ tema: tema, mailto: /^mailto:/.test(href) ? href : '' })) ev.preventDefault();
   }, true);
 
+  /* «Tu camino: paso N de M» (14/11/2026, auditoría §3). Cada perfil tiene un
+     camino corto que acaba en una persona; en cada página del camino, una
+     línea bajo la barra dice dónde estás, cuál es el siguiente paso y cómo
+     volver a «¿Qué quieres hacer?». `a` es la adreça del pas; sense `a`, el
+     pas és parlar amb l'Àlvar. */
+  var CAMINS = {
+    negocio: [{ a: '/cliente/#alrededor', es: 'Tu mapa', ca: 'El teu mapa' }, { a: '/cliente/#web', es: 'Tu web', ca: 'La teva web' },
+      { a: '/cliente/#enviar', es: 'Envíanoslo: te escribe Álvaro', ca: 'Envia-ho: t\'escriu l\'Àlvar' }],
+    empresa: [{ a: '/cataleg', es: 'Qué se contrata', ca: 'Què es contracta' }, { a: '/SOS/diagnostic-org.html', es: 'El diagnóstico de tu organización', ca: 'El diagnòstic de la teva organització' },
+      { es: 'Habla con Álvaro', ca: 'Parla amb l\'Àlvar' }],
+    consultor: [{ a: '/SOS/formacio.html', es: 'El itinerario', ca: 'L\'itinerari' }, { es: 'Pide tu plaza a Álvaro', ca: 'Demana la teva plaça a l\'Àlvar' }],
+    comunidad: [{ a: '/SOS/diagnostic-territori.html', es: 'El diagnóstico de tu territorio', ca: 'El diagnòstic del teu territori' }, { es: 'Habla con Álvaro', ca: 'Parla amb l\'Àlvar' }],
+    cliente: [{ a: '/cliente/#espacio', es: 'Tu espacio', ca: 'El teu espai' }, { es: 'Habla con Álvaro', ca: 'Parla amb l\'Àlvar' }]
+  };
+  var NOMS = { negocio: ['Tengo un negocio', 'Tinc un negoci'], empresa: ['Llevo una empresa o un equipo', 'Porto una empresa o un equip'],
+    consultor: ['Soy consultor o formador', 'Sóc consultor o formador'], comunidad: ['Mi comunidad o entidad', 'La meva comunitat o entitat'], cliente: ['Ya trabajo con vosotros', 'Ja treballo amb vosaltres'] };
+  function sensBarra(p) { return p.replace(/\.html$/, '').replace(/\/index$/, '/').replace(/\/+$/, '/') || '/'; }
+  function pasActual(c) {
+    var aqui = sensBarra(location.pathname), h = location.hash.split('/')[0], cand = [];
+    c.forEach(function (p, i) { if (p.a && sensBarra(p.a.split('#')[0]) === aqui) cand.push(i); });
+    if (!cand.length) return -1;
+    var amb = cand.filter(function (i) { return '#' + (c[i].a.split('#')[1] || '') === h; });
+    return amb.length ? amb[0] : cand[0];
+  }
+  function pintaCami() {
+    var c = CAMINS[estat.perfil];
+    var vell = document.getElementById('tt-cami'); if (vell) vell.remove();
+    if (!c) return;
+    var i = pasActual(c); if (i < 0) return;
+    var L = ll(), k = L === 'ca' ? 1 : 0, s = c[i + 1];
+    if (!document.getElementById('tt-cami-css')) {
+      var st = document.createElement('style'); st.id = 'tt-cami-css';
+      st.textContent = '.tt-cami{display:flex;flex-wrap:wrap;gap:.4rem 1rem;align-items:center;justify-content:center;padding:.5rem 16px;border-bottom:1px solid var(--border);background:var(--card,var(--bg));color:var(--text);font-size:15px}'
+        + '.tt-cami a{color:inherit;min-height:44px;display:inline-flex;align-items:center}.tt-cami b{font-weight:600}';
+      document.head.appendChild(st);
+    }
+    var d = document.createElement('div'); d.id = 'tt-cami'; d.className = 'tt-cami'; d.setAttribute('role', 'navigation');
+    d.setAttribute('aria-label', L === 'ca' ? 'El teu camí' : 'Tu camino');
+    var txt = (L === 'ca' ? 'El teu camí' : 'Tu camino') + ' · ' + NOMS[estat.perfil][k] + ' · ' + (L === 'ca' ? 'pas ' : 'paso ') + (i + 1) + (L === 'ca' ? ' de ' : ' de ') + c.length;
+    d.innerHTML = '<span><b>' + esc(txt) + '</b></span>';
+    if (s) {
+      var a = document.createElement('a'); a.href = s.a || '#'; a.textContent = (L === 'ca' ? 'Següent: ' : 'Siguiente: ') + s[L] + ' →';
+      if (!s.a) a.addEventListener('click', function (ev) { ev.preventDefault(); contacta({ tema: s[L] }); });
+      d.appendChild(a);
+    }
+    var t2 = document.createElement('a'); t2.href = '/' + (L === 'ca' ? '' : '?lang=es'); t2.textContent = L === 'ca' ? '← Canvia de camí' : '← Cambiar de camino';
+    d.appendChild(t2);
+    var nav = document.querySelector('nav.tt-nav');
+    if (nav && nav.parentNode) nav.parentNode.insertBefore(d, nav.nextSibling); else document.body.insertBefore(d, document.body.firstChild);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintaCami); else pintaCami();
+  window.addEventListener('hashchange', pintaCami);
+
   window.Recorrido = {
     perfil: function () { return estat.perfil || ''; },
     de: function () { return estat.de || ''; },
     contacta: contacta,
-    PERFILS: PERFILS
+    PERFILS: PERFILS,
+    CAMINS: CAMINS
   };
 })();
