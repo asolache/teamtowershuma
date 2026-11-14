@@ -24,6 +24,11 @@
 
    La guia per obtenir-les és a SOS/knowledge/dev/guia-zoho-nivell2.md. */
 
+import { magatzem } from '../lib/magatzem.mjs';
+import K from '../../SOS/lib/kanban.js';
+import * as RS from '../lib/resposta.mjs';
+import { registra } from '../lib/ia-router.mjs';
+
 export const FORMULARIS = {
   'diagnostic-org': 'Diagnòstic d\'organització (web)',
   /* La comanda de la pàgina de preus (SOS/pressupost.html). Encara no hi ha
@@ -37,7 +42,16 @@ export const FORMULARIS = {
   'visita': 'Visita des de la pàgina del lead (web)',
   /* L'espai de client (/cliente/): el primer diagnòstic d'un client web, amb
      les seves respostes, el mapa en JSON i el nivell de web que tria. */
-  'cliente-web': 'Espai de client · primer diagnòstic (web)'
+  'cliente-web': 'Espai de client · primer diagnòstic (web)',
+  /* «Habla con una persona» (14/11/2026): el formulari comú de totes les
+     pàgines del lloc (SOS/lib/recorrido.js), que substitueix els `mailto`
+     solts. Porta el perfil de qui escriu i la marca per on ha entrat. */
+  'contacto': 'Parla amb una persona (web)'
+};
+/* Els perfils del recorregut, en paraules del CRM. */
+const PERFIL = {
+  negocio: 'Té un negoci (pime o autònom)', empresa: 'Porta una empresa o un equip',
+  consultor: 'Consultor o formador', comunidad: 'Comunitat o entitat', cliente: 'Ja és client'
 };
 const RESPOSTA = { si: 'Vol la visita', no: 'Diu que el mapa no és així' };
 
@@ -64,7 +78,14 @@ export function aLead(formName, d, opts = {}) {
     Website: tall(d.web, 255),
     City: tall(d.municipi, 100),
     Description: tall([
+      /* La regla de marca de Zoho: «Marca: X» a la primera línia. */
+      d.marca && 'Marca: ' + tall(d.marca, 40),
       'Origen: ' + origen,
+      d.perfil && 'Perfil: ' + (PERFIL[net(d.perfil)] || tall(d.perfil, 40)),
+      d.de && 'Ve de: ' + tall(d.de, 40),
+      d.pagina && 'Des de: ' + tall(d.pagina, 120),
+      d.tema && 'Tema: ' + tall(d.tema, 120),
+      d.missatge && 'Missatge: ' + net(d.missatge),
       d.resposta && 'Resposta: ' + (RESPOSTA[net(d.resposta)] || tall(d.resposta, 40)),
       d.ref && 'Pàgina del lead: ' + tall(d.ref, 40),
       d.dediqueu && 'A què es dediquen: ' + net(d.dediqueu),
@@ -139,9 +160,46 @@ export async function processa(body, env, fetchFn = globalThis.fetch) {
   return { estat: 'creat', formName, id: fila.details && fila.details.id };
 }
 
+/* «Habla con una persona» deja también una tarjeta en el tablero de Álvaro
+   (14/11/2026, kanban único: el «Lo mío» del panel, `kanban/alvaro` del
+   almacén `fitxes`, el mismo de convidats.mjs). Así nadie se queda sin
+   respuesta aunque Zoho no esté configurado. Pura, para poder probarla. */
+export function targetaContacte(d, ara = new Date()) {
+  const nom = tall(d.nom, 60) || 'alguien', que = tall(d.tema, 80) || tall(d.missatge, 80);
+  const perfil = PERFIL[net(d.perfil)];
+  return { id: 'ct' + ara.getTime().toString(36), text: tall('Contestar a ' + nom + (que ? ': ' + que : ''), 200), col: 'todo',
+    qui: 'equipo', tipus: 'gestion', entregable: 'La respuesta enviada' + (perfil ? ' · ' + perfil : ''),
+    origen: { tipus: 'contacto', id: tall(d.pagina, 80), nom: 'Habla con una persona' },
+    creat: ara.toISOString().slice(0, 10), act: ara.toISOString() };
+}
+export async function apuntaTarjeta(body, reg, ara = new Date()) {
+  if (!reg) return false;
+  let ev; try { ev = JSON.parse(body || '{}'); } catch (e) { return false; }
+  const p = ev.payload || {}, formName = net(p.form_name || (p.data && p.data['form-name']));
+  if (formName !== 'contacto') return false;
+  const c = targetaContacte(p.data || {}, ara);
+  await reg.set('kanban/alvaro', K.fusiona(await reg.get('kanban/alvaro'), { cards: [c] }));
+  return c;
+}
+
+/* I l'esborrany de resposta (lib/resposta.mjs): espera al panell, al costat de
+   la targeta, fins que l'Àlvaro l'envia ell. Sense clau d'IA, la fila hi és
+   igual, amb l'esborrany buit. */
+export async function proposaResposta(body, card, reg, env, fetchFn = globalThis.fetch, comptes = null, ara = new Date()) {
+  if (!reg || !card) return null;
+  const d = ((JSON.parse(body || '{}').payload || {}).data) || {};
+  const r = await RS.esborrany(d, env, fetchFn).catch(() => ({ estat: 'error' }));
+  if (r.usd) await registra(comptes, { projecte: RS.IA.projecte, tasca: RS.IA.tasca, model: (r.ia || {}).model || RS.IA.model, usd: r.usd, usage: (r.ia || {}).usage }, ara).catch(() => {});
+  await reg.set(RS.DOC, RS.afegeix(await reg.get(RS.DOC), card.id, d, r.estat === 'fet' ? r.text : '', ara));
+  return r.estat;
+}
+
 export const handler = async (event) => {
   const r = await processa(event.body, process.env);
+  const fx = magatzem(event, 'fitxes');
+  const t = await apuntaTarjeta(event.body, fx).catch(() => false);
+  if (t) { r.tarjeta = true; r.borrador = await proposaResposta(event.body, t, fx, process.env, undefined, magatzem(event, 'ia-router')).catch(() => 'error'); }
   /* Al registre, mai el lead: només què ha passat. */
-  console.log('[submission-created]', JSON.stringify({ estat: r.estat, formName: r.formName, motiu: r.motiu, id: r.id, camps: r.camps }));
+  console.log('[submission-created]', JSON.stringify({ estat: r.estat, formName: r.formName, motiu: r.motiu, id: r.id, camps: r.camps, tarjeta: !!r.tarjeta, borrador: r.borrador }));
   return { statusCode: 200, body: JSON.stringify({ estat: r.estat }) };
 };

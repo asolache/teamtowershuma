@@ -108,6 +108,9 @@
         .pn-llista { list-style: none; display: grid; gap: 1rem; padding: 0; }
         .pn-conv { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; display: grid; gap: .35rem; }
         .pn-conv h4 { font-size: var(--t2); margin: 0; }
+        .pn-ac { display: grid; gap: .5rem; border-top: 1px dashed var(--border); padding-top: .75rem; margin-top: .5rem; }
+        .pn-ac label { display: grid; gap: .2rem; }
+        .pn-ac textarea, .pn-ac input { font: inherit; font-size: 16px; padding: .5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
         .pn-gast { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
         .pn-gast .barra-e { width: 6rem; height: .5rem; border-radius: 99px; background: #e4e0fb; overflow: hidden; display: inline-block; }
         .pn-gast .barra-e i { display: block; height: 100%; background: var(--indigo); }
@@ -649,6 +652,11 @@
     </ul>
 </nav>
 
+<!-- «Tu espacio» (14/11/2026): el de quien ya trabaja con nosotros; lo pinta SOS/lib/acollida.js con lo que Álvaro deja desde su panel. -->
+<section id="espacio" hidden>
+    <div class="container"><div class="ac-cos"></div></div>
+</section>
+
 <section id="inicio">
     <div class="container">
         <p class="eyebrow">Tu espacio de cliente</p>
@@ -662,7 +670,7 @@
             <ol id="cl-avanc"></ol>
         </div>
         <p class="nota" style="margin-top:1rem"><a href="#alrededor">Empieza por tu mapa</a>. ¿No sabes si te hace falta? <a href="/SOS/diagnostic.html?lang=es">Hazte el diagnóstico de 3 minutos</a>.</p>
-        <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="/acceso">tu espacio</a>.</p>
+        <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="#espacio">tu espacio</a>.</p>
     </div>
 </section>
 
@@ -734,6 +742,11 @@
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
         <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
         <details class="auto caso" id="cl-caso" hidden></details>
+        <div class="tablero" id="tareas" aria-labelledby="t-tareas">
+            <h3 id="t-tareas">Tus tareas: de la lista a lo validado</h3>
+            <p>Todo lo que hay que hacer en tu proyecto, lo tuyo y lo nuestro, en un solo sitio. Cada tarea pasa de «Por hacer» a «Haciendo», a «Hecho» (con la prueba de lo que se ha entregado) y a «Validado». Con el botón ⏱ trabajas 25 minutos seguidos y el tiempo queda apuntado en la tarea. Solo lo validado cuenta como trabajo hecho.</p>
+            <div id="cl-tareas"></div>
+        </div>
         <div class="tablero" id="tablero" aria-labelledby="t-tablero">
             <h3 id="t-tablero">Tu tablero: que lo que se repite vaya solo</h3>
             <p>Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.</p>
@@ -1027,6 +1040,8 @@
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">Qué es</span></a></li><li><a href="/cliente/#alrededor"><span data-i18n="nv.t.carpeta-cliente">Hacer uno</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">Qué contratas</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Precios y contratación</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">Tu web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Servicios conectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS y formación</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formación acción</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Flujos con IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Quiénes somos</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Quiénes somos</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Prensa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
   </div>
 </footer>
+<form name="contacto" data-netlify="true" netlify-honeypot="bot-field" hidden><input name="bot-field"><input name="nom"><input name="mail"><input name="missatge"><input name="tema"><input name="perfil"><input name="de"><input name="marca"><input name="pagina"><input name="llengua"></form>
+<script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
 
 <!-- El formulario que Netlify tiene que ver para darlo de alta. Está oculto:
@@ -1042,6 +1057,9 @@
 <script src="/SOS/lib/models-mapa.js"></script>
 <script src="/SOS/lib/cas-automatitzat.js"></script>
 <script src="/SOS/lib/tauler-client.js"></script>
+<script src="/SOS/lib/pomodoro.js"></script>
+<script src="/SOS/lib/kanban.js"></script>
+<script src="/SOS/lib/acollida.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
 <script src="/SOS/lib/pinya.js"></script>
 <script>
@@ -1106,6 +1124,9 @@
         'Qué web quieres': 'Quina web vols',
         'Que lo que se repite vaya solo': 'Que el que es repeteix vagi sol',
         'Tu tablero: que lo que se repite vaya solo': 'El teu tauler: que el que es repeteix vagi sol',
+        'Tus tareas: de la lista a lo validado': 'Les teves tasques: de la llista a allò validat',
+        'Todo lo que hay que hacer en tu proyecto, lo tuyo y lo nuestro, en un solo sitio. Cada tarea pasa de «Por hacer» a «Haciendo», a «Hecho» (con la prueba de lo que se ha entregado) y a «Validado». Con el botón ⏱ trabajas 25 minutos seguidos y el tiempo queda apuntado en la tarea. Solo lo validado cuenta como trabajo hecho.': 'Tot el que cal fer al teu projecte, el teu i el nostre, en un sol lloc. Cada tasca passa de «Per fer» a «Fent», a «Fet» (amb la prova del que s\'ha entregat) i a «Validat». Amb el botó ⏱ treballes 25 minuts seguits i el temps queda apuntat a la tasca. Només el que està validat compta com a feina feta.',
+        'La máquina': 'La màquina', 'Tú': 'Tu',
         'Tu espacio': 'El teu espai',
         'Tu mapa': 'El teu mapa',
         'Tu web': 'La teva web',
@@ -1830,6 +1851,7 @@
         });
         pintaAuto();
         pintaTauler();
+        pintaTareas();
     }
     /* El tablero (SOS/lib/tauler-client.js): las mismas flechas y la misma regla
        que «Lo que puede ir solo», ahora como tarjetas que el cliente define y
@@ -1841,6 +1863,19 @@
             roles: m.roles, centre: m.roles[0], llengua: LL, onCanvi: function (e) { S.tauler = e; desa(); } });
         var h = location.hash.slice(1), card = h.indexOf('tablero-') === 0 && document.getElementById(h);
         if (card && !c._vist) { c._vist = 1; card.classList.add('tc-on'); card.scrollIntoView({ block: 'center' }); }
+    }
+    /* Las tareas del proyecto (SOS/lib/kanban.js, 13/11/2026): el mismo motor que
+       el panel de Álvaro y el SOS. Lo suyo y lo nuestro en un tablero; viaja con
+       el mapa (S.kanban) y, con cuenta, se guarda con ella y lo vemos los dos. */
+    function personesTareas() {
+        return [{ id: 'cliente', nom: (S.nom || '').trim().split(/\s+/)[0] || t('Tú') }, { id: 'equipo', nom: 'Álvaro' }, { id: 'maquina', nom: t('La máquina') }];
+    }
+    function pintaTareas() {
+        var c = $('#cl-tareas'), K = window.Kanban; if (!c || !K) return;
+        K.pinta(c, { kanban: S.kanban || { cards: [] }, persones: personesTareas(), jo: 'cliente', llengua: LL, prefix: 'tarea-', pomoClau: 'tt.cliente.pomo',
+            tarifa: ((S.tauler || {})._formacio || {}).tarifa, onCanvi: function (k) { S.kanban = k; desa(); } });
+        var h = location.hash.slice(1), card = h.indexOf('tarea-') === 0 && document.getElementById(h);
+        if (card && !c._vist) { c._vist = 1; card.classList.add('kb-on'); card.scrollIntoView({ block: 'center' }); }
     }
     /* Lo que se puede automatizar de su mapa: la regla del tablero de la app
        (fluxAutomatitzable, en models-mapa.js), la misma que da el x % de la
@@ -2549,7 +2584,7 @@
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.Kanban && S.kanban ? '\n' + window.Kanban.resum(S.kanban, 'es', { cliente: S.nom || 'Cliente', equipo: 'Álvaro', maquina: 'La máquina' }) : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -2688,12 +2723,27 @@
                 .then(function (r) { return r.json().catch(function () { return { estat: 'error' }; }); }, function () { return { estat: 'error' }; });
         }
         function buida(x) { return !x.inicial && !(x.alrededor || []).some(function (f) { return f.quien; }); }
-        function puja() { if (I.sessio && !I.sense) fitxa({ fitxa: S }); }
+        /* Al guardar, el servidor junta sus tareas con las que haya puesto Álvaro
+           desde su panel; si ha cambiado algo, se repinta el tablero. */
+        function puja() {
+            if (!I.sessio || I.sense) return;
+            fitxa({ fitxa: S }).then(function (r) {
+                if (!r || r.estat !== 'desada' || !r.kanban || JSON.stringify(r.kanban) === JSON.stringify(window.Kanban ? window.Kanban.neteja(S.kanban) : S.kanban)) return;
+                S.kanban = r.kanban; try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ } pintaTareas();
+            });
+        }
         function sincronitza() {
             PUJA = null;
             if (!I.sessio || I.sense) return;
             fitxa({}).then(function (r) {
                 if (r.estat !== 'fet' && r.estat !== 'cap') return;
+                /* Su espacio, si Álvaro se lo ha dejado preparado: llega por ahí. */
+                if (r.estat === 'fet' && r.fitxa.acollida) {
+                    var nova = JSON.stringify(r.fitxa.acollida) !== JSON.stringify(S.acollida || null);
+                    S.acollida = r.fitxa.acollida; try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
+                    if (nova && !location.hash) location.hash = '#espacio';
+                    pintaAcollida();
+                }
                 if (r.estat === 'fet' && ((buida(S) && !S.mapaId) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
                     Object.assign(S, r.fitxa); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
                     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
@@ -2704,6 +2754,21 @@
                 fitxa({ foto: true }).then(function (f) { if (f.estat === 'foto' && f.lectura.estat === 'fet' && !FOTO) lectura(f.lectura); });
             });
         }
+        /* «Tu espacio» (14/11/2026, SOS/lib/acollida.js): cinco pantallas con lo
+           que nos ha contado, su mapa, lo que le toca y su web. Se ve si hay algo
+           preparado o si se abre #espacio (la puerta «Ya trabajo con vosotros»). */
+        function pintaAcollida() {
+            var s = document.getElementById('espacio'), A = window.AcollidaClient;
+            if (!s || !A) return;
+            var vol = !!A.pantalla();
+            s.hidden = !S.acollida && !vol;
+            if (s.hidden) return;
+            A.pinta(s.querySelector('.ac-cos'), { acollida: S.acollida || null, kanban: S.kanban, llengua: LL,
+                persones: (S.alrededor || []).filter(function (f) { return f.quien; }).length });
+            if (vol) s.scrollIntoView({ block: 'start' });
+        }
+        window.addEventListener('hashchange', function () { if (window.AcollidaClient && window.AcollidaClient.pantalla()) pintaAcollida(); });
+        window.ttAcollida = pintaAcollida;
         function esborra() {
             if (!confirm(t('¿Borramos tu dibujo de tu cuenta? En este navegador se queda.'))) return;
             fitxa({ esborra: true }).then(function (r) {
@@ -3277,7 +3342,7 @@
         return { pinta: pinta };
     })();
 
-    function pintaTot() { if (window.TTWebClient) TTWebClient.pinta(); EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { if (window.ttAcollida) window.ttAcollida(); if (window.TTWebClient) TTWebClient.pinta(); EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 

@@ -70,7 +70,10 @@ console.log(`  · ${noves} peticions al servidor · interactiu en ${ms} ms`);
 /* Amb «còpia primer i refresc a sota» la segona visita serveix de la memòria
    cau i demana el refresc de fons: es tolera el refresc, no una baixada nova
    de tot el que hi ha a la porta. */
-ok(noves <= 3, `la segona visita no torna a baixar l'app (${noves} peticions)`);
+/* 13/11/2026: l'app carrega dues peces compartides (lib/mapa-valor.js i
+   lib/pomodoro.js, la mateixa que fa servir /cliente/); cada una porta el seu
+   refresc de fons. El llindar és «no baixar la porta sencera». */
+ok(noves <= 4, `la segona visita no torna a baixar l'app (${noves} peticions)`);
 
 console.log('\n3 · Sense cobertura, segueix obrint-se');
 await ctx.setOffline(true);
