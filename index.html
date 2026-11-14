@@ -140,8 +140,9 @@
 
         /* HERO */
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
-        .peli-v { min-height:calc(100svh - 4rem); }
-        @media (max-width:860px) { .peli-v { min-height:calc(100svh - 12rem); } }
+        .peli-v { min-height:calc(100vh - 4rem); min-height:calc(100svh - 4rem); }
+        .peli-v:empty { min-height:0; }
+        @media (max-width:860px) { .peli-v { min-height:calc(100vh - 12rem); min-height:calc(100svh - 12rem); } }
         .hero { min-height:calc(100vh - 4rem); display:flex; align-items:center; padding:1rem 0 4rem; }
         @media (max-width:860px) { .hero { padding:1rem 0 2.5rem; min-height:calc(100vh - 6rem); } }
         .hero-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:0 4rem; align-items:center;

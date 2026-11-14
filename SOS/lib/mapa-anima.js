@@ -187,7 +187,7 @@
       if (e === 'muntar' || quiets) { var m = [0.25 * A[0] + 0.5 * Q[0] + 0.25 * B[0], 0.25 * A[1] + 0.5 * Q[1] + 0.25 * B[1]]; dot.setAttribute('cx', m[0]); dot.setAttribute('cy', m[1]); if (e === 'muntar') dot.setAttribute('fill-opacity', '.45'); }
       else {
         var v = VEL[x.qui] || 4, am = el('animateMotion', { dur: v + 's', repeatCount: 'indefinite', begin: (-(i * 0.37) % v).toFixed(2) + 's', rotate: 'auto' });
-        var mp = el('mpath'); mp.setAttribute('href', '#' + pre + i); am.appendChild(mp); dot.appendChild(am);
+        var mp = el('mpath'); mp.setAttribute('href', '#' + pre + i); mp.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + pre + i); am.appendChild(mp); dot.appendChild(am);
       }
       gD.appendChild(dot);
       return { x: x, p: p, dot: dot, mig: [0.25 * A[0] + 0.5 * Q[0] + 0.25 * B[0], 0.25 * A[1] + 0.5 * Q[1] + 0.25 * B[1]] };
@@ -441,7 +441,7 @@
       '.pl-esc{display:flex;flex-direction:column;min-height:inherit;padding:1rem 0 .6rem}' +
       '.pl-k{margin:0;font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center}' +
       '.pl-stage{position:relative;flex:1;display:grid;place-items:center;min-height:0}' +
-      '.pl-svg{grid-area:1/1;max-height:62svh;width:auto;max-width:100%;transition:opacity .6s,transform .8s cubic-bezier(.5,0,.2,1)}' +
+      '.pl-svg{grid-area:1/1;width:min(100%,calc(62vh * 1.3));width:min(100%,calc(62svh * 1.3));height:auto;aspect-ratio:700/540;transition:opacity .6s,transform .8s cubic-bezier(.5,0,.2,1)}' +
       '.pl-svg .ma-n{opacity:0;transform:scale(.4);transform-box:fill-box;transform-origin:center;transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}' +
       '.pl-svg .ma-f,.pl-svg .ma-d{opacity:0;transition:opacity .5s}.pl-svg .ma-b{opacity:0;transition:opacity .4s}' +
       '[data-e] .pl-svg .ma-n{opacity:1;transform:none}' +
@@ -466,7 +466,7 @@
       '.pl-ch button.on{color:var(--text);font-weight:700}.pl-ch i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--green)}' +
       '.pl-pausa:focus-visible,.pl-ch button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}' +
       '.pl-cas{margin:.4rem 0 0;text-align:center;font-size:.75rem;color:var(--muted)}' +
-      '@media (max-width:800px){.pl-svg{max-height:46svh}.pl-ch span{font-size:.68rem}.pl-tl .ma-col{min-height:8rem;padding:.4rem}.pl-tl .ma-card{font-size:.68rem;padding:.35rem .4rem}.pl-tl .ma-card b{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pl-tl .ma-card small{display:none}.pl-tl .ma-card .ma-lv{font-size:.66rem}.pl-cas{font-size:.68rem}.pl-tl .ma-pas{font-size:.68rem}.pl-tl .ma-hon{display:none}.pl-gran b{font-size:2rem}.pl-gran small{display:none}.pl-val{margin-top:.2rem}.pl-fi .btn-primary{display:none}}' +
+      '@media (max-width:800px){.pl-svg{width:min(100%,calc(46vh * 1.3));width:min(100%,calc(46svh * 1.3))}.pl-ch span{font-size:.68rem}.pl-tl .ma-col{min-height:8rem;padding:.4rem}.pl-tl .ma-card{font-size:.68rem;padding:.35rem .4rem}.pl-tl .ma-card b{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pl-tl .ma-card small{display:none}.pl-tl .ma-card .ma-lv{font-size:.66rem}.pl-cas{font-size:.68rem}.pl-tl .ma-pas{font-size:.68rem}.pl-tl .ma-hon{display:none}.pl-gran b{font-size:2rem}.pl-gran small{display:none}.pl-val{margin-top:.2rem}.pl-fi .btn-primary{display:none}}' +
       '@media (max-width:560px){.pl-ch li.on{flex:3.5}.pl-ch li:not(.on) span{display:none}.pl-ch button{text-align:center;white-space:nowrap;text-overflow:ellipsis}.pl-ch li.on button{text-align:left}}';
     document.head.appendChild(s);
   }
@@ -475,7 +475,9 @@
     var C = g.CasAutomatitzat; if (!C) return;
     var tots = [].slice.call(document.querySelectorAll('[data-anima]'));
     var FS = { tauler: tauler, pelicula: pelicula };
-    var pinta = function (n) { clearInterval(n._ma); (FS[n.getAttribute('data-anima')] || mapa)(n, C); n._fet = 1; };
+    /* Si una peça falla (un navegador vell), es buida: la pel·lícula buida es plega
+       i el que hi ha a sota queda a la vista. */
+    var pinta = function (n) { clearInterval(n._ma); clearInterval(n._pl); try { (FS[n.getAttribute('data-anima')] || mapa)(n, C); } catch (e) { n.textContent = ''; } n._fet = 1; };
     var io = 'IntersectionObserver' in g ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting && !e.target._fet) pinta(e.target); });
     }, { rootMargin: '200px' }) : null;
