@@ -163,7 +163,7 @@ aquesta llista i res més.
 
 - `SOS` · obra · L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes
 - `SOS/knowledge` · saber · El que sabem: llei, referents, visió, negoci i aquest mapa
-- `SOS/knowledge/matriu` · saber · El model de la MATRIU: com funciona i com es millora
+- `SOS/knowledge/matriu` · saber · El model de la MATRIU: com funciona, com es millora i el seu currículum (dominis, competències, skill-seeds i SOPs)
 - `SOS/knowledge/references` · saber · Els referents conceptuals, citats i no copiats
 - `SOS/knowledge/vision` · saber · Decisions d'arquitectura vives i auditories fetes
 - `SOS/knowledge/dev` · saber · El backlog i la guia d'estil per a qui hi escriu

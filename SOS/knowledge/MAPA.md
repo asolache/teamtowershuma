@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 479 · 24451 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 574 · 24842 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 173 KB |
@@ -46,13 +46,13 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 133 · 3645 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 228 · 4036 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 77 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 12 · 1334 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/legal/` | Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js) | 3 · 17 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
-| `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona i com es millora | 2 · 23 KB |
+| `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona, com es millora i el seu currículum (dominis, competències, skill-seeds i SOPs) | 97 · 414 KB |
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 3 · 32 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 15 · 143 KB |
