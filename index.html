@@ -140,6 +140,8 @@
 
         /* HERO */
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
+        .peli-v { min-height:calc(100svh - 4rem); }
+        @media (max-width:860px) { .peli-v { min-height:calc(100svh - 12rem); } }
         .hero { min-height:calc(100vh - 4rem); display:flex; align-items:center; padding:1rem 0 4rem; }
         @media (max-width:860px) { .hero { padding:1rem 0 2.5rem; min-height:calc(100vh - 6rem); } }
         .hero-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:0 4rem; align-items:center;
@@ -984,8 +986,12 @@
 <!--/TT-NAV-->
 <main>
 
+<!-- LA PEL·LÍCULA (14/11/2026): el primer que es veu no és text, és el flux
+     de valor en cinc escenes. Ho pinta SOS/lib/mapa-anima.js amb el cas real. -->
+<section class="peli" id="pelicula"><div class="container"><div class="peli-v" data-anima="pelicula" data-cta="/cliente/#alrededor" data-q="#inici"></div></div></section>
+
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="inici">
     <div class="container">
         <div class="hero-grid">
             <div class="hero-cap">
