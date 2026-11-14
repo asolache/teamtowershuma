@@ -398,20 +398,26 @@ const filtres = new Set([...CAT.src.matchAll(/class="pk-f[^"]*"\s+data-sec="([^"
    sector sense cap. El que ha de ser cert és que **cada sector del filtre
    tingui porta al hero i porta al repte**, que són els dos llocs on algú
    decideix si això va amb ell. */
-const heroP = new Set([...bloc('<div class="hero-eyebrow hero-portes', '</div>')
-  .matchAll(/data-sec="([^"]+)"/g)].map(m => m[1]));
+/* ⚠ **Des del 14/11/2026 el hero pregunta «Què vols fer?»** (decisió de
+   l'Àlvaro): cinc respostes per perfil en lloc de les tres portes de sector.
+   Els sectors segueixen tenint porta a «El repte» i filtre al catàleg; al hero
+   el que ha de ser cert és que hi hagi les cinc respostes i que cada una porti
+   a algun lloc del camí. */
+const PERFILS_HERO = ['negocio', 'empresa', 'consultor', 'comunidad', 'cliente'];
+const heroBloc = bloc('<nav class="hero-eyebrow hero-portes hero-perfils', '</nav>');
+const heroPerfils = [...heroBloc.matchAll(/<a href="([^"]+)" data-perfil="([^"]+)"/g)].map(m => [m[2], m[1]]);
 const repteP = new Set([...bloc('<div class="bandes-grid">', '</section>')
   .matchAll(/data-sec="([^"]+)"/g)].map(m => m[1]));
-const senseHero = [...filtres].filter(x => x !== 'tot' && !heroP.has(x));
 const senseRepte = [...filtres].filter(x => x !== 'tot' && !repteP.has(x));
+const perfilsFalten = PERFILS_HERO.filter(x => !heroPerfils.some(([p]) => p === x));
 const portesOrfes = [...new Set(portes)].filter(x => !filtres.has(x));
 if (portesOrfes.length) bad(`hi ha portes que demanen un sector que el filtre no té: ${portesOrfes.join(', ')}`);
-else if (senseHero.length) bad(`${pl(senseHero.length, 'sector sense porta al hero', 'sectors sense porta al hero')}: `
-  + `${senseHero.join(', ')} — qui ve d'aquella casa no es troba a la primera pantalla`);
+else if (perfilsFalten.length) bad(`al hero falten respostes de «Què vols fer?»: ${perfilsFalten.join(', ')}`);
+else if (heroPerfils.some(([, h]) => !/^\/[^\s]*$/.test(h))) bad('una resposta del hero no porta a cap pàgina del lloc');
 else if (senseRepte.length) bad(`${pl(senseRepte.length, 'sector sense banda al repte', 'sectors sense banda al repte')}: `
   + `${senseRepte.join(', ')} — el repte diu a qui li passa això, i aquell sector no hi surt`);
-else ok(`els ${[...filtres].filter(x => x !== 'tot').length} sectors tenen porta al hero, `
-  + 'banda al repte i filtre al catàleg');
+else ok(`el hero pregunta «Què vols fer?» amb ${heroPerfils.length} respostes, i els `
+  + `${[...filtres].filter(x => x !== 'tot').length} sectors tenen banda al repte i filtre al catàleg`);
 if (/document\.querySelectorAll\('a\[data-sec\]'\)/.test(src))
   ok('i el filtre les escolta totes, no les d\'un contenidor concret');
 else bad('el filtre s\'enganxa a les portes d\'un contenidor concret: una porta nova en un altre '

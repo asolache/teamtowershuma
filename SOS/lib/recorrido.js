@@ -143,6 +143,14 @@
     return true;
   }
 
+  /* Las respuestas de «¿Qué quieres hacer?» (`a[data-perfil]`, en la portada):
+     se recuerda la elegida, también cuando el camino sigue en otra página. */
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest && ev.target.closest('a[data-perfil]');
+    if (!a || PERFILS.indexOf(a.dataset.perfil) < 0) return;
+    estat.perfil = a.dataset.perfil; desa(estat);
+  }, true);
+
   /* Los enlaces de correo de siempre. Fase de captura: va antes que los
      scripts de cada página, que solo ponen el `href`. */
   document.addEventListener('click', function (ev) {
