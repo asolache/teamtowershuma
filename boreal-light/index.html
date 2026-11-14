@@ -111,6 +111,11 @@ nav.saltos a:hover{color:var(--agua)}
 ul.prensa{list-style:none;padding:0;margin:1rem 0 0;display:grid;gap:.5rem}
 ul.prensa li{background:var(--panel);border:1px solid var(--lin);border-radius:.5rem;padding:.6rem .9rem;font-size:.97rem}
 ul.prensa span{color:var(--mut);font-size:.88rem}
+/* Las variables que usa la animación del mapa (SOS/lib/mapa-anima.js), con los colores de esta página. */
+:root{--green:#1f8a5b;--orange:#d9822b;--blue:var(--agua);--indigo:#4b4fc4;--muted:var(--mut);--light:var(--mut);--card:var(--panel);--border:var(--lin);--border-strong:#9fb3b8;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+.anima-mapa{margin-top:1.6rem;background:var(--panel);border:1px solid var(--lin);border-radius:.8rem;padding:1.2rem}
+.yo{background:var(--panel);border:1px solid var(--lin);border-left:4px solid var(--agua);border-radius:.6rem;padding:1.2rem 1.4rem;max-width:46rem}
+.yo p{margin:.4rem 0}
 @media (max-width:540px){body{font-size:16px}.hero{padding:3rem 0}section{padding:2.5rem 0}}
 </style>
 </head>
@@ -131,7 +136,7 @@ ul.prensa span{color:var(--mut);font-size:.88rem}
   </div>
 </div>
 
-<nav class="saltos" aria-label="Secciones"><div class="wrap"><a href="#boreal">Boreal Light</a><a href="#servicios">Servicios</a><a href="#en-marcha">En marcha</a><a href="#nosotros">Quiénes somos</a><a href="#ecosistema">Ecosistema</a><a href="#flujo">Flujo de valor</a><a href="#sociedad">La sociedad</a><a href="#conversacion">Hablemos</a></div></nav>
+<nav class="saltos" aria-label="Secciones"><div class="wrap"><a href="#boreal">Boreal Light</a><a href="#servicios">Servicios</a><a href="#en-marcha">En marcha</a><a href="#nosotros">Quiénes somos</a><a href="#ecosistema">Ecosistema</a><a href="#flujo">Flujo de valor</a><a href="#sociedad">La sociedad</a><a href="#propuesta-alvaro">Mi propuesta</a><a href="#conversacion">Hablemos</a></div></nav>
 
 <main class="wrap">
 
@@ -225,6 +230,9 @@ ul.prensa span{color:var(--mut);font-size:.88rem}
 <section id="flujo">
   <h2>El flujo de valor</h2>
   <p class="lead">Lo dibujamos con el método de Verna Allee (Value Network Analysis): quién da qué a quién. Lo tangible, que se puede contratar. Y lo intangible, el saber y la confianza, que no se factura pero sostiene la red. Ponemos el foco en lo que llega a Boreal Light.</p>
+  <h3 class="sub">Así circularía el valor</h3>
+  <p class="fuente">Pasa el ratón o el dedo por cada rol para ver lo que da y lo que recibe.</p>
+  <div class="anima-mapa" data-anima="mapa" data-cas="CasBoreal" data-prioritats="no"></div>
   <h3 class="sub">Lo que aportamos a Boreal Light</h3>
   <table class="tabla"><thead><tr><th>Tipo</th><th>Qué</th><th>Cómo llega</th></tr></thead><tbody><tr><td><span class="tipo t">T</span></td><td>Pedidos con la ficha del sitio y la analítica del agua completas</td><td>Directo, antes de cada oferta técnica</td></tr><tr><td><span class="tipo t">T</span></td><td>Web y materiales en castellano y catalán</td><td>Directo, con la marca como la queráis presentar</td></tr><tr><td><span class="tipo t">T</span></td><td>Obra y mantenimiento local, con un socio instalador cerca del sitio</td><td>A través del cliente</td></tr><tr><td><span class="tipo t">T</span></td><td>Proyectos maduros, listos para presentar a quien financia</td><td>A través del cliente</td></tr><tr><td><span class="tipo i">I</span></td><td>Lo que pide el mercado español y mediterráneo, y cómo se vende aquí</td><td>Directo</td></tr><tr><td><span class="tipo i">I</span></td><td>Saber qué zonas y qué normas del agua piden solución</td><td>De quien autoriza y controla el agua</td></tr><tr><td><span class="tipo i">I</span></td><td>Datos de cómo trabaja la planta en un clima nuevo</td><td>A través del cliente y la monitorización</td></tr><tr><td><span class="tipo i">I</span></td><td>La historia del agua recuperada: casos, visibilidad y reputación</td><td>De la gente que bebe y riega, y de quien recomienda</td></tr><tr><td><span class="tipo i">I</span></td><td>Técnicos y comunidades formados en la escuela del agua</td><td>Directo, y en cada sitio</td></tr></tbody></table>
   <h3 class="sub">Lo que esperamos de Boreal Light</h3>
@@ -261,6 +269,17 @@ ul.prensa span{color:var(--mut);font-size:.88rem}
   <p class="aviso" style="margin-top:1.4rem">La forma de la sociedad y las condiciones se hablan en persona. Aquí no hay cifras.</p>
 </section>
 
+<section id="propuesta-alvaro">
+  <h2>Mi propuesta, si os parece interesante</h2>
+  <p class="lead">Creo que podemos ser buenos partners para activar un modelo de colaboración que aporte valor a todos.</p>
+  <div class="yo">
+    <p>Me interesa de verdad vuestro producto y vuestro trabajo. Y quiero seguir aprendiendo y preparándome para estar a la altura.</p>
+    <p>Si os parece interesante, propongo empezar por tres cosas:</p>
+    <ol class="linea"><li><h3>Definir juntos vuestros intereses</h3><p>Qué buscáis en España y qué esperáis de un socio aquí.</p></li><li><h3>Evaluar mi inversión de tiempo</h3><p>Cuánto tiempo puedo dedicar al desarrollo del negocio, y en qué.</p></li><li><h3>Definir el equipo</h3><p>El que vosotros consideréis necesario incorporar o tener disponible para conseguir los objetivos.</p></li></ol>
+    <p><b>Álvaro Solache, TeamTowers Humà</b></p>
+  </div>
+</section>
+
 <section id="conversacion">
   <h2>Para la primera conversación</h2>
   <p class="lead">Lo que nos gustaría preguntaros.</p>
@@ -282,5 +301,9 @@ ul.prensa span{color:var(--mut);font-size:.88rem}
   </div>
 </footer>
 
+<script src="cas-boreal.js" defer></script>
+<script src="/SOS/lib/mapa-valor.js" defer></script>
+<script src="/SOS/lib/mapa-etiquetes.js" defer></script>
+<script src="/SOS/lib/mapa-anima.js" defer></script>
 </body>
 </html>

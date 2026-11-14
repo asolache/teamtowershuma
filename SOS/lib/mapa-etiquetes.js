@@ -19,7 +19,7 @@
   'use strict';
   var NS = 'http://www.w3.org/2000/svg';
   var MAX = 22;
-  var MENA = { ca: { t: 'tangible', i: 'intangible' }, es: { t: 'tangible', i: 'intangible' } };
+  var MENA = { ca: { t: 'tangible', i: 'intangible' }, es: { t: 'tangible', i: 'intangible' }, en: { t: 'tangible', i: 'intangible' } };
   var ART = /^(?:(?:els seus|les seves|el seu|la seva|els|les|el|la|los|las|lo|uns|unes|unos|unas|un|una|sus|su)\s+|l')/i;
   var BUIDA = /\s+(de|del|d'\S*|la|el|les|els|los|las|a|i|y|amb|con|cada|qui|quien|què|qué|per|pel|para|por|que)$/i;
   var LLIGA = /\s(amb|con|i|y|des de|desde|per a|para|en|al|que|on|donde|sense|sin|perquè|porque|a)\s/i;
@@ -41,7 +41,7 @@
     }
     return t.charAt(0).toUpperCase() + t.slice(1);
   }
-  function ll() { return document.documentElement.lang === 'es' ? 'es' : 'ca'; }
+  function ll() { var l = document.documentElement.lang; return MENA[l] ? l : 'ca'; }
   function el(tag, at, txt) {
     var e = document.createElementNS(NS, tag);
     for (var k in at || {}) e.setAttribute(k, at[k]);
