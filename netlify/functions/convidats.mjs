@@ -10,6 +10,12 @@
                                         l'afegeix o el canvia (`nou`: enllaç nou,
                                         el d'abans deixa d'obrir).
    · `DELETE …/convidats?mail=…`      el treu; el seu enllaç ja no obre res.
+   · `PUT    …/convidats` {kanban, mail?}  les tasques (SOS/lib/kanban.js): amb
+                                        `mail`, les del projecte d'aquell client,
+                                        fusionades amb les que té (13/11/2026);
+                                        sense, les de l'Àlvaro mateix.
+   El GET porta també les tasques de cada client i les seves (`meu`): és el
+   seu backlog de tot, el que veu al panell.
 
    El que es guarda és el que ell escriu (lib/convidats.mjs). El que es llegeix
    de cada espai és un resum: mai el text del dibuix. */
@@ -19,6 +25,9 @@ import { secret, empremta } from '../lib/signatura.mjs';
 import { MAGATZEM, llista, desa, neteja, enllac, clauDe } from '../lib/convidats.mjs';
 import { config } from './pule-mapa.mjs';
 import { clau as clauFitxa } from './fitxa.mjs';
+import K from '../../SOS/lib/kanban.js';
+
+const MEU = 'kanban/alvaro';
 
 const net = v => (v == null ? '' : String(v)).trim();
 const json = (statusCode, o) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(o) });
@@ -45,11 +54,11 @@ export async function estat(env, regs, ara = new Date()) {
   const tots = await llista(regs.convidats), base = net(env.URL);
   const convidats = await Promise.all(Object.values(tots).sort((a, b) => (b.creat || '').localeCompare(a.creat || '')).map(async x => {
     const id = 'mail:' + empremta(x.mail), p = regs.ia ? await regs.ia.get('persona/' + empremta(id)) : null, f = regs.fitxes ? await regs.fitxes.get(clauFitxa(id)) : null;
-    return Object.assign({}, x, { enllac: enllac(x, secret(env), base), gastat: usd(p && p.gastat), voltes: (p && p.voltes) || 0, ultim: (p && p.ultim) || '', espai: resum(f) });
+    return Object.assign({}, x, { enllac: enllac(x, secret(env), base), gastat: usd(p && p.gastat), voltes: (p && p.voltes) || 0, ultim: (p && p.ultim) || '', espai: resum(f), kanban: f && f.kanban ? K.neteja(f.kanban) : null });
   }));
   return { ia: { actiu: !!(c.ok && regs.ia), motiu: c.ok ? (regs.ia ? '' : 'sense Netlify Blobs') : c.motiu, tope: c.ok ? c.tope : null, topeDia: c.ok ? c.topeDia : null },
     dia: { usd: usd(dia && dia.gastat) }, mes: { usd: usd(mes && mes.gastat), persones: mes && mes.persones ? Object.keys(mes.persones).length : 0 },
-    convidats, variable: c.ok ? c.invitats : [] };
+    convidats, variable: c.ok ? c.invitats : [], meu: K.neteja(regs.fitxes ? await regs.fitxes.get(MEU) : null) };
 }
 
 export async function gestiona(metode, q, autoritzacio, cos, env, regs, ara = new Date()) {
@@ -57,6 +66,17 @@ export async function gestiona(metode, q, autoritzacio, cos, env, regs, ara = ne
   if (!secret(env)) return { estat: 'error', motiu: 'falta IDENTITAT_SECRET o ANTHROPIC_API_KEY' };
   if (metode === 'GET') return Object.assign({ estat: 'fet' }, await estat(env, regs, ara));
   const tots = await llista(regs.convidats);
+  if (metode === 'PUT' && cos && cos.kanban !== undefined) {
+    if (!regs.fitxes) return { estat: 'error', motiu: 'sense Netlify Blobs' };
+    if (!net(cos.mail)) { const k = K.fusiona(await regs.fitxes.get(MEU), cos.kanban); await regs.fitxes.set(MEU, k); return { estat: 'fet', kanban: k }; }
+    const x = tots[clauDe(cos.mail)];
+    if (!x) return { estat: 'error', motiu: 'No es un invitado.' };
+    const kf = clauFitxa('mail:' + empremta(x.mail)), f = (await regs.fitxes.get(kf)) || null;
+    if (!f) return { estat: 'error', motiu: 'Su espacio aún no está guardado con su cuenta.' };
+    f.kanban = K.fusiona(f.kanban, cos.kanban); f.actualitzada = ara.toISOString();
+    await regs.fitxes.set(kf, f);
+    return { estat: 'fet', kanban: f.kanban };
+  }
   if (metode === 'PUT') {
     const k = clauDe(cos && cos.mail), c = neteja(cos, tots[k], ara);
     if (!c) return { estat: 'error', motiu: 'Falta un correo válido.' };
