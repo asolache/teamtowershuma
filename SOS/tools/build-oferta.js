@@ -541,6 +541,27 @@ const PAQUETS = [
     diners: 'Pressupost de formació, d\'esdeveniment o de festes',
     dinersEs: 'Presupuesto de formación, de evento o de fiestas' },
 
+  /* Mini Towers (14/11/2026, l'Àlvar): el mateix taller amb un pis menys i un
+     equip més petit, per a grups de lleure i cultura que passen per un espai
+     —un celler, una masia, un hotel— més que per a equips d'empresa. Tampoc
+     publica preu aquí: el preu per trams viu a la fitxa i a les tarifes. */
+  { id: 'mini-towers', sector: ['tercer', 'empresa'], fam: 'dinamitzacio', ve: 'README', punt: 'adaptacio',
+    mida: true, font: 'mapa', publica: true, enllac: '',
+    nom: 'Taller de castells «Fent Pinya Mini Towers»',
+    nomEs: 'Taller de castells «Fent Pinya Mini Towers»',
+    qui: 'Grups de lleure i cultura als espais: associacions, colles d\'amics, famílies, jubilats i turistes · de 10 a 100 persones',
+    quiEs: 'Grupos de ocio y cultura en los espacios: asociaciones, grupos de amigos, familias, jubilados y turistas · de 10 a 100 personas',
+    dura: '1 h 30 min',
+    duraEs: '1 h 30 min',
+    endus: 'El mateix taller amb un castell de tres pisos, un menys que el Fent Pinya: un dinamitzador i tres monitors castellers (quatre a partir de 61 persones), faixes per a tothom, assegurança de responsabilitat civil i material. Música en directe amb gralla i tabal, opcional. En català, castellà, anglès, francès o alemany.',
+    endusEs: 'El mismo taller con un castell de tres pisos, uno menos que el Fent Pinya: un dinamizador y tres monitores castellers (cuatro a partir de 61 personas), fajas para todos, seguro de responsabilidad civil y material. Música en directo con gralla y tabal, opcional. En catalán, castellano, inglés, francés o alemán.',
+    valor: 'Una hora i mitja on el grup es fa colla i aixeca el seu castell, amb jocs, rialles i històries de castells. No cal experiència: cadascú tria el seu lloc a la pinya i només puja qui vol. Encaixa abans o després d\'una visita, un tast o un dinar.',
+    valorEs: 'Hora y media en la que el grupo se hace colla y levanta su castell, con juegos, risas e historias de castells. No hace falta experiencia: cada uno elige su sitio en la piña y solo sube quien quiere. Encaja antes o después de una visita, una cata o una comida.',
+    perque: 'Puja amb el nombre de persones, per trams de 10 a 30, de 31 a 60 i de 61 a 100, i amb la música en directe si es vol. N\'hi ha prou amb una zona oberta d\'uns 10×10 m i 5 m d\'alçada i un espai cobert per si plou.',
+    perqueEs: 'Sube con el número de personas, por tramos de 10 a 30, de 31 a 60 y de 61 a 100, y con la música en directo si se quiere. Basta con una zona abierta de unos 10×10 m y 5 m de altura y un espacio cubierto por si llueve.',
+    diners: 'Pressupost de la sortida, de la visita o de festes',
+    dinersEs: 'Presupuesto de la salida, de la visita o de fiestas' },
+
   { id: 'demos', sector: ['admin', 'empresa'], fam: 'dinamitzacio', ve: 'README', punt: 'provat',
     mida: true, font: 'mapa', publica: true, enllac: '',
     nom: 'Demostració castellera',
