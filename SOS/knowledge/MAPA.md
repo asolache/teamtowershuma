@@ -24,6 +24,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
+| `boreal-light/` | La vista proposta per a Boreal Light GmbH: què aportem a la seva representació a Espanya, l'aigua com a ecosistema i les preguntes per a la primera conversa. Sense preus ni condicions, i fora dels cercadors | 2 · 39 KB |
 | `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 2 · 299 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 84 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 176 KB |
@@ -122,4 +123,4 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 
 ---
 
-*43 carpetes declarades · generat des de l'arbre, no escrit.*
+*44 carpetes declarades · generat des de l'arbre, no escrit.*
