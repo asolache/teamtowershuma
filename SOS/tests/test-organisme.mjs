@@ -184,7 +184,7 @@ console.log('\n5 · Una pinya de N baixos obre 4N rengles');
      que el porta. La prova hi va amb ell. */
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   const p = await ctx.newPage();
-  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.goto('file://' + join(DIR, '..', 'vna.html') + '#construccions'); // va en pantalles: s'obre la seva
   await p.waitForTimeout(400);
   for (const f of FIGURES) {
     await p.click(`.ct-t[data-f="${f.id}"]`);
@@ -216,7 +216,7 @@ console.log('\n6 · La mateixa planta, pintada per una altra cosa');
 {
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   const p = await ctx.newPage();
-  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.goto('file://' + join(DIR, '..', 'vna.html') + '#construccions'); // va en pantalles: s'obre la seva
   await p.waitForTimeout(400);
   for (const v of VARIABLES) {
     await p.click(`.ct-t[data-v="${v.id}"]`);
@@ -254,7 +254,7 @@ console.log('\n7 · Per què un instrument de setze factors cap en un 4');
   ok(!!v && v.fig === q.id, 'i la variable de setze dimensions hi va a sobre, sense forçar res');
   const ctx = await b.newContext({ viewport: { width: 1280, height: 900 } });
   const p = await ctx.newPage();
-  await p.goto('file://' + join(DIR, '..', 'vna.html'));
+  await p.goto('file://' + join(DIR, '..', 'vna.html') + '#construccions'); // va en pantalles: s'obre la seva
   await p.waitForTimeout(400);
   await p.click('.ct-t[data-v="setze"]');
   const r = await p.evaluate(() => ({
