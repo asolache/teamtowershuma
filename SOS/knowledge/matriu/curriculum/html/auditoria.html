@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria del currículum · La Matriu</title>
+<meta name="description" content="Visor del currículum de la Matriu. Dominis, competències, skill-seeds i SOPs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg-dark: #050507;
+    --bg-panel: #0a0a0f;
+    --bg-elevated: #111118;
+    --accent-indigo: #6366f1;
+    --accent-blue: #00b0ff;
+    --accent-purple: #e040fb;
+    --accent-green: #00e676;
+    --accent-orange: #ff9100;
+    --glass-border: rgba(255,255,255,0.07);
+    --text-primary: rgba(255,255,255,0.92);
+    --text-muted: rgba(255,255,255,0.55);
+    --text-faint: rgba(255,255,255,0.32);
+    --font-base: 'Space Grotesk', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-base);
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+        linear-gradient(rgba(99,102,241,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.035) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none; z-index: 0;
+}
+
+/* === Layout === */
+.app {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+}
+
+/* === Sidebar === */
+.sidebar {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--glass-border);
+    padding: 32px 24px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+@media (max-width: 900px) {
+    .sidebar { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--glass-border); }
+}
+
+.sidebar-title {
+    font-family: var(--font-base);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+}
+.sidebar-subtitle {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-indigo);
+    margin-bottom: 24px;
+}
+
+.sidebar-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.stat-pill {
+    background: var(--bg-elevated);
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+.stat-pill strong { color: var(--accent-indigo); font-weight: 500; }
+
+.section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 24px 0 8px;
+}
+
+.entity-list {
+    list-style: none;
+}
+.entity-list li {
+    margin-bottom: 2px;
+}
+.entity-list a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: background 0.15s, color 0.15s;
+    border-left: 2px solid transparent;
+}
+.entity-list a:hover {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+}
+.entity-list a.active {
+    background: var(--bg-elevated);
+    color: var(--accent-indigo);
+    border-left-color: var(--accent-indigo);
+}
+.entity-list .id-code {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+    width: 56px;
+}
+.entity-list .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.status-draft { background: var(--text-faint); }
+.status-review { background: var(--accent-orange); }
+.status-approved-by-cop { background: var(--accent-green); }
+
+/* === Main === */
+.main {
+    padding: 48px clamp(24px, 6vw, 64px);
+    max-width: 920px;
+    overflow-x: hidden;
+}
+
+.entity-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--glass-border);
+}
+.entity-type {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-indigo);
+    margin-bottom: 8px;
+}
+.entity-id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 4px;
+}
+.entity-title {
+    font-family: var(--font-base);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--text-primary);
+}
+
+/* Frontmatter view */
+.frontmatter-view {
+    background: var(--bg-elevated);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+.frontmatter-toggle {
+    cursor: pointer;
+    color: var(--text-muted);
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+    transition: color 0.15s;
+}
+.frontmatter-toggle:hover { color: var(--text-primary); }
+.frontmatter-toggle::before {
+    content: "▸";
+    color: var(--accent-indigo);
+    transition: transform 0.2s;
+    display: inline-block;
+}
+.frontmatter-view.open .frontmatter-toggle::before { transform: rotate(90deg); }
+.frontmatter-content {
+    display: none;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+}
+.frontmatter-view.open .frontmatter-content { display: block; }
+.frontmatter-content pre {
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Markdown rendering */
+.md-content {
+    color: var(--text-primary);
+}
+.md-content h1 {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 500;
+    margin: 56px 0 20px;
+    letter-spacing: -0.02em;
+    color: var(--accent-indigo);
+}
+.md-content h1:first-child { margin-top: 0; }
+.md-content h2 {
+    font-size: clamp(20px, 2.4vw, 26px);
+    font-weight: 500;
+    margin: 48px 0 16px;
+    letter-spacing: -0.015em;
+}
+.md-content h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 32px 0 12px;
+}
+.md-content h4 {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 24px 0 8px;
+}
+.md-content p {
+    font-size: 16px;
+    margin-bottom: 16px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    max-width: 70ch;
+}
+.md-content p strong { color: var(--text-primary); font-weight: 600; }
+.md-content p em { font-style: italic; color: var(--text-muted); }
+.md-content code {
+    background: var(--bg-elevated);
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-blue);
+    border: 1px solid var(--glass-border);
+}
+.md-content pre {
+    background: var(--bg-panel);
+    border: 1px solid var(--glass-border);
+    border-left: 3px solid var(--accent-indigo);
+    border-radius: 4px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+}
+.md-content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-primary);
+}
+.md-content ul, .md-content ol {
+    margin: 16px 0 24px 24px;
+    color: var(--text-primary);
+}
+.md-content li { margin-bottom: 8px; line-height: 1.55; }
+.md-content blockquote {
+    border-left: 3px solid var(--accent-indigo);
+    padding: 12px 20px;
+    margin: 24px 0;
+    background: rgba(99,102,241,0.04);
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: var(--text-muted);
+}
+.md-content blockquote p:last-child { margin-bottom: 0; }
+.md-content table {
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+    width: 100%;
+}
+.md-content th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--accent-indigo);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-indigo);
+    font-weight: 500;
+}
+.md-content td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--glass-border);
+    color: var(--text-primary);
+}
+.md-content hr {
+    border: none;
+    border-top: 1px solid var(--glass-border);
+    margin: 48px 0;
+}
+.md-content a {
+    color: var(--accent-blue);
+    text-decoration: none;
+    border-bottom: 1px dashed currentColor;
+}
+.md-content a:hover { color: var(--accent-indigo); }
+
+/* === Welcome screen === */
+.welcome {
+    padding: 80px 0;
+}
+.welcome h1 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    line-height: 1;
+}
+.welcome h1 em {
+    font-style: normal;
+    font-weight: 500;
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.welcome-lead {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 60ch;
+    margin-bottom: 48px;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+.taxonomy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 56px;
+}
+.taxonomy-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 24px 22px;
+}
+.taxonomy-card .tax-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-indigo);
+    margin-bottom: 12px;
+}
+.taxonomy-card h3 { font-size: 18px; margin-bottom: 8px; font-weight: 500; }
+.taxonomy-card p { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+.taxonomy-card .tax-count {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    color: var(--accent-green);
+    margin-top: 12px;
+    display: block;
+}
+
+.loading {
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 20px;
+}
+.error {
+    color: var(--accent-orange);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 20px;
+    border: 1px solid var(--accent-orange);
+    border-radius: 4px;
+    background: rgba(255,145,0,0.05);
+}
+
+/* Mobile menu toggle */
+@media (max-width: 900px) {
+    .sidebar-collapse {
+        margin-top: 16px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--accent-indigo);
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="sidebar-title">Currículum · La Matriu</div>
+        <div class="sidebar-subtitle">Auditoria v0.1</div>
+
+        <div class="sidebar-stats" id="stats">
+            <span class="stat-pill loading">Carregant...</span>
+        </div>
+
+        <div class="section-label">Schema</div>
+        <ul class="entity-list">
+            <li><a href="#" data-file="_schema.md" data-type="schema">
+                <span class="id-code">schema</span>
+                <span class="status-dot status-draft"></span>
+                <span>Estructura comuna</span>
+            </a></li>
+            <li><a href="#" data-file="_index.md" data-type="index">
+                <span class="id-code">index</span>
+                <span class="status-dot status-draft"></span>
+                <span>Índex mestre</span>
+            </a></li>
+        </ul>
+
+        <div class="section-label">Dominis (10)</div>
+        <ul class="entity-list" id="domains-list">
+            <li class="loading"><span class="stat-pill">Carregant...</span></li>
+        </ul>
+
+        <div class="section-label">Competències</div>
+        <ul class="entity-list" id="competencies-list"></ul>
+
+        <div class="section-label">Skill-seeds</div>
+        <ul class="entity-list" id="skill-seeds-list"></ul>
+
+        <div class="section-label">SOPs</div>
+        <ul class="entity-list" id="sops-list"></ul>
+    </aside>
+
+    <main class="main" id="content">
+        <div class="welcome">
+            <h1>Auditoria del<br><em>currículum.</em></h1>
+            <p class="welcome-lead">
+                Visor de tots els dominis, competències, skill-seeds i SOPs
+                de la Matriu. Tria una entitat de la barra lateral per veure-la.
+            </p>
+
+            <div class="taxonomy-grid" id="taxonomy-grid">
+                <div class="taxonomy-card">
+                    <div class="tax-num">01 · Dominis</div>
+                    <h3>Categories</h3>
+                    <p>Àrees funcionals del currículum. Una per cada mòdul de SOS.</p>
+                    <span class="tax-count" id="count-domains">−</span>
+                </div>
+                <div class="taxonomy-card">
+                    <div class="tax-num">02 · Competències</div>
+                    <h3>Capacitats humanes</h3>
+                    <p>Habilitats desenvolupables verificables. Una mitjana de 3-6 per domini.</p>
+                    <span class="tax-count" id="count-competencies">−</span>
+                </div>
+                <div class="taxonomy-card">
+                    <div class="tax-num">03 · Skill-seeds</div>
+                    <h3>Skills d'IA</h3>
+                    <p>Unitats de coneixement carregables per agents del swarm. Glass-box.</p>
+                    <span class="tax-count" id="count-skill-seeds">−</span>
+                </div>
+                <div class="taxonomy-card">
+                    <div class="tax-num">04 · SOPs</div>
+                    <h3>Procediments</h3>
+                    <p>Standard Operating Procedures validats per CoP, consumibles per humans i agents.</p>
+                    <span class="tax-count" id="count-sops">−</span>
+                </div>
+            </div>
+
+            <div class="md-content">
+                <h2>Per què aquest visor</h2>
+                <p>
+                    L'auditoria és l'eina <strong>glass-box</strong> que fa visible el currículum
+                    de la Matriu — tant per als humans que el practiquen com per als agents IA del
+                    swarm que el consumeixen. Cada fitxa té dues capes:
+                </p>
+                <ul>
+                    <li><strong>Frontmatter YAML</strong> — metadades estructurades que els agents llegeixen</li>
+                    <li><strong>Cos prosòdic</strong> — pedagogia humana que complementa, no duplica</li>
+                </ul>
+                <p>
+                    Tot el currículum viu a <code>SOS/knowledge/matriu/</code> i el carrega el
+                    <code>KnowledgeLoader</code> quan un cursant treballa el seu projecte.
+                </p>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+// =============================================================================
+// Currículum loader & renderer
+// =============================================================================
+
+// Llista de fitxers a carregar (en producció, això es generaria dinàmicament
+// llegint el directori, però com a SPA estàtica usem llista explícita).
+const FILES = {
+    schema: ['_schema.md', '_index.md'],
+    domains: ['d01-vna-mapping.md'],
+    competencies: [
+        'c-01.1-identify-vna-roles.md',
+        'c-01.2-distinguish-tangible-intangible.md',
+        'c-01.3-draw-vna-map.md'
+    ],
+    'skill-seeds': [
+        's-vna-role-extractor.md',
+        's-transaction-classifier.md'
+    ],
+    sops: [
+        'sop-entrevistar-per-rols.md',
+        'sop-validar-mapa-amb-stakeholders.md'
+    ]
+};
+
+const TYPE_PATHS = {
+    schema: '',
+    index: '',
+    domain: 'domains/',
+    competency: 'competencies/',
+    'skill-seed': 'skill-seeds/',
+    sop: 'sops/'
+};
+
+let allEntities = [];
+
+// =============================================================================
+// YAML parser (minimal, només per al nostre schema)
+// =============================================================================
+function parseYAML(text) {
+    const result = {};
+    const lines = text.split('\n');
+    let currentKey = null;
+    let currentList = null;
+    let currentObj = null;
+    let currentObjKey = null;
+    let inMultiline = false;
+    let multilineValue = '';
+    let multilineIndent = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (inMultiline) {
+            const indent = line.search(/\S/);
+            if (indent < 0 || indent >= multilineIndent) {
+                multilineValue += (multilineValue ? ' ' : '') + line.trim();
+                continue;
+            } else {
+                result[currentKey] = multilineValue.trim();
+                inMultiline = false;
+                currentKey = null;
+            }
+        }
+
+        if (!line.trim() || line.trim().startsWith('#')) continue;
+
+        // Top-level key
+        const topMatch = line.match(/^([a-z_][a-z0-9_]*?):\s*(.*)$/i);
+        if (topMatch && !line.startsWith(' ')) {
+            const [, key, val] = topMatch;
+            currentKey = key;
+            currentList = null;
+            currentObj = null;
+            const trimmedVal = val.trim();
+
+            if (trimmedVal === '' || trimmedVal === '>') {
+                if (trimmedVal === '>') {
+                    inMultiline = true;
+                    multilineValue = '';
+                    multilineIndent = 2;
+                    continue;
+                }
+                // Check if next non-empty line is a list item or sub-object
+                let j = i + 1;
+                while (j < lines.length && !lines[j].trim()) j++;
+                if (j < lines.length) {
+                    const nextLine = lines[j];
+                    if (nextLine.trim().startsWith('-')) {
+                        currentList = [];
+                        result[key] = currentList;
+                    } else if (/^\s+\w/.test(nextLine)) {
+                        currentObj = {};
+                        result[key] = currentObj;
+                    } else {
+                        result[key] = '';
+                    }
+                }
+            } else if (trimmedVal.startsWith('[') && trimmedVal.endsWith(']')) {
+                // Inline list
+                const inner = trimmedVal.slice(1, -1).trim();
+                result[key] = inner ? inner.split(',').map(s => s.trim().replace(/^["']|["']$/g, '')) : [];
+            } else if (trimmedVal === 'true' || trimmedVal === 'false') {
+                result[key] = trimmedVal === 'true';
+            } else if (!isNaN(trimmedVal) && trimmedVal !== '') {
+                result[key] = Number(trimmedVal);
+            } else {
+                result[key] = trimmedVal.replace(/^["']|["']$/g, '');
+            }
+            continue;
+        }
+
+        // List item
+        if (line.match(/^\s+-\s+/) && currentList !== null) {
+            const item = line.replace(/^\s+-\s+/, '').trim().replace(/^["']|["']$/g, '');
+            currentList.push(item);
+            continue;
+        }
+
+        // Sub-object key
+        if (line.match(/^\s+[a-z_][a-z0-9_]*:/i) && currentObj !== null) {
+            const subMatch = line.trim().match(/^([a-z_][a-z0-9_]*?):\s*(.*)$/i);
+            if (subMatch) {
+                const [, subKey, subVal] = subMatch;
+                currentObj[subKey] = subVal.trim().replace(/^["']|["']$/g, '');
+            }
+        }
+    }
+
+    if (inMultiline) {
+        result[currentKey] = multilineValue.trim();
+    }
+
+    return result;
+}
+
+// =============================================================================
+// Markdown renderer (minimal)
+// =============================================================================
+function renderMarkdown(md) {
+    let html = md;
+
+    // Code blocks (triple backtick)
+    html = html.replace(/```([\w]*)\n([\s\S]*?)```/g, (m, lang, code) => {
+        const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return `<pre><code>${escaped}</code></pre>`;
+    });
+
+    // Tables
+    html = html.replace(/((?:^\|.+\|\n)+)/gm, (match) => {
+        const lines = match.trim().split('\n');
+        if (lines.length < 2) return match;
+        const headerCells = lines[0].split('|').slice(1, -1).map(c => c.trim());
+        const isSep = /^\|[\s\-:|]+\|$/.test(lines[1]);
+        const startIdx = isSep ? 2 : 1;
+        const rows = lines.slice(startIdx).map(l => l.split('|').slice(1, -1).map(c => c.trim()));
+        let table = '<table><thead><tr>';
+        for (const h of headerCells) table += `<th>${h}</th>`;
+        table += '</tr></thead><tbody>';
+        for (const row of rows) {
+            table += '<tr>';
+            for (const cell of row) table += `<td>${inlineMd(cell)}</td>`;
+            table += '</tr>';
+        }
+        table += '</tbody></table>';
+        return table;
+    });
+
+    // Headers (must be done after tables)
+    html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+    html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+    // Blockquotes
+    html = html.replace(/(?:^>\s?.*\n?)+/gm, (m) => {
+        const content = m.split('\n').map(l => l.replace(/^>\s?/, '')).join('\n').trim();
+        return `<blockquote>${renderMarkdown(content)}</blockquote>`;
+    });
+
+    // Horizontal rule
+    html = html.replace(/^---+$/gm, '<hr>');
+
+    // Lists (un-nested)
+    html = html.replace(/((?:^[\s]*[-*]\s+.+\n?)+)/gm, (match) => {
+        const items = match.trim().split('\n').map(l => l.replace(/^[\s]*[-*]\s+/, ''));
+        return '<ul>' + items.map(i => `<li>${inlineMd(i)}</li>`).join('') + '</ul>';
+    });
+    html = html.replace(/((?:^[\s]*\d+\.\s+.+\n?)+)/gm, (match) => {
+        const items = match.trim().split('\n').map(l => l.replace(/^[\s]*\d+\.\s+/, ''));
+        return '<ol>' + items.map(i => `<li>${inlineMd(i)}</li>`).join('') + '</ol>';
+    });
+
+    // Paragraphs (lines not yet wrapped in tags)
+    html = html.split(/\n\n+/).map(block => {
+        block = block.trim();
+        if (!block) return '';
+        if (block.startsWith('<')) return block;
+        return `<p>${inlineMd(block)}</p>`;
+    }).join('\n');
+
+    return html;
+}
+
+function inlineMd(text) {
+    // Inline code
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Bold
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Italic
+    text = text.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
+    // Links
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    return text;
+}
+
+// =============================================================================
+// Loader
+// =============================================================================
+async function loadFile(category, filename) {
+    const path = category === 'schema' || filename.startsWith('_') ? filename : `${category}/${filename}`;
+    try {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const fmMatch = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+        if (!fmMatch) return null;
+        const yaml = parseYAML(fmMatch[1]);
+        const body = fmMatch[2];
+        return { yaml, body, path, filename };
+    } catch (e) {
+        console.error(`Error loading ${path}:`, e);
+        return null;
+    }
+}
+
+async function loadAll() {
+    const entities = [];
+    for (const [cat, files] of Object.entries(FILES)) {
+        for (const f of files) {
+            const entity = await loadFile(cat === 'schema' ? '' : cat, f);
+            if (entity) {
+                entity.category = cat;
+                entities.push(entity);
+            }
+        }
+    }
+    return entities;
+}
+
+// =============================================================================
+// Renderer
+// =============================================================================
+function renderSidebar(entities) {
+    const byType = {
+        domain: document.getElementById('domains-list'),
+        competency: document.getElementById('competencies-list'),
+        'skill-seed': document.getElementById('skill-seeds-list'),
+        sop: document.getElementById('sops-list')
+    };
+
+    Object.values(byType).forEach(el => el.innerHTML = '');
+
+    for (const e of entities) {
+        const type = e.yaml.type;
+        if (!byType[type]) continue;
+
+        const status = e.yaml.status || 'draft';
+        const idShort = e.yaml.id?.split('-')[0] || '';
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <a href="#${e.yaml.id}" data-id="${e.yaml.id}">
+                <span class="id-code">${idShort}</span>
+                <span class="status-dot status-${status}"></span>
+                <span>${e.yaml.name || e.yaml.id}</span>
+            </a>
+        `;
+        byType[type].appendChild(li);
+    }
+
+    // Stats
+    const stats = document.getElementById('stats');
+    const counts = {
+        domain: entities.filter(e => e.yaml.type === 'domain').length,
+        competency: entities.filter(e => e.yaml.type === 'competency').length,
+        'skill-seed': entities.filter(e => e.yaml.type === 'skill-seed').length,
+        sop: entities.filter(e => e.yaml.type === 'sop').length
+    };
+    stats.innerHTML = `
+        <span class="stat-pill"><strong>${counts.domain}</strong> dominis</span>
+        <span class="stat-pill"><strong>${counts.competency}</strong> compet.</span>
+        <span class="stat-pill"><strong>${counts['skill-seed']}</strong> skills</span>
+        <span class="stat-pill"><strong>${counts.sop}</strong> SOPs</span>
+    `;
+
+    document.getElementById('count-domains').textContent = counts.domain;
+    document.getElementById('count-competencies').textContent = counts.competency;
+    document.getElementById('count-skill-seeds').textContent = counts['skill-seed'];
+    document.getElementById('count-sops').textContent = counts.sop;
+}
+
+function renderEntity(entity) {
+    const content = document.getElementById('content');
+    const yaml = entity.yaml;
+    const yamlStr = Object.entries(yaml)
+        .map(([k, v]) => {
+            if (Array.isArray(v)) return `${k}: [${v.join(', ')}]`;
+            if (typeof v === 'object' && v !== null) {
+                return `${k}:\n${Object.entries(v).map(([sk, sv]) => `  ${sk}: ${sv}`).join('\n')}`;
+            }
+            return `${k}: ${v}`;
+        }).join('\n');
+
+    content.innerHTML = `
+        <div class="entity-header">
+            <div class="entity-type">${yaml.type || 'document'} · status: ${yaml.status || 'draft'} · v${yaml.version || '?'}</div>
+            <h1 class="entity-title">${yaml.name || yaml.id || 'Unnamed'}</h1>
+            <div class="entity-id">${yaml.id || entity.filename}</div>
+        </div>
+
+        <div class="frontmatter-view" id="fm-toggle">
+            <div class="frontmatter-toggle">Veure frontmatter (per als agents)</div>
+            <div class="frontmatter-content">
+                <pre>${yamlStr}</pre>
+            </div>
+        </div>
+
+        <div class="md-content">
+            ${renderMarkdown(entity.body)}
+        </div>
+    `;
+
+    // Frontmatter toggle
+    const fm = document.getElementById('fm-toggle');
+    fm.querySelector('.frontmatter-toggle').addEventListener('click', () => fm.classList.toggle('open'));
+
+    // Update active link
+    document.querySelectorAll('.entity-list a').forEach(a => a.classList.remove('active'));
+    const link = document.querySelector(`a[data-id="${yaml.id}"]`) || document.querySelector(`a[data-file="${entity.filename}"]`);
+    if (link) link.classList.add('active');
+
+    window.scrollTo(0, 0);
+}
+
+// =============================================================================
+// Init
+// =============================================================================
+(async function init() {
+    try {
+        allEntities = await loadAll();
+        renderSidebar(allEntities);
+
+        // Setup link handlers
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('.entity-list a');
+            if (!link) return;
+            e.preventDefault();
+
+            const id = link.dataset.id;
+            const file = link.dataset.file;
+            const entity = allEntities.find(en => en.yaml.id === id || en.filename === file);
+            if (entity) renderEntity(entity);
+        });
+
+        // Hash routing
+        if (window.location.hash) {
+            const id = window.location.hash.slice(1);
+            const entity = allEntities.find(en => en.yaml.id === id);
+            if (entity) renderEntity(entity);
+        }
+    } catch (e) {
+        document.getElementById('content').innerHTML = `
+            <div class="error">
+                Error carregant el currículum: ${e.message}<br><br>
+                <strong>Important:</strong> aquest visor necessita servir-se via HTTP
+                (no via <code>file://</code>) per poder fer fetch dels MD.
+                Executa: <code>python3 -m http.server 8000</code> al directori
+                <code>matriu-curriculum/</code> i obre <code>http://localhost:8000/auditoria.html</code>.
+            </div>
+        `;
+    }
+})();
+</script>
+
+</body>
+</html>
