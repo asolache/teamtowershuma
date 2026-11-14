@@ -13,7 +13,8 @@
 import * as AC from '../../netlify/lib/acollida.mjs';
 import { gestiona } from '../../netlify/functions/convidats.mjs';
 import { client, clau as clauFitxa } from '../../netlify/functions/fitxa.mjs';
-import { apuntaTarjeta, targetaContacte } from '../../netlify/functions/submission-created.mjs';
+import { apuntaTarjeta, targetaContacte, proposaResposta } from '../../netlify/functions/submission-created.mjs';
+import * as RS from '../../netlify/lib/resposta.mjs';
 import { empremta } from '../../netlify/lib/signatura.mjs';
 import { readFileSync } from 'node:fs';
 
@@ -84,6 +85,29 @@ console.log('\n5 · «Habla con una persona» deixa una targeta a «Lo mío»');
   ok(k.cards.length === 1 && /^Contestar a Pau: Jornada/.test(k.cards[0].text) && k.cards[0].qui === 'equipo', 'diu a qui cal contestar, i és teva');
   ok(!(await apuntaTarjeta(JSON.stringify({ payload: { form_name: 'comanda', data: {} } }), reg)), 'els altres formularis no en deixen');
   ok(targetaContacte({}).text === 'Contestar a alguien', 'sense nom, no peta');
+}
+
+console.log('\n6 · El bot propone la respuesta y Álvaro la valida');
+{
+  const reg = memoria(), comptes = memoria();
+  const cos = JSON.stringify({ payload: { form_name: 'contacto', data: { nom: 'Pau', mail: 'pau@example.org', tema: 'Jornada', missatge: 'Somos 40 y queremos un taller', perfil: 'empresa', llengua: 'es' } } });
+  let env = null;
+  const fb = async (u, o) => { env = JSON.parse(o.body); return { ok: true, status: 200, json: async () => ({ model: RS.IA.model, stop_reason: 'end_turn', usage: { input_tokens: 400, output_tokens: 150 }, content: [{ type: 'text', text: 'Hola Pau, gracias… Álvaro' }] }) }; };
+  const c = await apuntaTarjeta(cos, reg);
+  ok(await proposaResposta(cos, c, reg, ENV, fb, comptes) === 'fet', 'la IA escribe el borrador');
+  ok(env.model === RS.IA.model && /Nunca des precios/.test(env.system) && /fecha aproximada, número de personas/.test(env.system), 'con las reglas y el paso del camino «empresa»');
+  const doc = await reg.get(RS.DOC);
+  ok(doc[c.id] && doc[c.id].esborrany.startsWith('Hola Pau') && doc[c.id].mail === 'pau@example.org', 'espera en el panel, junto a su tarjeta');
+  ok((await comptes.get('mes/' + new Date().toISOString().slice(0, 7))).usd > 0, 'y su coste queda en el router');
+  ok(await proposaResposta(cos, c, memoria(), {}, fb) === 'sense-clau', 'sin clave de IA, la fila está igual, sin borrador');
+  const R = { convidats: memoria(), ia: memoria(), fitxes: reg };
+  const g = await gestiona('GET', {}, B, {}, ENV, R);
+  ok(g.respostes.length === 1 && g.respostes[0].id === c.id, 'el panel la enseña en «Por contestar»');
+  await gestiona('PUT', {}, B, { resposta: { id: c.id, esborrany: 'Hola Pau, cambiado' } }, ENV, R);
+  ok((await reg.get(RS.DOC))[c.id].esborrany === 'Hola Pau, cambiado', 'Álvaro la cambia');
+  await gestiona('PUT', {}, B, { resposta: { id: c.id, fet: true } }, ENV, R);
+  const k = await reg.get('kanban/alvaro');
+  ok(!(await reg.get(RS.DOC))[c.id] && k.cards.find(x => x.id === c.id).col === 'done', '«Ya está enviada»: sale de la lista y la tarjeta pasa a Hecho');
 }
 
 console.log(`\n${fail ? '❌' : '✅'} ${pass} correctes, ${fail} errors`);

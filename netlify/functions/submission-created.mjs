@@ -26,6 +26,8 @@
 
 import { magatzem } from '../lib/magatzem.mjs';
 import K from '../../SOS/lib/kanban.js';
+import * as RS from '../lib/resposta.mjs';
+import { registra } from '../lib/ia-router.mjs';
 
 export const FORMULARIS = {
   'diagnostic-org': 'Diagnòstic d\'organització (web)',
@@ -175,15 +177,29 @@ export async function apuntaTarjeta(body, reg, ara = new Date()) {
   let ev; try { ev = JSON.parse(body || '{}'); } catch (e) { return false; }
   const p = ev.payload || {}, formName = net(p.form_name || (p.data && p.data['form-name']));
   if (formName !== 'contacto') return false;
-  await reg.set('kanban/alvaro', K.fusiona(await reg.get('kanban/alvaro'), { cards: [targetaContacte(p.data || {}, ara)] }));
-  return true;
+  const c = targetaContacte(p.data || {}, ara);
+  await reg.set('kanban/alvaro', K.fusiona(await reg.get('kanban/alvaro'), { cards: [c] }));
+  return c;
+}
+
+/* I l'esborrany de resposta (lib/resposta.mjs): espera al panell, al costat de
+   la targeta, fins que l'Àlvaro l'envia ell. Sense clau d'IA, la fila hi és
+   igual, amb l'esborrany buit. */
+export async function proposaResposta(body, card, reg, env, fetchFn = globalThis.fetch, comptes = null, ara = new Date()) {
+  if (!reg || !card) return null;
+  const d = ((JSON.parse(body || '{}').payload || {}).data) || {};
+  const r = await RS.esborrany(d, env, fetchFn).catch(() => ({ estat: 'error' }));
+  if (r.usd) await registra(comptes, { projecte: RS.IA.projecte, tasca: RS.IA.tasca, model: (r.ia || {}).model || RS.IA.model, usd: r.usd, usage: (r.ia || {}).usage }, ara).catch(() => {});
+  await reg.set(RS.DOC, RS.afegeix(await reg.get(RS.DOC), card.id, d, r.estat === 'fet' ? r.text : '', ara));
+  return r.estat;
 }
 
 export const handler = async (event) => {
   const r = await processa(event.body, process.env);
-  const t = await apuntaTarjeta(event.body, magatzem(event, 'fitxes')).catch(() => false);
-  if (t) r.tarjeta = true;
+  const fx = magatzem(event, 'fitxes');
+  const t = await apuntaTarjeta(event.body, fx).catch(() => false);
+  if (t) { r.tarjeta = true; r.borrador = await proposaResposta(event.body, t, fx, process.env, undefined, magatzem(event, 'ia-router')).catch(() => 'error'); }
   /* Al registre, mai el lead: només què ha passat. */
-  console.log('[submission-created]', JSON.stringify({ estat: r.estat, formName: r.formName, motiu: r.motiu, id: r.id, camps: r.camps, tarjeta: !!r.tarjeta }));
+  console.log('[submission-created]', JSON.stringify({ estat: r.estat, formName: r.formName, motiu: r.motiu, id: r.id, camps: r.camps, tarjeta: !!r.tarjeta, borrador: r.borrador }));
   return { statusCode: 200, body: JSON.stringify({ estat: r.estat }) };
 };

@@ -270,11 +270,45 @@
         if (sense) box.appendChild(el('p', { class: 'nota' }, sense + (sense === 1 ? ' cliente aún no tiene' : ' clientes aún no tienen') + ' su espacio guardado con su cuenta: su tablero aparecerá aquí cuando entre por su enlace.'));
     }
 
+    /* Por contestar (14/11/2026, netlify/lib/resposta.mjs): cada «Habla con una
+       persona» de la web llega con un borrador de respuesta de la IA. Lo lees,
+       lo cambias si quieres y lo mandas tú desde tu correo; nada sale solo.
+       Al darle a «Ya está enviada», su tarjeta pasa a «Hecho». */
+    function perContestar(c) {
+        var rs = D.respostes || [];
+        if (!rs.length) return;
+        c.appendChild(el('h3', { id: 'pn-respostes' }, 'Por contestar (' + rs.length + ')'));
+        var ul = el('ul', { class: 'pn-llista' });
+        rs.forEach(function (x) {
+            var li = el('li', { class: 'pn-conv' });
+            li.appendChild(el('h4', {}, (x.nom || 'Alguien') + (x.tema ? ' · ' + x.tema : '')));
+            li.appendChild(el('p', { class: 'nota' }, [x.mail, x.perfil && 'perfil ' + x.perfil, x.pagina && 'desde ' + x.pagina, x.creat && dia(x.creat)].filter(Boolean).join(' · ')));
+            if (x.missatge) li.appendChild(el('blockquote', {}, x.missatge));
+            var ta = el('textarea', { rows: '7', 'aria-label': 'Borrador de respuesta' }); ta.value = x.esborrany || '';
+            if (!x.esborrany) ta.placeholder = 'Sin borrador de la IA: escribe tu respuesta.';
+            var w = el('div', { class: 'pn-ac' }); w.appendChild(el('label', {}, ['Borrador de respuesta (lo mandas tú)', ta])); li.appendChild(w);
+            var obre = el('a', { class: 'btn btn-primary btn-sm', href: '#' }, 'Abrir en mi correo');
+            obre.addEventListener('click', function () {
+                obre.href = 'mailto:' + encodeURIComponent(x.mail) + '?subject=' + encodeURIComponent('Re: ' + (x.tema || 'tu mensaje')) + '&body=' + encodeURIComponent(ta.value);
+                if (ta.value !== (x.esborrany || '')) crida('PUT', { resposta: { id: x.id, esborrany: ta.value } }).catch(function () { /* se queda en pantalla */ });
+            });
+            var fet = boto('Ya está enviada', function () {
+                fet.disabled = true;
+                crida('PUT', { resposta: { id: x.id, fet: true } }).then(function () { msg = 'Respuesta a ' + (x.nom || x.mail) + ' marcada como enviada.'; return carrega(); })
+                    .catch(function (er) { fet.disabled = false; msg = er.message; pinta(); });
+            }, 'btn-ghost btn-sm');
+            li.appendChild(el('div', { class: 'accions' }, [obre, fet]));
+            ul.appendChild(li);
+        });
+        c.appendChild(ul);
+    }
+
     function pinta() {
         var c = caixa.querySelector('.pn-cos'); c.textContent = '';
         if (msg) c.appendChild(el('p', { class: 'pn-msg', role: 'status' }, msg));
         if (!clau) { entrada(c); return; }
         if (!D) { c.appendChild(el('p', {}, 'Cargando…')); return; }
+        perContestar(c);
         tauler(c);
         tasques(c);
         estatIA(c);

@@ -890,7 +890,7 @@ function peu(pagina) {
     + P_TANCA;
 }
 const RECORRIDO = '<form name="contacto" data-netlify="true" netlify-honeypot="bot-field" hidden>'
-  + ['bot-field', 'nom', 'mail', 'missatge', 'tema', 'perfil', 'de', 'marca', 'pagina'].map(n => `<input name="${n}">`).join('')
+  + ['bot-field', 'nom', 'mail', 'missatge', 'tema', 'perfil', 'de', 'marca', 'pagina', 'llengua'].map(n => `<input name="${n}">`).join('')
   + '</form>\n<script src="/SOS/lib/recorrido.js" defer></script>';
 
 /* ══ Aplicar ═════════════════════════════════════════════════════════════ */

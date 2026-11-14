@@ -19,6 +19,10 @@
    · `POST   …/convidats` {ordena}      «Carga lo que me ha mandado» (14/11/2026):
                                         la IA petita ordena el text enganxat
                                         (lib/acollida.mjs). No desa res.
+   · `PUT    …/convidats` {resposta: {id, esborrany?, fet?}}  la resposta
+                                        proposada a un «Habla con una persona»
+                                        (lib/resposta.mjs): canviar-la, o
+                                        «ya está enviada» (la targeta passa a Fet).
    · `PUT    …/convidats` {acollida, deures?, mail}  ho desa a la fitxa del
                                         client («Tu espacio» a /cliente/), i els
                                         deures entren a les seves tasques.
@@ -33,6 +37,7 @@ import { config } from './pule-mapa.mjs';
 import { clau as clauFitxa } from './fitxa.mjs';
 import K from '../../SOS/lib/kanban.js';
 import * as AC from '../lib/acollida.mjs';
+import { DOC as RESP } from '../lib/resposta.mjs';
 import { registra } from '../lib/ia-router.mjs';
 
 const MEU = 'kanban/alvaro';
@@ -66,7 +71,8 @@ export async function estat(env, regs, ara = new Date()) {
   }));
   return { ia: { actiu: !!(c.ok && regs.ia), motiu: c.ok ? (regs.ia ? '' : 'sense Netlify Blobs') : c.motiu, tope: c.ok ? c.tope : null, topeDia: c.ok ? c.topeDia : null },
     dia: { usd: usd(dia && dia.gastat) }, mes: { usd: usd(mes && mes.gastat), persones: mes && mes.persones ? Object.keys(mes.persones).length : 0 },
-    convidats, variable: c.ok ? c.invitats : [], meu: K.neteja(regs.fitxes ? await regs.fitxes.get(MEU) : null) };
+    convidats, variable: c.ok ? c.invitats : [], meu: K.neteja(regs.fitxes ? await regs.fitxes.get(MEU) : null),
+    respostes: Object.values((regs.fitxes && await regs.fitxes.get(RESP)) || {}).sort((a, b) => (b.creat || '').localeCompare(a.creat || '')) };
 }
 
 export async function gestiona(metode, q, autoritzacio, cos, env, regs, ara = new Date()) {
@@ -78,6 +84,18 @@ export async function gestiona(metode, q, autoritzacio, cos, env, regs, ara = ne
     const r = await AC.ordena(cos.ordena, env, regs.fetch || globalThis.fetch, ara);
     if (r.usd) await registra(regs.comptes, { projecte: AC.IA.projecte, tasca: AC.IA.tasca, model: (r.ia || {}).model || AC.IA.model, usd: r.usd, usage: (r.ia || {}).usage }, ara).catch(() => {});
     return r.estat === 'fet' ? { estat: 'fet', acollida: r.acollida, deures: r.deures } : { estat: 'error', motiu: r.motiu };
+  }
+  if (metode === 'PUT' && cos && cos.resposta && typeof cos.resposta === 'object') {
+    if (!regs.fitxes) return { estat: 'error', motiu: 'sense Netlify Blobs' };
+    const doc = (await regs.fitxes.get(RESP)) || {}, id = net(cos.resposta.id), x = doc[id];
+    if (!x) return { estat: 'error', motiu: 'Esa respuesta ya no está.' };
+    if (cos.resposta.fet) {
+      delete doc[id];
+      const k = K.neteja(await regs.fitxes.get(MEU)), c = k.cards.find(y => y.id === id);
+      if (c) { c.col = 'done'; c.prova = 'Respuesta enviada por correo (' + ara.toISOString().slice(0, 10) + ')'; c.act = ara.toISOString(); await regs.fitxes.set(MEU, k); }
+    } else x.esborrany = net(cos.resposta.esborrany).slice(0, 3000);
+    await regs.fitxes.set(RESP, doc);
+    return { estat: 'fet' };
   }
   if (metode === 'PUT' && cos && cos.acollida !== undefined) {
     if (!regs.fitxes) return { estat: 'error', motiu: 'sense Netlify Blobs' };

@@ -114,7 +114,7 @@
         'form-name': 'contacto', 'bot-field': '',
         nom: nom, mail: mail, missatge: f.missatge.value.trim(),
         tema: o.tema || '', perfil: estat.perfil || '', de: estat.de || '',
-        marca: MARQUES[estat.de] || 'TeamTowers', pagina: location.pathname + location.hash
+        marca: MARQUES[estat.de] || 'TeamTowers', pagina: location.pathname + location.hash, llengua: ll()
       };
       var btn = f.querySelector('[type=submit]'); btn.disabled = true;
       fetch('/', {
