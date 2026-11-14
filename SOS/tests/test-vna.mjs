@@ -196,6 +196,9 @@ console.log('\n8 · Es pot recórrer amb el teclat, i cap al mòbil');
 }
 for (const [w, h] of [[390, 844], [1280, 1000]]) {
   const { ctx, p, errs } = await nova(w, h);
+  /* La pàgina va en pantalles (pantalla.js): el dibuix viu a la de la colla,
+     i s'obre com ho faria qui hi arriba amb un enllaç. */
+  await p.evaluate(() => document.querySelector('.escena').scrollIntoView());
   const r = await p.evaluate(() => ({ ample: document.documentElement.scrollWidth,
     esc: Math.round(document.querySelector('.escena').getBoundingClientRect().width) }));
   ok(r.ample <= w, `${w}px · la pàgina no se'n va de costat`);

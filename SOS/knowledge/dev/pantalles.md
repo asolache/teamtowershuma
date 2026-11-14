@@ -60,7 +60,12 @@ Alçada de la pàgina sencera en pantalles, a tauleta apaïsada 1180 × 820:
 | `premsa.html` | 3,8 | — | cua |
 | resta del SOS | 1,5–3 | — | cua, baixa prioritat |
 
-## La cua (la treballa també el guardià)
+## La cua
+
+La cua viva és a `guardia.md` (secció A), que és la que treballa el guardià.
+La d'aquí sota queda com a registre de la proposta del 13/11.
+
+### Proposta inicial
 
 Per ordre. Una línia = una peça petita, un PR, que espera la tanda.
 

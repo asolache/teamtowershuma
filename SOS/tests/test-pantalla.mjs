@@ -24,7 +24,8 @@ const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] }, proces
 const PILOTS = [
   { url: 'conecta/index.html', primer: 'Inicio', dins: 'cx-fuente', index: '.cab' },
   { url: 'SOS/ia.html', primer: 'Inici' },
-  { url: 'SOS/escola.html', primer: 'Inici' }
+  { url: 'SOS/escola.html', primer: 'Inici' },
+  { url: 'cataleg.html', primer: 'Inici' }
 ];
 for (const P of PILOTS) {
   for (const [nom, vp] of [['tauleta', { width: 1180, height: 820 }], ['mòbil', { width: 390, height: 844 }]]) {
@@ -74,6 +75,27 @@ for (const P of PILOTS) {
     await p.close();
   }
 }
+// Pàgina bilingüe: el selector d'idioma refà els noms sense canviar de pantalla.
+{
+  console.log('\n══ cataleg.html · canvi d\'idioma ══');
+  const p = await b.newPage({ viewport: { width: 1180, height: 820 } }), errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.goto(BASE + 'cataleg.html#cost', { waitUntil: 'load' });
+  await p.waitForFunction(() => window.TTPantalla);
+  const tabs = () => p.evaluate(() => [...document.querySelectorAll('.tt-pant-tabs a')].map(a => a.textContent));
+  const ca = await tabs();
+  ok(ca.includes('El catàleg') && ca.includes('D\'on surt un preu'), 'en català: ' + ca.join(' · '));
+  const abans = await p.evaluate(() => TTPantalla.actual());
+  await p.click('.lang-b[data-lang="es"]');
+  await p.waitForFunction(() => document.querySelector('.tt-pant-tabs a').textContent === 'Inicio');
+  const es = await tabs();
+  ok(es.includes('El catálogo') && es.includes('De dónde sale un precio') && es[0] === 'Inicio', 'en castellà: ' + es.join(' · '));
+  ok(await p.evaluate(() => /Siguiente|→/.test(document.querySelector('.tt-pant-seg').textContent) && document.querySelector('.tt-pant-seg').title === 'Siguiente'), '«Siguiente» en castellà');
+  ok(await p.evaluate(() => TTPantalla.actual()) === abans, 'es queda a la mateixa pantalla');
+  ok(!errs.length, 'sense errors' + (errs.length ? ': ' + errs.join(' | ') : ''));
+  await p.close();
+}
+
 await b.close(); srv.close();
 console.log('\n' + (fail ? '❌' : '✅') + ' pantalla: ' + pass + ' ok, ' + fail + ' malament');
 process.exit(fail ? 1 : 0);

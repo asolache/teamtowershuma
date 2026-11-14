@@ -347,9 +347,14 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 @media(max-width:860px){.emb-r{grid-template-columns:1fr}}
 @media(max-width:620px){.emb-portes{grid-template-columns:1fr}.emb-cta{width:100%;justify-content:center}}
 /*/TT-EMBUT-CSS*/
+/* Pantalles (SOS/lib/pantalla.js): el catàleg és una llista; llisca ella, no
+   la pàgina, i el filtre de sector queda sempre a la vista a sobre. */
+html.tt-pant-on .pk-llista{max-height:max(18rem,calc(100dvh - var(--tt-pant-dalt,0px) - 12rem));overflow-y:auto;
+  overscroll-behavior:contain;scroll-padding-top:.5rem}
+@media print{html.tt-pant-on .pk-llista{max-height:none;overflow:visible}}
 </style>
 </head>
-<body>
+<body data-pantalla>
 
 <!--TT-NAV-->
 <style>
@@ -542,7 +547,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
      quadre, a la clau catalana i a la castellana, i escrit a mà arriba el dia
      que se'n queda un enrere i la pàgina diu dos preus alhora —i no ho veu
      ningú, perquè el castellà el llegeixen altres persones que el català. -->
-<section class="cataleg" id="cataleg">
+<section class="cataleg" id="cataleg" data-pantalla-nom-ca="El catàleg" data-pantalla-nom-es="El catálogo">
     <div class="container">
         <!-- ⚠ Aquí hi havia la capçalera de la secció —el mateix titular i la
              mateixa entrada que ara porta la pàgina— i es llegia dues vegades
@@ -558,6 +563,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
       </div>
 
 <!--/TT-FILTRE-->
+<div class="pk-llista">
 <!--TT-OFERTA-->
 
       <div class="pk-fam" id="fam-consultoria">
@@ -999,6 +1005,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <!--/TT-OFERTA-->
         <p class="pk-nota" data-i18n-html="pk.peu"><strong>Tots els pressupostos són sense IVA</strong> i es fan per fluxos: les hores que surten del mapa, cada rol al preu del seu nivell i el cost de la IA de cada flux, amb el model que toca a cada tasca. No publiquem xifra tancada perquè depèn de coses que no es poden endevinar des d'una pàgina, però sí <a href="#cost">com es calcula</a>. El <em>punt</em> és una altra cosa: diu quantes vegades s'ha entregat —<em>provat</em>, <em>en adaptació</em> o <em>nou</em>— i dir-ho val més que la venda que es perd.</p>
         <p class="pk-nota" data-i18n-html="pk.pressu">Si ja saps què vols, <a href="/SOS/pressupost.html"><strong>demana el pressupost</strong></a>: en cinc minuts en surt una proposta esborrany amb el desglossament de rols, hores i nivells, i te la pots endur encara que no ens l'enviïs.</p>
+        </div>
     </div>
 </section>
 <!-- D'ON SURT UN PREU ────────────────────────────────────────────────────────
@@ -1010,7 +1017,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
      El bloc de sota el genera SOS/tools/build-oferta.js: els quatre passos i
      l'escala de tres nivells es declaren una sola vegada i s'escriuen aquí, al
      README i als dos idiomes. -->
-<section class="cost" id="cost">
+<section class="cost" id="cost" data-pantalla-nom-ca="D'on surt un preu" data-pantalla-nom-es="De dónde sale un precio">
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="cm.eyebrow">D'on surt un preu</div>
@@ -1090,7 +1097,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
      Per això no és una supressió sinó una substitució: quatre proves amb nom i
      una porta. Qui vulgui veure-les hi entra; qui només estigui decidint si ens
      contracta, ja sap que existeixen. -->
-<section class="pont" id="aprenent">
+<section class="pont" id="aprenent" data-pantalla-nom-ca="S'aprèn fent" data-pantalla-nom-es="Se aprende haciendo">
     <div class="container">
         <div class="pont-in fade-up">
             <div class="pont-t">
@@ -1114,7 +1121,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <!-- Va abans de la metodologia i no al peu, perquè és la metodologia la que
      introdueix les paraules. Un glossari col·locat després del text que
      l'exigia arriba quan la persona ja ha decidit que no ho entén. -->
-<section class="glossari" id="glossari">
+<section class="glossari" id="glossari" data-pantalla-nom-ca="Parlem clar" data-pantalla-nom-es="Hablemos claro">
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="glos.eyebrow">Parlem clar</div>
@@ -1777,5 +1784,6 @@ document.querySelectorAll('.colla-node').forEach(function(node) {
     if (b) b.click();
 })();
 </script>
+<script src="/SOS/lib/pantalla.js" defer></script>
 </body>
 </html>

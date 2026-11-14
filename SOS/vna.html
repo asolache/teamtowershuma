@@ -244,6 +244,11 @@ h1 em{font-style:normal;color:var(--tang)}
    seu contingut si no se li diu, i la taula de les setze transaccions
    n'estirava la columna sencera fora de la pantalla. */
 .lt{scroll-margin-top:5rem}
+/* En pantalles (SOS/lib/pantalla.js, pantalles.md): les vuit lectures són una
+   llista, i llisca ella i no la pàgina. A l'escriptori el dibuix queda al
+   costat i quiet; al telèfon va a dalt i la llista, a sota. */
+@media (min-width:981px){html.tt-pant-on .lz-read{max-height:calc(100vh - 9rem);overflow-y:auto;overscroll-behavior:contain;padding-right:.5rem}}
+@media (max-width:980px){html.tt-pant-on .lz-read{max-height:78vh;overflow-y:auto}}
 .lt.ara{position:relative}
 .lt.ara::before{content:'';position:absolute;left:-1.15rem;top:.3rem;bottom:.3rem;width:3px;
   border-radius:2px;background:var(--tang)}
@@ -587,7 +592,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 #xarxa .pl-svg{max-width:min(420px,100%)}
 </style>
 </head>
-<body>
+<body data-pantalla>
 <!--TT-NAV-->
 <style>
 /* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
@@ -913,7 +918,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
      `build-oferta.js` diu tres sessions i aquí en diguéssim dues, la que
      mentiria seria aquesta pàgina. -->
 <!--VNA-PROCES-->
-<section class="mv-sec">
+<section class="mv-sec" id="com-es-llegeix" data-pantalla-nom="Com es llegeix" data-pantalla-nom-ca="Com es llegeix" data-pantalla-nom-es="Cómo se lee">
 <h2 data-i18n="vn.not.h2">Com es llegeix un mapa</h2>
 <p class="mv-sub" data-i18n="vn.not.sub">Quatre paraules. Un mapa de valor amb quinze símbols no el llegeix ningú a una sala, i a la sala és on s'ha de llegir.</p>
 <div class="mv-not">
@@ -924,7 +929,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 <div class="mv-nt entrega"><div class="mv-nt-h"><b data-i18n="vn.not.entrega.n">Entregable</b><span data-i18n="vn.not.entrega.s">el que queda quan marxem</span></div><p data-i18n="vn.not.entrega.d">El mapa no és l'entregable: el mapa és l'eina. L'entregable és el que se'n decideix — què es pot cobrar, què s'ha de repartir i quin vincle s'ha de reparar abans que caigui.</p></div>
 </div>
 </section>
-<section class="mv-sec">
+<section class="mv-sec" id="com-es-fa" data-pantalla-nom="Com es fa" data-pantalla-nom-ca="Com es fa" data-pantalla-nom-es="Cómo se hace">
 <h2 data-i18n="vn.pas.h2">Com es fa</h2>
 <p class="mv-sub">10 <span data-i18n="vn.pas.en">passos en</span> 3 sessions · 4-6 setmanes. <span data-i18n-html="vn.pas.sub">Els tres del mig marcats són <b>les tres anàlisis de Verna Allee</b>, que són el mètode i no una manera nostra de mirar-ho.</span></p>
 <ol class="mv-pas">
@@ -940,7 +945,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 <li class="decisió"><span class="mv-pk" data-i18n="vn.tip.decisió">decisió</span><b data-i18n="vn.p9.t">El mapa queda viu</b><p data-i18n-html="vn.p9.d">Es carrega al SOS i és de la casa. Un mapa en un PDF caduca el primer dia que algú canvia de rol; un mapa que es pot editar es torna a mirar d'aquí a sis mesos.</p></li>
 </ol>
 </section>
-<section class="mv-sec">
+<section class="mv-sec" id="que-sendu" data-pantalla-nom="Què s'endú" data-pantalla-nom-ca="Què s'endú" data-pantalla-nom-es="Qué se lleva">
 <h2 data-i18n="vn.ent.h2">Què s'endú la casa</h2>
 <p class="mv-sub" data-i18n="vn.ent.sub">El mapa dels intercanvis reals, tangibles i intangibles, i on es perd valor sense que ho vegi ningú. Mètode VNA de Verna Allee.</p>
 <div class="mv-ent">
@@ -956,7 +961,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 
 <!--VNA-SESSIO-->
 <!-- GENERAT per SOS/tools/build-mapavalor.js · no s'edita a mà -->
-<section class="mv-sec">
+<section class="mv-sec" id="a-la-sala" data-pantalla-nom="A la sala" data-pantalla-nom-ca="A la sala" data-pantalla-nom-es="En la sala">
 <h2 data-i18n="vn.ses.h2">I com és, a la sala</h2>
 <p class="mv-sub" data-i18n-html="vn.ses.sub">No es fa amb un programa: es fa amb <b>un full gran, post-its i gomets</b>, i el programa ve després per mantenir-ho viu. Això és com queda el full — i tot el que hi surt té un motiu que es pot explicar en una frase.</p>
 <div class="mv-viz gran">
@@ -965,7 +970,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 <div class="se-leg"><span class="se-l"><i class="se-i must"></i><b data-i18n="vn.lg.must.t">«Must» · verd</b> <span data-i18n="vn.lg.must.d">Contractual i exigible: el que es dona per fet que arribarà.</span></span><span class="se-l"><i class="se-i extra"></i><b data-i18n="vn.lg.extra.t">«Extra» · rosa</b> <span data-i18n="vn.lg.extra.d">El que es dona per construir la relació i que ningú pot reclamar.</span></span><span class="se-l"><i class="se-i blau"></i><b data-i18n="vn.lg.blau.t">Gomet blau</b> <span data-i18n="vn.lg.blau.d">Qui ho rep n'està satisfet.</span></span><span class="se-l"><i class="se-i groc"></i><b data-i18n="vn.lg.groc.t">Gomet groc</b> <span data-i18n="vn.lg.groc.d">Qui ho rep no n'està satisfet. Aquí és on hi ha feina.</span></span><span class="se-l"><i class="se-i cor"></i><b data-i18n="vn.lg.cor.t">Cor</b> <span data-i18n="vn.lg.cor.d">De dos a quatre llocs on cal mirar el pols del flux de valor.</span></span></div>
 <p class="mv-nota" data-i18n-html="vn.ses.nota"><b>Els entregables es diuen amb noms, no amb verbs.</b> «La comanda», no «comandar»; «avisar abans que falli» és una cosa que arriba o no arriba. El criteri és aquest: un entregable es diu entregable perquè <b>es pot comprovar si ha arribat</b>.</p>
 </section>
-<section class="mv-sec">
+<section class="mv-sec" id="quatre-passes" data-pantalla-nom="Quatre passes" data-pantalla-nom-ca="Quatre passes" data-pantalla-nom-es="Cuatro pasos">
 <h2 data-i18n="vn.fa.h2">Les quatre passes grans</h2>
 <p class="mv-sub" data-i18n-html="vn.fa.sub">10 passos són per executar; <b>quatre són per recordar</b>. Aquesta és l'agrupació del guió de sessió, i és la que es fa servir a la sala.</p>
 <ol class="mv-fa">
@@ -977,7 +982,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 </section>
 <!--/VNA-SESSIO-->
 
-<section class="mv-sec">
+<section class="mv-sec" id="els-rols" data-pantalla-nom="Els rols" data-pantalla-nom-ca="Els rols" data-pantalla-nom-es="Los roles">
 <h2 data-i18n="vn.rl.h2">I els noms dels rols, per si et sonen</h2>
 <p class="mv-sub" data-i18n-html="vn.rl.sub">Les posicions d'un castell, amb <b>què són a una organització</b> i exemples que es reconeixen sense saber res de castells. És el vocabulari que fa que un dilluns algú pugui dir «aquesta persona és el nostre vent» i tothom entengui què vol dir.</p>
 <!--VNA-ROLS-->
@@ -1083,7 +1088,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
      parlaven del **mètode**: quines construccions hi ha i com es llegeix la
      planta, i el mapa de valor de la casa mateixa. La portada ven el mapa de
      valor i hi porta; el mètode viu aquí. -->
-<section class="mv-sec" id="construccions">
+<section class="mv-sec" id="construccions" data-pantalla-nom="Les construccions" data-pantalla-nom-ca="Les construccions" data-pantalla-nom-es="Las construcciones">
 <!--VNA-CONSTRUCCIONS-->
 <!-- GENERAT per SOS/tools/build-castells.js · no s'edita a mà -->
 <div class="ct-wrap fade-up">
@@ -1181,7 +1186,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 <!--/VNA-CONSTRUCCIONS-->
 </section>
 
-<section class="mv-sec" id="xarxa">
+<section class="mv-sec" id="xarxa" data-pantalla-nom="La nostra xarxa" data-pantalla-nom-ca="La nostra xarxa" data-pantalla-nom-es="Nuestra red">
 <!-- El mapa de valor de TeamTowers, fet amb el mateix mètode. És l'única
      manera honesta d'ensenyar-lo: aplicat a la casa que el ven. -->
 <!--VNA-XARXA-->
@@ -1220,7 +1225,7 @@ button{font-family:inherit;font-size:var(--t0);cursor:pointer}
 <!--/VNA-XARXA-PINYA-->
 </section>
 
-<section class="mv-sec" id="colla">
+<section class="mv-sec" id="colla" data-pantalla-nom="La colla" data-pantalla-nom-ca="La colla" data-pantalla-nom-es="La colla">
 <h2 data-i18n="vn.co.h2">D'on surt tot això: una colla castellera</h2>
 <p class="mv-sub" data-i18n-html="vn.co.sub">El graf d'un poble s'explica malament amb un diagrama i es explica bé amb <b>una colla</b>, perquè és exactament el mateix graf: uns rols, unes coses que es veuen i unes altres que no es veuen i sense les quals cau. Nou passos, i l'últim és per posar-t'hi tu. <span class="ajuda" style="display:block;margin-top:.4rem" data-i18n="vn.co.ca">Aquesta part encara és només en català.</span></p>
 
@@ -3309,5 +3314,6 @@ window.__VNA={ROLS,FLUXOS,PASSOS,S,pinta,tria,solsDonen,rol,
 });
 </script>
 <script src="lib/mapa-etiquetes.js" defer></script>
+<script src="lib/pantalla.js" defer></script>
 </body>
 </html>

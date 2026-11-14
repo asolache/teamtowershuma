@@ -100,6 +100,9 @@ const v = await p2.evaluate(() => {
      dibuix, i les lectures viuen al costat del llenç i no dins de cap
      `.mv-sec`. Comptar només les seccions diria que la pàgina ha deixat de
      dir de quin cas parla, i el que ha passat és que ho diu més amunt. */
+  /* La pàgina va en pantalles (pantalla.js) i n'amaga totes menys una: es
+     mira sencera, com surt sense JavaScript o en imprimir-la. */
+  document.documentElement.classList.remove('tt-pant-on');
   const t = document.body.innerText;
   return {
     secs: secs.length,
