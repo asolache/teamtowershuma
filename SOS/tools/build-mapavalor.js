@@ -718,7 +718,7 @@ function blocSessio() {
   const i18h = k => ` data-i18n-html="${k}"`;
   const f = [];
   f.push('<!-- GENERAT per SOS/tools/build-mapavalor.js · no s\'edita a mà -->');
-  f.push('<section class="mv-sec">');
+  f.push('<section class="mv-sec" id="a-la-sala" data-pantalla-nom="A la sala" data-pantalla-nom-ca="A la sala" data-pantalla-nom-es="En la sala">');
   f.push(`<h2${i18('vn.ses.h2')}>${VN['vn.ses.h2'].ca}</h2>`);
   f.push(`<p class="mv-sub"${i18h('vn.ses.sub')}>${VN['vn.ses.sub'].ca}</p>`);
   f.push('<div class="mv-viz gran">');
@@ -730,7 +730,7 @@ function blocSessio() {
   f.push(`<p class="mv-nota"${i18h('vn.ses.nota')}>${VN['vn.ses.nota'].ca}</p>`);
   f.push('</section>');
 
-  f.push('<section class="mv-sec">');
+  f.push('<section class="mv-sec" id="quatre-passes" data-pantalla-nom="Quatre passes" data-pantalla-nom-ca="Quatre passes" data-pantalla-nom-es="Cuatro pasos">');
   f.push(`<h2${i18('vn.fa.h2')}>${VN['vn.fa.h2'].ca}</h2>`);
   f.push(`<p class="mv-sub"${i18h('vn.fa.sub')}>${VN['vn.fa.sub'].ca}</p>`);
   f.push('<ol class="mv-fa">');
@@ -1656,7 +1656,7 @@ function blocProces() {
   const i18 = k => ` data-i18n="${k}"`;
   const i18h = k => ` data-i18n-html="${k}"`;
   const f = [];
-  f.push('<section class="mv-sec">');
+  f.push('<section class="mv-sec" id="com-es-llegeix" data-pantalla-nom="Com es llegeix" data-pantalla-nom-ca="Com es llegeix" data-pantalla-nom-es="Cómo se lee">');
   f.push(`<h2${i18('vn.not.h2')}>${VN['vn.not.h2'].ca}</h2>`);
   f.push(`<p class="mv-sub"${i18('vn.not.sub')}>${VN['vn.not.sub'].ca}</p>`);
   f.push('<div class="mv-not">');
@@ -1668,7 +1668,7 @@ function blocProces() {
   f.push('</div>');
   f.push('</section>');
 
-  f.push('<section class="mv-sec">');
+  f.push('<section class="mv-sec" id="com-es-fa" data-pantalla-nom="Com es fa" data-pantalla-nom-ca="Com es fa" data-pantalla-nom-es="Cómo se hace">');
   f.push(`<h2${i18('vn.pas.h2')}>${VN['vn.pas.h2'].ca}</h2>`);
   /* La xifra i la durada no van al diccionari: una xifra dins d'una frase
      traduïda és una xifra que es pot quedar vella en una llengua i no en
@@ -1683,7 +1683,7 @@ function blocProces() {
   f.push('</ol>');
   f.push('</section>');
 
-  f.push('<section class="mv-sec">');
+  f.push('<section class="mv-sec" id="que-sendu" data-pantalla-nom="Què s\'endú" data-pantalla-nom-ca="Què s\'endú" data-pantalla-nom-es="Qué se lleva">');
   f.push(`<h2${i18('vn.ent.h2')}>${VN['vn.ent.h2'].ca}</h2>`);
   f.push(`<p class="mv-sub" data-i18n="vn.ent.sub">${esc(PAQUET ? PAQUET.endus : '')}</p>`);
   f.push('<div class="mv-ent">');
