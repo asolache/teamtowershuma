@@ -180,7 +180,7 @@ const OBJECTIUS = [
     tEs: 'Un acto que se recuerde, o la jornada entera',
     diu: 'Tenim una convenció, un kick-off o una entrega de premis i volem que comenci amb alguna cosa que no sigui una presentació, o que algú ens porti la jornada de cap a peus.',
     diuEs: 'Tenemos una convención, un kick-off o una entrega de premios y queremos que empiece con algo que no sea una presentación, o que alguien nos lleve la jornada de principio a fin.',
-    paquets: ['demos', 'fent-pinya', 'produccio'],
+    paquets: ['demos', 'fent-pinya', 'mini-towers', 'produccio'],
     llegim: 'Això és un acte amb data, aforament i espai. El que decideix la proposta no és el vostre equip: és quanta gent hi haurà, quan i on. Si la porteu sencera, vol dir guió, proveïdors i permisos, i es cotitza a mida.',
     llegimEs: 'Esto es un acto con fecha, aforo y espacio. Lo que decide la propuesta no es vuestro equipo: es cuánta gente habrá, cuándo y dónde. Si la llevamos entera, quiere decir guion, proveedores y permisos, y se cotiza a medida.',
     /* El transmèdia penja d'aquí perquè és el que passa quan una jornada vol
