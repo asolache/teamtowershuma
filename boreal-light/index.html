@@ -104,6 +104,13 @@ nav.saltos a:hover{color:var(--agua)}
 .figura figcaption{font-size:.95rem;color:var(--mut)}
 .figura.sola{grid-template-columns:1fr;max-width:40rem;margin-left:auto;margin-right:auto}
 @media (max-width:700px){.figura{grid-template-columns:1fr}}
+.galeria{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));margin-top:1.4rem}
+.galeria figure{margin:0;background:var(--panel);border:1px solid var(--lin);border-radius:.6rem;overflow:hidden}
+.galeria img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;background:var(--lin)}
+.galeria figcaption{padding:.6rem .9rem;font-size:.9rem;color:var(--mut)}
+ul.prensa{list-style:none;padding:0;margin:1rem 0 0;display:grid;gap:.5rem}
+ul.prensa li{background:var(--panel);border:1px solid var(--lin);border-radius:.5rem;padding:.6rem .9rem;font-size:.97rem}
+ul.prensa span{color:var(--mut);font-size:.88rem}
 @media (max-width:540px){body{font-size:16px}.hero{padding:3rem 0}section{padding:2.5rem 0}}
 </style>
 </head>
@@ -124,7 +131,7 @@ nav.saltos a:hover{color:var(--agua)}
   </div>
 </div>
 
-<nav class="saltos" aria-label="Secciones"><div class="wrap"><a href="#boreal">Boreal Light</a><a href="#servicios">Servicios</a><a href="#nosotros">Quiénes somos</a><a href="#ecosistema">Ecosistema</a><a href="#flujo">Flujo de valor</a><a href="#sociedad">La sociedad</a><a href="#conversacion">Hablemos</a></div></nav>
+<nav class="saltos" aria-label="Secciones"><div class="wrap"><a href="#boreal">Boreal Light</a><a href="#servicios">Servicios</a><a href="#en-marcha">En marcha</a><a href="#nosotros">Quiénes somos</a><a href="#ecosistema">Ecosistema</a><a href="#flujo">Flujo de valor</a><a href="#sociedad">La sociedad</a><a href="#conversacion">Hablemos</a></div></nav>
 
 <main class="wrap">
 
@@ -152,6 +159,17 @@ nav.saltos a:hover{color:var(--agua)}
   <p class="lead">Una familia de soluciones para que haya agua buena donde no llega la red. Cada dato, con su fuente.</p>
   <figure class="figura"><div class="lamina"><img src="img/planetcube.png" alt="Dibujo de la planta Winture PlanetCube: un armario técnico con dos puertas y pantalla." width="250" height="246" loading="lazy"></div><figcaption><b>La planta, en un armario.</b> Así presentaba Boreal Light el PlanetCube en 2019: todo el tratamiento dentro de un contenedor, listo para conectar y trabajar al aire libre. Dibujo de Boreal Light (Winture).</figcaption></figure>
   <div class="servicios"><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="10" r="5"/><path d="M24 1v2M33 10h2M13 10h2M30 4l1.5-1.5M18 4l-1.5-1.5"/><rect x="8" y="20" width="32" height="22" rx="2"/><path d="M24 26c-3 4-4 6-4 8a4 4 0 0 0 8 0c0-2-1-4-4-8z"/></svg><h3>PlanetCube · desalinización solar</h3><p>Ósmosis inversa con energía solar, sin baterías ni inversor. De 1.000 a 40.000 L/h. Agua de mar, salobre o contaminada.</p><p class="src">Fuente: <a href="https://wacee.german-pavilion.com/en/exhibitors/94808" rel="noopener">WACEE</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10h36l-14 16v14l-8-4V26z"/></svg><h3>Ultrafiltración</h3><p>Para depurar agua de ríos y pozos.</p><p class="src">Fuente: <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 24 6l18 12"/><rect x="10" y="18" width="28" height="24"/><path d="M20 30h8v12h-8zM24 22v4"/></svg><h3>WaterKiosk</h3><p>Kioscos de agua que gestiona la propia comunidad.</p><p class="src">Fuente: <a href="https://impulse-foundation.com/solutions/ecosystem/boreal-light-gmbh" rel="noopener">Solar Impulse</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M24 4v40M7 14l34 20M7 34l34-20M19 6l5 5 5-5M19 42l5-5 5 5"/></svg><h3>Frío y hielo</h3><p>Enfriadores y fábricas de hielo para la cadena de frío.</p><p class="src">Fuente: <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="36" height="24" rx="2"/><path d="M12 24l6-6 6 4 8-8M18 40h12M24 32v8"/></svg><h3>Monitorización 24/7</h3><p>Cada planta, vigilada a distancia. UV y ozono, sin cloro.</p><p class="src">Fuente: <a href="https://wacee.german-pavilion.com/en/exhibitors/94808" rel="noopener">WACEE</a></p></div><div class="servicio"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="5"/><circle cx="32" cy="16" r="5"/><path d="M6 38c0-6 4-10 10-10s10 4 10 10M22 38c0-6 4-10 10-10s10 4 10 10"/></svg><h3>Para quién</h3><p>Municipios, gobiernos, agencias de desarrollo, ONG, hoteles, hospitales, granjas e industria.</p><p class="src">Fuente: <a href="https://germanwaterpartnership.de/en/mitgliederprofile/boreal-light-gmbh/" rel="noopener">German Water Partnership</a> y <a href="https://boreallight.com/" rel="noopener">boreallight.com</a></p></div></div>
+</section>
+
+<section id="en-marcha">
+  <h2>En marcha</h2>
+  <p class="lead">Plantas de Boreal Light ya trabajando. Estas fotos son de la cooperación alemana con Ucrania: plantas construidas en Berlín para dar agua potable.</p>
+  <div class="galeria">
+    <figure><img src="https://www.bmz.de/resource/image/318560/2x1/1920/960/63b2c674b9ccc8d00a9f4005c65225a8/B876BC3DE69C64F4D086195570D5BFBD/05c-bild1-ukraine.jpg" alt="Planta de desalinización de Boreal Light en Ucrania" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"><figcaption>Planta en Ucrania. Foto: <a href="https://www.bmz.de/en/issues/ukraine-water-treatment-318556" rel="noopener">BMZ</a>.</figcaption></figure>
+    <figure><img src="https://www.bmz.de/resource/blob/318558/cf43b33e0a2cef9f8c4eda0731fd93e7/05c-bild2-ukraine-data.jpg" alt="Contenedor con un sistema de desalinización" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').hidden=true"><figcaption>Contenedor de desalinización, solar o híbrido. Foto: <a href="https://www.bmz.de/en/issues/ukraine-water-treatment-318556" rel="noopener">BMZ</a>.</figcaption></figure>
+  </div>
+  <h3 class="sub">En la prensa</h3>
+  <ul class="prensa"><li><a href="https://www.bmz.de/en/issues/ukraine-water-treatment-318556" rel="noopener">Plantas solares de desalinización para el agua potable en Ucrania</a><br><span>Ministerio alemán de Cooperación (BMZ)</span></li><li><a href="https://www.pv-magazine.com/2023/10/26/german-company-installs-pv-powered-desalination-plant-in-ukraine" rel="noopener">Una empresa alemana instala una planta de desalinización con fotovoltaica en Ucrania</a><br><span>pv magazine, 26/10/2023</span></li><li><a href="https://aquatechtrade.com/news/desalination/desalination-goes-off-grid-via-solar" rel="noopener">La desalinización sale de la red con el sol</a><br><span>Aquatech, 19/01/2023</span></li><li><a href="https://wacee.german-pavilion.com/en/sites/products-services/131440" rel="noopener">The Winture PlanetCube</a><br><span>WACEE, pabellón alemán</span></li></ul>
 </section>
 
 <section id="nosotros">
