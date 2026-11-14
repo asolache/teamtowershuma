@@ -108,6 +108,9 @@
         .pn-llista { list-style: none; display: grid; gap: 1rem; padding: 0; }
         .pn-conv { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; display: grid; gap: .35rem; }
         .pn-conv h4 { font-size: var(--t2); margin: 0; }
+        .pn-ac { display: grid; gap: .5rem; border-top: 1px dashed var(--border); padding-top: .75rem; margin-top: .5rem; }
+        .pn-ac label { display: grid; gap: .2rem; }
+        .pn-ac textarea, .pn-ac input { font: inherit; font-size: 16px; padding: .5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
         .pn-gast { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
         .pn-gast .barra-e { width: 6rem; height: .5rem; border-radius: 99px; background: #e4e0fb; overflow: hidden; display: inline-block; }
         .pn-gast .barra-e i { display: block; height: 100%; background: var(--indigo); }
@@ -649,6 +652,11 @@
     </ul>
 </nav>
 
+<!-- «Tu espacio» (14/11/2026): el de quien ya trabaja con nosotros; lo pinta SOS/lib/acollida.js con lo que Álvaro deja desde su panel. -->
+<section id="espacio" hidden>
+    <div class="container"><div class="ac-cos"></div></div>
+</section>
+
 <section id="inicio">
     <div class="container">
         <p class="eyebrow">Tu espacio de cliente</p>
@@ -662,7 +670,7 @@
             <ol id="cl-avanc"></ol>
         </div>
         <p class="nota" style="margin-top:1rem"><a href="#alrededor">Empieza por tu mapa</a>. ¿No sabes si te hace falta? <a href="/SOS/diagnostic.html?lang=es">Hazte el diagnóstico de 3 minutos</a>.</p>
-        <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="/acceso">tu espacio</a>.</p>
+        <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="#espacio">tu espacio</a>.</p>
     </div>
 </section>
 
@@ -1051,6 +1059,7 @@
 <script src="/SOS/lib/tauler-client.js"></script>
 <script src="/SOS/lib/pomodoro.js"></script>
 <script src="/SOS/lib/kanban.js"></script>
+<script src="/SOS/lib/acollida.js"></script>
 <script src="/SOS/lib/motor-web.js"></script>
 <script src="/SOS/lib/pinya.js"></script>
 <script>
@@ -2728,6 +2737,13 @@
             if (!I.sessio || I.sense) return;
             fitxa({}).then(function (r) {
                 if (r.estat !== 'fet' && r.estat !== 'cap') return;
+                /* Su espacio, si Álvaro se lo ha dejado preparado: llega por ahí. */
+                if (r.estat === 'fet' && r.fitxa.acollida) {
+                    var nova = JSON.stringify(r.fitxa.acollida) !== JSON.stringify(S.acollida || null);
+                    S.acollida = r.fitxa.acollida; try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
+                    if (nova && !location.hash) location.hash = '#espacio';
+                    pintaAcollida();
+                }
                 if (r.estat === 'fet' && ((buida(S) && !S.mapaId) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
                     Object.assign(S, r.fitxa); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
                     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
@@ -2738,6 +2754,21 @@
                 fitxa({ foto: true }).then(function (f) { if (f.estat === 'foto' && f.lectura.estat === 'fet' && !FOTO) lectura(f.lectura); });
             });
         }
+        /* «Tu espacio» (14/11/2026, SOS/lib/acollida.js): cinco pantallas con lo
+           que nos ha contado, su mapa, lo que le toca y su web. Se ve si hay algo
+           preparado o si se abre #espacio (la puerta «Ya trabajo con vosotros»). */
+        function pintaAcollida() {
+            var s = document.getElementById('espacio'), A = window.AcollidaClient;
+            if (!s || !A) return;
+            var vol = !!A.pantalla();
+            s.hidden = !S.acollida && !vol;
+            if (s.hidden) return;
+            A.pinta(s.querySelector('.ac-cos'), { acollida: S.acollida || null, kanban: S.kanban, llengua: LL,
+                persones: (S.alrededor || []).filter(function (f) { return f.quien; }).length });
+            if (vol) s.scrollIntoView({ block: 'start' });
+        }
+        window.addEventListener('hashchange', function () { if (window.AcollidaClient && window.AcollidaClient.pantalla()) pintaAcollida(); });
+        window.ttAcollida = pintaAcollida;
         function esborra() {
             if (!confirm(t('¿Borramos tu dibujo de tu cuenta? En este navegador se queda.'))) return;
             fitxa({ esborra: true }).then(function (r) {
@@ -3311,7 +3342,7 @@
         return { pinta: pinta };
     })();
 
-    function pintaTot() { if (window.TTWebClient) TTWebClient.pinta(); EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
+    function pintaTot() { if (window.ttAcollida) window.ttAcollida(); if (window.TTWebClient) TTWebClient.pinta(); EINES.pinta(); pintaCamps(); pintaTitol(); pintaCompte(); pintaPrompt(); pintaPreguntes(); pintaFiles(); suggereix(); if (S.enviat) marcaPas('leemos'); }
     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
     pintaTot();
 

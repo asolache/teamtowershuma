@@ -24,6 +24,9 @@
 
    La guia per obtenir-les és a SOS/knowledge/dev/guia-zoho-nivell2.md. */
 
+import { magatzem } from '../lib/magatzem.mjs';
+import K from '../../SOS/lib/kanban.js';
+
 export const FORMULARIS = {
   'diagnostic-org': 'Diagnòstic d\'organització (web)',
   /* La comanda de la pàgina de preus (SOS/pressupost.html). Encara no hi ha
@@ -155,9 +158,32 @@ export async function processa(body, env, fetchFn = globalThis.fetch) {
   return { estat: 'creat', formName, id: fila.details && fila.details.id };
 }
 
+/* «Habla con una persona» deja también una tarjeta en el tablero de Álvaro
+   (14/11/2026, kanban único: el «Lo mío» del panel, `kanban/alvaro` del
+   almacén `fitxes`, el mismo de convidats.mjs). Así nadie se queda sin
+   respuesta aunque Zoho no esté configurado. Pura, para poder probarla. */
+export function targetaContacte(d, ara = new Date()) {
+  const nom = tall(d.nom, 60) || 'alguien', que = tall(d.tema, 80) || tall(d.missatge, 80);
+  const perfil = PERFIL[net(d.perfil)];
+  return { id: 'ct' + ara.getTime().toString(36), text: tall('Contestar a ' + nom + (que ? ': ' + que : ''), 200), col: 'todo',
+    qui: 'equipo', tipus: 'gestion', entregable: 'La respuesta enviada' + (perfil ? ' · ' + perfil : ''),
+    origen: { tipus: 'contacto', id: tall(d.pagina, 80), nom: 'Habla con una persona' },
+    creat: ara.toISOString().slice(0, 10), act: ara.toISOString() };
+}
+export async function apuntaTarjeta(body, reg, ara = new Date()) {
+  if (!reg) return false;
+  let ev; try { ev = JSON.parse(body || '{}'); } catch (e) { return false; }
+  const p = ev.payload || {}, formName = net(p.form_name || (p.data && p.data['form-name']));
+  if (formName !== 'contacto') return false;
+  await reg.set('kanban/alvaro', K.fusiona(await reg.get('kanban/alvaro'), { cards: [targetaContacte(p.data || {}, ara)] }));
+  return true;
+}
+
 export const handler = async (event) => {
   const r = await processa(event.body, process.env);
+  const t = await apuntaTarjeta(event.body, magatzem(event, 'fitxes')).catch(() => false);
+  if (t) r.tarjeta = true;
   /* Al registre, mai el lead: només què ha passat. */
-  console.log('[submission-created]', JSON.stringify({ estat: r.estat, formName: r.formName, motiu: r.motiu, id: r.id, camps: r.camps }));
+  console.log('[submission-created]', JSON.stringify({ estat: r.estat, formName: r.formName, motiu: r.motiu, id: r.id, camps: r.camps, tarjeta: !!r.tarjeta }));
   return { statusCode: 200, body: JSON.stringify({ estat: r.estat }) };
 };

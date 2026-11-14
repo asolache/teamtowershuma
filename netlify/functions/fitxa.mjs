@@ -133,6 +133,9 @@ export async function client(cos, env, reg, ara = new Date()) {
        pàgina oberta. */
     const abans = await reg.get(k);
     if (abans && abans.kanban) f.kanban = K.fusiona(abans.kanban, f.kanban);
+    /* «Tu espacio» (14/11/2026) el deja Álvaro desde su panel y ella no lo
+       edita: lo que manda su navegador no lo pisa. */
+    if (abans && abans.acollida) f.acollida = abans.acollida;
     await reg.set(k, f);
     return { estat: 'desada', actualitzada: f.actualitzada, kanban: f.kanban };
   }

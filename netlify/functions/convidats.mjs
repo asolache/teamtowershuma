@@ -16,6 +16,12 @@
                                         sense, les de l'Àlvaro mateix.
    El GET porta també les tasques de cada client i les seves (`meu`): és el
    seu backlog de tot, el que veu al panell.
+   · `POST   …/convidats` {ordena}      «Carga lo que me ha mandado» (14/11/2026):
+                                        la IA petita ordena el text enganxat
+                                        (lib/acollida.mjs). No desa res.
+   · `PUT    …/convidats` {acollida, deures?, mail}  ho desa a la fitxa del
+                                        client («Tu espacio» a /cliente/), i els
+                                        deures entren a les seves tasques.
 
    El que es guarda és el que ell escriu (lib/convidats.mjs). El que es llegeix
    de cada espai és un resum: mai el text del dibuix. */
@@ -26,6 +32,8 @@ import { MAGATZEM, llista, desa, neteja, enllac, clauDe } from '../lib/convidats
 import { config } from './pule-mapa.mjs';
 import { clau as clauFitxa } from './fitxa.mjs';
 import K from '../../SOS/lib/kanban.js';
+import * as AC from '../lib/acollida.mjs';
+import { registra } from '../lib/ia-router.mjs';
 
 const MEU = 'kanban/alvaro';
 
@@ -54,7 +62,7 @@ export async function estat(env, regs, ara = new Date()) {
   const tots = await llista(regs.convidats), base = net(env.URL);
   const convidats = await Promise.all(Object.values(tots).sort((a, b) => (b.creat || '').localeCompare(a.creat || '')).map(async x => {
     const id = 'mail:' + empremta(x.mail), p = regs.ia ? await regs.ia.get('persona/' + empremta(id)) : null, f = regs.fitxes ? await regs.fitxes.get(clauFitxa(id)) : null;
-    return Object.assign({}, x, { enllac: enllac(x, secret(env), base), gastat: usd(p && p.gastat), voltes: (p && p.voltes) || 0, ultim: (p && p.ultim) || '', espai: resum(f), kanban: f && f.kanban ? K.neteja(f.kanban) : null });
+    return Object.assign({}, x, { enllac: enllac(x, secret(env), base), gastat: usd(p && p.gastat), voltes: (p && p.voltes) || 0, ultim: (p && p.ultim) || '', espai: resum(f), kanban: f && f.kanban ? K.neteja(f.kanban) : null, acollida: (f && f.acollida) || null });
   }));
   return { ia: { actiu: !!(c.ok && regs.ia), motiu: c.ok ? (regs.ia ? '' : 'sense Netlify Blobs') : c.motiu, tope: c.ok ? c.tope : null, topeDia: c.ok ? c.topeDia : null },
     dia: { usd: usd(dia && dia.gastat) }, mes: { usd: usd(mes && mes.gastat), persones: mes && mes.persones ? Object.keys(mes.persones).length : 0 },
@@ -66,6 +74,26 @@ export async function gestiona(metode, q, autoritzacio, cos, env, regs, ara = ne
   if (!secret(env)) return { estat: 'error', motiu: 'falta IDENTITAT_SECRET o ANTHROPIC_API_KEY' };
   if (metode === 'GET') return Object.assign({ estat: 'fet' }, await estat(env, regs, ara));
   const tots = await llista(regs.convidats);
+  if (metode === 'POST' && cos && cos.ordena !== undefined) {
+    const r = await AC.ordena(cos.ordena, env, regs.fetch || globalThis.fetch, ara);
+    if (r.usd) await registra(regs.comptes, { projecte: AC.IA.projecte, tasca: AC.IA.tasca, model: (r.ia || {}).model || AC.IA.model, usd: r.usd, usage: (r.ia || {}).usage }, ara).catch(() => {});
+    return r.estat === 'fet' ? { estat: 'fet', acollida: r.acollida, deures: r.deures } : { estat: 'error', motiu: r.motiu };
+  }
+  if (metode === 'PUT' && cos && cos.acollida !== undefined) {
+    if (!regs.fitxes) return { estat: 'error', motiu: 'sense Netlify Blobs' };
+    const x = tots[clauDe(cos.mail)];
+    if (!x) return { estat: 'error', motiu: 'No es un invitado.' };
+    const a = AC.neteja(cos.acollida, ara);
+    if (!a) return { estat: 'error', motiu: 'No hay nada que guardar.' };
+    const kf = clauFitxa('mail:' + empremta(x.mail)), f = (await regs.fitxes.get(kf)) || {};
+    /* Lo que ya tenía se queda; su espacio se marca como nuevo para que su
+       navegador lo recoja la próxima vez que entre. */
+    f.acollida = a;
+    if (Array.isArray(cos.deures) && cos.deures.length) f.kanban = K.fusiona(f.kanban, { cards: cos.deures });
+    f.actualitzada = ara.toISOString();
+    await regs.fitxes.set(kf, f);
+    return { estat: 'fet', acollida: a, kanban: f.kanban ? K.neteja(f.kanban) : null };
+  }
   if (metode === 'PUT' && cos && cos.kanban !== undefined) {
     if (!regs.fitxes) return { estat: 'error', motiu: 'sense Netlify Blobs' };
     if (!net(cos.mail)) { const k = K.fusiona(await regs.fitxes.get(MEU), cos.kanban); await regs.fitxes.set(MEU, k); return { estat: 'fet', kanban: k }; }
@@ -96,7 +124,7 @@ export async function gestiona(metode, q, autoritzacio, cos, env, regs, ara = ne
 export const handler = async (event) => {
   const env = process.env, q = event.queryStringParameters || {};
   let cos = {}; try { cos = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
-  const regs = { convidats: magatzem(event, MAGATZEM), ia: magatzem(event, 'ia-cliente'), fitxes: magatzem(event, 'fitxes') };
+  const regs = { convidats: magatzem(event, MAGATZEM), ia: magatzem(event, 'ia-cliente'), fitxes: magatzem(event, 'fitxes'), comptes: magatzem(event, 'ia-router') };
   const r = await gestiona(event.httpMethod, q, (event.headers || {}).authorization, cos, env, regs).catch(() => ({ estat: 'error', motiu: 'blobs' }));
   console.log('[convidats]', JSON.stringify({ metode: event.httpMethod, estat: r ? r.estat : 'no' }));
   if (!r) return json(404, {});

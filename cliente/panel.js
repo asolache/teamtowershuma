@@ -107,6 +107,7 @@
         else li.appendChild(el('p', { class: 'nota' }, 'Su espacio aún no está guardado con su cuenta.'));
         var a = el('div', { class: 'accions' }), cp = boto('Copiar su enlace', function () { copia(x.enllac, cp); }, 'btn-primary btn-sm');
         a.appendChild(cp);
+        a.appendChild(boto(x.acollida ? 'Su espacio ✓' : 'Su espacio', function () { obre = obre === x.mail ? null : x.mail; pinta(); var e2 = document.getElementById('pn-ac-' + idDe(x)); if (e2) e2.scrollIntoView({ block: 'start' }); }, 'btn-ghost btn-sm'));
         a.appendChild(boto('Cambiar', function () { edita = x; pinta(); var f = caixa.querySelector('.pn-form'); if (f) f.scrollIntoView({ block: 'start' }); }, 'btn-ghost btn-sm'));
         a.appendChild(boto('Enlace nuevo', function () {
             if (!window.confirm('El enlace que tiene dejará de funcionar. ¿Hacemos uno nuevo?')) return;
@@ -117,7 +118,60 @@
             crida('DELETE', null, '?mail=' + encodeURIComponent(x.mail)).then(function () { msg = 'Quitado.'; return carrega(); }).catch(function (er) { msg = er.message; pinta(); });
         }, 'btn-ghost btn-sm'));
         li.appendChild(a);
+        if (obre === x.mail) li.appendChild(acollida(x));
         return li;
+    }
+
+    /* «Su espacio» (14/11/2026, netlify/lib/acollida.mjs). Álvaro: «que lo
+       próximo que le envíe le llegue por ahí, con todo lo que me ha mandado
+       por correo dentro». Pegas sus correos, la IA pequeña los ordena (no se
+       guardan), lo revisas aquí y, al darle a «Listo», lo ve en /cliente/ al
+       entrar por su enlace. Lo que le toca entra en sus tareas. Igual para
+       cada cliente: nada está hecho a medida. */
+    var obre = null, borr = {};
+    function acollida(x) {
+        var w = el('div', { class: 'pn-ac', id: 'pn-ac-' + idDe(x) }), a0 = borr[x.mail] || x.acollida || {}, ds = borr[x.mail] ? borr[x.mail]._deures || [] : [];
+        var linies = function (v) { return (v || []).join('\n'); };
+        w.appendChild(el('h4', {}, 'Su espacio: lo que verá al entrar'));
+        var pega = el('textarea', { rows: '5', placeholder: 'Pega aquí lo que te ha mandado: correos, notas, respuestas. No se guarda: la IA solo lo ordena.' });
+        var res = el('p', { class: 'nota', role: 'status' });
+        var ord = boto('Ordenar con IA', function () {
+            if (!pega.value.trim()) { res.textContent = 'Pega primero lo que te ha mandado.'; return; }
+            ord.disabled = true; res.textContent = 'Ordenando… (unos segundos)';
+            crida('POST', { ordena: pega.value }).then(function (j) {
+                borr[x.mail] = Object.assign({}, a0, j.acollida || {}, { sessio: a0.sessio || '', web: a0.web || '', seguent: a0.seguent || {}, _deures: (j.deures || []).map(function (c) { return c.text; }) });
+                pinta();
+            }).catch(function (er) { ord.disabled = false; res.textContent = 'No ha salido: ' + er.message; });
+        }, 'btn-primary btn-sm');
+        w.appendChild(el('label', {}, ['Lo que te ha mandado', pega]));
+        w.appendChild(el('div', { class: 'accions' }, [ord])); w.appendChild(res);
+        var camp = function (id, lbl, v, rows, ph) {
+            var c = rows ? el('textarea', { id: id, rows: String(rows), placeholder: ph || '' }) : el('input', { id: id, placeholder: ph || '' });
+            c.value = v || ''; w.appendChild(el('label', {}, [lbl, c])); return c;
+        };
+        var f = {
+            hola: camp('ac-hola', 'Hola (lo primero que lee)', a0.hola, 2, 'Hola amiga: ya tenemos ordenado todo lo que nos mandaste…'),
+            sessio: camp('ac-sessio', 'Próxima sesión', a0.sessio, 0, 'Por ejemplo: martes 18, de 10:00 a 11:30'),
+            contat: camp('ac-contat', 'Lo que nos ha contado (una cosa por línea)', linies(a0.contat), 5),
+            decidit: camp('ac-decidit', 'Lo que ya ha decidido (una por línea)', linies(a0.decidit), 3),
+            deures: camp('ac-deures', 'Lo que le toca (una por línea; entra en sus tareas)', linies(ds), 3),
+            preguntes: camp('ac-preg', 'Lo que falta preguntarle (una por línea)', linies(a0.preguntes), 3),
+            web: camp('ac-web', 'Su web en vista previa (https://…)', a0.web),
+            st: camp('ac-st', 'El siguiente paso (el botón de abajo)', (a0.seguent || {}).text, 0, 'Por ejemplo: Elige el día de la sesión'),
+            sh: camp('ac-sh', 'Enlace del siguiente paso (opcional; sin él, abre «Habla con Álvaro»)', (a0.seguent || {}).href)
+        };
+        var tl = function (c) { return c.value.split('\n').map(function (v) { return v.trim(); }).filter(Boolean); };
+        var desa = boto('Listo: guardar en su espacio', function () {
+            desa.disabled = true;
+            var hoy = new Date().toISOString();
+            var deures = tl(f.deures).map(function (tx) { return { text: tx, col: 'todo', qui: 'cliente', tipus: 'gestion', origen: { tipus: 'acollida', id: 'correus', nom: 'Lo que nos has mandado' }, creat: hoy.slice(0, 10), act: hoy }; });
+            crida('PUT', { mail: x.mail, acollida: { hola: f.hola.value, sessio: f.sessio.value, contat: tl(f.contat), decidit: tl(f.decidit), preguntes: tl(f.preguntes), web: f.web.value, seguent: { text: f.st.value, href: f.sh.value } }, deures: deures })
+                .then(function () { delete borr[x.mail]; obre = null; msg = 'Guardado en el espacio de ' + (x.nom || x.mail) + '. Lo verá al entrar por su enlace; mándaselo tú cuando quieras.'; return carrega(); })
+                .catch(function (er) { desa.disabled = false; msg = 'No se ha guardado: ' + er.message; pinta(); });
+        }, 'btn-primary btn-sm');
+        w.appendChild(el('div', { class: 'accions' }, [desa, boto('Cerrar', function () { obre = null; pinta(); }, 'btn-ghost btn-sm')]));
+        w.appendChild(el('p', { class: 'nota' }, 'Nada le llega hasta que tú le mandas su enlace. Sin precios ni nombres de herramientas: lo lee ella.'));
+        return w;
     }
 
     /* El tablero de clientes (11/11/2026): «que vaya también en el iPhone».
