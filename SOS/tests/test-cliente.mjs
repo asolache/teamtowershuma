@@ -510,6 +510,30 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
+/* Busca tu oficio (veda 184): la base única da las piezas, y las cinco capas dicen qué falta */
+{
+  console.log('\n══ Busca tu oficio ══');
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const p = await ctx.newPage(), errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
+  await p.addInitScript(() => { if (!sessionStorage.getItem('fet')) { sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es'); localStorage.removeItem('tt.cliente.v1'); } });
+  await p.goto(URL_ + '#alrededor');
+  await p.fill('#cl-busca', 'bodega familiar de cava');
+  await p.waitForFunction(() => document.querySelectorAll('#cl-busca-r button').length > 0);
+  const r1 = await p.textContent('#cl-busca-r');
+  ok(/Bodega|celler/i.test(r1), 'busca «bodega familiar de cava» y propone la bodega: ' + r1.slice(0, 80));
+  await p.click('#cl-busca-r button');
+  await p.waitForFunction(() => !document.querySelector('#cl-kosha').hidden && document.querySelectorAll('#cl-kosha .capes li').length === 5);
+  ok(await p.evaluate(() => document.querySelectorAll('#cl-files .fila').length >= 3), 'con un toque, su mapa: quién está alrededor y qué se dan');
+  const capes = await p.textContent('#cl-kosha');
+  ok(/Cuerpo/.test(capes) && /Propósito/.test(capes), 'enseña las cinco capas del mapa, de Cuerpo a Propósito');
+  await p.fill('#cl-busca', 'peluquería');
+  await p.waitForFunction(() => /Peluquería/.test(document.querySelector('#cl-busca-r').textContent));
+  ok(/aún sin mapa propio/.test(await p.textContent('#cl-busca-r')), 'una actividad oficial sin mapa propio lo dice, sin inventarse uno');
+  ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
 /* Mis mapas: guardar y empezar otro, borrar con «Deshacer», el enlace de cada mapa */
 {
   console.log('\n══ Mis mapas ══');

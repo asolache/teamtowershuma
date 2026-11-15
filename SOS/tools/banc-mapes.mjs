@@ -429,10 +429,11 @@ async function main() {
     console.log('lot de ' + codis.length + ' classes amb ' + t.model + ' (' + t.effort + ') · cost probable ~' + probable(ps, 3500).toFixed(2) + ' $ · queden ' + base.pendents.length + ' pendents en total');
     const rs = await crida(ps);
     if (!rs) return;
-    const ara = new Date().toISOString().slice(0, 10);
+    const ara = new Date().toISOString().slice(0, 10), errors = [];
     rs.forEach(x => {
       const codi = x.id.replace(/^cnae-/, '').replace('_', '.'), cl = base.classes.find(c => c.codi === codi);
-      if (!x.r) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'error ' + x.error }); return; }
+      /* Un error de l'API (clau, crèdit, xarxa) no diu res de l'ofici: no es descarta, es torna a provar al lot següent. */
+      if (!x.r) { errors.push(codi + ' (' + x.error + ')'); return; }
       let o; try { o = jsonDe(x.r); } catch (e) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'json' }); return; }
       const sal = salutOfici(o), mal = sal.regles.filter(r => !r.ok).map(r => r.id);
       if (sal.punts < 70) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'salut ' + sal.punts + ' (' + mal.join(', ') + ')' }); return; }
@@ -443,6 +444,7 @@ async function main() {
     writeFileSync(GENERATS, JSON.stringify(gen, null, 1) + '\n');
     execFileSync(process.execPath, [join(ARREL, 'SOS', 'tools', 'build-base-vna.js')], { stdio: 'inherit' });
     console.log('oficis: ' + gen.oficis.length + ' a la base · ' + gen.descartats.length + ' descartats · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
+    if (errors.length) { console.error('✗ ' + errors.length + ' crides han fallat a l\'API: ' + errors.slice(0, 3).join(', ')); if (errors.length === rs.length) process.exitCode = 1; }
     return;
   }
   if (ordre === 'jutja-oficis') {

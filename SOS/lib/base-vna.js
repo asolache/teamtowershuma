@@ -20,11 +20,11 @@
 'use strict';
 
 var CAPES = [
-  { id: 'cos', kosha: 'annamaya', nom: { ca: 'Cos', es: 'Cuerpo' }, diu: { ca: 'el que es lliura', es: 'lo que se entrega' } },
-  { id: 'energia', kosha: 'pranamaya', nom: { ca: 'Energia', es: 'Energía' }, diu: { ca: 'el que circula: diners, temps', es: 'lo que circula: dinero, tiempo' } },
-  { id: 'ment', kosha: 'manomaya', nom: { ca: 'Ment', es: 'Mente' }, diu: { ca: 'el que se sap: informació, avís, saber fer', es: 'lo que se sabe: información, aviso, saber hacer' } },
-  { id: 'discerniment', kosha: 'vijnanamaya', nom: { ca: 'Discerniment', es: 'Discernimiento' }, diu: { ca: 'el que és de fiar: confiança, criteri, decisió', es: 'lo que es de fiar: confianza, criterio, decisión' } },
-  { id: 'proposit', kosha: 'anandamaya', nom: { ca: 'Propòsit', es: 'Propósito' }, diu: { ca: 'per a què: sentit, pertinença, identitat', es: 'para qué: sentido, pertenencia, identidad' } }
+  { id: 'cos', kosha: 'annamaya', nom: { ca: 'Cos', es: 'Cuerpo' }, diu: { ca: 'el que es lliura', es: 'lo que se entrega' }, pregunta: { ca: 'Què lliures tu, i què et lliuren?', es: '¿Qué entregas tú, y qué te entregan?' } },
+  { id: 'energia', kosha: 'pranamaya', nom: { ca: 'Energia', es: 'Energía' }, diu: { ca: 'el que circula: diners, temps', es: 'lo que circula: dinero, tiempo' }, pregunta: { ca: 'Qui et paga, o et dona el seu temps, i a canvi de què?', es: '¿Quién te paga, o te da su tiempo, y a cambio de qué?' } },
+  { id: 'ment', kosha: 'manomaya', nom: { ca: 'Ment', es: 'Mente' }, diu: { ca: 'el que se sap: informació, avís, saber fer', es: 'lo que se sabe: información, aviso, saber hacer' }, pregunta: { ca: 'Qui t\'avisa, t\'ensenya o t\'explica el que passa?', es: '¿Quién te avisa, te enseña o te cuenta lo que pasa?' } },
+  { id: 'discerniment', kosha: 'vijnanamaya', nom: { ca: 'Discerniment', es: 'Discernimiento' }, diu: { ca: 'el que és de fiar: confiança, criteri, decisió', es: 'lo que es de fiar: confianza, criterio, decisión' }, pregunta: { ca: 'Qui es refia de tu, et recomana o t\'ajuda a decidir?', es: '¿Quién se fía de ti, te recomienda o te ayuda a decidir?' } },
+  { id: 'proposit', kosha: 'anandamaya', nom: { ca: 'Propòsit', es: 'Propósito' }, diu: { ca: 'per a què: sentit, pertinença, identitat', es: 'para qué: sentido, pertenencia, identidad' }, pregunta: { ca: 'Qui comparteix amb tu el per a què, i què hi troba?', es: '¿Quién comparte contigo el para qué, y qué encuentra en ello?' } }
 ];
 
 var norm = function (s) { return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); };

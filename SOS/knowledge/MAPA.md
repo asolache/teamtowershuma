@@ -13,19 +13,19 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 586 · 25470 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 586 · 25473 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 173 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
-| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 26 · 618 KB |
+| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 26 · 619 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 26 · 10877 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 400 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
 | `SOS/sql/` | Esquema de la part opcional amb servidor | 1 · 6 KB |
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
 | `boreal-light/` | La vista proposta per a Boreal Light GmbH: què aportem a la seva representació a Espanya, l'aigua com a ecosistema i les preguntes per a la primera conversa. Sense preus ni condicions, i fora dels cercadors | 5 · 263 KB |
-| `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 2 · 299 KB |
+| `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 2 · 308 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 84 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 176 KB |
 | `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) el preu de cada client, només per a ell (proposta), i el seu dibuix, guardat amb el seu compte (fitxa), i la seva web d'ara, llegida amb el seu sí (llegeix-web), i el router que tria quin model de Claude fa cada tasca i compta el que gasta cada projecte (ia-router), i els proveïdors del banc de proves de la IA (ia-proveidors) | 18 · 124 KB |
@@ -38,7 +38,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 43 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 142 · 1823 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 142 · 1825 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 80 · 1668 KB |
 
 ## saber
@@ -47,7 +47,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 235 · 4606 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 235 · 4605 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 77 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 13 · 1340 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
@@ -57,7 +57,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 3 · 32 KB |
 | `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 16 · 151 KB |
-| `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 66 · 2079 KB |
+| `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 66 · 2078 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
 
 ## arxiu
@@ -123,4 +123,4 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 
 ---
 
-*45 carpetes declarades · generat des de l'arbre, no escrit.*
+*44 carpetes declarades · generat des de l'arbre, no escrit.*
