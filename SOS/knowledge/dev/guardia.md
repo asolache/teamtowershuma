@@ -46,6 +46,12 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 
 **B · Que el que diu el repo sigui veritat**
 9. [ ] Passar `node SOS/tests/run.mjs` sencer i arreglar la causa dels que fallin (un per PR)
+   - Passada del 15/11/2026: 10 de 137 fitxers fallen.
+   - [x] `test-escola` · l'escola ja va en pantalles; el test hi arriba per `#id`, i la prova de la lletra ja no depèn de la font (#381)
+   - [ ] `test-cost`, `test-endreca`, `test-ia`, `test-mapavalor`, `test-menu`, `test-vna-llenc` · toquen fitxers dels PR oberts #376/#378 (portada, catàleg, `vna.html`, `build-nav.js`): tornar-hi quan es mergegin
+   - [ ] `test-rols`, `test-ux-flux` · són de l'app `SOS/index.html` (fil «Revisión UX de SOS»)
+   - [ ] `test-cliente` · és de `cliente/` (fil del kanban)
+   - Nota: les peces 1–8 es van saltar el 15/11 perquè #376/#378 toquen aquells fitxers.
 10. [ ] Enllaços morts del lloc i del SOS (`build-nav.js --check` i un rastreig de `href` interns)
 11. [ ] Textos sense traduir: bloc de la pinya de `vna.html` (19 cadenes), bloc de l'embut del blog
 
