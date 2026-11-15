@@ -224,7 +224,10 @@
     perfil: function () { return estat.perfil || ''; },
     de: function () { return estat.de || ''; },
     contacta: contacta,
+    /* La portada (SOS/lib/portada.js) recorda la porta triada amb la mateixa clau. */
+    tria: function (p) { if (PERFILS.indexOf(p) < 0) return; estat.perfil = p; desa(estat); pintaCami(); },
     PERFILS: PERFILS,
-    CAMINS: CAMINS
+    CAMINS: CAMINS,
+    NOMS: NOMS
   };
 })();

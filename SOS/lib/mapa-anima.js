@@ -30,7 +30,15 @@
       c1: 'Sense definir', c2: 'Definit', c3: 'Va sol', fa: 'Ho fa una persona',
       qui: 'Qui el dona → qui el rep', quan: 'Quan passa i què porta',
       honest: 'Funciona avui al tauler d\'una productora d\'esdeveniments. A la teva web arrenca amb els pilots.',
-      a11y: 'Mapa de valor animat: {0} rols i {1} lliuraments' },
+      a11y: 'Mapa de valor animat: {0} rols i {1} lliuraments',
+      pl: { k: 'El teu negoci, vist des de dalt', cas: 'Un cas real: {0}. Els noms no hi són.', a11y: 'Pel·lícula del flux de valor en cinc escenes', tu: 'Tu',
+        e: [['Qui ets', 'Ets aquí, al mig. I sé qui t\'envolta.'],
+          ['On ets', 'Això és el que passa de debò: el que cobres… i el que ningú et paga però t\'aguanta.'],
+          ['On se t\'escapa', 'Aquí se t\'escapa el valor.'],
+          ['Ho resolem', 'Ho definim i ho posem en marxa. En dies, no en mesos.'],
+          ['Va sol', 'El que va sol és temps que recuperes.']],
+        sols: 'lliuraments ja van sols', punt: 'i {0} més, a punt', val: 'Quant val això per a tu?', cta: 'Mira el teu en cinc minuts →', q: 'Què vols fer? ↓',
+        pausa: 'Atura la pel·lícula', segueix: 'Continua la pel·lícula' } },
     es: { tots: 'entregables', sol: 'ya van solos', punt: 'listos para ir solos', muntar: 'por montar', persona: 'de persona a persona',
       tang: 'tangible: se puede reclamar', intang: 'intangible: confianza, ideas, reputación',
       pri: 'Dónde trabajar para mejorar el flujo', p1: 'Automatiza lo que ya está definido', p2: 'Monta lo que falta',
@@ -43,7 +51,15 @@
       c1: 'Sin definir', c2: 'Definido', c3: 'Va solo', fa: 'Lo hace una persona',
       qui: 'Quién lo da → quién lo recibe', quan: 'Cuándo pasa y qué lleva',
       honest: 'Funciona hoy en el tablero de una productora de eventos. En tu web arranca con los pilotos.',
-      a11y: 'Mapa de valor animado: {0} roles y {1} entregables' },
+      a11y: 'Mapa de valor animado: {0} roles y {1} entregables',
+      pl: { k: 'Tu negocio, visto desde arriba', cas: 'Un caso real: {0}. Los nombres no están.', a11y: 'Película del flujo de valor en cinco escenas', tu: 'Tú',
+        e: [['Quién eres', 'Estás aquí, en el centro. Y sé quién te rodea.'],
+          ['Dónde estás', 'Esto es lo que pasa de verdad: lo que cobras… y lo que nadie te paga pero te sostiene.'],
+          ['Dónde se te escapa', 'Aquí se te escapa el valor.'],
+          ['Lo resolvemos', 'Lo definimos y lo ponemos en marcha. En días, no en meses.'],
+          ['Va solo', 'Lo que va solo es tiempo que recuperas.']],
+        sols: 'entregables ya van solos', punt: 'y {0} más, listos', val: '¿Cuánto vale eso para ti?', cta: 'Mira el tuyo en cinco minutos →', q: '¿Qué quieres hacer? ↓',
+        pausa: 'Para la película', segueix: 'Sigue la película' } },
     en: { tots: 'deliverables', sol: 'already run on their own', punt: 'ready to run on their own', muntar: 'still to set up', persona: 'person to person',
       tang: 'tangible: can be claimed', intang: 'intangible: trust, ideas, reputation',
       pri: 'Where to work to improve the flow', p1: 'Automate what is already defined', p2: 'Set up what is missing',
@@ -126,14 +142,15 @@
   var quiet = function () { return g.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; };
 
   /* ── El mapa ──────────────────────────────────────────────────────────── */
-  function mapa(cont, C) {
-    posaEstil();
-    /* Un altre cas pot portar els seus textos (C.textos[L]), les seves icones
-       (C.icones, per rol en castellà) i deixar de banda les prioritats
-       (data-prioritats="no"), sense tocar la portada. */
-    var L = ll(), t = Object.assign({}, T[L], (C.textos || {})[L]), R = C.roles[L], fx = C.fluxos;
+  /* El dibuix sol (rols, lliuraments, punts que circulen i insígnies de les
+     prioritats), sense text al voltant: el fan servir el mapa d'aquí sota i
+     la pel·lícula de la primera pantalla. Un altre cas pot portar els seus
+     textos (C.textos[L]), les seves icones (C.icones, per rol en castellà) i
+     deixar de banda les prioritats (ambPri === false). */
+  var nDib = 0;
+  function dibuix(C, L, ambPri) {
+    var t = Object.assign({}, T[L], (C.textos || {})[L]), pre = 'ma' + (nDib++) + 'p', R = C.roles[L], fx = C.fluxos;
     icPropies = C.icones || null;
-    var ambPri = cont.getAttribute('data-prioritats') !== 'no';
     /* El rol que més toca va al centre; la resta, en rotllana, en l'ordre que
        creua menys línies: cada rol al costat d'aquell amb qui més es dona. */
     var grau = R.map(function (r) { return fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; }).length; });
@@ -174,16 +191,13 @@
     if (conc && !conc.ok) PRI.push({ n: 3, c: 'var(--indigo)', t: t.p3, d: f(t.p3d, pct, menor(R[mig])), rol: R[mig], fl: fx.filter(function (x) { return x.de[L] === R[mig] || x.a[L] === R[mig]; }) });
     else if (humans.length) PRI.push({ n: 3, c: COLOR.persona, t: t.p4, d: f(t.p4d, humans.length, llista(humans.slice(0, 3).map(function (x) { return x.que[L]; }), L)), fl: humans });
 
-    if (!ambPri) PRI = [];
-    var vell = cont.querySelector('.ma-svg'); if (vell && vell._me) vell._me.treu();
-    cont.textContent = '';
-    var grid = el('div', { class: 'ma-grid' }), esq = el('div'), dre = el('div', { class: 'ma-pri' });
+    if (ambPri === false) PRI = [];
     var svg = el('svg', { class: 'ma-svg', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': f(t.a11y, R.length, fx.length) });
     var gF = el('g'), gD = el('g'), gN = el('g'), gB = el('g'), quiets = quiet();
     var vies = fx.map(function (x, i) {
       var A = pos[x.de[L]], B = pos[x.a[L]], dx = B[0] - A[0], dy = B[1] - A[1], d = Math.sqrt(dx * dx + dy * dy) || 1;
       var k = 26, Q = [(A[0] + B[0]) / 2 - dy / d * k, (A[1] + B[1]) / 2 + dx / d * k], e = estat(x);
-      var p = el('path', { id: 'ma-p' + i, class: 'ma-f', d: 'M' + A.join(' ') + 'Q' + Q.join(' ') + ' ' + B.join(' '), stroke: COLOR[e] });
+      var p = el('path', { id: pre + i, class: 'ma-f', d: 'M' + A.join(' ') + 'Q' + Q.join(' ') + ' ' + B.join(' '), stroke: COLOR[e] });
       if (x.mena === 'intangible') p.setAttribute('stroke-dasharray', '5 5');
       p.appendChild(el('title', {}, x.de[L] + ' → ' + x.a[L] + ': ' + x.que[L]));
       gF.appendChild(p);
@@ -191,7 +205,7 @@
       if (e === 'muntar' || quiets) { var m = [0.25 * A[0] + 0.5 * Q[0] + 0.25 * B[0], 0.25 * A[1] + 0.5 * Q[1] + 0.25 * B[1]]; dot.setAttribute('cx', m[0]); dot.setAttribute('cy', m[1]); if (e === 'muntar') dot.setAttribute('fill-opacity', '.45'); }
       else {
         var v = VEL[x.qui] || 4, am = el('animateMotion', { dur: v + 's', repeatCount: 'indefinite', begin: (-(i * 0.37) % v).toFixed(2) + 's', rotate: 'auto' });
-        var mp = el('mpath'); mp.setAttribute('href', '#ma-p' + i); am.appendChild(mp); dot.appendChild(am);
+        var mp = el('mpath'); mp.setAttribute('href', '#' + pre + i); mp.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + pre + i); am.appendChild(mp); dot.appendChild(am);
       }
       gD.appendChild(dot);
       return { x: x, p: p, dot: dot, mig: [0.25 * A[0] + 0.5 * Q[0] + 0.25 * B[0], 0.25 * A[1] + 0.5 * Q[1] + 0.25 * B[1]] };
@@ -203,10 +217,6 @@
       n.appendChild(el('circle', { cx: P[0], cy: P[1], r: r === R[mig] ? 38 : 30 }));
       n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, icona(C.roles.es[R.indexOf(r)])));
       n.appendChild(el('text', { x: P[0], y: P[1] + (r === R[mig] ? 58 : 50) }, curt(r)));
-      n.addEventListener('mouseenter', function () { tria(fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; }), r); });
-      n.addEventListener('focus', function () { tria(fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; }), r); });
-      n.addEventListener('mouseleave', function () { tria(null); });
-      n.addEventListener('blur', function () { tria(null); });
       gN.appendChild(n); nodes[r] = n;
     });
     /* Les insígnies numerades: on toca cada prioritat. */
@@ -221,10 +231,26 @@
       });
     });
     [gF, gD, gN, gB].forEach(function (x) { svg.appendChild(x); });
-    esq.appendChild(svg);
-
     var compte = { sol: 0, punt: 0, muntar: 0, persona: 0 };
     fx.forEach(function (x) { compte[estat(x)]++; });
+    return { svg: svg, vies: vies, nodes: nodes, pos: pos, PRI: PRI, R: R, fx: fx, mig: mig, compte: compte, quiets: quiets };
+  }
+
+  function mapa(cont, C) {
+    posaEstil();
+    var L = ll(), t = Object.assign({}, T[L], (C.textos || {})[L]), D = dibuix(C, L, cont.getAttribute('data-prioritats') !== 'no'), R = D.R, fx = D.fx, svg = D.svg, vies = D.vies, nodes = D.nodes, PRI = D.PRI, quiets = D.quiets, compte = D.compte;
+    var vell = cont.querySelector('.ma-svg'); if (vell && vell._me) vell._me.treu();
+    cont.textContent = '';
+    var grid = el('div', { class: 'ma-grid' }), esq = el('div'), dre = el('div', { class: 'ma-pri' });
+    Object.keys(nodes).forEach(function (r) {
+      var n = nodes[r], seus = fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; });
+      n.addEventListener('mouseenter', function () { tria(seus, r); });
+      n.addEventListener('focus', function () { tria(seus, r); });
+      n.addEventListener('mouseleave', function () { tria(null); });
+      n.addEventListener('blur', function () { tria(null); });
+    });
+    esq.appendChild(svg);
+
     var peu = el('p', { class: 'ma-peu' });
     var s0 = el('span'); s0.appendChild(el('b', {}, fx.length)); s0.appendChild(document.createTextNode(t.tots)); peu.appendChild(s0);
     ['sol', 'punt', 'muntar', 'persona'].forEach(function (k) {
@@ -324,7 +350,144 @@
     if (quiet()) { fase = 2; omple(sols[0]); card.classList.add('def', 'sol'); posa(2); ps.forEach(function (s) { s.classList.add('on'); }); return; }
     fase = 0; pas1();
     cont._ma = setInterval(function () { if (!document.hidden) pas1(); }, 2200);
-    g.addEventListener('resize', function () { posa((fase + 2) % 3); });
+    if (cont._rz) g.removeEventListener('resize', cont._rz);
+    cont._rz = function () { posa((fase + 2) % 3); };
+    g.addEventListener('resize', cont._rz);
+  }
+
+
+  /* ── La pel·lícula ────────────────────────────────────────────────────────
+     14/11/2026. Àlvaro: «que el primer que vegis no sigui text: una
+     autoexplicació del flux de valor amb les seves vistes, que s'intueixi com
+     en una pel·lícula el valor, la presa de decisions i com d'àgil pot ser
+     automatitzar aquests processos un cop els modeles».
+     Cinc escenes sobre el mateix dibuix i el mateix cas: els rols, els
+     intercanvis, les decisions (les prioritats de MapaValor), el tauler (el
+     de sota) i el que va sol. Una frase per escena; cada escena té el seu botó
+     i es pot aturar. Amb moviment reduït no s'engega sola. */
+  var DUR = [4200, 6500, 7500, 7600, 7200];
+  function pelicula(cont, C) {
+    posaEstil(); estilPeli();
+    var L = ll(), t = T[L], P = t.pl || T.es.pl, D = dibuix(C, L), svg = D.svg;
+    if (cont._pl) clearInterval(cont._pl);
+    if (cont._tl) clearInterval(cont._tl._ma);
+    cont.textContent = '';
+    cont.setAttribute('role', 'region'); cont.setAttribute('aria-label', P.a11y);
+    svg.classList.add('pl-svg');
+    var nn = Object.keys(D.nodes);
+    nn.forEach(function (r, i) { D.nodes[r].style.setProperty('--dl', (i * 0.32) + 's'); });
+    D.vies.forEach(function (v, i) { var dl = (0.3 + i * 0.09).toFixed(2) + 's'; v.p.style.setProperty('--dl', dl); v.dot.style.setProperty('--dl', dl); v.p.classList.add('pl-' + estat(v.x)); v.dot.classList.add('pl-' + estat(v.x)); });
+    var esc = el('div', { class: 'pl-esc' }), stage = el('div', { class: 'pl-stage' }), tl = el('div', { class: 'pl-tl' });
+    stage.appendChild(svg); stage.appendChild(tl);
+    var gran = el('p', { class: 'pl-gran' });
+    gran.appendChild(el('b', {}, D.compte.sol)); gran.appendChild(document.createTextNode(' ' + P.sols));
+    gran.appendChild(el('small', {}, f(P.punt, D.compte.punt)));
+    gran.appendChild(el('em', { class: 'pl-val' }, P.val));
+    /* «Tu»: el visitant es reconeix al mig del dibuix des de la primera escena. */
+    var cM = D.pos[D.R[D.mig]], tu = el('text', { x: cM[0], y: cM[1] - 48, class: 'pl-tu' }, P.tu);
+    svg.appendChild(tu);
+    var cap = el('p', { class: 'pl-cap', 'aria-live': 'polite' }), sub = el('small', { class: 'pl-sub' });
+    var fi = el('p', { class: 'pl-fi' });
+    fi.appendChild(el('a', { class: 'btn-primary', href: cont.getAttribute('data-cta') || '/cliente/#alrededor' }, P.cta));
+    fi.appendChild(el('a', { class: 'btn-ghost', href: cont.getAttribute('data-q') || '#inici' }, P.q));
+    var bar = el('div', { class: 'pl-bar' }), pausa = el('button', { type: 'button', class: 'pl-pausa', 'aria-label': P.pausa }, '❚❚');
+    var ch = el('ol', { class: 'pl-ch' });
+    var bts = P.e.map(function (e, i) {
+      var li = el('li'), b = el('button', { type: 'button', 'aria-label': (i + 1) + ' · ' + e[0] });
+      b.appendChild(el('b', {}, i + 1)); b.appendChild(el('span', {}, ' · ' + e[0])); b.appendChild(el('i', { 'aria-hidden': 'true' }));
+      b.addEventListener('click', function () { va(i); });
+      li.appendChild(b); ch.appendChild(li); b._li = li; return b;
+    });
+    bar.appendChild(pausa); bar.appendChild(ch);
+    esc.appendChild(el('p', { class: 'pl-k' }, P.k));
+    esc.appendChild(stage); esc.appendChild(cap); esc.appendChild(fi); esc.appendChild(bar);
+    esc.appendChild(el('p', { class: 'pl-cas' }, f(P.cas, menor(C.nom[L]))));
+    cont.appendChild(esc);
+
+    var ara = 0, temps = 0, sub0 = -1, parat = D.quiets, vist = true;
+    function frase(txt, peu) { cap.textContent = txt; if (peu) { sub.textContent = peu; cap.appendChild(sub); } }
+    function va(i) {
+      ara = i; temps = 0; sub0 = -1;
+      esc.setAttribute('data-e', i + 1);
+      bts.forEach(function (b, k) { b.classList.toggle('on', k === i); b._li.classList.toggle('on', k === i); b.classList.toggle('fet', k < i); b.setAttribute('aria-current', k === i ? 'step' : 'false'); b.lastChild.style.width = k < i ? '100%' : '0'; });
+      svg.classList.remove('ma-tria');
+      D.vies.forEach(function (v) { v.p.classList.remove('on'); v.dot.classList.remove('on'); });
+      nn.forEach(function (r) { D.nodes[r].classList.remove('on'); });
+      if (i === 3) { tauler(tl, C); cont._tl = tl; } else if (cont._tl) { clearInterval(tl._ma); }
+      frase(P.e[i][1]); if (i === 4) cap.appendChild(gran);
+      pas(0);
+    }
+    /* Dins de cada escena, el que canvia cada estona: quin lliurament es
+       llegeix, quina prioritat s'il·lumina. */
+    function pas(ms) {
+      var k;
+      if (ara === 1) {
+        k = Math.floor(Math.max(0, ms - 1800) / 1500);
+        var mostra = D.vies.filter(function (v) { return estat(v.x) !== 'muntar'; }), v = mostra[(k * 5) % mostra.length];
+        if (k !== sub0 && ms > 1800) { sub0 = k; frase(P.e[1][1], v.x.de[L] + ' → ' + v.x.a[L] + ': ' + v.x.que[L] + (v.x.mena === 'intangible' ? ' ✦' : '')); }
+      }
+      if (ara === 2) {
+        k = Math.min(D.PRI.length - 1, Math.floor(ms / (DUR[2] / D.PRI.length)));
+        if (k !== sub0) {
+          sub0 = k; var pr = D.PRI[k];
+          svg.classList.add('ma-tria');
+          D.vies.forEach(function (v) { var on = pr.fl.indexOf(v.x) >= 0; v.p.classList.toggle('on', on); v.dot.classList.toggle('on', on); });
+          nn.forEach(function (r) { D.nodes[r].classList.toggle('on', r === pr.rol); });
+          frase(P.e[2][1], pr.n + ' · ' + pr.t);
+        }
+      }
+    }
+    function commuta() {
+      parat = !parat; esc.classList.toggle('pl-parat', parat);
+      pausa.textContent = parat ? '▶' : '❚❚'; pausa.setAttribute('aria-label', parat ? P.segueix : P.pausa);
+    }
+    pausa.addEventListener('click', commuta);
+    if ('IntersectionObserver' in g) new IntersectionObserver(function (es) { vist = es[0].isIntersecting; }).observe(cont);
+    if (D.quiets) { esc.classList.add('pl-parat'); pausa.textContent = '▶'; pausa.setAttribute('aria-label', P.segueix); va(4); return; }
+    void esc.offsetWidth; va(0);
+    cont._pl = setInterval(function () {
+      if (parat || !vist || document.hidden) return;
+      temps += 100; pas(temps);
+      bts[ara].lastChild.style.width = Math.min(100, temps / DUR[ara] * 100) + '%';
+      if (temps >= DUR[ara]) va((ara + 1) % DUR.length);
+    }, 100);
+  }
+  var estilP = false;
+  function estilPeli() {
+    if (estilP) return; estilP = true;
+    var s = document.createElement('style');
+    s.textContent =
+      '.pl-esc{display:flex;flex-direction:column;min-height:inherit;padding:1rem 0 .6rem}' +
+      '.pl-k{margin:0;font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center}' +
+      '.pl-stage{position:relative;flex:1;display:grid;place-items:center;min-height:0}' +
+      '.pl-svg{grid-area:1/1;width:min(100%,calc(62vh * 1.3));width:min(100%,calc(62svh * 1.3));height:auto;aspect-ratio:700/540;transition:opacity .6s,transform .8s cubic-bezier(.5,0,.2,1)}' +
+      '.pl-svg .ma-n{opacity:0;transform:scale(.4);transform-box:fill-box;transform-origin:center;transition:opacity .5s,transform .6s cubic-bezier(.3,1.4,.5,1)}' +
+      '.pl-svg .ma-f,.pl-svg .ma-d{opacity:0;transition:opacity .5s}.pl-svg .ma-b{opacity:0;transition:opacity .4s}' +
+      '[data-e] .pl-svg .ma-n{opacity:1;transform:none}' +
+      '[data-e="2"] .pl-svg .ma-f,[data-e="3"] .pl-svg .ma-f{opacity:.55}[data-e="2"] .pl-svg .ma-d,[data-e="3"] .pl-svg .ma-d{opacity:1}' +
+      '[data-e="3"] .pl-svg.ma-tria .ma-f{opacity:.1}[data-e="3"] .pl-svg .ma-f.on{opacity:1}[data-e="3"] .pl-svg.ma-tria .ma-d{opacity:.12}[data-e="3"] .pl-svg .ma-d.on{opacity:1}[data-e="3"] .pl-svg .ma-b{opacity:1}' +
+      '[data-e="4"] .pl-svg{opacity:.08;transform:scale(.85)}' +
+      '[data-e="5"] .pl-svg .ma-f{opacity:.1}[data-e="5"] .pl-svg .ma-f.pl-sol{opacity:1;stroke-width:3.2}[data-e="5"] .pl-svg .ma-d.pl-sol{opacity:1}[data-e="5"] .pl-svg .ma-f.pl-punt{opacity:.45}' +
+      '[data-e="1"] .pl-svg .ma-n,[data-e="2"] .pl-svg .ma-f,[data-e="2"] .pl-svg .ma-d{transition-delay:var(--dl,0s)}' +
+      '.pl-tl{grid-area:1/1;width:100%;max-width:46rem;opacity:0;pointer-events:none;transition:opacity .5s}[data-e="4"] .pl-tl{opacity:1;pointer-events:auto}' +
+      '.pl-tl .ma-t{margin:0}.pl-tl .ma-cols{grid-template-columns:repeat(3,1fr)}.pl-tl .ma-col{min-height:9rem}' +
+      '.pl-gran{display:block;margin:.3rem 0 0;font-size:1rem;animation:pl-in .6s .6s both}@keyframes pl-in{from{opacity:0;transform:translateY(.6rem)}}' +
+      '.pl-tu{font:800 20px var(--sans);fill:var(--green);paint-order:stroke;stroke:var(--bg);stroke-width:6px;text-anchor:middle;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .5s 1.2s}[data-e] .pl-tu{opacity:1}' +
+      '.pl-val{display:block;margin-top:.5rem;font-style:normal;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--text);animation:pl-in .6s 2s both}' +
+      '.pl-gran b{font-size:2.4rem;color:var(--green);vertical-align:-.12em}.pl-gran small{display:block;font-weight:400;color:var(--muted)}' +
+      '.pl-cap{min-height:4.2em;margin:.4rem auto 0;max-width:40rem;text-align:center;font-family:var(--sans);font-size:clamp(1.15rem,2.6vw,1.6rem);font-weight:700;line-height:1.25}' +
+      '.pl-sub{display:block;margin-top:.35rem;font-family:var(--body,inherit);font-size:.95rem;font-weight:400;color:var(--light);line-height:1.4}' +
+      '.pl-fi{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin:.5rem 0;opacity:.0;transition:opacity .6s}[data-e="5"] .pl-fi,.pl-parat .pl-fi{opacity:1}' +
+      '.pl-bar{display:flex;gap:.5rem;align-items:stretch;margin:.4rem 0 0}' +
+      '.pl-pausa{all:unset;flex:none;width:2.4rem;border:1px solid var(--border);border-radius:8px;text-align:center;cursor:pointer;font-size:.8rem;color:var(--text)}' +
+      '.pl-ch{flex:1;display:flex;gap:.35rem;list-style:none;margin:0;padding:0}.pl-ch li{flex:1;min-width:0;transition:flex .4s}' +
+      '.pl-ch button{all:unset;box-sizing:border-box;position:relative;display:block;width:100%;padding:.45rem .4rem .6rem;border-radius:8px;cursor:pointer;font-size:.78rem;line-height:1.2;color:var(--muted);background:var(--panel);overflow:hidden}' +
+      '.pl-ch button.on{color:var(--text);font-weight:700}.pl-ch i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--green)}' +
+      '.pl-pausa:focus-visible,.pl-ch button:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}' +
+      '.pl-cas{margin:.4rem 0 0;text-align:center;font-size:.75rem;color:var(--muted)}' +
+      '@media (max-width:800px){.pl-svg{width:min(100%,calc(46vh * 1.3));width:min(100%,calc(46svh * 1.3))}.pl-ch span{font-size:.68rem}.pl-tl .ma-col{min-height:8rem;padding:.4rem}.pl-tl .ma-card{font-size:.68rem;padding:.35rem .4rem}.pl-tl .ma-card b{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pl-tl .ma-card small{display:none}.pl-tl .ma-card .ma-lv{font-size:.66rem}.pl-cas{font-size:.68rem}.pl-tl .ma-pas{font-size:.68rem}.pl-tl .ma-hon{display:none}.pl-gran b{font-size:2rem}.pl-gran small{display:none}.pl-val{margin-top:.2rem}.pl-fi .btn-primary{display:none}}' +
+      '@media (max-width:560px){.pl-ch li.on{flex:3.5}.pl-ch li:not(.on) span{display:none}.pl-ch button{text-align:center;white-space:nowrap;text-overflow:ellipsis}.pl-ch li.on button{text-align:left}}';
+    document.head.appendChild(s);
   }
 
   function engega() {
@@ -332,7 +495,10 @@
     var cas = function (n) { return g[n.getAttribute('data-cas') || 'CasAutomatitzat']; };
     var tots = [].slice.call(document.querySelectorAll('[data-anima]')).filter(cas);
     if (!tots.length) return;
-    var pinta = function (n) { clearInterval(n._ma); (n.getAttribute('data-anima') === 'tauler' ? tauler : mapa)(n, cas(n)); n._fet = 1; };
+    var FS = { tauler: tauler, pelicula: pelicula };
+    /* Si una peça falla (un navegador vell), es buida: la pel·lícula buida es plega
+       i el que hi ha a sota queda a la vista. */
+    var pinta = function (n) { clearInterval(n._ma); clearInterval(n._pl); try { (FS[n.getAttribute('data-anima')] || mapa)(n, cas(n)); } catch (e) { n.textContent = ''; } n._fet = 1; };
     var io = 'IntersectionObserver' in g ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting && !e.target._fet) pinta(e.target); });
     }, { rootMargin: '200px' }) : null;
@@ -340,6 +506,6 @@
     new MutationObserver(function () { tots.forEach(function (n) { if (n._fet) pinta(n); }); })
       .observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   }
-  g.MapaAnima = { mapa: mapa, tauler: tauler, T: T };
+  g.MapaAnima = { mapa: mapa, tauler: tauler, pelicula: pelicula, dibuix: dibuix, T: T };
   if (typeof document !== 'undefined') { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engega); else engega(); }
 })(typeof window !== 'undefined' ? window : this);
