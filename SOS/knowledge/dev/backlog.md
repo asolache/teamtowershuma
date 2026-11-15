@@ -5561,3 +5561,30 @@ el disseny al mòbil, estàndard. Pla complet a
   folksonomia, faceta visibilitat → web / extranet / intern), un arbre de sèrie
   per tipus de projecte; vistes Negoci i Sistema; motor sense llegir els
   560 KB de `vna-suport.html` al mòbil; logo i foto de portada al panell.
+
+### Crea tu mapa amb el que ja sabem · el següent pas (15/11/2026)
+
+L'Àlvar, 15/11/2026 (fil «Llevar el mapa de valor al siguiente paso»): que el
+mapa surti del nostre coneixement de VNA per capes (koshas), amb les vistes del
+cervell per navegar-lo i el kanban únic per automatitzar-lo; «guarda todo esto
+para ir haciendo». Revisió a
+`/mnt/project-files/producto/mapa-siguiente-paso/revision-y-propuestas.md`.
+Es tanca cada punt quan l'Àlvar el valida a la preview.
+
+- **Pendent 1 · El mapa neix del que ja sabem:** l'esborrany surt de
+  `models-mapa.js` (sectors i oficis) i del banc `vna/banc-mapes/` sense IA, al
+  navegador; la IA només poleix.
+- **Pendent 2 · Cada intercanvi a la seva capa:** cada flux porta el seu kosha
+  (annamaya → anandamaya), amb la mateixa llista de capes que
+  `codex-sintesi.md`.
+- **Pendent 3 · Les vistes del cervell sobre el mapa del client:** àguila,
+  castellera i pinya alimentades pel mapa, no pel repositori.
+- **Pendent 4 · Del mapa al kanban únic:** cada intercanvi que es repeteix és
+  una targeta (Backlog → Haciendo → Hecho → Validado) amb el seu nivell
+  (`automatitzable.json`); depèn de `SOS/lib/kanban.js` a main.
+- **Pendent 5 · Tot al seu ordinador:** mapa, flux viu i tauler a IndexedDB,
+  exportables com el seu cervell.
+- **Ara (demanat el mateix dia):** inventari del coneixement VNA i proposta
+  d'acotar en poques preguntes fins a donar-li les peces del mapa perquè només
+  les validi i les col·loqui. Doc a
+  `/mnt/project-files/producto/mapa-siguiente-paso/conocimiento-vna-y-acotado.md`.
