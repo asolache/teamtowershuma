@@ -59,13 +59,26 @@
           ['Lo resolvemos', 'Lo definimos y lo ponemos en marcha. En días, no en meses.'],
           ['Va solo', 'Lo que va solo es tiempo que recuperas.']],
         sols: 'entregables ya van solos', punt: 'y {0} más, listos', val: '¿Cuánto vale eso para ti?', cta: 'Mira el tuyo en cinco minutos →', q: '¿Qué quieres hacer? ↓',
-        pausa: 'Para la película', segueix: 'Sigue la película' } }
+        pausa: 'Para la película', segueix: 'Sigue la película' } },
+    en: { tots: 'deliverables', sol: 'already run on their own', punt: 'ready to run on their own', muntar: 'still to set up', persona: 'person to person',
+      tang: 'tangible: can be claimed', intang: 'intangible: trust, ideas, reputation',
+      pri: 'Where to work to improve the flow', p1: 'Automate what is already defined', p2: 'Set up what is missing',
+      p3: 'Share the load', p1d: '{0} exchanges already defined, mostly in {1}: with {2}.', p2d: '{0}.',
+      p3d: '{0}% of what flows goes through {1}. If that role fails, everything stops: a human tower with a thin base.',
+      p4: 'Look after what is never invoiced', p4d: '{0} deliverables of trust, such as {1}. They are not automated: they are recorded, and the map warns if they stop.',
+      pinya: 'The value network is the base of the human tower: if it holds, the child on top (the project) reaches the top. Every deliverable that flows is one more person pushing.',
+      valor: 'One person and their network carry what used to need an office.', i: 'and',
+      t1: 'You draw the flow', t2: 'You define it', t3: 'The board automates it',
+      c1: 'Not defined', c2: 'Defined', c3: 'Runs on its own', fa: 'A person does it',
+      qui: 'Who gives it → who receives it', quan: 'When it happens and what it carries',
+      honest: 'It runs today on the board of an events company. On your website it starts with the pilots.',
+      a11y: 'Animated value map: {0} roles and {1} deliverables' }
   };
   var ICONA = [[/encarg/, '🏢'], [/reven/, '🤝'], [/produ/, '🎯'], [/acoge|acull/, '🏡'], [/vin|vi$/, '🍷'],
     [/sirve|serveix/, '🍽️'], [/dinami/, '🎪'], [/asist|assist/, '👥'], [/factur/, '🧾']];
   var VEL = { solo: 1.6, ia: 2.4, maquina: 2.4, persona: 5.5 };
 
-  function ll() { return document.documentElement.lang === 'es' ? 'es' : 'ca'; }
+  function ll() { var l = document.documentElement.lang; return T[l] ? l : 'ca'; }
   function f(s) { var a = arguments; return s.replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }); }
   function el(tag, at, txt) {
     var e = /^(svg|g|path|circle|text|tspan|title|animateMotion|mpath)$/.test(tag) ? document.createElementNS(NS, tag) : document.createElement(tag);
@@ -73,7 +86,8 @@
     if (txt != null) e.textContent = txt;
     return e;
   }
-  function icona(nom) { var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
+  var icPropies = null;
+  function icona(nom) { if (icPropies && icPropies[nom]) return icPropies[nom]; var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
   /* «Quien elabora el vino» → «Quien elabora»; «Qui hi assisteix» es queda sencer. */
   function curt(nom) { var w = nom.split(' '); return w.slice(0, /^(lo|el|la|hi|ho|les|los|l'.*)$/.test(w[1]) ? 3 : 2).join(' '); }
   function llista(xs, L) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' ' + T[L].i + ' ' + xs[xs.length - 1]; }
@@ -130,10 +144,13 @@
   /* ── El mapa ──────────────────────────────────────────────────────────── */
   /* El dibuix sol (rols, lliuraments, punts que circulen i insígnies de les
      prioritats), sense text al voltant: el fan servir el mapa d'aquí sota i
-     la pel·lícula de la primera pantalla. */
+     la pel·lícula de la primera pantalla. Un altre cas pot portar els seus
+     textos (C.textos[L]), les seves icones (C.icones, per rol en castellà) i
+     deixar de banda les prioritats (ambPri === false). */
   var nDib = 0;
-  function dibuix(C, L) {
-    var t = T[L], pre = 'ma' + (nDib++) + 'p', R = C.roles[L], fx = C.fluxos;
+  function dibuix(C, L, ambPri) {
+    var t = Object.assign({}, T[L], (C.textos || {})[L]), pre = 'ma' + (nDib++) + 'p', R = C.roles[L], fx = C.fluxos;
+    icPropies = C.icones || null;
     /* El rol que més toca va al centre; la resta, en rotllana, en l'ordre que
        creua menys línies: cada rol al costat d'aquell amb qui més es dona. */
     var grau = R.map(function (r) { return fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; }).length; });
@@ -174,6 +191,7 @@
     if (conc && !conc.ok) PRI.push({ n: 3, c: 'var(--indigo)', t: t.p3, d: f(t.p3d, pct, menor(R[mig])), rol: R[mig], fl: fx.filter(function (x) { return x.de[L] === R[mig] || x.a[L] === R[mig]; }) });
     else if (humans.length) PRI.push({ n: 3, c: COLOR.persona, t: t.p4, d: f(t.p4d, humans.length, llista(humans.slice(0, 3).map(function (x) { return x.que[L]; }), L)), fl: humans });
 
+    if (ambPri === false) PRI = [];
     var svg = el('svg', { class: 'ma-svg', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': f(t.a11y, R.length, fx.length) });
     var gF = el('g'), gD = el('g'), gN = el('g'), gB = el('g'), quiets = quiet();
     var vies = fx.map(function (x, i) {
@@ -220,7 +238,7 @@
 
   function mapa(cont, C) {
     posaEstil();
-    var L = ll(), t = T[L], D = dibuix(C, L), R = D.R, fx = D.fx, svg = D.svg, vies = D.vies, nodes = D.nodes, PRI = D.PRI, quiets = D.quiets, compte = D.compte;
+    var L = ll(), t = Object.assign({}, T[L], (C.textos || {})[L]), D = dibuix(C, L, cont.getAttribute('data-prioritats') !== 'no'), R = D.R, fx = D.fx, svg = D.svg, vies = D.vies, nodes = D.nodes, PRI = D.PRI, quiets = D.quiets, compte = D.compte;
     var vell = cont.querySelector('.ma-svg'); if (vell && vell._me) vell._me.treu();
     cont.textContent = '';
     var grid = el('div', { class: 'ma-grid' }), esq = el('div'), dre = el('div', { class: 'ma-pri' });
@@ -236,6 +254,7 @@
     var peu = el('p', { class: 'ma-peu' });
     var s0 = el('span'); s0.appendChild(el('b', {}, fx.length)); s0.appendChild(document.createTextNode(t.tots)); peu.appendChild(s0);
     ['sol', 'punt', 'muntar', 'persona'].forEach(function (k) {
+      if (!compte[k]) return;
       var s = el('span'), i = el('i'); i.style.background = COLOR[k];
       s.appendChild(i); s.appendChild(el('b', {}, compte[k])); s.appendChild(document.createTextNode(t[k])); peu.appendChild(s);
     });
@@ -245,7 +264,7 @@
 
     dre.appendChild(el('p', { class: 'ma-valor' }, t.valor));
     dre.appendChild(el('p', { class: 'ma-pinya' }, t.pinya));
-    dre.appendChild(el('h3', {}, t.pri));
+    if (PRI.length) dre.appendChild(el('h3', {}, t.pri));
     var botons = PRI.map(function (pr) {
       var b = el('button', { type: 'button', 'aria-pressed': 'false' }), n = el('span', { class: 'ma-num' }, pr.n), tx = el('span');
       n.style.background = pr.c; tx.appendChild(el('b', {}, pr.t)); tx.appendChild(document.createTextNode(pr.d));
@@ -349,7 +368,7 @@
   var DUR = [4200, 6500, 7500, 7600, 7200];
   function pelicula(cont, C) {
     posaEstil(); estilPeli();
-    var L = ll(), t = T[L], P = t.pl, D = dibuix(C, L), svg = D.svg;
+    var L = ll(), t = T[L], P = t.pl || T.es.pl, D = dibuix(C, L), svg = D.svg;
     if (cont._pl) clearInterval(cont._pl);
     if (cont._tl) clearInterval(cont._tl._ma);
     cont.textContent = '';
@@ -472,12 +491,14 @@
   }
 
   function engega() {
-    var C = g.CasAutomatitzat; if (!C) return;
-    var tots = [].slice.call(document.querySelectorAll('[data-anima]'));
+    /* Cada contenidor pot dir quin cas pinta (data-cas="NomGlobal"); si no, el de la portada. */
+    var cas = function (n) { return g[n.getAttribute('data-cas') || 'CasAutomatitzat']; };
+    var tots = [].slice.call(document.querySelectorAll('[data-anima]')).filter(cas);
+    if (!tots.length) return;
     var FS = { tauler: tauler, pelicula: pelicula };
     /* Si una peça falla (un navegador vell), es buida: la pel·lícula buida es plega
        i el que hi ha a sota queda a la vista. */
-    var pinta = function (n) { clearInterval(n._ma); clearInterval(n._pl); try { (FS[n.getAttribute('data-anima')] || mapa)(n, C); } catch (e) { n.textContent = ''; } n._fet = 1; };
+    var pinta = function (n) { clearInterval(n._ma); clearInterval(n._pl); try { (FS[n.getAttribute('data-anima')] || mapa)(n, cas(n)); } catch (e) { n.textContent = ''; } n._fet = 1; };
     var io = 'IntersectionObserver' in g ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting && !e.target._fet) pinta(e.target); });
     }, { rootMargin: '200px' }) : null;
