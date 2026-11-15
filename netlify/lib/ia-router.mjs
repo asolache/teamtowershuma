@@ -44,7 +44,13 @@ export const TASQUES = {
   /* pule-mapa.mjs: el mapa del client, amb esquema. Sonnet des del 02/11/2026:
      al banc de mapes (36 casos, jutge a cegues) fa el mateix que Opus (3,03 sobre 5) a mig preu;
      amb esforç mitjà, 3,06 contra 2,86 de l'esforç baix, pel mateix cost. */
-  mapa: { model: 'claude-sonnet-5-5', effort: 'medium' }
+  mapa: { model: 'claude-sonnet-5-5', effort: 'medium' },
+  /* banc-mapes.mjs oficis --lot (15/11/2026): el model de referència d'un ofici
+     del catàleg, amb el que ja sabem al context. Sonnet perquè al mapa fa el
+     mateix que Opus a mig preu; jutja-oficis ho mesura i, si no arriba, es puja aquí. */
+  ofici: { model: 'claude-sonnet-5-5', effort: 'medium' },
+  /* El jutge a cegues del banc de mapes: Opus, com fins ara. */
+  jutja: { model: 'claude-opus-5-5', effort: 'medium' }
 };
 
 /* Els projectes de l'Àlvar. `tasques` canvia una tasca només en aquell projecte. */

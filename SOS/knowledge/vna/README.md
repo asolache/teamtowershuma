@@ -14,8 +14,21 @@ vna/
 ├── README.md     això
 ├── patrons.md    el que s'ha vist dues vegades o més
 ├── casos/        un fitxer per mapa real
-└── sectors/      una veda per sector: el que ja se sap (bones pràctiques, no casos)
+├── sectors/      una veda per sector: el que ja se sap (bones pràctiques, no casos)
+├── banc-mapes/   el banc de proves: casos, oficis, jutgessa i resultats
+├── base.json     GENERAT: la base única, tot l'anterior en un sol format (veda 184)
+└── base/
+    ├── oficis-generats.json   els oficis del catàleg que fa el generador, en esborrany
+    └── fonts/                 nace-2-1.json (les 651 classes) i sos-antic.json (el SOS antic)
 ```
+
+**La base única** (`node SOS/tools/build-base-vna.js`) junta els models, sectors i
+oficis de `SOS/lib/models-mapa.js`, els oficis generats, els dominis i sectors del
+SOS antic i els casos del banc, i diu quantes de les 651 classes de la NACE 2.1
+tenen ja un ofici propi. Els que falten es fan per lots:
+`node SOS/tools/banc-mapes.mjs oficis --lot 10 --sec` diu què costaria sense cridar
+res (a Actions, «Banc de proves de la IA» amb `banc-mapes`, ho fa de debò).
+La llegeix `SOS/lib/base-vna.js` (navegador i node) i la skill `mapa-de-valor`.
 
 ## Com s'hi escriu
 

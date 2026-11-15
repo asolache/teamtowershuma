@@ -16,7 +16,7 @@ on:
         required: false
         default: 'banc-ia'
       ordres:
-        description: 'banc-mapes: les ordres, p. ex. «corre --variant actual --tope 15» (separa passos amb ;)'
+        description: 'banc-mapes: les ordres, p. ex. «oficis --lot 10 --tope 3 ; jutja-oficis --tope 2» (separa passos amb ;)'
         required: false
         default: ''
 
@@ -58,7 +58,7 @@ jobs:
           git config user.email "banc-mapes@users.noreply.github.com"
           # El mapa del cervell compta les mides: es refà amb els resultats nous (si no, el CI peta).
           node SOS/tools/cervell.js > /dev/null
-          git add SOS/knowledge/vna/banc-mapes SOS/knowledge/MAPA.md
+          git add SOS/knowledge/vna/banc-mapes SOS/knowledge/vna/base SOS/knowledge/vna/base.json SOS/knowledge/MAPA.md
           git diff --cached --quiet && exit 0
           git commit -m "banc-mapes: resultats de ${{ github.run_id }} (${{ inputs.ordres }})"
           # Si una altra execució ha tocat el mateix fitxer (oficis.json), guanya la d'ara.

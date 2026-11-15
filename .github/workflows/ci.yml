@@ -99,6 +99,11 @@ jobs:
       - name: Nucli del mapa de valor
         run: node SOS/tests/test-mapa-valor.mjs
 
+      # La base única de mapes de valor (SOS/knowledge/vna/base.json): al dia
+      # amb les seves fonts, i el que en llegeix la web (SOS/lib/base-vna.js).
+      - name: Base única de mapes de valor
+        run: node SOS/tools/build-base-vna.js --check && node SOS/tests/test-base-vna.mjs
+
       # El nom de cada entregable damunt de les fletxes dels mapes de valor.
       - name: Etiquetes dels entregables
         run: node SOS/tests/test-mapa-etiquetes.mjs
