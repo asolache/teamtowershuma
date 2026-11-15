@@ -1,0 +1,57 @@
+{
+ "versio": 1,
+ "estat": "esborrany",
+ "oficis": [],
+ "descartats": [
+  {
+   "cnae": "55.10",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "55.30",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "55.40",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "55.90",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "56.12",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "56.21",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "56.22",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "56.40",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "46.11",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  },
+  {
+   "cnae": "46.12",
+   "data": "2026-11-15",
+   "motiu": "error authentication_error"
+  }
+ ]
+}
