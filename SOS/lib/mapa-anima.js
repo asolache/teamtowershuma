@@ -73,6 +73,18 @@
     if (txt != null) e.textContent = txt;
     return e;
   }
+  /* Els textos d'un cas: els de la casa i, a sobre, els que porta el cas
+     (C.textos[L]). Així el mateix motor explica una productora o un poble
+     sense que cap frase d'un es fiqui a l'altre (15/11/2026, portada del SOS). */
+  function tx(C, L) {
+    var b = T[L], o = C && C.textos && C.textos[L], r = {}, k;
+    if (!o) return b;
+    for (k in b) r[k] = b[k];
+    for (k in o) if (k !== 'pl') r[k] = o[k];
+    r.pl = {}; for (k in b.pl) r.pl[k] = b.pl[k];
+    for (k in (o.pl || {})) r.pl[k] = o.pl[k];
+    return r;
+  }
   function icona(nom) { var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
   /* «Quien elabora el vino» → «Quien elabora»; «Qui hi assisteix» es queda sencer. */
   function curt(nom) { var w = nom.split(' '); return w.slice(0, /^(lo|el|la|hi|ho|les|los|l'.*)$/.test(w[1]) ? 3 : 2).join(' '); }
@@ -133,7 +145,7 @@
      la pel·lícula de la primera pantalla. */
   var nDib = 0;
   function dibuix(C, L) {
-    var t = T[L], pre = 'ma' + (nDib++) + 'p', R = C.roles[L], fx = C.fluxos;
+    var t = tx(C, L), pre = 'ma' + (nDib++) + 'p', R = C.roles[L], fx = C.fluxos;
     /* El rol que més toca va al centre; la resta, en rotllana, en l'ordre que
        creua menys línies: cada rol al costat d'aquell amb qui més es dona. */
     var grau = R.map(function (r) { return fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; }).length; });
@@ -197,7 +209,7 @@
       var P = pos[r], n = el('g', { class: 'ma-n', tabindex: '0', role: 'button', 'aria-label': r });
       n.appendChild(el('title', {}, r));
       n.appendChild(el('circle', { cx: P[0], cy: P[1], r: r === R[mig] ? 38 : 30 }));
-      n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, icona(C.roles.es[R.indexOf(r)])));
+      n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, (C.icones && C.icones[R.indexOf(r)]) || icona(C.roles.es[R.indexOf(r)])));
       n.appendChild(el('text', { x: P[0], y: P[1] + (r === R[mig] ? 58 : 50) }, curt(r)));
       gN.appendChild(n); nodes[r] = n;
     });
@@ -220,7 +232,7 @@
 
   function mapa(cont, C) {
     posaEstil();
-    var L = ll(), t = T[L], D = dibuix(C, L), R = D.R, fx = D.fx, svg = D.svg, vies = D.vies, nodes = D.nodes, PRI = D.PRI, quiets = D.quiets, compte = D.compte;
+    var L = ll(), t = tx(C, L), D = dibuix(C, L), R = D.R, fx = D.fx, svg = D.svg, vies = D.vies, nodes = D.nodes, PRI = D.PRI, quiets = D.quiets, compte = D.compte;
     var vell = cont.querySelector('.ma-svg'); if (vell && vell._me) vell._me.treu();
     cont.textContent = '';
     var grid = el('div', { class: 'ma-grid' }), esq = el('div'), dre = el('div', { class: 'ma-pri' });
@@ -291,7 +303,7 @@
   /* ── El tauler ────────────────────────────────────────────────────────── */
   function tauler(cont, C) {
     posaEstil();
-    var L = ll(), t = T[L], fx = C.fluxos;
+    var L = ll(), t = tx(C, L), fx = C.fluxos;
     var sols = fx.filter(function (x) { return x.escalo === 'automatizado'; });
     var nDef = fx.filter(function (x) { return x.escalo === 'definido'; }).length;
     var nSense = fx.filter(function (x) { return !x.escalo || x.escalo === 'sin_definir' || x.escalo === 'por_montar'; }).length;
@@ -349,7 +361,7 @@
   var DUR = [4200, 6500, 7500, 7600, 7200];
   function pelicula(cont, C) {
     posaEstil(); estilPeli();
-    var L = ll(), t = T[L], P = t.pl, D = dibuix(C, L), svg = D.svg;
+    var L = ll(), t = tx(C, L), P = t.pl, D = dibuix(C, L), svg = D.svg;
     if (cont._pl) clearInterval(cont._pl);
     if (cont._tl) clearInterval(cont._tl._ma);
     cont.textContent = '';
@@ -472,12 +484,14 @@
   }
 
   function engega() {
-    var C = g.CasAutomatitzat; if (!C) return;
-    var tots = [].slice.call(document.querySelectorAll('[data-anima]'));
+    /* Cada peça pinta el cas que diu `data-cas` (el nom global d'un altre cas,
+       com `CasSOS`) o, si no en diu cap, el de la casa. */
+    var cas = function (n) { return g[n.getAttribute('data-cas')] || g.CasAutomatitzat; };
+    var tots = [].slice.call(document.querySelectorAll('[data-anima]')).filter(cas);
     var FS = { tauler: tauler, pelicula: pelicula };
     /* Si una peça falla (un navegador vell), es buida: la pel·lícula buida es plega
        i el que hi ha a sota queda a la vista. */
-    var pinta = function (n) { clearInterval(n._ma); clearInterval(n._pl); try { (FS[n.getAttribute('data-anima')] || mapa)(n, C); } catch (e) { n.textContent = ''; } n._fet = 1; };
+    var pinta = function (n) { clearInterval(n._ma); clearInterval(n._pl); try { (FS[n.getAttribute('data-anima')] || mapa)(n, cas(n)); } catch (e) { n.textContent = ''; } n._fet = 1; };
     var io = 'IntersectionObserver' in g ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting && !e.target._fet) pinta(e.target); });
     }, { rootMargin: '200px' }) : null;

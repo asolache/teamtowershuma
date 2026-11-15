@@ -41,8 +41,10 @@ const on = await page.evaluate(() => {
 ok(!!on, 'la portada porta el bloc de beneficis');
 ok(on && on.n === 3, 'amb tres beneficis: el fons, el que s\'aprèn i el que s\'estalvia');
 ok(on && on.xifres >= 5, `i ${on ? on.xifres : 0} xifres, no adjectius`);
-ok(on && on.ordre.join(',') === 'pg-grid,ob-paths,ob-benef',
-  'l\'ordre és eines → portes → beneficis (' + (on && on.ordre.join(',')) + ')');
+/* Des del 15/11/2026 les portes («Què vols fer?») van just després de la
+   pel·lícula, i les eines i els beneficis darrere de «Mira-ho tot». */
+ok(on && on.ordre.join(',') === 'ob-paths,pg-grid,ob-benef',
+  'l\'ordre és portes → eines → beneficis (' + (on && on.ordre.join(',')) + ')');
 ok(on && !on.repte && !on.pains, 'i ni el dolor de negoci ni «el repte»: això viu a TeamTowers Humà');
 
 console.log('\n2 · Les xifres de la pantalla són les que l\'app calcula');
