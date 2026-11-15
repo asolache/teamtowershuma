@@ -5492,6 +5492,16 @@ codi nou: `#/fons` ja ho ensenya), i preguntar la forma legal abans de dir
 
 ---
 
+**Obra · l'aigua solar, la xarxa de professionals certificats per disciplina** — demanat per l'Àlvar el 14/11/2026
+
+Esborrany a `SOS/knowledge/vision/aigua-solar-xarxa.md`: vuit disciplines amb
+l'evidència de N1 i N2, el mapa de la xarxa i l'encaix a l'embut comú, sobre
+els nivells i el ledger que ja hi ha. Pendent: que el fabricant confirmi
+l'aliança (el nom i l'acord, al repositori privat), validar els llindars amb un
+primer grup d'instal·ladors i decidir la forma de la xarxa.
+
+---
+
 **El cervell de cada repo, amb GitHub i amb l'estructura estàndard** — demanat per l'Àlvar el 22/10/2026
 
 - **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,
