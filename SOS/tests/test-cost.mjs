@@ -54,19 +54,13 @@ console.log('\n1 · El hero nomena les tres cases i obre tres portes');
       cta: [...h.querySelectorAll('.hero-actions a, .hero-note a')].map(a => a.getAttribute('href'))
     };
   });
-  ok(/empres|cooperativ/i.test(r.eyebrow), 'la primera línia nomena l\'empresa');
-  ok(/administraci/i.test(r.eyebrow), 'i també l\'administració');
-  ok(/tercer sector/i.test(r.eyebrow), 'i el tercer sector, que abans vivia dins de «públic»');
+  /* Des del 14/11/2026 el hero pregunta «Què vols fer?» amb cinc respostes per
+     perfil; les portes de sector viuen a «El repte» i al catàleg. */
+  ok(/vols fer|quieres hacer/i.test(r.eyebrow), 'la primera línia pregunta què vols fer');
   ok(!/veïnal|vecinal/i.test(r.h1), 'el titular ja no és només comunitari');
-  ok(['admin', 'tercer', 'empresa'].every(x => r.portes.includes(x)),
-    `hi ha una porta per sector: ${r.portes.join(', ')}`);
-  /* El catàleg és una pàgina des del 04/10/2026, i per tant les portes són un
-     enllaç de debò i no una àncora. Sense JavaScript porten igualment a la
-     pàgina sencera —i amb el sector a l'adreça, perquè qui ve d'una porta no
-     aterri davant dels vint-i-un paquets. Sense JavaScript surten tots, que és
-     el comportament correcte: el filtre és una millora, no un requisit. */
-  ok(r.dest.every(h => /^\/cataleg(\?s=[a-z]+)?$/.test(h)),
-    'i totes tres porten al catàleg encara que el JavaScript no corri · ' + [...new Set(r.dest)].join(', '));
+  const perf = await p.evaluate(() => [...document.querySelectorAll('.hero-perfils a')].map(a => a.dataset.perfil));
+  ok(['negocio', 'empresa', 'consultor', 'comunidad', 'cliente'].every(x => perf.includes(x)),
+    `hi ha una resposta per perfil: ${perf.join(', ')}`);
   ok(r.cta.some(h => /pressupost/.test(h)),
     'i des del hero es pot demanar pressupost sense buscar-lo');
   ok(!errs.length, 'cap error de JavaScript' + (errs.length ? ': ' + errs[0] : ''));

@@ -337,28 +337,16 @@
         }
         @media (max-width:768px) {
             .hero-eyebrow.hero-portes { margin-bottom:1rem; }
-            /* Amb la tercera porta, les tres queien en tres línies a 390 px i el
-               botó del dibuix se n'anava 2 px per sota del plec. El que costa
-               l'amplada és el `letter-spacing` —2,3 px per caràcter, 29 px
-               només a «Administració pública»—, i no la lletra: cenyint-lo, en
-               caben dues a la primera línia i el dibuix torna a dins.
-               Es cenyeix i no se'n treu cap: una porta que no es veu a la
-               primera pantalla és una porta que no existeix. */
             .hero-portes { gap:.35rem .45rem; letter-spacing:.08em; }
         }
-        /* Amb tres portes, la línia es partia i deixava un «·» penjant al final
-           de la primera: es llegia com dues portes i una, que és just el que
-           aquesta fila ha de deixar de dir. Hi caben les tres seguides traient
-           dues coses que aquí no diuen res —el guió decoratiu de
-           `.hero-eyebrow`, que etiqueta un títol i no una fila d'enllaços, i
-           80 punts de `letter-spacing`. */
         .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem 1.25rem; letter-spacing:.06em; line-height:1.3; }
         .hero-portes::before { display:none; }
         .hero-portes a { color:inherit; text-decoration:none;
             border-bottom:1px dashed var(--border); transition:.15s; }
         .hero-portes a:hover { color:var(--green); border-bottom-color:var(--green); }
-        /* A 15 px no sempre hi caben seguides: sense el «·», el salt no deixa res penjant. */
         .hero-portes span { display:none; }
+        .hero-perfils { text-transform:none; letter-spacing:0; gap:.35rem .9rem; }
+        .hero-perfils .hp-q { flex-basis:100%; color:var(--text); }
         .mv-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:3rem; align-items:center; }
         .mv-viz { position:relative; }
         .mv-svg { width:100%; height:auto; display:block; }
@@ -810,7 +798,7 @@
         .aut-avui { border-top-color:var(--green); } .aut-avui .aut-st { color:var(--green); }
         .aut-pilot { border-top-color:var(--indigo); } .aut-pilot .aut-st { color:var(--indigo); }
         .aut-acc { display:flex; flex-wrap:wrap; gap:.8rem 1.4rem; align-items:center; margin:0; }
-        .aut-acc a:not(.btn-ghost) { color:var(--indigo); font-weight:600; }
+        .aut-acc a:not([class]) { color:var(--indigo); font-weight:600; }
         @media (max-width:1080px) { .aut-l { grid-template-columns:repeat(2,minmax(0,1fr)); } }
         @media (max-width:620px) { .aut-l { grid-template-columns:1fr; } }
         .cervell-top { border-bottom:1px solid var(--border); font-size:var(--t0); }
@@ -995,13 +983,15 @@
                      crida principal: crear el mapa a /cliente/, que dona valor abans
                      de demanar res (camiClient, pas 1). La història de la casa i el
                      finançament baixen a «Per què nosaltres»; el mètode, a sota. -->
-                <div class="hero-eyebrow hero-portes fade-up">
-                    <a href="/cataleg?s=admin" data-sec="admin" data-i18n="hero.porta1">Administració pública</a>
-                    <span aria-hidden="true">·</span>
-                    <a href="/cataleg?s=tercer" data-sec="tercer" data-i18n="hero.porta2">Tercer sector</a>
-                    <span aria-hidden="true">·</span>
-                    <a href="/cataleg?s=empresa" data-sec="empresa" data-i18n="hero.porta3">Empresa i cooperativa</a>
-                </div>
+                <!-- «Què vols fer?» (14/11/2026): SOS/lib/recorrido.js -->
+                <nav class="hero-eyebrow hero-portes hero-perfils fade-up" aria-labelledby="heroQ">
+                    <b class="hp-q" id="heroQ" data-i18n="hero.q">Què vols fer?</b>
+                    <a href="/cliente/?perfil=negocio#alrededor" data-perfil="negocio" data-i18n="hero.p.negoci">Tinc un negoci</a>
+                    <a href="/cataleg?s=empresa&amp;perfil=empresa" data-perfil="empresa" data-i18n="hero.p.empresa">Porto una empresa o un equip</a>
+                    <a href="/SOS/formacio.html?perfil=consultor#itineraris" data-perfil="consultor" data-i18n="hero.p.consultor">Sóc consultor o formador</a>
+                    <a href="/SOS/?perfil=comunidad" data-perfil="comunidad" data-i18n="hero.p.comunitat">La meva comunitat o entitat</a>
+                    <a href="/cliente/?perfil=cliente#espacio" data-perfil="cliente" data-i18n="hero.p.client">Ja treballo amb vosaltres</a>
+                </nav>
                 <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Fem visible com flueix el valor al teu negoci <em>i el convertim en web, processos i equip</em></em></h1>
                 <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Som consultors d'estratègia amb eina pròpia. Dibuixem el <strong>mapa de valor</strong> del teu negoci (qui et dona què, i què li dones) i d'aquí en surten la teva web, processos que van sols amb IA i la formació del teu equip. Per a pimes, autònoms, grans empreses i entitats.</strong>: és gratis i en surt el primer esbós de la web.</p>
                 <ul class="hero-av fade-up" style="animation-delay:.25s">
@@ -1868,6 +1858,8 @@
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">Què és</span></a></li><li><a href="/cliente/#alrededor"><span data-i18n="nv.t.carpeta-cliente">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">Què contractes</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
   </div>
 </footer>
+<form name="contacto" data-netlify="true" netlify-honeypot="bot-field" hidden><input name="bot-field"><input name="nom"><input name="mail"><input name="missatge"><input name="tema"><input name="perfil"><input name="de"><input name="marca"><input name="pagina"><input name="llengua"></form>
+<script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
 
 <script>
@@ -2268,7 +2260,8 @@ ca: {
   'cl.s.ajuntament-de-vilafranca':'Administració local','cl.s.junta-de-castilla-y-leon':'Administració autonòmica',
 /*/TT-CL-I18N-CA*/
   'hero.evok':'I la prova que funciona: vint anys entregant-ho',
-  'hero.porta1':'Administració pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa i cooperativa',
+  'hero.q':'Què vols fer?','hero.p.negoci':'Tinc un negoci','hero.p.empresa':'Porto una empresa o un equip',
+  'hero.p.consultor':'Sóc consultor o formador','hero.p.comunitat':'La meva comunitat o entitat','hero.p.client':'Ja treballo amb vosaltres',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
   'ct.a11y.d':'A l\'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.',
@@ -2747,7 +2740,8 @@ es: {
   'cl.s.ajuntament-de-vilafranca':'Administración local','cl.s.junta-de-castilla-y-leon':'Administración autonómica',
 /*/TT-CL-I18N-ES*/
   'hero.evok':'Y la prueba de que funciona: veinte años entregándolo',
-  'hero.porta1':'Administración pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa y cooperativa',
+  'hero.q':'¿Qué quieres hacer?','hero.p.negoci':'Tengo un negocio','hero.p.empresa':'Llevo una empresa o un equipo',
+  'hero.p.consultor':'Soy consultor o formador','hero.p.comunitat':'Mi comunidad o entidad','hero.p.client':'Ya trabajo con vosotros',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
   'ct.a11y.d':'A la izquierda, una torre sostenida por cuatro personas. A la derecha, la misma torre sostenida por catorce. Cuando se va una, la primera cae y la segunda aguanta.',
@@ -2972,7 +2966,7 @@ applyLang(currentLang);
            res — un enllaç que no fa res al lloc on algú ja s'ha convençut. */
         document.querySelectorAll('.js-mail, #ctaMail').forEach(function (a) {
             a.href = 'mailto:' + u + '@' + d + '?subject=' +
-                encodeURIComponent('Repte comunitari — parlem-ne');
+                encodeURIComponent('TeamTowers Humà — parlem-ne');
         });
     }
     wire();
