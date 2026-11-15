@@ -94,6 +94,11 @@ console.log('\n3 · La confirmació és un botó de qui l\'ha rebuda, no del mes
     E.pintaClasse();
   });
   const abans = await p.$$('#tInter [data-conf]');
+  /* Des del 13/11/2026 l'escola va en pantalles (SOS/lib/pantalla.js) i la
+     taula d'intercanvis viu a la seva: s'hi arriba com hi arriba la persona,
+     pel seu enllaç `#tInter`, i llavors el botó es veu i es pot prémer. */
+  await p.evaluate(() => { location.hash = '#tInter'; });
+  await p.waitForSelector('#tInter [data-conf]', { state: 'visible' });
   await p.click('#tInter [data-conf]');
   const r = await p.evaluate(() => ({
     e: window.__ESCOLA.estrelles('Raig'),
@@ -196,9 +201,12 @@ console.log('\n8 · El cromo és un fitxer que es pot imprimir');
     E.C.nom = 'Capitana Tramuntana de la Serra Alta';
     const cv = E.pinta();
     const dades = cv.toDataURL('image/png');
-    /* El nom llarg s'ha d'encongir abans de retallar-se. */
+    /* El nom llarg s'ha d'encongir abans de retallar-se. L'ample de prova
+       (300 px) és més estret que el nom a 40 px amb qualsevol lletra del
+       sistema (≈ 420 px a Linux) i més ample que a 24 px (≈ 250 px): així la
+       prova no depèn de quina lletra tingui la màquina. */
     const x = cv.getContext('2d');
-    const petit = E.encabeix(x, 'Capitana Tramuntana', 300, -100, 460, 40, 24, '700');
+    const petit = E.encabeix(x, 'Capitana Tramuntana', 300, -100, 300, 40, 24, '700');
     return { w: cv.width, h: cv.height, png: dades.slice(0, 22), pes: dades.length,
       mida: petit.mida, text: petit.text };
   });
@@ -233,6 +241,9 @@ console.log('\n9 · La guia del professorat hi és sencera i porta a la formaci�
 console.log('\n10 · Cap al mòbil, que és on hi ha la tauleta de l\'aula');
 for (const [w, h] of [[390, 844], [820, 1180]]) {
   const { ctx, p, errs } = await nova(w, h);
+  /* El cromo és a la pantalla de la Fàbrica: s'hi va pel seu enllaç. */
+  await p.evaluate(() => { location.hash = '#cvCromo'; });
+  await p.waitForSelector('#cvCromo', { state: 'visible' });
   const r = await p.evaluate(() => ({
     ample: document.documentElement.scrollWidth,
     cv: Math.round(document.querySelector('#cvCromo').getBoundingClientRect().width)
