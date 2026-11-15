@@ -214,8 +214,11 @@
     var nav = document.querySelector('nav.tt-nav');
     if (nav && nav.parentNode) nav.parentNode.insertBefore(d, nav.nextSibling); else document.body.insertBefore(d, document.body.firstChild);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintaCami); else pintaCami();
-  window.addEventListener('hashchange', pintaCami);
+  /* Enlace directo al formulario: `#habla` o `#parla` en cualquier página. */
+  function obreSiCal() { if (/^#(habla|parla)$/.test(location.hash)) contacta({}); }
+  function arrenca() { pintaCami(); obreSiCal(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrenca); else arrenca();
+  window.addEventListener('hashchange', function () { pintaCami(); obreSiCal(); });
 
   window.Recorrido = {
     perfil: function () { return estat.perfil || ''; },
