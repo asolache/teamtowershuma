@@ -43,13 +43,26 @@
       c1: 'Sin definir', c2: 'Definido', c3: 'Va solo', fa: 'Lo hace una persona',
       qui: 'Quién lo da → quién lo recibe', quan: 'Cuándo pasa y qué lleva',
       honest: 'Funciona hoy en el tablero de una productora de eventos. En tu web arranca con los pilotos.',
-      a11y: 'Mapa de valor animado: {0} roles y {1} entregables' }
+      a11y: 'Mapa de valor animado: {0} roles y {1} entregables' },
+    en: { tots: 'deliverables', sol: 'already run on their own', punt: 'ready to run on their own', muntar: 'still to set up', persona: 'person to person',
+      tang: 'tangible: can be claimed', intang: 'intangible: trust, ideas, reputation',
+      pri: 'Where to work to improve the flow', p1: 'Automate what is already defined', p2: 'Set up what is missing',
+      p3: 'Share the load', p1d: '{0} exchanges already defined, mostly in {1}: with {2}.', p2d: '{0}.',
+      p3d: '{0}% of what flows goes through {1}. If that role fails, everything stops: a human tower with a thin base.',
+      p4: 'Look after what is never invoiced', p4d: '{0} deliverables of trust, such as {1}. They are not automated: they are recorded, and the map warns if they stop.',
+      pinya: 'The value network is the base of the human tower: if it holds, the child on top (the project) reaches the top. Every deliverable that flows is one more person pushing.',
+      valor: 'One person and their network carry what used to need an office.', i: 'and',
+      t1: 'You draw the flow', t2: 'You define it', t3: 'The board automates it',
+      c1: 'Not defined', c2: 'Defined', c3: 'Runs on its own', fa: 'A person does it',
+      qui: 'Who gives it → who receives it', quan: 'When it happens and what it carries',
+      honest: 'It runs today on the board of an events company. On your website it starts with the pilots.',
+      a11y: 'Animated value map: {0} roles and {1} deliverables' }
   };
   var ICONA = [[/encarg/, '🏢'], [/reven/, '🤝'], [/produ/, '🎯'], [/acoge|acull/, '🏡'], [/vin|vi$/, '🍷'],
     [/sirve|serveix/, '🍽️'], [/dinami/, '🎪'], [/asist|assist/, '👥'], [/factur/, '🧾']];
   var VEL = { solo: 1.6, ia: 2.4, maquina: 2.4, persona: 5.5 };
 
-  function ll() { return document.documentElement.lang === 'es' ? 'es' : 'ca'; }
+  function ll() { var l = document.documentElement.lang; return T[l] ? l : 'ca'; }
   function f(s) { var a = arguments; return s.replace(/\{(\d)\}/g, function (_, i) { return a[+i + 1]; }); }
   function el(tag, at, txt) {
     var e = /^(svg|g|path|circle|text|tspan|title|animateMotion|mpath)$/.test(tag) ? document.createElementNS(NS, tag) : document.createElement(tag);
@@ -57,7 +70,8 @@
     if (txt != null) e.textContent = txt;
     return e;
   }
-  function icona(nom) { var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
+  var icPropies = null;
+  function icona(nom) { if (icPropies && icPropies[nom]) return icPropies[nom]; var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
   /* «Quien elabora el vino» → «Quien elabora»; «Qui hi assisteix» es queda sencer. */
   function curt(nom) { var w = nom.split(' '); return w.slice(0, /^(lo|el|la|hi|ho|les|los|l'.*)$/.test(w[1]) ? 3 : 2).join(' '); }
   function llista(xs, L) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' ' + T[L].i + ' ' + xs[xs.length - 1]; }
@@ -114,7 +128,12 @@
   /* ── El mapa ──────────────────────────────────────────────────────────── */
   function mapa(cont, C) {
     posaEstil();
-    var L = ll(), t = T[L], R = C.roles[L], fx = C.fluxos;
+    /* Un altre cas pot portar els seus textos (C.textos[L]), les seves icones
+       (C.icones, per rol en castellà) i deixar de banda les prioritats
+       (data-prioritats="no"), sense tocar la portada. */
+    var L = ll(), t = Object.assign({}, T[L], (C.textos || {})[L]), R = C.roles[L], fx = C.fluxos;
+    icPropies = C.icones || null;
+    var ambPri = cont.getAttribute('data-prioritats') !== 'no';
     /* El rol que més toca va al centre; la resta, en rotllana, en l'ordre que
        creua menys línies: cada rol al costat d'aquell amb qui més es dona. */
     var grau = R.map(function (r) { return fx.filter(function (x) { return x.de[L] === r || x.a[L] === r; }).length; });
@@ -155,6 +174,7 @@
     if (conc && !conc.ok) PRI.push({ n: 3, c: 'var(--indigo)', t: t.p3, d: f(t.p3d, pct, menor(R[mig])), rol: R[mig], fl: fx.filter(function (x) { return x.de[L] === R[mig] || x.a[L] === R[mig]; }) });
     else if (humans.length) PRI.push({ n: 3, c: COLOR.persona, t: t.p4, d: f(t.p4d, humans.length, llista(humans.slice(0, 3).map(function (x) { return x.que[L]; }), L)), fl: humans });
 
+    if (!ambPri) PRI = [];
     var vell = cont.querySelector('.ma-svg'); if (vell && vell._me) vell._me.treu();
     cont.textContent = '';
     var grid = el('div', { class: 'ma-grid' }), esq = el('div'), dre = el('div', { class: 'ma-pri' });
@@ -208,6 +228,7 @@
     var peu = el('p', { class: 'ma-peu' });
     var s0 = el('span'); s0.appendChild(el('b', {}, fx.length)); s0.appendChild(document.createTextNode(t.tots)); peu.appendChild(s0);
     ['sol', 'punt', 'muntar', 'persona'].forEach(function (k) {
+      if (!compte[k]) return;
       var s = el('span'), i = el('i'); i.style.background = COLOR[k];
       s.appendChild(i); s.appendChild(el('b', {}, compte[k])); s.appendChild(document.createTextNode(t[k])); peu.appendChild(s);
     });
@@ -217,7 +238,7 @@
 
     dre.appendChild(el('p', { class: 'ma-valor' }, t.valor));
     dre.appendChild(el('p', { class: 'ma-pinya' }, t.pinya));
-    dre.appendChild(el('h3', {}, t.pri));
+    if (PRI.length) dre.appendChild(el('h3', {}, t.pri));
     var botons = PRI.map(function (pr) {
       var b = el('button', { type: 'button', 'aria-pressed': 'false' }), n = el('span', { class: 'ma-num' }, pr.n), tx = el('span');
       n.style.background = pr.c; tx.appendChild(el('b', {}, pr.t)); tx.appendChild(document.createTextNode(pr.d));
@@ -307,9 +328,11 @@
   }
 
   function engega() {
-    var C = g.CasAutomatitzat; if (!C) return;
-    var tots = [].slice.call(document.querySelectorAll('[data-anima]'));
-    var pinta = function (n) { clearInterval(n._ma); (n.getAttribute('data-anima') === 'tauler' ? tauler : mapa)(n, C); n._fet = 1; };
+    /* Cada contenidor pot dir quin cas pinta (data-cas="NomGlobal"); si no, el de la portada. */
+    var cas = function (n) { return g[n.getAttribute('data-cas') || 'CasAutomatitzat']; };
+    var tots = [].slice.call(document.querySelectorAll('[data-anima]')).filter(cas);
+    if (!tots.length) return;
+    var pinta = function (n) { clearInterval(n._ma); (n.getAttribute('data-anima') === 'tauler' ? tauler : mapa)(n, cas(n)); n._fet = 1; };
     var io = 'IntersectionObserver' in g ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting && !e.target._fet) pinta(e.target); });
     }, { rootMargin: '200px' }) : null;
