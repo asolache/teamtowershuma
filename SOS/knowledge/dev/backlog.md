@@ -5502,6 +5502,22 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
 
 ---
 
+**La colla en la pinya · els taulers per factors** — demanat per l'Àlvaro el 16/11/2026 (veda 184)
+
+- **Fet:** `SOS/colla.html` (motor `SOS/lib/colla-taulers.js`, models a
+  `SOS/lib/taulers-models.js`). La pinya de dalt i en 3D amb una rengla per
+  factor (16PF, Big Five obert i panteó de 12), un ninot per persona, la base
+  teòrica en línia i els forats amb el rol, les skills i qui els pot cobrir.
+  S'imprimeix com a tauler físic. La skill castellera és a
+  `references/castells.md` i l'obra de negoci a `vision/taulers-colla.md`.
+- **Pendent:** el disseny del joc físic que ja té l'Álvaro; el tauler de les
+  àrees del mapa de valor; un tauler d'estils d'equip; l'acord amb un editor de
+  test; el fee d'intermediació comptat en un sol lloc; portar el tauler a la
+  web de l'Álvaro i al taller de Fent Pinya carregant-lo d'aquí (DRY);
+  contrastar els punts de § 10 de la skill castellera.
+
+---
+
 **El cervell de cada repo, amb GitHub i amb l'estructura estàndard** — demanat per l'Àlvar el 22/10/2026
 
 - **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,
