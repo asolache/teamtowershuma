@@ -122,3 +122,6 @@ Els imports viuen al pla de negoci únic, al repositori privat.
    `cervell.js --actualitza`.
 3. Amb el primer instal·lador, la primera fitxa del lloc i la primera evidència
    N1 al ledger.
+
+El que neix al voltant de cada planta (escola, serveis, conreus i segon
+sector) continua a `aigua-escola-sector.md`.

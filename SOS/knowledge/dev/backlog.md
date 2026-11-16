@@ -5502,6 +5502,17 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
 
 ---
 
+**Obra · l'aigua com a escola, cada planta un sector nou** — demanat per l'Àlvar el 16/11/2026
+
+Esborrany a `SOS/knowledge/vision/aigua-escola-sector.md`: les cinc capes que
+neixen al voltant d'una planta (planta, serveis, conreus, segon sector i
+comunitat), el fabricant com a partner de formació (proposta) i el mapa de
+valor. Enllaça amb l'obra de tokenització (PR #384). Pendent: que el fabricant
+confirmi l'aliança, triar un lloc pilot i escriure el currículum de qui opera
+al lloc.
+
+---
+
 **El cervell de cada repo, amb GitHub i amb l'estructura estàndard** — demanat per l'Àlvar el 22/10/2026
 
 - **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,
