@@ -70,7 +70,7 @@ rols es diuen pel que fan.
 | **Els partners** | llocs especials i agències d'Events Penedès |
 | **Qui sap de la llei** | assessor jurídic i fiscal (avui **no és ningú**, regla 5) |
 | **El supervisor** | CNMV (i Banc d'Espanya si hi ha diners electrònics) |
-| **La banca aliada** | CaixaBank, si s'hi arriba: avui **no hi ha cap acord** |
+| **La banca aliada** | CaixaBank, si s'hi arriba: avui **no hi ha cap acord**. La porta és la Fundació «la Caixa», que és un lead |
 
 | De → a | Mena | Què | Retorn | Mena |
 |---|---|---|---|---|
@@ -137,10 +137,89 @@ la dona un prestador qualificat eIDAS, no un banc) sinó:
   arribés la fase 4, la custòdia regulada.
 - **Un cas d'innovació rural** que li interessa explicar.
 
-Un matís: «la Caixa» pot voler dir **CaixaBank** (el banc) o la **Fundació
-«la Caixa»** (l'obra social). Per a cobrament i custòdia és el banc; per a un
-programa social o de cultura al territori seria la fundació. Són dues portes
-diferents, i convé saber a quina es truca.
+**La porta d'entrada és la Fundació «la Caixa»**, que l'Àlvar ja té com a
+**lead** (16/11/2026). La Fundació és l'accionista principal de CaixaBank, a
+través de CriteriaCaixa (en té al voltant d'un terç, no el 100 %), i té
+programes socials i culturals al territori. L'ordre proposat:
+
+1. **Amb la Fundació, un pilot social** (pas 1 de l'embut comú: primer valor):
+   el registre del poble aplicat a una comunitat o programa seu, sense diners
+   ni tokens transferibles.
+2. **Amb el pilot fet, el banc**: CaixaBank com a banca aliada per al
+   cobrament i, si mai cal, la custòdia.
+
+La Fundació i el banc són entitats diferents i decideixen per separat: un sí
+de la Fundació no és un sí del banc.
+
+## Full de ruta de la validesa jurídica, per territori
+
+> **L'Àlvar, el 16/11/2026:** els registres han d'aconseguir validesa notarial
+> a Catalunya, Euskadi, Espanya i Europa per començar.
+
+**El que no canvia:** la **fe pública notarial** només la dona un notari. Cap
+registre, cadena de blocs ni prestador no la té per si sol. Per arribar-hi hi
+ha dos camins, i no s'exclouen: **aliar-se amb els notaris** perquè donin fe
+del que el registre ja prova, o **ser (o fer servir) un prestador qualificat**,
+que no és fe pública però sí una presumpció legal davant de qualsevol jutge de
+la Unió.
+
+### Els quatre nivells de valor d'un registre
+
+| Nivell | Què és | Quin valor té | Qui el dona |
+|---|---|---|---|
+| **0 · Prova signada** | L'apunt amb did i signatura del SOS (avui) | No se li pot negar efecte pel sol fet de ser electrònic (eIDAS), però el jutge el valora lliurement | Nosaltres |
+| **1 · Segell de temps qualificat** | El hash del tancament, segellat | **Presumpció** d'exactitud de la data i d'integritat a tota la UE (eIDAS, art. 41) | Un prestador qualificat |
+| **2 · Llibre major electrònic qualificat** | El registre sencer com a llibre major qualificat | **Presumpció** d'unicitat, autenticitat i ordre cronològic de les dades (eIDAS 2, Reglament (UE) 2024/1183) | Un prestador qualificat per a llibres majors (n'hi haurà a mesura que s'acreditin) |
+| **3 · Fe pública** | Un notari dona fe del registre o d'un apunt concret (acta) | Fe pública: el valor més alt | Només un notari |
+
+### Territori per territori
+
+| Territori | Què hi ha avui | Aliat possible | Què fa falta |
+|---|---|---|---|
+| **Europa** | eIDAS i eIDAS 2: els serveis qualificats tenen el mateix valor a tots els Estats; la llista de confiança de la UE diu qui és qualificat | Qualsevol prestador qualificat de la llista | Nivell 1 ja és a l'abast contractant-lo; el nivell 2 quan hi hagi prestadors de llibre major qualificats |
+| **Espanya** | Llei 6/2020 de serveis electrònics de confiança (supervisa el Ministeri de Transformació Digital); la Llei d'Enjudiciament Civil reconeix els documents electrònics amb serveis qualificats; la Llei 11/2023 va digitalitzar actuacions notarials | **Consejo General del Notariado** i la seva agència de certificació (ANCERT) | Una conversa amb el Consejo: si una acta notarial pot donar fe d'un tancament del registre segellat |
+| **Catalunya** | La Generalitat nomena els notaris del seu territori; el **Consorci AOC** és prestador públic de serveis de confiança (idCAT) | **Col·legi de Notaris de Catalunya** i Consorci AOC | Un pilot amb un notari català i un ajuntament (els ajuntaments ja fan servir l'AOC) |
+| **Euskadi** | **Izenpe** és el prestador públic de serveis de confiança de les administracions basques | **Colegio Notarial del País Vasco** i Izenpe | El mateix pilot que a Catalunya, amb un ajuntament basc |
+
+Els noms i les lleis d'aquesta taula són per contrastar amb l'assessor: el
+que hi ha és el mapa de portes, no una opinió jurídica.
+
+### Registres públics validats pels estats
+
+> **L'Àlvar, el 16/11/2026:** «Quiero registros públicos validados por
+> estados.»
+
+Un estat «valida» un registre de tres maneres, i cal saber quina es demana:
+
+| Via | Què és | Com hi entra el registre del poble |
+|---|---|---|
+| **La llista de confiança de la UE** | Cada estat publica, amb el seu organisme supervisor, quins prestadors són qualificats; la Comissió les aplega en una llista de llistes | Fent servir un prestador que hi sigui (nivells 1 i 2), o entrant-hi nosaltres com a prestador (any d'auditoria i supervisió). És la validació d'estat amb efecte legal directe |
+| **EBSI** | La infraestructura de cadena de blocs que operen els estats de la UE i la Comissió (European Blockchain Partnership), amb casos com la traçabilitat de documents i les credencials verificables | Per anclar-hi hashes o emetre credencials cal ser **emissor de confiança** acreditat per una entitat pública; l'accés per a privats és limitat i en evolució. Via: un ajuntament o una universitat com a emissor, nosaltres com a eina |
+| **Prestadors públics del territori** | **Consorci AOC** (Catalunya) i **Izenpe** (Euskadi) són prestadors de serveis de confiança de les administracions | Segellar amb ells i, sobretot, fer els pilots amb ajuntaments que ja els fan servir |
+
+**Alastria**, a Espanya, és un consorci d'empreses i entitats (també
+públiques) amb xarxes de cadena de blocs i identitat digital pròpia. És una
+bona xarxa per ancorar i per trobar aliats, però **no és una validació
+d'estat**: és una associació, no un organisme supervisor.
+
+**La identitat:** quan hi hagi la cartera d'identitat digital europea (eIDAS
+2), el did:key de cada persona del SOS s'hauria de poder vincular a la seva
+identitat verificada per l'estat. És el que farà que «qui ha signat» també
+quedi validat. Pendent de mirar quan les carteres siguin operatives.
+
+### L'ordre proposat
+
+1. **Nivell 1 ara:** segellar els tancaments del registre amb un prestador
+   qualificat (veda 180). És el que tanca la guarda pendent «El registre amb
+   valor de prova».
+2. **Nivell 3 en pilot:** una notaria (a Catalunya primer, que és casa) que
+   aixequi acta d'un tancament concret. Així el registre del poble queda
+   **amb fe pública d'un notari** sense que nosaltres en fem de notaris.
+3. **Col·legis i Consejo:** amb el pilot fet, proposar-los el registre com a
+   eina per a les seves actes. És el pas que pot fer de l'Àlvar «el del
+   registre del poble» de veritat.
+4. **Nivell 2, ser prestador propi:** només si el volum ho paga. Demana
+   auditoria, assegurança i supervisió, i és projecte d'anys.
 
 ## L'encaix legal a Espanya (a validar)
 
@@ -225,6 +304,42 @@ La veda 64 ja va decidir que un ordre global vol dir un amo. Per això:
   reparteixen llesques o obren un curs quan arriba el pagament, però el diner
   i el que és intangible són sempre d'una persona.
 
+## Quin contracte per a cada actiu
+
+> L'Àlvar coneix els contractes intel·ligents i els seus tipus: aquí es va al
+> detall. Regla de fons: **a la cadena, el mínim**. El ledger del SOS és la font;
+> la cadena ancora hashes i, només quan un dret s'ha de poder moure, porta el
+> token.
+
+| Actiu | Estàndard | Transferible | Per què |
+|---|---|---|---|
+| Autoria del codex (vedes) | Atestació (EAS o equivalent) sobre el hash de la veda, o ERC-5192 | No | Prova qui i quan; vendre l'autoria no té sentit |
+| Llesques del Slicing Pie | Signades al ledger del SOS; si cal a la cadena, ERC-1155 amb transferència bloquejada | No | Són dinàmiques: es recalculen, no es negocien |
+| Llicència de marca | ERC-721 amb dades de la llicència (territori, durada) i bloqueig (ERC-5192) | No, o només amb permís de qui té la marca | Cada llicència és única i té condicions |
+| Accés a un curs | ERC-1155 (un id per curs, una unitat per plaça) | Opcional, amb llista blanca | Places iguals d'un mateix curs: fungibles dins del curs |
+| Certificat de curs | Credencial verificable W3C signada amb el did; ancorada, no tokenitzada | No | És una credencial, no un actiu; encaixa amb la cartera europea |
+| Entrada d'esdeveniment | ERC-721 (seient o entrada única) o ERC-1155 (general), amb ERC-2981 si es vol retorn en la revenda | Sí, controlada | La revenda és l'únic cas on la transferència aporta |
+| Participacions del holding | **ERC-3643** (T-REX): token amb permisos, identitat verificada (ONCHAINID) i regles de compliment a la cadena | Només entre inversors verificats | És l'estàndard pensat per a valors; només via entitat autoritzada (fase 4) |
+| Pagaments | Cap token propi: euro o, si mai cal, un EMT d'un emissor autoritzat | — | Emetre diner electrònic és activitat regulada |
+
+**Xarxa:** ancoratge a Ethereum per una capa 2 (cost baix, seguretat de la
+capa 1) o a Alastria si l'aliat ho demana; EBSI quan hi hagi emissor públic.
+Cap dada personal a la cadena, només hashes i dids (RGPD).
+
+**Claus d'administració:** multisignatura (Safe o equivalent) amb l'Àlvar i
+dues persones de confiança; contractes amb pausa i sense actualització oculta
+(si s'actualitzen, amb retard públic). El contracte automatitza, no decideix
+(veda 180).
+
+**El límit quàntic de la cadena:** les signatures d'Ethereum (ECDSA secp256k1)
+tampoc no són postquàntiques. Per això la prova que ha de durar va signada
+fora de la cadena amb la signatura híbrida (Ed25519 + ML-DSA), i la cadena
+només n'ancora el hash. Amb l'abstracció de comptes (ERC-4337) un compte pot
+verificar altres esquemes de signatura; és la via per portar ML-DSA a la
+cadena quan sigui pràctic.
+
+> **Leads:** la llista d'entitats públiques de cadena de blocs de ciutat, regió i país és a [`tokenitzacio-leads-publics.md`](tokenitzacio-leads-publics.md).
+
 ## Les fases
 
 | Fase | Què | Toca la llei? |
@@ -251,9 +366,11 @@ risc legal.
   diferent.
 - Té una còpia del codi de Molekulon3/molekulonClub?
 - Hi ha cap assessor jurídic o fiscal de confiança que ja conegui MiCA?
-- Amb «La Caixa», penses en el banc (CaixaBank) o en la Fundació? Hi tens ja
-  algun contacte?
+- Amb la Fundació «la Caixa» (lead): amb quin programa o persona hi ha la
+  conversa oberta?
 - T'agrada «el registre del poble» com a nom, en lloc de «notari»?
+- Coneixes algun notari a Catalunya o a Euskadi disposat a fer el primer
+  pilot?
 - Quan diu «random d'esdeveniments paral·lels», pensava en una balisa pública
   (sortejos justos) o en protegir les claus? Si és el segon, la resposta són
   ML-KEM i ML-DSA.
