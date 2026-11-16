@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guia formativa SOS · 8 mòduls per esdevenir expert/a</title>
-<meta name="description" content="Guia pedagògica completa del Sistema Operatiu Social. 8 mòduls progressius amb objectius formatius, skills desenvolupades, aptituds i exercicis pràctics — des dels fonaments W3C fins al Comando Molekulon i l'ancoratge Nostr.">
+<title>Guia formativa SOS · acció-formació exponencial amb IA</title>
+<meta name="description" content="Acció-formació exponencial: aprens sobre el teu projecte real, la teva IA fa de tutora amb el cervell del projecte, i el que aprens torna a la xarxa. 22 mòduls en tres blocs, itineraris, guies metodològiques i evidència en lloc d'examen.">
 <style>
 :root{
 /*TT-PELL*/
@@ -208,6 +208,38 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 @media(max-width:860px){.emb-r{grid-template-columns:1fr}}
 @media(max-width:620px){.emb-portes{grid-template-columns:1fr}.emb-cta{width:100%;justify-content:center}}
 /*/TT-EMBUT-CSS*/
+/* Acció-formació exponencial · les tres imatges. SVG en línia amb els colors de la pell. */
+.expo{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.6rem 1.2rem;margin-bottom:1.8rem}
+.expo .pilars{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;margin:1rem 0 1.4rem}
+.expo .pilar{background:var(--panel);border-radius:10px;padding:.9rem 1rem}
+.expo .pilar h3{font-size:var(--t1);margin:0 0 .3rem}
+.expo .pilar p{margin:0;color:var(--light);font-size:var(--t0)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.fig{margin:0;background:var(--panel);border-radius:12px;padding:.8rem}
+.fig figcaption{font-size:var(--t0);color:var(--light);margin-top:.5rem}
+.fig figcaption strong{color:var(--text)}
+.fig-svg{width:100%;height:auto;display:block}
+.fig-svg text{font-family:inherit;text-anchor:middle}
+.fx-arc{fill:none;stroke:var(--border-strong);stroke-width:2.5}
+.fx-ah{fill:var(--muted)}
+.fx-mid{fill:var(--card);stroke:var(--border);stroke-dasharray:4 4}
+.fx-c1{font-size:16px;font-weight:700;fill:var(--text)} .fx-c2{font-size:14px;fill:var(--light)}
+.fx-n rect{fill:var(--card);stroke-width:2}
+.fx-n:hover rect,.fx-n:focus rect{fill:var(--panel)}
+.fx-n:focus{outline:none} .fx-n:focus-visible rect{stroke-width:4}
+.fx-t{font-size:16px;font-weight:700} .fx-s{font-size:13px;fill:var(--light)}
+.fb-ax{stroke:var(--border-strong);stroke-width:1.5}
+.fb-own{fill:var(--indigo)} .fb-inh{fill:var(--purple);opacity:.45}
+.fb-g{font-size:13px;font-weight:700;fill:var(--text)} .fb-n{font-size:12px;fill:var(--muted)}
+.fb-l{font-size:13px;fill:var(--light);text-anchor:start!important}
+.fv-n{fill:var(--card);stroke-width:2} .fv-nt{font-size:13.5px;font-weight:700;fill:var(--text)}
+.fv-t{stroke:var(--blue);stroke-width:2} .fv-i{stroke:var(--purple);stroke-width:2;stroke-dasharray:6 4}
+.fv-l{font-size:12.5px;fill:var(--text);paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
+.module.mod-17{border-left-color:var(--blue)} .module.mod-18{border-left-color:var(--purple)} .module.mod-19{border-left-color:var(--green)}
+.module.mod-20{border-left-color:var(--gold)} .module.mod-21{border-left-color:var(--orange)} .module.mod-22{border-left-color:var(--indigo)}
+.guia dl{margin:.4rem 0 0} .guia dt{font-weight:700;margin-top:.5rem} .guia dd{margin:.15rem 0 0;color:var(--light)}
+@media (max-width:560px){.expo{padding:1.1rem .9rem}}
+
 </style>
 </head>
 <body>
@@ -341,10 +373,99 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 
 <header>
 <h1>Guia formativa SOS · Fes-te expert/a</h1>
-<p>El model d'aprenentatge del SOS és l'<strong>acció-formació</strong>: es fa, i el fet queda com a certificació. Aquesta pàgina és el <strong>repositori per preparar-te</strong> — 16 mòduls en dos blocs, itineraris per rol i per tipus d'organització, el programa de Gestor/a i les fonts per ampliar. La mentoria la fan els primers formats en la gestió del SOS.</p>
+<p>Un tipus d'aprenentatge nou: l'<strong>acció-formació exponencial</strong>. Aprens fent sobre el teu projecte real, la teva IA t'acompanya amb el cervell del projecte, i el que aprens torna a la xarxa perquè el següent comenci més amunt. Aquí hi ha <strong>22 mòduls en tres blocs</strong>, els itineraris, les guies metodològiques i les fonts. <a href="#exponencial">Com funciona, en tres imatges</a>.</p>
 </header>
 
 <main class="wrap">
+
+<section class="expo" id="exponencial">
+<h2>🚀 Un nou tipus d'aprenentatge: l'acció-formació exponencial</h2>
+<p class="lead">Un curs clàssic ensenya i s'acaba: cada persona comença de zero i el que aprèn marxa amb ella. Aquí passa al revés. <strong>Aprens fent sobre el teu projecte</strong>, la teva IA t'acompanya perquè coneix el teu projecte (el seu <a href="/SOS/cervell.html">cervell</a>), i el que aprens queda escrit i <strong>torna a la xarxa</strong>. Per això creix de manera exponencial: cada node que s'hi forma deixa la xarxa més preparada per al següent.</p>
+<div class="pilars">
+<div class="pilar"><h3>1 · Sobre el teu projecte real</h3><p>No hi ha exercicis inventats. Cada mòdul acaba amb una cosa teva que funciona: el mapa, el cervell, la web, un flux que va sol.</p></div>
+<div class="pilar"><h3>2 · La IA fa de tutora</h3><p>La teva IA llegeix el cervell del projecte i et guia pas a pas. La persona mentora revisa i dona criteri, però no ho fa per tu.</p></div>
+<div class="pilar"><h3>3 · El que aprens torna a la xarxa</h3><p>Les teves regles i els teus mapes passen al cervell comú com a vedes, mapes de sector i <a href="knowledge/matriu/curriculum/README.md">skills</a>. El següent no comença de zero.</p></div>
+</div>
+<div class="figs">
+<figure class="fig">
+<svg class="fig-svg" viewBox="0 0 380 410" role="img" aria-labelledby="fx-t fx-d">
+<title id="fx-t">El flux de valor de l'acció-formació exponencial</title>
+<desc id="fx-d">Cercle de cinc passos: la visió del SOS es concreta en un mapa de valor; el mapa alimenta el cervell; el cervell guia l'acció (la web i els fluxos que van sols); l'acció deixa evidència; i l'evidència torna al cervell i a la xarxa. Al centre, la IA fa de tutora a cada pas.</desc>
+<defs><marker id="fx-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="fx-ah"/></marker></defs>
+<path class="fx-arc" d="M228.6 78.8A132 132 0 0 1 298.1 129.3" marker-end="url(#fx-a)"/>
+<path class="fx-arc" d="M322.0 202.7A132 132 0 0 1 295.4 284.4" marker-end="url(#fx-a)"/>
+<path class="fx-arc" d="M233.0 329.8A132 132 0 0 1 147.0 329.8" marker-end="url(#fx-a)"/>
+<path class="fx-arc" d="M84.6 284.4A132 132 0 0 1 58.0 202.7" marker-end="url(#fx-a)"/>
+<path class="fx-arc" d="M81.9 129.3A132 132 0 0 1 151.4 78.8" marker-end="url(#fx-a)"/>
+<circle cx="190" cy="205" r="62" class="fx-mid"/>
+<text x="190" y="195" class="fx-c1">🤖 La teva IA</text><text x="190" y="214" class="fx-c2">fa de tutora</text><text x="190" y="231" class="fx-c2">a cada pas</text>
+<a href="#m1" class="fx-n"><rect x="128.0" y="45.0" width="124" height="56" rx="10" style="stroke:var(--indigo)"/><text x="190.0" y="69.0" class="fx-t" style="fill:var(--indigo)">Visió SOS</text><text x="190.0" y="87.0" class="fx-s">què volem</text></a>
+<a href="#m17" class="fx-n"><rect x="253.5" y="136.2" width="124" height="56" rx="10" style="stroke:var(--blue)"/><text x="315.5" y="160.2" class="fx-t" style="fill:var(--blue)">Mapa de valor</text><text x="315.5" y="178.2" class="fx-s">qui aporta què</text></a>
+<a href="#m18" class="fx-n"><rect x="205.6" y="283.8" width="124" height="56" rx="10" style="stroke:var(--purple)"/><text x="267.6" y="307.8" class="fx-t" style="fill:var(--purple)">Cervell</text><text x="267.6" y="325.8" class="fx-s">el que sabem</text></a>
+<a href="#m19" class="fx-n"><rect x="50.4" y="283.8" width="124" height="56" rx="10" style="stroke:var(--green)"/><text x="112.4" y="307.8" class="fx-t" style="fill:var(--green)">Acció</text><text x="112.4" y="325.8" class="fx-s">web i fluxos</text></a>
+<a href="#m14" class="fx-n"><rect x="2.5" y="136.2" width="124" height="56" rx="10" style="stroke:var(--orange)"/><text x="64.5" y="160.2" class="fx-t" style="fill:var(--orange)">Evidència</text><text x="64.5" y="178.2" class="fx-s">el que canvia</text></a>
+</svg>
+<figcaption><strong>El flux de valor: de la visió a l'operació.</strong> La visió del SOS es concreta en el teu mapa de valor. El mapa alimenta el cervell, el cervell guia l'acció, i l'acció deixa una evidència que torna al cervell. Cada pas porta al seu mòdul.</figcaption>
+</figure>
+<figure class="fig">
+<svg class="fig-svg" viewBox="0 0 360 380" role="img" aria-labelledby="fv-t fv-d">
+<title id="fv-t">El programa mirat com un mapa de valor</title>
+<desc id="fv-d">Quatre rols. Tu i el teu equip doneu el vostre projecte real a la vostra IA, i la IA us torna propostes pas a pas. Doneu evidència al mentor o mentora, que us torna criteri i confiança. El que heu après passa a la xarxa SOS, i la xarxa dona a la vostra IA el cervell heretat. El mentor certifica a la xarxa. Línia contínua: tangible. Línia discontínua: intangible.</desc>
+<defs><marker id="fv-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="fx-ah"/></marker></defs>
+<line x1="202.1" y1="84.8" x2="252.3" y2="169.6" class="fv-t" marker-end="url(#fv-a)"/>
+<text x="238.0" y="150.0" class="fv-l">el teu projecte</text>
+<line x1="267.9" y1="157.2" x2="217.7" y2="72.4" class="fv-i" marker-end="url(#fv-a)"/>
+<text x="292.0" y="114.0" class="fv-l">propostes pas a pas</text>
+<line x1="142.3" y1="72.4" x2="92.1" y2="157.2" class="fv-t" marker-end="url(#fv-a)"/>
+<text x="80.0" y="114.0" class="fv-l">evidència</text>
+<line x1="107.7" y1="169.6" x2="157.9" y2="84.8" class="fv-i" marker-end="url(#fv-a)"/>
+<text x="124.0" y="150.0" class="fv-l">criteri i confiança</text>
+<line x1="217.7" y1="307.6" x2="267.9" y2="222.8" class="fv-t" marker-end="url(#fv-a)"/>
+<text x="276.0" y="272.0" class="fv-l">cervell heretat</text>
+<line x1="180.0" y1="80.0" x2="180.0" y2="300.0" class="fv-i" marker-end="url(#fv-a)"/>
+<text x="180.0" y="248.0" class="fv-l">el que has après</text>
+<line x1="92.1" y1="222.8" x2="142.3" y2="307.6" class="fv-t" marker-end="url(#fv-a)"/>
+<text x="84.0" y="272.0" class="fv-l">certificació</text>
+<rect x="114" y="32" width="132" height="40" rx="20" class="fv-n" style="stroke:var(--indigo)"/><text x="180" y="57" class="fv-nt">🙋 Tu i el teu equip</text>
+<rect x="224" y="170" width="132" height="40" rx="20" class="fv-n" style="stroke:var(--blue)"/><text x="290" y="195" class="fv-nt">🤖 La teva IA</text>
+<rect x="4" y="170" width="132" height="40" rx="20" class="fv-n" style="stroke:var(--green)"/><text x="70" y="195" class="fv-nt">🧭 Mentor/a</text>
+<rect x="114" y="308" width="132" height="40" rx="20" class="fv-n" style="stroke:var(--purple)"/><text x="180" y="333" class="fv-nt">🌐 La xarxa SOS</text>
+</svg>
+<figcaption><strong>El programa, mirat com un mapa de valor.</strong> Línia contínua: el que és tangible (el projecte, l'evidència, el cervell heretat). Línia discontínua: el que és intangible (la guia, el criteri, la confiança, el que has après).</figcaption>
+</figure>
+<figure class="fig">
+<svg class="fig-svg" viewBox="0 0 360 250" role="img" aria-labelledby="fb-t fb-d">
+<title id="fb-t">Curs clàssic i acció-formació exponencial, comparats</title>
+<desc id="fb-d">Esquema il·lustratiu. En un curs clàssic, cada persona o equip que es forma comença de zero i arriba al mateix lloc. A l'acció-formació exponencial, cada nou node comença amb el que la xarxa ja ha après (vedes, mapes de sector, skills) i hi afegeix el seu, de manera que cada un arrenca més amunt que l'anterior.</desc>
+<line x1="30" y1="200" x2="350" y2="200" class="fb-ax"/>
+<text x="95" y="236" class="fb-g">Curs clàssic</text><text x="265" y="236" class="fb-g">Acció-formació exponencial</text>
+<rect x="40" y="160" width="20" height="40" class="fb-own"/>
+<rect x="68" y="160" width="20" height="40" class="fb-own"/>
+<rect x="96" y="160" width="20" height="40" class="fb-own"/>
+<rect x="124" y="160" width="20" height="40" class="fb-own"/>
+<rect x="210" y="160" width="24" height="40" class="fb-own"/>
+<text x="222" y="216" class="fb-n">1</text>
+<rect x="244" y="178" width="24" height="22" class="fb-inh"/>
+<rect x="244" y="138" width="24" height="40" class="fb-own"/>
+<text x="256" y="216" class="fb-n">2</text>
+<rect x="278" y="148" width="24" height="52" class="fb-inh"/>
+<rect x="278" y="108" width="24" height="40" class="fb-own"/>
+<text x="290" y="216" class="fb-n">3</text>
+<rect x="312" y="108" width="24" height="92" class="fb-inh"/>
+<rect x="312" y="68" width="24" height="40" class="fb-own"/>
+<text x="324" y="216" class="fb-n">4</text>
+<text x="50" y="216" class="fb-n">1</text>
+<text x="78" y="216" class="fb-n">2</text>
+<text x="106" y="216" class="fb-n">3</text>
+<text x="134" y="216" class="fb-n">4</text>
+<rect x="34" y="18" width="12" height="12" class="fb-own"/><text x="52" y="28" class="fb-l">el que aprèn cada node</text>
+<rect x="34" y="38" width="12" height="12" class="fb-inh"/><text x="52" y="48" class="fb-l">el que hereta de la xarxa (cervell)</text>
+</svg>
+<figcaption><strong>Per què és exponencial.</strong> Esquema il·lustratiu, no dades. En un curs clàssic tothom arrenca de zero. Aquí cada node nou hereta el que la xarxa ja ha après, i hi afegeix el seu.</figcaption>
+</figure>
+</div>
+<p class="lead" style="margin-top:1rem">Per on començar: si tens un negoci o una entitat, el <a href="#blocC"><strong>Bloc C · La teva web viva amb el teu cervell</strong></a>. Si vols sostenir una comunitat, el <a href="#m1">Bloc A</a> i el <a href="#blocB">Bloc B</a>. Cada mòdul diu les hores, com es fa (en línia o presencial) i quina evidència deixa.</p>
+</section>
 
 <section class="model">
 <h2>🌀 El model: acció-formació</h2>
@@ -402,6 +523,14 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <thead><tr><th>Per a qui</th><th>Itinerari</th><th>Fita</th><th>Durada</th></tr></thead>
 <tbody>
 <tr><td><span class="rt-r" style="--c:var(--purple)">🧠 Un equip amb un projecte viu</span><br><span class="rt-s">pime, cooperativa, entitat o equip d'una empresa</span></td><td>M1 · M3 · M8 · M14</td><td>El codex amb les primeres vedes, el mapa de valor i dues guardes, llegits per la vostra IA</td><td>La suma dels quatre mòduls</td></tr>
+</tbody>
+</table>
+<h3 class="section">Per producte · La teva web viva amb el teu cervell</h3>
+<p class="lead">Per a un negoci, una escola o una entitat que vol portar la seva web i els seus fluxos sense dependre de ningú. Es fa sobre el vostre projecte i se'n surt amb la web publicada per vosaltres i una feina que ja va sola.</p>
+<table class="rt">
+<thead><tr><th>Per a qui</th><th>Itinerari</th><th>Fita</th><th>Durada</th></tr></thead>
+<tbody>
+<tr><td><span class="rt-r" style="--c:var(--blue)">🌱 Un negoci o una entitat amb web</span><br><span class="rt-s">autònoms, pimes, escoles, associacions</span></td><td><a href="#m17">M17</a> · <a href="#m18">M18</a> · <a href="#m19">M19</a> · <a href="#m20">M20</a> · <a href="#m21">M21</a> · <a href="#m22">M22</a></td><td>La vostra web, canviada i publicada per vosaltres, i una targeta del tauler a «Que vagi sol»</td><td>13,5 h en 6 sessions</td></tr>
 </tbody>
 </table>
 <h3 class="section">Per rol directiu</h3>
@@ -469,11 +598,21 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <li><a href="#m15">Dades, privadesa i RGPD</a> · <em>què és públic i què és irreversible</em></li>
 <li><a href="#m16">Formació de formadors</a> · <em>l'ofici de mentorar · N3</em></li>
 </ol>
-<ol start="17" style="list-style:none;padding-left:0;margin-top:.6rem">
+<h3 style="margin-top:1.2rem">Bloc C · La teva web viva amb el teu cervell</h3>
+<ol start="17">
+<li><a href="#m17">El teu mapa de valor</a> · <em>qui aporta què, amb les deu regles</em></li>
+<li><a href="#m18">El teu cervell i la teva cultura</a> · <em>que la teva IA conegui casa teva</em></li>
+<li><a href="#m19">La teva web</a> · <em>del mapa a la web, sense perdre Google</em></li>
+<li><a href="#m20">Editar i publicar sense trencar</a> · <em>vista prèvia abans de publicar</em></li>
+<li><a href="#m21">Que vagi sol</a> · <em>formularis i fluxos connectats a la teva gestió</em></li>
+<li><a href="#m22">Treballar amb el teu Claude</a> · <em>demanar canvis i revisar-los tu</em></li>
+</ol>
+<ol start="23" style="list-style:none;padding-left:0;margin-top:.6rem">
 <li><a href="#manual">🔧 Manual tècnic · Desenvolupament i administració</a> · <em>carteres permaweb · Nostr · Claude API · allotjament propi</em></li>
 </ol>
 <h3 style="margin-top:1.2rem">Més enllà dels mòduls</h3>
 <ul class="toc-x">
+<li><a href="#exponencial">🚀 Acció-formació exponencial</a> · <em>el model, en tres imatges</em></li>
 <li><a href="#itineraris">🧭 Itineraris</a> · <em>per rol del SOS, per organització i per rol directiu</em></li>
 <li><a href="#gestor">🎖 Programa de Gestor/a SOS</a> · <em>les 6 competències i les seves evidències</em></li>
 <li><a href="#equipv1">👥 Equip gestor v1</a> · <em>les 12 setmanes que posen un territori en marxa</em></li>
@@ -1024,6 +1163,101 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Acompanya una persona de N0 a N1 amb evidència al ledger. Registra cada sessió com a aportació de valor. Al final, escriu què faries diferent — i comparteix-ho amb els altres mentors.</p></div>
 </section>
 
+<div class="bloc-sep" id="blocC">
+<h2>🌱 Bloc C · La teva web viva amb el teu cervell</h2>
+<p>Els blocs A i B ensenyen a sostenir una comunitat. Aquest ensenya a un negoci o una entitat a <strong>fer-se ell mateix</strong> el mapa de valor, el cervell i la web, i a deixar anar sol el que es repeteix. És l'itinerari de l'acció-formació exponencial per a clients: sis mòduls, 13,5 hores, cadascun amb la seva guia metodològica i una evidència que fas tu. La persona es queda amb el que és intangible i amb el tracte real; el que es repeteix, va sol.</p>
+</div>
+
+<section class="module mod-17" id="m17">
+<div class="num">MÒDUL 17 · 3 h · Bloc C · N1</div>
+<h2>El teu mapa de valor</h2>
+<p class="subtitle">Qui aporta què a casa teva, tangible i intangible, en un mapa que reconeixes com a teu.</p>
+<p class="lead">El punt de partida de tot. Abans de la web i abans de la IA, cal veure qui sosté el negoci i què s'intercanvia. El mapa és el que després llegirà el teu cervell.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul><li>Nomenar els rols del teu negoci (no els càrrecs).</li><li>Dibuixar els intercanvis tangibles i intangibles.</li><li>Passar el mapa per les deu regles de la casa.</li></ul>
+<div class="box eines"><h4>🧰 Eines</h4><p>El <a href="/cliente/">mapa a /cliente/</a> amb IA per polir-lo · la skill <code>mapa-de-valor</code> · <a href="vna.html">com es llegeix un mapa</a> · <a href="#m3">mòdul 3 (VNA)</a> per aprofundir.</p></div>
+<div class="box metode guia"><h4>🎓 Guia metodològica</h4><dl>
+<dt>Seqüència</dt><dd><ol><li>Una pregunta: «qui fa que això funcioni?». Llista de rols.</li><li>Els intercanvis, de dos en dos: què dona i què rep cadascú.</li><li>La IA revisa el mapa amb les deu regles; tu decideixes què canvies.</li></ol></dd>
+<dt>Modalitat</dt><dd>En línia o presencial. Una sessió de 2 h i una hora de feina pròpia.</dd>
+<dt>Quan es torça</dt><dd>Si surt un organigrama, torna a la pregunta dels rols. Si només hi ha diners i serveis, pregunta què es perdria si una persona marxés demà.</dd>
+</dl></div>
+<div class="box exercici"><h4>✏ Evidència</h4><p>Un mapa que passa les deu regles, desat a «Els meus mapes».</p></div>
+</section>
+<section class="module mod-18" id="m18">
+<div class="num">MÒDUL 18 · 2 h · Bloc C · N1</div>
+<h2>El teu cervell i la teva cultura</h2>
+<p class="subtitle">Que la teva IA conegui casa teva abans de demanar-li res.</p>
+<p class="lead">Una IA sense context escriu com tothom. El cervell del projecte guarda el teu mapa, les teves regles (vedes) i el que ja has decidit, i la IA el llegeix cada cop.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul><li>Muntar el cervell del projecte a partir del mapa.</li><li>Escriure les primeres vedes: com parleu, què no feu mai.</li><li>Entendre les capes del cervell i on va cada cosa.</li></ul>
+<div class="box eines"><h4>🧰 Eines</h4><p><a href="/SOS/cervell.html">Crea el teu cervell</a> · <a href="vedes.html">les vedes de la casa</a> com a exemple · <a href="knowledge/matriu/curriculum/README.md">currículum de la MATRIU</a> (domini D-00).</p></div>
+<div class="box metode guia"><h4>🎓 Guia metodològica</h4><dl>
+<dt>Seqüència</dt><dd><ol><li>Del mapa al cervell: s'importen els rols i els intercanvis.</li><li>Tres vedes escrites per tu, amb un exemple de cada.</li><li>Una pregunta a la IA amb cervell i sense: es comparen les respostes.</li></ol></dd>
+<dt>Modalitat</dt><dd>En línia. Una sessió de 1,5 h i mitja hora de feina pròpia.</dd>
+<dt>Quan es torça</dt><dd>Si les vedes són eslògans («som propers»), demana un exemple de frase que sí i una que no.</dd>
+</dl></div>
+<div class="box exercici"><h4>✏ Evidència</h4><p>El teu cervell amb les primeres vedes, i la comparació de respostes amb cervell i sense.</p></div>
+</section>
+<section class="module mod-19" id="m19">
+<div class="num">MÒDUL 19 · 3 h · Bloc C · N1</div>
+<h2>La teva web</h2>
+<p class="subtitle">Tenir la teva web i poder-la canviar sense perdre el posicionament que ja tens.</p>
+<p class="lead">Si ja tens web, s'importa tal com és i s'hi afegeix un gestor de continguts de codi obert. Si no en tens, surt del teu mapa: cada rol té la seva pàgina. En tots dos casos, la web queda a comptes al teu nom.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul><li>Saber d'on surt cada pàgina (del mapa o de la web antiga).</li><li>Revisar que les adreces antigues porten a les noves, perquè Google no et perdi.</li><li>Tenir la web a comptes teves (codi i allotjament).</li></ul>
+<div class="box eines"><h4>🧰 Eines</h4><p><a href="/mapa-web/">Mapa web</a> · la skill <code>propuesta-inicial</code> · un gestor de continguts de codi obert.</p></div>
+<div class="box metode guia"><h4>🎓 Guia metodològica</h4><dl>
+<dt>Seqüència</dt><dd><ol><li>Inventari de la web actual i de les pàgines que porten visites.</li><li>Proposta de web des del mapa, revisada amb tu.</li><li>Vista prèvia sense indexar: la mires al mòbil i a l'ordinador.</li></ol></dd>
+<dt>Modalitat</dt><dd>En línia, en dues sessions de 1,5 h.</dd>
+<dt>Quan es torça</dt><dd>Si una pàgina antiga porta visites i no té on anar, no es publica fins que tingui la seva redirecció.</dd>
+</dl></div>
+<div class="box exercici"><h4>✏ Evidència</h4><p>La teva web en vista prèvia, amb les adreces antigues comprovades.</p></div>
+</section>
+<section class="module mod-20" id="m20">
+<div class="num">MÒDUL 20 · 1,5 h · Bloc C · N1</div>
+<h2>Editar i publicar sense trencar</h2>
+<p class="subtitle">Canviar textos, dates i programes tu mateixa, i revisar-ho abans que surti.</p>
+<p class="lead">La web viva és la que canvies quan cal, no quan algú té temps. Aquí aprens el panell d'edició i la vista prèvia: tot canvi es mira abans de publicar.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul><li>Editar un text o una data des del panell.</li><li>Revisar el canvi a la vista prèvia, al mòbil.</li><li>Publicar-lo i saber com desfer-lo.</li></ul>
+<div class="box eines"><h4>🧰 Eines</h4><p>El panell d'edició de la teva web · la vista prèvia de cada canvi.</p></div>
+<div class="box metode guia"><h4>🎓 Guia metodològica</h4><dl>
+<dt>Seqüència</dt><dd><ol><li>Un canvi real que necessitis aquesta setmana.</li><li>Vista prèvia al mòbil, amb la llista de comprovació.</li><li>Publicació i com es tornaria enrere.</li></ol></dd>
+<dt>Modalitat</dt><dd>En línia o presencial. Una sessió d'1 h i mitja hora de pràctica.</dd>
+<dt>Quan es torça</dt><dd>Si el canvi trenca la maqueta, es desfà a la vista prèvia: per això existeix. No es publica res que no hagis vist.</dd>
+</dl></div>
+<div class="box exercici"><h4>✏ Evidència</h4><p>Un canvi publicat per tu.</p></div>
+</section>
+<section class="module mod-21" id="m21">
+<div class="num">MÒDUL 21 · 2 h · Bloc C · N1</div>
+<h2>Que vagi sol</h2>
+<p class="subtitle">Decidir què s'automatitza i connectar els formularis i els fluxos amb la teva gestió.</p>
+<p class="lead">No tot s'ha d'automatitzar. Amb el tauler decideixes, intercanvi per intercanvi, què queda «Per definir», què està «Definit» i què ja «Va sol». El que es repeteix va sol; el tracte amb les persones, no.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul><li>Classificar els intercanvis del mapa al tauler.</li><li>Connectar un formulari amb la teva gestió (CRM, full o correu).</li><li>Posar una guarda: què ha de passar perquè t'avisi.</li></ul>
+<div class="box eines"><h4>🧰 Eines</h4><p>El <a href="/cliente/#tablero">tauler del teu mapa</a> · <a href="/conecta/">connectors</a> · <a href="#m14">mòdul 14 (mesura d'impacte)</a> per saber què ha canviat.</p></div>
+<div class="box metode guia"><h4>🎓 Guia metodològica</h4><dl>
+<dt>Seqüència</dt><dd><ol><li>Repàs del mapa: quins intercanvis es repeteixen cada setmana.</li><li>Un d'aquests, connectat i provat de punta a punta.</li><li>La guarda i qui rep l'avís.</li></ol></dd>
+<dt>Modalitat</dt><dd>En línia. Una sessió de 1,5 h i mitja hora de prova.</dd>
+<dt>Quan es torça</dt><dd>Si s'automatitza un intercanvi intangible (la confiança, l'acollida), es torna a «Definit»: aquest el porta una persona.</dd>
+</dl></div>
+<div class="box exercici"><h4>✏ Evidència</h4><p>Una targeta del teu tauler a «Que vagi sol», provada.</p></div>
+</section>
+<section class="module mod-22" id="m22">
+<div class="num">MÒDUL 22 · 2 h · Bloc C · N2</div>
+<h2>Treballar amb el teu Claude</h2>
+<p class="subtitle">Demanar canvis a la teva IA amb el teu cervell, i revisar-los tu abans d'acceptar-los.</p>
+<p class="lead">L'últim pas és el que fa l'aprenentatge exponencial: la teva IA ja coneix casa teva, i tu saps demanar-li bé i revisar el que fa. A partir d'aquí, cada canvi nou t'ensenya alguna cosa i en queda constància.</p>
+<h3 class="section">Objectius formatius</h3>
+<ul><li>Escriure un encàrrec clar a la IA, amb el que vols i el que no.</li><li>Revisar el canvi a la vista prèvia abans d'acceptar-lo.</li><li>Deixar escrit al cervell el que has après (una veda nova).</li></ul>
+<div class="box eines"><h4>🧰 Eines</h4><p>Claude Code al teu compte · el teu cervell · <a href="#m8">mòdul 8 (IA integrada)</a> per aprofundir.</p></div>
+<div class="box metode guia"><h4>🎓 Guia metodològica</h4><dl>
+<dt>Seqüència</dt><dd><ol><li>Un encàrrec real, escrit amb la plantilla.</li><li>La IA fa el canvi; tu el revises a la vista prèvia.</li><li>El que has après, com a veda nova al cervell.</li></ol></dd>
+<dt>Modalitat</dt><dd>En línia. Una sessió de 1,5 h i mitja hora de pràctica.</dd>
+<dt>Quan es torça</dt><dd>Si la IA fa més del que has demanat, no s'accepta: es torna a demanar amb el límit escrit.</dd>
+</dl></div>
+<div class="box exercici"><h4>✏ Evidència</h4><p>Un canvi demanat a la teva IA i revisat per tu, i una veda nova al cervell.</p></div>
+</section>
 <section class="gestor" id="gestor">
 <h2>🎖 Programa de Gestor/a SOS</h2>
 <p class="lead">Un gestor SOS no és qui sap fer servir l'app: és qui <strong>pot posar un territori en marxa i sostenir-lo</strong>. Aquest programa és el pont entre N1 (Practicant) i N2 (Gestor), i el requisit per després mentorar.</p>

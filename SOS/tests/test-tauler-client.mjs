@@ -105,7 +105,7 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.locator('#cl-tauler .tc-fo form button[type=submit]').click();
   ok(/Conectar los formularios/.test(await p.locator('#cl-tauler .tc-fo .tc-col[data-col=prog]').textContent()), 'se añade otra acción, también de desarrollo');
   const fo = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).tauler._formacio);
-  ok(await acc.locator('a.tc-tem').getAttribute('href') === '/SOS/formacio.html#itineraris' && !/€/.test(await p.textContent('#cl-tauler .tc-fo')), 'enlaza a su contenido y no enseña importes sin tarifa');
+  ok(await acc.locator('a.tc-tem').getAttribute('href') === '/SOS/formacio.html#m20' && !/€/.test(await p.textContent('#cl-tauler .tc-fo')), 'enlaza a su contenido y no enseña importes sin tarifa');
   ok(fo && fo.accions.length === 7 && fo.accions.some(a => a.col === 'fet' && a.modalitat === 'presencial'), 'las acciones se guardan con el mapa');
   const id = await card.getAttribute('id');
   await p.goto(URL_ + '#' + id); await p.waitForTimeout(300);

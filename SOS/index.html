@@ -1798,7 +1798,7 @@ body.sos-taller .lent-z{min-width:56px}
       <div class="obb-k">El que aprèn cada persona</div>
       <p class="obb-d">Sostenir una dinàmica és un ofici, i aquí es pot aprendre i <b>acreditar</b>. El certificat el signa qui ha vist la feina i <b>és de la persona</b>: se l'endú encara que plegui del projecte.</p>
       <div class="obb-n"><b>9 professions</b><span>sortides dels rols reals de les dinàmiques</span></div>
-      <div class="obb-n"><b>16 mòduls</b><span>de N0 a N3, i el que fas queda al teu registre</span></div>
+      <div class="obb-n"><b>22 mòduls</b><span>de N0 a N3, i el que fas queda al teu registre</span></div>
     </div>
     <div class="obb b3">
       <div class="obb-k">El que s'estalvia cada persona</div>
@@ -9090,7 +9090,17 @@ const FORMACIO_MODULES=[
   {id:'m13',n:13,title:'Formes jurídiques i tràmits',hours:6,level:'N2',roles:['guardian','coordinador','agent']},
   {id:'m14',n:14,title:'Mesura d\'impacte i justificació',hours:6,level:'N2',roles:['coordinador','agent','mentor']},
   {id:'m15',n:15,title:'Dades, privadesa i RGPD',hours:5,level:'N1',roles:['guardian','agent','coordinador']},
-  {id:'m16',n:16,title:'Formació de formadors · l\'ofici de mentorar',hours:9,level:'N3',roles:['mentor']}
+  {id:'m16',n:16,title:'Formació de formadors · l\'ofici de mentorar',hours:9,level:'N3',roles:['mentor']},
+  /* ═══ Bloc C · la teva web viva amb el teu cervell ═══
+     L'itinerari de l'acció-formació exponencial per a clients (negoci,
+     escola, entitat). El tauler del client (SOS/lib/tauler-client.js) hi
+     enllaça cada acció formativa. */
+  {id:'m17',n:17,title:'El teu mapa de valor',hours:3,level:'N1',roles:['coordinador','agent','mentor']},
+  {id:'m18',n:18,title:'El teu cervell i la teva cultura',hours:2,level:'N1',roles:['coordinador','agent']},
+  {id:'m19',n:19,title:'La teva web',hours:3,level:'N1',roles:['coordinador','agent']},
+  {id:'m20',n:20,title:'Editar i publicar sense trencar',hours:1.5,level:'N1',roles:['coordinador','agent']},
+  {id:'m21',n:21,title:'Que vagi sol',hours:2,level:'N1',roles:['coordinador','agent','guardian']},
+  {id:'m22',n:22,title:'Treballar amb el teu Claude',hours:2,level:'N2',roles:['coordinador','agent','guardian']}
 ];
 /* On viu la docència de cada mòdul. `formacio.html` és la font única —aquí només
    hi ha l'esquelet referenciable— i per això el que importa és que **l'àncora
