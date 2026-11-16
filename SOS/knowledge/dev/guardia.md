@@ -36,7 +36,7 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 
 **A · Pantalles, no rotlles** (estàndard a `pantalles.md`)
 1. [x] `cataleg.html` en pantalles (bilingüe: `data-pantalla-nom` per idioma o noms des de l'i18n) (#368)
-2. [x] `qui-som.html` en pantalles: sis pantalles amb noms en català i castellà (#PR)
+2. [x] `qui-som.html` en pantalles: sis pantalles amb noms en català i castellà (#390)
 3. [x] `SOS/vna.html` en pantalles (#369)
 4. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
 5. [ ] Pantalles de més de 3 alçades a conecta/ia/escola: partir-les o fer-ne llista que llisca
