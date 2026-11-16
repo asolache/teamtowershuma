@@ -86,6 +86,18 @@
     if (txt != null) e.textContent = txt;
     return e;
   }
+  /* Els textos d'un cas: els de la casa i, a sobre, els que porta el cas
+     (C.textos[L]). Així el mateix motor explica una productora o un poble
+     sense que cap frase d'un es fiqui a l'altre (15/11/2026, portada del SOS). */
+  function tx(C, L) {
+    var b = T[L], o = C && C.textos && C.textos[L], r = {}, k;
+    if (!o) return b;
+    for (k in b) r[k] = b[k];
+    for (k in o) if (k !== 'pl') r[k] = o[k];
+    r.pl = {}; for (k in b.pl) r.pl[k] = b.pl[k];
+    for (k in (o.pl || {})) r.pl[k] = o.pl[k];
+    return r;
+  }
   var icPropies = null;
   function icona(nom) { if (icPropies && icPropies[nom]) return icPropies[nom]; var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
   /* «Quien elabora el vino» → «Quien elabora»; «Qui hi assisteix» es queda sencer. */
@@ -215,7 +227,7 @@
       var P = pos[r], n = el('g', { class: 'ma-n', tabindex: '0', role: 'button', 'aria-label': r });
       n.appendChild(el('title', {}, r));
       n.appendChild(el('circle', { cx: P[0], cy: P[1], r: r === R[mig] ? 38 : 30 }));
-      n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, icona(C.roles.es[R.indexOf(r)])));
+      n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, (C.icones && C.icones[R.indexOf(r)]) || icona(C.roles.es[R.indexOf(r)])));
       n.appendChild(el('text', { x: P[0], y: P[1] + (r === R[mig] ? 58 : 50) }, curt(r)));
       gN.appendChild(n); nodes[r] = n;
     });
@@ -310,7 +322,7 @@
   /* ── El tauler ────────────────────────────────────────────────────────── */
   function tauler(cont, C) {
     posaEstil();
-    var L = ll(), t = T[L], fx = C.fluxos;
+    var L = ll(), t = tx(C, L), fx = C.fluxos;
     var sols = fx.filter(function (x) { return x.escalo === 'automatizado'; });
     var nDef = fx.filter(function (x) { return x.escalo === 'definido'; }).length;
     var nSense = fx.filter(function (x) { return !x.escalo || x.escalo === 'sin_definir' || x.escalo === 'por_montar'; }).length;
@@ -368,7 +380,7 @@
   var DUR = [4200, 6500, 7500, 7600, 7200];
   function pelicula(cont, C) {
     posaEstil(); estilPeli();
-    var L = ll(), t = T[L], P = t.pl || T.es.pl, D = dibuix(C, L), svg = D.svg;
+    var L = ll(), t = tx(C, L), P = t.pl || T.es.pl, D = dibuix(C, L), svg = D.svg;
     if (cont._pl) clearInterval(cont._pl);
     if (cont._tl) clearInterval(cont._tl._ma);
     cont.textContent = '';
