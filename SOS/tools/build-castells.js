@@ -281,32 +281,9 @@ function repartiment(f, v) {
    posició al castell perquè no la fa ningú en concret —la fa la colla sencera
    quan el castell és descarregat—. A una organització passa igual, i és
    justament el que ningú té assignat. */
-const PANTEO = {
-  zeus: { ic: '⚡', nom: 'Zeus', q: 'Com prenem les decisions i com repartim el valor',
-    qEs: 'Cómo tomamos las decisiones y cómo repartimos el valor' },
-  hera: { ic: '👑', nom: 'Hera', q: 'Com generem confiança i compromís',
-    qEs: 'Cómo generamos confianza y compromiso' },
-  posido: { ic: '🌊', nom: 'Posidó', q: 'Com sostenim la tensió del canvi',
-    qEs: 'Cómo sostenemos la tensión del cambio' },
-  demeter: { ic: '🌾', nom: 'Demèter', q: 'Com generem valor i en tenim cura',
-    qEs: 'Cómo generamos valor y lo cuidamos' },
-  atenea: { ic: '🦉', nom: 'Atenea', q: 'Com protegim el nostre flux de valor',
-    qEs: 'Cómo protegemos nuestro flujo de valor' },
-  apollo: { ic: '📚', nom: 'Apol·lo', q: 'Com estructurem el que sabem',
-    qEs: 'Cómo estructuramos lo que sabemos' },
-  hebe: { ic: '🍶', nom: 'Hebe', q: 'Com resolem la intendència',
-    qEs: 'Cómo resolvemos la intendencia' },
-  dionis: { ic: '🍇', nom: 'Dionís', q: 'Com celebrem el que surt bé',
-    qEs: 'Cómo celebramos lo que sale bien' },
-  afrodita: { ic: '💗', nom: 'Afrodita', q: 'Com es veu el valor que aportem',
-    qEs: 'Cómo se ve el valor que aportamos' },
-  hefest: { ic: '🔨', nom: 'Hefest', q: 'Amb quin ofici i quines eines produïm',
-    qEs: 'Con qué oficio y qué herramientas producimos' },
-  hermes: { ic: '🪽', nom: 'Hermes', q: 'Com connectem les persones',
-    qEs: 'Cómo conectamos a las personas' },
-  hestia: { ic: '🔥', nom: 'Hèstia', q: 'Com acollim i sostenim els espais',
-    qEs: 'Cómo acogemos y sostenemos los espacios' }
-};
+/* Viu a `SOS/lib/panteo.js`: el fan servir aquest generador, el pas guiat de
+   /cliente/ i la pel·lícula de la font. Una sola còpia. */
+const PANTEO = require('../lib/panteo.js').ARQ;
 
 const POSICIONS = [
   { id: 'baix', nom: 'Baix', nomEs: 'Baix', on: 'tronc', pis: 1, fn: 'coord', aport: 'Temps constant',

@@ -1734,6 +1734,7 @@
     /* `PUJA`: si ha entrado con su cuenta, la ficha también se guarda con ella (fitxa.mjs). */
     var PUJA = null;
     function desa() { S.actualitzada = new Date().toISOString(); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* el navegador no deja guardar */ } viu(); pintaAvanc(); guardaM(); if (typeof MAPES !== 'undefined' && MAPES) MAPES.pinta(); if (PUJA) PUJA(); }
+    window.TTCliente = { estat: function () { return S; }, desa: function () { desa(); } };
     function aviso(tx) { var a = document.createElement('div'); a.className = 'aviso'; a.setAttribute('role', 'status'); a.textContent = tx; document.body.appendChild(a); setTimeout(function () { a.remove(); }, 2600); }
     function el(tag, at, txt) { var e = document.createElement(tag); Object.keys(at || {}).forEach(function (k) { e.setAttribute(k, at[k]); }); if (txt != null) e.textContent = txt; return e; }
 
@@ -2584,7 +2585,7 @@
            tratamientos, SOS/knowledge/legal/): la fecha viaja con el envío. */
         if (!$('#cl-priv').checked) { r.className = 'resposta ko'; r.textContent = t('Marca la casilla de privacidad para poder enviarlo.'); $('#cl-priv').focus(); return; }
         var dades = { 'form-name': 'cliente-web', 'bot-field': '', nom: S.nom, mail: S.mail, orgNom: S.org, alcance: S.alcance === 'zoom' ? 'Zoom en un área: ' + (S.area || '') : 'Mapa global', web: S.web,
-            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.Kanban && S.kanban ? '\n' + window.Kanban.resum(S.kanban, 'es', { cliente: S.nom || 'Cliente', equipo: 'Álvaro', maquina: 'La máquina' }) : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
+            objectiu: S.respuestas.objetivo || S.inicial, nivel: S.nivel, automatiza: S.automatiza ? 'Sí: que lo que se repite vaya solo' : '', capas: ['web pública'].concat(capes()).join(', '), resum: D.resum(S) + (window.GuiaCliente ? window.GuiaCliente.resum(S) : '') + (MM.automatitza ? '\nAutomatizable (regla del tablero): ' + auto().filter(function (x) { return x.r.qui === 'maquina'; }).map(function (x) { return x.que; }).join(' · ') : '') + (window.Kanban && S.kanban ? '\n' + window.Kanban.resum(S.kanban, 'es', { cliente: S.nom || 'Cliente', equipo: 'Álvaro', maquina: 'La máquina' }) : '') + (window.TaulerClient ? '\n' + window.TaulerClient.resum(window.TaulerClient.cartes(D.mapa(S).pairs, MM.automatitza ? function (q, k) { return MM.automatitza(q, k, 'es'); } : null), S.tauler || {}, 'es') : ''),
             privacidad: 'Aceptada el ' + new Date().toISOString() + ' desde /cliente/' + (LL === 'ca' ? ' (en catalán)' : ''), ia: IA.resum(), eines: EINES.text() };
         b.disabled = true; r.className = 'resposta'; r.textContent = t('Enviando…');
         fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -3359,5 +3360,7 @@
     document.addEventListener('focusout', function () { setTimeout(function () { document.body.classList.toggle('escribe', esCamp(document.activeElement)); }, 0); });
 })();
 </script>
+<script src="/SOS/lib/panteo.js"></script>
+<script src="/SOS/lib/guia-cliente.js" defer></script>
 </body>
 </html>

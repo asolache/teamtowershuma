@@ -5514,6 +5514,15 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
   mapa del projecte, cervell, «Crea el teu mapa», les tres anàlisis i la
   formació), i l'última és l'entrada amb el mínim: un camp (nom o web) i un toc
   cap a `/cliente/?org=` o `?web=`, que ja obre el mapa amb això posat.
+- **Fet (16/11, tercer pas):** `/cliente/` en cinc passos curts
+  (`SOS/lib/guia-cliente.js`, una capa damunt la pàgina, sense reescriure-la):
+  el teu mapa, els teus forats, el que va sol, la teva web i la quota, envia-ho.
+  Abans: 13.979 px i unes 3.000 paraules de cop (21.528 px al mòbil); ara cada
+  pas fa d'1.300 a 2.600 px. Al pas dels forats, les dotze preguntes del Panteó
+  (veda 19, `SOS/lib/panteo.js`, ara compartit amb `build-castells.js`): es toca
+  la que ja té algú, les altres són forats, i Zeus (com es reparteix el valor)
+  surt primer. Viatja amb l'enviament. «Veure tota la pàgina» la torna sencera;
+  qui arriba amb una invitació a nom seu (`?para=`) segueix amb la seva benvinguda.
 - **Pendent:** pintar-hi la colla de cadascú (el seu mapa o el seu cervell en
   comptes del cas de l'aigua); lligar cada forat a un itinerari de
   `formacio.html`; portar-la a la web de l'Àlvar carregant-la d'aquí (DRY);
