@@ -36,6 +36,9 @@
     R_PIL = MOB ? 40 : 46; PAS = MOB ? 24 : 29; R_ET = MOB ? 176 : 214;
   }
   var KC = { anna: '#b45309', prana: '#15803d', mano: '#0e7490', vijnana: '#1d4ed8', ananda: '#7c3aed' };
+  /* De cada escena, un servei: la pel·lícula és també el mapa del que hi ha.
+     L'última no en té cap: és l'entrada, un sol camp cap a «Crea el teu mapa». */
+  var SRV = [null, 'https://teamtowers.eu', '/SOS/diagnostic-org.html', '/SOS/cervell.html#repo', '/SOS/cervell.html#3d', '/cliente/#alrededor', '/SOS/vna-suport.html', '/SOS/formacio.html', null];
   var DUR = [5200, 8600, 7000, 6400, 8200, 9600, 8400, 8800, 9000];
 
   var T = {
@@ -63,7 +66,9 @@
       falta: 'Per ocupar: {0} · {1}', pilar: 'qui en respon',
       tang: 'tangible', intang: 'intangible', aturat: 'no circula',
       ple: 'ocupat', buit: 'per ocupar', tu: 'Tu',
-      cta: 'Fes la teva colla →', cervell: 'El teu cervell', castell: 'El castell de la casa', apren: 'Aprèn fent',
+      cervell: 'El teu cervell', castell: 'El castell de la casa', apren: 'Aprèn fent',
+      camp: 'El nom de la teva colla, o la teva web', srvK: 'Servei', crea: 'Crea el teu mapa →', mes: 'O mira:',
+      srv: [null, 'El taller Fent Pinya', 'La diagnosi de la teva organització', 'El mapa del teu projecte', 'El teu cervell', 'Crea el teu mapa', 'Les tres anàlisis del mapa', 'Aprèn fent: la formació', null],
       cas: 'Cas: la xarxa de l\'aigua solar de la matriu, sense noms ni xifres.'
     },
     es: {
@@ -90,7 +95,9 @@
       falta: 'Por ocupar: {0} · {1}', pilar: 'quien responde',
       tang: 'tangible', intang: 'intangible', aturat: 'no circula',
       ple: 'ocupado', buit: 'por ocupar', tu: 'Tú',
-      cta: 'Haz tu colla →', cervell: 'Tu cerebro', castell: 'El castell de la casa', apren: 'Aprende haciendo',
+      cervell: 'Tu cerebro', castell: 'El castell de la casa', apren: 'Aprende haciendo',
+      camp: 'El nombre de tu colla, o tu web', srvK: 'Servicio', crea: 'Crea tu mapa →', mes: 'O mira:',
+      srv: [null, 'El taller Fent Pinya', 'El diagnóstico de tu organización', 'El mapa de tu proyecto', 'Tu cerebro', 'Crea tu mapa', 'Los tres análisis del mapa', 'Aprende haciendo: la formación', null],
       cas: 'Caso: la red del agua solar de la matriz, sin nombres ni cifras.'
     }
   };
@@ -206,7 +213,11 @@
       '@keyframes fo-sap{to{stroke-dashoffset:-32}}' +
       '.fo-cap{min-height:4.4em;margin:.2rem auto 0;max-width:42rem;text-align:center;font-weight:700;font-size:clamp(1.05rem,2.4vw,1.45rem);line-height:1.28}' +
       '.fo-sub{display:block;margin-top:.35rem;font-weight:400;font-size:.95rem;color:var(--light,#4a463e);line-height:1.4}' +
-      '.fo-fi{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;opacity:0;pointer-events:none;transition:opacity .6s}.fo[data-e="9"] .fo-fi{opacity:1;pointer-events:auto}' +
+      '.fo-fi,.fo-mes{display:none}.fo[data-e="9"] .fo-fi{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin:0;animation:fo-in .6s both}.fo[data-e="9"] .fo-mes{display:block;margin:0;text-align:center;font-size:.9rem;color:var(--fo-m)}' +
+      '.fo-fi input{flex:1 1 16rem;max-width:26rem;min-height:44px;font:inherit;padding:.55rem .9rem;border:1px solid var(--border-strong,#cac3b0);border-radius:10px;background:var(--fo-c);color:var(--fo-t)}.fo-fi input:focus-visible{outline:2px solid var(--indigo,#4f46e5);outline-offset:2px}' +
+      '.fo-srv{display:block;width:max-content;max-width:100%;margin:0 auto;font-weight:600;color:var(--indigo,#4f46e5);text-decoration:none;min-height:24px}.fo-srv:hover{text-decoration:underline}.fo-srv[hidden]{display:none}' +
+      '.fo-srv::before{content:attr(data-k) \' · \';font:600 .72rem var(--mono,monospace);letter-spacing:.08em;text-transform:uppercase;color:var(--fo-m)}' +
+      '@keyframes fo-in{from{opacity:0;transform:translateY(.4rem)}}' +
       '.fo-bar{display:flex;gap:.4rem;align-items:stretch}' +
       '.fo-bar>button{all:unset;flex:none;width:2.6rem;min-height:44px;border:1px solid var(--fo-l);border-radius:8px;text-align:center;cursor:pointer;font-size:.85rem;color:var(--fo-t)}' +
       '.fo-ch{flex:1;display:flex;gap:.3rem;list-style:none;margin:0;padding:0}.fo-ch li{flex:1;min-width:0;transition:flex .4s}' +
@@ -364,10 +375,27 @@
     mostra('fo-ley-fx', el('line', { x1: 1, y1: 7, x2: 25, y2: 7, class: 'fo-fx intangible' }), t.intang);
     mostra('fo-ley-fx', el('line', { x1: 1, y1: 7, x2: 25, y2: 7, class: 'fo-fx aturat' }), t.aturat);
     var cap = h('p', { class: 'fo-cap', 'aria-live': 'polite' }), sub = h('small', { class: 'fo-sub' });
-    var fi = h('p', { class: 'fo-fi' });
-    [['btn-primary', cont.getAttribute('data-cta') || '/cliente/', t.cta], ['btn-ghost', '/SOS/cervell.html', t.cervell],
-      ['btn-ghost', '/#dues-vistes', t.castell], ['btn-ghost', '/SOS/formacio.html', t.apren]].forEach(function (b) {
-      fi.appendChild(h('a', { class: b[0], href: b[1] }, b[2]));
+    /* La base de les adreces: buida aquí; una web filla que la carrega de
+       teamtowershuma.com hi posa data-base="https://teamtowershuma.com". */
+    var base = cont.getAttribute('data-base') || '';
+    var ad = function (u) { return /^https?:/.test(u) ? u : base + u; };
+    var srv = h('a', { class: 'fo-srv' });
+    /* L'entrada amb el mínim: un nom o una web, i un toc. /cliente/ ja sap
+       llegir ?org= i ?web= i obre el mapa amb això posat. */
+    var fi = h('form', { class: 'fo-fi', method: 'get', action: ad(cont.getAttribute('data-cta') || '/cliente/') });
+    var camp = h('input', { type: 'text', name: 'org', required: '', maxlength: '160', autocomplete: 'organization', 'aria-label': t.camp, placeholder: t.camp });
+    fi.appendChild(camp); fi.appendChild(h('button', { type: 'submit', class: 'btn-primary' }, t.crea));
+    fi.addEventListener('submit', function (e) {
+      var v = camp.value.trim(); if (!v) return;
+      e.preventDefault();
+      var web = /^\S+\.[a-z]{2,}(\/\S*)?$/i.test(v.replace(/^https?:\/\//, ''));
+      location.href = fi.action + '?' + (web ? 'web=' : 'org=') + encodeURIComponent(v) + '#alrededor';
+    });
+    var mes = h('p', { class: 'fo-mes' });
+    mes.appendChild(document.createTextNode(t.mes + ' '));
+    [['/SOS/cervell.html', t.cervell], ['/#dues-vistes', t.castell], ['/SOS/formacio.html', t.apren]].forEach(function (b, k) {
+      if (k) mes.appendChild(document.createTextNode(' · '));
+      mes.appendChild(h('a', { href: ad(b[0]) }, b[1]));
     });
     var bar = h('div', { class: 'fo-bar' });
     var bAnt = h('button', { type: 'button', class: 'fo-sal', 'aria-label': t.ant }, '‹');
@@ -382,7 +410,7 @@
     var bSeg = h('button', { type: 'button', class: 'fo-sal', 'aria-label': t.seg }, '›');
     bar.appendChild(bAnt); bar.appendChild(pausa); bar.appendChild(ch); bar.appendChild(bSeg);
     esc.appendChild(h('p', { class: 'fo-k' }, t.k));
-    esc.appendChild(st); esc.appendChild(ley); esc.appendChild(cap); esc.appendChild(fi); esc.appendChild(bar);
+    esc.appendChild(st); esc.appendChild(ley); esc.appendChild(cap); esc.appendChild(srv); esc.appendChild(fi); esc.appendChild(mes); esc.appendChild(bar);
     esc.appendChild(h('p', { class: 'fo-cas' }, t.cas));
     cont.appendChild(esc);
 
@@ -412,6 +440,8 @@
       var forat = M.forats.filter(function (l) { return !l.k; })[0] || M.forats[0];
       M.llocs.forEach(function (l) { l.e.classList.toggle('tu', i === 8 && l === forat); });
       tu.setAttribute('opacity', 0);
+      srv.hidden = !SRV[i];
+      if (SRV[i]) { srv.href = ad(SRV[i]); srv.textContent = t.srv[i] + ' →'; srv.setAttribute('data-k', t.srvK); }
       var txt = t.e[i][1];
       if (i === 7) txt = f(txt, M.forats.length);
       frase(txt);

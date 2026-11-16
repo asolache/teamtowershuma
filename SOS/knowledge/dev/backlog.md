@@ -5510,6 +5510,10 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
   costat, l'arbre, el mapa mental amb les cinc capes del cervell, el mapa de
   valor, les troballes, els forats per ocupar i «la teva colla». Els forats es
   veuen a totes les vistes. Cas: el mapa de `aigua-solar-xarxa.md`.
+- **Fet (16/11, segon pas):** cada escena porta al seu servei (taller, diagnosi,
+  mapa del projecte, cervell, «Crea el teu mapa», les tres anàlisis i la
+  formació), i l'última és l'entrada amb el mínim: un camp (nom o web) i un toc
+  cap a `/cliente/?org=` o `?web=`, que ja obre el mapa amb això posat.
 - **Pendent:** pintar-hi la colla de cadascú (el seu mapa o el seu cervell en
   comptes del cas de l'aigua); lligar cada forat a un itinerari de
   `formacio.html`; portar-la a la web de l'Àlvar carregant-la d'aquí (DRY);
