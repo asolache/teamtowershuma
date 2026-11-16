@@ -5502,6 +5502,21 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
 
 ---
 
+**La font i la colla · totes les vistes en una pel·lícula** — demanat per l'Àlvar el 16/11/2026
+
+- **Fet:** `SOS/la-font.html` (motor `SOS/lib/font-anima.js`, dades de
+  `tools/build-font.js`). Nou escenes amb les mateixes persones: la font, la
+  pinya des de dalt (cada rengla una àrea, cada cordó un cercle), el castell de
+  costat, l'arbre, el mapa mental amb les cinc capes del cervell, el mapa de
+  valor, les troballes, els forats per ocupar i «la teva colla». Els forats es
+  veuen a totes les vistes. Cas: el mapa de `aigua-solar-xarxa.md`.
+- **Pendent:** pintar-hi la colla de cadascú (el seu mapa o el seu cervell en
+  comptes del cas de l'aigua); lligar cada forat a un itinerari de
+  `formacio.html`; portar-la a la web de l'Àlvar carregant-la d'aquí (DRY);
+  passar-la al taller de Fent Pinya.
+
+---
+
 **El cervell de cada repo, amb GitHub i amb l'estructura estàndard** — demanat per l'Àlvar el 22/10/2026
 
 - **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,
