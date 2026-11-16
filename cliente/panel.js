@@ -13,7 +13,7 @@
     var CT = 'tt.panel.clau', F = '/.netlify/functions/convidats', caixa = document.getElementById('panel');
     if (!caixa) return;
     var clau = ''; try { clau = localStorage.getItem(CT) || ''; } catch (e) { clau = ''; }
-    var D = null, edita = null, msg = '';
+    var D = null, edita = null, msg = '', proj = '*';
 
     function el(tag, at, fills) {
         var n = document.createElement(tag);
@@ -107,6 +107,7 @@
         else li.appendChild(el('p', { class: 'nota' }, 'Su espacio aún no está guardado con su cuenta.'));
         var a = el('div', { class: 'accions' }), cp = boto('Copiar su enlace', function () { copia(x.enllac, cp); }, 'btn-primary btn-sm');
         a.appendChild(cp);
+        a.appendChild(boto(x.acollida ? 'Su espacio ✓' : 'Su espacio', function () { obre = obre === x.mail ? null : x.mail; pinta(); var e2 = document.getElementById('pn-ac-' + idDe(x)); if (e2) e2.scrollIntoView({ block: 'start' }); }, 'btn-ghost btn-sm'));
         a.appendChild(boto('Cambiar', function () { edita = x; pinta(); var f = caixa.querySelector('.pn-form'); if (f) f.scrollIntoView({ block: 'start' }); }, 'btn-ghost btn-sm'));
         a.appendChild(boto('Enlace nuevo', function () {
             if (!window.confirm('El enlace que tiene dejará de funcionar. ¿Hacemos uno nuevo?')) return;
@@ -117,7 +118,60 @@
             crida('DELETE', null, '?mail=' + encodeURIComponent(x.mail)).then(function () { msg = 'Quitado.'; return carrega(); }).catch(function (er) { msg = er.message; pinta(); });
         }, 'btn-ghost btn-sm'));
         li.appendChild(a);
+        if (obre === x.mail) li.appendChild(acollida(x));
         return li;
+    }
+
+    /* «Su espacio» (14/11/2026, netlify/lib/acollida.mjs). Álvaro: «que lo
+       próximo que le envíe le llegue por ahí, con todo lo que me ha mandado
+       por correo dentro». Pegas sus correos, la IA pequeña los ordena (no se
+       guardan), lo revisas aquí y, al darle a «Listo», lo ve en /cliente/ al
+       entrar por su enlace. Lo que le toca entra en sus tareas. Igual para
+       cada cliente: nada está hecho a medida. */
+    var obre = null, borr = {};
+    function acollida(x) {
+        var w = el('div', { class: 'pn-ac', id: 'pn-ac-' + idDe(x) }), a0 = borr[x.mail] || x.acollida || {}, ds = borr[x.mail] ? borr[x.mail]._deures || [] : [];
+        var linies = function (v) { return (v || []).join('\n'); };
+        w.appendChild(el('h4', {}, 'Su espacio: lo que verá al entrar'));
+        var pega = el('textarea', { rows: '5', placeholder: 'Pega aquí lo que te ha mandado: correos, notas, respuestas. No se guarda: la IA solo lo ordena.' });
+        var res = el('p', { class: 'nota', role: 'status' });
+        var ord = boto('Ordenar con IA', function () {
+            if (!pega.value.trim()) { res.textContent = 'Pega primero lo que te ha mandado.'; return; }
+            ord.disabled = true; res.textContent = 'Ordenando… (unos segundos)';
+            crida('POST', { ordena: pega.value }).then(function (j) {
+                borr[x.mail] = Object.assign({}, a0, j.acollida || {}, { sessio: a0.sessio || '', web: a0.web || '', seguent: a0.seguent || {}, _deures: (j.deures || []).map(function (c) { return c.text; }) });
+                pinta();
+            }).catch(function (er) { ord.disabled = false; res.textContent = 'No ha salido: ' + er.message; });
+        }, 'btn-primary btn-sm');
+        w.appendChild(el('label', {}, ['Lo que te ha mandado', pega]));
+        w.appendChild(el('div', { class: 'accions' }, [ord])); w.appendChild(res);
+        var camp = function (id, lbl, v, rows, ph) {
+            var c = rows ? el('textarea', { id: id, rows: String(rows), placeholder: ph || '' }) : el('input', { id: id, placeholder: ph || '' });
+            c.value = v || ''; w.appendChild(el('label', {}, [lbl, c])); return c;
+        };
+        var f = {
+            hola: camp('ac-hola', 'Hola (lo primero que lee)', a0.hola, 2, 'Hola amiga: ya tenemos ordenado todo lo que nos mandaste…'),
+            sessio: camp('ac-sessio', 'Próxima sesión', a0.sessio, 0, 'Por ejemplo: martes 18, de 10:00 a 11:30'),
+            contat: camp('ac-contat', 'Lo que nos ha contado (una cosa por línea)', linies(a0.contat), 5),
+            decidit: camp('ac-decidit', 'Lo que ya ha decidido (una por línea)', linies(a0.decidit), 3),
+            deures: camp('ac-deures', 'Lo que le toca (una por línea; entra en sus tareas)', linies(ds), 3),
+            preguntes: camp('ac-preg', 'Lo que falta preguntarle (una por línea)', linies(a0.preguntes), 3),
+            web: camp('ac-web', 'Su web en vista previa (https://…)', a0.web),
+            st: camp('ac-st', 'El siguiente paso (el botón de abajo)', (a0.seguent || {}).text, 0, 'Por ejemplo: Elige el día de la sesión'),
+            sh: camp('ac-sh', 'Enlace del siguiente paso (opcional; sin él, abre «Habla con Álvaro»)', (a0.seguent || {}).href)
+        };
+        var tl = function (c) { return c.value.split('\n').map(function (v) { return v.trim(); }).filter(Boolean); };
+        var desa = boto('Listo: guardar en su espacio', function () {
+            desa.disabled = true;
+            var hoy = new Date().toISOString();
+            var deures = tl(f.deures).map(function (tx) { return { text: tx, col: 'todo', qui: 'cliente', tipus: 'gestion', origen: { tipus: 'acollida', id: 'correus', nom: 'Lo que nos has mandado' }, creat: hoy.slice(0, 10), act: hoy }; });
+            crida('PUT', { mail: x.mail, acollida: { hola: f.hola.value, sessio: f.sessio.value, contat: tl(f.contat), decidit: tl(f.decidit), preguntes: tl(f.preguntes), web: f.web.value, seguent: { text: f.st.value, href: f.sh.value } }, deures: deures })
+                .then(function () { delete borr[x.mail]; obre = null; msg = 'Guardado en el espacio de ' + (x.nom || x.mail) + '. Lo verá al entrar por su enlace; mándaselo tú cuando quieras.'; return carrega(); })
+                .catch(function (er) { desa.disabled = false; msg = 'No se ha guardado: ' + er.message; pinta(); });
+        }, 'btn-primary btn-sm');
+        w.appendChild(el('div', { class: 'accions' }, [desa, boto('Cerrar', function () { obre = null; pinta(); }, 'btn-ghost btn-sm')]));
+        w.appendChild(el('p', { class: 'nota' }, 'Nada le llega hasta que tú le mandas su enlace. Sin precios ni nombres de herramientas: lo lee ella.'));
+        return w;
     }
 
     /* El tablero de clientes (11/11/2026): «que vaya también en el iPhone».
@@ -159,6 +213,7 @@
                 var a = el('div', { class: 'pn-ka' });
                 if (i < FASES.length - 1) a.appendChild(boto(FASES[i + 1][1] + ' →', function () { mou(x, FASES[i + 1][0]); }, 'btn-primary btn-sm'));
                 if (i > 0) { var ba = boto('←', function () { mou(x, FASES[i - 1][0]); }, 'btn-ghost btn-sm'); ba.setAttribute('aria-label', 'Volver a «' + FASES[i - 1][1] + '»'); a.appendChild(ba); }
+                a.appendChild(boto('Tareas', function () { proj = x.mail; pinta(); var b = document.getElementById('pn-tasques'); if (b) b.scrollIntoView({ block: 'start' }); }, 'btn-ghost btn-sm'));
                 a.appendChild(boto('Ficha', function () { var li = document.getElementById(idDe(x)); if (li) { li.scrollIntoView({ block: 'start' }); li.focus({ preventScroll: true }); } }, 'btn-ghost btn-sm'));
                 k.appendChild(a); col.appendChild(k);
             });
@@ -167,12 +222,95 @@
         c.appendChild(t);
     }
 
+    /* Tu backlog de todo (13/11/2026, SOS/lib/kanban.js). Álvaro: «con una
+       lógica fractal debería poderme conectar y ver mi Kanban filtrado siempre».
+       Un árbol: tus tareas arriba y, colgando, el tablero de cada cliente (el
+       mismo que ve ella en /cliente/). «Todo» los junta; elegir un proyecto lo
+       filtra. Lo que cambias aquí vuelve al tablero de donde salió; lo nuevo
+       en «Todo» o en «Lo mío» es tuyo. */
+    function arbre() {
+        return { id: '', projecte: 'Lo mío', kanban: D.meu || { cards: [] },
+            fills: D.convidats.filter(function (x) { return x.kanban; }).map(function (x) { return { id: x.mail, projecte: (x.params && x.params.org) || x.nom || x.mail, kanban: x.kanban }; }) };
+    }
+    function tasques(c) {
+        var K = window.Kanban; if (!K) return;
+        var box = el('section', { id: 'pn-tasques', class: 'pn-tasques', 'aria-labelledby': 'pn-t-tasques' });
+        box.appendChild(el('h3', { id: 'pn-t-tasques' }, 'Tu backlog de todo'));
+        var a = arbre(), fonts = [a].concat(a.fills);
+        if (proj !== '*' && !fonts.some(function (x) { return x.id === proj; })) proj = '*';
+        var w = el('div', { class: 'camp' }), sel = el('select', { id: 'pn-proj' });
+        sel.appendChild(el('option', { value: '*' }, 'Todo'));
+        fonts.forEach(function (x) { sel.appendChild(el('option', { value: x.id }, x.projecte + ' · ' + ((x.kanban && x.kanban.cards) || []).length)); });
+        sel.value = proj;
+        sel.addEventListener('change', function () { proj = sel.value; pinta(); });
+        w.appendChild(el('label', { for: 'pn-proj' }, 'Proyecto')); w.appendChild(sel); box.appendChild(w);
+        var tot = proj === '*', src = tot ? null : fonts.filter(function (x) { return x.id === proj; })[0];
+        var cards = tot ? K.ajunta([a]) : ((src.kanban && src.kanban.cards) || []), font = {}, nomP = {};
+        if (tot) cards.forEach(function (x) { font[x.id] = x._font; nomP[x.id] = x._projecte.replace(/^Lo mío › /, ''); });
+        var cont = el('div'); box.appendChild(cont); c.appendChild(box);
+        K.pinta(cont, { kanban: { cards: cards }, jo: 'equipo', llengua: 'es', prefix: 'pn-tarea-', pomoClau: 'tt.panel.pomo',
+            persones: [{ id: 'equipo', nom: 'Yo' }, { id: 'cliente', nom: 'El cliente' }, { id: 'maquina', nom: 'La máquina' }],
+            projecte: tot ? function (x) { return nomP[x.id] || ''; } : null,
+            onCanvi: function (k) {
+                /* Cada tarjeta vuelve a su tablero; las nuevas, al tuyo. */
+                var per = {};
+                (tot ? fonts : [src]).forEach(function (x) { per[x.id] = { cards: [], fora: k.fora || [] }; });
+                k.cards.forEach(function (x) { var f = tot ? (font[x.id] || '') : src.id; (per[f] || per[''] || (per[f] = { cards: [], fora: [] })).cards.push(x); });
+                Object.keys(per).forEach(function (f) {
+                    var x = fonts.filter(function (y) { return y.id === f; })[0];
+                    if (tot && x && JSON.stringify(K.neteja(x.kanban).cards) === JSON.stringify(per[f].cards) && !(k.fora || []).length) return;
+                    crida('PUT', f ? { mail: f, kanban: per[f] } : { kanban: per[f] }).then(function (j) {
+                        if (f) { var cv = D.convidats.filter(function (y) { return y.mail === f; })[0]; if (cv) cv.kanban = j.kanban; } else D.meu = j.kanban;
+                    }).catch(function (er) { msg = 'No se ha guardado: ' + er.message; pinta(); });
+                    /* Mientras llega, lo que ves ya es lo nuevo. */
+                    if (f) { var cv = D.convidats.filter(function (y) { return y.mail === f; })[0]; if (cv) cv.kanban = per[f]; } else D.meu = per[f];
+                });
+            } });
+        var sense = D.convidats.filter(function (x) { return !x.kanban; }).length;
+        if (sense) box.appendChild(el('p', { class: 'nota' }, sense + (sense === 1 ? ' cliente aún no tiene' : ' clientes aún no tienen') + ' su espacio guardado con su cuenta: su tablero aparecerá aquí cuando entre por su enlace.'));
+    }
+
+    /* Por contestar (14/11/2026, netlify/lib/resposta.mjs): cada «Habla con una
+       persona» de la web llega con un borrador de respuesta de la IA. Lo lees,
+       lo cambias si quieres y lo mandas tú desde tu correo; nada sale solo.
+       Al darle a «Ya está enviada», su tarjeta pasa a «Hecho». */
+    function perContestar(c) {
+        var rs = D.respostes || [];
+        if (!rs.length) return;
+        c.appendChild(el('h3', { id: 'pn-respostes' }, 'Por contestar (' + rs.length + ')'));
+        var ul = el('ul', { class: 'pn-llista' });
+        rs.forEach(function (x) {
+            var li = el('li', { class: 'pn-conv' });
+            li.appendChild(el('h4', {}, (x.nom || 'Alguien') + (x.tema ? ' · ' + x.tema : '')));
+            li.appendChild(el('p', { class: 'nota' }, [x.mail, x.perfil && 'perfil ' + x.perfil, x.pagina && 'desde ' + x.pagina, x.creat && dia(x.creat)].filter(Boolean).join(' · ')));
+            if (x.missatge) li.appendChild(el('blockquote', {}, x.missatge));
+            var ta = el('textarea', { rows: '7', 'aria-label': 'Borrador de respuesta' }); ta.value = x.esborrany || '';
+            if (!x.esborrany) ta.placeholder = 'Sin borrador de la IA: escribe tu respuesta.';
+            var w = el('div', { class: 'pn-ac' }); w.appendChild(el('label', {}, ['Borrador de respuesta (lo mandas tú)', ta])); li.appendChild(w);
+            var obre = el('a', { class: 'btn btn-primary btn-sm', href: '#' }, 'Abrir en mi correo');
+            obre.addEventListener('click', function () {
+                obre.href = 'mailto:' + encodeURIComponent(x.mail) + '?subject=' + encodeURIComponent('Re: ' + (x.tema || 'tu mensaje')) + '&body=' + encodeURIComponent(ta.value);
+                if (ta.value !== (x.esborrany || '')) crida('PUT', { resposta: { id: x.id, esborrany: ta.value } }).catch(function () { /* se queda en pantalla */ });
+            });
+            var fet = boto('Ya está enviada', function () {
+                fet.disabled = true;
+                crida('PUT', { resposta: { id: x.id, fet: true } }).then(function () { msg = 'Respuesta a ' + (x.nom || x.mail) + ' marcada como enviada.'; return carrega(); })
+                    .catch(function (er) { fet.disabled = false; msg = er.message; pinta(); });
+            }, 'btn-ghost btn-sm');
+            li.appendChild(el('div', { class: 'accions' }, [obre, fet]));
+            ul.appendChild(li);
+        });
+        c.appendChild(ul);
+    }
+
     function pinta() {
         var c = caixa.querySelector('.pn-cos'); c.textContent = '';
         if (msg) c.appendChild(el('p', { class: 'pn-msg', role: 'status' }, msg));
         if (!clau) { entrada(c); return; }
         if (!D) { c.appendChild(el('p', {}, 'Cargando…')); return; }
+        perContestar(c);
         tauler(c);
+        tasques(c);
         estatIA(c);
         c.appendChild(el('h3', {}, 'Tus invitados (' + D.convidats.length + ')'));
         if (!D.convidats.length) c.appendChild(el('p', { class: 'nota' }, 'Todavía ninguno.'));

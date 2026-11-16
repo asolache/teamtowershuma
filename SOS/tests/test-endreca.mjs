@@ -200,8 +200,9 @@ console.log('\n5 · A la primera pantalla: què es compra i si va amb tu');
       `${w}×${h}: les portes i el titular caben a la primera pantalla (${r.portes} · ${r.h1} de ${r.fold})`);
     if (w >= 1280) ok(r.cta <= r.fold,
       `  i a sobretaula, també la crida (${r.cta} de ${r.fold})`);
-    if (w === 1280) ok(r.sectors.length === 3 && r.sectors.every(t => t.length > 3),
-      `i les tres portes es llegeixen senceres: ${r.sectors.join(' · ')}`);
+    /* Des del 14/11/2026: la pregunta «Què vols fer?» i les seves cinc respostes. */
+    if (w === 1280) ok(r.sectors.length === 5 && r.sectors.every(t => t.length > 3),
+      `i les cinc respostes es llegeixen senceres: ${r.sectors.join(' · ')}`);
     await ctx.close();
   }
 }

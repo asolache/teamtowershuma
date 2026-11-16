@@ -531,6 +531,19 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   await p.fill('#cl-busca', 'peluquería');
   await p.waitForFunction(() => /Peluquería/.test(document.querySelector('#cl-busca-r').textContent));
   ok(/aún sin mapa propio/.test(await p.textContent('#cl-busca-r')), 'una actividad oficial sin mapa propio lo dice, sin inventarse uno');
+  /* L'escena 9 de «La font i la colla» porta amb ?org=: si el nom diu l'ofici, la cerca ja s'obre feta */
+  await p.evaluate(() => { localStorage.removeItem('tt.cliente.v1'); localStorage.removeItem('tt.cliente.mapas'); });
+  await p.goto(URL_ + '?org=' + encodeURIComponent('Bodega del Penedès') + '#alrededor');
+  await p.waitForFunction(() => document.querySelectorAll('#cl-busca-r button').length > 0);
+  ok(await p.inputValue('#cl-org') === 'Bodega del Penedès' && /Bodega|celler/i.test(await p.textContent('#cl-busca-r')), 'desde «La font i la colla» (?org=Bodega del Penedès): su nombre puesto y ya le propone la bodega');
+  await p.evaluate(() => { localStorage.removeItem('tt.cliente.v1'); localStorage.removeItem('tt.cliente.mapas'); });
+  await p.goto(URL_ + '?org=Acme#alrededor');
+  await p.waitForFunction(() => document.querySelector('#cl-org').value === 'Acme');
+  await p.waitForTimeout(600);
+  ok(await p.inputValue('#cl-busca') === '', 'con un nombre que no dice el oficio (?org=Acme) no busca nada');
+  await p.goto(URL_ + '?ofici=' + encodeURIComponent('escuela de idiomas') + '#alrededor');
+  await p.waitForFunction(() => document.querySelectorAll('#cl-busca-r button').length > 0);
+  ok(await p.inputValue('#cl-busca') === 'escuela de idiomas', '?ofici= abre la búsqueda ya hecha');
   ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }

@@ -140,6 +140,16 @@
 
         /* HERO */
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
+        .pt:not(.pt-tot) main>:is(section,nav,.cta-band):not(.peli,.hero,.cl-mur,.cta-final,.pt-pant,.pt-vis),.pt:not(.pt-tot) :is(.hero-desc,.hero-av,.hero-actions,.hero-note,.hero-cos,.hero-visual){display:none}
+        .pt:not(.pt-tot) .hero{min-height:auto;padding:4rem 0 1rem}.pt:not(.pt-tot) .hero-grid{display:block}
+        .pt .hero-perfils{font-family:var(--sans);display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.7rem;margin:0 0 2rem;animation:none;opacity:1}
+        .pt .hero-perfils .hp-q{grid-column:1/-1;font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;letter-spacing:-.02em;text-align:center;margin:0 0 1rem}
+        .pt .hero-perfils a{display:flex;align-items:center;justify-content:space-between;min-height:3.6rem;padding:.8rem 1.1rem;border:1px solid var(--border);border-radius:16px;background:var(--card);color:var(--text);font-size:1.05rem;font-weight:600;transition:border-color .2s,transform .2s}
+        .pt .hero-perfils a::after{content:"→";color:var(--muted)}.pt .hero-perfils a:hover,.pt .hero-perfils a[aria-current=true]{border-color:var(--green);transform:translateY(-2px)}
+        .pt:not(.pt-tot) .hero h1{font-size:clamp(1rem,2.2vw,1.25rem);font-weight:500;color:var(--muted);text-align:center;max-width:40rem;margin:0 auto}
+        .peli-v { min-height:calc(100vh - 4rem); min-height:calc(100svh - 4rem); }
+        .peli-v:empty { min-height:0; }
+        @media (max-width:860px) { .peli-v { min-height:calc(100vh - 12rem); min-height:calc(100svh - 12rem); } }
         .hero { min-height:calc(100vh - 4rem); display:flex; align-items:center; padding:1rem 0 4rem; }
         @media (max-width:860px) { .hero { padding:1rem 0 2.5rem; min-height:calc(100vh - 6rem); } }
         .hero-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:0 4rem; align-items:center;
@@ -337,28 +347,16 @@
         }
         @media (max-width:768px) {
             .hero-eyebrow.hero-portes { margin-bottom:1rem; }
-            /* Amb la tercera porta, les tres queien en tres línies a 390 px i el
-               botó del dibuix se n'anava 2 px per sota del plec. El que costa
-               l'amplada és el `letter-spacing` —2,3 px per caràcter, 29 px
-               només a «Administració pública»—, i no la lletra: cenyint-lo, en
-               caben dues a la primera línia i el dibuix torna a dins.
-               Es cenyeix i no se'n treu cap: una porta que no es veu a la
-               primera pantalla és una porta que no existeix. */
             .hero-portes { gap:.35rem .45rem; letter-spacing:.08em; }
         }
-        /* Amb tres portes, la línia es partia i deixava un «·» penjant al final
-           de la primera: es llegia com dues portes i una, que és just el que
-           aquesta fila ha de deixar de dir. Hi caben les tres seguides traient
-           dues coses que aquí no diuen res —el guió decoratiu de
-           `.hero-eyebrow`, que etiqueta un títol i no una fila d'enllaços, i
-           80 punts de `letter-spacing`. */
         .hero-portes { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem 1.25rem; letter-spacing:.06em; line-height:1.3; }
         .hero-portes::before { display:none; }
         .hero-portes a { color:inherit; text-decoration:none;
             border-bottom:1px dashed var(--border); transition:.15s; }
         .hero-portes a:hover { color:var(--green); border-bottom-color:var(--green); }
-        /* A 15 px no sempre hi caben seguides: sense el «·», el salt no deixa res penjant. */
         .hero-portes span { display:none; }
+        .hero-perfils { text-transform:none; letter-spacing:0; gap:.35rem .9rem; }
+        .hero-perfils .hp-q { flex-basis:100%; color:var(--text); }
         .mv-grid { display:grid; grid-template-columns:1.05fr 1fr; gap:3rem; align-items:center; }
         .mv-viz { position:relative; }
         .mv-svg { width:100%; height:auto; display:block; }
@@ -810,7 +808,7 @@
         .aut-avui { border-top-color:var(--green); } .aut-avui .aut-st { color:var(--green); }
         .aut-pilot { border-top-color:var(--indigo); } .aut-pilot .aut-st { color:var(--indigo); }
         .aut-acc { display:flex; flex-wrap:wrap; gap:.8rem 1.4rem; align-items:center; margin:0; }
-        .aut-acc a:not(.btn-ghost) { color:var(--indigo); font-weight:600; }
+        .aut-acc a:not([class]) { color:var(--indigo); font-weight:600; }
         @media (max-width:1080px) { .aut-l { grid-template-columns:repeat(2,minmax(0,1fr)); } }
         @media (max-width:620px) { .aut-l { grid-template-columns:1fr; } }
         .cervell-top { border-bottom:1px solid var(--border); font-size:var(--t0); }
@@ -983,25 +981,26 @@
 </script>
 <!--/TT-NAV-->
 <main>
+<script>document.documentElement.classList.add('pt')</script>
+
+<!-- LA PEL·LÍCULA (14/11/2026): el primer que es veu no és text, és el flux
+     de valor en cinc escenes. Ho pinta SOS/lib/mapa-anima.js amb el cas real. -->
+<section class="peli" id="pelicula"><div class="container"><div class="peli-v" data-anima="pelicula" data-cta="/cliente/#alrededor" data-q="#inici"></div></div></section>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="inici">
     <div class="container">
         <div class="hero-grid">
             <div class="hero-cap">
-                <!-- LA HOME VEN (22/10/2026). Àlvaro: «enfocada directament a la venda
-                     i a la creació del teu mapa de valor, i totes les avantatges com
-                     a client». La primera pantalla diu què t'emportes i té una sola
-                     crida principal: crear el mapa a /cliente/, que dona valor abans
-                     de demanar res (camiClient, pas 1). La història de la casa i el
-                     finançament baixen a «Per què nosaltres»; el mètode, a sota. -->
-                <div class="hero-eyebrow hero-portes fade-up">
-                    <a href="/cataleg?s=admin" data-sec="admin" data-i18n="hero.porta1">Administració pública</a>
-                    <span aria-hidden="true">·</span>
-                    <a href="/cataleg?s=tercer" data-sec="tercer" data-i18n="hero.porta2">Tercer sector</a>
-                    <span aria-hidden="true">·</span>
-                    <a href="/cataleg?s=empresa" data-sec="empresa" data-i18n="hero.porta3">Empresa i cooperativa</a>
-                </div>
+                <!-- «Què vols fer?» (14/11/2026): SOS/lib/recorrido.js -->
+                <nav class="hero-eyebrow hero-portes hero-perfils fade-up" aria-labelledby="heroQ">
+                    <b class="hp-q" id="heroQ" data-i18n="hero.q">Què vols fer?</b>
+                    <a href="/cliente/?perfil=negocio#alrededor" data-perfil="negocio" data-i18n="hero.p.negoci">Tinc un negoci</a>
+                    <a href="/cataleg?s=empresa&amp;perfil=empresa" data-perfil="empresa" data-i18n="hero.p.empresa">Porto una empresa o un equip</a>
+                    <a href="/SOS/formacio.html?perfil=consultor#itineraris" data-perfil="consultor" data-i18n="hero.p.consultor">Sóc consultor o formador</a>
+                    <a href="/SOS/?perfil=comunidad" data-perfil="comunidad" data-i18n="hero.p.comunitat">La meva comunitat o entitat</a>
+                    <a href="/cliente/?perfil=cliente#espacio" data-perfil="cliente" data-i18n="hero.p.client">Ja treballo amb vosaltres</a>
+                </nav>
                 <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Fem visible com flueix el valor al teu negoci <em>i el convertim en web, processos i equip</em></em></h1>
                 <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Som consultors d'estratègia amb eina pròpia. Dibuixem el <strong>mapa de valor</strong> del teu negoci (qui et dona què, i què li dones) i d'aquí en surten la teva web, processos que van sols amb IA i la formació del teu equip. Per a pimes, autònoms, grans empreses i entitats.</strong>: és gratis i en surt el primer esbós de la web.</p>
                 <ul class="hero-av fade-up" style="animation-delay:.25s">
@@ -1235,6 +1234,7 @@
 <script src="/SOS/lib/mapa-valor.js" defer></script>
 <script src="/SOS/lib/mapa-etiquetes.js" defer></script>
 <script src="/SOS/lib/mapa-anima.js" defer></script>
+<script src="/SOS/lib/portada.js" defer></script>
 <script src="/SOS/cervell/pla.js" defer></script>
 <script src="/SOS/cervell/franja.js" defer></script>
     </div>
@@ -1375,20 +1375,6 @@
 </nav>
 
 
-<!-- EL NEGOCI OPERATIU ─────────────────────────────────────────────────
-     L'estratègia d'octubre del 2026: el que funcionava a la sala —que un equip
-     vegi el mateix flux i s'acordi on ha de fluir millor— durava el que durava
-     el taller. Ara es queda com un sistema viu i es ven com a paquet, a un preu
-     de pime. La sala segueix sent humana; l'execució la fa el sistema.
-     Les xifres de l'escala són les de `/mapa-web/` (sessió i taller) i la del
-     paquet nou; cap altra xifra no surt aquí. -->
-<!-- ELS TRES SERVEIS (10/10/2026) ──────────────────────────────────────────
-     La portada parlava de moltes coses i Àlvaro va demanar que en digués tres:
-     el diagnòstic i la millora amb el mapa de valor, el desenvolupament web i
-     el SOS com a formació acció. Són les tres portes de la barra del lloc
-     (`build-nav.js`, `LLOC`), en el mateix ordre i amb el mateix destí; les
-     eines del SOS una per una viuen a dins del SOS. Substitueix «Tres camins»,
-     que repetia el menú amb el catàleg, qui som i el SOS. -->
 <section class="serveis" id="serveis">
     <div class="container">
         <div class="section-header fade-up">
@@ -1523,16 +1509,6 @@
 <section class="enfoc" id="enfoc">
     <div class="container">
 
-        <!-- LES DUES BANDES ────────────────────────────────────────────────
-             El hero obre tres portes i el catàleg filtra per sector; el repte
-             es continuava explicant només per a una. Qui ve del costat privat
-             llegia «voluntariat» i «hort comunitari» i concloïa que això no
-             anava amb ell — just després que el hero li hagués dit que sí.
-
-             Les tres columnes són el mateix patró amb tres vocabularis, i van
-             de costat a posta: llegides alhora es veu que és el mateix
-             problema, que és el que fa creïble que el mètode sigui un de sol.
-             Cada banda acaba a la seva porta del catàleg. -->
         <!-- El repte sencer —les veus, el que es veu i el que no— ha marxat a
              `/SOS/`, que és on viu l'eina que el resol: qui ha arribat fins
              aquí ja sap que té un problema, i el que li falta és veure que el
@@ -1543,12 +1519,6 @@
         </div>
         <div class="bandes fade-up">
             <p class="bandes-lead" data-i18n-html="enfoc.b.lead">Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l'organització estigui millor psicosocialment i econòmicament. I es mesura d'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.</p>
-            <!-- Tres columnes i no dues. La del mig és la que no existia: el
-                 contingut de l'antiga «sector públic i comunitari» —voluntàries,
-                 confiança veïnal, actes— era, llegit de prop, el d'una entitat
-                 i no el d'un ajuntament. Es queda al tercer sector, que és d'on
-                 parlava, i l'administració estrena el text que li toca: el
-                 mandat, la memòria del servei i el plec. -->
             <div class="bandes-grid">
                 <div class="banda" data-sec="admin">
                     <div class="banda-k" data-i18n="enfoc.b.adm.k">A l'administració pública</div>
@@ -1668,12 +1638,6 @@
         </div>
         <p class="dv-peu fade-up" data-i18n-html="dv.peu">I el que fa que això sigui consultoria sistèmica i no un dibuix: <b>el valor de fer el mapa és que el grup s’alinea dient en veu alta quina és la seva organització real</b>, i l’entén com un sistema i no com la suma del que fa cadascú.</p>
 
-        <!-- COM ES CONSTRUEIX ───────────────────────────────────────────────
-             Els cinc estats no són una metodologia nova: són el que ja passa
-             en una sessió, posat en ordre i amb una regla de moviment. La
-             regla és la que importa, i és la que es ven: **avança sol**. Qui
-             no diu res deixa que el sistema es construeixi; qui diu alguna
-             cosa el fa una mica més seu. -->
         <div class="dv-flux fade-up">
             <div class="dv-fk" data-i18n="dv.fk">I com es construeix: cinc estats i una regla</div>
             <ol class="dv-fl">
@@ -1729,10 +1693,6 @@
 
 
 <!-- COM FUNCIONA -->
-<!-- L'estructura de pàgina de venda de la guia d'estil demana un «com» de 3-4
-     passos, i era l'únic bloc que hi faltava. Sense ell, qui ha de defensar la
-     despesa davant d'una junta no sap ni quant dura, ni què li tocarà fer, ni
-     com s'acaba. Cada pas diu les tres coses. -->
 <section class="passos" id="com">
     <div class="container">
         <div class="section-header fade-up">
@@ -1769,10 +1729,6 @@
     </div>
 </section>
 
-<!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
-     i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
-     convençut a mig camí no té on clicar. La mateixa acció principal, ni més
-     ni diferent: una acció per pantalla. -->
 <div class="cta-band fade-up">
     <div class="container cta-band-inner">
         <p data-i18n="band.t">Ja saps com va. La pregunta és com és la teva xarxa: en cinc minuts en tens el primer dibuix, i te l'endús, l'enviïs o no.</p>
@@ -1783,10 +1739,6 @@
 <!-- FENT PINYA EN DETALL -->
 
 
-<!-- Crida repetida. En una pàgina de quinze pantalles, la crida del principi
-     i la del final estan a més de deu pantalles l'una de l'altra, i qui s'ha
-     convençut a mig camí no té on clicar. La mateixa acció principal, ni més
-     ni diferent: una acció per pantalla. -->
 <div class="cta-band fade-up">
     <div class="container cta-band-inner">
         <p data-i18n="band2.t">Amb el catàleg a la vista, el següent pas no és trucar: és dibuixar el teu mapa. D'aquí surt quin paquet et toca.</p>
@@ -1798,16 +1750,7 @@
 <!-- CTA FINAL -->
 <section class="cta-final">
     <div class="container">
-        <!-- El titular deia «el teu poble». Parlava a una sola de les dues cases i
-             deixava fora qui arriba des d'una empresa, que és qui compra la
-             meitat del catàleg. La línia comunitària no s'ha perdut: viu al SOS,
-             que és el projecte que la sosté. -->
         <h2 class="fade-up" data-i18n-html="cta.h2">Hi ha feina a la teva organització<br>que <em>s'aguanta amb pinces?</em></h2>
-        <!-- Aquí hi havia una cita entre cometes retolada com «el que un tècnic
-             POT dir»: una frase inventada, admesa com a inventada, al lloc de
-             més conversió de la pàgina. La guia d'estil demana prova amb el seu
-             rang i diu que reconèixer el que no tenim genera més confiança que
-             allargar la llista del que sí. Es canvia per fets comprovables. -->
         <div class="proves fade-up" style="animation-delay:.1s">
             <div class="prova"><div class="prova-n">2009</div><div class="prova-l" data-i18n="cta.pr1">Primer banc de temps de la ciutat de León, engegat i encara explicable pas a pas</div></div>
             <div class="prova"><div class="prova-n">60.000+</div><div class="prova-l" data-i18n="cta.pr2">Persones pel taller Fent Pinya des del 2005</div></div>
@@ -1868,6 +1811,8 @@
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.valor">Mapa de valor</span></p><ul><li><a href="/SOS/vna.html"><span data-i18n="nv.t.vna">Què és</span></a></li><li><a href="/cliente/#alrededor"><span data-i18n="nv.t.carpeta-cliente">Fer-ne un</span></a></li><li><a href="/cataleg.html"><span data-i18n="nv.t.arrel-cataleg">Què contractes</span></a></li><li><a href="/SOS/pressupost.html"><span data-i18n="nv.t.pressupost">Preus i contractació</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.web">La teva web</span></p><ul><li><a href="/mapa-web/"><span data-i18n="nv.t.carpeta-mapa-web">Mapa i web en una hora</span></a></li><li><a href="/conecta/"><span data-i18n="nv.t.carpeta-conecta">Serveis connectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.formacio">SOS i formació</span></p><ul><li><a href="/SOS/"><span data-i18n="nv.t.app">Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span data-i18n="nv.t.formacio">Formació acció</span></a></li><li><a href="/SOS/ia.html"><span data-i18n="nv.t.ia">Fluxos amb IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span data-i18n="nv.g.casa">Qui som</span></p><ul><li><a href="/qui-som.html"><span data-i18n="nv.t.arrel-qui-som">Qui som</span></a></li><li><a href="/premsa.html"><span data-i18n="nv.t.arrel-premsa">Premsa</span></a></li><li><a href="/SOS/blog.html"><span data-i18n="nv.t.blog">Blog</span></a></li></ul></div></div>
   </div>
 </footer>
+<form name="contacto" data-netlify="true" netlify-honeypot="bot-field" hidden><input name="bot-field"><input name="nom"><input name="mail"><input name="missatge"><input name="tema"><input name="perfil"><input name="de"><input name="marca"><input name="pagina"><input name="llengua"></form>
+<script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
 
 <script>
@@ -2268,7 +2213,8 @@ ca: {
   'cl.s.ajuntament-de-vilafranca':'Administració local','cl.s.junta-de-castilla-y-leon':'Administració autonòmica',
 /*/TT-CL-I18N-CA*/
   'hero.evok':'I la prova que funciona: vint anys entregant-ho',
-  'hero.porta1':'Administració pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa i cooperativa',
+  'hero.q':'Què vols fer?','hero.p.negoci':'Tinc un negoci','hero.p.empresa':'Porto una empresa o un equip',
+  'hero.p.consultor':'Sóc consultor o formador','hero.p.comunitat':'La meva comunitat o entitat','hero.p.client':'Ja treballo amb vosaltres',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
   'ct.a11y.d':'A l\'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.',
@@ -2747,7 +2693,8 @@ es: {
   'cl.s.ajuntament-de-vilafranca':'Administración local','cl.s.junta-de-castilla-y-leon':'Administración autonómica',
 /*/TT-CL-I18N-ES*/
   'hero.evok':'Y la prueba de que funciona: veinte años entregándolo',
-  'hero.porta1':'Administración pública','hero.porta2':'Tercer sector','hero.porta3':'Empresa y cooperativa',
+  'hero.q':'¿Qué quieres hacer?','hero.p.negoci':'Tengo un negocio','hero.p.empresa':'Llevo una empresa o un equipo',
+  'hero.p.consultor':'Soy consultor o formador','hero.p.comunitat':'Mi comunidad o entidad','hero.p.client':'Ya trabajo con vosotros',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
   'ct.a11y.d':'A la izquierda, una torre sostenida por cuatro personas. A la derecha, la misma torre sostenida por catorce. Cuando se va una, la primera cae y la segunda aguanta.',
@@ -2972,7 +2919,7 @@ applyLang(currentLang);
            res — un enllaç que no fa res al lloc on algú ja s'ha convençut. */
         document.querySelectorAll('.js-mail, #ctaMail').forEach(function (a) {
             a.href = 'mailto:' + u + '@' + d + '?subject=' +
-                encodeURIComponent('Repte comunitari — parlem-ne');
+                encodeURIComponent('TeamTowers Humà — parlem-ne');
         });
     }
     wire();

@@ -409,7 +409,9 @@ jobs:
       # Es prova amb un `fetch` fals, sense xarxa: que sense claus no faci res,
       # que el lead porti el que toca i que el registre no porti cap dada personal.
       - name: Flux de nivell 2 · formulari → Zoho CRM
-        run: node SOS/tests/test-zoho-nivell2.mjs
+        run: |
+          node SOS/tests/test-zoho-nivell2.mjs
+          node SOS/tests/test-acollida.mjs
 
       # L'espai de cada agència: llegeix de Zoho amb un enllaç privat. Sense
       # xarxa: que una clau només obri la seva agència, que no surti res del

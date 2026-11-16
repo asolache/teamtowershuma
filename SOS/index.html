@@ -1710,6 +1710,7 @@ body.sos-taller .lent-z{min-width:56px}
 
 <!-- Les deu regles del mapa de valor, les mateixes que l'editor (SOS/tools/build-vna-suport.js). Abans del mòdul, que les fa servir. -->
 <script src="lib/mapa-valor.js"></script>
+<script src="lib/pomodoro.js"></script>
 <script type="module">
 /* ═══════════════════ EMAIL OFUSCAT ═══════════════════ */
 const _U='asolache', _D='mac'+'.'+'com';
@@ -19498,26 +19499,19 @@ function networkMissions(){
    · **Sobreviu a recarregar la pàgina.** Es desa l'hora d'acabar, no els
      minuts que falten: així el compte és cert encara que el temporitzador
      s'aturi perquè el mòbil s'ha adormit. */
+/* El rellotge i la memòria viuen a lib/pomodoro.js (13/11/2026), el mateix
+   que fa servir el tauler de tasques de /cliente/: una sola vegada per a tota
+   la casa. Aquí queda el que és del SOS: la caixa i el registre en acabar. */
+const PM=window.Pomodoro;
 const POMO_ID='tt.pomo';
-const POMO_MIN=25;
+const POMO_MIN=PM.MIN;
 let _pomo=null,_pomoTic=null;
-function pomoLlegeix(){
-  try{const d=JSON.parse(localStorage.getItem(POMO_ID)||'null');return d&&d.fi?d:null;}catch(e){return null;}
-}
-function pomoDesa(p){
-  _pomo=p||null;
-  try{p?localStorage.setItem(POMO_ID,JSON.stringify(p)):localStorage.removeItem(POMO_ID);}catch(e){}
-}
-/* Segons que falten. Negatiu vol dir que ja s'ha acabat i encara no s'ha
-   tancat, que és un estat legítim: has estat fora i el trobes esperant. */
-function pomoResta(p){p=p||_pomo;return p?Math.round((p.fi-Date.now())/1000):0;}
-const pomoRellotge=s=>{
-  const v=Math.max(0,s);
-  return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0');
-};
+function pomoLlegeix(){return PM.llegeix(POMO_ID);}
+function pomoDesa(p){_pomo=p||null;PM.desa(POMO_ID,_pomo);}
+function pomoResta(p){return PM.resta(p||_pomo);}
+const pomoRellotge=s=>PM.rellotge(s);
 function pomoComenca(m,mins){
-  pomoDesa({id:m.id,titol:m.title,nodeId:m.nodeId||null,
-    min:mins||POMO_MIN,fi:Date.now()+(mins||POMO_MIN)*60000});
+  _pomo=PM.comenca(POMO_ID,{id:m.id,titol:m.title,nodeId:m.nodeId||null},mins||POMO_MIN);
   pomoArrenca();
   renderWorkspace();
 }

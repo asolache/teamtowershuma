@@ -882,8 +882,17 @@ function peu(pagina) {
     + `<a class="tp-legal" href="${hrefDe('avis-legal.html')}${ll === 'es' ? '?lang=es' : ''}"${hrefDe('avis-legal.html') === jo ? ' aria-current="page"' : ''}>`
     + `<span${i18n('nv.peu.legal')}>${ll === 'es' ? 'Aviso legal y privacidad' : 'Avís legal i privacitat'}</span></a></div>\n`
     + `    <div class="tp-cols">${(lloc ? LLOC : SOS_GRUPS).map(col).join('')}</div>\n`
-    + `  </div>\n</footer>\n` + P_TANCA;
+    + `  </div>\n</footer>\n`
+    /* «Habla con una persona» (14/11/2026): el correo de todas las páginas del
+       lugar pasa por SOS/lib/recorrido.js, que lo lleva a Zoho con marca y
+       perfil. El formulario oculto es el que Netlify detecta al desplegar. */
+    /* Al SOS, només el guió: el camí («paso N de M») i el contacte comú. */
+    + (lloc ? RECORRIDO + '\n' : '<script src="/SOS/lib/recorrido.js" defer></script>\n')
+    + P_TANCA;
 }
+const RECORRIDO = '<form name="contacto" data-netlify="true" netlify-honeypot="bot-field" hidden>'
+  + ['bot-field', 'nom', 'mail', 'missatge', 'tema', 'perfil', 'de', 'marca', 'pagina', 'llengua'].map(n => `<input name="${n}">`).join('')
+  + '</form>\n<script src="/SOS/lib/recorrido.js" defer></script>';
 
 /* ══ Aplicar ═════════════════════════════════════════════════════════════ */
 /* `build-vedes.js` genera `vedes.html` sencer des del codex, o sigui que
