@@ -23,7 +23,7 @@ await page.waitForTimeout(1200);
 console.log('\n1 · La portada diu que aquí també et formes, i porta al camí');
 const porta = await page.evaluate(() => {
   const b = document.querySelector('#onboarding #obCami');
-  return { hi: !!b, txt: b ? b.closest('p').textContent : '' };
+  return { hi: !!b, txt: b ? b.closest('p, .ob-path').textContent : '' };
 });
 ok(porta.hi, 'hi ha «El meu camí →» a la portada');
 ok(/et formes/.test(porta.txt) && /ikigai/.test(porta.txt) && /món una mica millor/.test(porta.txt),
