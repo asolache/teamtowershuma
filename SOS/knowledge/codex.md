@@ -5590,3 +5590,55 @@ de cada client.
 **Guarda:** `test-web-vella.mjs` (cada adreça vella de la foto surt al
 `_redirects`, la pàgina que es replica conserva títol, descripció i H1, i el
 document de disseny porta els requisits de posicionament).
+
+## Veda 184 — La colla es veu en una pinya: una rengla per factor, un ninot per persona i els forats a la vista
+
+**Adoptada el 16/11/2026** per l'Álvaro: «quiero ver al grupo en función del
+resultado del 16PF […] 16 rengles, las filas de personas por cada uno de los
+factores, y voy ubicando a cada persona con un muñequito, como si fuese un
+Lego». I, de seguida: «póntelo también en el códex, porque esto es muy base a
+nivel de lo que hago».
+
+L'error que evita: llegir un test de personalitat persona a persona, com una
+etiqueta, i no veure mai el grup. Un equip amb deu persones fortes en el mateix
+factor té deu persones i un forat; un informe individual no ho ensenya mai.
+
+**El mètode**, que és el de la pinya del castell (`references/castells.md`):
+
+1. **Al mig, la font.** Tot neix del propòsit: és el centre del tauler, com
+   l'aigua a «La font i la colla».
+2. **Una rengla per factor** del model, del centre cap enfora: setze amb el
+   16PF, cinc amb el Big Five, dotze amb el panteó. Cada rengla porta un
+   **rol de la colla** i les **skills** dels seus dos pols.
+3. **Un pilar i cinc cordons** per rengla. Els cordons són les cinc koshas, del
+   propòsit (a prop de la font) al cos (a fora).
+4. **La base teòrica**: la plantilla demana els primers cordons de cada rengla.
+   És el castell que la colla vol poder fer, i surt en línia.
+5. **Un ninot per persona**, a la rengla del factor on és més marcada; com més
+   marcada, més a prop de la font. Un lloc no té mai dues persones: si és ple,
+   un cordó enfora; si la rengla és plena, el segon factor. Es pot moure a mà.
+6. **Els forats** són la superposició: lloc de la base sense ningú. Es veuen
+   sempre, també en 3D, i cadascun porta el rol, les skills i qui el podria
+   cobrir. Si no hi ha ningú, és una **plaça d'aprenent** (aprendre fent, veda
+   160).
+
+**El que no es fa:**
+
+- **Cap ítem de cap test amb drets.** Del 16PF només hi ha els noms dels
+  factors; el test el passa un proveïdor autoritzat i la persona hi porta els
+  seus decatipus. Les plantilles pròpies van amb models oberts (els ítems de
+  l'IPIP són de domini públic) o de llicència lliure (el panteó, CC BY).
+- **La lectura és de la casa, no del test.** Els rols i les skills són com
+  TeamTowers llegeix un factor dins d'una colla, i així s'escriu.
+- **Les dades del grup no surten del navegador.** Sense servidor i sense
+  localStorage: el grup es desa com a fitxer, a mans de qui el fa.
+
+Val per a tot model que es pugui posar en rengles: un test de personalitat,
+uns estils de treball en equip, les àrees d'un mapa de valor. Cada model és un
+**tauler**, en paper per al taller i en digital per a la colla; el negoci que
+en surt és a `vision/taulers-colla.md`. Hereten d'aquesta veda la vista
+(`SOS/colla.html`), la skill castellera i la pinya del mapa (`lib/pinya.js`).
+
+**Guarda:** `SOS/tests/test-colla-taulers.mjs` (una rengla per factor, el
+factor més marcat mana, mai dues persones al mateix lloc, els forats són la
+base sense ningú, i cada model diu la seva llicència).
