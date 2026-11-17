@@ -5504,6 +5504,11 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
 
 **La colla en la pinya · els taulers per factors** — demanat per l'Àlvaro el 16/11/2026 (veda 184)
 
+- **Fet (17/11):** «sense una bona pinya no hi ha castell». Cada rol porta el
+  nom a la punta de la seva rengla i, al 3D, el castell (set pisos) s'aixeca a
+  sobre de la font amb tants pisos com base coberta. Pensar en castells queda
+  com a ofici de la casa: veda 185 i skill `.claude/skills/pensar-en-castells/`.
+
 - **Fet:** `SOS/colla.html` (motor `SOS/lib/colla-taulers.js`, models a
   `SOS/lib/taulers-models.js`). La pinya de dalt i en 3D amb una rengla per
   factor (16PF, Big Five obert i panteó de 12), un ninot per persona, la base

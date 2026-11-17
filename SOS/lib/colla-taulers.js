@@ -30,6 +30,16 @@
 (function (arrel) {
   'use strict';
   var KMAX = 5;
+  /* El castell que la pinya ha d'aguantar: set pisos, quatre de tronc i el pom
+     de dalt (dosos, acotxador i enxaneta), com un castell de set. */
+  var PISOS = 7;
+  /* El nom curt d'un rol, per escriure'l a la punta de la seva rengla. */
+  function curt(s) {
+    s = String(s).split(' · ')[0].split(/ (?:i|y) /)[0];
+    if (s.length <= 16) return s;
+    var t = s.slice(0, 16), j = t.lastIndexOf(' ');
+    return (j > 6 ? t.slice(0, j) : t) + '…';
+  }
 
   /* ══ EL MODEL ════════════════════════════════════════════════════════════ */
   function intensitat(model, v) {
@@ -87,9 +97,13 @@
       return { f: l.f, k: l.k, cand: cand };
     });
     var base = llocs.filter(function (l) { return l.req; }).length;
+    var ocupats = llocs.filter(function (l) { return l.req && l.p !== null; }).length;
     return {
       n: n, cordons: cordons, llocs: llocs, persones: ps, forats: forats, base: base,
-      ocupats: llocs.filter(function (l) { return l.req && l.p !== null; }).length,
+      ocupats: ocupats,
+      /* Sense una bona pinya no hi ha castell: el castell (el projecte) puja
+         tants pisos com la part de la base que la colla té coberta. */
+      castell: { pisos: PISOS, aguanta: base ? Math.floor(ocupats / base * PISOS + 1e-9) : 0 },
       fora: llocs.filter(function (l) { return !l.req && l.p !== null; }).length,
       reserva: ps.filter(function (q) { return q.f === null; })
     };
@@ -138,6 +152,11 @@
           + '<b>' + r.forats.length + ' forats</b>' + (r.fora ? ' · ' + r.fora + ' fora de la base' : '')
           + (r.reserva.length ? ' · ' + r.reserva.length + ' en reserva' : '');
       },
+      castell: function (r) {
+        var c = r.castell;
+        return c.aguanta >= c.pisos ? 'La pinya aguanta el castell sencer: ' + c.pisos + ' pisos, fins a l\'enxaneta.'
+          : 'La pinya aguanta <b>' + c.aguanta + ' de ' + c.pisos + ' pisos</b>. Sense una bona pinya no hi ha castell: cada forat que s\'omple és un pis més del projecte.';
+      },
       kosha: ['pilar (baix)', '1r cordó · propòsit', '2n cordó · criteri', '3r cordó · ment', '4t cordó · energia', '5è cordó · cos'],
       afegeix: 'Afegeix una persona', nom: 'Nom o àlies', enganxa: 'O enganxa el perfil (A=7 B=5 … o les xifres en ordre)',
       posa: 'Posa-la a la colla', treu: 'Treu', mou: 'Mou', mouAra: 'Toca un lloc del tauler per posar-hi ', solta: 'Deixa-la on la posa el mètode',
@@ -157,6 +176,11 @@
         return r.persones.length + ' personas · ' + r.base + ' lugares en la base · ' + r.ocupats + ' ocupados · '
           + '<b>' + r.forats.length + ' huecos</b>' + (r.fora ? ' · ' + r.fora + ' fuera de la base' : '')
           + (r.reserva.length ? ' · ' + r.reserva.length + ' en reserva' : '');
+      },
+      castell: function (r) {
+        var c = r.castell;
+        return c.aguanta >= c.pisos ? 'La pinya aguanta el castell entero: ' + c.pisos + ' pisos, hasta la enxaneta.'
+          : 'La pinya aguanta <b>' + c.aguanta + ' de ' + c.pisos + ' pisos</b>. Sin una buena pinya no hay castell: cada hueco que se llena es un piso más del proyecto.';
       },
       kosha: ['pilar (baix)', '1.er cordón · propósito', '2.º cordón · criterio', '3.er cordón · mente', '4.º cordón · energía', '5.º cordón · cuerpo'],
       afegeix: 'Añade una persona', nom: 'Nombre o alias', enganxa: 'O pega el perfil (A=7 B=5 … o las cifras en orden)',
@@ -204,13 +228,17 @@
 
   /* La planta de dalt: el tauler que s'imprimeix i on es juga. */
   function dalt(m, r, ps, op) {
-    var n = r.n, L = R0 + KMAX * PAS + 46, o = [];
-    o.push('<svg class="ct-svg" viewBox="' + (-L) + ' ' + (-L) + ' ' + 2 * L + ' ' + 2 * L + '" role="img" aria-labelledby="ct-t"><title id="ct-t">' + esc(op.titol) + '</title>');
+    var n = r.n, L = R0 + KMAX * PAS + 62, o = [];
+    var LX = L + 70;
+    o.push('<svg class="ct-svg" viewBox="' + (-LX) + ' ' + (-L) + ' ' + 2 * LX + ' ' + 2 * L + '" role="img" aria-labelledby="ct-t"><title id="ct-t">' + esc(op.titol) + '</title>');
     for (var k = 0; k <= KMAX; k++) o.push('<circle r="' + (R0 + k * PAS) + '" class="ct-cordo' + (k < r.cordons ? ' ct-req' : '') + '"/>');
     for (var f = 0; f < n; f++) {
       var a = pos(n, f, 0), b = pos(n, f, KMAX), e = pos(n, f, KMAX + 1.1);
       o.push('<line x1="' + f1(RF * Math.cos(a.a)) + '" y1="' + f1(RF * Math.sin(a.a)) + '" x2="' + f1(b.x) + '" y2="' + f1(b.y) + '" class="ct-rengla"/>');
-      o.push('<text x="' + f1(e.x) + '" y="' + f1(e.y) + '" class="ct-lf">' + esc(m.factors[f].id) + '</text>');
+      /* Als costats, el nom s'escriu cap enfora perquè no trepitgi la pinya. */
+      var ca = Math.cos(e.a), an = ca > 0.35 ? 'start' : ca < -0.35 ? 'end' : 'middle';
+      o.push('<text x="' + f1(e.x) + '" y="' + f1(e.y - 5) + '" class="ct-lf" style="text-anchor:' + an + '">' + esc(m.factors[f].id)
+        + '<tspan x="' + f1(e.x) + '" dy="12" class="ct-lr">' + esc(curt(op.txt(m.factors[f].rol))) + '</tspan></text>');
     }
     o.push(font(0, 0, 1));
     r.llocs.forEach(function (l, j) {
@@ -238,7 +266,7 @@
     var n = r.n, th = (op.gir || 0) * Math.PI / 180, inc = 0.5, S = 1.25;
     var c = Math.cos(th), s = Math.sin(th);
     function pr(x, y, z) { var X = x * c - y * s, Y = x * s + y * c; return { X: X * S, Y: Y * inc * S - (z || 0), d: Y }; }
-    var L = (R0 + KMAX * PAS + 40) * S, top = 70, o = [];
+    var L = (R0 + KMAX * PAS + 40) * S, top = 70 + PISOS * 26, o = [];
     o.push('<svg class="ct-svg ct-3d" viewBox="' + (-L) + ' ' + (-L * inc - top) + ' ' + 2 * L + ' ' + (2 * L * inc + top + 20) + '" role="img" aria-labelledby="ct-t"><title id="ct-t">' + esc(op.titol) + '</title>');
     /* El terra: els cordons com a el·lipses i les rengles. */
     for (var k = KMAX; k >= 0; k--) {
@@ -257,7 +285,19 @@
       var p = pos(n, l.f, l.k), P = pr(p.x, p.y), q = l.p !== null ? r.persones[l.p] : null;
       return { l: l, j: j, P: P, q: q };
     }).sort(function (a, b) { return a.P.d - b.P.d; });
+    /* El castell, a sobre de la font: els pisos que la pinya aguanta, plens; la
+       resta, en línia. Es pinta quan toca per profunditat, al centre. */
+    var tronc = false;
+    function castell() {
+      var g = '<g class="ct-castell" aria-hidden="true">';
+      for (var i = 0; i < PISOS; i++) {
+        var z = 14 + i * 26, ple = i < r.castell.aguanta, pom = i >= PISOS - 3;
+        g += ninot(0, -z, pom ? 0.8 - (i - (PISOS - 3)) * 0.1 : 1, ple ? 'ple' : 'teoric', ple ? (pom ? 'var(--gold)' : 'var(--indigo)') : 'var(--muted)');
+      }
+      return g + '</g>';
+    }
     items.forEach(function (it) {
+      if (!tronc && it.P.d > 0) { o.push(castell()); tronc = true; }
       var l = it.l, q = it.q, P = it.P, sel = op.sel && op.sel.l === it.j;
       var at = 'data-l="' + it.j + '" tabindex="0" role="button" aria-label="' + esc(m.factors[l.f].id + ' · ' + op.t.kosha[l.k] + (q ? ' · ' + q.nom : (l.req ? ' · ' + op.t.buit : ''))) + '"';
       var base = '<ellipse cx="' + f1(P.X) + '" cy="' + f1(P.Y) + '" rx="' + f1(10 * S) + '" ry="' + f1(10 * S * inc) + '" class="ct-rajola' + (l.req ? ' ct-req' : '') + (l.req && !q ? ' ct-forat' : '') + '"/>';
@@ -265,6 +305,7 @@
       else if (l.req) o.push('<g class="ct-lloc ct-forat' + (sel ? ' ct-sel' : '') + '" ' + at + '>' + base + ninot(P.X, P.Y, 1, 'forat', 'var(--red)') + '</g>');
       else o.push('<g class="ct-lloc' + (sel ? ' ct-sel' : '') + '" ' + at + '>' + base + '</g>');
     });
+    if (!tronc) o.push(castell());
     o.push('</svg>');
     return o.join('');
   }
@@ -284,6 +325,7 @@
     + '.ct-cordo{fill:none;stroke:var(--border);stroke-width:1}.ct-cordo.ct-req{stroke:var(--border-strong);stroke-width:1.4}'
     + '.ct-rengla{stroke:var(--border-strong);stroke-width:1}'
     + '.ct-lf{font:600 12px var(--mono);fill:var(--light);text-anchor:middle;dominant-baseline:middle}'
+    + '.ct-lr{font:500 10px var(--mono);fill:var(--muted)}'
     + '.ct-nm{font:10px var(--mono);fill:var(--text);text-anchor:middle}'
     + '.ct-font ellipse{fill:color-mix(in srgb,var(--blue) 22%,var(--card));stroke:var(--blue);stroke-width:1.2}'
     + '.ct-ona{fill:none;stroke:var(--blue);stroke-width:1.2;animation:ct-ona 3.2s ease-out infinite}.ct-ona2{animation-delay:1.6s}'
@@ -327,7 +369,7 @@
     function pinta() {
       var t = T[ll()], m = M.MODELS[st.model], ps = grup(), r = calcula(m, ps, { cordons: st.cordons });
       var titol = t.alt3d(r, m);
-      var op = { t: t, sel: st.sel, gir: st.gir, titol: titol, buit: st.buit };
+      var op = { t: t, sel: st.sel, gir: st.gir, titol: titol, buit: st.buit, txt: txt };
       var h = [];
       h.push('<div class="ct-ctl">');
       h.push('<label>' + t.model + ' <select data-a="model">' + M.ORDRE.map(function (id) {
@@ -338,7 +380,7 @@
         + '<button type="button" data-a="d3" aria-pressed="' + (st.vista === '3d') + '">' + t.d3 + '</button></span>');
       if (st.vista === '3d') h.push('<label>' + t.gir + ' <input type="range" min="0" max="359" value="' + st.gir + '" data-a="gir"></label>');
       h.push('</div>');
-      h.push('<p class="ct-res" aria-live="polite">' + t.resum(r, m) + '</p>');
+      h.push('<p class="ct-res" aria-live="polite">' + t.resum(r, m) + '<br>' + t.castell(r) + '</p>');
       if (st.mou !== null) h.push('<p class="ct-av">' + t.mouAra + esc(ps[st.mou].nom) + '. <button type="button" class="btn btn-sm" data-a="solta">' + t.solta + '</button></p>');
       h.push('<div class="ct-main"><div class="ct-esc">' + (st.vista === '3d' ? tresD(m, r, ps, op) : dalt(m, r, ps, op)) + '</div>');
       h.push('<div class="ct-pan">' + detall(t, m, r, ps) + forats(t, m, r, ps) + colla(t, m, r, ps) + afegeix(t, m) + '</div></div>');
@@ -481,7 +523,7 @@
     return { pinta: pinta, estat: st };
   }
 
-  var CollaTaulers = { KMAX: KMAX, T: T, intensitat: intensitat, cordoDe: cordoDe, perfil: perfil, calcula: calcula, llegeixText: llegeixText, exemple: exemple, munta: munta };
+  var CollaTaulers = { KMAX: KMAX, PISOS: PISOS, curt: curt, T: T, intensitat: intensitat, cordoDe: cordoDe, perfil: perfil, calcula: calcula, llegeixText: llegeixText, exemple: exemple, munta: munta };
   if (typeof module === 'object' && module.exports) module.exports = CollaTaulers;
   else {
     arrel.CollaTaulers = CollaTaulers;
