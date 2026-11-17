@@ -35,9 +35,9 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 ## La cola (prioritzada · només coses que es poden fer soles i comprovar)
 
 **A · Pantalles, no rotlles** (estàndard a `pantalles.md`)
-1. [ ] `cataleg.html` en pantalles (bilingüe: `data-pantalla-nom` per idioma o noms des de l'i18n)
-2. [ ] `qui-som.html` en pantalles
-3. [ ] `SOS/vna.html` en pantalles
+1. [x] `cataleg.html` en pantalles (bilingüe: `data-pantalla-nom` per idioma o noms des de l'i18n) (#368)
+2. [x] `qui-som.html` en pantalles: sis pantalles amb noms en català i castellà (#390)
+3. [x] `SOS/vna.html` en pantalles (#369)
 4. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
 5. [ ] Pantalles de més de 3 alçades a conecta/ia/escola: partir-les o fer-ne llista que llisca
 6. [ ] `SOS/blog.html`: llista d'entrades que llisca i una entrada per pantalla
