@@ -39,7 +39,7 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 2. [x] `qui-som.html` en pantalles: sis pantalles amb noms en català i castellà (#390)
 3. [x] `SOS/vna.html` en pantalles (#369)
 4. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
-   - [x] `premsa.html` · quatre pantalles, noms en català i castellà (#PRNUM)
+   - [x] `premsa.html` · quatre pantalles, noms en català i castellà (#394)
    - [ ] `SOS/uneix-te.html`, `SOS/compra.html` · el PR obert #386 els toca: tornar-hi quan es mergegi
 5. [ ] Pantalles de més de 3 alçades a conecta/ia/escola: partir-les o fer-ne llista que llisca
 6. [ ] `SOS/blog.html`: llista d'entrades que llisca i una entrada per pantalla
