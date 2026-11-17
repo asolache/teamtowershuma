@@ -25,7 +25,8 @@ const PILOTS = [
   { url: 'conecta/index.html', primer: 'Inicio', dins: 'cx-fuente', index: '.cab' },
   { url: 'SOS/ia.html', primer: 'Inici' },
   { url: 'SOS/escola.html', primer: 'Inici' },
-  { url: 'cataleg.html', primer: 'Inici' }
+  { url: 'cataleg.html', primer: 'Inici' },
+  { url: 'qui-som.html', primer: 'Inici' }
 ];
 for (const P of PILOTS) {
   for (const [nom, vp] of [['tauleta', { width: 1180, height: 820 }], ['mòbil', { width: 390, height: 844 }]]) {

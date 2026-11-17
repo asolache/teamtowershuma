@@ -315,7 +315,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 /*/TT-EMBUT-CSS*/
 </style>
 </head>
-<body>
+<body data-pantalla>
 
 <!--TT-NAV-->
 <style>
@@ -461,7 +461,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 </section>
 
 <!-- SOBRE EL FACILITADOR -->
-<section class="facilitador" id="facilitador">
+<section class="facilitador" id="facilitador" data-pantalla-nom-ca="El facilitador" data-pantalla-nom-es="El facilitador">
     <div class="container">
         <div class="facilitador-inner fade-up">
             <!-- L'eyebrow deia «Qui hi ha darrere» i el títol de la pàgina ja ho
@@ -556,7 +556,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
      tenim els números d'aquell celler i un marge inventat per il·lustrar-ne un
      de real és exactament el que la guia de marca prohibeix. El que el
      generador sí que compta són les fletxes, que les té. -->
-<section class="relat" id="relat">
+<section class="relat" id="relat" data-pantalla-nom-ca="El cas treballat" data-pantalla-nom-es="El caso trabajado">
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="relat.eyebrow">D'on ve això</div>
@@ -588,7 +588,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
     </div>
 </section>
 <!-- TRAJECTÒRIA I CONFIANÇA -->
-<section class="clients" id="trajectoria">
+<section class="clients" id="trajectoria" data-pantalla-nom-ca="Vint anys i clients" data-pantalla-nom-es="Veinte años y clientes">
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="cl.eyebrow">Trajectòria i confiança</div>
@@ -652,7 +652,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
         <p class="pk-nota" data-i18n-html="cl.honest"><strong>D'on ve cada prova.</strong> Les xifres de dalt són de <a href="https://www.teamtowers.eu" target="_blank" rel="noopener">teamtowers.eu</a> i del taller Fent Pinya: 60.000 persones i 150 organitzacions des del 2005, i una millora del 30-50 % en cohesió d'equip <em>segons les enquestes internes posteriors a l'esdeveniment</em> — no és un estudi extern i es diu. La línia comunitària és més nova i té menys quilòmetres: per això al catàleg cada paquet diu si està <em>provat</em>, <em>en adaptació</em> o és <em>nou</em>, en comptes de fer servir aquests números com si ho demostressin tot.</p>
     </div>
 </section>
-<section class="objeccions" id="objeccions" style="border-top:1px solid var(--border);background:var(--panel);">
+<section class="objeccions" id="objeccions" data-pantalla-nom-ca="El que ens pregunten" data-pantalla-nom-es="Lo que nos preguntan" style="border-top:1px solid var(--border);background:var(--panel);">
     <div class="container">
         <div class="section-header fade-up">
             <div class="section-eyebrow" data-i18n="faq.eyebrow">Abans de trucar</div>
@@ -1228,5 +1228,6 @@ document.querySelectorAll('.colla-node').forEach(function(node) {
 });
 
 </script>
+<script src="/SOS/lib/pantalla.js" defer></script>
 </body>
 </html>
