@@ -137,7 +137,7 @@ async function mira(fitxer, titol, esperaEs) {
 }
 
 console.log('\n1 · Les tres pantalles es poden llegir en castellà');
-await mira('diagnostic.html', 'Quin diagnòstic et toca?', '¿Qué diagnóstico te toca?');
+await mira('diagnostic.html', 'El teu flux de valor, en un minut', 'Tu flujo de valor, en un minuto');
 await mira('diagnostic-org.html', 'Diagnòstic d\'organització', 'Diagnóstico de organización');
 await mira('diagnostic-territori.html', 'Diagnòstic comunitari', 'Diagnóstico comunitario');
 
