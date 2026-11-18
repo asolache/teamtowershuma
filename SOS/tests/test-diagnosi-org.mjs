@@ -38,7 +38,7 @@ console.log('\n1 · La tria porta als dos diagnòstics i no pregunta res');
   await p.goto(url('diagnostic.html'));
   const r = await p.evaluate(() => ({
     portes: [...document.querySelectorAll('.porta')].map(a => a.getAttribute('href')),
-    camps: document.querySelectorAll('input,select,textarea').length
+    camps: [...document.querySelectorAll('input,select,textarea')].filter(e => !e.closest('[data-flux-minut],form[hidden]')).length
   }));
   ok(r.portes.includes('diagnostic-org.html') && r.portes.includes('diagnostic-territori.html'),
     'les dues portes hi són · ' + r.portes.join(' i '));

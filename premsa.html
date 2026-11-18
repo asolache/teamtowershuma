@@ -173,7 +173,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 /*/TT-EMBUT-CSS*/
 </style>
 </head>
-<body>
+<body data-pantalla>
 
 <!--TT-NAV-->
 <style>
@@ -319,7 +319,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
     </div>
 </section>
 
-<section class="pr" id="aparicions">
+<section class="pr" id="aparicions" data-pantalla-nom-ca="Les aparicions" data-pantalla-nom-es="Las apariciones">
     <div class="container">
         <div class="pr-filtre" role="group" aria-label="Filtra per mitjà" data-i18n-aria="pr.f.aria">
             <button type="button" data-f="tots" aria-pressed="true" data-i18n="pr.f.tots">Totes</button>
@@ -422,7 +422,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
     </div>
 </section>
 
-<section class="pr-cta">
+<section class="pr-cta" id="periodistes" data-pantalla-nom-ca="Ets periodista?" data-pantalla-nom-es="¿Eres periodista?">
     <div class="container">
         <h2 data-i18n="pr.cta.h2">Ets periodista?</h2>
         <p data-i18n="pr.cta.p">Per a una entrevista, imatges d&#x27;un taller o dades del mètode, escriu directament. Contesta l&#x27;Álvaro.</p>
@@ -770,5 +770,6 @@ document.querySelectorAll('.pr-filtre button').forEach(function (b) {
     });
 })();
 </script>
+<script src="/SOS/lib/pantalla.js" defer></script>
 </body>
 </html>
