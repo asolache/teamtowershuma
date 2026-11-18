@@ -2455,7 +2455,7 @@
     /* Los modelos del SOS (models-mapa.js, los mismos de la app): rellenan
        quién está alrededor y lo que se da, con «tú» en el centro. */
     var MM = window.ModelsMapa;
-    /* La base única (veda 184, SOS/knowledge/vna/base.json): els oficis del
+    /* La base única (veda 186, SOS/knowledge/vna/base.json): els oficis del
        catàleg, els dominis i els sectors que la casa ja sap, a més dels models
        d'aquí. Es baixa només quan algú busca el seu ofici o en tria un. Una peça
        que no és a models-mapa.js es guarda a EXTRA amb la mateixa forma. */
@@ -2570,6 +2570,15 @@
         SUG.appendChild(b);
     }
     $('#cl-inicial').addEventListener('input', function () { clearTimeout(sugT); sugT = setTimeout(suggereix, 400); });
+    /* Llega del diagnóstico de un minuto (/SOS/diagnostic.html, SOS/lib/flux-minut.js)
+       con `?modelo=<id>`: si su mapa está vacío, empieza con ese modelo y no
+       vuelve a preguntarle a qué se dedica. 17/11/2026. */
+    (function () {
+        var id = new URLSearchParams(location.search).get('modelo'), x;
+        if (!id || !MM || !buit()) return;
+        x = MM.MODELS.concat(MM.SECTORS, MM.OFICIS).filter(function (m) { return m.id === id; })[0];
+        if (x) tria(x);
+    })();
 
     /* Busca tu oficio: el que s'assembla a la base (BaseVna.tria) i les classes
        oficials pel nom. Una classe sense mapa propi ho diu i comença pel model

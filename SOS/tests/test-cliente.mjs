@@ -510,7 +510,7 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
-/* Busca tu oficio (veda 184): la base única da las piezas, y las cinco capas dicen qué falta */
+/* Busca tu oficio (veda 186): la base única da las piezas, y las cinco capas dicen qué falta */
 {
   console.log('\n══ Busca tu oficio ══');
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });

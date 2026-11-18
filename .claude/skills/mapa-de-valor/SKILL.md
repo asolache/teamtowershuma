@@ -14,7 +14,7 @@ description: Acompanyar una sessió de mapa de valor amb el mètode VNA de Verna
 ## Abans de res, tres lectures
 
 0. **La base: el que la casa ja sap del seu ofici** (`SOS/knowledge/vna/base.json`,
-   veda 184). Busca-hi la peça que s'assembla a qui tens davant i parteix del seu
+   veda 186). Busca-hi la peça que s'assembla a qui tens davant i parteix del seu
    mapa: rols, intercanvis amb la seva capa, intangibles, SOPs i casos. No
    proposis de zero el que la base ja sap.
 

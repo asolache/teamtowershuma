@@ -32,12 +32,12 @@
       honest: 'Funciona avui al tauler d\'una productora d\'esdeveniments. A la teva web arrenca amb els pilots.',
       a11y: 'Mapa de valor animat: {0} rols i {1} lliuraments',
       pl: { k: 'El teu negoci, vist des de dalt', cas: 'Un cas real: {0}. Els noms no hi són.', a11y: 'Pel·lícula del flux de valor en cinc escenes', tu: 'Tu',
-        e: [['Qui ets', 'Ets aquí, al mig. I sé qui t\'envolta.'],
-          ['On ets', 'Això és el que passa de debò: el que cobres… i el que ningú et paga però t\'aguanta.'],
+        e: [['Tu', 'Això ets tu.', 'I al teu voltant, tota la teva xarxa.'],
+          ['El que circula', 'Això és el que cobres.', 'I això, el que et sosté sense factura.'],
           ['On se t\'escapa', 'Aquí se t\'escapa el valor.'],
-          ['Ho resolem', 'Ho definim i ho posem en marxa. En dies, no en mesos.'],
-          ['Va sol', 'El que va sol és temps que recuperes.']],
-        sols: 'lliuraments ja van sols', punt: 'i {0} més, a punt', val: 'Quant val això per a tu?', cta: 'Mira el teu en cinc minuts →', q: 'Què vols fer? ↓',
+          ['Ho endrecem', 'Ho posem en ordre. En dies, no en mesos.'],
+          ['Va sol', 'I el que es repeteix, va sol.']],
+        sols: 'lliuraments ja van sols', punt: 'i {0} més, a punt', val: 'Ningú no arriba a dalt sol.', cta: 'Mira el teu en un minut →', q: 'Què vols fer? ↓',
         pausa: 'Atura la pel·lícula', segueix: 'Continua la pel·lícula' } },
     es: { tots: 'entregables', sol: 'ya van solos', punt: 'listos para ir solos', muntar: 'por montar', persona: 'de persona a persona',
       tang: 'tangible: se puede reclamar', intang: 'intangible: confianza, ideas, reputación',
@@ -53,12 +53,12 @@
       honest: 'Funciona hoy en el tablero de una productora de eventos. En tu web arranca con los pilotos.',
       a11y: 'Mapa de valor animado: {0} roles y {1} entregables',
       pl: { k: 'Tu negocio, visto desde arriba', cas: 'Un caso real: {0}. Los nombres no están.', a11y: 'Película del flujo de valor en cinco escenas', tu: 'Tú',
-        e: [['Quién eres', 'Estás aquí, en el centro. Y sé quién te rodea.'],
-          ['Dónde estás', 'Esto es lo que pasa de verdad: lo que cobras… y lo que nadie te paga pero te sostiene.'],
-          ['Dónde se te escapa', 'Aquí se te escapa el valor.'],
-          ['Lo resolvemos', 'Lo definimos y lo ponemos en marcha. En días, no en meses.'],
-          ['Va solo', 'Lo que va solo es tiempo que recuperas.']],
-        sols: 'entregables ya van solos', punt: 'y {0} más, listos', val: '¿Cuánto vale eso para ti?', cta: 'Mira el tuyo en cinco minutos →', q: '¿Qué quieres hacer? ↓',
+        e: [['Tú', 'Esto eres tú.', 'Y a tu alrededor, toda tu red.'],
+          ['Lo que circula', 'Esto es lo que cobras.', 'Y esto, lo que te sostiene sin factura.'],
+          ['Dónde se escapa', 'Aquí se te escapa el valor.'],
+          ['Lo ordenamos', 'Lo ponemos en orden. En días, no en meses.'],
+          ['Va solo', 'Y lo que se repite, va solo.']],
+        sols: 'entregables ya van solos', punt: 'y {0} más, listos', val: 'Nadie llega arriba solo.', cta: 'Mira el tuyo en un minuto →', q: '¿Qué quieres hacer? ↓',
         pausa: 'Para la película', segueix: 'Sigue la película' } },
     en: { tots: 'deliverables', sol: 'already run on their own', punt: 'ready to run on their own', muntar: 'still to set up', persona: 'person to person',
       tang: 'tangible: can be claimed', intang: 'intangible: trust, ideas, reputation',
@@ -72,7 +72,15 @@
       c1: 'Not defined', c2: 'Defined', c3: 'Runs on its own', fa: 'A person does it',
       qui: 'Who gives it → who receives it', quan: 'When it happens and what it carries',
       honest: 'It runs today on the board of an events company. On your website it starts with the pilots.',
-      a11y: 'Animated value map: {0} roles and {1} deliverables' }
+      a11y: 'Animated value map: {0} roles and {1} deliverables',
+      pl: { k: 'Your business, seen from above', cas: 'A real case: {0}. Names removed.', a11y: 'Value-flow film in five scenes', tu: 'You',
+        e: [['You', 'This is you.', 'And around you, your whole network.'],
+          ['What flows', 'This is what you get paid for.', 'And this is what holds you up, unbilled.'],
+          ['Where it leaks', 'This is where your value leaks.'],
+          ['We sort it', 'We put it in order. In days, not months.'],
+          ['Runs alone', 'And what repeats, runs on its own.']],
+        sols: 'deliverables already run on their own', punt: 'and {0} more, ready', val: 'No one gets to the top alone.', cta: 'See yours in one minute →', q: 'What do you want to do? ↓',
+        pausa: 'Pause the film', segueix: 'Play the film' } }
   };
   var ICONA = [[/encarg/, '🏢'], [/reven/, '🤝'], [/produ/, '🎯'], [/acoge|acull/, '🏡'], [/vin|vi$/, '🍷'],
     [/sirve|serveix/, '🍽️'], [/dinami/, '🎪'], [/asist|assist/, '👥'], [/factur/, '🧾']];
@@ -86,10 +94,27 @@
     if (txt != null) e.textContent = txt;
     return e;
   }
+  /* Els textos d'un cas: els de la casa i, a sobre, els que porta el cas
+     (C.textos[L]). Així el mateix motor explica una productora o un poble
+     sense que cap frase d'un es fiqui a l'altre (15/11/2026, portada del SOS). */
+  function tx(C, L) {
+    var b = T[L], o = C && C.textos && C.textos[L], r = {}, k;
+    if (!o) return b;
+    for (k in b) r[k] = b[k];
+    for (k in o) if (k !== 'pl') r[k] = o[k];
+    r.pl = {}; for (k in b.pl) r.pl[k] = b.pl[k];
+    for (k in (o.pl || {})) r.pl[k] = o.pl[k];
+    return r;
+  }
   var icPropies = null;
   function icona(nom) { if (icPropies && icPropies[nom]) return icPropies[nom]; var n = nom.toLowerCase(); for (var i = 0; i < ICONA.length; i++) if (ICONA[i][0].test(n)) return ICONA[i][1]; return '●'; }
   /* «Quien elabora el vino» → «Quien elabora»; «Qui hi assisteix» es queda sencer. */
-  function curt(nom) { var w = nom.split(' '); return w.slice(0, /^(lo|el|la|hi|ho|les|los|l'.*)$/.test(w[1]) ? 3 : 2).join(' '); }
+  function curt(nom) {
+    var w = nom.split(' '), n = /^(lo|el|la|hi|ho|les|los|l'.*)$/.test(w[1]) ? 3 : 2;
+    /* «Bar de proximidad» no es queda en «Bar de»: si talla en un enllaç, en pren una més. */
+    while (n < w.length && /^(de|del|dels|d'.*|que|y|i|o|e|a|al|en|amb|con|per|para|of|and|the)$/i.test(w[n - 1])) n++;
+    return w.slice(0, n).join(' ');
+  }
   function llista(xs, L) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' ' + T[L].i + ' ' + xs[xs.length - 1]; }
   function menor(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
   /* L'estat d'un lliurament al tauler: el que ja va sol, el definit, el que
@@ -191,6 +216,8 @@
     if (conc && !conc.ok) PRI.push({ n: 3, c: 'var(--indigo)', t: t.p3, d: f(t.p3d, pct, menor(R[mig])), rol: R[mig], fl: fx.filter(function (x) { return x.de[L] === R[mig] || x.a[L] === R[mig]; }) });
     else if (humans.length) PRI.push({ n: 3, c: COLOR.persona, t: t.p4, d: f(t.p4d, humans.length, llista(humans.slice(0, 3).map(function (x) { return x.que[L]; }), L)), fl: humans });
 
+    PRI = PRI.filter(function (pr) { return pr.fl.length || pr.rol; });
+    PRI.forEach(function (pr, i) { pr.n = i + 1; });
     if (ambPri === false) PRI = [];
     var svg = el('svg', { class: 'ma-svg', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': f(t.a11y, R.length, fx.length) });
     var gF = el('g'), gD = el('g'), gN = el('g'), gB = el('g'), quiets = quiet();
@@ -199,9 +226,10 @@
       var k = 26, Q = [(A[0] + B[0]) / 2 - dy / d * k, (A[1] + B[1]) / 2 + dx / d * k], e = estat(x);
       var p = el('path', { id: pre + i, class: 'ma-f', d: 'M' + A.join(' ') + 'Q' + Q.join(' ') + ' ' + B.join(' '), stroke: COLOR[e] });
       if (x.mena === 'intangible') p.setAttribute('stroke-dasharray', '5 5');
+      p.classList.add(x.mena === 'intangible' ? 'pl-in' : 'pl-tg');
       p.appendChild(el('title', {}, x.de[L] + ' → ' + x.a[L] + ': ' + x.que[L]));
       gF.appendChild(p);
-      var dot = el('circle', { class: 'ma-d', r: e === 'sol' ? 4.5 : 4, fill: COLOR[e] });
+      var dot = el('circle', { class: 'ma-d ' + (x.mena === 'intangible' ? 'pl-in' : 'pl-tg'), r: e === 'sol' ? 4.5 : 4, fill: COLOR[e] });
       if (e === 'muntar' || quiets) { var m = [0.25 * A[0] + 0.5 * Q[0] + 0.25 * B[0], 0.25 * A[1] + 0.5 * Q[1] + 0.25 * B[1]]; dot.setAttribute('cx', m[0]); dot.setAttribute('cy', m[1]); if (e === 'muntar') dot.setAttribute('fill-opacity', '.45'); }
       else {
         var v = VEL[x.qui] || 4, am = el('animateMotion', { dur: v + 's', repeatCount: 'indefinite', begin: (-(i * 0.37) % v).toFixed(2) + 's', rotate: 'auto' });
@@ -215,7 +243,7 @@
       var P = pos[r], n = el('g', { class: 'ma-n', tabindex: '0', role: 'button', 'aria-label': r });
       n.appendChild(el('title', {}, r));
       n.appendChild(el('circle', { cx: P[0], cy: P[1], r: r === R[mig] ? 38 : 30 }));
-      n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, icona(C.roles.es[R.indexOf(r)])));
+      n.appendChild(el('text', { x: P[0], y: P[1] + 9, class: 'ma-ic' }, (C.icones && C.icones[R.indexOf(r)]) || icona(C.roles.es[R.indexOf(r)])));
       n.appendChild(el('text', { x: P[0], y: P[1] + (r === R[mig] ? 58 : 50) }, curt(r)));
       gN.appendChild(n); nodes[r] = n;
     });
@@ -310,7 +338,7 @@
   /* ── El tauler ────────────────────────────────────────────────────────── */
   function tauler(cont, C) {
     posaEstil();
-    var L = ll(), t = T[L], fx = C.fluxos;
+    var L = ll(), t = tx(C, L), fx = C.fluxos;
     var sols = fx.filter(function (x) { return x.escalo === 'automatizado'; });
     var nDef = fx.filter(function (x) { return x.escalo === 'definido'; }).length;
     var nSense = fx.filter(function (x) { return !x.escalo || x.escalo === 'sin_definir' || x.escalo === 'por_montar'; }).length;
@@ -364,11 +392,19 @@
      Cinc escenes sobre el mateix dibuix i el mateix cas: els rols, els
      intercanvis, les decisions (les prioritats de MapaValor), el tauler (el
      de sota) i el que va sol. Una frase per escena; cada escena té el seu botó
-     i es pot aturar. Amb moviment reduït no s'engega sola. */
-  var DUR = [4200, 6500, 7500, 7600, 7200];
+     i es pot aturar. Amb moviment reduït no s'engega sola.
+     17/11/2026. Àlvaro: que es llegeixi com un **espot mut**. Cada escena diu
+     una frase curta en gran, i les dues primeres en diuen dues (`e[i][2]`):
+     primer tu sol i després la xarxa; primer el que cobres (tangible) i
+     després el que et sosté sense factura (intangible). Tanca amb el lema:
+     «Ningú no arriba a dalt sol», la pinya del castell.
+     Un cas pot portar `escenes` (quines toca, p. ex. [0, 1, 2]) i `unCop`
+     (no torna a començar i crida `alFinal`): és el mapa propi del
+     diagnòstic d'un minut (SOS/lib/flux-minut.js). */
+  var DUR = [5200, 8400, 7500, 7000, 7600], TALL = [1900, 4000];
   function pelicula(cont, C) {
     posaEstil(); estilPeli();
-    var L = ll(), t = T[L], P = t.pl || T.es.pl, D = dibuix(C, L), svg = D.svg;
+    var L = ll(), t = tx(C, L), P = t.pl || T.es.pl, D = dibuix(C, L), svg = D.svg;
     if (cont._pl) clearInterval(cont._pl);
     if (cont._tl) clearInterval(cont._tl._ma);
     cont.textContent = '';
@@ -404,11 +440,14 @@
     esc.appendChild(el('p', { class: 'pl-cas' }, f(P.cas, menor(C.nom[L]))));
     cont.appendChild(esc);
 
+    var ESC = C.escenes || [0, 1, 2, 3, 4];
+    if (C.escenes) bts.forEach(function (b, k) { if (ESC.indexOf(k) < 0) b._li.hidden = true; });
+    if (D.mig >= 0) D.nodes[D.R[D.mig]].classList.add('pl-mig');
     var ara = 0, temps = 0, sub0 = -1, parat = D.quiets, vist = true;
-    function frase(txt, peu) { cap.textContent = txt; if (peu) { sub.textContent = peu; cap.appendChild(sub); } }
+    function frase(txt, peu) { cap.textContent = txt; if (peu) { sub.textContent = peu; cap.appendChild(sub); } cap.style.animation = 'none'; void cap.offsetWidth; cap.style.animation = ''; }
     function va(i) {
       ara = i; temps = 0; sub0 = -1;
-      esc.setAttribute('data-e', i + 1);
+      esc.setAttribute('data-e', i + 1); esc.setAttribute('data-b', 0);
       bts.forEach(function (b, k) { b.classList.toggle('on', k === i); b._li.classList.toggle('on', k === i); b.classList.toggle('fet', k < i); b.setAttribute('aria-current', k === i ? 'step' : 'false'); b.lastChild.style.width = k < i ? '100%' : '0'; });
       svg.classList.remove('ma-tria');
       D.vies.forEach(function (v) { v.p.classList.remove('on'); v.dot.classList.remove('on'); });
@@ -421,11 +460,8 @@
        llegeix, quina prioritat s'il·lumina. */
     function pas(ms) {
       var k;
-      if (ara === 1) {
-        k = Math.floor(Math.max(0, ms - 1800) / 1500);
-        var mostra = D.vies.filter(function (v) { return estat(v.x) !== 'muntar'; }), v = mostra[(k * 5) % mostra.length];
-        if (k !== sub0 && ms > 1800) { sub0 = k; frase(P.e[1][1], v.x.de[L] + ' → ' + v.x.a[L] + ': ' + v.x.que[L] + (v.x.mena === 'intangible' ? ' ✦' : '')); }
-      }
+      /* El segon temps de les dues primeres escenes: la xarxa, l'intangible. */
+      if (ara < 2 && P.e[ara][2] && ms >= TALL[ara] && sub0 !== 'b') { sub0 = 'b'; esc.setAttribute('data-b', 1); frase(P.e[ara][2]); }
       if (ara === 2) {
         k = Math.min(D.PRI.length - 1, Math.floor(ms / (DUR[2] / D.PRI.length)));
         if (k !== sub0) {
@@ -443,13 +479,17 @@
     }
     pausa.addEventListener('click', commuta);
     if ('IntersectionObserver' in g) new IntersectionObserver(function (es) { vist = es[0].isIntersecting; }).observe(cont);
-    if (D.quiets) { esc.classList.add('pl-parat'); pausa.textContent = '▶'; pausa.setAttribute('aria-label', P.segueix); va(4); return; }
-    void esc.offsetWidth; va(0);
+    if (D.quiets) { esc.classList.add('pl-parat'); pausa.textContent = '▶'; pausa.setAttribute('aria-label', P.segueix); va(ESC[ESC.length - 1]); if (C.alFinal) C.alFinal(); return; }
+    void esc.offsetWidth; va(ESC[0]);
     cont._pl = setInterval(function () {
       if (parat || !vist || document.hidden) return;
       temps += 100; pas(temps);
       bts[ara].lastChild.style.width = Math.min(100, temps / DUR[ara] * 100) + '%';
-      if (temps >= DUR[ara]) va((ara + 1) % DUR.length);
+      if (temps >= DUR[ara]) {
+        var seg = ESC[ESC.indexOf(ara) + 1];
+        if (seg == null && C.unCop) { commuta(); if (C.alFinal) C.alFinal(); return; }
+        va(seg == null ? ESC[0] : seg);
+      }
     }, 100);
   }
   var estilP = false;
@@ -469,13 +509,16 @@
       '[data-e="4"] .pl-svg{opacity:.08;transform:scale(.85)}' +
       '[data-e="5"] .pl-svg .ma-f{opacity:.1}[data-e="5"] .pl-svg .ma-f.pl-sol{opacity:1;stroke-width:3.2}[data-e="5"] .pl-svg .ma-d.pl-sol{opacity:1}[data-e="5"] .pl-svg .ma-f.pl-punt{opacity:.45}' +
       '[data-e="1"] .pl-svg .ma-n,[data-e="2"] .pl-svg .ma-f,[data-e="2"] .pl-svg .ma-d{transition-delay:var(--dl,0s)}' +
+      '[data-e="1"][data-b="0"] .pl-svg .ma-n:not(.pl-mig){opacity:0;transform:scale(.4)}[data-e="1"] .pl-svg .pl-mig circle{stroke:var(--green);stroke-width:3}' +
+      '[data-e="2"][data-b="0"] .pl-svg .pl-in{opacity:.06}[data-e="2"][data-b="0"] .pl-svg .ma-f.pl-tg{opacity:1;stroke-width:2.6}' +
+      '[data-e="2"][data-b="1"] .pl-svg .pl-tg{opacity:.06;transition-delay:0s}[data-e="2"][data-b="1"] .pl-svg .ma-f.pl-in{opacity:1;stroke:var(--purple);stroke-width:2.6;transition-delay:0s}[data-e="2"][data-b="1"] .pl-svg .ma-d.pl-in{fill:var(--purple);opacity:1;transition-delay:0s}' +
       '.pl-tl{grid-area:1/1;width:100%;max-width:46rem;opacity:0;pointer-events:none;transition:opacity .5s}[data-e="4"] .pl-tl{opacity:1;pointer-events:auto}' +
       '.pl-tl .ma-t{margin:0}.pl-tl .ma-cols{grid-template-columns:repeat(3,1fr)}.pl-tl .ma-col{min-height:9rem}' +
       '.pl-gran{display:block;margin:.3rem 0 0;font-size:1rem;animation:pl-in .6s .6s both}@keyframes pl-in{from{opacity:0;transform:translateY(.6rem)}}' +
       '.pl-tu{font:800 20px var(--sans);fill:var(--green);paint-order:stroke;stroke:var(--bg);stroke-width:6px;text-anchor:middle;letter-spacing:.08em;text-transform:uppercase;opacity:0;transition:opacity .5s 1.2s}[data-e] .pl-tu{opacity:1}' +
-      '.pl-val{display:block;margin-top:.5rem;font-style:normal;font-size:clamp(1.1rem,2.4vw,1.4rem);color:var(--text);animation:pl-in .6s 2s both}' +
+      '.pl-val{display:block;margin-top:.6rem;font-style:normal;font-weight:800;font-size:clamp(1.5rem,6.4vw,2.3rem);letter-spacing:-.015em;color:var(--indigo);animation:pl-in .6s 2.2s both}' +
       '.pl-gran b{font-size:2.4rem;color:var(--green);vertical-align:-.12em}.pl-gran small{display:block;font-weight:400;color:var(--muted)}' +
-      '.pl-cap{min-height:4.2em;margin:.4rem auto 0;max-width:40rem;text-align:center;font-family:var(--sans);font-size:clamp(1.15rem,2.6vw,1.6rem);font-weight:700;line-height:1.25}' +
+      '.pl-cap{min-height:3.4em;margin:.4rem auto 0;max-width:40rem;text-align:center;font-family:var(--sans);font-size:clamp(1.5rem,6.4vw,2.3rem);font-weight:800;letter-spacing:-.015em;line-height:1.15;animation:pl-in .5s both}' +
       '.pl-sub{display:block;margin-top:.35rem;font-family:var(--body,inherit);font-size:.95rem;font-weight:400;color:var(--light);line-height:1.4}' +
       '.pl-fi{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;margin:.5rem 0;opacity:.0;transition:opacity .6s}[data-e="5"] .pl-fi,.pl-parat .pl-fi{opacity:1}' +
       '.pl-bar{display:flex;gap:.5rem;align-items:stretch;margin:.4rem 0 0}' +

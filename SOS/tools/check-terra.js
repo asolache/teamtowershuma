@@ -48,6 +48,15 @@ const SVG = {
     '.ct-est': 'Comptadors del dibuix dels castells: només <text> dins del SVG.',
     '.pl-nom': 'Noms dels nodes de la planta: només <text> dins del SVG (viewBox 0 0 400 400).'
   },
+  'SOS/formacio.html': {
+    '.fx-c2': 'Centre del dibuix del flux de valor: només <text> dins del SVG (viewBox 0 0 380 410).',
+    '.fx-s': 'Subtítol de cada pas del flux de valor: <text> del SVG.',
+    '.fb-g': 'Rètols del dibuix «per què és exponencial»: <text> del SVG (viewBox 0 0 360 250).',
+    '.fb-n': 'Números de les barres: <text> del SVG.',
+    '.fb-l': 'Llegenda de les barres: <text> del SVG.',
+    '.fv-nt': 'Noms dels rols del mapa del programa: <text> del SVG (viewBox 0 0 360 380).',
+    '.fv-l': 'Etiquetes dels intercanvis del mapa del programa: <text> del SVG.'
+  },
   'SOS/vna.html': {
     '.mv-dinsn': 'Nom dins del node del mapa: <text> del SVG.',
     '.se-abast': 'Abast de la seqüència: <text> del SVG.',

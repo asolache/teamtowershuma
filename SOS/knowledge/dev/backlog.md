@@ -5502,6 +5502,38 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
 
 ---
 
+**La colla en la pinya · els taulers per factors** — demanat per l'Àlvaro el 16/11/2026 (veda 184)
+
+- **Fet (17/11):** «sense una bona pinya no hi ha castell». Cada rol porta el
+  nom a la punta de la seva rengla i, al 3D, el castell (set pisos) s'aixeca a
+  sobre de la font amb tants pisos com base coberta. Pensar en castells queda
+  com a ofici de la casa: veda 185 i skill `.claude/skills/pensar-en-castells/`.
+
+- **Fet:** `SOS/colla.html` (motor `SOS/lib/colla-taulers.js`, models a
+  `SOS/lib/taulers-models.js`). La pinya de dalt i en 3D amb una rengla per
+  factor (16PF, Big Five obert i panteó de 12), un ninot per persona, la base
+  teòrica en línia i els forats amb el rol, les skills i qui els pot cobrir.
+  S'imprimeix com a tauler físic. La skill castellera és a
+  `references/castells.md` i l'obra de negoci a `vision/taulers-colla.md`.
+- **Pendent:** el disseny del joc físic que ja té l'Álvaro; el tauler de les
+  àrees del mapa de valor; un tauler d'estils d'equip; l'acord amb un editor de
+  test; el fee d'intermediació comptat en un sol lloc; portar el tauler a la
+  web de l'Álvaro i al taller de Fent Pinya carregant-lo d'aquí (DRY);
+  contrastar els punts de § 10 de la skill castellera.
+
+---
+
+**Obra · l'aigua com a escola, cada planta un sector nou** — demanat per l'Àlvar el 16/11/2026
+
+Esborrany a `SOS/knowledge/vision/aigua-escola-sector.md`: les cinc capes que
+neixen al voltant d'una planta (planta, serveis, conreus, segon sector i
+comunitat), el fabricant com a partner de formació (proposta) i el mapa de
+valor. Enllaça amb l'obra de tokenització (PR #384). Pendent: que el fabricant
+confirmi l'aliança, triar un lloc pilot i escriure el currículum de qui opera
+al lloc.
+
+---
+
 **El cervell de cada repo, amb GitHub i amb l'estructura estàndard** — demanat per l'Àlvar el 22/10/2026
 
 - **Fet:** a `SOS/cervell.html` entres amb GitHub i tries entre els teus repos,

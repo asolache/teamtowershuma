@@ -16,7 +16,7 @@ vna/
 ├── casos/        un fitxer per mapa real
 ├── sectors/      una veda per sector: el que ja se sap (bones pràctiques, no casos)
 ├── banc-mapes/   el banc de proves: casos, oficis, jutgessa i resultats
-├── base.json     GENERAT: la base única, tot l'anterior en un sol format (veda 184)
+├── base.json     GENERAT: la base única, tot l'anterior en un sol format (veda 186)
 └── base/
     ├── oficis-generats.json   els oficis del catàleg que fa el generador, en esborrany
     └── fonts/                 nace-2-1.json (les 651 classes) i sos-antic.json (el SOS antic)
