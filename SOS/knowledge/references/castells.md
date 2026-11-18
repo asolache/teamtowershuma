@@ -120,6 +120,12 @@ mesurar el flux i la cura alhora.
 
 ## 8 · Com ho fa servir el SOS
 
+Pensar en castells és **un dels oficis de TeamTowers** (veda 185): ajudar a
+pensar en visual amb la metàfora del castell. Com es facilita és a la skill
+`.claude/skills/pensar-en-castells/SKILL.md`. La regla mare: **sense una bona
+pinya no hi ha castell**.
+
+
 - **Els taulers de la colla** (`SOS/colla.html`): la pinya de dalt, una rengla
   per factor d'un model (16PF, Big Five, panteó de 12), un ninot per persona i
   els forats en 3D. Regla: veda 184.

@@ -49,6 +49,7 @@ paper.
 | **Els models oberts** | L'IPIP i altres de domini públic o llicència lliure | Ser citats i fets servir bé |
 | **Els proveïdors d'skills** | Formadors, APIs, plataformes de test, l'escola | Clients que arriben amb la necessitat ja dita (el forat) |
 | **El fabricant** | Qui imprimeix el tauler i fa els ninots | Comandes |
+| **Qui va dissenyar el joc** | J. F. C., co-dissenyador del tauler original | Reconeixement i la seva part del benefici |
 
 ## Els intercanvis
 
@@ -66,6 +67,8 @@ paper.
 | TeamTowers | Qui facilita | El kit (taulers, ninots, formació, el digital) | El nom de la xarxa |
 | Els models oberts | TeamTowers | Els ítems i el model | — (es cita la font) |
 | El fabricant | TeamTowers | Els taulers i els ninots | La qualitat del producte |
+| Qui va dissenyar el joc | TeamTowers | El disseny del tauler (~20 h) | La seva idea, que el mètode fa créixer |
+| TeamTowers | Qui va dissenyar el joc | La seva part del benefici (comissió, producte, servei o intercanvi) | L'autoria reconeguda al ledger |
 
 ## Per on entra el diner
 
@@ -96,6 +99,30 @@ paper.
   mesura abans de donar-lo per bo (veda 175).
 - **Cap test amb drets es reprodueix**: ni ítems, ni barems, ni informes. Els
   taulers propis van amb models oberts.
+
+## La comptabilitat de valor del tauler
+
+**Dit per l'Álvaro el 17/11/2026:** en el disseny del tauler hi ha unes **20
+hores de treball** d'un co-dissenyador, **J. F. C.**, i si en surt una
+evolució gràcies a la seva feina, ha de quedar reconeguda i tenir recompensa
+d'acord amb el model tokenòmic.
+
+| Qui | Què hi va aportar | Hores | Com es compta |
+|---|---|---|---|
+| **J. F. C.**, co-dissenyador del joc de taulers | El disseny del tauler original, del qual surt aquest | ~20 (estimació de l'Álvaro, per confirmar amb ell) | Llesques del Slicing Pie de la MATRIU: `hores × FMV × multiplicador no-cash` (`matriu/guia-funcionament.md`) |
+
+- **El nom sencer no va en aquest repositori, que és públic** (veda 168): va al
+  registre privat de les llesques i al CRM. Aquí hi surt amb les inicials fins
+  que ell digui com vol constar. El segon cognom està per confirmar.
+- **Model tokenòmic** vol dir aquí el repartiment del benefici amb els
+  stakeholders segons les sortides que el model defineix: **comissions,
+  productes, serveis o intercanvis**. Ningú no rep diners per hores; rep la
+  seva part del que el tauler genera, en la sortida que triï.
+- **L'autoria es registra** com a llesca signada al ledger del SOS, la mateixa
+  peça que fa servir la tokenització de l'autoria del codex
+  (`vision/tokenitzacio-actius.md`, «Quin contracte per a cada actiu»).
+- **Una evolució** (un tauler nou, una versió física, una llicència) que surti
+  del seu disseny li suma llesques. Ho decideix l'Álvaro i s'escriu aquí.
 
 ## Les tres anàlisis, en esborrany
 

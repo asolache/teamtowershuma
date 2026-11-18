@@ -70,6 +70,21 @@ prova('el perfil es pot enganxar com a text', () => {
   assert.deepEqual(C.llegeixText(m, 'A=7 q4: 3 Z=1'), { A: 7, Q4: 3 });
   assert.equal(Object.keys(C.llegeixText(m, '1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6')).length, 16);
 });
+prova('sense una bona pinya no hi ha castell: els pisos que aguanta van amb la base coberta', () => {
+  assert.equal(C.calcula(m, [], { cordons: 2 }).castell.aguanta, 0);
+  const plena = [];
+  m.factors.forEach((f, i) => { plena.push({ nom: 'a' + i, v: { [f.id]: 10 } }, { nom: 'b' + i, v: { [f.id]: 9 } }); });
+  const r = C.calcula(m, plena, { cordons: 2 });
+  assert.equal(r.forats.length, 0);
+  assert.equal(r.castell.aguanta, C.PISOS);
+  const mig = C.calcula(m, plena.filter((_, j) => j % 2 === 0), { cordons: 2 });
+  assert.equal(mig.castell.aguanta, Math.floor(C.PISOS / 2));
+});
+prova('cada rol té nom curt per escriure\'l a la seva rengla', () => {
+  ORDRE.forEach(id => MODELS[id].factors.forEach(f => ['ca', 'es'].forEach(l => {
+    const c = C.curt(f.rol[l]); assert.ok(c.length > 0 && c.length <= 17, `${id}.${f.id}.${l}: ${c}`);
+  })));
+});
 prova('català i castellà amb les mateixes claus', () => {
   assert.deepEqual(Object.keys(C.T.ca).sort(), Object.keys(C.T.es).sort());
   assert.equal(C.T.ca.kosha.length, C.KMAX + 1);
