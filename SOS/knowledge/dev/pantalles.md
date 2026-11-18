@@ -57,7 +57,7 @@ Alçada de la pàgina sencera en pantalles, a tauleta apaïsada 1180 × 820:
 | `avis-legal.html` | 7,3 | — | cua · text legal: lectura amb índex |
 | `SOS/vna-suport.html` | 7,2 | — | editor: disseny propi d'app |
 | `SOS/compra.html` | 6,7 | — | cua |
-| `premsa.html` | 3,8 | — | cua |
+| `premsa.html` | 3,8 | pantalles d'1 a 1,7 | guardià ✓ |
 | resta del SOS | 1,5–3 | — | cua, baixa prioritat |
 
 ## La cua

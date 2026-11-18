@@ -5590,3 +5590,103 @@ de cada client.
 **Guarda:** `test-web-vella.mjs` (cada adreça vella de la foto surt al
 `_redirects`, la pàgina que es replica conserva títol, descripció i H1, i el
 document de disseny porta els requisits de posicionament).
+
+## Veda 184 — La colla es veu en una pinya: una rengla per factor, un ninot per persona i els forats a la vista
+
+**Adoptada el 16/11/2026** per l'Álvaro: «quiero ver al grupo en función del
+resultado del 16PF […] 16 rengles, las filas de personas por cada uno de los
+factores, y voy ubicando a cada persona con un muñequito, como si fuese un
+Lego». I, de seguida: «póntelo también en el códex, porque esto es muy base a
+nivel de lo que hago».
+
+L'error que evita: llegir un test de personalitat persona a persona, com una
+etiqueta, i no veure mai el grup. Un equip amb deu persones fortes en el mateix
+factor té deu persones i un forat; un informe individual no ho ensenya mai.
+
+**El mètode**, que és el de la pinya del castell (`references/castells.md`):
+
+1. **Al mig, la font.** Tot neix del propòsit: és el centre del tauler, com
+   l'aigua a «La font i la colla».
+2. **Una rengla per factor** del model, del centre cap enfora: setze amb el
+   16PF, cinc amb el Big Five, dotze amb el panteó. Cada rengla porta un
+   **rol de la colla** i les **skills** dels seus dos pols.
+3. **Un pilar i cinc cordons** per rengla. Els cordons són les cinc koshas, del
+   propòsit (a prop de la font) al cos (a fora).
+4. **La base teòrica**: la plantilla demana els primers cordons de cada rengla.
+   És el castell que la colla vol poder fer, i surt en línia.
+5. **Un ninot per persona**, a la rengla del factor on és més marcada; com més
+   marcada, més a prop de la font. Un lloc no té mai dues persones: si és ple,
+   un cordó enfora; si la rengla és plena, el segon factor. Es pot moure a mà.
+6. **Els forats** són la superposició: lloc de la base sense ningú. Es veuen
+   sempre, també en 3D, i cadascun porta el rol, les skills i qui el podria
+   cobrir. Si no hi ha ningú, és una **plaça d'aprenent** (aprendre fent, veda
+   160).
+
+**El que no es fa:**
+
+- **Cap ítem de cap test amb drets.** Del 16PF només hi ha els noms dels
+  factors; el test el passa un proveïdor autoritzat i la persona hi porta els
+  seus decatipus. Les plantilles pròpies van amb models oberts (els ítems de
+  l'IPIP són de domini públic) o de llicència lliure (el panteó, CC BY).
+- **La lectura és de la casa, no del test.** Els rols i les skills són com
+  TeamTowers llegeix un factor dins d'una colla, i així s'escriu.
+- **Les dades del grup no surten del navegador.** Sense servidor i sense
+  localStorage: el grup es desa com a fitxer, a mans de qui el fa.
+
+**Sense una bona pinya no hi ha castell** (l'Álvaro, 17/11/2026: «sin una
+buena piña no se puede construir el proyecto, que sería el castell; tiene
+sentido que todos los roles estén en las diferentes rengles del castell»). Per
+això cada rol té la seva rengla i el seu nom escrit a la punta, i a sobre de la
+font s'aixeca el castell: el projecte. Puja tants pisos com la part de la base
+que la colla té coberta; els que encara no aguanta surten en línia. Cada forat
+que s'omple és un pis més. El mètode de pensar així és la veda 185.
+
+Val per a tot model que es pugui posar en rengles: un test de personalitat,
+uns estils de treball en equip, les àrees d'un mapa de valor. Cada model és un
+**tauler**, en paper per al taller i en digital per a la colla; el negoci que
+en surt és a `vision/taulers-colla.md`. Hereten d'aquesta veda la vista
+(`SOS/colla.html`), la skill castellera i la pinya del mapa (`lib/pinya.js`).
+
+**Guarda:** `SOS/tests/test-colla-taulers.mjs` (una rengla per factor, el
+factor més marcat mana, mai dues persones al mateix lloc, els forats són la
+base sense ningú, i cada model diu la seva llicència).
+
+## Veda 185 — Pensem en castells: el pensament visual és un dels nostres oficis
+
+**Adoptada el 17/11/2026** per l'Álvaro: «quede dentro de nuestras
+metodologías: uno de nuestros skills es ayudar al pensamiento visual a través
+de la metáfora de los castells».
+
+L'error que evita: tractar els castells com a decoració de marca, i cada
+dibuix com una vista més. No ho són: és **el mètode** amb què TeamTowers ajuda
+una persona, un equip o una xarxa a veure's. Qui ha fet una pinya amb el cos ja
+ho entén sense que se li expliqui.
+
+**La metàfora, sempre amb les mateixes peces:**
+
+- **La font**, al centre: el propòsit. Tot hi neix.
+- **La pinya**: la base de persones, rols i relacions. **Sense una bona pinya
+  no hi ha castell.** Es mira primer, i es mira de dalt.
+- **Les rengles**: una per rol, àrea o factor, del centre cap enfora. Tots els
+  rols hi són; cap no queda fora del dibuix.
+- **Els cordons**: la distància a la font (les cinc koshas, veda 184).
+- **El tronc i el pom de dalt**: el projecte que la pinya aguanta, i el
+  propòsit que el corona (l'enxaneta fa l'aleta quan el castell és fet).
+- **Els forats**: el que falta. Es veuen sempre i porten a la formació.
+- **El resultat**: descarregat, carregat, intent o intent desmuntat. Es mesuren
+  el lliurament i la cura alhora.
+
+**Com es fa servir:** primer amb el cos (el taller Fent Pinya), després en
+paper (el tauler i els ninots), després en digital (les vistes del SOS). La
+mateixa metàfora val per a un grup segons un test (`SOS/colla.html`), per a un
+mapa de valor (`lib/pinya.js`), per al cervell d'un projecte (`cervell/forces.js`)
+i per a la xarxa de l'aigua («La font i la colla»). Una vista nova del SOS que
+expliqui persones, rols o projectes es dibuixa amb aquestes peces abans
+d'inventar-ne cap altra.
+
+**On viu el saber:** la skill `.claude/skills/pensar-en-castells/` (com
+facilitar-ho) i `knowledge/references/castells.md` (el saber casteller, amb
+fonts).
+
+**Guarda:** `SOS/tests/test-colla-taulers.mjs` (la pinya aguanta els pisos que
+la base té coberts, i cada rol té el nom a la seva rengla).

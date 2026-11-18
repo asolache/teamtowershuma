@@ -543,6 +543,12 @@ jobs:
       - name: Les rengles dibuixen el que diuen
         run: node SOS/tools/build-castells.js --check
 
+      # Els taulers de la colla (veda 184): una rengla per factor, el factor més
+      # marcat mana, mai dues persones al mateix lloc i els forats són la base
+      # sense ningú. I cap model sense la seva llicència.
+      - name: Els taulers de la colla
+        run: node SOS/tests/test-colla-taulers.mjs
+
       # Cada acció del llançador declara quan serveix. Una que no ho digui no
       # sortiria mai a la portada i no petaria res: seguiria al menú sencer i
       # semblaria que tot està bé. I si totes servissin sempre, la portada

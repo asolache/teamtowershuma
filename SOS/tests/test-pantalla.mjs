@@ -25,7 +25,10 @@ const PILOTS = [
   { url: 'conecta/index.html', primer: 'Inicio', dins: 'cx-fuente', index: '.cab' },
   { url: 'SOS/ia.html', primer: 'Inici' },
   { url: 'SOS/escola.html', primer: 'Inici' },
-  { url: 'cataleg.html', primer: 'Inici' }
+  { url: 'cataleg.html', primer: 'Inici' },
+  { url: 'qui-som.html', primer: 'Inici' },
+  // La premsa és curta (3,8 alçades): quatre pantalles i prou.
+  { url: 'premsa.html', primer: 'Inici', min: 4 }
 ];
 for (const P of PILOTS) {
   for (const [nom, vp] of [['tauleta', { width: 1180, height: 820 }], ['mòbil', { width: 390, height: 844 }]]) {
@@ -35,7 +38,7 @@ for (const P of PILOTS) {
     await p.goto(BASE + P.url, { waitUntil: 'load' });
     await p.waitForFunction(() => window.TTPantalla);
     const ps = await p.evaluate(() => TTPantalla.pantalles);
-    ok(ps.length >= 5, ps.length + ' pantalles, de les seccions de la pàgina');
+    ok(ps.length >= (P.min || 5), ps.length + ' pantalles, de les seccions de la pàgina');
     ok(ps[0].nom === P.primer, 'la primera es diu «' + P.primer + '»');
     ok(ps.every(x => x.nom && x.nom.length <= 31), 'cada pestanya té un nom curt');
     const visibles = await p.evaluate(() => [...document.querySelectorAll('[data-pant]')]

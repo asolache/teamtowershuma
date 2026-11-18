@@ -192,6 +192,8 @@ const SOS_GRUPS = [
       T('Cinc vistes, per a les IA i el LMS', 'Cinco vistas, para las IA y el LMS')],
     ['la-font.html', T('La font i la colla', 'La fuente y la colla'),
       T('Totes les vistes en una pel·lícula', 'Todas las vistas en una película')],
+    ['colla.html', T('La colla en la pinya', 'La colla en la pinya'),
+      T('Un tauler per factor del test, amb els forats', 'Un tablero por factor del test, con los huecos')],
     L.blog
   ] },
   /* ══ 3 · I L'ALTRE MÓN ════════════════════════════════════════════════
@@ -272,7 +274,7 @@ const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
-  'uneix-te.html', 'vedes.html', 'cervell.html', 'la-font.html', 'vna.html', 'vna-suport.html'];
+  'uneix-te.html', 'vedes.html', 'cervell.html', 'la-font.html', 'colla.html', 'vna.html', 'vna-suport.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */
@@ -288,7 +290,6 @@ const EXCEPCIONS = {
      Posar-li la barra seria mantenir un menú a una pantalla que ningú pot
      obrir, i el dia que algú el mirés es creuria que és una pàgina viva. */
   'comando.html': 'Ja no se serveix: les seves adreces fan 301 cap a molekulon.org. El fitxer es queda perquè `build-comando.js` l\'hi llegeix l\'ancoratge al canon i n\'exporta `molekulon-data.json`. És una font, no una pàgina.',
-  'index.html': 'És l\'aplicació i té la seva pròpia barra, amb cerca, accions i sessió.',
   'joc.html': 'És una pantalla de joc completa; un menú a sobre en trencaria el ritme.'
 };
 
@@ -421,7 +422,8 @@ const OBRE = '<!--TT-NAV-->', TANCA = '<!--/TT-NAV-->';
    substitueixen per una, i el nom `SOS-NAV` ja no diu la veritat: no és la
    barra del SOS, és la del lloc. */
 const VELLES = [['<!--SOS-NAV-->', '<!--/SOS-NAV-->'], ['<!--TT-PAGINES-->', '<!--/TT-PAGINES-->']];
-/* L'aplicació no porta la barra —això segueix sent cert i és a EXCEPCIONS—,
+/* L'aplicació (des del 15/11/2026 porta la barra del SOS a la portada i al
+   botó «Menú»: vegeu «I l'aplicació», més avall),
    però sí que ha de portar **la mateixa llista de destins**. L'excepció era
    sobre la barra, no sobre el contingut: fins ara, de dins de l'app no hi havia
    manera d'arribar a cap de les eines de fora. Ni una. */
@@ -1127,11 +1129,23 @@ if (CHECK) {
   });
 }
 
-/* I l'aplicació, que no porta la barra però sí la llista. */
+/* I l'aplicació, que porta la llista i, a la seva portada, la barra del SOS.
+   15/11/2026, l'Àlvaro: «cuando entras en SOS pierdes todo el menú de
+   contexto y es un desastre». Qui arriba sense perfil no veu l'app sinó la
+   portada (#onboarding), i la portada no tenia cap barra: era l'única pàgina
+   del SOS sense menú, sense «← TeamTowers» i sense «Entra». Ara porta la
+   mateixa barra que les altres, amb l'adreça `/SOS/` —`index.html` seria la
+   portada de l'arrel— i, a dins de l'app, el botó «Menú» de la seva barra
+   obre aquesta mateixa (SOS/index.html, `.sos-app`). */
 {
   const f = join(SOS, APP);
   const html = readFileSync(f, 'utf8');
-  const nou = posaApp(html);
+  let nou = posaApp(html);
+  if (nou !== null) {
+    const amb = posa(nou, '/SOS/');
+    if (amb === null) bad(`${APP} no té les marques del peu ${P_OBRE} … ${P_TANCA}: la portada del SOS es quedaria sense barra`);
+    else nou = amb;
+  }
   if (nou === null) bad(`${APP} no té les marques ${A_OBRE} … ${A_TANCA}: de dins de l'app no ` +
     'hi hauria manera d\'arribar a cap eina de fora');
   else if (CHECK) {
