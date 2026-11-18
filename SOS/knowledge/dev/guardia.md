@@ -41,7 +41,7 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 4. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
    - [x] `premsa.html` · quatre pantalles, noms en català i castellà (#394)
    - [ ] `SOS/uneix-te.html`, `SOS/compra.html` · el PR obert #386 els toca: tornar-hi quan es mergegi
-5. [ ] Pantalles de més de 3 alçades a conecta/ia/escola: partir-les o fer-ne llista que llisca
+5. [x] Pantalles de més de 3 alçades a conecta/ia/escola: a `conecta/` els flujos (4,1) i el catàleg (5,7) ara són llistes que llisquen (1,5); ia i escola ja hi cabien; el test exigeix ≤ 3 (#PR)
 6. [ ] `SOS/blog.html`: llista d'entrades que llisca i una entrada per pantalla
 7. [ ] `SOS/vedes.html`: filtre a dalt i llista que llisca
 8. [ ] Quan n'hi hagi 8 o més: el `<script>` dins de les marques de `build-nav.js`

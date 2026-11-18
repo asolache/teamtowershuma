@@ -26,7 +26,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `SOS/supply/` | L'oferta comuna publicada, passada pel sedàs | 2 · 2 KB |
 | `boreal-light/` | La vista proposta per a Boreal Light GmbH: què aportem a la seva representació a Espanya, l'aigua com a ecosistema i les preguntes per a la primera conversa. Sense preus ni condicions, i fora dels cercadors | 5 · 263 KB |
 | `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 2 · 317 KB |
-| `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 84 KB |
+| `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 85 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 176 KB |
 | `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) el preu de cada client, només per a ell (proposta), i el seu dibuix, guardat amb el seu compte (fitxa), i la seva web d'ara, llegida amb el seu sí (llegeix-web), i el router que tria quin model de Claude fa cada tasca i compta el que gasta cada projecte (ia-router), i els proveïdors del banc de proves de la IA (ia-proveidors) | 20 · 144 KB |
 | `visita/` | On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així | 1 · 6 KB |

@@ -186,6 +186,15 @@
         .filtro { display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; font-size: var(--t0); cursor: pointer; }
         .filtro input { width: 1.15rem; height: 1.15rem; accent-color: var(--indigo); }
         .cat { margin-top: 2rem; }
+        /* Pantalles, no rotlles (SOS/knowledge/dev/pantalles.md): a partir de
+           tauleta, els flujos i el catàleg són llistes que llisquen elles, no la
+           pàgina; la pila i el filtre queden a la vista. En imprimir, sencers. */
+        @media screen and (min-width: 640px) {
+            .llisca { max-height: max(22rem, calc(100dvh - 15rem)); overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: .2rem .5rem .2rem .2rem; border-radius: var(--radius); }
+            .llisca:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+            .llisca > .cat:first-child { margin-top: 0; }
+            .llisca .cat h3 { position: sticky; top: -.2rem; z-index: 1; background: var(--bg); padding: .3rem 0; }
+        }
         .cat h3 { font-size: 1.0625rem; font-family: var(--mono); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
         .servicios { display: grid; gap: .8rem; margin-top: .6rem; }
         @media (min-width: 640px) { .servicios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -458,7 +467,7 @@
         </div>
         <div class="roles" id="cx-roles" role="group" aria-label="Rol"></div>
         <div class="flujos-grid">
-            <div class="flujos" id="cx-flujos" aria-live="polite"></div>
+            <div class="flujos llisca" id="cx-flujos" aria-live="polite" tabindex="0" aria-label="Flujos del rol elegido"></div>
             <aside class="pila" id="cx-pila" aria-labelledby="t-pila">
                 <h3 id="t-pila">Tu pila</h3>
                 <div id="cx-pila-cuerpo"></div>
@@ -482,7 +491,7 @@
             <p class="lead">Los que están <strong>en uso</strong> funcionan hoy en TeamTowers: el piloto 1 somos nosotros. En cada categoría hay al menos una opción <strong>libre</strong>, que puedes alojar tú.</p>
         </div>
         <label class="filtro"><input type="checkbox" id="cx-solo-libres"> Ver solo las opciones libres</label>
-        <div id="cx-catalogo"></div>
+        <div class="llisca" id="cx-catalogo" tabindex="0" aria-label="Servicios conectables por categoría"></div>
     </div>
 </section>
 
