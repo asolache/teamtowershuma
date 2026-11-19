@@ -40,7 +40,7 @@ Alçada de la pàgina sencera en pantalles, a tauleta apaïsada 1180 × 820:
 | Pàgina | Abans | Ara | Qui la porta |
 |---|---|---|---|
 | `index.html` (portada) | 21,7 | **es queda amb scroll** | — |
-| `conecta/` | 19,6 | pantalles d'1 a 5,7 | pilot ✓ |
+| `conecta/` | 19,6 | pantalles d'1 a 3 (flujos i catàleg, llistes que llisquen) | pilot ✓ |
 | `SOS/ia.html` | 8,9 | pantalles d'1 a 2 | pilot ✓ |
 | `SOS/escola.html` | 9,0 | pantalles d'1 a 2,3 | pilot ✓ |
 | `SOS/vedes.html` | 178 | — | cua · és una llista: filtre + llista que llisca |
@@ -76,7 +76,7 @@ Per ordre. Una línia = una peça petita, un PR, que espera la tanda.
 5. [ ] `SOS/vedes.html` — filtre a dalt, llista que llisca
 6. [ ] `SOS/formacio.html` — coordinar amb el fil del catàleg formatiu
 7. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html`, `avis-legal.html`
-8. [ ] Pantalles de més de 3 alçades a les pàgines pilot: partir o fer llista
+8. [x] Pantalles de més de 3 alçades a les pàgines pilot: partir o fer llista (classe `.llisca` a `conecta/`)
 9. [ ] Quan n'hi hagi 8 o més: posar el `<script>` dins de les marques de
        `build-nav.js` (un sol lloc) i que cada pàgina només porti `data-pantalla`
 10. [ ] `cliente/` i l'app `SOS/index.html`: només quan els seus fils hi diguin sí
