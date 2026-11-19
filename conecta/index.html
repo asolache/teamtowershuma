@@ -186,6 +186,15 @@
         .filtro { display: inline-flex; align-items: center; gap: .55rem; min-height: 44px; font-size: var(--t0); cursor: pointer; }
         .filtro input { width: 1.15rem; height: 1.15rem; accent-color: var(--indigo); }
         .cat { margin-top: 2rem; }
+        /* Pantalles, no rotlles (SOS/knowledge/dev/pantalles.md): a partir de
+           tauleta, els flujos i el catàleg són llistes que llisquen elles, no la
+           pàgina; la pila i el filtre queden a la vista. En imprimir, sencers. */
+        @media screen and (min-width: 640px) {
+            .llisca { max-height: max(22rem, calc(100dvh - 15rem)); overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: .2rem .5rem .2rem .2rem; border-radius: var(--radius); }
+            .llisca:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+            .llisca > .cat:first-child { margin-top: 0; }
+            .llisca .cat h3 { position: sticky; top: -.2rem; z-index: 1; background: var(--bg); padding: .3rem 0; }
+        }
         .cat h3 { font-size: 1.0625rem; font-family: var(--mono); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
         .servicios { display: grid; gap: .8rem; margin-top: .6rem; }
         @media (min-width: 640px) { .servicios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -377,7 +386,7 @@
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span>Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b>Qué es</b><span>Qué es un mapa de valor, sobre un caso</span></a><a href="/cliente/#alrededor"><b>Hacer uno</b><span>Dibuja quién te rodea y qué os dais, gratis</span></a><a href="/cataleg.html"><b>Qué contratas</b><span>Paquetes por flujos: horas e IA</span></a><a href="/SOS/pressupost.html"><b>Precios y contratación</b><span>Del borrador al negocio operativo, y el resto a medida</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🌐</i><span>Tu web</span></summary><div class="tn-p"><a href="/mapa-web/"><b>Mapa y web en una hora</b><span>El mapa de tu negocio y la web, en una sesión</span></a><a href="/conecta/" aria-current="page"><b>Servicios conectables</b><span>Tu web con tu IA, el CRM y los cobros</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span>SOS y formación</span></summary><div class="tn-p"><a href="/SOS/"><b>Entra al SOS</b><span>El sistema que mantiene vivo el mapa, sin cuenta</span></a><a href="/SOS/formacio.html"><b>Formación acción</b><span>Los módulos, de N0 a N3, y el certificado es tuyo</span></a><a href="/SOS/ia.html"><b>Flujos con IA</b><span>Automatizar lo tangible, valorar lo intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span>Quiénes somos</span></summary><div class="tn-p"><a href="/qui-som.html"><b>Quiénes somos</b><span>Veinte años, los clientes y de dónde viene el método</span></a><a href="/premsa.html"><b>Prensa</b><span>Lo que se ha dicho fuera</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacidad, explicada</span></a></div></details></div>
   <a class="tn-in" href="/acceso"><span>Entra</span></a>
-  <a class="tn-cta" href="/cliente/#alrededor"><span>Crea tu mapa</span> →</a>
+  <a class="tn-cta" href="/SOS/diagnostic.html"><span>Crea tu mapa</span> →</a>
 </nav>
 <script>
 (function () {
@@ -458,7 +467,7 @@
         </div>
         <div class="roles" id="cx-roles" role="group" aria-label="Rol"></div>
         <div class="flujos-grid">
-            <div class="flujos" id="cx-flujos" aria-live="polite"></div>
+            <div class="flujos llisca" id="cx-flujos" aria-live="polite" tabindex="0" aria-label="Flujos del rol elegido"></div>
             <aside class="pila" id="cx-pila" aria-labelledby="t-pila">
                 <h3 id="t-pila">Tu pila</h3>
                 <div id="cx-pila-cuerpo"></div>
@@ -482,7 +491,7 @@
             <p class="lead">Los que están <strong>en uso</strong> funcionan hoy en TeamTowers: el piloto 1 somos nosotros. En cada categoría hay al menos una opción <strong>libre</strong>, que puedes alojar tú.</p>
         </div>
         <label class="filtro"><input type="checkbox" id="cx-solo-libres"> Ver solo las opciones libres</label>
-        <div id="cx-catalogo"></div>
+        <div class="llisca" id="cx-catalogo" tabindex="0" aria-label="Servicios conectables por categoría"></div>
     </div>
 </section>
 
@@ -620,6 +629,7 @@
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-frase{margin-top:.5rem;font-weight:700;color:var(--text)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
 .tt-peu .tp-legal{color:var(--muted)}
 .tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
@@ -632,7 +642,7 @@
 </style>
 <footer class="tt-peu">
   <div class="tp-in">
-    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-lema" lang="ca">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span>Escríbenos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html?lang=es"><span>Aviso legal y privacidad</span></a></div>
+    <div class="tp-marca"><a class="tp-logo" href="/">Team<b>Towers</b> Humà</a><p class="tp-frase"><span>Nadie llega arriba solo.</span></p><p class="tp-lema" lang="ca">Força · Equilibri · Valor · Seny</p><a class="tp-mail js-mail" href="/qui-som"><span>Escríbenos</span></a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html?lang=es"><span>Aviso legal y privacidad</span></a></div>
     <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Mapa de valor</span></p><ul><li><a href="/SOS/vna.html"><span>Qué es</span></a></li><li><a href="/cliente/#alrededor"><span>Hacer uno</span></a></li><li><a href="/cataleg.html"><span>Qué contratas</span></a></li><li><a href="/SOS/pressupost.html"><span>Precios y contratación</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Tu web</span></p><ul><li><a href="/mapa-web/"><span>Mapa y web en una hora</span></a></li><li><a href="/conecta/" aria-current="page"><span>Servicios conectables</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>SOS y formación</span></p><ul><li><a href="/SOS/"><span>Entra al SOS</span></a></li><li><a href="/SOS/formacio.html"><span>Formación acción</span></a></li><li><a href="/SOS/ia.html"><span>Flujos con IA</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Quiénes somos</span></p><ul><li><a href="/qui-som.html"><span>Quiénes somos</span></a></li><li><a href="/premsa.html"><span>Prensa</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div></div>
   </div>
 </footer>

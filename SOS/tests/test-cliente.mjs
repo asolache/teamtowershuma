@@ -72,6 +72,14 @@ ok(D.revisa(m, MV).llest, 'ese mapa pasa las reglas duras: ' + D.revisa(m, MV).p
 const srv = await serve(ARREL, 0), URL_ = 'http://127.0.0.1:' + srv.address().port + '/cliente/index.html';
 const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
   process.env.SOS_CHROMIUM ? { executablePath: process.env.SOS_CHROMIUM } : {}));
+/* Les proves de la pàgina sencera la miren sense el pas a pas (16/11/2026);
+   el pas a pas té les seves al final. */
+const nouCtx = b.newContext.bind(b);
+b.newContext = async (o = {}) => {
+  const { guia, ...op } = o; const c = await nouCtx(op);
+  if (!guia) await c.addInitScript(() => { try { localStorage.setItem('tt.guia', 'off'); } catch (e) { /* res */ } });
+  return c;
+};
 
 for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori', { width: 1280, height: 900 }]]) {
   console.log('\n══ /cliente/ · ' + nom + ' ══');
@@ -510,6 +518,43 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
+/* Busca tu oficio (veda 186): la base única da las piezas, y las cinco capas dicen qué falta */
+{
+  console.log('\n══ Busca tu oficio ══');
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 } });
+  const p = await ctx.newPage(), errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
+  await p.addInitScript(() => { if (!sessionStorage.getItem('fet')) { sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es'); localStorage.removeItem('tt.cliente.v1'); } });
+  await p.goto(URL_ + '#alrededor');
+  await p.fill('#cl-busca', 'bodega familiar de cava');
+  await p.waitForFunction(() => document.querySelectorAll('#cl-busca-r button').length > 0);
+  const r1 = await p.textContent('#cl-busca-r');
+  ok(/Bodega|celler/i.test(r1), 'busca «bodega familiar de cava» y propone la bodega: ' + r1.slice(0, 80));
+  await p.click('#cl-busca-r button');
+  await p.waitForFunction(() => !document.querySelector('#cl-kosha').hidden && document.querySelectorAll('#cl-kosha .capes li').length === 5);
+  ok(await p.evaluate(() => document.querySelectorAll('#cl-files .fila').length >= 3), 'con un toque, su mapa: quién está alrededor y qué se dan');
+  const capes = await p.textContent('#cl-kosha');
+  ok(/Cuerpo/.test(capes) && /Propósito/.test(capes), 'enseña las cinco capas del mapa, de Cuerpo a Propósito');
+  await p.fill('#cl-busca', 'peluquería');
+  await p.waitForFunction(() => /Peluquería/.test(document.querySelector('#cl-busca-r').textContent));
+  ok(/aún sin mapa propio/.test(await p.textContent('#cl-busca-r')), 'una actividad oficial sin mapa propio lo dice, sin inventarse uno');
+  /* L'escena 9 de «La font i la colla» porta amb ?org=: si el nom diu l'ofici, la cerca ja s'obre feta */
+  await p.evaluate(() => { localStorage.removeItem('tt.cliente.v1'); localStorage.removeItem('tt.cliente.mapas'); });
+  await p.goto(URL_ + '?org=' + encodeURIComponent('Bodega del Penedès') + '#alrededor');
+  await p.waitForFunction(() => document.querySelectorAll('#cl-busca-r button').length > 0);
+  ok(await p.inputValue('#cl-org') === 'Bodega del Penedès' && /Bodega|celler/i.test(await p.textContent('#cl-busca-r')), 'desde «La font i la colla» (?org=Bodega del Penedès): su nombre puesto y ya le propone la bodega');
+  await p.evaluate(() => { localStorage.removeItem('tt.cliente.v1'); localStorage.removeItem('tt.cliente.mapas'); });
+  await p.goto(URL_ + '?org=Acme#alrededor');
+  await p.waitForFunction(() => document.querySelector('#cl-org').value === 'Acme');
+  await p.waitForTimeout(600);
+  ok(await p.inputValue('#cl-busca') === '', 'con un nombre que no dice el oficio (?org=Acme) no busca nada');
+  await p.goto(URL_ + '?ofici=' + encodeURIComponent('escuela de idiomas') + '#alrededor');
+  await p.waitForFunction(() => document.querySelectorAll('#cl-busca-r button').length > 0);
+  ok(await p.inputValue('#cl-busca') === 'escuela de idiomas', '?ofici= abre la búsqueda ya hecha');
+  ok(!errs.length, 'sense errors de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
 /* Mis mapas: guardar y empezar otro, borrar con «Deshacer», el enlace de cada mapa */
 {
   console.log('\n══ Mis mapas ══');
@@ -564,6 +609,41 @@ console.log('\n══ El enlace de invitación ══');
   ok(await p.isHidden('#cl-benvinguda'), '«Entendido» cierra la bienvenida');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'en el móvil, la barra de su espacio no hace desplazar la página de lado');
   ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+/* El pas a pas (Àlvar, 16/11/2026: «esta página es terrorífica, tan larga»):
+   cinc passos curts, amb la lògica de La font i la colla, i les dotze
+   preguntes del Panteó per veure els forats. */
+console.log('\n══ El paso a paso ══');
+for (const [nom, vp] of [['mòbil', { width: 390, height: 844 }], ['escriptori', { width: 1280, height: 900 }]]) {
+  const ctx = await b.newContext({ viewport: vp, guia: true });
+  const p = await ctx.newPage(); const errs = [];
+  p.on('pageerror', e => errs.push(e.message));
+  await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
+  await p.addInitScript(() => { if (!sessionStorage.getItem('fet')) { sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es'); } });
+  await p.goto(URL_ + '?org=Celler#web');
+  await p.waitForFunction(() => window.GuiaCliente);
+  const vis = () => p.evaluate(() => [...document.querySelectorAll('main>section')].filter(e => e.offsetParent).map(e => e.id).join(','));
+  const pas = () => p.evaluate(() => [...document.querySelectorAll('#gc [aria-current]')].findIndex(b => b.getAttribute('aria-current') === 'step'));
+  ok(await pas() === 3 && await vis() === 'gc,web', nom + ': #web abre el paso «Tu web y tu cuota», solo con esa sección');
+  ok(await p.evaluate(() => { const g = document.getElementById('gc').getBoundingClientRect(); return g.bottom > 0 && g.top < innerHeight; }), nom + ': el paso a paso queda a la vista, no bajo el menú');
+  const alt = [];
+  for (let i = 0; i < 5; i++) { await p.evaluate(i => GuiaCliente.va(i), i); alt.push(await p.evaluate(() => document.documentElement.scrollHeight)); }
+  const sencera = await p.evaluate(() => { GuiaCliente.posa(false); return document.documentElement.scrollHeight; });
+  await p.evaluate(() => { GuiaCliente.posa(true); GuiaCliente.va(0); });
+  ok(Math.max(...alt) * 2 < sencera, nom + ': cada paso mide menos de la mitad que la página entera (' + Math.max(...alt) + ' px frente a ' + sencera + ')');
+  await p.locator('#cl-models button').first().click();
+  await p.waitForTimeout(1000);
+  ok(await pas() === 1 && await p.isVisible('#gc-panteo') && await p.isVisible('#cl-files'), nom + ': al elegir un modelo, pasa solo a «Tus huecos», con las doce preguntas');
+  ok(await p.locator('#gc-panteo [aria-pressed]').count() === 12, nom + ': las doce preguntas del Panteón, para tocar');
+  await p.locator('#gc-panteo [aria-pressed]').first().click();
+  const S = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
+  ok(Array.isArray(S.panteo) && S.panteo[0] === 'zeus' && /1 de 12/.test(await p.textContent('#gc-panteo')), nom + ': lo que toca se guarda con su mapa y cuenta los huecos');
+  ok(/Las 12 preguntas.*con alguien Zeus; huecos .*Hestia/.test(await p.evaluate(() => GuiaCliente.resum(TTCliente.estat()))), nom + ': y viaja con el envío');
+  await p.click('#gc .gc-tot, #gc a:has-text("Ver toda la página"), button:has-text("Ver toda la página")');
+  ok(await p.isVisible('#inicio') && await p.isVisible('#preguntas'), nom + ': «Ver toda la página» la devuelve entera');
+  ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), nom + ': sin desplazarse de lado');
+  ok(!errs.length, nom + ': sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 await b.close(); srv.close();

@@ -39,6 +39,7 @@ El criteri: dir només el que es pot sostenir, mesurar abans d'estimar, el sedà
 El que es recorda i s'ordena: dades, mapes, el cervell, la taxonomia i el backlog.
 
 - No s'inventen dades ni es presenten com a exactes; si alguna cosa falta, falla o és incompleta, es diu clarament. (vedes 32, 37, 54, 96, 131)
+- El que ja sabem es junta en una sola base generada i és el punt de partida de cada mapa: la IA no endevina el que la casa ja sap, i el que genera passa pel sedàs abans d'entrar-hi. (vedes 71, 161, 186)
 - Cada dada es compta una sola vegada i té una sola font; ampliar relacions obliga a revisar el que se suma. (vedes 28, 37, 79, 96, 161)
 - Una taxonomia la declara una persona i una màquina comprova que res no quedi fora ni apunti al que no existeix. (vedes 40, 44, 63, 131, 161)
 - El coneixement viu mentre s'usa: cada petició va al backlog, cada lliçó s'escriu i l'aprenentatge circula en tots dos sentits. (vedes 15, 160, 161, 166)
@@ -71,10 +72,10 @@ L'obra: el codi, les pàgines, les eines i les guardes que la sostenen.
 
 Els sabers que desenvolupa cada veda, d'una llista tancada.
 
-- **Mapa de valor** (9): 21, 22, 37, 45, 54, 116, 119, 120, 152
+- **Mapa de valor** (10): 21, 22, 37, 45, 54, 116, 119, 120, 152, 186
 - **Comptabilitat de valor i tokenomics** (37): 12, 13, 14, 22, 23, 24, 26, 29, 30, 38, 39, 43, 45, 52, 55, 56, 59, 64, 67, 76, 79, 83, 90, 92, 95, 119, 124, 125, 126, 129, 130, 134, 139, 145, 156, 158, 163
 - **DeFi i P2P** (37): 25, 26, 27, 30, 39, 42, 43, 47, 48, 58, 59, 60, 61, 64, 65, 69, 70, 71, 76, 80, 82, 83, 84, 86, 88, 92, 95, 96, 97, 98, 108, 125, 126, 135, 136, 144, 148
-- **Gestió del coneixement** (32): 15, 17, 21, 28, 31, 32, 40, 44, 54, 57, 60, 72, 89, 98, 100, 109, 112, 117, 128, 131, 132, 149, 154, 158, 159, 160, 161, 162, 163, 164, 165, 166
+- **Gestió del coneixement** (33): 15, 17, 21, 28, 31, 32, 40, 44, 54, 57, 60, 72, 89, 98, 100, 109, 112, 117, 128, 131, 132, 149, 154, 158, 159, 160, 161, 162, 163, 164, 165, 166, 186
 - **Persones i equips** (31): 19, 20, 23, 29, 39, 43, 46, 51, 56, 59, 66, 68, 69, 74, 82, 84, 102, 103, 104, 108, 114, 120, 121, 122, 123, 131, 133, 134, 148, 154, 159
 - **Projectes, kanban i backlog** (22): 29, 36, 37, 38, 50, 52, 53, 62, 63, 75, 85, 87, 91, 93, 129, 137, 138, 140, 141, 143, 146, 160
 - **Desenvolupament web i SOS** (78): 11, 20, 21, 27, 31, 33, 34, 35, 40, 41, 42, 46, 47, 48, 49, 50, 51, 57, 61, 62, 63, 66, 67, 68, 71, 72, 73, 74, 75, 79, 80, 81, 86, 87, 88, 90, 91, 92, 93, 94, 96, 98, 99, 100, 101, 102, 104, 105, 106, 109, 111, 112, 113, 117, 118, 121, 122, 123, 127, 128, 132, 133, 135, 136, 142, 145, 151, 152, 153, 154, 155, 157, 158, 159, 161, 162, 164, 165

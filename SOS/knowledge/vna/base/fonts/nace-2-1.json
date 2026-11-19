@@ -1,0 +1,3788 @@
+{
+"nota": "Classificació d'activitats econòmiques NACE Rev. 2.1 de la UE, la base de la CNAE-2025 espanyola (els mateixos codis a quatre xifres). Noms en castellà de la traducció oficial de la UE, extrets UN cop el 15/11/2026 de les dades del paquet npm @financica/nace-codes 3.1.0 (llicència MIT), sense executar-ne el codi. És una font: no la genera cap eina; build-base-vna.js la llegeix.",
+"font": "NACE Rev. 2.1 (EU) · @financica/nace-codes@3.1.0",
+"seccions": [
+{
+"codi": "A",
+"en": "Agriculture, forestry and fishing"
+},
+{
+"codi": "B",
+"en": "Mining and quarrying"
+},
+{
+"codi": "C",
+"en": "Manufacturing"
+},
+{
+"codi": "D",
+"en": "Electricity, gas, steam and air conditioning supply"
+},
+{
+"codi": "E",
+"en": "Water supply; sewerage, waste management and remediation activities"
+},
+{
+"codi": "F",
+"en": "Construction"
+},
+{
+"codi": "G",
+"en": "Wholesale and retail trade"
+},
+{
+"codi": "H",
+"en": "Transportation and storage"
+},
+{
+"codi": "I",
+"en": "Accommodation and food service activities"
+},
+{
+"codi": "J",
+"en": "Publishing, broadcasting, and content production and distribution activities"
+},
+{
+"codi": "K",
+"en": "Telecommunication, computer programming, consulting, computing infrastructure and other information service activities"
+},
+{
+"codi": "L",
+"en": "Financial and insurance activities"
+},
+{
+"codi": "M",
+"en": "Real estate activities"
+},
+{
+"codi": "N",
+"en": "Professional, scientific and technical activities"
+},
+{
+"codi": "O",
+"en": "Administrative and support service activities"
+},
+{
+"codi": "P",
+"en": "Public administration and defence; compulsory social security"
+},
+{
+"codi": "Q",
+"en": "Education"
+},
+{
+"codi": "R",
+"en": "Human health and social work activities"
+},
+{
+"codi": "S",
+"en": "Arts, sports and recreation"
+},
+{
+"codi": "T",
+"en": "Other service activities"
+},
+{
+"codi": "U",
+"en": "Activities of households as employers and undifferentiated goods - and service-producing activities of households for own use"
+},
+{
+"codi": "V",
+"en": "Activities of extraterritorial organisations and bodies"
+}
+],
+"divisions": [
+{
+"codi": "01",
+"seccio": "A",
+"es": "Agricultura, ganadería, caza y servicios relacionados"
+},
+{
+"codi": "02",
+"seccio": "A",
+"es": "Silvicultura y explotación forestal"
+},
+{
+"codi": "03",
+"seccio": "A",
+"es": "Pesca y acuicultura"
+},
+{
+"codi": "05",
+"seccio": "B",
+"es": "Extracción de antracita, hulla y lignito"
+},
+{
+"codi": "06",
+"seccio": "B",
+"es": "Extracción de crudo de petróleo y gas natural"
+},
+{
+"codi": "07",
+"seccio": "B",
+"es": "Extracción de minerales metálicos"
+},
+{
+"codi": "08",
+"seccio": "B",
+"es": "Otras industrias extractivas"
+},
+{
+"codi": "09",
+"seccio": "B",
+"es": "Actividades de apoyo a las industrias extractivas"
+},
+{
+"codi": "10",
+"seccio": "C",
+"es": "Industria alimentaria"
+},
+{
+"codi": "11",
+"seccio": "C",
+"es": "Fabricación de bebidas"
+},
+{
+"codi": "12",
+"seccio": "C",
+"es": "Industria del tabaco"
+},
+{
+"codi": "13",
+"seccio": "C",
+"es": "Industria textil"
+},
+{
+"codi": "14",
+"seccio": "C",
+"es": "Confección de prendas de vestir"
+},
+{
+"codi": "15",
+"seccio": "C",
+"es": "Industria del cuero y productos relacionados de otros materiales"
+},
+{
+"codi": "16",
+"seccio": "C",
+"es": "Industria de la madera y del corcho, excepto muebles; cestería y espartería"
+},
+{
+"codi": "17",
+"seccio": "C",
+"es": "Industria del papel"
+},
+{
+"codi": "18",
+"seccio": "C",
+"es": "Artes gráficas y reproducción de soportes grabados"
+},
+{
+"codi": "19",
+"seccio": "C",
+"es": "Coquerías y refino de petróleo"
+},
+{
+"codi": "20",
+"seccio": "C",
+"es": "Industria química"
+},
+{
+"codi": "21",
+"seccio": "C",
+"es": "Fabricación de productos farmacéuticos"
+},
+{
+"codi": "22",
+"seccio": "C",
+"es": "Fabricación de productos de caucho y plásticos"
+},
+{
+"codi": "23",
+"seccio": "C",
+"es": "Fabricación de otros productos minerales no metálicos"
+},
+{
+"codi": "24",
+"seccio": "C",
+"es": "Metalurgia"
+},
+{
+"codi": "25",
+"seccio": "C",
+"es": "Fabricación de productos metálicos, excepto maquinaria y equipo"
+},
+{
+"codi": "26",
+"seccio": "C",
+"es": "Fabricación de productos informáticos, electrónicos y ópticos"
+},
+{
+"codi": "27",
+"seccio": "C",
+"es": "Fabricación de material y equipo eléctrico"
+},
+{
+"codi": "28",
+"seccio": "C",
+"es": "Fabricación de maquinaria y equipo n.c.o.p."
+},
+{
+"codi": "29",
+"seccio": "C",
+"es": "Fabricación de vehículos de motor, remolques y semirremolques"
+},
+{
+"codi": "30",
+"seccio": "C",
+"es": "Fabricación de otro material de transporte"
+},
+{
+"codi": "31",
+"seccio": "C",
+"es": "Fabricación de muebles"
+},
+{
+"codi": "32",
+"seccio": "C",
+"es": "Otras industrias manufactureras"
+},
+{
+"codi": "33",
+"seccio": "C",
+"es": "Reparación, mantenimiento e instalación de maquinaria y equipos"
+},
+{
+"codi": "35",
+"seccio": "D",
+"es": "Suministro de energía eléctrica, gas, vapor y aire acondicionado"
+},
+{
+"codi": "36",
+"seccio": "E",
+"es": "Captación, depuración y distribución de agua"
+},
+{
+"codi": "37",
+"seccio": "E",
+"es": "Recogida y tratamiento de aguas residuales"
+},
+{
+"codi": "38",
+"seccio": "E",
+"es": "Actividades de recogida, tratamiento y eliminación de residuos"
+},
+{
+"codi": "39",
+"seccio": "E",
+"es": "Actividades de descontaminación y otros servicios de gestión de residuos"
+},
+{
+"codi": "41",
+"seccio": "F",
+"es": "Construcción de edificios"
+},
+{
+"codi": "42",
+"seccio": "F",
+"es": "Ingeniería civil"
+},
+{
+"codi": "43",
+"seccio": "F",
+"es": "Actividades de construcción especializada"
+},
+{
+"codi": "46",
+"seccio": "G",
+"es": "Comercio al por mayor"
+},
+{
+"codi": "47",
+"seccio": "G",
+"es": "Comercio al por menor"
+},
+{
+"codi": "49",
+"seccio": "H",
+"es": "Transporte terrestre y por tubería"
+},
+{
+"codi": "50",
+"seccio": "H",
+"es": "Transporte marítimo y por vías navegables interiores"
+},
+{
+"codi": "51",
+"seccio": "H",
+"es": "Transporte aéreo"
+},
+{
+"codi": "52",
+"seccio": "H",
+"es": "Depósito, almacenamiento y actividades auxiliares del transporte"
+},
+{
+"codi": "53",
+"seccio": "H",
+"es": "Actividades postales y de mensajería"
+},
+{
+"codi": "55",
+"seccio": "I",
+"es": "Servicios de alojamiento"
+},
+{
+"codi": "56",
+"seccio": "I",
+"es": "Servicios de comidas y bebidas"
+},
+{
+"codi": "58",
+"seccio": "J",
+"es": "Edición"
+},
+{
+"codi": "59",
+"seccio": "J",
+"es": "Producción cinematográficas, de vídeo y de programas de televisión, grabación de sonido y edición musical"
+},
+{
+"codi": "60",
+"seccio": "J",
+"es": "Actividades de programación, radiodifusión, agencias de noticias y otras actividades de distribución de contenidos"
+},
+{
+"codi": "61",
+"seccio": "K",
+"es": "Telecomunicaciones"
+},
+{
+"codi": "62",
+"seccio": "K",
+"es": "Programación, consultoría y otras actividades relacionadas con la informática"
+},
+{
+"codi": "63",
+"seccio": "K",
+"es": "Infraestructura informática, tratamiento de datos, alojamiento de datos y otras actividades de servicios de información"
+},
+{
+"codi": "64",
+"seccio": "L",
+"es": "Servicios financieros, excepto seguros y fondos de pensiones"
+},
+{
+"codi": "65",
+"seccio": "L",
+"es": "Seguros, reaseguros y planes de pensiones, excepto seguridad social obligatoria"
+},
+{
+"codi": "66",
+"seccio": "L",
+"es": "Actividades auxiliares a los servicios financieros y a los seguros"
+},
+{
+"codi": "68",
+"seccio": "M",
+"es": "Actividades inmobiliarias"
+},
+{
+"codi": "69",
+"seccio": "N",
+"es": "Actividades jurídicas y de contabilidad"
+},
+{
+"codi": "70",
+"seccio": "N",
+"es": "Actividades de las sedes centrales y consultoría de gestión empresarial"
+},
+{
+"codi": "71",
+"seccio": "N",
+"es": "Servicios técnicos de arquitectura e ingeniería; ensayos y análisis técnicos"
+},
+{
+"codi": "72",
+"seccio": "N",
+"es": "Investigación y desarrollo"
+},
+{
+"codi": "73",
+"seccio": "N",
+"es": "Actividades de publicidad, estudios de mercado y relaciones públicas"
+},
+{
+"codi": "74",
+"seccio": "N",
+"es": "Otras actividades profesionales, científicas y técnicas"
+},
+{
+"codi": "75",
+"seccio": "N",
+"es": "Actividades veterinarias"
+},
+{
+"codi": "77",
+"seccio": "O",
+"es": "Actividades de alquiler"
+},
+{
+"codi": "78",
+"seccio": "O",
+"es": "Actividades relacionadas con el empleo"
+},
+{
+"codi": "79",
+"seccio": "O",
+"es": "Actividades de agencias de viajes, operadores turísticos, servicios de reservas y actividades relacionadas"
+},
+{
+"codi": "80",
+"seccio": "O",
+"es": "Servicios de investigación y seguridad"
+},
+{
+"codi": "81",
+"seccio": "O",
+"es": "Servicios a edificios y actividades de jardinería"
+},
+{
+"codi": "82",
+"seccio": "O",
+"es": "Actividades administrativas de oficina y otras actividades auxiliares a las empresas"
+},
+{
+"codi": "84",
+"seccio": "P",
+"es": "Administración pública y defensa; seguridad social obligatoria"
+},
+{
+"codi": "85",
+"seccio": "Q",
+"es": "Educación"
+},
+{
+"codi": "86",
+"seccio": "R",
+"es": "Actividades sanitarias"
+},
+{
+"codi": "87",
+"seccio": "R",
+"es": "Asistencia en establecimientos residenciales"
+},
+{
+"codi": "88",
+"seccio": "R",
+"es": "Actividades de servicios sociales sin alojamiento"
+},
+{
+"codi": "90",
+"seccio": "S",
+"es": "Actividades de creación artística y artes escénicas"
+},
+{
+"codi": "91",
+"seccio": "S",
+"es": "Actividades de bibliotecas, archivos, museos y otras actividades culturales"
+},
+{
+"codi": "92",
+"seccio": "S",
+"es": "Actividades de juegos de azar y apuestas"
+},
+{
+"codi": "93",
+"seccio": "S",
+"es": "Actividades deportivas, recreativas y de entretenimiento"
+},
+{
+"codi": "94",
+"seccio": "T",
+"es": "Actividades asociativas"
+},
+{
+"codi": "95",
+"seccio": "T",
+"es": "Reparación y mantenimiento de ordenadores, artículos personales y enseres domésticos y vehículos de motor y motocicletas"
+},
+{
+"codi": "96",
+"seccio": "T",
+"es": "Servicios personales"
+},
+{
+"codi": "97",
+"seccio": "U",
+"es": "Actividades de los hogares como empleadores de personal doméstico"
+},
+{
+"codi": "98",
+"seccio": "U",
+"es": "Actividades de los hogares como productores de bienes y servicios para uso propio"
+},
+{
+"codi": "99",
+"seccio": "V",
+"es": "Actividades de organizaciones y organismos extraterritoriales"
+}
+],
+"classes": [
+{
+"codi": "01.11",
+"seccio": "A",
+"es": "Cultivo de cereales, distintos de arroz, leguminosas y oleaginosas"
+},
+{
+"codi": "01.12",
+"seccio": "A",
+"es": "Cultivo de arroz"
+},
+{
+"codi": "01.13",
+"seccio": "A",
+"es": "Cultivo de hortalizas, raíces y tubérculos"
+},
+{
+"codi": "01.14",
+"seccio": "A",
+"es": "Cultivo de caña de azúcar"
+},
+{
+"codi": "01.15",
+"seccio": "A",
+"es": "Cultivo de tabaco"
+},
+{
+"codi": "01.16",
+"seccio": "A",
+"es": "Cultivo de plantas para fibras textiles"
+},
+{
+"codi": "01.19",
+"seccio": "A",
+"es": "Otros cultivos no perennes"
+},
+{
+"codi": "01.21",
+"seccio": "A",
+"es": "Cultivo de la vid"
+},
+{
+"codi": "01.22",
+"seccio": "A",
+"es": "Cultivo de frutos tropicales y subtropicales"
+},
+{
+"codi": "01.23",
+"seccio": "A",
+"es": "Cultivo de cítricos"
+},
+{
+"codi": "01.24",
+"seccio": "A",
+"es": "Cultivo de frutos con hueso y pepitas"
+},
+{
+"codi": "01.25",
+"seccio": "A",
+"es": "Cultivo de otros árboles y arbustos frutales y frutos secos"
+},
+{
+"codi": "01.26",
+"seccio": "A",
+"es": "Cultivo de frutos oleaginosos"
+},
+{
+"codi": "01.27",
+"seccio": "A",
+"es": "Cultivo de plantas para bebidas"
+},
+{
+"codi": "01.28",
+"seccio": "A",
+"es": "Cultivo de especias, plantas aromáticas, medicinales y farmacéuticas"
+},
+{
+"codi": "01.29",
+"seccio": "A",
+"es": "Otros cultivos perennes"
+},
+{
+"codi": "01.30",
+"seccio": "A",
+"es": "Propagación de plantas"
+},
+{
+"codi": "01.41",
+"seccio": "A",
+"es": "Explotación de ganado bovino para la producción de leche"
+},
+{
+"codi": "01.42",
+"seccio": "A",
+"es": "Explotación de otro ganado bovino y búfalos"
+},
+{
+"codi": "01.43",
+"seccio": "A",
+"es": "Explotación de caballos y otros equinos"
+},
+{
+"codi": "01.44",
+"seccio": "A",
+"es": "Explotación de camellos y otros camélidos"
+},
+{
+"codi": "01.45",
+"seccio": "A",
+"es": "Explotación de ganado ovino y caprino"
+},
+{
+"codi": "01.46",
+"seccio": "A",
+"es": "Explotación de ganado porcino"
+},
+{
+"codi": "01.47",
+"seccio": "A",
+"es": "Avicultura"
+},
+{
+"codi": "01.48",
+"seccio": "A",
+"es": "Otras explotaciones de ganado"
+},
+{
+"codi": "01.50",
+"seccio": "A",
+"es": "Producción agrícola combinada con la producción ganadera"
+},
+{
+"codi": "01.61",
+"seccio": "A",
+"es": "Actividades de apoyo a la agricultura"
+},
+{
+"codi": "01.62",
+"seccio": "A",
+"es": "Actividades de apoyo a la ganadería"
+},
+{
+"codi": "01.63",
+"seccio": "A",
+"es": "Actividades de preparación posterior a la cosecha y tratamiento de semillas para reproducción"
+},
+{
+"codi": "01.70",
+"seccio": "A",
+"es": "Caza, captura de animales y servicios relacionados"
+},
+{
+"codi": "02.10",
+"seccio": "A",
+"es": "Silvicultura y otras actividades forestales"
+},
+{
+"codi": "02.20",
+"seccio": "A",
+"es": "Explotación de la madera"
+},
+{
+"codi": "02.30",
+"seccio": "A",
+"es": "Recolección de productos silvestres, excepto madera"
+},
+{
+"codi": "02.40",
+"seccio": "A",
+"es": "Servicios de apoyo a la silvicultura"
+},
+{
+"codi": "03.11",
+"seccio": "A",
+"es": "Pesca marina"
+},
+{
+"codi": "03.12",
+"seccio": "A",
+"es": "Pesca en agua dulce"
+},
+{
+"codi": "03.21",
+"seccio": "A",
+"es": "Acuicultura marina"
+},
+{
+"codi": "03.22",
+"seccio": "A",
+"es": "Acuicultura en agua dulce"
+},
+{
+"codi": "03.30",
+"seccio": "A",
+"es": "Actividades de apoyo a la pesca y la acuicultura"
+},
+{
+"codi": "05.10",
+"seccio": "B",
+"es": "Extracción de antracita y hulla"
+},
+{
+"codi": "05.20",
+"seccio": "B",
+"es": "Extracción de lignito"
+},
+{
+"codi": "06.10",
+"seccio": "B",
+"es": "Extracción de crudo de petróleo"
+},
+{
+"codi": "06.20",
+"seccio": "B",
+"es": "Extracción de gas natural"
+},
+{
+"codi": "07.10",
+"seccio": "B",
+"es": "Extracción de minerales de hierro"
+},
+{
+"codi": "07.21",
+"seccio": "B",
+"es": "Extracción de minerales de uranio y torio"
+},
+{
+"codi": "07.29",
+"seccio": "B",
+"es": "Extracción de otros minerales metálicos no férreos"
+},
+{
+"codi": "08.11",
+"seccio": "B",
+"es": "Extracción de piedra ornamental, piedra caliza, yeso, pizarra y otras piedras"
+},
+{
+"codi": "08.12",
+"seccio": "B",
+"es": "Extracción de gravas y arenas y extracción de arcilla y caolín"
+},
+{
+"codi": "08.91",
+"seccio": "B",
+"es": "Extracción de minerales para productos químicos y fertilizantes"
+},
+{
+"codi": "08.92",
+"seccio": "B",
+"es": "Extracción de turba"
+},
+{
+"codi": "08.93",
+"seccio": "B",
+"es": "Extracción de sal"
+},
+{
+"codi": "08.99",
+"seccio": "B",
+"es": "Otras industrias extractivas n.c.o.p."
+},
+{
+"codi": "09.10",
+"seccio": "B",
+"es": "Actividades de apoyo a la extracción de petróleo y gas natural"
+},
+{
+"codi": "09.90",
+"seccio": "B",
+"es": "Actividades de apoyo a otras industrias extractivas"
+},
+{
+"codi": "10.11",
+"seccio": "C",
+"es": "Procesado y conservación de carne, excepto volatería"
+},
+{
+"codi": "10.12",
+"seccio": "C",
+"es": "Procesado y conservación de volatería"
+},
+{
+"codi": "10.13",
+"seccio": "C",
+"es": "Elaboración de productos cárnicos y de volatería"
+},
+{
+"codi": "10.20",
+"seccio": "C",
+"es": "Procesado y conservación de pescados, crustáceos y moluscos"
+},
+{
+"codi": "10.31",
+"seccio": "C",
+"es": "Procesado y conservación de patatas"
+},
+{
+"codi": "10.32",
+"seccio": "C",
+"es": "Elaboración de zumos de frutas y hortalizas"
+},
+{
+"codi": "10.39",
+"seccio": "C",
+"es": "Otro procesado y conservación de frutas y hortalizas"
+},
+{
+"codi": "10.41",
+"seccio": "C",
+"es": "Fabricación de aceites y grasas"
+},
+{
+"codi": "10.42",
+"seccio": "C",
+"es": "Fabricación de margarina y grasas comestibles similares"
+},
+{
+"codi": "10.51",
+"seccio": "C",
+"es": "Fabricación de productos lácteos"
+},
+{
+"codi": "10.52",
+"seccio": "C",
+"es": "Fabricación de helados y otros hielos comestibles"
+},
+{
+"codi": "10.61",
+"seccio": "C",
+"es": "Fabricación de productos de molinería"
+},
+{
+"codi": "10.62",
+"seccio": "C",
+"es": "Fabricación de almidones y productos amiláceos"
+},
+{
+"codi": "10.71",
+"seccio": "C",
+"es": "Fabricación de pan y de productos frescos de panadería y pastelería"
+},
+{
+"codi": "10.72",
+"seccio": "C",
+"es": "Fabricación de galletas y productos de panadería y pastelería de larga duración"
+},
+{
+"codi": "10.73",
+"seccio": "C",
+"es": "Elaboración de pastas alimenticias"
+},
+{
+"codi": "10.81",
+"seccio": "C",
+"es": "Fabricación de azúcar"
+},
+{
+"codi": "10.82",
+"seccio": "C",
+"es": "Fabricación de cacao, chocolate y productos de confitería"
+},
+{
+"codi": "10.83",
+"seccio": "C",
+"es": "Elaboración de café, té e infusiones"
+},
+{
+"codi": "10.84",
+"seccio": "C",
+"es": "Elaboración de especias, salsas y condimentos"
+},
+{
+"codi": "10.85",
+"seccio": "C",
+"es": "Elaboración de platos y comidas preparados"
+},
+{
+"codi": "10.86",
+"seccio": "C",
+"es": "Elaboración de preparados alimenticios homogeneizados y alimentos dietéticos"
+},
+{
+"codi": "10.89",
+"seccio": "C",
+"es": "Elaboración de otros productos alimenticios n.c.o.p."
+},
+{
+"codi": "10.91",
+"seccio": "C",
+"es": "Fabricación de productos para la alimentación de animales de granja"
+},
+{
+"codi": "10.92",
+"seccio": "C",
+"es": "Fabricación de productos para la alimentación de animales de compañía"
+},
+{
+"codi": "11.01",
+"seccio": "C",
+"es": "Destilación, rectificación y mezcla de bebidas alcohólicas"
+},
+{
+"codi": "11.02",
+"seccio": "C",
+"es": "Elaboración de vinos"
+},
+{
+"codi": "11.03",
+"seccio": "C",
+"es": "Elaboración de sidra y otras bebidas fermentadas a partir de frutas"
+},
+{
+"codi": "11.04",
+"seccio": "C",
+"es": "Elaboración de otras bebidas no destiladas, procedentes de la fermentación"
+},
+{
+"codi": "11.05",
+"seccio": "C",
+"es": "Fabricación de cerveza"
+},
+{
+"codi": "11.06",
+"seccio": "C",
+"es": "Fabricación de malta"
+},
+{
+"codi": "11.07",
+"seccio": "C",
+"es": "Fabricación de bebidas no alcohólicas y aguas embotelladas"
+},
+{
+"codi": "12.00",
+"seccio": "C",
+"es": "Industria del tabaco"
+},
+{
+"codi": "13.10",
+"seccio": "C",
+"es": "Preparación e hilado de fibras textiles"
+},
+{
+"codi": "13.20",
+"seccio": "C",
+"es": "Fabricación de tejidos textiles"
+},
+{
+"codi": "13.30",
+"seccio": "C",
+"es": "Acabado de textiles"
+},
+{
+"codi": "13.91",
+"seccio": "C",
+"es": "Fabricación de tejidos de punto"
+},
+{
+"codi": "13.92",
+"seccio": "C",
+"es": "Fabricación de textiles para el hogar y artículos de decoración confeccionados"
+},
+{
+"codi": "13.93",
+"seccio": "C",
+"es": "Fabricación de alfombras y moquetas"
+},
+{
+"codi": "13.94",
+"seccio": "C",
+"es": "Fabricación de cuerdas, cordeles, bramantes y redes"
+},
+{
+"codi": "13.95",
+"seccio": "C",
+"es": "Fabricación de telas no tejidas y artículos confeccionados con ellas"
+},
+{
+"codi": "13.96",
+"seccio": "C",
+"es": "Fabricación de otros productos textiles de uso técnico e industrial"
+},
+{
+"codi": "13.99",
+"seccio": "C",
+"es": "Fabricación de otros productos textiles n.c.o.p."
+},
+{
+"codi": "14.10",
+"seccio": "C",
+"es": "Confección de prendas de vestir de punto"
+},
+{
+"codi": "14.21",
+"seccio": "C",
+"es": "Confección de prendas de vestir exteriores"
+},
+{
+"codi": "14.22",
+"seccio": "C",
+"es": "Confección de ropa interior"
+},
+{
+"codi": "14.23",
+"seccio": "C",
+"es": "Confección de ropa de trabajo"
+},
+{
+"codi": "14.24",
+"seccio": "C",
+"es": "Confección de prendas de vestir de cuero y peletería"
+},
+{
+"codi": "14.29",
+"seccio": "C",
+"es": "Confección de otras prendas de vestir y accesorios n.c.o.p."
+},
+{
+"codi": "15.11",
+"seccio": "C",
+"es": "Preparación, curtido y teñido cueros y pieles"
+},
+{
+"codi": "15.12",
+"seccio": "C",
+"es": "Fabricación de artículos de marroquinería, viaje y de guarnicionería y talabartería de cualquier material"
+},
+{
+"codi": "15.20",
+"seccio": "C",
+"es": "Fabricación de calzado"
+},
+{
+"codi": "16.11",
+"seccio": "C",
+"es": "Aserrado y cepillado de la madera"
+},
+{
+"codi": "16.12",
+"seccio": "C",
+"es": "Transformación y acabado de la madera"
+},
+{
+"codi": "16.21",
+"seccio": "C",
+"es": "Fabricación de chapas y tableros de madera"
+},
+{
+"codi": "16.22",
+"seccio": "C",
+"es": "Fabricación de suelos de madera ensamblados"
+},
+{
+"codi": "16.23",
+"seccio": "C",
+"es": "Fabricación de otras estructuras de madera y piezas de carpintería y ebanistería para la construcción"
+},
+{
+"codi": "16.24",
+"seccio": "C",
+"es": "Fabricación de envases y embalajes de madera"
+},
+{
+"codi": "16.25",
+"seccio": "C",
+"es": "Fabricación de puertas y ventanas de madera"
+},
+{
+"codi": "16.26",
+"seccio": "C",
+"es": "Fabricación de combustibles sólidos a partir de biomasa vegetal"
+},
+{
+"codi": "16.27",
+"seccio": "C",
+"es": "Acabado de productos de madera"
+},
+{
+"codi": "16.28",
+"seccio": "C",
+"es": "Fabricación de otros productos de madera; artículos de corcho, cestería y espartería"
+},
+{
+"codi": "17.11",
+"seccio": "C",
+"es": "Fabricación de pasta papelera"
+},
+{
+"codi": "17.12",
+"seccio": "C",
+"es": "Fabricación de papel y cartón"
+},
+{
+"codi": "17.21",
+"seccio": "C",
+"es": "Fabricación de papel y cartón ondulados, y de envases y embalajes de papel y cartón"
+},
+{
+"codi": "17.22",
+"seccio": "C",
+"es": "Fabricación de artículos de papel y cartón para uso doméstico, sanitario e higiénico"
+},
+{
+"codi": "17.23",
+"seccio": "C",
+"es": "Fabricación de artículos de papelería"
+},
+{
+"codi": "17.24",
+"seccio": "C",
+"es": "Fabricación de papeles pintados"
+},
+{
+"codi": "17.25",
+"seccio": "C",
+"es": "Fabricación de otros artículos de papel y cartón"
+},
+{
+"codi": "18.11",
+"seccio": "C",
+"es": "Impresión de periódicos"
+},
+{
+"codi": "18.12",
+"seccio": "C",
+"es": "Otras actividades de impresión y artes gráficas"
+},
+{
+"codi": "18.13",
+"seccio": "C",
+"es": "Servicios de preimpresión y preparación de soportes"
+},
+{
+"codi": "18.14",
+"seccio": "C",
+"es": "Encuadernación y servicios relacionados"
+},
+{
+"codi": "18.20",
+"seccio": "C",
+"es": "Reproducción de soportes grabados"
+},
+{
+"codi": "19.10",
+"seccio": "C",
+"es": "Coquerías"
+},
+{
+"codi": "19.20",
+"seccio": "C",
+"es": "Refino de petróleo y de combustibles fósiles"
+},
+{
+"codi": "20.11",
+"seccio": "C",
+"es": "Fabricación de gases industriales"
+},
+{
+"codi": "20.12",
+"seccio": "C",
+"es": "Fabricación de colorantes y pigmentos"
+},
+{
+"codi": "20.13",
+"seccio": "C",
+"es": "Fabricación de otros productos básicos de química inorgánica"
+},
+{
+"codi": "20.14",
+"seccio": "C",
+"es": "Fabricación de otros productos básicos de química orgánica"
+},
+{
+"codi": "20.15",
+"seccio": "C",
+"es": "Fabricación de fertilizantes y compuestos nitrogenados"
+},
+{
+"codi": "20.16",
+"seccio": "C",
+"es": "Fabricación de plásticos en formas primarias"
+},
+{
+"codi": "20.17",
+"seccio": "C",
+"es": "Fabricación de caucho sintético en formas primarias"
+},
+{
+"codi": "20.20",
+"seccio": "C",
+"es": "Fabricación de pesticidas, desinfectantes y otros productos agroquímicos"
+},
+{
+"codi": "20.30",
+"seccio": "C",
+"es": "Fabricación de pinturas, barnices y revestimientos similares; tintas de imprenta y masillas"
+},
+{
+"codi": "20.41",
+"seccio": "C",
+"es": "Fabricación de jabones, detergentes y otros artículos de limpieza y abrillantamiento"
+},
+{
+"codi": "20.42",
+"seccio": "C",
+"es": "Fabricación de productos de perfumería y cosmética"
+},
+{
+"codi": "20.51",
+"seccio": "C",
+"es": "Fabricación de biocombustibles líquidos"
+},
+{
+"codi": "20.59",
+"seccio": "C",
+"es": "Fabricación de otros productos químicos n.c.o.p."
+},
+{
+"codi": "20.60",
+"seccio": "C",
+"es": "Fabricación de fibras artificiales y sintéticas"
+},
+{
+"codi": "21.10",
+"seccio": "C",
+"es": "Fabricación de productos farmacéuticos de base"
+},
+{
+"codi": "21.20",
+"seccio": "C",
+"es": "Fabricación de especialidades farmacéuticas"
+},
+{
+"codi": "22.11",
+"seccio": "C",
+"es": "Fabricación, recauchutado y reconstrucción de neumáticos de caucho y fabricación de cámaras"
+},
+{
+"codi": "22.12",
+"seccio": "C",
+"es": "Fabricación de otros productos de caucho"
+},
+{
+"codi": "22.21",
+"seccio": "C",
+"es": "Fabricación de placas, hojas, tubos y perfiles de plástico"
+},
+{
+"codi": "22.22",
+"seccio": "C",
+"es": "Fabricación de envases y embalajes de plástico"
+},
+{
+"codi": "22.23",
+"seccio": "C",
+"es": "Fabricación de puertas y ventanas de plástico"
+},
+{
+"codi": "22.24",
+"seccio": "C",
+"es": "Fabricación de productos de plástico para la construcción"
+},
+{
+"codi": "22.25",
+"seccio": "C",
+"es": "Transformación y acabado de productos de plástico"
+},
+{
+"codi": "22.26",
+"seccio": "C",
+"es": "Fabricación de otros productos de plástico"
+},
+{
+"codi": "23.11",
+"seccio": "C",
+"es": "Fabricación de vidrio plano"
+},
+{
+"codi": "23.12",
+"seccio": "C",
+"es": "Manipulado y transformación de vidrio plano"
+},
+{
+"codi": "23.13",
+"seccio": "C",
+"es": "Fabricación de vidrio hueco"
+},
+{
+"codi": "23.14",
+"seccio": "C",
+"es": "Fabricación de fibra de vidrio"
+},
+{
+"codi": "23.15",
+"seccio": "C",
+"es": "Fabricación y manipulado de otro vidrio, incluido el vidrio técnico"
+},
+{
+"codi": "23.20",
+"seccio": "C",
+"es": "Fabricación de productos cerámicos refractarios"
+},
+{
+"codi": "23.31",
+"seccio": "C",
+"es": "Fabricación de azulejos y baldosas de cerámica"
+},
+{
+"codi": "23.32",
+"seccio": "C",
+"es": "Fabricación de ladrillos, tejas y productos de tierras cocidas para la construcción"
+},
+{
+"codi": "23.41",
+"seccio": "C",
+"es": "Fabricación de artículos cerámicos de uso doméstico y ornamental"
+},
+{
+"codi": "23.42",
+"seccio": "C",
+"es": "Fabricación de aparatos sanitarios cerámicos"
+},
+{
+"codi": "23.43",
+"seccio": "C",
+"es": "Fabricación de aisladores y piezas aislantes de material cerámico"
+},
+{
+"codi": "23.44",
+"seccio": "C",
+"es": "Fabricación de otros productos cerámicos de uso técnico"
+},
+{
+"codi": "23.45",
+"seccio": "C",
+"es": "Fabricación de otros productos cerámicos"
+},
+{
+"codi": "23.51",
+"seccio": "C",
+"es": "Fabricación de cemento"
+},
+{
+"codi": "23.52",
+"seccio": "C",
+"es": "Fabricación de cal y yeso"
+},
+{
+"codi": "23.61",
+"seccio": "C",
+"es": "Fabricación de elementos de hormigón para la construcción"
+},
+{
+"codi": "23.62",
+"seccio": "C",
+"es": "Fabricación de elementos de yeso para la construcción"
+},
+{
+"codi": "23.63",
+"seccio": "C",
+"es": "Fabricación de hormigón fresco"
+},
+{
+"codi": "23.64",
+"seccio": "C",
+"es": "Fabricación de mortero"
+},
+{
+"codi": "23.65",
+"seccio": "C",
+"es": "Fabricación de fibrocemento"
+},
+{
+"codi": "23.66",
+"seccio": "C",
+"es": "Fabricación de otros productos de hormigón, yeso y cemento"
+},
+{
+"codi": "23.70",
+"seccio": "C",
+"es": "Corte, tallado y acabado de la piedra"
+},
+{
+"codi": "23.91",
+"seccio": "C",
+"es": "Fabricación de productos abrasivos"
+},
+{
+"codi": "23.99",
+"seccio": "C",
+"es": "Fabricación de otros productos minerales no metálicos n.c.o.p."
+},
+{
+"codi": "24.10",
+"seccio": "C",
+"es": "Fabricación de productos básicos de hierro, acero y ferroaleaciones"
+},
+{
+"codi": "24.20",
+"seccio": "C",
+"es": "Fabricación de tubos, tuberías, perfiles huecos y sus accesorios, de acero"
+},
+{
+"codi": "24.31",
+"seccio": "C",
+"es": "Estirado en frío"
+},
+{
+"codi": "24.32",
+"seccio": "C",
+"es": "Laminado en frío"
+},
+{
+"codi": "24.33",
+"seccio": "C",
+"es": "Producción de perfiles en frío por conformación con plegado"
+},
+{
+"codi": "24.34",
+"seccio": "C",
+"es": "Trefilado en frío"
+},
+{
+"codi": "24.41",
+"seccio": "C",
+"es": "Producción de metales preciosos"
+},
+{
+"codi": "24.42",
+"seccio": "C",
+"es": "Producción de aluminio"
+},
+{
+"codi": "24.43",
+"seccio": "C",
+"es": "Producción de plomo, zinc y estaño"
+},
+{
+"codi": "24.44",
+"seccio": "C",
+"es": "Producción de cobre"
+},
+{
+"codi": "24.45",
+"seccio": "C",
+"es": "Producción de otros metales no férreos"
+},
+{
+"codi": "24.46",
+"seccio": "C",
+"es": "Procesamiento de combustibles nucleares"
+},
+{
+"codi": "24.51",
+"seccio": "C",
+"es": "Fundición de hierro"
+},
+{
+"codi": "24.52",
+"seccio": "C",
+"es": "Fundición de acero"
+},
+{
+"codi": "24.53",
+"seccio": "C",
+"es": "Fundición de metales ligeros"
+},
+{
+"codi": "24.54",
+"seccio": "C",
+"es": "Fundición de otros metales no férreos"
+},
+{
+"codi": "25.11",
+"seccio": "C",
+"es": "Fabricación de estructuras metálicas y sus componentes"
+},
+{
+"codi": "25.12",
+"seccio": "C",
+"es": "Fabricación de puertas y ventanas de metal"
+},
+{
+"codi": "25.21",
+"seccio": "C",
+"es": "Fabricación de radiadores, generadores de vapor y calderas para calefacción central"
+},
+{
+"codi": "25.22",
+"seccio": "C",
+"es": "Fabricación de otras cisternas, grandes depósitos y contenedores de metal"
+},
+{
+"codi": "25.30",
+"seccio": "C",
+"es": "Fabricación de armas y municiones"
+},
+{
+"codi": "25.40",
+"seccio": "C",
+"es": "Forja y modelado de metales y metalurgia de polvos"
+},
+{
+"codi": "25.51",
+"seccio": "C",
+"es": "Revestimiento de metales"
+},
+{
+"codi": "25.52",
+"seccio": "C",
+"es": "Tratamiento térmico de metales"
+},
+{
+"codi": "25.53",
+"seccio": "C",
+"es": "Mecanizado de metales"
+},
+{
+"codi": "25.61",
+"seccio": "C",
+"es": "Fabricación de artículos de cuchillería y cubertería"
+},
+{
+"codi": "25.62",
+"seccio": "C",
+"es": "Fabricación de cerraduras y herrajes"
+},
+{
+"codi": "25.63",
+"seccio": "C",
+"es": "Fabricación de herramientas"
+},
+{
+"codi": "25.91",
+"seccio": "C",
+"es": "Fabricación de bidones y toneles de hierro o acero"
+},
+{
+"codi": "25.92",
+"seccio": "C",
+"es": "Fabricación de envases y embalajes metálicos ligeros"
+},
+{
+"codi": "25.93",
+"seccio": "C",
+"es": "Fabricación de productos de alambre, cadenas y muelles"
+},
+{
+"codi": "25.94",
+"seccio": "C",
+"es": "Fabricación de pernos y productos de tornillería"
+},
+{
+"codi": "25.99",
+"seccio": "C",
+"es": "Fabricación de otros productos metálicos n.c.o.p."
+},
+{
+"codi": "26.11",
+"seccio": "C",
+"es": "Fabricación de componentes electrónicos"
+},
+{
+"codi": "26.12",
+"seccio": "C",
+"es": "Fabricación de circuitos impresos ensamblados"
+},
+{
+"codi": "26.20",
+"seccio": "C",
+"es": "Fabricación de ordenadores y equipos periféricos"
+},
+{
+"codi": "26.30",
+"seccio": "C",
+"es": "Fabricación de equipos de telecomunicaciones"
+},
+{
+"codi": "26.40",
+"seccio": "C",
+"es": "Fabricación de productos electrónicos de consumo"
+},
+{
+"codi": "26.51",
+"seccio": "C",
+"es": "Fabricación de instrumentos y aparatos de medida, verificación y navegación"
+},
+{
+"codi": "26.52",
+"seccio": "C",
+"es": "Fabricación de relojes"
+},
+{
+"codi": "26.60",
+"seccio": "C",
+"es": "Fabricación de equipos de radiación, electromédicos y electroterapéuticos"
+},
+{
+"codi": "26.70",
+"seccio": "C",
+"es": "Fabricación de instrumentos ópticos, soportes magnéticos y ópticos y equipos fotográficos"
+},
+{
+"codi": "27.11",
+"seccio": "C",
+"es": "Fabricación de motores, generadores y transformadores eléctricos"
+},
+{
+"codi": "27.12",
+"seccio": "C",
+"es": "Fabricación de aparatos de distribución y control eléctrico"
+},
+{
+"codi": "27.20",
+"seccio": "C",
+"es": "Fabricación de pilas y acumuladores eléctricos"
+},
+{
+"codi": "27.31",
+"seccio": "C",
+"es": "Fabricación de cables de fibra óptica"
+},
+{
+"codi": "27.32",
+"seccio": "C",
+"es": "Fabricación de otros hilos y cables electrónicos y eléctricos"
+},
+{
+"codi": "27.33",
+"seccio": "C",
+"es": "Fabricación de dispositivos de cableado"
+},
+{
+"codi": "27.40",
+"seccio": "C",
+"es": "Fabricación de equipos de iluminación"
+},
+{
+"codi": "27.51",
+"seccio": "C",
+"es": "Fabricación de electrodomésticos"
+},
+{
+"codi": "27.52",
+"seccio": "C",
+"es": "Fabricación de aparatos domésticos no eléctricos"
+},
+{
+"codi": "27.90",
+"seccio": "C",
+"es": "Fabricación de otro material y equipo eléctrico"
+},
+{
+"codi": "28.11",
+"seccio": "C",
+"es": "Fabricación de motores y turbinas, excepto los destinados a aeronaves, vehículos automóviles y ciclomotores"
+},
+{
+"codi": "28.12",
+"seccio": "C",
+"es": "Fabricación de equipos de transmisión hidráulica y neumática"
+},
+{
+"codi": "28.13",
+"seccio": "C",
+"es": "Fabricación de otras bombas y compresores"
+},
+{
+"codi": "28.14",
+"seccio": "C",
+"es": "Fabricación de otra grifería y válvulas"
+},
+{
+"codi": "28.15",
+"seccio": "C",
+"es": "Fabricación de cojinetes, engranajes y órganos mecánicos de transmisión"
+},
+{
+"codi": "28.21",
+"seccio": "C",
+"es": "Fabricación de hornos, quemadores y equipos de calefacción doméstica permanente"
+},
+{
+"codi": "28.22",
+"seccio": "C",
+"es": "Fabricación de maquinaria de elevación y manipulación"
+},
+{
+"codi": "28.23",
+"seccio": "C",
+"es": "Fabricación de máquinas y equipos de oficina, excepto equipos informáticos"
+},
+{
+"codi": "28.24",
+"seccio": "C",
+"es": "Fabricación de herramientas eléctricas manuales"
+},
+{
+"codi": "28.25",
+"seccio": "C",
+"es": "Fabricación de equipos de aire acondicionado no domésticos"
+},
+{
+"codi": "28.29",
+"seccio": "C",
+"es": "Fabricación de otra maquinaria de uso general n.c.o.p."
+},
+{
+"codi": "28.30",
+"seccio": "C",
+"es": "Fabricación de maquinaria agraria y forestal"
+},
+{
+"codi": "28.41",
+"seccio": "C",
+"es": "Fabricación de maquinaria para el conformado de metales y de máquinas herramienta para trabajar el metal"
+},
+{
+"codi": "28.42",
+"seccio": "C",
+"es": "Fabricación de otras máquinas herramienta"
+},
+{
+"codi": "28.91",
+"seccio": "C",
+"es": "Fabricación de maquinaria para la industria metalúrgica"
+},
+{
+"codi": "28.92",
+"seccio": "C",
+"es": "Fabricación de maquinaria para las industrias extractivas y de la construcción"
+},
+{
+"codi": "28.93",
+"seccio": "C",
+"es": "Fabricación de maquinaria para la industria de la alimentación, bebidas y tabaco"
+},
+{
+"codi": "28.94",
+"seccio": "C",
+"es": "Fabricación de maquinaria para las industrias textil, de la confección y del cuero"
+},
+{
+"codi": "28.95",
+"seccio": "C",
+"es": "Fabricación de maquinaria para la industria del papel y del cartón"
+},
+{
+"codi": "28.96",
+"seccio": "C",
+"es": "Fabricación de maquinaria para las industrias del plástico y del caucho"
+},
+{
+"codi": "28.97",
+"seccio": "C",
+"es": "Fabricación de maquinaria de fabricación aditiva"
+},
+{
+"codi": "28.99",
+"seccio": "C",
+"es": "Fabricación de otra maquinaria para usos específicos n.c.o.p."
+},
+{
+"codi": "29.10",
+"seccio": "C",
+"es": "Fabricación de vehículos de motor"
+},
+{
+"codi": "29.20",
+"seccio": "C",
+"es": "Fabricación de carrocerías para vehículos de motor; fabricación de remolques y semirremolques"
+},
+{
+"codi": "29.31",
+"seccio": "C",
+"es": "Fabricación de equipos eléctricos y electrónicos para vehículos de motor"
+},
+{
+"codi": "29.32",
+"seccio": "C",
+"es": "Fabricación de otros componentes, piezas y accesorios para vehículos de motor"
+},
+{
+"codi": "30.11",
+"seccio": "C",
+"es": "Construcción de buques civiles y estructuras flotantes"
+},
+{
+"codi": "30.12",
+"seccio": "C",
+"es": "Construcción de embarcaciones de recreo y deporte"
+},
+{
+"codi": "30.13",
+"seccio": "C",
+"es": "Construcción de embarcaciones y buques militares"
+},
+{
+"codi": "30.20",
+"seccio": "C",
+"es": "Fabricación de locomotoras y material ferroviario"
+},
+{
+"codi": "30.31",
+"seccio": "C",
+"es": "Construcción aeronáutica y espacial civil y su maquinaria"
+},
+{
+"codi": "30.32",
+"seccio": "C",
+"es": "Construcción aeronáutica y espacial militar y su maquinaria"
+},
+{
+"codi": "30.40",
+"seccio": "C",
+"es": "Fabricación de vehículos militares de combate"
+},
+{
+"codi": "30.91",
+"seccio": "C",
+"es": "Fabricación de motocicletas"
+},
+{
+"codi": "30.92",
+"seccio": "C",
+"es": "Fabricación de bicicletas y de vehículos para personas con discapacidad"
+},
+{
+"codi": "30.99",
+"seccio": "C",
+"es": "Fabricación de otro material de transporte n.c.o.p."
+},
+{
+"codi": "31.00",
+"seccio": "C",
+"es": "Fabricación de muebles"
+},
+{
+"codi": "32.11",
+"seccio": "C",
+"es": "Fabricación de monedas"
+},
+{
+"codi": "32.12",
+"seccio": "C",
+"es": "Fabricación de artículos de joyería y artículos similares"
+},
+{
+"codi": "32.13",
+"seccio": "C",
+"es": "Fabricación de artículos de bisutería y artículos similares"
+},
+{
+"codi": "32.20",
+"seccio": "C",
+"es": "Fabricación de instrumentos musicales"
+},
+{
+"codi": "32.30",
+"seccio": "C",
+"es": "Fabricación de artículos de deporte"
+},
+{
+"codi": "32.40",
+"seccio": "C",
+"es": "Fabricación de juegos y juguetes"
+},
+{
+"codi": "32.50",
+"seccio": "C",
+"es": "Fabricación de instrumentos y suministros médicos y odontológicos"
+},
+{
+"codi": "32.91",
+"seccio": "C",
+"es": "Fabricación de escobas, brochas y cepillos"
+},
+{
+"codi": "32.99",
+"seccio": "C",
+"es": "Otras industrias manufactureras n.c.o.p."
+},
+{
+"codi": "33.11",
+"seccio": "C",
+"es": "Reparación y mantenimiento de productos metálicos"
+},
+{
+"codi": "33.12",
+"seccio": "C",
+"es": "Reparación y mantenimiento de maquinaria"
+},
+{
+"codi": "33.13",
+"seccio": "C",
+"es": "Reparación y mantenimiento de equipos electrónicos y ópticos"
+},
+{
+"codi": "33.14",
+"seccio": "C",
+"es": "Reparación y mantenimiento de equipos eléctricos"
+},
+{
+"codi": "33.15",
+"seccio": "C",
+"es": "Reparación y mantenimiento de buques y embarcaciones civiles"
+},
+{
+"codi": "33.16",
+"seccio": "C",
+"es": "Reparación y mantenimiento aeronáutico y espacial civil"
+},
+{
+"codi": "33.17",
+"seccio": "C",
+"es": "Reparación y mantenimiento de otro material de transporte civil"
+},
+{
+"codi": "33.18",
+"seccio": "C",
+"es": "Reparación y mantenimiento de vehículos de combate, buques, embarcaciones, vehículos aéreos y espaciales militares"
+},
+{
+"codi": "33.19",
+"seccio": "C",
+"es": "Reparación y mantenimiento de otros equipos"
+},
+{
+"codi": "33.20",
+"seccio": "C",
+"es": "Instalación de máquinas y equipos industriales"
+},
+{
+"codi": "35.11",
+"seccio": "D",
+"es": "Producción de energía eléctrica a partir de fuentes no renovables"
+},
+{
+"codi": "35.12",
+"seccio": "D",
+"es": "Producción de energía eléctrica a partir de fuentes renovables"
+},
+{
+"codi": "35.13",
+"seccio": "D",
+"es": "Transporte de energía eléctrica"
+},
+{
+"codi": "35.14",
+"seccio": "D",
+"es": "Distribución de energía eléctrica"
+},
+{
+"codi": "35.15",
+"seccio": "D",
+"es": "Comercio de energía eléctrica"
+},
+{
+"codi": "35.16",
+"seccio": "D",
+"es": "Almacenamiento de energía eléctrica"
+},
+{
+"codi": "35.21",
+"seccio": "D",
+"es": "Producción de gas"
+},
+{
+"codi": "35.22",
+"seccio": "D",
+"es": "Distribución por tubería de combustibles gaseosos"
+},
+{
+"codi": "35.23",
+"seccio": "D",
+"es": "Comercio de gas por tuberías"
+},
+{
+"codi": "35.24",
+"seccio": "D",
+"es": "Almacenamiento de gas como parte de los servicios de suministro de la red"
+},
+{
+"codi": "35.30",
+"seccio": "D",
+"es": "Suministro de vapor y aire acondicionado"
+},
+{
+"codi": "35.40",
+"seccio": "D",
+"es": "Actividades de intermediación de energía eléctrica y gas natural"
+},
+{
+"codi": "36.00",
+"seccio": "E",
+"es": "Captación, depuración y distribución de agua"
+},
+{
+"codi": "37.00",
+"seccio": "E",
+"es": "Recogida y tratamiento de aguas residuales"
+},
+{
+"codi": "38.11",
+"seccio": "E",
+"es": "Recogida de residuos no peligrosos"
+},
+{
+"codi": "38.12",
+"seccio": "E",
+"es": "Recogida de residuos peligrosos"
+},
+{
+"codi": "38.21",
+"seccio": "E",
+"es": "Valorización de materiales"
+},
+{
+"codi": "38.22",
+"seccio": "E",
+"es": "Valorización energética"
+},
+{
+"codi": "38.23",
+"seccio": "E",
+"es": "Otra valorización de residuos"
+},
+{
+"codi": "38.31",
+"seccio": "E",
+"es": "Incineración sin valorización energética"
+},
+{
+"codi": "38.32",
+"seccio": "E",
+"es": "Depósito en vertederos o almacenamiento permanente"
+},
+{
+"codi": "38.33",
+"seccio": "E",
+"es": "Otra eliminación de residuos"
+},
+{
+"codi": "39.00",
+"seccio": "E",
+"es": "Actividades de descontaminación y otros servicios de gestión de residuos"
+},
+{
+"codi": "41.00",
+"seccio": "F",
+"es": "Construcción de edificios"
+},
+{
+"codi": "42.11",
+"seccio": "F",
+"es": "Construcción de carreteras y autopistas"
+},
+{
+"codi": "42.12",
+"seccio": "F",
+"es": "Construcción de vías férreas de superficie y subterráneas"
+},
+{
+"codi": "42.13",
+"seccio": "F",
+"es": "Construcción de puentes y túneles"
+},
+{
+"codi": "42.21",
+"seccio": "F",
+"es": "Construcción de redes para fluidos"
+},
+{
+"codi": "42.22",
+"seccio": "F",
+"es": "Construcción de redes eléctricas y de telecomunicaciones"
+},
+{
+"codi": "42.91",
+"seccio": "F",
+"es": "Obras hidráulicas"
+},
+{
+"codi": "42.99",
+"seccio": "F",
+"es": "Construcción de otros proyectos de ingeniería civil n.c.o.p."
+},
+{
+"codi": "43.11",
+"seccio": "F",
+"es": "Demolición"
+},
+{
+"codi": "43.12",
+"seccio": "F",
+"es": "Preparación de terrenos"
+},
+{
+"codi": "43.13",
+"seccio": "F",
+"es": "Perforaciones y sondeos"
+},
+{
+"codi": "43.21",
+"seccio": "F",
+"es": "Instalaciones eléctricas"
+},
+{
+"codi": "43.22",
+"seccio": "F",
+"es": "Fontanería, instalación de sistemas de calefacción y aire acondicionado"
+},
+{
+"codi": "43.23",
+"seccio": "F",
+"es": "Instalación de aislamiento"
+},
+{
+"codi": "43.24",
+"seccio": "F",
+"es": "Otras instalaciones en obras de construcción"
+},
+{
+"codi": "43.31",
+"seccio": "F",
+"es": "Revocamiento"
+},
+{
+"codi": "43.32",
+"seccio": "F",
+"es": "Instalación de carpintería"
+},
+{
+"codi": "43.33",
+"seccio": "F",
+"es": "Revestimiento de suelos y paredes"
+},
+{
+"codi": "43.34",
+"seccio": "F",
+"es": "Pintura y acristalamiento"
+},
+{
+"codi": "43.35",
+"seccio": "F",
+"es": "Otros acabados de edificios"
+},
+{
+"codi": "43.41",
+"seccio": "F",
+"es": "Construcción de cubiertas"
+},
+{
+"codi": "43.42",
+"seccio": "F",
+"es": "Otras actividades de construcción especializada en la construcción de edificios"
+},
+{
+"codi": "43.50",
+"seccio": "F",
+"es": "Actividades de construcción especializada en ingeniería civil"
+},
+{
+"codi": "43.60",
+"seccio": "F",
+"es": "Actividades de intermediación para servicios de construcción especializada"
+},
+{
+"codi": "43.91",
+"seccio": "F",
+"es": "Actividades de mampostería y albañilería"
+},
+{
+"codi": "43.99",
+"seccio": "F",
+"es": "Otras actividades de construcción especializada n.c.o.p."
+},
+{
+"codi": "46.11",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de materias primas agrarias, animales vivos, materias primas textiles y productos semielaborados"
+},
+{
+"codi": "46.12",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de combustibles, minerales, metales y productos químicos industriales"
+},
+{
+"codi": "46.13",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de la madera y materiales de construcción"
+},
+{
+"codi": "46.14",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de maquinaria, equipo industrial, embarcaciones y aeronaves"
+},
+{
+"codi": "46.15",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de muebles, artículos para el hogar y ferretería"
+},
+{
+"codi": "46.16",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de textiles, prendas de vestir, peletería, calzado y artículos de cuero"
+},
+{
+"codi": "46.17",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de productos alimenticios, bebidas y tabaco"
+},
+{
+"codi": "46.18",
+"seccio": "G",
+"es": "Actividades de intermediarios del comercio al por mayor de otros productos específicos"
+},
+{
+"codi": "46.19",
+"seccio": "G",
+"es": "Actividades de los agentes del comercio al por mayor no especializado"
+},
+{
+"codi": "46.21",
+"seccio": "G",
+"es": "Comercio al por mayor de cereales, tabaco en rama, simientes y alimentos para animales"
+},
+{
+"codi": "46.22",
+"seccio": "G",
+"es": "Comercio al por mayor de flores y plantas"
+},
+{
+"codi": "46.23",
+"seccio": "G",
+"es": "Comercio al por mayor de animales vivos"
+},
+{
+"codi": "46.24",
+"seccio": "G",
+"es": "Comercio al por mayor de cueros y pieles"
+},
+{
+"codi": "46.31",
+"seccio": "G",
+"es": "Comercio al por mayor de frutas y hortalizas"
+},
+{
+"codi": "46.32",
+"seccio": "G",
+"es": "Comercio al por mayor de carne, productos cárnicos, pescado y productos del pescado"
+},
+{
+"codi": "46.33",
+"seccio": "G",
+"es": "Comercio al por mayor de productos lácteos, huevos, aceites y grasas comestibles"
+},
+{
+"codi": "46.34",
+"seccio": "G",
+"es": "Comercio al por mayor de bebidas"
+},
+{
+"codi": "46.35",
+"seccio": "G",
+"es": "Comercio al por mayor de productos del tabaco"
+},
+{
+"codi": "46.36",
+"seccio": "G",
+"es": "Comercio al por mayor de azúcar, chocolate y confitería"
+},
+{
+"codi": "46.37",
+"seccio": "G",
+"es": "Comercio al por mayor de café, té, cacao y especias"
+},
+{
+"codi": "46.38",
+"seccio": "G",
+"es": "Comercio al por mayor de otros alimentos"
+},
+{
+"codi": "46.39",
+"seccio": "G",
+"es": "Comercio al por mayor, no especializado, de productos alimenticios, bebidas y tabaco"
+},
+{
+"codi": "46.41",
+"seccio": "G",
+"es": "Comercio al por mayor de textiles"
+},
+{
+"codi": "46.42",
+"seccio": "G",
+"es": "Comercio al por mayor de prendas de vestir y calzado"
+},
+{
+"codi": "46.43",
+"seccio": "G",
+"es": "Comercio al por mayor de aparatos electrodomésticos"
+},
+{
+"codi": "46.44",
+"seccio": "G",
+"es": "Comercio al por mayor de porcelana, cristalería y artículos de limpieza"
+},
+{
+"codi": "46.45",
+"seccio": "G",
+"es": "Comercio al por mayor de productos de perfumería y cosmética"
+},
+{
+"codi": "46.46",
+"seccio": "G",
+"es": "Comercio al por mayor de productos farmacéuticos y médicos"
+},
+{
+"codi": "46.47",
+"seccio": "G",
+"es": "Comercio al por mayor de mobiliario para el hogar, la oficina y los establecimientos comerciales, alfombras y aparatos de iluminación"
+},
+{
+"codi": "46.48",
+"seccio": "G",
+"es": "Comercio al por mayor de artículos de relojería y joyería"
+},
+{
+"codi": "46.49",
+"seccio": "G",
+"es": "Comercio al por mayor de otros artículos de uso doméstico"
+},
+{
+"codi": "46.50",
+"seccio": "G",
+"es": "Comercio al por mayor de equipos para las tecnologías de la información y las comunicaciones"
+},
+{
+"codi": "46.61",
+"seccio": "G",
+"es": "Comercio al por mayor de maquinaria, equipos y suministros agrícolas"
+},
+{
+"codi": "46.62",
+"seccio": "G",
+"es": "Comercio al por mayor de máquinas herramienta"
+},
+{
+"codi": "46.63",
+"seccio": "G",
+"es": "Comercio al por mayor de maquinaria para la minería, la construcción y la ingeniería civil"
+},
+{
+"codi": "46.64",
+"seccio": "G",
+"es": "Comercio al por mayor de otra maquinaria y equipo"
+},
+{
+"codi": "46.71",
+"seccio": "G",
+"es": "Comercio al por mayor de vehículos de motor"
+},
+{
+"codi": "46.72",
+"seccio": "G",
+"es": "Comercio al por mayor de repuestos y accesorios de vehículos de motor"
+},
+{
+"codi": "46.73",
+"seccio": "G",
+"es": "Comercio al por mayor de motocicletas, y repuestos y accesorios de motocicletas"
+},
+{
+"codi": "46.81",
+"seccio": "G",
+"es": "Comercio al por mayor de combustibles sólidos, líquidos y gaseosos, y productos similares"
+},
+{
+"codi": "46.82",
+"seccio": "G",
+"es": "Comercio al por mayor de metales y minerales metálicos"
+},
+{
+"codi": "46.83",
+"seccio": "G",
+"es": "Comercio al por mayor de madera, materiales de construcción y aparatos sanitarios"
+},
+{
+"codi": "46.84",
+"seccio": "G",
+"es": "Comercio al por mayor de equipos y suministros de ferretería, fontanería y calefacción"
+},
+{
+"codi": "46.85",
+"seccio": "G",
+"es": "Comercio al por mayor de productos químicos"
+},
+{
+"codi": "46.86",
+"seccio": "G",
+"es": "Comercio al por mayor de otros productos semielaborados"
+},
+{
+"codi": "46.87",
+"seccio": "G",
+"es": "Comercio al por mayor de chatarra y productos de desecho"
+},
+{
+"codi": "46.89",
+"seccio": "G",
+"es": "Otro comercio al por mayor especializado n.c.o.p."
+},
+{
+"codi": "46.90",
+"seccio": "G",
+"es": "Comercio al por mayor no especializado"
+},
+{
+"codi": "47.11",
+"seccio": "G",
+"es": "Comercio al por menor no especializado predominantemente de productos alimenticios, bebidas y tabaco"
+},
+{
+"codi": "47.12",
+"seccio": "G",
+"es": "Otros comercio al por menor no especializado"
+},
+{
+"codi": "47.21",
+"seccio": "G",
+"es": "Comercio al por menor de frutas y verduras"
+},
+{
+"codi": "47.22",
+"seccio": "G",
+"es": "Comercio al por menor de carne y productos cárnicos"
+},
+{
+"codi": "47.23",
+"seccio": "G",
+"es": "Comercio al por menor de pescados y mariscos"
+},
+{
+"codi": "47.24",
+"seccio": "G",
+"es": "Comercio al por menor de pan, productos de panadería y confitería"
+},
+{
+"codi": "47.25",
+"seccio": "G",
+"es": "Comercio al por menor de bebidas"
+},
+{
+"codi": "47.26",
+"seccio": "G",
+"es": "Comercio al por menor de productos de tabaco"
+},
+{
+"codi": "47.27",
+"seccio": "G",
+"es": "Comercio al por menor de otros productos alimenticios"
+},
+{
+"codi": "47.30",
+"seccio": "G",
+"es": "Comercio al por menor de combustible para la automoción"
+},
+{
+"codi": "47.40",
+"seccio": "G",
+"es": "Comercio al por menor de equipos para las tecnologías de la información y las comunicaciones"
+},
+{
+"codi": "47.51",
+"seccio": "G",
+"es": "Comercio al por menor de textiles"
+},
+{
+"codi": "47.52",
+"seccio": "G",
+"es": "Comercio al por menor de ferretería, materiales de construcción, pinturas y vidrio"
+},
+{
+"codi": "47.53",
+"seccio": "G",
+"es": "Comercio al por menor de alfombras, moquetas y revestimientos de paredes y suelos"
+},
+{
+"codi": "47.54",
+"seccio": "G",
+"es": "Comercio al por menor de aparatos electrodomésticos"
+},
+{
+"codi": "47.55",
+"seccio": "G",
+"es": "Comercio al por menor de muebles, aparatos de iluminación, vajilla y otros artículos de uso doméstico"
+},
+{
+"codi": "47.61",
+"seccio": "G",
+"es": "Comercio al por menor de libros"
+},
+{
+"codi": "47.62",
+"seccio": "G",
+"es": "Comercio al por menor de periódicos y otras publicaciones periódicas y artículos de papelería"
+},
+{
+"codi": "47.63",
+"seccio": "G",
+"es": "Comercio al por menor de artículos deportivos"
+},
+{
+"codi": "47.64",
+"seccio": "G",
+"es": "Comercio al por menor de juegos y juguetes"
+},
+{
+"codi": "47.69",
+"seccio": "G",
+"es": "Comercio al por menor de artículos culturales y recreativos n.c.o.p."
+},
+{
+"codi": "47.71",
+"seccio": "G",
+"es": "Comercio al por menor de prendas de vestir"
+},
+{
+"codi": "47.72",
+"seccio": "G",
+"es": "Comercio al por menor de calzado y artículos de cuero"
+},
+{
+"codi": "47.73",
+"seccio": "G",
+"es": "Comercio al por menor de productos farmacéuticos"
+},
+{
+"codi": "47.74",
+"seccio": "G",
+"es": "Comercio al por menor de artículos médicos y ortopédicos"
+},
+{
+"codi": "47.75",
+"seccio": "G",
+"es": "Comercio al por menor de productos de cosmética e higiene"
+},
+{
+"codi": "47.76",
+"seccio": "G",
+"es": "Comercio al por menor de flores, plantas, fertilizantes, animales de compañía y alimentos para estos"
+},
+{
+"codi": "47.77",
+"seccio": "G",
+"es": "Comercio al por menor de artículos de relojería y joyería"
+},
+{
+"codi": "47.78",
+"seccio": "G",
+"es": "Comercio al por menor de otros productos nuevos"
+},
+{
+"codi": "47.79",
+"seccio": "G",
+"es": "Comercio al por menor de artículos de segunda mano"
+},
+{
+"codi": "47.81",
+"seccio": "G",
+"es": "Comercio al por menor de vehículos de motor"
+},
+{
+"codi": "47.82",
+"seccio": "G",
+"es": "Comercio al por menor de repuestos y accesorios de vehículos de motor"
+},
+{
+"codi": "47.83",
+"seccio": "G",
+"es": "Comercio al por menor de motocicletas, y repuestos y accesorios de motocicletas"
+},
+{
+"codi": "47.91",
+"seccio": "G",
+"es": "Actividades de servicios de intermediación para el comercio al por menor no especializado"
+},
+{
+"codi": "47.92",
+"seccio": "G",
+"es": "Actividades de servicios de intermediación para el comercio al por menor especializado"
+},
+{
+"codi": "49.11",
+"seccio": "H",
+"es": "Transporte pesado de pasajeros por ferrocarril"
+},
+{
+"codi": "49.12",
+"seccio": "H",
+"es": "Otro transporte de pasajeros por ferrocarril"
+},
+{
+"codi": "49.20",
+"seccio": "H",
+"es": "Transporte de mercancías por ferrocarril"
+},
+{
+"codi": "49.31",
+"seccio": "H",
+"es": "Transporte regular de pasajeros por carretera"
+},
+{
+"codi": "49.32",
+"seccio": "H",
+"es": "Transporte no regular de pasajeros por carretera"
+},
+{
+"codi": "49.33",
+"seccio": "H",
+"es": "Servicios de transporte de pasajeros bajo demanda en vehículos con conductor"
+},
+{
+"codi": "49.34",
+"seccio": "H",
+"es": "Transporte de pasajeros en teleféricos y remontes"
+},
+{
+"codi": "49.39",
+"seccio": "H",
+"es": "Otros tipos de transporte terrestre de pasajeros n.c.o.p."
+},
+{
+"codi": "49.41",
+"seccio": "H",
+"es": "Transporte de mercancías por carretera"
+},
+{
+"codi": "49.42",
+"seccio": "H",
+"es": "Servicios de mudanzas"
+},
+{
+"codi": "49.50",
+"seccio": "H",
+"es": "Transporte por tubería"
+},
+{
+"codi": "50.10",
+"seccio": "H",
+"es": "Transporte marítimo de pasajeros"
+},
+{
+"codi": "50.20",
+"seccio": "H",
+"es": "Transporte marítimo de mercancías"
+},
+{
+"codi": "50.30",
+"seccio": "H",
+"es": "Transporte de pasajeros por vías navegables interiores"
+},
+{
+"codi": "50.40",
+"seccio": "H",
+"es": "Transporte de mercancías por vías navegables interiores"
+},
+{
+"codi": "51.10",
+"seccio": "H",
+"es": "Transporte aéreo de pasajeros"
+},
+{
+"codi": "51.21",
+"seccio": "H",
+"es": "Transporte aéreo de mercancías"
+},
+{
+"codi": "51.22",
+"seccio": "H",
+"es": "Transporte espacial"
+},
+{
+"codi": "52.10",
+"seccio": "H",
+"es": "Depósito y almacenamiento"
+},
+{
+"codi": "52.21",
+"seccio": "H",
+"es": "Actividades auxiliares del transporte terrestre"
+},
+{
+"codi": "52.22",
+"seccio": "H",
+"es": "Actividades auxiliares del transporte marítimo y por vías navegables interiores"
+},
+{
+"codi": "52.23",
+"seccio": "H",
+"es": "Actividades auxiliares del transporte aéreo"
+},
+{
+"codi": "52.24",
+"seccio": "H",
+"es": "Manipulación de mercancías"
+},
+{
+"codi": "52.25",
+"seccio": "H",
+"es": "Actividades de servicios logísticos"
+},
+{
+"codi": "52.26",
+"seccio": "H",
+"es": "Otras actividades auxiliares del transporte"
+},
+{
+"codi": "52.31",
+"seccio": "H",
+"es": "Actividades de intermediación para el transporte de mercancías"
+},
+{
+"codi": "52.32",
+"seccio": "H",
+"es": "Actividades de intermediación para el transporte de pasajeros"
+},
+{
+"codi": "53.10",
+"seccio": "H",
+"es": "Actividades postales sometidas a la obligación del servicio universal"
+},
+{
+"codi": "53.20",
+"seccio": "H",
+"es": "Otras actividades postales y de mensajería"
+},
+{
+"codi": "53.30",
+"seccio": "H",
+"es": "Servicios de intermediación para las actividades postales y de mensajería"
+},
+{
+"codi": "55.10",
+"seccio": "I",
+"es": "Hoteles y alojamientos similares"
+},
+{
+"codi": "55.20",
+"seccio": "I",
+"es": "Alojamientos turísticos y otros alojamientos de corta estancia"
+},
+{
+"codi": "55.30",
+"seccio": "I",
+"es": "Campings y aparcamientos para caravanas"
+},
+{
+"codi": "55.40",
+"seccio": "I",
+"es": "Actividades de intermediación para servicios de alojamiento"
+},
+{
+"codi": "55.90",
+"seccio": "I",
+"es": "Otros servicios de alojamiento"
+},
+{
+"codi": "56.11",
+"seccio": "I",
+"es": "Restaurantes"
+},
+{
+"codi": "56.12",
+"seccio": "I",
+"es": "Puestos de comidas"
+},
+{
+"codi": "56.21",
+"seccio": "I",
+"es": "Servicios ocasionales de catering"
+},
+{
+"codi": "56.22",
+"seccio": "I",
+"es": "Servicios regulares de catering y otros servicios de comidas"
+},
+{
+"codi": "56.30",
+"seccio": "I",
+"es": "Servicios de bebidas"
+},
+{
+"codi": "56.40",
+"seccio": "I",
+"es": "Actividades de intermediación para los servicios de comidas y bebidas"
+},
+{
+"codi": "58.11",
+"seccio": "J",
+"es": "Edición de libros"
+},
+{
+"codi": "58.12",
+"seccio": "J",
+"es": "Edición de periódicos"
+},
+{
+"codi": "58.13",
+"seccio": "J",
+"es": "Edición de revistas"
+},
+{
+"codi": "58.19",
+"seccio": "J",
+"es": "Otras actividades editoriales, excepto la edición de programas informáticos"
+},
+{
+"codi": "58.21",
+"seccio": "J",
+"es": "Edición de videojuegos"
+},
+{
+"codi": "58.29",
+"seccio": "J",
+"es": "Edición de otros programas informáticos"
+},
+{
+"codi": "59.11",
+"seccio": "J",
+"es": "Actividades de producción cinematográficas, de vídeo y de programas de televisión"
+},
+{
+"codi": "59.12",
+"seccio": "J",
+"es": "Actividades de posproducción cinematográfica, de vídeo y de programas de televisión"
+},
+{
+"codi": "59.13",
+"seccio": "J",
+"es": "Actividades de distribución cinematográfica y de vídeo"
+},
+{
+"codi": "59.14",
+"seccio": "J",
+"es": "Actividades de exhibición cinematográfica"
+},
+{
+"codi": "59.20",
+"seccio": "J",
+"es": "Actividades de grabación de sonido y edición musical"
+},
+{
+"codi": "60.10",
+"seccio": "J",
+"es": "Actividades de radiodifusión y distribución de audio"
+},
+{
+"codi": "60.20",
+"seccio": "J",
+"es": "Actividades de programación de televisión, emisión y distribución de vídeos"
+},
+{
+"codi": "60.31",
+"seccio": "J",
+"es": "Actividades de las agencias de noticias"
+},
+{
+"codi": "60.39",
+"seccio": "J",
+"es": "Otras actividades de distribución de contenidos"
+},
+{
+"codi": "61.10",
+"seccio": "K",
+"es": "Actividades de telecomunicación por cable, inalámbricas y por satélite"
+},
+{
+"codi": "61.20",
+"seccio": "K",
+"es": "Actividades de reventa de telecomunicaciones y servicios de intermediación para telecomunicaciones"
+},
+{
+"codi": "61.90",
+"seccio": "K",
+"es": "Otras actividades de telecomunicaciones"
+},
+{
+"codi": "62.10",
+"seccio": "K",
+"es": "Actividades de programación informática"
+},
+{
+"codi": "62.20",
+"seccio": "K",
+"es": "Actividades de consultoría informática y gestión de instalaciones informáticas"
+},
+{
+"codi": "62.90",
+"seccio": "K",
+"es": "Otros servicios relacionados con las tecnologías de la información y la informática"
+},
+{
+"codi": "63.10",
+"seccio": "K",
+"es": "Infraestructura informática, tratamiento de datos, alojamiento de datos y actividades relacionadas"
+},
+{
+"codi": "63.91",
+"seccio": "K",
+"es": "Actividades de portales de búsqueda en la web"
+},
+{
+"codi": "63.92",
+"seccio": "K",
+"es": "Otros servicios de información"
+},
+{
+"codi": "64.11",
+"seccio": "L",
+"es": "Banca central"
+},
+{
+"codi": "64.19",
+"seccio": "L",
+"es": "Otra intermediación monetaria"
+},
+{
+"codi": "64.21",
+"seccio": "L",
+"es": "Actividades de sociedades de cartera"
+},
+{
+"codi": "64.22",
+"seccio": "L",
+"es": "Actividades de sociedades instrumentales de financiación"
+},
+{
+"codi": "64.31",
+"seccio": "L",
+"es": "Actividades de los fondos de inversión monetarios y no monetarios"
+},
+{
+"codi": "64.32",
+"seccio": "L",
+"es": "Actividades de cuentas fiduciarias, patrimoniales y de agencia"
+},
+{
+"codi": "64.91",
+"seccio": "L",
+"es": "Arrendamiento financiero"
+},
+{
+"codi": "64.92",
+"seccio": "L",
+"es": "Otras actividades crediticias"
+},
+{
+"codi": "64.99",
+"seccio": "L",
+"es": "Otros servicios financieros, excepto seguros y fondos de pensiones n.c.o.p."
+},
+{
+"codi": "65.11",
+"seccio": "L",
+"es": "Seguros de vida"
+},
+{
+"codi": "65.12",
+"seccio": "L",
+"es": "Seguros distintos de los seguros de vida"
+},
+{
+"codi": "65.20",
+"seccio": "L",
+"es": "Reaseguros"
+},
+{
+"codi": "65.30",
+"seccio": "L",
+"es": "Fondos de pensiones"
+},
+{
+"codi": "66.11",
+"seccio": "L",
+"es": "Administración de mercados financieros"
+},
+{
+"codi": "66.12",
+"seccio": "L",
+"es": "Actividades de intermediación en operaciones con valores y otros activos"
+},
+{
+"codi": "66.19",
+"seccio": "L",
+"es": "Otras actividades auxiliares a los servicios financieros, excepto seguros y fondos de pensiones"
+},
+{
+"codi": "66.21",
+"seccio": "L",
+"es": "Evaluación de riesgos y daños"
+},
+{
+"codi": "66.22",
+"seccio": "L",
+"es": "Actividades de agentes y corredores de seguros"
+},
+{
+"codi": "66.29",
+"seccio": "L",
+"es": "Actividades auxiliares a seguros y fondos de pensiones n.c.o.p."
+},
+{
+"codi": "66.30",
+"seccio": "L",
+"es": "Actividades de gestión de fondos"
+},
+{
+"codi": "68.11",
+"seccio": "M",
+"es": "Compraventa de bienes inmobiliarios por cuenta propia"
+},
+{
+"codi": "68.12",
+"seccio": "M",
+"es": "Promoción inmobiliaria"
+},
+{
+"codi": "68.20",
+"seccio": "M",
+"es": "Alquiler de bienes inmobiliarios por cuenta propia"
+},
+{
+"codi": "68.31",
+"seccio": "M",
+"es": "Servicios de intermediación para actividades inmobiliarias"
+},
+{
+"codi": "68.32",
+"seccio": "M",
+"es": "Otras actividades inmobiliarias por cuenta de terceros"
+},
+{
+"codi": "69.10",
+"seccio": "N",
+"es": "Actividades jurídicas"
+},
+{
+"codi": "69.20",
+"seccio": "N",
+"es": "Actividades de contabilidad, teneduría de libros, auditoría y asesoría fiscal"
+},
+{
+"codi": "70.10",
+"seccio": "N",
+"es": "Actividades de las sedes centrales"
+},
+{
+"codi": "70.20",
+"seccio": "N",
+"es": "Otras actividades de consultoría de gestión empresarial"
+},
+{
+"codi": "71.11",
+"seccio": "N",
+"es": "Servicios técnicos de arquitectura"
+},
+{
+"codi": "71.12",
+"seccio": "N",
+"es": "Servicios técnicos de ingeniería y otras actividades relacionadas con el asesoramiento técnico"
+},
+{
+"codi": "71.20",
+"seccio": "N",
+"es": "Ensayos y análisis técnicos"
+},
+{
+"codi": "72.10",
+"seccio": "N",
+"es": "Investigación y desarrollo experimental en ciencias naturales y técnicas"
+},
+{
+"codi": "72.20",
+"seccio": "N",
+"es": "Investigación y desarrollo experimental en ciencias sociales y humanidades"
+},
+{
+"codi": "73.11",
+"seccio": "N",
+"es": "Actividades de las agencias de publicidad"
+},
+{
+"codi": "73.12",
+"seccio": "N",
+"es": "Servicios de representación de medios de comunicación"
+},
+{
+"codi": "73.20",
+"seccio": "N",
+"es": "Estudios de mercado y realización de encuestas de opinión pública"
+},
+{
+"codi": "73.30",
+"seccio": "N",
+"es": "Relaciones públicas y comunicación"
+},
+{
+"codi": "74.11",
+"seccio": "N",
+"es": "Actividades de diseño de productos industriales y moda"
+},
+{
+"codi": "74.12",
+"seccio": "N",
+"es": "Actividades de diseño gráfico y de comunicación visual"
+},
+{
+"codi": "74.13",
+"seccio": "N",
+"es": "Actividades de diseño de interiores"
+},
+{
+"codi": "74.14",
+"seccio": "N",
+"es": "Otras actividades de diseño especializado"
+},
+{
+"codi": "74.20",
+"seccio": "N",
+"es": "Actividades de fotografía"
+},
+{
+"codi": "74.30",
+"seccio": "N",
+"es": "Actividades de traducción e interpretación"
+},
+{
+"codi": "74.91",
+"seccio": "N",
+"es": "Actividades de los agentes de patentes y de los servicios de comercialización"
+},
+{
+"codi": "74.99",
+"seccio": "N",
+"es": "Todas las demás actividades profesionales, científicas y técnicas n.c.o.p."
+},
+{
+"codi": "75.00",
+"seccio": "N",
+"es": "Actividades veterinarias"
+},
+{
+"codi": "77.11",
+"seccio": "O",
+"es": "Alquiler de automóviles y vehículos de motor ligeros"
+},
+{
+"codi": "77.12",
+"seccio": "O",
+"es": "Alquiler de camiones"
+},
+{
+"codi": "77.21",
+"seccio": "O",
+"es": "Alquiler de artículos de ocio y deportivos"
+},
+{
+"codi": "77.22",
+"seccio": "O",
+"es": "Alquiler de efectos personales y artículos de uso doméstico"
+},
+{
+"codi": "77.31",
+"seccio": "O",
+"es": "Alquiler de maquinaria y equipo de uso agrícola"
+},
+{
+"codi": "77.32",
+"seccio": "O",
+"es": "Alquiler de maquinaria y equipo para la construcción e ingeniería civil"
+},
+{
+"codi": "77.33",
+"seccio": "O",
+"es": "Alquiler de maquinaria y equipo de oficina y ordenadores"
+},
+{
+"codi": "77.34",
+"seccio": "O",
+"es": "Alquiler de medios de navegación"
+},
+{
+"codi": "77.35",
+"seccio": "O",
+"es": "Alquiler de medios de transporte aéreo"
+},
+{
+"codi": "77.39",
+"seccio": "O",
+"es": "Alquiler de otra maquinaria, equipos y bienes materiales n.c.o.p."
+},
+{
+"codi": "77.40",
+"seccio": "O",
+"es": "Arrendamiento de la propiedad intelectual y productos similares, excepto obras protegidas por derechos de autor"
+},
+{
+"codi": "77.51",
+"seccio": "O",
+"es": "Servicios de intermediación para el alquiler de automóviles, autocaravanas y remolques"
+},
+{
+"codi": "77.52",
+"seccio": "O",
+"es": "Servicios de intermediación para el alquiler de otros bienes tangibles y de activos intangibles no financieros"
+},
+{
+"codi": "78.10",
+"seccio": "O",
+"es": "Actividades de las agencias de colocación"
+},
+{
+"codi": "78.20",
+"seccio": "O",
+"es": "Actividades de las empresas de trabajo temporal y otras provisiones de recursos humanos"
+},
+{
+"codi": "79.11",
+"seccio": "O",
+"es": "Actividades de las agencias de viajes"
+},
+{
+"codi": "79.12",
+"seccio": "O",
+"es": "Actividades de los operadores turísticos"
+},
+{
+"codi": "79.90",
+"seccio": "O",
+"es": "Otros servicios de reservas y actividades relacionadas"
+},
+{
+"codi": "80.01",
+"seccio": "O",
+"es": "Servicios de investigación y seguridad privados"
+},
+{
+"codi": "80.09",
+"seccio": "O",
+"es": "Servicios de seguridad n.c.o.p."
+},
+{
+"codi": "81.10",
+"seccio": "O",
+"es": "Servicios integrales a edificios e instalaciones"
+},
+{
+"codi": "81.21",
+"seccio": "O",
+"es": "Limpieza general de edificios"
+},
+{
+"codi": "81.22",
+"seccio": "O",
+"es": "Otras actividades de limpieza industrial y de edificios"
+},
+{
+"codi": "81.23",
+"seccio": "O",
+"es": "Otras actividades de limpieza"
+},
+{
+"codi": "81.30",
+"seccio": "O",
+"es": "Actividades de jardinería"
+},
+{
+"codi": "82.10",
+"seccio": "O",
+"es": "Actividades administrativas y auxiliares de oficina"
+},
+{
+"codi": "82.20",
+"seccio": "O",
+"es": "Actividades de los centros de llamadas"
+},
+{
+"codi": "82.30",
+"seccio": "O",
+"es": "Organización de convenciones y ferias de muestras"
+},
+{
+"codi": "82.40",
+"seccio": "O",
+"es": "Actividades de intermediación para servicios de apoyo a las empresas n.c.o.p."
+},
+{
+"codi": "82.91",
+"seccio": "O",
+"es": "Actividades de las agencias de cobros y de las oficinas de crédito"
+},
+{
+"codi": "82.92",
+"seccio": "O",
+"es": "Actividades de envasado y empaquetado"
+},
+{
+"codi": "82.99",
+"seccio": "O",
+"es": "Otras actividades de apoyo a las empresas n.c.o.p."
+},
+{
+"codi": "84.11",
+"seccio": "P",
+"es": "Actividades generales de la administración pública"
+},
+{
+"codi": "84.12",
+"seccio": "P",
+"es": "Regulación de los servicios sanitarios, educativos y culturales, y otros servicios sociales"
+},
+{
+"codi": "84.13",
+"seccio": "P",
+"es": "Regulación de la actividad económica y contribución a su mayor eficiencia"
+},
+{
+"codi": "84.21",
+"seccio": "P",
+"es": "Asuntos exteriores"
+},
+{
+"codi": "84.22",
+"seccio": "P",
+"es": "Defensa"
+},
+{
+"codi": "84.23",
+"seccio": "P",
+"es": "Justicia"
+},
+{
+"codi": "84.24",
+"seccio": "P",
+"es": "Orden público y seguridad"
+},
+{
+"codi": "84.25",
+"seccio": "P",
+"es": "Servicios de protección de incendios"
+},
+{
+"codi": "84.30",
+"seccio": "P",
+"es": "Seguridad social obligatoria"
+},
+{
+"codi": "85.10",
+"seccio": "Q",
+"es": "Educación preprimaria"
+},
+{
+"codi": "85.20",
+"seccio": "Q",
+"es": "Educación primaria"
+},
+{
+"codi": "85.31",
+"seccio": "Q",
+"es": "Educación secundaria general"
+},
+{
+"codi": "85.32",
+"seccio": "Q",
+"es": "Educación secundaria profesional"
+},
+{
+"codi": "85.33",
+"seccio": "Q",
+"es": "Educación postsecundaria no terciaria"
+},
+{
+"codi": "85.40",
+"seccio": "Q",
+"es": "Educación terciaria"
+},
+{
+"codi": "85.51",
+"seccio": "Q",
+"es": "Educación deportiva y recreativa"
+},
+{
+"codi": "85.52",
+"seccio": "Q",
+"es": "Educación cultural"
+},
+{
+"codi": "85.53",
+"seccio": "Q",
+"es": "Actividades de las escuelas de conducción y pilotaje"
+},
+{
+"codi": "85.59",
+"seccio": "Q",
+"es": "Otra educación n.c.o.p."
+},
+{
+"codi": "85.61",
+"seccio": "Q",
+"es": "Actividades de servicios de intermediación para cursos y tutores"
+},
+{
+"codi": "85.69",
+"seccio": "Q",
+"es": "Actividades auxiliares a la educación n.c.o.p."
+},
+{
+"codi": "86.10",
+"seccio": "R",
+"es": "Actividades hospitalarias"
+},
+{
+"codi": "86.21",
+"seccio": "R",
+"es": "Actividades de medicina general"
+},
+{
+"codi": "86.22",
+"seccio": "R",
+"es": "Actividades de medicina especializada"
+},
+{
+"codi": "86.23",
+"seccio": "R",
+"es": "Actividades odontológicas"
+},
+{
+"codi": "86.91",
+"seccio": "R",
+"es": "Servicios de diagnóstico por la imagen y actividades de laboratorio médico"
+},
+{
+"codi": "86.92",
+"seccio": "R",
+"es": "Transporte de pacientes en ambulancia"
+},
+{
+"codi": "86.93",
+"seccio": "R",
+"es": "Actividades de psicólogos y psicoterapeutas, excepto médicos"
+},
+{
+"codi": "86.94",
+"seccio": "R",
+"es": "Actividades de enfermería y enfermería obstétrica"
+},
+{
+"codi": "86.95",
+"seccio": "R",
+"es": "Actividades de fisioterapia"
+},
+{
+"codi": "86.96",
+"seccio": "R",
+"es": "Actividades de medicina tradicional, complementaria y alternativa"
+},
+{
+"codi": "86.97",
+"seccio": "R",
+"es": "Actividades de intermediación para servicios médicos, odontológicos y otros servicios sanitarios"
+},
+{
+"codi": "86.99",
+"seccio": "R",
+"es": "Otras actividades sanitarias n.c.o.p."
+},
+{
+"codi": "87.10",
+"seccio": "R",
+"es": "Cuidados de enfermería en establecimientos residenciales"
+},
+{
+"codi": "87.20",
+"seccio": "R",
+"es": "Asistencia en establecimientos residenciales para personas que padecen una enfermedad mental o una drogodependencia o que han recibido un diagnóstico al respecto"
+},
+{
+"codi": "87.30",
+"seccio": "R",
+"es": "Asistencia en establecimientos residenciales para personas mayores o con discapacidad física"
+},
+{
+"codi": "87.91",
+"seccio": "R",
+"es": "Servicios de intermediación para actividades de asistencia en establecimientos residenciales"
+},
+{
+"codi": "87.99",
+"seccio": "R",
+"es": "Otro tipo de asistencia en establecimientos residenciales n.c.o.p."
+},
+{
+"codi": "88.10",
+"seccio": "R",
+"es": "Actividades de servicios sociales sin alojamiento para personas mayores o con discapacidad"
+},
+{
+"codi": "88.91",
+"seccio": "R",
+"es": "Actividades de cuidado diurno de niños"
+},
+{
+"codi": "88.99",
+"seccio": "R",
+"es": "Otras actividades de servicios sociales sin alojamiento n.c.o.p."
+},
+{
+"codi": "90.11",
+"seccio": "S",
+"es": "Actividades de creación literaria y composición musical"
+},
+{
+"codi": "90.12",
+"seccio": "S",
+"es": "Actividades de creación de artes visuales"
+},
+{
+"codi": "90.13",
+"seccio": "S",
+"es": "Otras actividades de creación artística"
+},
+{
+"codi": "90.20",
+"seccio": "S",
+"es": "Actividades de artes escénicas"
+},
+{
+"codi": "90.31",
+"seccio": "S",
+"es": "Explotación de instalaciones y lugares artísticos"
+},
+{
+"codi": "90.39",
+"seccio": "S",
+"es": "Otras actividades de apoyo a las artes y las artes escénicas"
+},
+{
+"codi": "91.11",
+"seccio": "S",
+"es": "Actividades de bibliotecas"
+},
+{
+"codi": "91.12",
+"seccio": "S",
+"es": "Actividades de archivos"
+},
+{
+"codi": "91.21",
+"seccio": "S",
+"es": "Actividades de museos y de colecciones"
+},
+{
+"codi": "91.22",
+"seccio": "S",
+"es": "Actividades de sitios históricos y monumentos"
+},
+{
+"codi": "91.30",
+"seccio": "S",
+"es": "Conservación, restauración y otras actividades de apoyo al patrimonio cultural"
+},
+{
+"codi": "91.41",
+"seccio": "S",
+"es": "Actividades de los jardines botánicos y los parques zoológicos"
+},
+{
+"codi": "91.42",
+"seccio": "S",
+"es": "Actividades de las reservas naturales"
+},
+{
+"codi": "92.00",
+"seccio": "S",
+"es": "Actividades de juegos de azar y apuestas"
+},
+{
+"codi": "93.11",
+"seccio": "S",
+"es": "Gestión de instalaciones deportivas"
+},
+{
+"codi": "93.12",
+"seccio": "S",
+"es": "Actividades de los clubes deportivos"
+},
+{
+"codi": "93.13",
+"seccio": "S",
+"es": "Actividades de los centros deportivos"
+},
+{
+"codi": "93.19",
+"seccio": "S",
+"es": "Actividades deportivas n.c.o.p."
+},
+{
+"codi": "93.21",
+"seccio": "S",
+"es": "Actividades de los parques de atracciones y los parques temáticos"
+},
+{
+"codi": "93.29",
+"seccio": "S",
+"es": "Actividades recreativas y de entretenimiento n.c.o.p."
+},
+{
+"codi": "94.11",
+"seccio": "T",
+"es": "Actividades de organizaciones empresariales y patronales"
+},
+{
+"codi": "94.12",
+"seccio": "T",
+"es": "Actividades de organizaciones profesionales"
+},
+{
+"codi": "94.20",
+"seccio": "T",
+"es": "Actividades sindicales"
+},
+{
+"codi": "94.91",
+"seccio": "T",
+"es": "Actividades de organizaciones religiosas"
+},
+{
+"codi": "94.92",
+"seccio": "T",
+"es": "Actividades de organizaciones políticas"
+},
+{
+"codi": "94.99",
+"seccio": "T",
+"es": "Otras actividades asociativas n.c.o.p."
+},
+{
+"codi": "95.10",
+"seccio": "T",
+"es": "Reparación y mantenimiento de ordenadores y equipos de comunicación"
+},
+{
+"codi": "95.21",
+"seccio": "T",
+"es": "Reparación y mantenimiento de aparatos electrónicos de consumo"
+},
+{
+"codi": "95.22",
+"seccio": "T",
+"es": "Reparación y mantenimiento de electrodomésticos y de equipos para el hogar y el jardín"
+},
+{
+"codi": "95.23",
+"seccio": "T",
+"es": "Reparación y mantenimiento de calzado y artículos de cuero"
+},
+{
+"codi": "95.24",
+"seccio": "T",
+"es": "Reparación y mantenimiento de muebles y artículos de menaje"
+},
+{
+"codi": "95.25",
+"seccio": "T",
+"es": "Reparación y mantenimiento de relojes y joyería"
+},
+{
+"codi": "95.29",
+"seccio": "T",
+"es": "Reparación y mantenimiento de efectos personales y artículos de uso doméstico n.c.o.p."
+},
+{
+"codi": "95.31",
+"seccio": "T",
+"es": "Reparación y mantenimiento de vehículos de motor"
+},
+{
+"codi": "95.32",
+"seccio": "T",
+"es": "Reparación y mantenimiento del motocicletas"
+},
+{
+"codi": "95.40",
+"seccio": "T",
+"es": "Actividades de intermediación para reparación y mantenimiento de ordenadores, artículos personales y enseres domésticos y vehículos de motor y motocicletas"
+},
+{
+"codi": "96.10",
+"seccio": "T",
+"es": "Lavado y limpieza de prendas de tela y de piel"
+},
+{
+"codi": "96.21",
+"seccio": "T",
+"es": "Peluquería y barbería"
+},
+{
+"codi": "96.22",
+"seccio": "T",
+"es": "Actividades de cuidados de belleza y otras actividades de tratamiento de belleza"
+},
+{
+"codi": "96.23",
+"seccio": "T",
+"es": "Actividades de spa, sauna y baño de vapor"
+},
+{
+"codi": "96.30",
+"seccio": "T",
+"es": "Pompas fúnebres y actividades relacionadas"
+},
+{
+"codi": "96.40",
+"seccio": "T",
+"es": "Actividades de intermediación para servicios personales"
+},
+{
+"codi": "96.91",
+"seccio": "T",
+"es": "Prestación de servicios personales domésticos"
+},
+{
+"codi": "96.99",
+"seccio": "T",
+"es": "Otros servicios personales n.c.o.p."
+},
+{
+"codi": "97.00",
+"seccio": "U",
+"es": "Actividades de los hogares como empleadores de personal doméstico"
+},
+{
+"codi": "98.10",
+"seccio": "U",
+"es": "Actividades de los hogares como productores de bienes para uso propio"
+},
+{
+"codi": "98.20",
+"seccio": "U",
+"es": "Actividades de los hogares como productores de servicios para uso propio"
+},
+{
+"codi": "99.00",
+"seccio": "V",
+"es": "Actividades de organizaciones y organismos extraterritoriales"
+}
+]
+}

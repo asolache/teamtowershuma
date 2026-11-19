@@ -11,8 +11,22 @@ description: Acompanyar una sessió de mapa de valor amb el mètode VNA de Verna
 > és correcta, s'accepta. **Un mapa sintàcticament vàlid i metodològicament fals
 > és pitjor que cap mapa**: neix ambre i ensenya que ambre és normal.
 
-## Abans de res, dues lectures
+## Abans de res, tres lectures
 
+0. **La base: el que la casa ja sap del seu ofici** (`SOS/knowledge/vna/base.json`,
+   veda 186). Busca-hi la peça que s'assembla a qui tens davant i parteix del seu
+   mapa: rols, intercanvis amb la seva capa, intangibles, SOPs i casos. No
+   proposis de zero el que la base ja sap.
+
+   ```bash
+   node -e "const B=require('./SOS/knowledge/vna/base.json'),V=require('./SOS/lib/base-vna.js');
+   const t=V.tria(B,'bodega familiar de cava',3);console.log(t);console.log(V.peces(V.troba(B,t[0].id)))"
+   ```
+
+   Amb el mapa que ja hi ha, `V.forats(B, id, mapa)` diu quins rols i quins
+   intangibles de l'ofici hi falten i quines capes (cos, energia, ment,
+   discerniment, propòsit) són buides: són les preguntes de la sessió. Si l'ofici
+   no hi és, digues-ho: és un pendent del catàleg (`base.json` → `pendents`).
 1. **`SOS/knowledge/vna/patrons.md`** — el que s'ha vist en els mapes que ja
    s'han fet. Si una troballa s'hi repeteix, pregunta-la abans que la sala
    l'hagi de descobrir sola.

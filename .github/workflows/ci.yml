@@ -83,6 +83,14 @@ jobs:
       - name: El cervell de la portada és el del codex
         run: node SOS/tools/build-cervell-dades.js --check
 
+      # La font i la colla (SOS/la-font.html) pinta el mapa de l'aigua solar i les
+      # cinc capes del codex. Si el mapa o el codex canvien i les dades no, la
+      # pel·lícula ensenyaria forats que ja no hi són.
+      - name: La font i la colla, del mapa de l'aigua i del codex
+        run: |
+          node SOS/tools/build-font.js --check
+          node SOS/tests/test-font.mjs
+
       # El motor de l'editor del mapa (model, text, arbre, desviació i
       # diagnòstic) es prova en Node pur: és l'única guarda de l'editor que corre
       # aquí, perquè Playwright no hi corre.
@@ -98,6 +106,11 @@ jobs:
       # el mapa de l'app (per id) i la forma canònica (per nom).
       - name: Nucli del mapa de valor
         run: node SOS/tests/test-mapa-valor.mjs
+
+      # La base única de mapes de valor (SOS/knowledge/vna/base.json): al dia
+      # amb les seves fonts, i el que en llegeix la web (SOS/lib/base-vna.js).
+      - name: Base única de mapes de valor
+        run: node SOS/tools/build-base-vna.js --check && node SOS/tests/test-base-vna.mjs
 
       # El nom de cada entregable damunt de les fletxes dels mapes de valor.
       - name: Etiquetes dels entregables

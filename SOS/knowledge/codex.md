@@ -5690,3 +5690,41 @@ fonts).
 
 **Guarda:** `SOS/tests/test-colla-taulers.mjs` (la pinya aguanta els pisos que
 la base té coberts, i cada rol té el nom a la seva rengla).
+
+## Veda 186 — El mapa surt del que ja sabem, no d'un bon prompt
+
+**Adoptada el 15/11/2026** per l'Álvaro, en demanar el canvi de nivel de «Crea
+tu mapa»: «quiero ver el cerebro de todo el conocimiento de VNA que tenemos…
+más allá de que le hayamos puesto un prompt bueno… le pones ya las piezas y él
+las mete en el tablero».
+
+L'error que evita: tenir el saber escampat i demanar-li a la IA que el
+endevini. El banc de mapes del 02/11 ho va mesurar: amb qualsevol prompt i amb
+Sonnet o amb Opus, el mapa es quedava prop de 3 sobre 5, i el que més fallava
+eren els intangibles propis de cada ofici. Mentrestant teníem 14 oficis, 21
+sectors, 24 dominis i 80 SOPs en tres llocs que no es parlaven, un d'ells en un
+repositori aturat.
+
+- **Una sola base, generada:** `SOS/knowledge/vna/base.json` la fa
+  `build-base-vna.js` amb totes les fonts (models, oficis, dominis i sectors del
+  SOS antic, casos del banc). Cap font es copia; el CI peta si la base no hi
+  correspon.
+- **El catàleg oficial és la vara de mesurar:** les 651 classes de la NACE 2.1
+  (la base de la CNAE-2025). «Quants oficis sabem?» es contesta amb la
+  cobertura de la base, i es diu quina part és exacta (amb codi) i quina
+  aproximada (per paraules).
+- **El que es genera parteix del que hi ha i passa pel sedàs:** cada ofici nou
+  surt amb el sector, els dominis i l'ofici més proper al context, ha de passar
+  les regles de la casa (salut 70 o més) i una jutgessa a cegues el puntua. Entra
+  com a esborrany; una persona el valida.
+- **Cada intercanvi porta la seva capa:** cos, energia, ment, discerniment i
+  propòsit, les cinc del codex. Una capa buida al mapa d'algú és una pregunta,
+  no un error seu.
+- **La persona valida peces, no escriu de zero:** la web li posa el mapa del seu
+  ofici i ella diu sí, no o ho diu amb les seves paraules.
+- **El que s'aprèn torna a la base:** una peça rebutjada o reescrita més d'una
+  vegada és una troballa del seu ofici.
+
+**Guarda:** `build-base-vna.js --check` i `test-base-vna.mjs` (cinc capes,
+tria la peça bona, troba el que falta, la cobertura suma el catàleg i la base no
+porta preus).

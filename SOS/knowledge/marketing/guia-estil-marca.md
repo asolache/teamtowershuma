@@ -19,7 +19,17 @@ es fan servir com a sinònims dins d'una mateixa frase.
 
 ---
 
-## 2. Els quatre valors
+## 2. El lema
+
+**Ningú no arriba a dalt sol.** · *Nadie llega arriba solo.* · *No one gets to the top alone.*
+
+Decidit per l'Àlvaro el 19/11/2026. És la pinya del castell, l'espècie social
+de Wilson i el canvi de cep del seu rebesavi en cinc paraules: el que hi ha
+al voltant és el que t'aguanta. Va a la llengua de qui llegeix, tanca l'espot
+de la portada, és al peu de totes les pàgines i serveix per signar el blog, les
+propostes i les xarxes. No es tradueix lliure ni s'allarga.
+
+## 2b. Els quatre valors
 
 **Força · Equilibri · Valor · Seny.**
 

@@ -167,8 +167,9 @@ function desDe(m, casa) {
   var c = net(casa) || 'Tu equipo', files = {}, ordre = [], extra = { roles: [], pairs: [] };
   var fila = function (q) { if (!files[q]) { files[q] = { quien: q, meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'tangible' }; ordre.push(q); } return files[q]; };
   (m && m.pairs || []).forEach(function (p) {
-    if (p[1] === c && p[0] !== c) { var f = fila(p[0]); if (!f.meDa) { f.meDa = p[3] || ''; f.meDaEs = p[2] || 'tangible'; f.leDoy = p[5] || ''; f.leDoyEs = p[4] || 'tangible'; } }
-    else if (p[0] === c && p[1] !== c) { var g = fila(p[1]); if (!g.leDoy) { g.leDoy = p[3] || ''; g.leDoyEs = p[2] || 'tangible'; g.meDa = p[5] || ''; g.meDaEs = p[4] || 'tangible'; } }
+    /* Una fila guarda un intercanvi per persona; el segon amb la mateixa persona va a `extra`, no es perd. */
+    if (p[1] === c && p[0] !== c) { var f = fila(p[0]); if (!f.meDa && !f.leDoy) { f.meDa = p[3] || ''; f.meDaEs = p[2] || 'tangible'; f.leDoy = p[5] || ''; f.leDoyEs = p[4] || 'tangible'; } else extra.pairs.push(p.slice()); }
+    else if (p[0] === c && p[1] !== c) { var g = fila(p[1]); if (!g.meDa && !g.leDoy) { g.leDoy = p[3] || ''; g.leDoyEs = p[2] || 'tangible'; g.meDa = p[5] || ''; g.meDaEs = p[4] || 'tangible'; } else extra.pairs.push(p.slice()); }
     else extra.pairs.push(p.slice());
   });
   (m && m.roles || []).forEach(function (r) { if (r !== c && !files[r]) extra.roles.push(r); });
