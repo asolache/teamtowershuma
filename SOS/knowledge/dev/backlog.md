@@ -5502,6 +5502,31 @@ primer grup d'instal·ladors i decidir la forma de la xarxa.
 
 ---
 
+**La font i la colla · totes les vistes en una pel·lícula** — demanat per l'Àlvar el 16/11/2026
+
+- **Fet:** `SOS/la-font.html` (motor `SOS/lib/font-anima.js`, dades de
+  `tools/build-font.js`). Nou escenes amb les mateixes persones: la font, la
+  pinya des de dalt (cada rengla una àrea, cada cordó un cercle), el castell de
+  costat, l'arbre, el mapa mental amb les cinc capes del cervell, el mapa de
+  valor, les troballes, els forats per ocupar i «la teva colla». Els forats es
+  veuen a totes les vistes. Cas: el mapa de `aigua-solar-xarxa.md`.
+- **Fet (16/11, segon pas):** cada escena porta al seu servei (taller, diagnosi,
+  mapa del projecte, cervell, «Crea el teu mapa», les tres anàlisis i la
+  formació), i l'última és l'entrada amb el mínim: un camp (nom o web) i un toc
+  cap a `/cliente/?org=` o `?web=`, que ja obre el mapa amb això posat.
+- **Fet (16/11, tercer pas):** `/cliente/` en cinc passos curts
+  (`SOS/lib/guia-cliente.js`, una capa damunt la pàgina, sense reescriure-la):
+  el teu mapa, els teus forats, el que va sol, la teva web i la quota, envia-ho.
+  Abans: 13.979 px i unes 3.000 paraules de cop (21.528 px al mòbil); ara cada
+  pas fa d'1.300 a 2.600 px. Al pas dels forats, les dotze preguntes del Panteó
+  (veda 19, `SOS/lib/panteo.js`, ara compartit amb `build-castells.js`): es toca
+  la que ja té algú, les altres són forats, i Zeus (com es reparteix el valor)
+  surt primer. Viatja amb l'enviament. «Veure tota la pàgina» la torna sencera;
+  qui arriba amb una invitació a nom seu (`?para=`) segueix amb la seva benvinguda.
+- **Pendent:** pintar-hi la colla de cadascú (el seu mapa o el seu cervell en
+  comptes del cas de l'aigua); lligar cada forat a un itinerari de
+  `formacio.html`; portar-la a la web de l'Àlvar carregant-la d'aquí (DRY);
+  passar-la al taller de Fent Pinya.
 **La colla en la pinya · els taulers per factors** — demanat per l'Àlvaro el 16/11/2026 (veda 184)
 
 - **Fet (17/11):** «sense una bona pinya no hi ha castell». Cada rol porta el
