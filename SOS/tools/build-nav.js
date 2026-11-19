@@ -246,8 +246,11 @@ const txt = (v, l) => (typeof v === 'string' ? v : v[l]);
 /* ── L'acció és crear el mapa (22/10/2026) ──────────────────────────────────
    Àlvaro: «la primera acció, fer el teu mapa de valor». És el pas 1 del camí
    de client (`camiClient`), torna valor abans de demanar res i és la mateixa
-   crida principal de la portada. El diagnòstic segueix al grup «Mapa de valor». */
-const CTA = ['/cliente/#alrededor', T('Crea el teu mapa', 'Crea tu mapa')];
+   crida principal de la portada. El diagnòstic segueix al grup «Mapa de valor».
+   19/11/2026 · Àlvaro («Ok»): el botó porta al diagnòstic d'un minut
+   (SOS/lib/flux-minut.js), que dibuixa el mapa amb un toc i el passa a
+   /cliente/ ja fet. «Fer-ne un» del menú segueix anant a l'editor. */
+const CTA = ['/SOS/diagnostic.html', T('Crea el teu mapa', 'Crea tu mapa')];
 const MARCA = ['/', 'Team', 'Towers', 'Humà'];
 /* ── A dins del SOS ──────────────────────────────────────────────────────────
    L'acció és obrir-lo i la marca porta a la seva portada, que és l'embut de
@@ -493,6 +496,8 @@ function diccionari(l) {
     /* L'enllaç de correu del peu, que és l'únic text del peu que la barra no
        porta. */
     'nv.peu.mail': { ca: 'Escriu-nos', es: 'Escríbenos' },
+    /* El lema de la marca (19/11/2026): la pinya dita en cinc paraules. */
+    'nv.peu.lema': { ca: 'Ningú no arriba a dalt sol.', es: 'Nadie llega arriba solo.' },
     /* I l'avís legal, que el peu porta a totes les pàgines i cap grup no té. */
     'nv.peu.legal': { ca: 'Avís legal i privacitat', es: 'Aviso legal y privacidad' }
   };
@@ -835,6 +840,7 @@ const PEU_CSS = `<style>
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-frase{margin-top:.5rem;font-weight:700;color:var(--text)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
 .tt-peu .tp-legal{color:var(--muted)}
 .tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
@@ -865,7 +871,9 @@ function peu(pagina) {
   };
   const marca = lloc
     ? `<a class="tp-logo" href="/">Team<b>Towers</b> Humà</a>`
-      /* El lema és de la marca i es diu en català a totes dues llengües. */
+      /* El lema de la marca, a la llengua de la pàgina (19/11/2026). */
+      + `<p class="tp-frase"><span${i18n('nv.peu.lema')}>${ll === 'es' ? 'Nadie llega arriba solo.' : 'Ningú no arriba a dalt sol.'}</span></p>`
+      /* Els valors són de la marca i es diuen en català a totes dues llengües. */
       + `<p class="tp-lema"${ll === 'ca' ? '' : ' lang="ca"'}>Força · Equilibri · Valor · Seny</p>`
       /* El correu va ofuscat: les pàgines que tenen el script (`.js-mail`)
          el munten en temps d'execució, i a la resta l'enllaç porta a qui som,
