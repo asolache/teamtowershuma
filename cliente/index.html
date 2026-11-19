@@ -179,6 +179,14 @@
         .sug { margin-top: .8rem; padding: .8rem 1rem; border-left: 3px solid var(--indigo); background: var(--card); border-radius: 0 12px 12px 0; line-height: 1.55; }
         .sug .btn { margin-left: .4rem; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+        .busca-ofici { margin: .8rem 0 1rem; }
+        .busca-ofici input { display: block; width: 100%; margin-top: .4rem; font: inherit; padding: .6rem .8rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); }
+        .capes-mapa { margin-top: 1rem; padding: .8rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+        .capes-mapa h3 { margin: 0 0 .3rem; font-size: var(--t1, 1.05rem); }
+        .capes-mapa .capes { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; padding: 0; list-style: none; }
+        .capes-mapa .capes li { padding: .3rem .7rem; border-radius: 999px; border: 1px solid var(--border); font-size: var(--t0); }
+        .capes-mapa .capes li.ok { border-color: var(--indigo); }
+        .capes-mapa ul.preg { margin: .4rem 0 0; padding-left: 1.2rem; line-height: 1.55; }
         .model-xips button { font: inherit; font-size: var(--t0); padding: .45rem .8rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--text); cursor: pointer; }
         .model-xips button[aria-pressed="true"], .model-xips button[aria-checked="true"] { border: 2px solid var(--indigo); }
         .alcance { margin-top: 0; }
@@ -713,6 +721,12 @@
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
         <div class="models">
             <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
+            <div class="busca-ofici">
+                <label for="cl-busca"><b>Busca tu oficio</b> entre las 651 actividades oficiales y empieza con su mapa:</label>
+                <input id="cl-busca" type="search" autocomplete="off" placeholder="peluquería, bodega, academia de baile…">
+                <div class="model-xips" id="cl-busca-r" role="group" aria-label="Lo que se parece a tu oficio" aria-live="polite"></div>
+            </div>
+            <p class="models-sec">O elige un modelo para empezar:</p>
             <div class="model-xips" id="cl-models" role="group" aria-label="Modelos para empezar"></div>
             <p class="models-sec">O por oficio, si eres una pyme o trabajas por tu cuenta:</p>
             <div class="model-xips" id="cl-oficis" role="group" aria-label="Modelos por oficio"></div>
@@ -720,6 +734,7 @@
             <div class="model-xips" id="cl-sectors" role="group" aria-label="Modelos por sector"></div>
             <p class="bona" id="cl-bona" hidden></p>
             <div class="rols-model" id="cl-rols" aria-live="polite" hidden></div>
+            <div class="capes-mapa" id="cl-kosha" aria-live="polite" hidden></div>
         </div>
         <div class="files" id="cl-files"></div>
         <div class="accions"><button type="button" class="btn btn-ghost" id="cl-afegeix">Añadir a alguien</button><button type="button" class="btn btn-ghost js-dibuix">◎ Dibujarlo en pantalla completa</button></div>
@@ -1055,6 +1070,7 @@
 <script src="/SOS/lib/mapa-valor.js"></script>
 <script src="/SOS/lib/diagnosi-client.js"></script>
 <script src="/SOS/lib/models-mapa.js"></script>
+<script src="/SOS/lib/base-vna.js"></script>
 <script src="/SOS/lib/cas-automatitzat.js"></script>
 <script src="/SOS/lib/tauler-client.js"></script>
 <script src="/SOS/lib/pomodoro.js"></script>
@@ -1444,6 +1460,16 @@
         'Aplicar todas': 'Aplicar-les totes', 'Tu respuesta, con tus palabras': 'La teva resposta, amb les teves paraules', '✦ Otra vuelta': '✦ Una altra volta', 'Otra': 'Una altra', 'Puedes elegir más de una.': 'En pots triar més d\'una.',
         'O por oficio, si eres una pyme o trabajas por tu cuenta:': 'O per ofici, si ets una pime o treballes pel teu compte:',
         'Quién suele estar en «{0}»': 'Qui sol haver-hi a «{0}»', 'Quién suele estar': 'Qui sol haver-hi',
+        'Busca tu oficio': 'Busca el teu ofici', 'entre las 651 actividades oficiales y empieza con su mapa:': 'entre les 651 activitats oficials i comença amb el seu mapa:',
+        'peluquería, bodega, academia de baile…': 'perruqueria, celler, acadèmia de ball…', 'Lo que se parece a tu oficio': 'El que s\'assembla al teu ofici',
+        'O elige un modelo para empezar:': 'O tria un model per començar:',
+        'Ahora no podemos buscar: elige un modelo de abajo.': 'Ara no podem buscar: tria un model de sota.',
+        'aún sin mapa propio': 'encara sense mapa propi',
+        'Aún no tenemos el mapa de «{0}»: empieza con el de un negocio y lo aprendemos contigo': 'Encara no tenim el mapa de «{0}»: comença amb el d\'un negoci i l\'aprenem amb tu',
+        'No lo encontramos todavía: escribe quién está a tu alrededor y lo aprendemos contigo.': 'Encara no el trobem: escriu qui hi ha al teu voltant i l\'aprenem amb tu.',
+        'Las cinco capas de tu mapa': 'Les cinc capes del teu mapa',
+        'Un mapa que se sostiene tiene algo en cada capa: lo que se entrega, lo que circula, lo que se sabe, lo que es de fiar y el para qué.': 'Un mapa que s\'aguanta té alguna cosa a cada capa: el que es lliura, el que circula, el que se sap, el que és de fiar i el per a què.',
+        'En «{0}» también suele circular: {1}.': 'A «{0}» també sol circular: {1}.',
         'Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.': 'Afegeix qui et serveixi, un per un, amb el que sol donar i rebre. Després posa-ho amb les teves paraules.',
         'Añadido: {0}': 'Afegit: {0}', 'Añadidos: {0}': 'Afegits: {0}', 'Añadir los {0} que faltan': 'Afegir els {0} que falten',
         'Cambiar todo por este modelo': 'Canviar-ho tot per aquest model', 'Ver quién suele estar': 'Veure qui sol haver-hi',
@@ -1707,6 +1733,14 @@
        nada. ?org=&web=&pie=&pieNom=&para=&procesos=programas. Solo rellena lo que
        está vacío; si es otra organización, abre un mapa nuevo y guarda el de antes.
        Nada de esto está en el repositorio: va en el enlace que le mandamos. */
+    /* La llavor de «Busca tu oficio» (16/11/2026): l'escena 9 de «La font i la
+       colla» (SOS/la-font.html) porta aquí amb ?org= (o ?web=), i qualsevol enllaç
+       pot portar ?ofici=. Si el mapa encara no té ningú al voltant, la cerca
+       s'obre ja feta amb aquest text, i la persona només tria la peça. */
+    var LLAVOR = (function () {
+        var q = new URLSearchParams(location.search), o = (q.get('ofici') || '').trim().slice(0, 80);
+        return o ? { text: o, ofici: true } : (q.get('org') || '').trim() ? { text: q.get('org').trim().slice(0, 80), ofici: false } : null;
+    })();
     (function () {
         var q = new URLSearchParams(location.search), org = (q.get('org') || '').trim().slice(0, 160), web = (q.get('web') || '').trim().slice(0, 300);
         /* El enlace que hace Álvaro desde su panel (05/11/2026) lleva además `inv`:
@@ -1842,6 +1876,7 @@
     function pintaSalut() {
         var r = D.revisa(D.mapa(S), null, LL), c = $('#cl-salut'); c.textContent = '';
         $('#cl-salut-n').textContent = t('Tu dibujo, al {0} %', D.salut(D.mapa(S), null, LL).punts);
+        if (BASE) pintaCapes();
         pintaAvanc();
         /* Cada cosa que falta porta on s'arregla: «la màxima de tot és un enllaç». */
         r.punts.forEach(function (p) {
@@ -2420,12 +2455,36 @@
     /* Los modelos del SOS (models-mapa.js, los mismos de la app): rellenan
        quién está alrededor y lo que se da, con «tú» en el centro. */
     var MM = window.ModelsMapa;
+    /* La base única (veda 186, SOS/knowledge/vna/base.json): els oficis del
+       catàleg, els dominis i els sectors que la casa ja sap, a més dels models
+       d'aquí. Es baixa només quan algú busca el seu ofici o en tria un. Una peça
+       que no és a models-mapa.js es guarda a EXTRA amb la mateixa forma. */
+    var BV = window.BaseVna, BASE = null, BASE_P = null, EXTRA = {};
+    function baseVna() {
+        if (!BASE_P) BASE_P = fetch('/SOS/knowledge/vna/base.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (b) { BASE = b; return b; }).catch(function () { return null; });
+        return BASE_P;
+    }
+    function deBase(p) {
+        var ja = MM.MODELS.concat(MM.OFICIS || [], MM.SECTORS || []).filter(function (y) { return y.id === p.id; })[0];
+        if (ja) return ja;
+        var centre = p.centre || (p.rols[0] || {}).nom || 'Tu equipo', pairs = (p.intercanvis || []).slice();
+        if (!pairs.length && p.fluxos) pairs = p.fluxos.map(function (f) { return [f.de, f.a, f.tipus === 'intangible' ? 'intangible' : 'tangible', f.que, '', '']; });
+        var m = { nom: p.nom, diu: p.diu || '', roles: p.rols.map(function (r) { return r.nom; }), pairs: pairs, centre: centre };
+        var x = { id: p.id, icona: p.tipus === 'domini' ? '🧩' : '🛠️', es: m, ca: m, en: m };
+        EXTRA[p.id] = x; return x;
+    }
+    function mapaDe(id) {
+        var x = EXTRA[id];
+        if (!x) return MM.mapa(id, LL, S.casa.trim() || null);
+        var c = S.casa.trim() || x.es.centre, r = function (v) { return v === x.es.centre ? c : v; };
+        return { abast: '', nom: x.es.nom, diu: x.es.diu, centre: c, bona: '', roles: x.es.roles.map(r), pairs: x.es.pairs.map(function (p) { return [r(p[0]), r(p[1]), p[2], p[3], p[4], p[5]]; }) };
+    }
     /* Y los catorce sectores de la Matriu (SECTORS), con el mismo botón. */
     function pintaModels() {
         pintaGrup($('#cl-models'), MM.MODELS); pintaGrup($('#cl-oficis'), MM.OFICIS || []); pintaGrup($('#cl-sectors'), MM.SECTORS || []);
         /* Cada modelo trae su buena práctica (models-mapa.js, BONES): por qué
            está ese flujo que no se paga. Es lo que enseña el modelo. */
-        var mb = S.modelo && MM.mapa(S.modelo, LL), bo = $('#cl-bona');
+        var mb = S.modelo && !EXTRA[S.modelo] && MM.mapa(S.modelo, LL), bo = $('#cl-bona');
         bo.hidden = !(mb && mb.bona); bo.textContent = '';
         if (mb && mb.bona) { bo.appendChild(el('b', {}, t('Buena práctica:') + ' ')); bo.appendChild(document.createTextNode(mb.bona)); }
     }
@@ -2447,14 +2506,14 @@
         VIST = x.id; pintaModels(); pintaRols();
         $('#cl-rols').scrollIntoView({ block: 'nearest' });
     }
-    function totsModels() { return MM.MODELS.concat(MM.OFICIS || [], MM.SECTORS || []); }
+    function totsModels() { return MM.MODELS.concat(MM.OFICIS || [], MM.SECTORS || [], Object.keys(EXTRA).map(function (k) { return EXTRA[k]; })); }
     function teRol(q) { var k = String(q).trim().toLowerCase(); return S.alrededor.some(function (f) { return String(f.quien).trim().toLowerCase() === k; }); }
     function filaDe(m, q) {
         var d = D.desDe(m, m.centre), f = d.alrededor.filter(function (x) { return x.quien === q; })[0];
         return f || { quien: q, meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' };
     }
     function afegeixRols(x, qs) {
-        var m = MM.mapa(x.id, LL, S.casa.trim() || null);
+        var m = mapaDe(x.id);
         if (!S.casa.trim()) S.casa = m.centre;
         S.alrededor = S.alrededor.filter(function (f) { return f.quien || f.meDa || f.leDoy; });
         qs.filter(function (q) { return !teRol(q); }).forEach(function (q) { S.alrededor.push(filaDe(m, q)); apunta('Añadido del modelo «' + x[LL].nom + '»: ' + q); });
@@ -2464,7 +2523,7 @@
     function pintaRols() {
         var c = $('#cl-rols'), id = VIST || S.modelo, x = id && totsModels().filter(function (y) { return y.id === id; })[0];
         c.textContent = ''; c.hidden = !x; if (!x) return;
-        var m = MM.mapa(x.id, LL, S.casa.trim() || null), rols = m.roles.filter(function (r) { return r !== m.centre; });
+        var m = mapaDe(x.id), rols = m.roles.filter(function (r) { return r !== m.centre; });
         c.appendChild(el('h3', {}, t('Quién suele estar en «{0}»', x.icona + ' ' + x[LL].nom)));
         c.appendChild(el('p', { class: 'nota' }, t('Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.')));
         var g = el('div', { class: 'model-xips', role: 'group', 'aria-label': t('Quién suele estar') }), falten = [];
@@ -2483,7 +2542,7 @@
         var hiHa = S.alrededor.some(function (f) { return f.quien || f.meDa || f.leDoy; });
         if (hiHa && !confirm(t('Esto cambia quién está a tu alrededor por lo del modelo «{0}». ¿Seguimos?', x[LL].nom))) return false;
         VIST = null;
-        var m = MM.mapa(x.id, LL, S.casa.trim() || null);
+        var m = mapaDe(x.id);
         if (!S.casa.trim()) S.casa = m.centre;
         var d = D.desDe(m, S.casa);
         S.alrededor = d.alrededor; S.extra = d.extra; S.modelo = x.id; desa();
@@ -2520,6 +2579,76 @@
         x = MM.MODELS.concat(MM.SECTORS, MM.OFICIS).filter(function (m) { return m.id === id; })[0];
         if (x) tria(x);
     })();
+
+    /* Busca tu oficio: el que s'assembla a la base (BaseVna.tria) i les classes
+       oficials pel nom. Una classe sense mapa propi ho diu i comença pel model
+       de negoci, no per un sector que potser no hi toca. */
+    var buscaT = null;
+    function pintaBusca() {
+        var q = $('#cl-busca').value.trim(), c = $('#cl-busca-r');
+        if (q.length < 3) { c.textContent = ''; return; }
+        baseVna().then(function (b) {
+            if ($('#cl-busca').value.trim() !== q) return;
+            c.textContent = '';
+            if (!b) { c.appendChild(el('p', { class: 'nota' }, t('Ahora no podemos buscar: elige un modelo de abajo.'))); return; }
+            var vist = {}, n = 0;
+            BV.tria(b, q, 4).forEach(function (r) {
+                var p = BV.troba(b, r.id); if (!p || p.tipus === 'sector-antic' || vist[p.id]) return; vist[p.id] = 1; n++;
+                var x = deBase(p), bt = el('button', { type: 'button', title: x[LL].diu || '' }, x.icona + ' ' + x[LL].nom);
+                bt.addEventListener('click', function () { mostraModel(x); pintaCapes(); });
+                c.appendChild(bt);
+            });
+            var w = BV.norm(q).split(' ').filter(function (k) { return k.length > 3; }).map(function (k) { return k.slice(0, Math.max(4, k.length - 2)); });
+            b.classes.filter(function (cl) { var nm = ' ' + BV.norm(cl.es); return w.length && w.every(function (k) { return nm.indexOf(' ' + k) >= 0; }); }).slice(0, 4).forEach(function (cl) {
+                var id = (cl.peces || [])[0], p = id && BV.troba(b, id); if (p && vist[p.id]) return; n++;
+                var bt = el('button', { type: 'button', title: cl.codi }, '📋 ' + cl.es + (p ? '' : ' · ' + t('aún sin mapa propio')));
+                bt.addEventListener('click', function () {
+                    var x = p ? deBase(p) : MM.MODELS[0];
+                    if (!p) aviso(t('Aún no tenemos el mapa de «{0}»: empieza con el de un negocio y lo aprendemos contigo', cl.es));
+                    mostraModel(x); pintaCapes();
+                });
+                c.appendChild(bt);
+            });
+            if (!n) c.appendChild(el('p', { class: 'nota' }, t('No lo encontramos todavía: escribe quién está a tu alrededor y lo aprendemos contigo.')));
+        });
+    }
+    $('#cl-busca').addEventListener('input', function () { clearTimeout(buscaT); buscaT = setTimeout(pintaBusca, 300); });
+    /* Si arriba amb una llavor i encara no hi ha ningú al voltant: amb ?ofici= la
+       cerca s'obre sempre; amb el nom de l'organització, només si s'hi assembla
+       alguna peça (un nom propi sol no diu res de l'ofici). */
+    if (LLAVOR && !(S.alrededor || []).some(function (f) { return f && (f.quien || '').trim(); }) && !((S.extra || {}).roles || []).length) {
+        baseVna().then(function (b) {
+            if (!b || $('#cl-busca').value.trim()) return;
+            if (!LLAVOR.ofici && !BV.tria(b, LLAVOR.text, 1).length) return;
+            $('#cl-busca').value = LLAVOR.text; pintaBusca();
+        });
+    }
+
+    /* Las cinco capas del mapa (las del codex): qué ya circula y qué falta. Cada
+       capa vacía es una pregunta, no un error. Y lo que suele circular en su
+       oficio y aún no está, para que lo valide con un toque en «Quién suele estar». */
+    function pintaCapes() {
+        var c = $('#cl-kosha');
+        if (!S.modelo) { c.hidden = true; return; }
+        baseVna().then(function (b) {
+            var p = b && (BV.troba(b, S.modelo));
+            if (!p) { c.hidden = true; return; }
+            if (!EXTRA[S.modelo] && !MM.mapa(S.modelo, LL)) deBase(p);
+            var f = BV.forats(b, p, D.mapa(S)), ll = LL === 'ca' ? 'ca' : 'es';
+            c.textContent = ''; c.hidden = false;
+            c.appendChild(el('h3', {}, t('Las cinco capas de tu mapa')));
+            c.appendChild(el('p', { class: 'nota' }, t('Un mapa que se sostiene tiene algo en cada capa: lo que se entrega, lo que circula, lo que se sabe, lo que es de fiar y el para qué.')));
+            var ul = el('ul', { class: 'capes' });
+            BV.CAPES.forEach(function (k) { var ok = f.capesBuides.indexOf(k.id) < 0; ul.appendChild(el('li', { class: ok ? 'ok' : '', title: k.diu[ll] }, (ok ? '✓ ' : '○ ') + k.nom[ll])); });
+            c.appendChild(ul);
+            var pr = el('ul', { class: 'preg' });
+            BV.CAPES.filter(function (k) { return f.capesBuides.indexOf(k.id) >= 0; }).forEach(function (k) { pr.appendChild(el('li', {}, k.pregunta[ll])); });
+            if (f.intangibles.length) pr.appendChild(el('li', {}, t('En «{0}» también suele circular: {1}.', p.nom, f.intangibles.slice(0, 4).join(' · '))));
+            if (pr.childNodes.length) c.appendChild(pr);
+        });
+    }
+    if (S.modelo && !MM.mapa(S.modelo, LL)) baseVna().then(function (b) { var p = b && BV.troba(b, S.modelo); if (p) { deBase(p); pintaModels(); pintaRols(); pintaCapes(); } });
+    else if (S.modelo) pintaCapes();
     pintaModels(); pintaRols();
 
     /* El dibujo, dentro de la página: el editor del mapa (vna-suport.html) en un
@@ -2802,7 +2931,7 @@
         function dades(nota) {
             /* La IA arranca del modelo que ha elegido o que le sugerimos (models-mapa.js)
                y lo adapta a lo que cuenta: es la referencia de buenas prácticas. */
-            var mi = S.modelo || ((MM.suggereix && MM.suggereix([S.inicial, S.respuestas.objetivo].join(' '), LL)) || {}).id, mr = mi && MM.mapa(mi, LL, S.casa.trim() || null);
+            var mi = S.modelo || ((MM.suggereix && MM.suggereix([S.inicial, S.respuestas.objetivo].join(' '), LL)) || {}).id, mr = mi && mapaDe(mi);
             return { casa: S.casa, org: S.org, inicial: S.inicial, nota: nota || '', nivel: S.nivel, capes: capes(),
                 model: mr ? { nom: mr.nom, bona: mr.bona, pairs: mr.pairs, veda: mr.veda, passos: mr.passos } : null,
                 llengua: LL, extra: S.extra || null, respuestas: D.PREGUNTES.map(function (p) { return { id: p.id, q: D.pregunta(p, LL).q, a: S.respuestas[p.id] || '' }; }),
