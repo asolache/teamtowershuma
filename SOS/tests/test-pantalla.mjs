@@ -51,7 +51,9 @@ for (const P of PILOTS) {
         alts.push(await p.evaluate(() => document.documentElement.scrollHeight / innerHeight));
       }
       const pitjor = Math.max(...alts);
-      ok(pitjor <= 6, 'la pantalla més llarga fa ' + pitjor.toFixed(1) + ' alçades (abans, la pàgina sencera)');
+      // Estàndard: cap pantalla de més de tres alçades (el que no hi cap és una
+      // llista que llisca ella). «Coste de la IA» de conecta fa 3,0 justes.
+      ok(pitjor <= 3.1, 'la pantalla més llarga fa ' + pitjor.toFixed(1) + ' alçades (abans, la pàgina sencera)');
     } else {
       ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'sense desplaçament de costat');
     }
