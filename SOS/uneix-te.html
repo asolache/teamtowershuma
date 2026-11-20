@@ -156,7 +156,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
 .foot-cta{text-align:center;padding:2.4rem 1.2rem 0}
 </style>
 </head>
-<body>
+<body data-pantalla>
 <!--TT-NAV-->
 <style>
 /* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
@@ -303,7 +303,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
 
 <div class="wrap">
 
-<section>
+<section id="et-sona" data-pantalla-nom="Et sona?">
   <h2>Segurament et sona alguna d'aquestes</h2>
   <p class="sub">No som els primers a notar-ho. Som els primers a comptar-ho.</p>
   <div class="pains">
@@ -314,7 +314,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   </div>
 </section>
 
-<section id="comando">
+<section id="comando" data-pantalla-nom="La història">
   <h2>Això ja té nom, i és una història</h2>
   <p class="sub">Fa anys que la dibuixem en còmics. Va del mateix.</p>
 
@@ -360,7 +360,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   </div>
 </section>
 
-<section id="com-va">
+<section id="com-va" data-pantalla-nom="El tracte">
   <h2>El tracte, dit clar</h2>
   <p class="sub">Demanar-te feina sense dir què en treus seria demanar-te feina. Això és una proposta.</p>
   <div class="deal">
@@ -385,7 +385,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   </div>
 </section>
 
-<section>
+<section id="entra" data-pantalla-nom="Per on entres">
   <h2>Tria per on entres</h2>
   <p class="sub">Ningú comença per dalt. La majoria comença aportant una cosa i ja està.</p>
   <div class="roles">
@@ -412,7 +412,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   </div>
 </section>
 
-<section id="pioneres">
+<section id="pioneres" data-pantalla-nom="Pioneres">
   <h2>Programa Pioneres</h2>
   <p class="sub">Tres setmanes de feina real i un certificat del rol que hagis fet. Places limitades: acompanyar bé a molta gent alhora no es pot.</p>
 
@@ -478,7 +478,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   <p class="fine">Escriu-me dient <strong>on vius</strong> i <strong>què t'agradaria fer</strong>. Amb dues línies n'hi ha prou; ja et diré si encaixa o no, i si no encaixa t'ho diré igual de clar.</p>
 </section>
 
-<section>
+<section id="quan-cliques" data-pantalla-nom="Quan cliques">
   <h2>Què passa quan cliques</h2>
   <div class="steps">
     <div class="step"><h3>Poses el teu nom i el teu poble</h3><p>Res més. No hi ha correu, ni contrasenya, ni verificació per SMS.</p></div>
@@ -488,7 +488,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   </div>
 </section>
 
-<section>
+<section id="no-fa" data-pantalla-nom="El que no fa">
   <div class="nots">
     <h2 style="margin-top:0">El que això <em>no</em> fa</h2>
     <p class="sub" style="margin-bottom:0">Val més dir-ho ara que descobrir-ho després. Cada «no» d'aquests té el motiu escrit a <a href="vedes.html">els vedes</a>, que són les regles que aquesta eina s'ha imposat.</p>
@@ -501,7 +501,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
   </div>
 </section>
 
-<section>
+<section id="preguntes" data-pantalla-nom="Preguntes">
   <h2>Preguntes que es fa tothom</h2>
   <details><summary>Qui hi ha darrere d'això?</summary><p>TeamTowers Humà, des de l'Alt Penedès. El codi és obert i l'app és un sol fitxer que pots descarregar-te i fer servir sense nosaltres. Aquesta és la prova de que no depens de ningú: <a href="index.html">obre'l</a>, desa la pàgina i ja és teu.</p></details>
   <details><summary>Si no hi ha servidor, com em trobo amb els altres?</summary><p>Connectant dispositius directament entre ells, o compartint el que decideixis publicar al teu territori. És més lent que una app normal i és a posta: cap intermediari vol dir cap intermediari, també quan fa nosa.</p></details>
@@ -553,6 +553,7 @@ details p{margin:.6rem 0 0;font-size:.89rem;color:var(--light)}
 </footer>
 <script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
+<script src="/SOS/lib/pantalla.js" defer></script>
 
 <script>
 /* Correu ofuscat, com a l'arrel: no viatja en clar dins de l'HTML. */
