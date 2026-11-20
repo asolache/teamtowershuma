@@ -5460,10 +5460,12 @@ gasta crèdits; uns nou al dia del SOS esgoten el cicle en dues setmanes.
   no es despleguen poden mergear quan toca, però també s'agrupen.
 - **Res de merges fora de tanda** (22/10, 13:40): cada PR espera llest i en
   verd la tanda següent. Només el que és urgent per a un client surt al moment.
-- **Cada tanda surt amb el seu post al blog** (`SOS/blog.html`, `#post-tanda-…`):
-  què ha millorat, en paraules del client, amb l'enllaç i el pantallàs de cada
-  vista. Mateixa estructura sempre (una secció per àrea, «Per a qui», «On és»),
-  perquè els posts es puguin compilar com a manual del sistema.
+- **Un post al blog per setmana, agrupat per les línies del pla** (l'Álvaro,
+  16/11/2026; abans era un post per tanda): `SOS/blog.html`, `#post-setmana-…`.
+  El que s'ha construït aquella setmana, en paraules del client, amb una secció
+  per línia del pla estratègic (només el nom de la línia, mai xifres), «Per a
+  qui», l'enllaç i el pantallàs de cada vista i «On és», perquè els posts es
+  puguin compilar com a manual del sistema.
 
 **Guarda:** cap automàtica; la regla és a `CLAUDE.md`.
 
