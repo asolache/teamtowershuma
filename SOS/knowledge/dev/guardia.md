@@ -88,8 +88,11 @@ abans que el vegi un client.
     Test que ho cobreixi.
 16. [ ] Lots de 10 en l'ordre de `pendents` (comença per l'hostaleria, 55.x).
     Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
+    Cada ofici diu les àrees que li falten (`arees_falten`, de `MapaValor.arees`):
+    una àrea crítica que falta va a «falta», o l'ofici no entra.
 17. [ ] La jutgessa del dissabte: `rubrica-ofici.md` sobre els oficis de la
     setmana; els de nota baixa tornen a `pendents` amb el motiu.
+    També mira les dotze àrees: les que falten, ¿són de debò fora de l'ofici?
 18. [ ] Cada 4 lots: la cobertura de `base.json` (exacta / aproximada /
     només sector) en una línia aquí, per veure si el client ha de triar menys.
 

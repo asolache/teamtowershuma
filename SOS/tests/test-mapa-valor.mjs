@@ -88,5 +88,23 @@ console.log('\nT5 · Un rol no és una organització');
     'un mapa amb `ocupa` en surt agrupant pel node');
 }
 
+/* Les dotze àrees (20/11/2026): cap àrea crítica s'oblida. Surten de la
+   taxonomia universal, no fan nota, i un forat és una pregunta per a la sessió. */
+{
+  const tax = JSON.parse(readFileSync(join(DIR, '..', 'knowledge', 'cervell', 'taxonomia-universal.json'), 'utf8'));
+  const ids = tax.facetes.find(f => f.id === 'role').valors.map(v => v.id);
+  ok(MV.AREES.length === 12 && MV.AREES.every((a, i) => a.id === ids[i]), 'les 12 àrees són les de la taxonomia, en el mateix ordre');
+  const buit = MV.arees({});
+  ok(buit.falten.length === 12 && !buit.completa, 'un mapa buit té les 12 àrees per preguntar');
+  ok(buit.falten.every(f => f.pregunta && f.pregunta.es && f.pregunta.ca), 'cada forat porta la pregunta en català i castellà');
+  const m = { roles: ['Clientes', 'Proveedores', 'Equipo de cocina'], pairs: [['Clientes', 'Equipo de cocina', 'tangible', 'Pedido', 'tangible', 'Factura']],
+    arees: { legal: 'no-aplica', systems: 'Gestoría digital' } };
+  const r = MV.arees(m), te = id => r.cobertes.some(c => c.id === id);
+  ok(te('sales') && te('logistics') && te('people') && te('finance'), 'els rols i els lliuraments cobreixen vendes, logística, persones i finances');
+  ok(r.noAplica.some(c => c.id === 'legal') && te('systems'), 'el mapa pot marcar una àrea «no-aplica» o dir qui la porta');
+  ok(r.cobertes.length + r.noAplica.length + r.falten.length === 12, 'cada àrea és a un sol lloc');
+  ok(MV.salut(m).punts === MV.salut(Object.assign({}, m, { arees: undefined })).punts, 'les àrees no canvien la nota de les deu regles');
+}
+
 console.log(fails ? `\n❌ ${fails} de ${n} fallen\n` : `\n✅ ${n} comprovacions · el nucli del mapa és un de sol\n`);
 process.exit(fails ? 1 : 0);

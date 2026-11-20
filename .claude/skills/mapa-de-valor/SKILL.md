@@ -131,6 +131,16 @@ mapa**, s'ensenya el que li falta. Les **toves** avisen i deixen passar.
 | 10 | Més d'un procés, i el que passa «sempre» marcat | tova | la casa |
 <!--/VS-REGLES-->
 
+### I les dotze àrees, que no se n'oblidi cap
+
+A part de les deu regles (no fan nota): `MapaValor.arees(mapa)` diu quines de
+les dotze àrees de `taxonomia-universal.json` (direcció, comunicació,
+màrqueting, vendes, finances, logística, producció, operacions, persones,
+xarxa, sistemes, legal) toca algun rol o lliurament, quines s'han marcat
+`arees: { legal: 'no-aplica' }` i quines **falten**. Cada forat porta la seva
+pregunta per a la sessió: una àrea crítica sense ningú és una troballa, i és
+també el que s'ha de treballar a la formació.
+
 Els llindars de les regles 6 i 7 **no són de Verna Allee**: l'article diu
 explícitament que «la recerca encara no ha determinat quines són les proporcions
 ideals». Són d'aquesta casa, estan mesurats a `vision/auditoria-mapes.md`, i

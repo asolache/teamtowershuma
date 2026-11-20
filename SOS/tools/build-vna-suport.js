@@ -193,6 +193,57 @@ function revisa(m) {
     dures: r.filter(x => x.dur && !x.ok).length, toves: r.filter(x => !x.dur && !x.ok).length };
 }
 
+/* ══ 4b · LES DOTZE ÀREES: QUE NO SE N'OBLIDI CAP ══════════════════════════
+   L'Álvaro (20/11/2026): «que en un mapa de valor se tenga contemplado todas
+   las áreas de los procesos para que no se nos olvide ninguno crítico, porque
+   al final es un tema de formación también». No és una regla més (les regles
+   són deu i fan la nota): és una revisió a part que diu, de les dotze àrees de
+   `taxonomia-universal.json`, quines cobreix el mapa, quines s'han marcat com
+   que no hi toquen i quines **falten**. Una que falta és un forat per preguntar
+   a la sessió o per treballar a la formació, no un error del mapa.
+   Els noms i les paraules de cada àrea surten de la taxonomia; aquí només s'hi
+   afegeixen les que diu un mapa (rols i lliuraments) i no un document.
+   Un mapa pot dir-ho ell mateix: `arees: { finance: 'no-aplica', legal: 'Gestoria' }`. */
+const AREES = (() => {
+  const t = JSON.parse(readFileSync(join(SOS, 'knowledge', 'cervell', 'taxonomia-universal.json'), 'utf8'));
+  const rol = t.facetes.find(f => f.id === 'role');
+  const MES = {
+    strategy: ['direc', 'gerent', 'gerenc', 'fundador', 'junta', 'patronat', 'patronato', 'propietari', 'decisi', 'estrateg', 'lidera'],
+    communication: ['comunic', 'periodist', 'mitjans', 'medios', 'difusi', 'newsletter', 'butlleti', 'boletin', 'relat', 'portaveu', 'portavoz'],
+    marketing: ['marketing', 'marqueting', 'publicitat', 'publicidad', 'anunci', 'visibilit', 'visibilid', 'seo', 'promoci', 'ressenya', 'resena', 'prescriptor', 'influenc'],
+    sales: ['client', 'venda', 'venta', 'vended', 'venedor', 'reserva', 'pedido', 'comanda', 'alumn', 'usuari', 'huesped', 'hoste', 'visitant', 'comprador', 'abonat', 'abonad', 'pacient', 'socia-client'],
+    finance: ['financ', 'pago', 'pagament', 'factur', 'cobr', 'banc', 'gestor', 'inversor', 'inversi', 'ajut', 'ayuda', 'coste', 'cost', 'tesorer', 'contab', 'comptab', 'fiscal', 'quota', 'cuota'],
+    logistics: ['proveed', 'proveid', 'suministr', 'subministr', 'transport', 'almac', 'magatzem', 'distribu', 'material', 'envio', 'enviament', 'repartidor', 'mensajer', 'missatger'],
+    production: ['produc', 'elabor', 'fabric', 'cocina', 'cuina', 'taller', 'disseny', 'diseno', 'creaci', 'artesa', 'obrador', 'bodega', 'celler', 'cultiu', 'cultivo'],
+    operations: ['operac', 'operaci', 'entreg', 'calidad', 'qualitat', 'mantenim', 'atencio', 'atencion', 'soport', 'suport', 'event', 'esdeveniment', 'sesion', 'sessio', 'visita', 'recepci', 'neteja', 'limpieza', 'agenda'],
+    people: ['equip', 'emplead', 'treballador', 'trabajador', 'personal', 'voluntari', 'formaci', 'talent', 'monitor', 'profesor', 'professor', 'docent', 'mentor', 'tutor', 'aprenent', 'aprendiz'],
+    network: ['red', 'xarxa', 'soci', 'partner', 'alianz', 'alianc', 'colabor', 'col·labor', 'comunidad', 'comunitat', 'asociaci', 'associaci', 'federaci', 'gremi', 'veina', 'vecin', 'cooperativ'],
+    systems: ['sistem', 'dato', 'dades', 'tecnolog', 'software', 'plataforma', 'app', 'ia', 'herramient', 'eines', 'automat', 'informat', 'digital', 'programari'],
+    legal: ['legal', 'juridic', 'contrat', 'contract', 'rgpd', 'normativ', 'cumpl', 'compli', 'administraci', 'ajuntament', 'ayuntamiento', 'llicenc', 'licenc', 'permis', 'asseguran', 'asegura', 'inspecc', 'hisenda', 'hacienda', 'regulad']
+  };
+  return rol.valors.map(v => ({ id: v.id, ca: v.ca, es: v.es, en: v.en,
+    paraules: [...new Set([...(v.alias || []), ...(MES[v.id] || [])].map(w => w.replace(/-/g, ' ')))] }));
+})();
+function arees(m) {
+  m = m || {};
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/·/g, '');
+  const tokens = [...(m.roles || []), ...textos(m)].map(norm).join(' ').split(/[^a-z0-9ñç]+/).filter(Boolean);
+  const diu = m.arees || {}, cobertes = [], noAplica = [], falten = [];
+  AREES.forEach(a => {
+    const marca = diu[a.id];
+    if (marca === 'no-aplica' || marca === false) { noAplica.push({ id: a.id, ca: a.ca, es: a.es }); return; }
+    if (typeof marca === 'string' && marca.trim()) { cobertes.push({ id: a.id, ca: a.ca, es: a.es, per: [marca.trim()] }); return; }
+    const per = a.paraules.map(norm).filter(w => w.length < 4 ? tokens.includes(w) : tokens.some(t => t.startsWith(w)));
+    if (per.length) cobertes.push({ id: a.id, ca: a.ca, es: a.es, per: per.slice(0, 3) });
+    else falten.push({ id: a.id, ca: a.ca, es: a.es,
+      pregunta: { ca: `Qui s'ocupa de ${a.ca} en aquesta xarxa, i què hi dona i què en rep?`,
+        es: `¿Quién se ocupa de ${a.es} en esta red, y qué da y qué recibe?` } });
+  });
+  return { total: AREES.length, cobertes, noAplica, falten, completa: !falten.length,
+    diu: !falten.length ? `Les ${AREES.length} àrees hi són o s'han marcat com que no hi toquen`
+      : `${falten.length} de ${AREES.length} àrees sense ningú: ${falten.map(f => f.ca).join(', ')}. Pregunta-ho a la sessió o marca-les «no-aplica»` };
+}
+
 /* ══ 5 · EL QUE SE LI DONA A UNA IA ═══════════════════════════════════════
    Es construeix **de les mateixes regles** que comproven la resposta. Si el
    prompt i la comprovació es declaressin a part, el dia que una canviï l'altra
@@ -414,7 +465,7 @@ function salut(m, op) {
    `require('./SOS/tools/build-vna-suport.js').revisa(mapa)`, i una lectura que
    reescrivís quatre fitxers de passada seria una sorpresa. A sota hi comencen
    els destins, que només corren quan s'executa el fitxer. */
-module.exports = { PASSES, REGLES, ANALISIS, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut, fusiona, exporta, orgsDe, lecturaOrgs, mapaOrg, llocOrg, ESCALA, escalaOrg };
+module.exports = { PASSES, REGLES, ANALISIS, AREES, arees, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut, fusiona, exporta, orgsDe, lecturaOrgs, mapaOrg, llocOrg, ESCALA, escalaOrg };
 if (require.main !== module) return;
 
 /* ══ 6 · ELS DESTINS ══════════════════════════════════════════════════════ */
@@ -510,7 +561,8 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', MOTOR, 'js');
     'const orgsDe=' + orgsDe.toString() + ';', 'const lecturaOrgs=' + lecturaOrgs.toString() + ';', 'const mapaOrg=' + mapaOrg.toString() + ';', 'const llocOrg=' + llocOrg.toString() + ';',
     'const ESCALA=[' + ESCALA.map(e => `{id:${JSON.stringify(e.id)},t:${JSON.stringify(e.t)},porta:${e.porta.toString()}}`).join(',\n') + '];',
     'const escalaOrg=' + escalaOrg.toString() + ';',
-    'const MapaValor={REGLES,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};',
+    'const AREES=' + JSON.stringify(AREES) + ';', 'const arees=' + arees.toString() + ';',
+    'const MapaValor={REGLES,AREES,arees,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};',
     'if (typeof module !== \'undefined\' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;',
     '})(typeof globalThis !== \'undefined\' ? globalThis : this);', ''].join('\n');
   const ara = existsSync(f) ? readFileSync(f, 'utf8') : '';
