@@ -83,10 +83,10 @@ abans que el vegi un client.
 14. [ ] Pes: cap pàgina per sobre del seu sostre gzip (portada 67 KB, app 550 KB); avisar si s'hi acosta
 
 **D · El cervell de VNA** (`SOS/knowledge/vna/`, veda 186)
-15. [ ] Mode sense API a `banc-mapes.mjs`: `oficis --lot 10 --a-ma` escriu les
+15. [x] Mode sense API a `banc-mapes.mjs`: `oficis --lot 10 --a-ma` escriu les
     peticions del lot a `banc-mapes/resultats/a-ma/`, i `--ingereix <fitxer>`
     fa passar les respostes pel mateix camí (salut, descartats, `build-base-vna.js`).
-    Test que ho cobreixi.
+    Test que ho cobreixi. (#405)
 16. [ ] Lots de 10 en l'ordre de `pendents` (comença per l'hostaleria, 55.x).
     Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
     Cada ofici diu les àrees que li falten (`arees_falten`, de `MapaValor.arees`):
