@@ -59,7 +59,8 @@ abans que el vegi un client.
 3. [x] `SOS/vna.html` en pantalles (#369)
 4. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
    - [x] `premsa.html` · quatre pantalles, noms en català i castellà (#394)
-   - [ ] `SOS/uneix-te.html`, `SOS/compra.html` · el PR obert #386 els toca: tornar-hi quan es mergegi
+   - [x] `SOS/uneix-te.html` · nou pantalles, de 2,2 alçades com a molt, noms en català (#400)
+   - [ ] `SOS/compra.html` · #386 ja és al main: és la següent
 5. [x] Pantalles de més de 3 alçades a conecta/ia/escola: a `conecta/` els flujos (4,1) i el catàleg (5,7) ara són llistes que llisquen (1,5); ia i escola ja hi cabien; el test exigeix ≤ 3 (#397)
 6. [ ] `SOS/blog.html`: llista d'entrades que llisca i una entrada per pantalla
 7. [ ] `SOS/vedes.html`: filtre a dalt i llista que llisca
