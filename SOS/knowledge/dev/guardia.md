@@ -15,6 +15,25 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 - **Una peça per execució, un PR com a màxim.** Si topa amb el límit, para i no
   deixa res a mitges al main.
 
+## Quina cola li toca cada nit (des del 20/11/2026)
+
+L'Álvaro (20/11/2026): aprofitar les nits per fer un cervell de VNA més potent,
+perquè el client treballi menys, i que totes les àrees tinguin el seu torn.
+El dia de la setmana (hora de Madrid) tria la cola. Si la seva cola no té res
+que es pugui fer, agafa la peça següent de la cola A–C.
+
+| Nit | Cola | Model |
+|---|---|---|
+| dilluns, dimecres, divendres | **D · Oficis VNA**: un lot de 10 classes de `pendents` | Sonnet |
+| dimarts | **A–C** (la de sempre) | el de la tasca |
+| dijous i diumenge | **E · L'àrea de torn** del cervell | Sonnet |
+| dissabte | **D · La jutgessa**: nota a cegues dels oficis de la setmana | Opus |
+
+Els oficis els escriu la mateixa sessió amb el saldo del pla: no cal la clau de
+l'API ni cap crèdit. Cada ofici passa per `salutOfici` (sota 70 es descarta) i
+entra a `base/oficis-generats.json` com a **esborrany**: una persona el revisa
+abans que el vegi un client.
+
 ## Què no fa mai
 
 - Mergear, tocar producció o Netlify, escriure fora (correus, Zoho, la web
@@ -61,6 +80,28 @@ perdre. Treballa **aquesta cola**, de dalt a baix.
 12. [ ] Camps sense nom i botons sense text accessible a les pàgines del SOS
 13. [ ] Zones tàctils de menys de 44 px a mòbil a les pàgines amb `data-pantalla`
 14. [ ] Pes: cap pàgina per sobre del seu sostre gzip (portada 67 KB, app 550 KB); avisar si s'hi acosta
+
+**D · El cervell de VNA** (`SOS/knowledge/vna/`, veda 186)
+15. [ ] Mode sense API a `banc-mapes.mjs`: `oficis --lot 10 --a-ma` escriu les
+    peticions del lot a `banc-mapes/resultats/a-ma/`, i `--ingereix <fitxer>`
+    fa passar les respostes pel mateix camí (salut, descartats, `build-base-vna.js`).
+    Test que ho cobreixi.
+16. [ ] Lots de 10 en l'ordre de `pendents` (comença per l'hostaleria, 55.x).
+    Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
+17. [ ] La jutgessa del dissabte: `rubrica-ofici.md` sobre els oficis de la
+    setmana; els de nota baixa tornen a `pendents` amb el motiu.
+18. [ ] Cada 4 lots: la cobertura de `base.json` (exacta / aproximada /
+    només sector) en una línia aquí, per veure si el client ha de triar menys.
+
+**E · L'àrea de torn** (les 12 de `taxonomia-universal.json`, per ordre; dues
+per setmana, la volta sencera en sis setmanes)
+- A cada torn: els documents de l'àrea al cervell del repo (`cervell.js --check`),
+  els que hi falten, els enllaços morts i el que el VNA hi diu (els rols i
+  intangibles de la base que toquen l'àrea). Un PR petit o, si no cal res, una
+  línia aquí.
+- [ ] direcció i estratègia · [ ] comunicació · [ ] màrqueting · [ ] vendes ·
+  [ ] finances · [ ] logística · [ ] producció · [ ] operacions · [ ] persones ·
+  [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
 
 ## Esperen l'Álvaro (el guardià no les toca)
 
