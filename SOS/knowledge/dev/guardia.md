@@ -60,7 +60,7 @@ abans que el vegi un client.
 4. [x] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
    - [x] `premsa.html` · quatre pantalles, noms en català i castellà (#394)
    - [x] `SOS/uneix-te.html` · nou pantalles, de 2,2 alçades com a molt, noms en català (#400)
-   - [x] `SOS/compra.html` · Inici i les set pestanyes pròpies, ara de `pantalla.js`; taules, comanda i mapes llisquen (≤ 2,9 alçades) (#PRNUM)
+   - [x] `SOS/compra.html` · Inici i les set pestanyes pròpies, ara de `pantalla.js`; taules, comanda i mapes llisquen (≤ 2,9 alçades) (#406)
 5. [x] Pantalles de més de 3 alçades a conecta/ia/escola: a `conecta/` els flujos (4,1) i el catàleg (5,7) ara són llistes que llisquen (1,5); ia i escola ja hi cabien; el test exigeix ≤ 3 (#397)
 6. [ ] `SOS/blog.html`: llista d'entrades que llisca i una entrada per pantalla
 7. [ ] `SOS/vedes.html`: filtre a dalt i llista que llisca
