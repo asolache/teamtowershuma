@@ -7,8 +7,8 @@ parli. El Comando Molekulon és una campanya indirecta: el llenguatge del SOS
 ha de ser oficial i clar per a la ciutadania que es forma i per al sector
 públic. Treure la fricció de cara al client.
 
-**Estat: proposta.** En aquest PR només canvia el menú comú (grup
-«Molekulon» → «Participació»). La resta de la taula s'aplica quan l'Álvaro
+**Estat:** usuari, ciutadà i l'escola, aplicats; els 22 mòduls i la veda 187, en
+proposta. La resta s'aplica quan l'Álvaro
 la doni per bona, pàgina per pàgina, amb el fil que porta cada pàgina
 (`formacio.html` és del fil del catàleg; `SOS/index.html`, del de la UX).
 
@@ -26,50 +26,63 @@ la doni per bona, pàgina per pàgina, amb el fil que porta cada pàgina
 El nom intern de les funcions (`openSuperheroiOnboarding`, `superheroCromo`)
 no es veu: no es toca, per no trencar res sense guany.
 
-## 2 · Els àmbits de formació, amb nom oficial
+## 2 · Els 22 mòduls, segona proposta (21/11, veda 187)
 
-Referència: les famílies professionals del Catàleg Nacional de Qualificacions
-Professionals (INCUAL / SEPE), que són les que fan servir els certificats de
-professionalitat i la formació per a l'ocupació (Fundae), i la secció CNAE-2025
-de l'activitat. El codi és orientatiu: diu a quina família s'assembla, no que
-el mòdul doni el certificat.
+L'Álvaro: «que cada título defina más la temática y luego haya más detalle…
+áreas de conocimiento y roles… qué skills desarrollan». El títol diu l'àrea;
+a sota, el rol que forma i les capacitats.
 
-| Mòdul | Avui | Proposta (ca) | Propuesta (es) | Família · CNAE |
+| Mòdul | Títol (ca) | Título (es) | Rol que forma · capacitats (es) | Família · CNAE |
 |---|---|---|---|---|
-| m1 | Fonaments SOS i codex Antigravity | Fonaments de sistemes digitals per a organitzacions | Fundamentos de sistemas digitales para organizaciones | IFC · J |
-| m2 | Identitat descentralitzada i criptografia | Identitat digital i signatura electrònica | Identidad digital y firma electrónica | IFC · J |
-| m3 | Value Network Analysis (Verna Allee) | Anàlisi de xarxes de valor (mètode VNA) | Análisis de redes de valor (método VNA) | ADG · M |
-| m4 | Recursos comunitaris | Gestió de recursos compartits: banc de temps i préstec d'objectes | Gestión de recursos compartidos: banco de tiempo y préstamo de objetos | SSC · S |
-| m5 | Governança i Guardians | Governança participativa i presa de decisions | Gobernanza participativa y toma de decisiones | SSC · S |
-| m6 | MATRIU, Slicing Pie i intercooperació | Intercooperació i repartiment equitatiu en projectes col·lectius | Intercooperación y reparto equitativo en proyectos colectivos | ADG · M |
-| m7 | Comando Molekulon i reputació | Participació ciutadana i reconeixement de les aportacions | Participación ciudadana y reconocimiento de las aportaciones | SSC · S |
-| m8 | Ancoratge públic i IA integrada | Dades obertes i ús responsable de la IA | Datos abiertos y uso responsable de la IA | IFC · J |
-| m9 | Facilitació i dinamització de grups | Dinamització de grups i comunitats | Dinamización de grupos y comunidades | SSC · S |
-| m10 | Comunicació i captació de persones | Comunicació i captació de participants | Comunicación y captación de participantes | COM · M |
-| m11 | Conflictes, cures i relleu | Gestió de conflictes i cura dels equips | Gestión de conflictos y cuidado de los equipos | SSC · S |
-| m12 | Finançament i subvencions a Catalunya | Finançament i subvencions | Financiación y subvenciones | ADG · M |
-| m13 | Formes jurídiques i tràmits | Formes jurídiques i tràmits (igual) | Formas jurídicas y trámites | ADG · M |
-| m14 | Mesura d'impacte i justificació | Avaluació i justificació de l'impacte social | Evaluación y justificación del impacto social | SSC · S |
-| m15 | Dades, privadesa i RGPD | Protecció de dades personals (RGPD) | Protección de datos personales (RGPD) | ADG · M |
-| m16 | Formació de formadors | Docència i tutoria de la formació | Docencia y tutoría de la formación | SSC · P |
-| m17 | El teu mapa de valor | Mapa de valor de l'organització | Mapa de valor de la organización | ADG · M |
-| m18 | El teu cervell i la teva cultura | Base de coneixement de l'organització per a la IA | Base de conocimiento de la organización para la IA | IFC · J |
-| m19 | La teva web | Web corporativa a partir del mapa de valor | Web corporativa a partir del mapa de valor | IFC · J |
-| m20 | Editar i publicar sense trencar | Edició i publicació de continguts web | Edición y publicación de contenidos web | IFC · J |
-| m21 | Que vagi sol | Automatització de formularis i processos | Automatización de formularios y procesos | IFC · J |
-| m22 | Treballar amb el teu Claude | Treball amb un assistent d'IA | Trabajo con un asistente de IA | IFC · J |
+| m1 | Sistemes digitals per a organitzacions | Sistemas digitales para organizaciones | Responsable digital · elegir herramientas abiertas, guardar los datos propios | IFC · J |
+| m2 | Identitat digital i signatura electrònica | Identidad digital y firma electrónica | Responsable de datos · firmar, verificar y custodiar | IFC · J |
+| m3 | Anàlisi de xarxes de valor | Análisis de redes de valor | Analista de procesos · mapear roles e intercambios, ver qué falta | ADG · M |
+| m4 | Gestió de recursos compartits | Gestión de recursos compartidos | Gestor/a de recursos comunitarios · banco de tiempo, préstamo de objetos | SSC · S |
+| m5 | Governança participativa | Gobernanza participativa | Secretaría y facilitación de órganos · quórum, actas, decisiones | SSC · S |
+| m6 | Economia col·laborativa i intercooperació | Economía colaborativa e intercooperación | Promotor/a de proyectos colectivos · reparto equitativo, acuerdos entre entidades | ADG · M |
+| m7 | Participació ciutadana | Participación ciudadana | Dinamizador/a de participación · registrar y reconocer aportaciones | SSC · S |
+| m8 | Dades obertes i IA responsable | Datos abiertos e IA responsable | Técnico/a de datos · publicar con garantías, usar la IA con criterio | IFC · J |
+| m9 | Dinamització de grups | Dinamización de grupos | Dinamizador/a comunitario/a · conducir sesiones | SSC · S |
+| m10 | Comunicació i captació | Comunicación y captación | Comunicador/a · difundir, acoger y fidelizar | COM · M |
+| m11 | Gestió de conflictes i cures | Gestión de conflictos y cuidados | Mediador/a · mediar, prevenir el desgaste, preparar relevos | SSC · S |
+| m12 | Finançament i subvencions | Financiación y subvenciones | Gestor/a de proyectos · buscar, solicitar y justificar | ADG · M |
+| m13 | Formes jurídiques i tràmits | Formas jurídicas y trámites | Gestor/a administrativo/a · elegir forma, hacer trámites | ADG · M |
+| m14 | Avaluació de l'impacte social | Evaluación del impacto social | Evaluador/a · indicadores e informes | SSC · S |
+| m15 | Protecció de dades personals | Protección de datos personales | Responsable de tratamiento · RGPD, consentimientos | ADG · M |
+| m16 | Docència i tutoria | Docencia y tutoría | Formador/a · diseñar, tutorizar y evaluar | SSC · P |
+| m17 | Mapa de valor de l'organització | Mapa de valor de la organización | Dirección o consultoría · quién aporta qué, con las diez reglas | ADG · M |
+| m18 | Gestió del coneixement per a la IA | Gestión del conocimiento para la IA | Gestor/a del conocimiento · que la IA conozca la organización | IFC · J |
+| m19 | Web corporativa | Web corporativa | Responsable web · del mapa a la web sin perder posicionamiento | IFC · J |
+| m20 | Publicació de continguts web | Publicación de contenidos web | Editor/a de contenidos · vista previa antes de publicar | IFC · J |
+| m21 | Automatització de processos | Automatización de procesos | Técnico/a de procesos · formularios y flujos conectados | IFC · J |
+| m22 | Treball amb assistents d'IA | Trabajo con asistentes de IA | Cualquier rol · pedir cambios, revisarlos y validarlos | IFC · J |
 
 Famílies: ADG Administració i gestió · COM Comerç i màrqueting · IFC
 Informàtica i comunicacions · SSC Serveis socioculturals i a la comunitat.
 CNAE: J informació i comunicacions · M activitats professionals · P educació ·
 S altres serveis.
 
-Els blocs: **A · Fonaments** → «Organitzacions comunitàries i economia
-social»; **B · L'ofici comunitari** → «Dinamització comunitària»; **C · La
-teva web viva** → «Transformació digital de l'organització».
+Els blocs: **A** → «Organitzacions comunitàries i economia social»; **B** →
+«Dinamització comunitària»; **C** → «Transformació digital de l'organització».
 
-## 3 · El que l'Álvaro ha de dir
+## 3 · Impacte del canvi
 
-1. ¿«Usuari» a l'app i «ciutadà» a les pàgines públiques, o un sol nom?
-2. ¿La taula de mòduls tal qual, o amb canvis? Els enllaços `#m1`… no canvien.
-3. ¿L'escola es diu «Escola de participació» també al títol de la pàgina?
+- **Enllaços i posicionament:** cap. `#m1`…`#m22`, els `id` i les URL no
+  canvien; només canvien títols visibles. L'escola canvia el `<title>`, que és
+  una pàgina petita.
+- **Pàgines que canvien:** `formacio.html` (22 títols, l'índex, les taules
+  d'itineraris i de rols), i el que en llegeix els noms: `comando.html` i
+  `molekulandia.html` (es regeneren amb `build-comando.js` i
+  `build-molekulandia.js`, PR #409), el catàleg, el pressupost i la visió per
+  stakeholder (PR #410).
+- **L'app:** només textos visibles (usuari/ària); el rol intern `superheroi`
+  queda, perquè és la clau de les dades que la gent ja té desades.
+- **El que no es toca:** el blog i les vedes antigues (són història) i les
+  pàgines de la campanya Molekulon (la ficció hi té el seu lloc).
+- **Arquitectura:** tres nivells fixos (àrea → mòdul → pràctica) i les regles
+  de la veda 187, que val per a qualsevol web comunitària nova.
+
+## 4 · Decidit i pendent
+
+- Decidit (21/11): usuari a l'app, ciutadà al públic; «Escola de participació».
+- Pendent: els 22 títols de la taula de dalt i adoptar la veda 187.
