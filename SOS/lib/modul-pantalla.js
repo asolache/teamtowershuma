@@ -101,6 +101,7 @@
       '  background:var(--card,#fff);color:var(--text,#222);border:1px solid var(--border,#ddd);border-left:3px solid var(--green,#2a7);',
       '  border-radius:10px;padding:.35rem .55rem;font:500 var(--t0,15px)/1.3 \'Space Grotesk\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Helvetica,Arial,sans-serif;',
       '  box-shadow:0 2px 10px rgba(0,0,0,.08)}',
+      '.tt-mp>span:not([aria-hidden]){min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.tt-mp a{color:var(--text,#222);text-decoration:none}.tt-mp a:hover,.tt-mp a:focus-visible{text-decoration:underline}',
       '.tt-mp .tt-mp-x{flex:none;border:0;background:none;color:var(--muted,#777);cursor:pointer;font-size:1rem;line-height:1;padding:0 .15rem}',
       '@media print{.tt-mp{display:none}}'
