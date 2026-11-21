@@ -32,7 +32,7 @@
       "id": "educacio",
       "ic": "🎓",
       "nom": "Educació",
-      "que": "El mateix relat és material d'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.",
+      "que": "El mateix relat és material d'aula: l'Escola de participació, de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.",
       "on": [
         "A l'escola",
         "escola.html"
@@ -410,7 +410,7 @@
       "mena": "directe",
       "qui": [],
       "titol": "Un taller, filmat",
-      "d": "Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.",
+      "d": "Una sessió de l'Escola de participació tal com passa, sense muntatge.",
       "url": null
     }
   ],
@@ -655,7 +655,7 @@
         "tall": false,
         "canon": "no tenen manera de veure",
         "pantalla": true,
-        "img": "Tres imatges: una aula de la Fàbrica de Superherois, un cromo que s'omple, i el kit narratiu escrivint una sinopsi.",
+        "img": "Tres imatges: una aula de l'Escola de participació, un cromo que s'omple, i el kit narratiu escrivint una sinopsi.",
         "veu": "Un superheroi són dues coses: saber què saps fer, i posar-ho on serveixi a algú altre. Si encara no saps què saps, per això hi ha escola. I si no tens la creativitat, te la posa una màquina.",
         "retol": null
       },

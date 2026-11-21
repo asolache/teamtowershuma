@@ -61,7 +61,7 @@ console.log('\n2 · Els quatre mòduls del SOS obren el que prometen');
   const passos = await page.$$eval('.pas .pas-cta', as => as.map(a => a.getAttribute('href')));
   ok(passos.length === 4, 'la pàgina declara els quatre passos');
   const ESPERAT = {
-    'index.html#/alta': /superheroi/i,
+    'index.html#/alta': /el teu perfil/i,
     'index.html#/kit': /kit narratiu/i,
     'index.html#/multivers': /multivers/i,
     'index.html#/comando': /comando/i

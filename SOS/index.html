@@ -2898,7 +2898,7 @@ const I18N={es:{
   '▦ Cohort':'▦ Cohorte',
   // Rols
   'Guardian del territori':'Guardián del territorio',
-  'Superheroi/na':'Superheroína/héroe',
+  'Usuari/ària':'Usuario/a',
   'Coordinador/a de comunitat':'Coordinador/a de comunidad',
   'Agent territorial':'Agente territorial',
   'Mentor/a d\'iniciatives':'Mentor/a de iniciativas',
@@ -4544,7 +4544,7 @@ const COMANDO_VILLAINS=[
 // Escala de reputació del Comando dins del SOS: es puja amb evidència, no amb temps.
 const COMANDO_RANKS=[
   {id:'aprenent',label:'Aprenent',one:'Comença: encara sense aportacions signades'},
-  {id:'superheroi',label:t('Superheroi/na'),one:'Aporta i intercanvia amb rastre verificable'},
+  {id:'superheroi',label:t('Usuari/ària'),one:'Aporta i intercanvia amb rastre verificable'},
   {id:'guardia',label:'Guardià/ana',one:'Sosté el territori: signa decisions i acompanya altres'}
 ];
 const founderOf=godKey=>COMANDO_FOUNDERS.find(f=>f.god===godKey)||null;
@@ -5932,12 +5932,12 @@ function openSuperheroiOnboarding(prefill){
   const editing=!!(prefill.key||prefill.name);
   const munis=CAT_GEO.municipi.slice().sort((a,b)=>a.n.localeCompare(b.n));
   const bg=modal(`
-    <h2>🦸 ${editing?'El teu perfil de superheroi/na':'Crea el teu perfil de superheroi/na'}</h2>
+    <h2>🦸 ${editing?'El teu perfil':'Crea el teu perfil'}</h2>
     ${editing&&prefill.via!=='importa'?'':`<div class="sh-pont sh-importa"><label class="btn btn-ghost" id="shImp">⇪ Importa un perfil<input type="file" id="shImpFile" accept=".json,.txt,.md,.csv,.vcf,application/json,text/plain" hidden></label>
       <span class="sh-pont-n">Ja en tens un? Porta la còpia de la teva identitat o de tot el SOS que vas descarregar en un altre aparell. Si és un CV o un text, l'aprofito per omplir-ho aquí.</span></div>`}
     <p class="m-sub">${editing?'Ja hi ets: <strong>edita</strong> el que vulguis. El que desmarquis es retirarà i el que afegeixis es publicarà — no es dupliquen ni ofertes ni objectes.':'En un sol pas: ubicació + habilitats (banc de temps) + objectes (biblioteca). Es signa amb la teva identitat did:sos i entra al fons cooperatiu local.'}</p>
     <div class="field"><label>El teu nom</label><input id="shName" autocomplete="name" placeholder="p.ex. Àlvar Solache" value="${esc(prefill.name||'')}"><div class="ent-desc" style="margin-top:.3rem">El nom que veurà la comunitat. Verificable via reputació signada del ledger.</div></div>
-    <div class="ent-desc" style="margin:-.2rem 0 .8rem">🦸 <strong>Entres com a superheroi/na</strong>, que és per on s'entra:
+    <div class="ent-desc" style="margin:-.2rem 0 .8rem">🦸 <strong>Entres com a usuari/ària</strong>, que és per on s'entra:
     hi poses el que saps fer i el que tens, i el sistema et pot trobar. Els altres rols no es trien
     aquí — <strong>es guanyen fent o te'ls assigna qui porta el node</strong>, i cadascun diu com.</div>
     ${prefill.via==='comando' ? `
@@ -6243,7 +6243,7 @@ function openNarrativeKit(prefill){
     <h2>🎬 Kit narratiu Molekulon</h2>
     <p class="m-sub">Genera sinopsi de còmic, himne i escena performativa amb IA. La narrativa viu al costat de la comptabilitat.</p>
     <div class="field"><label>Nom del molekulon</label><input id="nkName" placeholder="p.ex. Els guardians del barri vell" value="${esc(prefill.name||'')}"></div>
-    <div class="field"><label>Superherois (noms separats per coma)</label><input id="nkMembers" placeholder="Àlvar, Berta, Cèlia…" value="${esc((prefill.members||[]).join(', '))}"></div>
+    <div class="field"><label>Usuaris (noms separats per coma)</label><input id="nkMembers" placeholder="Àlvar, Berta, Cèlia…" value="${esc((prefill.members||[]).join(', '))}"></div>
     <div class="field"><label>Repte comunitari</label><input id="nkChallenge" placeholder="Recuperar l'ateneu del barri" value="${esc(prefill.challenge||'')}"></div>
     <div class="field"><label>Mode (opcional)</label>
       <div style="display:flex;gap:.4rem;flex-wrap:wrap">
@@ -6390,10 +6390,10 @@ function openMatchesModal(personName){
 // Cerca global (⌘K / Ctrl+K) — Backlog #9. Palette per accedir a qualsevol node · persona · entitat · acció.
 function _searchIndex(){
   const nodes=state.nodes.map(n=>{const d=n.dynamicType?dynById(n.dynamicType):null;return{k:'node',id:n.id,label:n.name,sub:(d?d.icon+' ':'')+metaOf(n).label,action:()=>selectNode(n.id)};});
-  const persons=[];const seen=new Set();state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{const k=personKey(m.name);if(seen.has(k))return;seen.add(k);persons.push({k:'person',id:k,label:m.name,sub:'🦸 superheroi',action:()=>openPersonProfile(m.name)});}));
+  const persons=[];const seen=new Set();state.nodes.forEach(nd=>membersOf(nd).forEach(m=>{const k=personKey(m.name);if(seen.has(k))return;seen.add(k);persons.push({k:'person',id:k,label:m.name,sub:'🦸 usuari/ària',action:()=>openPersonProfile(m.name)});}));
   const ents=(state.entities||[]).map(e=>({k:'entity',id:e.id,label:e.name,sub:'🏛 '+(e.entityType||'entitat'),action:()=>openEntityForm(e)}));
   const actions=[
-    {k:'action',id:'act_hero',label:'El meu perfil superheroi · crea\'l o edita\'l',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
+    {k:'action',id:'act_hero',label:'El meu perfil · crea\'l o edita\'l',sub:'✦ acció',action:()=>openSuperheroiOnboarding()},
     {k:'action',id:'act_dossier',label:'El meu dossier · CV, recursos i personatge',sub:'📇 acció',action:()=>openDossierEditor(state.activePersona||'')},
     {k:'action',id:'act_guide',label:'Guia pas a pas del meu rol',sub:'🧭 acció',action:()=>openGuide()},
     {k:'action',id:'act_intro',label:'Torna a veure la introducció al SOS',sub:'✦ acció · què és això i per a què serveix, des del principi',action:()=>openOnboardingTour()},
@@ -6437,7 +6437,7 @@ const QN_SINONIMS={
   pago:'registra ledger registre',pagament:'registra ledger registre',pagar:'registra ledger registre',diner:'ledger fons',dinero:'ledger fons',
   hores:'registra ledger',horas:'registra ledger',apuntar:'registra',apunta:'registra',
   tasca:'tasques',tasques:'tasques',tarea:'tasques',tareas:'tasques',pendent:'tasques vistiplau',pendiente:'tasques vistiplau',
-  gente:'gent persona',persona:'gent superheroi',personas:'gent superheroi',equip:'gent',equipo:'gent',socio:'soci gent',
+  gente:'gent persona',persona:'gent superheroi usuari ciutada',personas:'gent superheroi usuari ciutada',equip:'gent',equipo:'gent',socio:'soci gent',
   red:'xarxa mapa',flujo:'mapa',flux:'mapa',valor:'mapa ledger',
   copia:'configuracio',backup:'configuracio',exportar:'configuracio',exporta:'configuracio',
   fosc:'configuracio',oscuro:'configuracio',tema:'configuracio',aparenca:'configuracio',apariencia:'configuracio',
@@ -6586,7 +6586,7 @@ function openOnboardingTour(o){
        havia fet res. Ara explica el mapa: entres per un lloc, i els altres es
        guanyen o te'ls assignen. La pregunta «què puc arribar a ser» és bona; la
        dolenta era demanar-li que la contestés el primer dia. */
-    {ic:'🦸',t:'Entres com a superheroi/na',role:true,
+    {ic:'🦸',t:'Entres com a usuari/ària',role:true,
      b:'No has de triar què ets: <strong>s\'entra per un sol lloc</strong>. Hi poses el que saps fer i el que tens, i el sistema et pot trobar. Els altres rols no es demanen a la porta — <strong>es guanyen fent o te\'ls assigna qui porta el node</strong>, i aquí sota hi diu com s\'arriba a cadascun.',cta:null},
     {ic:'🦸',t:'El primer pas concret',
      b:'Nom, població, el que saps fer i el que poses en comú. Cinc minuts. <strong>No estàs donant-te d\'alta de res: estàs deixant que et puguin trobar.</strong> A partir d\'aquí el sistema ja pot casar el que saps fer amb qui ho necessita.',
@@ -6613,7 +6613,7 @@ function openOnboardingTour(o){
       /* El flux que es mostra és el de superheroi/na, que és per on s'entra, i
          no el d'un rol clicat: no hi ha res a clicar. */
       const j=ROLE_JOURNEYS.superheroi;
-      bg.querySelector('#obRoleFlow').innerHTML='<span class="cg-lens-r">El teu flux de valor com a superheroi/na</span>'+
+      bg.querySelector('#obRoleFlow').innerHTML='<span class="cg-lens-r">El teu flux de valor com a usuari/ària</span>'+
         '<strong>Hi poses:</strong> '+esc(j.gives)+'<br><strong>En treus:</strong> '+esc(j.gets);
     }
     /* L'últim pas ja no porta «salta»: quan has arribat al final no queda res a
@@ -8196,7 +8196,7 @@ const FOUNDER_MAP={
     {ic:'🏛',name:'Institucions públiques',fn:'ajuntaments, consells, Diputació, Generalitat (subvencions + validació)'},
     {ic:'💰',name:'Finançadors comunitaris',fn:'Fons cooperatius, NextGen, Coop57, Fiare, mecenatge distribuït'},
     {ic:'🤝',name:'Aliats tecnològics',fn:'Ateneus Coop, XES, Coòpolis, Pam a Pam, Sostre Cívic, Som Energia, La Dinamo'},
-    {ic:'🦸',name:'Superherois validats',fn:'aporten temps/objectes/talent verificats al ledger signat'},
+    {ic:'🦸',name:'Usuaris validats',fn:'aporten temps/objectes/talent verificats al ledger signat'},
     {ic:'📚',name:'Investigació acadèmica',fn:'universitats VNA + Slicing Pie + economia solidària'}
   ],
   flows:{
@@ -8211,7 +8211,7 @@ const FOUNDER_MAP={
       {t:'T',dst:'Comunitats',lbl:'Implementació + formació + suport tècnic'},
       {t:'T',dst:'Comunitats',lbl:'Canalització de subvencions (NextGen, Diba, aracoop)'},
       {t:'I',dst:'Comunitats',lbl:'Metodologia VNA · codex Antigravity · sabiduria'},
-      {t:'I',dst:'Superherois',lbl:'Confiança + reputació verificable via ledger'}
+      {t:'I',dst:'Usuaris',lbl:'Confiança + reputació verificable via ledger'}
     ],
     aggregate:[
       {t:'T',lbl:'Estalvi €/any per llar (banc temps + biblio + energia + habitatge coop)'},
@@ -8264,7 +8264,7 @@ function coreProjectsFor(personName){
 // Rols del SOS · cada rol té un roadmap i suggeriments d'acció adaptats.
 const SOS_ROLES={
   guardian:{ic:'🏛',label:t('Guardian del territori'),desc:'Coordina, vetlla la sabiduria, signa decisions',color:'var(--indigo)'},
-  superheroi:{ic:'🦸',label:t('Superheroi/na'),desc:'Aporta talents i objectes al fons cooperatiu',color:'var(--green)'},
+  superheroi:{ic:'🦸',label:t('Usuari/ària'),desc:'Aporta talents i objectes al fons cooperatiu',color:'var(--green)'},
   coordinador:{ic:'👥',label:t('Coordinador/a de comunitat'),desc:'Ajuda persones i entitats a integrar-se al SOS',color:'var(--orange)'},
   agent:{ic:'🌐',label:t('Agent territorial'),desc:'Connecta institucions públiques amb l\'ecosistema',color:'var(--blue)'},
   mentor:{ic:'🎓',label:t('Mentor/a d\'iniciatives'),desc:'Acompanya ventures de la MATRIU amb sessions registrades',color:'var(--amber)'},
@@ -8500,7 +8500,7 @@ function openPublicDecisionsModal(node){
 const PES_ORDRE={bloqueja:3,obre:2,mou:1,menu:0};
 const ACCIONS=[
   {g:'jo',ic:'🆔',quan:c=>c.jo,pes:'menu',t:'La meva identitat digital',d:'did:sos · passkey · Nostr · relés · rols · envelopes',fn:()=>routeTo('identitat')},
-  {g:'jo',ic:'🦸',quan:()=>true,pes:c=>c.jo?'menu':'bloqueja',t:'El meu perfil superheroi',d:'Nom + població + fins a 5 poders + objectes · si ja el tens, s\'edita',fn:()=>openSuperheroiOnboarding()},
+  {g:'jo',ic:'🦸',quan:()=>true,pes:c=>c.jo?'menu':'bloqueja',t:'El meu perfil',d:'Nom + població + fins a 5 poders + objectes · si ja el tens, s\'edita',fn:()=>openSuperheroiOnboarding()},
   {g:'jo',ic:'📇',quan:c=>c.jo,pes:c=>c.caps.dossier?'menu':'mou',t:'El meu dossier',d:'CV en local + recursos + arquetip + personatge amb IA',fn:()=>openDossierEditor(state.activePersona||'')},
   {g:'jo',ic:'🧭',quan:c=>c.jo,pes:'menu',t:'La meva guia pas a pas',d:'Flux de valor i camí complet segons el teu rol al SOS',fn:()=>openGuide()},
   {g:'jo',ic:'⊞',quan:c=>c.jo&&c.ledger>0,pes:'menu',t:'El meu ledger SOS',d:'Totes les meves aportacions, a tots els nodes, amb la seva firma',fn:()=>openMyLedger(state.activePersona||'')},
@@ -8769,7 +8769,7 @@ function _initialsOf(name){return (name||'?').split(/\s+/).slice(0,2).map(s=>s.c
 // El check retorna un booleà. La UI marca ✓/○ i mostra progrés real, no promesa.
 const HERO_CHALLENGES={
   Aprenent:[
-    {id:'a1',label:'Crea el teu perfil superheroi',check:async p=>p.totals.nodes>0},
+    {id:'a1',label:'Crea el teu perfil',check:async p=>p.totals.nodes>0},
     {id:'a2',label:'Registra la teva primera aportació',check:async(p,r)=>p.balances.length>0||r.hours>0||p.contributions.some(c=>c.entry.type==='temps')},
     {id:'a3',label:'Registra 1 objecte a la biblioteca',check:async p=>p.totals.objectesPropis>0}
   ],
@@ -8790,7 +8790,7 @@ const HERO_CHALLENGES={
   ],
   Llegenda:[
     {id:'l1',label:'Coordina intercooperació entre ventures',check:async p=>p.totals.ventures>=2},
-    {id:'l2',label:'Mentoritza altres superheroi',check:async(p,r)=>r.communities>=8},
+    {id:'l2',label:'Mentoritza altres usuaris',check:async(p,r)=>r.communities>=8},
     {id:'l3',label:'Reputació de llegenda mantinguda',check:async(p,r)=>r.reputationScore>=1100}
   ]
 };
@@ -9257,7 +9257,7 @@ function openComandoView(){
       '<div style="padding:.4rem .8rem 0"><div style="font-size:var(--t0);color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem">Superarmes</div><div style="display:flex;flex-wrap:wrap;gap:.2rem">'+(c.superarmes.length?c.superarmes.slice(0,4).map(a=>'<span style="background:rgba(0,230,118,.15);color:var(--green);padding:.1rem .4rem;border-radius:10px;font-size:var(--t0)" title="'+esc(a.node)+'">'+esc(a.name.slice(0,18))+(a.name.length>18?'…':'')+'</span>').join(''):'<span style="font-size:var(--t0);color:var(--muted);opacity:.6">encara cap</span>')+'</div></div>'+
       '<div style="padding:.4rem .8rem .7rem;font-size:var(--t0);color:var(--muted);display:flex;gap:.6rem;border-top:1px solid color-mix(in srgb,var(--text) 5%,transparent);margin-top:.3rem"><span>⏱ '+c.hours+'h</span><span>🏘 '+c.communities+'</span><span>🔏 '+c.signed+'</span></div>'+
     '</div>';
-  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap usuari. Crea el teu perfil o convida gent.</span></div>';
   // Vista fitxa: skills + recursos + projectes de cada personatge (agregat sobre tot l'ecosistema)
   const renderFitxa=()=>roster.length?roster.slice(0,40).map((c,i)=>{
     const sheet=characterSheetOf(c.name);
@@ -9272,7 +9272,7 @@ function openComandoView(){
       '<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🏘 Projectes on és membre</div><div class="cm-fitxa-body">'+projHtml+'</div></div>'+
       (ventHtml?'<div class="cm-fitxa-sec"><div class="cm-fitxa-lb">🌱 Ventures que lidera</div><div class="cm-fitxa-body">'+ventHtml+'</div></div>':'')+
     '</div>';
-  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap superheroi. Crea el teu perfil o convida gent.</span></div>';
+  }).join(''):'<div class="ai-note"><span class="ic">✨</span><span>Encara cap usuari. Crea el teu perfil o convida gent.</span></div>';
   let mode='film';
   const paint=()=>{
     labelBox.textContent=mode==='film'?'Cromos de la tribu':'Fitxes de personatge';
@@ -10979,7 +10979,7 @@ function renderResum(body,node,ru){
     'Obre <strong>Assemblea federativa</strong> per decisions inter-municipis',
     'Publica <strong>mainHash</strong> a Nostr per prova pública'
   ],{label:'🏛 Obre Sabiduria',onclick:()=>openGovernanceModal(node)},SOS_ROLES.guardian.color));
-  flow.appendChild(flowCard('🦸','Superheroi/na','Aporta els teus talents · rep reputació verificable',[
+  flow.appendChild(flowCard('🦸','Usuari/ària','Aporta els teus talents · rep reputació verificable',[
     'Crea el teu perfil (nom + població + fins a 5 <strong>superpoders</strong>)',
     'Vincula un <strong>passkey WebAuthn</strong> per accés segur',
     'Publica ofertes/demandes al banc de temps · rep pings',
@@ -14839,7 +14839,7 @@ const MODAL_ROUTES={
   /* `#/alta/comando` és la mateixa alta amb una passa més. `parseRoute` parteix
      per barres i es queda amb el primer tros, així que el segon no demana cap
      ruta nova —i el sostre de rutes modals no es toca per una variant. */
-  alta:{open:()=>openSuperheroiOnboarding({via:/\/comando\b/.test(location.hash||'')?'comando':''}),label:'Fes-te superheroi/na'},
+  alta:{open:()=>openSuperheroiOnboarding({via:/\/comando\b/.test(location.hash||'')?'comando':''}),label:'Fes-te usuari/ària'},
   comando:{open:()=>openComandoView(),label:'Comando Molekulon'},
   activitat:{open:()=>openActivityLog(),label:'Registre d\'activitat'},
   ledger:{open:()=>openMyLedger(state.activePersona||''),label:'El meu ledger SOS'},
@@ -16062,7 +16062,7 @@ function openMemberForm(node,e){
     <div class="field"><label>Contacte (opcional)</label><div class="wz-key"><input id="mbPhone" placeholder="Telèfon" value="${e?esc(e.contact.phone||''):''}"><input id="mbEmail" placeholder="Correu" value="${e?esc(e.contact.email||''):''}"></div></div>
     </div>
     ${e?`<div class="field"><label>Rol assignat en aquest node</label>
-      <select id="mbRole">${[['','— cap, i està bé: superheroi/na és el rol de tothom que aporta']]
+      <select id="mbRole">${[['','— cap, i està bé: usuari/ària és el rol de tothom que aporta']]
         .concat(ROLS_ASSIGNABLES.map(k=>[k,SOS_ROLES[k].ic+' '+SOS_ROLES[k].label+' · '+SOS_ROLES[k].desc]))
         .map(([v,l])=>'<option value="'+v+'"'+((e.role||'')===v||(v===''&&(!e.role||e.role==='superheroi'))?' selected':'')+'>'+esc(l)+'</option>').join('')}</select>
       <div class="ent-desc" style="margin-top:.3rem">Només aquests dos es marquen a mà. <strong>Guardiana</strong> surt de reclamar el node o de ser-ne guardiana —se signa—, i <strong>mentora</strong> del registre de mentories. Repartir-los des d'un desplegable seria donar per formulari el que es guanya deixant rastre.</div>
@@ -17455,7 +17455,7 @@ function openPersonProfile(nameOrKey){
               '<div class="rol-d">'+esc(x.acces.via||x.meta.desc)+'</div></div>').join('')+'</div>';
         })();
     })()}
-    ${(function(){const rep=reputationOf(p.key||p.name);const shakti=Math.round(rep.shakti*100),shiva=Math.round(rep.shiva*100);const powers=rep.superpowers.map(s=>'<span class="ent-b">'+esc(s.cat)+' ×'+s.count+'</span>').join('');return '<div class="ent-card" style="background:linear-gradient(90deg,rgba(0,230,118,.1) '+shakti+'%,rgba(255,145,0,.1) '+shakti+'%);margin-bottom:.6rem"><div class="ent-nm">🦸 Superheroi · reputació '+rep.reputationScore+'</div><div class="ent-badges"><span class="ent-b b-ver">💫 Shakti '+shakti+'%</span><span class="ent-b">🔥 Shiva '+shiva+'%</span>'+(rep.signed?'<span class="ent-b b-ver">🔏 '+rep.signed+' apunts firmats</span>':'')+(rep.unsigned?'<span class="ent-b">⋯ '+rep.unsigned+' legacy</span>':'')+'</div>'+(powers?'<div class="ent-desc" style="margin-top:.4rem"><strong>Superpoders:</strong> '+powers+'</div>':'')+'</div>';})()}
+    ${(function(){const rep=reputationOf(p.key||p.name);const shakti=Math.round(rep.shakti*100),shiva=Math.round(rep.shiva*100);const powers=rep.superpowers.map(s=>'<span class="ent-b">'+esc(s.cat)+' ×'+s.count+'</span>').join('');return '<div class="ent-card" style="background:linear-gradient(90deg,rgba(0,230,118,.1) '+shakti+'%,rgba(255,145,0,.1) '+shakti+'%);margin-bottom:.6rem"><div class="ent-nm">🦸 Usuari/ària · reputació '+rep.reputationScore+'</div><div class="ent-badges"><span class="ent-b b-ver">💫 Shakti '+shakti+'%</span><span class="ent-b">🔥 Shiva '+shiva+'%</span>'+(rep.signed?'<span class="ent-b b-ver">🔏 '+rep.signed+' apunts firmats</span>':'')+(rep.unsigned?'<span class="ent-b">⋯ '+rep.unsigned+' legacy</span>':'')+'</div>'+(powers?'<div class="ent-desc" style="margin-top:.4rem"><strong>Superpoders:</strong> '+powers+'</div>':'')+'</div>';})()}
     ${(function(){
       const cr=superheroCromo(p.key||p.name),comp=dossierCompleteness(cr.dossier);
       const aff=archetypeAffinity(p.name);

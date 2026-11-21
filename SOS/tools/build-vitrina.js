@@ -144,7 +144,7 @@ const GENT = [
     q: 'El poble sencer en una pantalla: onze edificis on entrar i nou professions. El bar és el banc de temps i la ferreteria, la biblioteca.' },
   { ic: '🎬', nom: 'El Comando Molekulon', pag: 'SOS/comando.html',
     q: 'Un còmic, una banda i una pel·lícula que farem 150.000 persones. El teu personatge és el que ja fas, i els crèdits són el registre.' },
-  { ic: '🎓', nom: 'La Fàbrica de Superherois', pag: 'SOS/escola.html',
+  { ic: '🎓', nom: 'L\'Escola de participació', pag: 'SOS/escola.html',
     q: 'El mateix relat, de 6 a 13 anys. Cap nom real surt de l\'aula.' },
   { ic: '🌐', nom: 'El directori', pag: 'SOS/online.html',
     q: 'Qui hi ha al territori, per municipi, amb cada fitxa signada per qui la publica.' },

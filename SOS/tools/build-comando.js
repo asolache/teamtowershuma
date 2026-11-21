@@ -73,7 +73,7 @@ const EIXOS = [
     que: 'Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable.',
     on: ['Els herois canònics', '#herois'] },
   { id: 'educacio', ic: '🎓', nom: 'Educació',
-    que: 'El mateix relat és material d\'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.',
+    que: 'El mateix relat és material d\'aula: l\'Escola de participació, de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.',
     on: ['A l\'escola', 'escola.html'] },
   { id: 'inspiracio', ic: '✨', nom: 'Inspiració',
     que: 'Ningú es mou per un informe. Es mou perquè algú altre s\'ha mogut i ho ha explicat prou bé perquè es vegi que es podia.',
@@ -199,7 +199,7 @@ const VIDEOS = [
     d: 'El tema que enceta la saga del tercer còmic: el punxi per rematar la fauna i trobar els que falten.',
     url: null },
   { id: 'directe-taller', mena: 'directe', qui: [], titol: 'Un taller, filmat',
-    d: 'Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.', url: null }
+    d: 'Una sessió de l\'Escola de participació tal com passa, sense muntatge.', url: null }
 ];
 
 /* ══ EL BLOG DEL COMANDO ═════════════════════════════════════════════════════
@@ -347,7 +347,7 @@ const INTRO = {
       retol: null },
     { n: 14, s: 10, titol: 'Com es fa un superheroi', de: null, qui: [], tall: false,
       canon: 'no tenen manera de veure', pantalla: true,
-      img: 'Tres imatges: una aula de la Fàbrica de Superherois, un cromo que s\'omple, i el kit narratiu escrivint una sinopsi.',
+      img: 'Tres imatges: una aula de l\'Escola de participació, un cromo que s\'omple, i el kit narratiu escrivint una sinopsi.',
       veu: 'Un superheroi són dues coses: saber què saps fer, i posar-ho on serveixi a algú altre. Si encara no saps què saps, per això hi ha escola. I si no tens la creativitat, te la posa una màquina.',
       retol: null },
     { n: 15, s: 7, titol: 'I tu, t\'hi apuntes?', de: null, qui: [], tall: true, cta: true,
