@@ -178,6 +178,8 @@ const SOS_GRUPS = [
       T('Grup de consum i compra col·lectiva', 'Grupo de consumo y compra colectiva')],
     ['energia.html', T('L\'Energia', 'La Energía'),
       T('Comunitat energètica i autoconsum compartit', 'Comunidad energética y autoconsumo compartido')],
+    ['aigua.html', T('L\'Aigua', 'El Agua'),
+      T('El consum de cada llar, l\'estalvi mesurat i la planta solar', 'El consumo de cada hogar, el ahorro medido y la planta solar')],
     ['habitatge.html', T('L\'Habitatge', 'La Vivienda'),
       T('Cessió d\'ús: quota, entrada i sortida', 'Cesión de uso: cuota, entrada y salida')],
     ['online.html', T('El directori', 'El directorio'),
@@ -273,7 +275,7 @@ const PAGINES_LLOC = ['blog.html', 'diagnostic.html', 'diagnostic-org.html', 'di
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
-const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html', 'crm.html', 'diagnostic.html',
+const PAGINES = ['aigua.html', 'banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',

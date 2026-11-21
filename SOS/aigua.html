@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>L'Aigua · gestió comunitària de l'aigua · SOS</title>
+<meta name="description" content="L'aigua d'una comunitat, comptada: el que gasta cada llar, l'estalvi mesurat amb el comptador, el que perd la xarxa, la gestió compartida i les plantes solars on no hi ha aigua bona.">
+<meta property="og:title" content="L'Aigua · gestió comunitària de l'aigua">
+<meta property="og:description" content="El consum de cada llar, l'estalvi mesurat i no estimat, les pèrdues de la xarxa i la planta solar on no arriba l'aigua bona.">
+<meta property="og:type" content="website">
+<style>
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+.wrap{max-width:880px;margin:0 auto;padding:0 1rem}
+a{color:var(--indigo)}
+.hero{padding:2.6rem 1rem 1.8rem;text-align:center}
+.hero .kicker{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--blue)}
+.hero h1{font-size:var(--t4);line-height:1.15;margin:.6rem auto .8rem;max-width:18ch}
+.hero .lead{font-size:var(--t1);color:var(--light);max-width:36rem;margin:0 auto 1.3rem}
+.ctas{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+.fine{margin-top:1rem;font-size:var(--t0);color:var(--muted)}
+section{padding:2rem 0}
+h2{font-size:var(--t3);margin:0 0 .4rem}
+h3{font-size:var(--t1);margin:0 0 .3rem}
+.sub{color:var(--light);margin:0 0 1.2rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.8rem}
+label{display:block;font-size:var(--t0);color:var(--light);margin:.5rem 0 .2rem}
+input{width:100%;min-height:44px;padding:.5rem .7rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--card);color:var(--text);font:inherit}
+.res{background:var(--panel);border-left:3px solid var(--blue);border-radius:0 12px 12px 0;padding:1rem 1.1rem;margin-top:.9rem}
+.res b.gran{font-size:var(--t3);color:var(--blue)}
+.font{font-size:var(--t0);color:var(--muted)}
+.taula{width:100%;border-collapse:collapse;font-size:var(--t0)}
+.taula th,.taula td{padding:.45rem .4rem;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+.taula input{min-height:40px}
+.capes{counter-reset:c;display:grid;gap:.6rem;padding:0;margin:0;list-style:none}
+.capes li{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.8rem 1rem .8rem 3rem;position:relative}
+.capes li::before{counter-increment:c;content:counter(c);position:absolute;left:1rem;top:.85rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--blue);color:var(--on-accent);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:var(--t0)}
+.avis{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;color:var(--light);font-size:var(--t0)}
+ul.net{margin:.3rem 0 0;padding-left:1.1rem;color:var(--light)}
+ul.net li{margin:.3rem 0}
+</style>
+</head>
+<body data-pantalla>
+<!--TT-NAV-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
+   una còpia: hi ha guarda. Només tokens de la pell (build-pell.js), perquè els
+   àlies de les pàgines d'arrel —--white, --accent-indigo, --bg-panel— no
+   existeixen a les 24 del SOS i allà no peten: deixen el text sense color. */
+.tt-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+  padding:.7rem 1.1rem;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
+  text-decoration:none;margin-right:.5rem;white-space:nowrap}
+.tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
+.tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.tt-nav .tn-g{position:relative}
+.tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
+.tt-nav .tn-g>summary::-webkit-details-marker{display:none}
+.tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
+.tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.tt-nav .tn-here>summary{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+.tt-nav .tn-p{position:absolute;top:calc(100% + .35rem);left:0;min-width:272px;z-index:110;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.tt-nav .tn-p a{display:block;padding:.44rem .58rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.tt-nav .tn-p a:hover{background:var(--panel);color:var(--text)}
+.tt-nav .tn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.tt-nav .tn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.tt-nav .tn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.tt-nav .tn-lang{display:flex;align-items:center;gap:2px;margin-left:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px}
+.tt-nav .tn-lang .lang-b{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font:inherit;font-size:var(--t0);padding:.16rem .5rem;border-radius:5px}
+.tt-nav .tn-lang .lang-b.on{background:var(--indigo);color:var(--on-accent);font-weight:700}
+.tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
+/* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
+.tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-in{margin-left:auto;color:var(--text);text-decoration:none;padding:.42rem .6rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-in:hover{background:var(--panel)}
+.tt-nav .tn-in+.tn-cta{margin-left:.25rem}
+.tt-nav .tn-lang~.tn-in{margin-left:.55rem}
+.tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
+  text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-cta:hover{filter:brightness(1.12)}
+@media(max-width:860px){
+  .tt-nav{padding:.42rem .6rem;gap:.25rem}
+  /* La marca baixa al terra —no per sota— perquè la marca, el commutador i
+     l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
+     partia i la barra passava de dues files a tres. */
+  .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
+  /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
+     El primer intent posava els cinc grups **en columna** a mòbil, oberts
+     sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
+     el dibuix i el botó del hero de la primera pantalla: test-portada.mjs va
+     dir «acaba a 1033 de 844». Una barra no pot costar un quart de pantalla.
+
+     En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
+     d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
+     a sota, que és el que una columna sí que feia. */
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-g>summary{padding:.3rem .5rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
+  .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
+    top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
+}
+</style>
+<nav class="tt-nav" aria-label="Navegació del lloc">
+  <a class="tn-brand" href="/SOS/">El <span>SOS</span></a>
+  <a class="tn-casa" href="/">TeamTowers</a>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/vna-suport.html"><b>L'editor del mapa</b><span>Rols, lliuraments, real i ideal: la vista avançada</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/aigua.html" aria-current="page"><b>L'Aigua</b><span>El consum de cada llar, l'estalvi mesurat i la planta solar</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html"><b>Crea el teu cervell</b><span>Cinc vistes, per a les IA i el LMS</span></a><a href="/SOS/la-font.html"><b>La font i la colla</b><span>Totes les vistes en una pel·lícula</span></a><a href="/SOS/colla.html"><b>La colla en la pinya</b><span>Un tauler per factor del test, amb els forats</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span>Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>El Comando</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 herois</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>La Fàbrica de Superherois</b><span>De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
+  <a class="tn-in" href="/acceso"><span>Entra</span></a>
+  <a class="tn-cta" href="/SOS/"><span>Obre el SOS</span> →</a>
+</nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
+<!--/TT-NAV-->
+<main>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="kicker">💧 Gestió comunitària de l'aigua</div>
+    <h1>L'aigua del poble, comptada entre tots</h1>
+    <p class="lead">Quanta aigua gasta cada llar, quanta se n'estalvia <strong>de debò</strong> (mesurada amb el comptador, no promesa), quanta en perd la xarxa i com es gestiona en comú. I, on no arriba aigua bona, com una planta solar en pot fer la llavor d'un sector nou.</p>
+    <div class="ctas">
+      <a class="btn-primary" href="#llar">Calcula la teva llar</a>
+      <a class="btn-ghost" href="#planta">Plantes solars d'aigua</a>
+    </div>
+    <p class="fine">Aquí no es contracta res. El que hi escriguis es queda en aquest dispositiu i enlloc més.</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section id="llar" data-pantalla-nom="La teva llar">
+  <h2>Quanta aigua gasta la teva llar</h2>
+  <p class="sub">Agafa l'última factura: hi diu els m³ i els dies del període.</p>
+  <div class="card">
+    <div class="grid">
+      <div><label for="a-pers">Persones a casa</label><input id="a-pers" type="number" min="1" step="1" value="2" inputmode="numeric"></div>
+      <div><label for="a-m3">m³ de la factura</label><input id="a-m3" type="number" min="0" step="0.1" placeholder="p. ex. 12" inputmode="decimal"></div>
+      <div><label for="a-dies">Dies del període</label><input id="a-dies" type="number" min="1" step="1" value="61" inputmode="numeric"></div>
+    </div>
+    <div class="res" id="a-res" aria-live="polite"></div>
+  </div>
+  <p class="font">Referència: <span id="a-ref"></span></p>
+</section>
+
+<section id="estalvi" data-pantalla-nom="L'estalvi">
+  <h2>L'estalvi, mesurat i no estimat</h2>
+  <p class="sub">Cada llar apunta dues lectures del comptador de períodes iguals: abans i després de canviar alguna cosa (airejadors, dutxa, cisterna, una fuita arreglada). La suma és l'estalvi del grup.</p>
+  <div class="card">
+    <table class="taula" aria-label="Lectures de les llars del grup">
+      <thead><tr><th scope="col">Llar</th><th scope="col">Abans (m³)</th><th scope="col">Després (m³)</th><th scope="col">Treu</th></tr></thead>
+      <tbody id="e-files"></tbody>
+    </table>
+    <p><button type="button" class="btn btn-sm" id="e-afegeix">+ Una llar</button></p>
+    <label for="e-preu">Preu del m³ de la vostra factura (opcional, amb tots els conceptes)</label>
+    <input id="e-preu" type="number" min="0" step="0.01" placeholder="el de la factura" inputmode="decimal">
+    <div class="res" id="e-res" aria-live="polite"></div>
+  </div>
+  <p class="font">El sostre: amb els equips més eficients a aixetes, dutxa i cisterna de doble descàrrega, l'OCU va mesurar fins a un <span id="e-sostre"></span> d'estalvi en el seu escenari de prova. És un sostre, no una promesa: per això aquí es mesura.</p>
+</section>
+
+<section id="xarxa" data-pantalla-nom="La xarxa">
+  <h2>El que perd la xarxa</h2>
+  <p class="sub">En una xarxa comunitària (una urbanització, un poble petit, una finca), el que entra menys el que marquen els comptadors és el que es perd pel camí.</p>
+  <div class="card">
+    <div class="grid">
+      <div><label for="x-entra">m³ que entren a la xarxa</label><input id="x-entra" type="number" min="0" step="0.1" inputmode="decimal"></div>
+      <div><label for="x-compt">m³ que sumen els comptadors</label><input id="x-compt" type="number" min="0" step="0.1" inputmode="decimal"></div>
+    </div>
+    <div class="res" id="x-res" aria-live="polite"></div>
+  </div>
+  <p class="font" id="x-ref"></p>
+</section>
+
+<section id="comunitat" data-pantalla-nom="Gestió compartida">
+  <h2>L'aigua com a bé comú</h2>
+  <p class="sub">Gestionar l'aigua en comú no és nou: les comunitats d'usuaris existeixen a la llei des de fa dècades. El que el SOS hi afegeix és que tot quedi comptat i a la vista.</p>
+  <div class="grid">
+    <div class="card"><h3>📜 La forma</h3><p>Una <strong>comunitat d'usuaris</strong> (art. 81 de la Llei d'Aigües) quan compartiu una captació, o l'associació o cooperativa que ja tingueu. Els tràmits, al mòdul 13.</p></div>
+    <div class="card"><h3>🧪 La qualitat</h3><p>L'aigua de consum té controls obligatoris (Reial decret 3/2023). Les analítiques, amb data i signatura, al registre del grup.</p></div>
+    <div class="card"><h3>⏳ El manteniment</h3><p>Les hores de qui llegeix comptadors, canvia filtres o arregla una fuita, al <a href="/SOS/banc-temps.html">Banc de Temps</a>: una hora val una hora.</p></div>
+    <div class="card"><h3>⚡ L'energia</h3><p>Bombejar i tractar aigua gasta llum. Si teniu plaques, el bombament al migdia és l'excedent ben aprofitat: <a href="/SOS/energia.html">L'Energia</a>.</p></div>
+  </div>
+</section>
+
+<section id="planta" data-pantalla-nom="Plantes solars">
+  <h2>On no hi ha aigua bona: una planta solar</h2>
+  <p class="sub">Plantes de dessalinització per osmosi inversa i de depuració que funcionen amb el sol, sense bateries ni xarxa elèctrica, i es vigilen a distància. Per a municipis, càmpings, finques amb pou salobre i comunitats sense aigua bona.</p>
+  <p>La màquina es pot vigilar per sensor; <strong>la comunitat no.</strong> Al voltant de cada planta neix un sector, i cada capa s'ha d'aprendre:</p>
+  <ol class="capes">
+    <li><strong>La planta</strong> · aigua bona cada dia, i algú del poble que la cuida.</li>
+    <li><strong>L'aigua per a serveis</strong> · el quiosc d'aigua, l'escola, la salut, la cuina.</li>
+    <li><strong>Els conreus</strong> · reg amb poca aigua, l'hort comunitari.</li>
+    <li><strong>El segon sector</strong> · transformar el que l'aigua fa créixer.</li>
+    <li><strong>La comunitat de l'aigua</strong> · qui en fa ús, com es paga i com es decideix.</li>
+  </ol>
+  <div class="card" style="margin-top:1rem">
+    <h3>🌅 Boreal Light</h3>
+    <p>La línia que porta aquestes plantes a Espanya amb una xarxa de professionals certificats per disciplina. <a href="/boreal-light/">Veure la proposta</a></p>
+  </div>
+</section>
+
+<section id="apren" data-pantalla-nom="Aprèn-ho">
+  <h2>On s'aprèn i com es certifica</h2>
+  <p class="sub">Aquesta pantalla és la pràctica del mòdul de recursos compartits. El certificat surt de l'evidència, i és teu.</p>
+  <div class="grid">
+    <a class="card" href="/SOS/formacio.html#m4"><h3>🎓 Mòdul 4 · Gestió de recursos compartits</h3><p>Gestor/a de recursos comunitaris: comptar el que és de tots i repartir-ho bé.</p></a>
+    <a class="card" href="/SOS/formacio.html#m14"><h3>📊 Mòdul 14 · Avaluació de l'impacte social</h3><p>Dir l'estalvi amb la seva font i el seu mètode, i no més del que es pot provar.</p></a>
+  </div>
+  <div class="card">
+    <h3>La pràctica que certifica</h3>
+    <ul class="net">
+      <li><strong>N1</strong> · el consum de cinc llars calculat aquí, i una assemblea o sessió sobre l'aigua feta.</li>
+      <li><strong>N2</strong> · un estalvi mesurat de grup (abans i després) i un model de pagament o de torns funcionant.</li>
+      <li><strong>N3</strong> · formar qui ho farà al poble següent.</li>
+    </ul>
+    <p class="font">Les disciplines d'una planta solar (diagnosi del lloc, fotovoltaica, hidràulica, tractament, control, manteniment, tràmits i comunitat) tenen la seva evidència N1 i N2 a la xarxa de professionals de Boreal Light.</p>
+  </div>
+</section>
+
+<section id="fonts" data-pantalla-nom="Fonts">
+  <h2>D'on surt cada xifra</h2>
+  <ul class="net" id="f-llista"></ul>
+  <p class="avis">L'estalvi d'un grup <strong>no s'estima</strong>: es mesura amb dues lectures del comptador. Els euros només surten si hi poseu el preu de la vostra factura. Aquesta pàgina no publica cap preu.</p>
+</section>
+
+</div>
+</main>
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-frase{margin-top:.5rem;font-weight:700;color:var(--text)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span>Avís legal i privacitat</span></a></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/vna-suport.html"><span>L'editor del mapa</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/aigua.html" aria-current="page"><span>L'Aigua</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html"><span>Formació acció</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/cervell.html"><span>Crea el teu cervell</span></a></li><li><a href="/SOS/la-font.html"><span>La font i la colla</span></a></li><li><a href="/SOS/colla.html"><span>La colla en la pinya</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Molekulon</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>El Comando</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>La Fàbrica de Superherois</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+  </div>
+</footer>
+<script src="/SOS/lib/recorrido.js" defer></script>
+<!--/TT-PEU-->
+<script src="/SOS/lib/aigua.js"></script>
+<script src="/SOS/lib/pantalla.js" defer></script>
+<script>
+/* ══ L'Aigua · la pantalla de la comunitat de l'aigua ═══════════════════════
+   Els càlculs i les fonts viuen a `lib/aigua.js` (una sola peça, que hereten
+   la visió i Boreal Light). Aquí només hi ha la pantalla i el que es desa en
+   aquest navegador. */
+(function () {
+  'use strict';
+  var A = window.Aigua;
+  var $ = function (s) { return document.querySelector(s); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var fmt = function (x, d) { return Number(x).toLocaleString('ca-ES', { maximumFractionDigits: d == null ? 1 : d }); };
+  var CLAU = 'sos-aigua';
+  var estat = { pers: 2, m3: '', dies: 61, preu: '', entra: '', compt: '', llars: [{ nom: 'Llar 1', abans: '', despres: '' }] };
+  try { var g = JSON.parse(localStorage.getItem(CLAU) || 'null'); if (g) estat = Object.assign(estat, g); } catch (e) {}
+  function desa() { try { localStorage.setItem(CLAU, JSON.stringify(estat)); } catch (e) {} }
+  var CAT = A.REFERENCIES.catalunya, ESP = A.REFERENCIES.espanya, F = A.FONTS;
+
+  /* ── La llar ── */
+  $('#a-ref').innerHTML = 'consum mitjà de les llars el ' + CAT.any + ': ' + CAT.lpd + ' l per persona i dia a Catalunya i ' + ESP.lpd + ' a Espanya (<a href="' + F.ine2024.url + '" rel="noopener">INE</a>).';
+  function llar() {
+    var p = +$('#a-pers').value, m3 = +$('#a-m3').value, d = +$('#a-dies').value;
+    estat.pers = p; estat.m3 = $('#a-m3').value; estat.dies = d; desa();
+    var lpd = A.lpdDeFactura(m3, d, p);
+    if (!lpd) { $('#a-res').innerHTML = 'Posa-hi els m³ i els dies de la factura. Mentrestant, una llar de ' + fmt(p, 0) + ' persones a la mitjana catalana gasta uns <b>' + fmt(A.anualLlar(p, CAT.lpd)) + ' m³ l\'any</b>.'; return; }
+    var dif = Math.round((lpd - CAT.lpd) / CAT.lpd * 100);
+    $('#a-res').innerHTML = '<b class="gran">' + fmt(lpd, 0) + ' l</b> per persona i dia · ' + fmt(A.anualLlar(p, lpd)) + ' m³ l\'any.<br>' +
+      (dif > 0 ? 'Un ' + dif + ' % per sobre de la mitjana catalana.' : dif < 0 ? 'Un ' + (-dif) + ' % per sota de la mitjana catalana.' : 'Just a la mitjana catalana.');
+  }
+  $('#a-pers').value = estat.pers; $('#a-m3').value = estat.m3; $('#a-dies').value = estat.dies;
+  ['#a-pers', '#a-m3', '#a-dies'].forEach(function (s) { $(s).addEventListener('input', llar); });
+  llar();
+
+  /* ── L'estalvi del grup ── */
+  $('#e-sostre').textContent = Math.round(A.SOSTRE_EQUIPS.pct * 100) + ' %';
+  function files() {
+    $('#e-files').innerHTML = estat.llars.map(function (l, i) {
+      return '<tr><td><input aria-label="Nom de la llar" data-i="' + i + '" data-k="nom" value="' + esc(l.nom) + '"></td>' +
+        '<td><input aria-label="m³ abans" type="number" min="0" step="0.1" inputmode="decimal" data-i="' + i + '" data-k="abans" value="' + esc(l.abans) + '"></td>' +
+        '<td><input aria-label="m³ després" type="number" min="0" step="0.1" inputmode="decimal" data-i="' + i + '" data-k="despres" value="' + esc(l.despres) + '"></td>' +
+        '<td><button type="button" class="btn btn-sm btn-ghost" data-treu="' + i + '" aria-label="Treu la llar">✕</button></td></tr>';
+    }).join('');
+  }
+  function grup() {
+    estat.preu = $('#e-preu').value; desa();
+    var r = A.grup(estat.llars, +estat.preu);
+    if (!r.llars) { $('#e-res').textContent = 'Quan una llar tingui les dues lectures, aquí sortirà l\'estalvi del grup.'; return; }
+    $('#e-res').innerHTML = '<b class="gran">' + fmt(r.m3) + ' m³</b> estalviats entre ' + r.llars + (r.llars === 1 ? ' llar' : ' llars') + ' · ' + fmt(r.pct) + ' % menys.' +
+      (r.eur != null ? '<br>Amb el preu de la vostra factura: ' + fmt(r.eur, 2) + ' € en aquest període.' : '') +
+      '<br>Són ' + fmt(r.m3 * 1000, 0) + ' litres.';
+  }
+  $('#e-files').addEventListener('input', function (e) {
+    var t = e.target; if (!t.dataset.k) return;
+    estat.llars[+t.dataset.i][t.dataset.k] = t.value; grup();
+  });
+  $('#e-files').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-treu]'); if (!b) return;
+    estat.llars.splice(+b.dataset.treu, 1);
+    if (!estat.llars.length) estat.llars.push({ nom: 'Llar 1', abans: '', despres: '' });
+    files(); grup();
+  });
+  $('#e-afegeix').addEventListener('click', function () {
+    estat.llars.push({ nom: 'Llar ' + (estat.llars.length + 1), abans: '', despres: '' }); files(); grup();
+  });
+  $('#e-preu').value = estat.preu; $('#e-preu').addEventListener('input', grup);
+  files(); grup();
+
+  /* ── La xarxa ── */
+  var PX = A.PERDUES_XARXA;
+  $('#x-ref').innerHTML = 'Referència: les xarxes de distribució d\'Espanya van perdre el ' + fmt(PX.pct * 100) + ' % de l\'aigua subministrada el ' + PX.any + ' (<a href="' + F.ine2024.url + '" rel="noopener">INE</a>).';
+  function xarxa() {
+    estat.entra = $('#x-entra').value; estat.compt = $('#x-compt').value; desa();
+    var r = A.perdues(+estat.entra, +estat.compt);
+    if (!+estat.entra) { $('#x-res').textContent = 'Posa-hi el que marca el comptador general i la suma dels de les llars del mateix període.'; return; }
+    $('#x-res').innerHTML = '<b class="gran">' + fmt(r.pct) + ' %</b> es perd pel camí (' + fmt(r.m3) + ' m³). ' +
+      (r.pct > PX.pct * 100 ? 'Més que la mitjana estatal: val la pena buscar fuites.' : 'Per sota de la mitjana estatal.');
+  }
+  $('#x-entra').value = estat.entra; $('#x-compt').value = estat.compt;
+  ['#x-entra', '#x-compt'].forEach(function (s) { $(s).addEventListener('input', xarxa); });
+  xarxa();
+
+  /* ── Les fonts ── */
+  $('#f-llista').innerHTML = Object.keys(F).map(function (k) {
+    return '<li><a href="' + F[k].url + '" rel="noopener">' + esc(F[k].nom) + '</a></li>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
