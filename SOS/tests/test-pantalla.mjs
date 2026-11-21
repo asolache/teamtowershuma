@@ -30,7 +30,9 @@ const PILOTS = [
   // La premsa és curta (3,8 alçades): quatre pantalles i prou.
   { url: 'premsa.html', primer: 'Inici', min: 4 },
   // Uneix-t'hi: el hero i vuit seccions, noms curts en català.
-  { url: 'SOS/uneix-te.html', primer: 'Inici' }
+  { url: 'SOS/uneix-te.html', primer: 'Inici' },
+  // La Compra: ja tenia set pestanyes pròpies; ara són les de la peça comuna.
+  { url: 'SOS/compra.html', primer: 'Inici', dins: 'btnTanca' }
 ];
 for (const P of PILOTS) {
   for (const [nom, vp] of [['tauleta', { width: 1180, height: 820 }], ['mòbil', { width: 390, height: 844 }]]) {
