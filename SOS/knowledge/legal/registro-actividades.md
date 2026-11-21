@@ -21,17 +21,6 @@
 - **Cuánto tiempo:** Mientras dure la relación y, si no hay contrato, 2 años desde el último contacto.
 - **Fuera de la UE:** A EE. UU. por Netlify, GitHub y Anthropic, con el Marco de Privacidad de Datos o cláusulas tipo.
 
-### Referencias de clientes
-
-- **Para qué:** Recoger la referencia de quien ha trabajado con nosotros y, con el permiso que elige, publicarla en la web o pasarla en privado a quien pide referencias antes de contratar.
-- **Base legal:** Consentimiento (art. 6.1.a RGPD): quien escribe elige en el formulario cómo se usa, se le envía el texto antes de publicarlo y puede retirarlo cuando quiera.
-- **De quién:** Clientes, alumnos y colaboradores que dejan su referencia en «Qui som».
-- **Qué datos:** Nombre, cargo y organización, qué se hizo y cuándo, el texto de la referencia, el correo (solo para enviarle el texto antes de publicarlo; nunca se publica) y el permiso elegido.
-- **Por dónde llegan:** los formularios `referencia`.
-- **Quién los trata por encargo:** Netlify.
-- **Cuánto tiempo:** Mientras no retire el consentimiento; si la referencia no se llega a usar, 2 años desde que la envió.
-- **Fuera de la UE:** A EE. UU. por Netlify, con el Marco de Privacidad de Datos o cláusulas tipo.
-
 ### Facturación y cobros
 
 - **Para qué:** Cobrar los proyectos y las cuotas, emitir facturas y cumplir con Hacienda.
