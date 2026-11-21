@@ -14,6 +14,8 @@
     if (!caixa) return;
     var clau = ''; try { clau = localStorage.getItem(CT) || ''; } catch (e) { clau = ''; }
     var D = null, edita = null, msg = '', proj = '*';
+    /* Las referencias de sus clientes (21/11/2026): netlify/functions/referencies.mjs, con la misma clave. */
+    var FR = '/.netlify/functions/referencies', RF = null;
 
     function el(tag, at, fills) {
         var n = document.createElement(tag);
@@ -25,14 +27,15 @@
     var usd = function (v) { return (Number(v) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $'; };
     var dia = function (s) { return s ? new Date(s).toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' }) : ''; };
 
-    function crida(metode, cos, q) {
-        return fetch(F + (q || ''), { method: metode, headers: { Authorization: 'Bearer ' + clau, 'Content-Type': 'application/json' }, body: cos ? JSON.stringify(cos) : undefined })
+    function crida(metode, cos, q, fn) {
+        return fetch((fn || F) + (q || ''), { method: metode, headers: { Authorization: 'Bearer ' + clau, 'Content-Type': 'application/json' }, body: cos ? JSON.stringify(cos) : undefined })
             .then(function (r) {
                 if (r.status === 404) throw new Error('clau');
                 return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || 'No se ha podido'); return j; });
             });
     }
     function carrega() {
+        crida('GET', null, '', FR).then(function (j) { RF = j; if (D) pinta(); }).catch(function () { RF = null; });
         return crida('GET').then(function (j) { D = j; pinta(); }).catch(function (e) {
             if (e.message === 'clau') { clau = ''; try { localStorage.removeItem(CT); } catch (x) { /* sin memoria */ } msg = 'Esa clave no entra. Comprueba IA_CIERRE_TOKEN.'; }
             else msg = e.message;
@@ -303,6 +306,57 @@
         c.appendChild(ul);
     }
 
+    /* Referencias: pedir una, copiar el enlace para quien la escribe (lo
+       mandas tú) y, si esa persona lo ha permitido, el enlace para enseñarla. */
+    var NIV = { privada: 'Solo para ti', compartir: 'Se puede enseñar por enlace', publica: 'Se puede enseñar y poner en la web' };
+    function referencies(c) {
+        c.appendChild(el('h3', { id: 'pn-t-refs' }, 'Referencias de tus clientes'));
+        if (!RF) { c.appendChild(el('p', { class: 'nota' }, 'No se han podido cargar.')); return; }
+        if (RF.dossier) {
+            var dc = boto('Copiar el enlace con todas', function () { copia(RF.dossier, dc); }, 'btn-primary btn-sm');
+            c.appendChild(el('p', {}, ['Las que se pueden enseñar, en una sola página: ', dc]));
+        }
+        var ul = el('ul', { class: 'pn-llista' });
+        RF.refs.forEach(function (x) {
+            var r = x.resposta, li = el('li', { class: 'pn-conv' });
+            li.appendChild(el('h4', {}, x.nom + (x.org ? ' · ' + x.org : '')));
+            li.appendChild(el('p', { class: 'nota' }, r ? 'Escrita el ' + dia(r.escrita) + '. ' + NIV[r.consentiment.nivell] + '.' : 'Pedida el ' + dia(x.creat) + '. Todavía sin escribir.'));
+            if (r && r.frase) li.appendChild(el('p', {}, '«' + r.frase + '»'));
+            var a = el('div', { class: 'accions' }), ce = boto(r ? 'Copiar su enlace para cambiarla' : 'Copiar su enlace para escribirla', function () { copia(x.escriu, ce); }, (r ? 'btn-ghost' : 'btn-primary') + ' btn-sm');
+            a.appendChild(ce);
+            if (x.ver) { var cv = boto('Copiar el enlace para enseñarla', function () { copia(x.ver, cv); }, 'btn-primary btn-sm'); a.appendChild(cv); }
+            a.appendChild(boto('Enlaces nuevos', function () {
+                if (!window.confirm('Los enlaces de ' + x.nom + ' dejarán de abrir. ¿Seguro?')) return;
+                crida('PUT', { id: x.id, nou: true }, '', FR).then(function () { msg = 'Enlaces nuevos para ' + x.nom + '.'; return carrega(); }).catch(function (er) { msg = er.message; pinta(); });
+            }, 'btn-ghost btn-sm'));
+            a.appendChild(boto('Borrar', function () {
+                if (!window.confirm('Se borra la referencia de ' + x.nom + ' con lo que haya escrito. ¿Seguro?')) return;
+                crida('DELETE', null, '?id=' + encodeURIComponent(x.id), FR).then(function () { msg = 'Borrada.'; return carrega(); }).catch(function (er) { msg = er.message; pinta(); });
+            }, 'btn-ghost btn-sm'));
+            li.appendChild(a); ul.appendChild(li);
+        });
+        if (RF.refs.length) c.appendChild(ul);
+        var f = el('form', { class: 'pn-ac' });
+        f.appendChild(el('p', {}, 'Pedir una referencia. Te da el enlace; se lo mandas tú.'));
+        [['nom', 'Su nombre'], ['org', 'Su organización (opcional)'], ['relacio', 'De qué trabajo habláis, en una línea (la verá)']].forEach(function (k) {
+            f.appendChild(el('label', {}, [k[1], el('input', { id: 'pn-rf-' + k[0], type: 'text', maxlength: k[0] === 'relacio' ? 300 : 120 })]));
+        });
+        var lc = el('input', { id: 'pn-rf-ca', type: 'checkbox' });
+        f.appendChild(el('label', {}, [lc, ' En catalán']));
+        var b = el('button', { type: 'submit', class: 'btn btn-primary btn-sm' }, 'Pedir referencia');
+        f.appendChild(el('div', { class: 'accions' }, b));
+        f.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var v = function (k) { return f.querySelector('#pn-rf-' + k).value.trim(); };
+            if (!v('nom')) return;
+            b.disabled = true;
+            crida('PUT', { nom: v('nom'), org: v('org'), relacio: v('relacio'), llengua: lc.checked ? 'ca' : 'es' }, '', FR)
+                .then(function (j) { msg = 'Listo. Copia el enlace de ' + j.ref.nom + ' en «Referencias» y mándaselo tú.'; return carrega(); })
+                .catch(function (er) { b.disabled = false; msg = er.message; pinta(); });
+        });
+        c.appendChild(f);
+    }
+
     function pinta() {
         var c = caixa.querySelector('.pn-cos'); c.textContent = '';
         if (msg) c.appendChild(el('p', { class: 'pn-msg', role: 'status' }, msg));
@@ -312,6 +366,7 @@
         tauler(c);
         tasques(c);
         estatIA(c);
+        referencies(c);
         c.appendChild(el('h3', {}, 'Tus invitados (' + D.convidats.length + ')'));
         if (!D.convidats.length) c.appendChild(el('p', { class: 'nota' }, 'Todavía ninguno.'));
         var ul = el('ul', { class: 'pn-llista' }); D.convidats.forEach(function (x) { ul.appendChild(fitxa(x)); }); c.appendChild(ul);

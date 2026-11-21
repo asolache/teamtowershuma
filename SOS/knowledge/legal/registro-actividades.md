@@ -41,6 +41,17 @@
 - **Cuánto tiempo:** Hasta que la persona la retira.
 - **Fuera de la UE:** Ninguna fuera de la UE prevista.
 
+### Referencias de clientes
+
+- **Para qué:** Recoger lo que un cliente cuenta de su trabajo con Alvaro Solache y enseñarlo solo como esa persona ha elegido: a nadie, a personas concretas por un enlace privado, o también en la web.
+- **Base legal:** Consentimiento (art. 6.1.a RGPD), que se da al enviar la referencia con la casilla de privacidad y se retira con el mismo enlace.
+- **De quién:** Clientes a quienes Alvaro pide una referencia desde su panel.
+- **Qué datos:** Nombre, cargo y organización si los dan, lo que escriben, cómo quieren que aparezca su nombre (entero, iniciales o sin nombre), a quién dejan verla y la fecha. Se guarda en Netlify Blobs (almacén «referencies»); no pasa por ninguna IA ni por el CRM.
+- **Por dónde llegan:** los formularios `referencia`.
+- **Quién los trata por encargo:** Netlify.
+- **Cuánto tiempo:** Hasta que la persona la retira: retirarla la borra y cierra el enlace con que se enseña. Alvaro también la puede borrar desde su panel.
+- **Fuera de la UE:** Las de Netlify, con sus garantías.
+
 ## Encargados y sus contratos (DPA)
 
 | Proveedor | Para qué | Dónde | Contrato | Estado |
