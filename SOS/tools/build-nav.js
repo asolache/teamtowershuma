@@ -185,7 +185,12 @@ const SOS_GRUPS = [
   ] },
   /* ══ 2 · COM S'APRÈN ═════════════════════════════════════════════════ */
   { id: 'apren', lbl: T('Aprèn', 'Aprende'), ic: '📚', links: [
-    L.formacio, L.ia,
+    L.formacio,
+    /* 21/11/2026 · Álvaro: com es certifica posant el model en marxa a la
+       comunitat, amb la IA del SOS de tutora i la xarxa descentralitzada. */
+    ['certificacio.html', T('La certificació', 'La certificación'),
+      T('22 pràctiques a la comunitat, amb la IA de tutora', '22 prácticas en la comunidad, con la IA de tutora')],
+    L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
       T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
     ['cervell.html', T('Crea el teu cervell', 'Crea tu cerebro'),
@@ -273,7 +278,7 @@ const PAGINES_LLOC = ['blog.html', 'diagnostic.html', 'diagnostic-org.html', 'di
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
-const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html', 'crm.html', 'diagnostic.html',
+const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'certificacio.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',

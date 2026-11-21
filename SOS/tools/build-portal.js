@@ -97,6 +97,7 @@ const APREN = [
   { p: 'vna.html', ic: '🕸', guanya: 'El mapa de qui sosté què a la teva comunitat, amb els favors i la confiança que no compta ningú.' },
   { p: 'vna-suport.html', ic: '🧭', guanya: 'Les sis passes per dibuixar-lo, amb deu regles que revisen el mapa mentre s\'escriu.' },
   { p: 'formacio.html', ic: '🎓', guanya: 'De N0 a N3. El que fas queda al teu registre i el certificat és teu, no del projecte.' },
+  { p: 'certificacio.html', ic: '📜', guanya: 'Cada mòdul, una pràctica real a la teva comunitat. La IA fa de tutora, les dades es queden al node i la xarxa segueix si cau internet.' },
   { p: 'escola.html', ic: '🏫', guanya: 'El mateix a l\'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.' },
   { p: 'ia.html', ic: '🤖', guanya: 'Automatitzar el tangible i valorar l\'intangible, amb IA que proposa i mai decideix.' },
   { p: 'vedes.html', ic: '⛔', guanya: 'Cada regla amb el motiu escrit al costat. És el que evita repetir un error que ja va sortir car.' },
