@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Les referències dels clients sobre l'Àlvaro (21/11/2026). Només hi arriba qui
+     té un enllaç signat: `?r=` per escriure-la (el que l'Àlvaro envia a mà des del
+     seu panell, /cliente/#panel) i `?ver=` per llegir-la (una, o el dossier), només
+     si qui l'ha escrita ho ha permès. La lògica és a netlify/lib/referencies.mjs.
+     No s'indexa i no porta cap comptador. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Referencias sobre Álvaro Solache | TeamTowers</title>
+<style>
+:root{--acc:#1f4e79;--text:#1b1b1f;--mut:#55555f;--lin:#cfcfd6;--bg:#fbfbf8;--panel:#fff;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--acc:#8fb8e8;--text:#ececf1;--mut:#a9a9b3;--lin:#3a3a44;--bg:#15151a;--panel:#1f1f26}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:17px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:38rem;margin:0 auto;padding:1.5rem 16px 3rem}
+.marca{font-weight:700;color:var(--acc);margin:0}
+h1{font-size:1.45rem;line-height:1.3;margin:.8rem 0 .4rem}
+h2{font-size:1.05rem;margin:1.4rem 0 .3rem}
+fieldset{border:0;padding:0;margin:1.2rem 0}
+legend{font-weight:600;margin-bottom:.4rem}
+.op{display:flex;gap:.5rem;align-items:flex-start;margin:.45rem 0}
+.op input{margin-top:.35rem;flex:none}
+label.c{display:block;font-weight:600;margin:1.1rem 0 .2rem}
+.ayuda{display:block;color:var(--mut);font-size:.9rem;font-weight:400;margin-bottom:.3rem}
+input[type=text],textarea{width:100%;font:inherit;padding:.6rem .7rem;border:1px solid var(--lin);border-radius:.45rem;background:var(--panel);color:var(--text)}
+button{margin-top:1.3rem;font:inherit;font-weight:600;padding:.75rem 1.2rem;border:0;border-radius:.5rem;background:var(--acc);color:#fff;cursor:pointer}
+button.sec{background:transparent;color:var(--acc);border:1px solid var(--lin)}
+@media (prefers-color-scheme:dark){button{color:#15151a}button.sec{color:var(--acc)}}
+.hint{color:var(--mut);font-size:.9rem}
+.ok{border-left:4px solid var(--acc);padding:.4rem .9rem;background:var(--panel)}
+.err{color:#a1260d}
+@media (prefers-color-scheme:dark){.err{color:#ff9d85}}
+.ref{background:var(--panel);border:1px solid var(--lin);border-radius:.7rem;padding:1rem 1.1rem;margin:1.2rem 0;break-inside:avoid}
+.ref blockquote{margin:0 0 .8rem;font-size:1.15rem;font-style:italic}
+.ref h3{font-size:.95rem;color:var(--mut);margin:.9rem 0 .1rem;font-weight:600}
+.ref p{margin:.1rem 0 .4rem;white-space:pre-line}
+.ref .quien{margin-top:.9rem;font-weight:600}
+.ref .quien span{display:block;font-weight:400;color:var(--mut)}
+a{color:var(--acc)}
+@media print{button,.no-print{display:none!important}body{background:#fff;color:#000}.ref{border-color:#bbb}}
+</style>
+</head>
+<body>
+<main>
+<p class="marca">TeamTowers · Álvaro Solache</p>
+<h1 id="titol">Referencias sobre Álvaro Solache</h1>
+<p id="estat" role="status"></p>
+
+<!-- Escriure-la · ?r= -->
+<form id="forma" hidden>
+  <p id="intro"></p>
+  <p class="hint" data-t="guia">Escribe con tus palabras, como se lo contarías a alguien que no lo conoce. No hace falta que contestes a todo.</p>
+
+  <label class="c" for="antes"><span data-t="q1">¿Cómo estabais cuando empezamos a trabajar juntos?</span><span class="ayuda" data-t="a1">Lo que pasaba entonces, lo que costaba o lo que buscabais.</span></label>
+  <textarea id="antes" rows="4" maxlength="1500"></textarea>
+  <label class="c" for="cambio"><span data-t="q2">¿Qué ha cambiado desde entonces?</span><span class="ayuda" data-t="a2">Lo que notas tú, tu equipo o la gente con la que trabajáis.</span></label>
+  <textarea id="cambio" rows="4" maxlength="1500"></textarea>
+  <label class="c" for="como"><span data-t="q3">¿Cómo ha sido trabajar con Álvaro?</span><span class="ayuda" data-t="a3">Lo que aporta y cómo lo hace.</span></label>
+  <textarea id="como" rows="4" maxlength="1500"></textarea>
+  <label class="c" for="recomienda"><span data-t="q4">¿A quién se lo recomendarías, y para qué?</span></label>
+  <textarea id="recomienda" rows="3" maxlength="800"></textarea>
+  <label class="c" for="frase"><span data-t="q5">Si tuvieras que decirlo en una frase</span><span class="ayuda" data-t="a5">Opcional. Es la que se lee primero.</span></label>
+  <input type="text" id="frase" maxlength="280">
+
+  <h2 data-t="firma">Tu firma</h2>
+  <label class="c" for="firmaNom" data-t="fnom">Tu nombre</label>
+  <input type="text" id="firmaNom" required maxlength="80" autocomplete="name">
+  <label class="c" for="firmaCarrec" data-t="fcar">Tu cargo o papel</label>
+  <input type="text" id="firmaCarrec" maxlength="120" autocomplete="organization-title">
+  <label class="c" for="firmaOrg" data-t="forg">Tu organización</label>
+  <input type="text" id="firmaOrg" maxlength="120" autocomplete="organization">
+
+  <fieldset>
+    <legend data-t="mostra">Cómo quieres que aparezca tu nombre</legend>
+    <label class="op"><input type="radio" name="mostra" value="nombre" checked> <span data-t="m1">Con mi nombre, cargo y organización</span></label>
+    <label class="op"><input type="radio" name="mostra" value="iniciales"> <span data-t="m2">Solo mis iniciales, con cargo y organización</span></label>
+    <label class="op"><input type="radio" name="mostra" value="anonimo"> <span data-t="m3">Sin mi nombre: solo cargo y organización</span></label>
+  </fieldset>
+
+  <fieldset>
+    <legend data-t="nivell">Quién puede leerla</legend>
+    <label class="op"><input type="radio" name="nivell" value="privada"> <span data-t="n1">Solo Álvaro. No se enseña a nadie.</span></label>
+    <label class="op"><input type="radio" name="nivell" value="compartir" checked> <span data-t="n2">Álvaro puede enseñarla, con un enlace privado, a personas concretas con las que vaya a trabajar.</span></label>
+    <label class="op"><input type="radio" name="nivell" value="publica"> <span data-t="n3">Además puede ponerla en la web de TeamTowers.</span></label>
+  </fieldset>
+
+  <label class="op"><input type="checkbox" id="privacitat" required> <span data-t="priv">He leído cómo se tratan estos datos y estoy de acuerdo.</span></label>
+  <p class="hint" data-t="privTx">Responsable: Alvaro Solache (TeamTowers), para usar tu referencia como has elegido arriba. Se guarda en nuestro alojamiento (Netlify), no pasa por ninguna IA y no se publica nada sin que lo hayas elegido. Con este mismo enlace puedes cambiarla o retirarla cuando quieras, y eso cierra también el enlace con el que se comparte.</p>
+  <p class="hint"><a href="/avis-legal.html" data-t="legal">Aviso legal y privacidad</a></p>
+
+  <button type="submit" id="envia" data-t="envia">Enviar mi referencia</button>
+  <button type="button" id="retira" class="sec" hidden data-t="retira">Retirar mi referencia</button>
+</form>
+
+<!-- Llegir-la · ?ver= -->
+<div id="vista" hidden></div>
+<p id="imprimeix" class="no-print" hidden><button type="button" id="pdf" class="sec" data-t="pdf">Guardar como PDF</button></p>
+</main>
+<script>
+/* El que fa: llegeix l'enllaç, demana a la funció el que toca i pinta el
+   formulari o la referència. Sense JavaScript no hi ha res a fer: la pàgina
+   només diu el títol, que és el que ha de dir a qui hi arribi sense enllaç. */
+(function () {
+  'use strict';
+  var F = '/.netlify/functions/referencies', q = new URLSearchParams(location.search), $ = function (id) { return document.getElementById(id); };
+  var CA = {
+    guia: 'Escriu amb les teves paraules, com ho explicaries a algú que no el coneix. No cal que responguis a tot.',
+    q1: 'Com estàveu quan vam començar a treballar junts?', a1: 'El que passava aleshores, el que costava o el que buscàveu.',
+    q2: 'Què ha canviat des d\'aleshores?', a2: 'El que notes tu, el teu equip o la gent amb qui treballeu.',
+    q3: 'Com ha estat treballar amb l\'Álvaro?', a3: 'El que aporta i com ho fa.',
+    q4: 'A qui el recomanaries, i per a què?', q5: 'Si ho haguessis de dir en una frase', a5: 'Opcional. És la que es llegeix primer.',
+    firma: 'La teva signatura', fnom: 'El teu nom', fcar: 'El teu càrrec o paper', forg: 'La teva organització',
+    mostra: 'Com vols que surti el teu nom', m1: 'Amb el meu nom, càrrec i organització', m2: 'Només les meves inicials, amb càrrec i organització', m3: 'Sense el meu nom: només càrrec i organització',
+    nivell: 'Qui la pot llegir', n1: 'Només l\'Álvaro. No s\'ensenya a ningú.', n2: 'L\'Álvaro la pot ensenyar, amb un enllaç privat, a persones concretes amb qui hagi de treballar.', n3: 'A més, la pot posar a la web de TeamTowers.',
+    priv: 'He llegit com es tracten aquestes dades i hi estic d\'acord.',
+    privTx: 'Responsable: Alvaro Solache (TeamTowers), per fer servir la teva referència com has triat a dalt. Es desa al nostre allotjament (Netlify), no passa per cap IA i no es publica res que no hagis triat. Amb aquest mateix enllaç la pots canviar o retirar quan vulguis, i això tanca també l\'enllaç amb què es comparteix.',
+    legal: 'Avís legal i privacitat', envia: 'Envia la meva referència', retira: 'Retira la meva referència', pdf: 'Desa com a PDF'
+  };
+  var ca = q.get('l') === 'ca';
+  var tx = function (es, cat) { return ca ? cat : es; };
+  function catala() {
+    ca = true; document.documentElement.lang = 'ca';
+    document.querySelectorAll('[data-t]').forEach(function (n) { if (CA[n.getAttribute('data-t')]) n.textContent = CA[n.getAttribute('data-t')]; });
+  }
+  if (ca) catala();
+  var estat = function (m, err) { $('estat').textContent = m || ''; $('estat').className = err ? 'err' : ''; };
+  function crida(metode, cos, qs) {
+    return fetch(F + (qs || ''), { method: metode, headers: { 'Content-Type': 'application/json' }, body: cos ? JSON.stringify(cos) : undefined })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (r.status === 404) throw new Error('cap'); if (!r.ok) throw new Error(j.motiu || 'error'); return j; }); });
+  }
+  var cap = function () { estat(tx('Este enlace ya no abre nada. Pídele uno nuevo a Álvaro.', 'Aquest enllaç ja no obre res. Demana\'n un de nou a l\'Álvaro.'), true); };
+
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text) n.textContent = text; return n; }
+  var TIT = { antes: [tx('Antes', 'Abans')], cambio: [tx('Qué ha cambiado', 'Què ha canviat')], como: [tx('Cómo trabaja Álvaro', 'Com treballa l\'Álvaro')], recomienda: [tx('A quién se lo recomienda', 'A qui el recomana')] };
+  function pintaRef(r) {
+    var b = el('article', 'ref');
+    if (r.frase) b.appendChild(el('blockquote', '', '«' + r.frase + '»'));
+    ['antes', 'cambio', 'como', 'recomienda'].forEach(function (k) { if (r[k]) { b.appendChild(el('h3', '', TIT[k][0])); b.appendChild(el('p', '', r[k])); } });
+    var w = el('p', 'quien', '— ' + r.firma.qui); if (r.firma.rol) w.appendChild(el('span', '', r.firma.rol));
+    b.appendChild(w);
+    return b;
+  }
+
+  var ver = q.get('ver'), r = q.get('r');
+  if (ver) {
+    crida('GET', null, '?ver=' + encodeURIComponent(ver)).then(function (j) {
+      var v = $('vista');
+      v.appendChild(el('p', 'hint', j.refs.length > 1 ? tx('Lo que dicen de su trabajo personas que han trabajado con él. Cada una ha elegido que se pueda compartir.', 'El que diuen de la seva feina persones que hi han treballat. Cadascuna ha triat que es pugui compartir.') : tx('Una referencia escrita por quien firma, que ha elegido que se pueda compartir.', 'Una referència escrita per qui la signa, que ha triat que es pugui compartir.')));
+      j.refs.forEach(function (x) { v.appendChild(pintaRef(x)); });
+      v.hidden = false; $('imprimeix').hidden = false;
+    }).catch(function (e) { e.message === 'cap' ? cap() : estat(e.message, true); });
+    $('pdf').addEventListener('click', function () { window.print(); });
+    return;
+  }
+  if (!r) { estat(tx('Para escribir o leer una referencia hace falta el enlace que manda Álvaro.', 'Per escriure o llegir una referència cal l\'enllaç que envia l\'Álvaro.')); return; }
+
+  var f = $('forma'), CAMPS = ['antes', 'cambio', 'como', 'recomienda', 'frase'];
+  function omple(x) {
+    CAMPS.forEach(function (k) { $(k).value = x[k] || ''; });
+    var fm = x.firma || {}; $('firmaNom').value = fm.nom || ''; $('firmaCarrec').value = fm.carrec || ''; $('firmaOrg').value = fm.org || '';
+    f.querySelectorAll('[name=mostra]').forEach(function (i) { i.checked = i.value === (x.mostra || 'nombre'); });
+    f.querySelectorAll('[name=nivell]').forEach(function (i) { i.checked = i.value === ((x.consentiment || {}).nivell || 'compartir'); });
+  }
+  crida('GET', null, '?r=' + encodeURIComponent(r)).then(function (j) {
+    if (j.llengua === 'ca' && !ca) catala();
+    $('titol').textContent = tx('Tu referencia sobre Álvaro', 'La teva referència sobre l\'Álvaro');
+    $('intro').textContent = tx('Hola, ' + j.nom + '. Álvaro te pide unas líneas sobre el trabajo que habéis hecho juntos', 'Hola, ' + j.nom + '. L\'Álvaro et demana unes línies sobre la feina que heu fet junts') + (j.relacio ? ': ' + j.relacio + '.' : '.');
+    if (j.resposta) { omple(j.resposta); $('retira').hidden = false; estat(tx('Ya la escribiste. Puedes cambiarla o retirarla.', 'Ja la vas escriure. La pots canviar o retirar.')); }
+    else $('firmaNom').value = j.nom || '';
+    f.hidden = false;
+  }).catch(function (e) { e.message === 'cap' ? cap() : estat(e.message, true); });
+
+  f.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var tria = function (n) { var i = f.querySelector('[name=' + n + ']:checked'); return i ? i.value : ''; };
+    var res = { mostra: tria('mostra'), nivell: tria('nivell'), privacitat: $('privacitat').checked, firmaNom: $('firmaNom').value, firmaCarrec: $('firmaCarrec').value, firmaOrg: $('firmaOrg').value };
+    CAMPS.forEach(function (k) { res[k] = $(k).value; });
+    $('envia').disabled = true;
+    crida('POST', { r: r, resposta: res }).then(function () {
+      $('envia').disabled = false; $('retira').hidden = false; window.scrollTo(0, 0);
+      estat(tx('Gracias. Tu referencia está guardada. Si quieres cambiar algo, vuelve a este enlace cuando quieras.', 'Gràcies. La teva referència està desada. Si vols canviar res, torna a aquest enllaç quan vulguis.'));
+    }).catch(function (e) { $('envia').disabled = false; e.message === 'cap' ? cap() : estat(e.message, true); });
+  });
+  $('retira').addEventListener('click', function () {
+    crida('POST', { r: r, retira: true }).then(function () {
+      omple({}); $('firmaNom').value = ''; $('retira').hidden = true; window.scrollTo(0, 0);
+      estat(tx('Retirada. Ya no la ve nadie, tampoco por el enlace con el que se compartía.', 'Retirada. Ja no la veu ningú, tampoc per l\'enllaç amb què es compartia.'));
+    }).catch(function (e) { e.message === 'cap' ? cap() : estat(e.message, true); });
+  });
+})();
+</script>
+</body>
+</html>

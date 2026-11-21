@@ -159,6 +159,12 @@ const SENSE_EDIFICI = { generic: 'És la plantilla en blanc, no un tipus de proj
    dinàmica estrenés eina, i no petaria res. */
 const { EINES } = require('./build-nav.js');
 
+/* La sèrie del SOS: cada capítol és un mòdul de formació, el fa una professió
+   d'aquí i passa en un servei de la plaça. Declarada a `serie-sos.js`, que és
+   on també la llegeix el Comando per posar-hi la ficció. Aquí no n'hi ha:
+   Molekulandia és l'estat on això ja funciona, i es diu amb noms oficials. */
+const SERIE_SOS = require('./serie-sos.js');
+
 /* ══ LLEGIR LES TAULES ═══════════════════════════════════════════════════════ */
 const APP = readFileSync(join(SOS, 'index.html'), 'utf8');
 
@@ -252,6 +258,18 @@ if (!senseCasa.length && !casaFantasma.length)
 else bad((senseCasa.length ? `sense edifici ni motiu: ${senseCasa.map(d => d.id).join(', ')}. ` : '') +
   (casaFantasma.length ? `edificis d'una dinàmica que no existeix: ${casaFantasma.map(e => e.din).join(', ')}` : ''));
 
+/* ── La sèrie del SOS ───────────────────────────────────────────────────── */
+const MODULS = SERIE_SOS.moduls();
+const malSerie = SERIE_SOS.comprova(MODULS);
+SERIE_SOS.SERIE.forEach(c => {
+  if (!PROFESSIONS.some(p => p.id === c.professio)) malSerie.push(`el capítol ${c.c} el fa la professió «${c.professio}», que no existeix`);
+  if (c.servei && c.servei !== 'negoci' && !EDIFICIS.some(e => e.din === c.servei))
+    malSerie.push(`el capítol ${c.c} passa a «${c.servei}», que no és cap edifici de la plaça`);
+});
+if (!malSerie.length) ok(`i els ${SERIE_SOS.SERIE.length} capítols de la sèrie tenen mòdul, professió i servei`);
+else malSerie.forEach(bad);
+const modulsDe = f => SERIE_SOS.SERIE.filter(f).map(c => ({ c: c.c, m: c.m, t: (MODULS[c.m] || {}).t || c.m }));
+
 /* ══ EL QUE ES GENERA ════════════════════════════════════════════════════════ */
 const j = o => JSON.stringify(o);
 const bloc = () => {
@@ -259,15 +277,26 @@ const bloc = () => {
     const d = dinamiques.find(x => x.id === e.din);
     return { din: e.din, nom: e.nom, ic: e.ic, x: e.x, y: e.y, es: e.es,
       dinNom: d.nom, dinIc: d.ic, one: d.one, rols: d.rols,
-      eina: EINES[e.din] || null };
+      eina: EINES[e.din] || null, capitols: modulsDe(c => c.servei === e.din) };
   });
+  const serie = { format: SERIE_SOS.FORMAT.map(f => ({ t: f.t, d: f.d })), temporades: SERIE_SOS.TEMPORADES,
+    capitols: SERIE_SOS.SERIE.map(c => {
+      const p = PROFESSIONS.find(x => x.id === c.professio), e = EDIFICIS.find(x => x.din === c.servei);
+      const d = e && dinamiques.find(x => x.id === e.din);
+      return { c: c.c, t: c.t, m: c.m, modul: MODULS[c.m] || null, apren: c.apren, prova: c.prova,
+        professio: { id: p.id, nom: p.nom, ic: p.ic },
+        servei: e ? { din: e.din, nom: d.nom, ic: d.ic, lloc: e.nom } : c.servei === 'negoci'
+          ? { din: 'negoci', nom: 'La teva organització', ic: '🏪', lloc: 'La teva botiga de la plaça' }
+          : { din: null, nom: 'Tota la plaça', ic: '🏛', lloc: 'La plaça' } };
+    }) };
   return '<!--MOLEK-DADES-->\n<script id="molek-dades" type="application/json">\n' +
     j({ resum: RESUM,
       fonts: dades.map(f => ({ id: f.id, lbl: f.lbl, diu: f.diu,
         plantilles: f.plantilles.length, rols: f.plantilles.reduce((a, p) => a + p.rols.length, 0) })),
       professions: PROFESSIONS.map(p => Object.assign({}, p, {
-        rols: p.rols.map(r => ({ nom: r, cops: (onSurt[r] || []).length, on: onSurt[r] || [] })) })),
-      rols, edificis, senseEdifici: SENSE_EDIFICI,
+        rols: p.rols.map(r => ({ nom: r, cops: (onSurt[r] || []).length, on: onSurt[r] || [] })),
+        moduls: modulsDe(c => c.professio === p.id) })),
+      rols, edificis, serie, senseEdifici: SENSE_EDIFICI,
       plantilles: plantilles.map(p => ({ id: p.id, nom: p.nom, ic: p.ic, font: p.font, rols: p.rols.length })) }) +
     '\n</script>\n<!--/MOLEK-DADES-->';
 };
@@ -304,6 +333,9 @@ const md = () => {
     L.push(p.diu);
     L.push('');
     L.push(`**Demana**: ${p.demana.join(', ')}.`);
+    L.push('');
+    const ms = modulsDe(c => c.professio === p.id);
+    L.push(`**Es forma amb**: ${ms.length ? ms.map(x => `capítol ${x.c} · ${x.m} ${x.t}`).join('; ') : 'cap capítol de la sèrie encara'}.`);
     L.push('');
     L.push('| Rol | Cops | On surt |');
     L.push('|---|---|---|');

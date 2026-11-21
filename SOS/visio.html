@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La visió del SOS · un sistema operatiu social que suma</title>
+<meta name="description" content="Per què el SOS: quan el temps, el coneixement i les coses circulen al territori, la vida millora per a la ciutadania, les empreses i l'administració pública. Amb les fonts que ho sostenen.">
+<meta property="og:title" content="La visió del SOS · el sistema operatiu social">
+<meta property="og:description" content="Sumar, no restar: el que cadascú sap i té, posat a circular. Beneficis per a cada part i les fonts que ho diuen.">
+<style>
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.55;overflow-x:hidden}
+.wrap{max-width:980px;margin:0 auto;padding:0 1rem}
+a{color:var(--indigo)}
+
+/* ── La visió · una pantalla per a cada part ───────────────────────────────
+   21/11/2026, encàrrec de l'Álvaro: abans de les eines, el SOS ha de dir per
+   què existeix i què hi guanya cadascú —la ciutadania, l'empresa i
+   l'administració— i lligar-ho a l'emprenedoria (la MATRIU). Llenguatge
+   oficial (vegeu SOS/knowledge/dev/noms-oficials.md) i cap xifra sense font:
+   cada número de la pàgina porta la seva referència a la pantalla «Fonts». */
+.hero{padding:2.6rem 1rem 1.6rem;text-align:center}
+.kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:var(--mono)}
+.hero h1{font-size:clamp(1.8rem,5.4vw,2.7rem);line-height:1.15;margin:.6rem auto .8rem;max-width:22ch}
+.hero h1 em{font-style:normal;color:var(--green)}
+.lead{font-size:clamp(1rem,2.3vw,1.15rem);color:var(--light);max-width:40rem;margin:0 auto 1.2rem}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;max-width:46rem;margin:1.2rem auto 0;text-align:left}
+.tres a{display:block;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;text-decoration:none;color:var(--text)}
+.tres a:hover,.tres a:focus-visible{border-color:var(--indigo)}
+.tres b{display:block;font-size:.98rem}
+.tres span{display:block;font-size:.85rem;color:var(--muted);margin-top:.2rem}
+.principi{max-width:40rem;margin:1.4rem auto 0;font-size:.92rem;color:var(--light);border-left:3px solid var(--green);padding:.2rem 0 .2rem .9rem;text-align:left}
+
+section{padding:1.8rem 0;border-top:1px solid rgba(21,19,15,.06)}
+h2{font-size:clamp(1.25rem,3.3vw,1.65rem);margin:0 0 .4rem}
+.sub{color:var(--light);margin:0 0 1.1rem;max-width:62ch}
+.beneficis{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.8rem}
+.b{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.95rem 1.05rem;border-top:3px solid var(--indigo)}
+.b.salut{border-top-color:var(--green)}
+.b.diners{border-top-color:var(--gold)}
+.b.valor{border-top-color:var(--purple)}
+.b h3{margin:0 0 .35rem;font-size:1rem}
+a.b.mod{display:block;text-decoration:none;color:inherit}
+a.b.mod:hover,a.b.mod:focus-visible{border-color:var(--indigo)}
+.b.prox{border-style:dashed}
+.b .b-x{display:block;margin-top:.45rem;font-family:var(--mono);font-size:.85rem;font-weight:700;color:var(--gold)}
+.b p{margin:0;font-size:.9rem;color:var(--light)}
+.dada{display:flex;gap:.8rem;align-items:baseline;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;margin-top:.8rem;font-size:.9rem;color:var(--light)}
+.dada b{font-size:1.35rem;color:var(--text);white-space:nowrap;font-family:var(--mono)}
+.dada a{white-space:nowrap}
+.eines{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.eines a{display:inline-flex;align-items:center;min-height:44px;padding:.35rem .85rem;border:1px solid var(--border);border-radius:999px;background:var(--card);text-decoration:none;color:var(--text);font-size:.9rem}
+.eines a:hover,.eines a:focus-visible{border-color:var(--indigo)}
+.passos{list-style:none;counter-reset:p;display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.6rem;padding:0;margin:1rem 0 0}
+.passos li{counter-increment:p;border-top:2px solid var(--green);padding-top:.45rem;font-size:.88rem;color:var(--light)}
+.passos li b{display:block;color:var(--text)}
+.passos li b::before{content:counter(p) " · ";font-family:var(--mono);font-weight:400;color:var(--green)}
+ol.fonts{margin:.6rem 0 0;padding-left:1.4rem;font-size:.88rem;color:var(--light);columns:2 22rem;column-gap:2rem}
+ol.fonts li{margin-bottom:.55rem;break-inside:avoid}
+.nota{font-size:.85rem;color:var(--muted);margin-top:1rem}
+sup a{text-decoration:none;font-size:.75em}
+.pot{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.pot-t{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem}
+.pot-t h3{margin:0 0 .2rem;font-size:1rem}
+.pot-t .pot-n{font-size:.85rem;color:var(--muted);margin:0 0 .4rem}
+.pot-t .pot-x{font-family:var(--mono);font-size:1.25rem;font-weight:700;color:var(--green)}
+.imp-barres text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+@media(max-width:860px){.pot{grid-template-columns:1fr}}
+@media(max-width:700px){.tres{grid-template-columns:1fr}.dada{flex-direction:column;gap:.2rem}}
+</style>
+</head>
+<body data-pantalla>
+<!--TT-NAV-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
+   una còpia: hi ha guarda. Només tokens de la pell (build-pell.js), perquè els
+   àlies de les pàgines d'arrel —--white, --accent-indigo, --bg-panel— no
+   existeixen a les 24 del SOS i allà no peten: deixen el text sense color. */
+.tt-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+  padding:.7rem 1.1rem;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
+  text-decoration:none;margin-right:.5rem;white-space:nowrap}
+.tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
+.tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.tt-nav .tn-g{position:relative}
+.tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
+.tt-nav .tn-g>summary::-webkit-details-marker{display:none}
+.tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
+.tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.tt-nav .tn-here>summary{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+.tt-nav .tn-p{position:absolute;top:calc(100% + .35rem);left:0;min-width:272px;z-index:110;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.tt-nav .tn-p a{display:block;padding:.44rem .58rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.tt-nav .tn-p a:hover{background:var(--panel);color:var(--text)}
+.tt-nav .tn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.tt-nav .tn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.tt-nav .tn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.tt-nav .tn-lang{display:flex;align-items:center;gap:2px;margin-left:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px}
+.tt-nav .tn-lang .lang-b{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font:inherit;font-size:var(--t0);padding:.16rem .5rem;border-radius:5px}
+.tt-nav .tn-lang .lang-b.on{background:var(--indigo);color:var(--on-accent);font-weight:700}
+.tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
+/* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
+.tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-in{margin-left:auto;color:var(--text);text-decoration:none;padding:.42rem .6rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-in:hover{background:var(--panel)}
+.tt-nav .tn-in+.tn-cta{margin-left:.25rem}
+.tt-nav .tn-lang~.tn-in{margin-left:.55rem}
+.tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
+  text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-cta:hover{filter:brightness(1.12)}
+@media(max-width:860px){
+  .tt-nav{padding:.42rem .6rem;gap:.25rem}
+  /* La marca baixa al terra —no per sota— perquè la marca, el commutador i
+     l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
+     partia i la barra passava de dues files a tres. */
+  .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
+  /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
+     El primer intent posava els cinc grups **en columna** a mòbil, oberts
+     sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
+     el dibuix i el botó del hero de la primera pantalla: test-portada.mjs va
+     dir «acaba a 1033 de 844». Una barra no pot costar un quart de pantalla.
+
+     En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
+     d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
+     a sota, que és el que una columna sí que feia. */
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-g>summary{padding:.3rem .5rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
+  .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
+    top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
+}
+</style>
+<nav class="tt-nav" aria-label="Navegació del lloc">
+  <a class="tn-brand" href="/SOS/">El <span>SOS</span></a>
+  <a class="tn-casa" href="/">TeamTowers</a>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/visio.html" aria-current="page"><b>La visió</b><span>Què hi guanya la ciutadania, l'empresa i l'administració</span></a><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/vna-suport.html"><b>L'editor del mapa</b><span>Rols, lliuraments, real i ideal: la vista avançada</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/certificacio.html"><b>La certificació</b><span>22 pràctiques a la comunitat, amb la IA de tutora</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html"><b>Crea el teu cervell</b><span>Cinc vistes, per a les IA i el LMS</span></a><a href="/SOS/la-font.html"><b>La font i la colla</b><span>Totes les vistes en una pel·lícula</span></a><a href="/SOS/colla.html"><b>La colla en la pinya</b><span>Un tauler per factor del test, amb els forats</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🤝</i><span>Participació</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>La campanya</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 personatges</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>Escola de participació</b><span>Alumnat de 6 a 13 anys, sense dades personals</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
+  <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
+  <a class="tn-in" href="/acceso"><span>Entra</span></a>
+  <a class="tn-cta" href="/SOS/"><span>Obre el SOS</span> →</a>
+</nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
+<!--/TT-NAV-->
+
+<header class="hero">
+  <div class="kicker" data-i18n-html="h.k">La visió · el sistema operatiu social</div>
+  <h1 data-i18n-html="h.t">Una societat va bé quan <em>el que sabem i tenim circula</em>.</h1>
+  <p class="lead" data-i18n-html="h.l">El SOS és un conjunt d'eines perquè el temps, el coneixement i les coses de cada territori es comparteixin. Quan això passa, millora la qualitat de vida a tots els nivells: la de les persones, la de les empreses i la dels serveis públics. Cada part hi guanya una cosa diferent, i totes surten del mateix gest.</p>
+  <div class="tres" role="group" aria-label="Per a qui">
+    <a href="#ciutadania"><b data-i18n-html="h.c1">Per a la ciutadania</b><span data-i18n-html="h.c1d">Companyia, salut i estalvi a la vida de cada dia</span></a>
+    <a href="#empresa"><b data-i18n-html="h.c2">Per a l'empresa</b><span data-i18n-html="h.c2d">Equips més units, clients i talent a prop</span></a>
+    <a href="#administracio"><b data-i18n-html="h.c3">Per a l'administració</b><span data-i18n-html="h.c3d">Prevenció que alleuja els serveis públics</span></a>
+  </div>
+  <p class="principi" data-i18n-html="h.p"><strong>Sumar, no restar.</strong> No és una ideologia: és aplicar bé tot el coneixement humà que ja tenim, a favor de les persones, dels éssers vius i de la natura. El que funciona —el veïnatge que s'ajuda, l'empresa que cuida el seu entorn, el servei públic que prevé— es fa visible i es multiplica.<sup><a href="#f11">[11]</a></sup></p>
+</header>
+
+<main class="wrap">
+
+<section id="ciutadania" data-pantalla-nom-ca="Ciutadania" data-pantalla-nom-es="Ciudadanía">
+  <h2 data-i18n-html="c.t">Per a la ciutadania · estar acompanyat també és salut</h2>
+  <p class="sub" data-i18n-html="c.s">La soledat no desitjada és avui un dels grans riscos per a la salut. Les xarxes de suport —un banc de temps, el préstec d'objectes, la compra compartida— hi responen amb una cosa senzilla: persones que es coneixen i es donen un cop de mà.</p>
+  <div class="beneficis">
+    <div class="b salut"><h3 data-i18n-html="c.b1">Salut mental i companyia</h3><p data-i18n-html="c.b1d">Tenir relacions socials sòlides augmenta un 50 % la probabilitat de supervivència, segons una metanàlisi de 148 estudis.<sup><a href="#f2">[2]</a></sup></p></div>
+    <div class="b diners"><h3 data-i18n-html="c.b2">Salut econòmica</h3><p data-i18n-html="c.b2d">Una hora val una hora: el que no es paga amb diners es paga amb temps. Deixar i compartir objectes, energia o compres redueix la despesa de cada llar. <a href="#estalvi">Mòdul a mòdul →</a></p></div>
+    <div class="b"><h3 data-i18n-html="c.b3">Aprendre i ser reconegut</h3><p data-i18n-html="c.b3d">Cada aportació al barri queda comptada i es pot convertir en formació i en una competència acreditada, amb el teu perfil i les teves dades sota el teu control.</p></div>
+  </div>
+  <p class="dada"><b>1 / 5</b><span data-i18n-html="c.d">de les persones a Espanya diuen patir soledat no desitjada; al món, una de cada sis. L'OMS la relaciona amb unes 871.000 morts l'any.<sup><a href="#f1">[1]</a></sup> <sup><a href="#f3">[3]</a></sup></span></p>
+  <div class="eines">
+    <a href="banc-temps.html" data-i18n-html="e.bt">El Banc de Temps</a>
+    <a href="biblioteca.html" data-i18n-html="e.bi">La Biblioteca de les Coses</a>
+    <a href="compra.html" data-i18n-html="e.co">La Compra</a>
+    <a href="energia.html" data-i18n-html="e.en">L'Energia</a>
+    <a href="habitatge.html" data-i18n-html="e.ha">L'Habitatge</a>
+  </div>
+</section>
+
+<section id="estalvi" data-pantalla-nom-ca="Què s'estalvia" data-pantalla-nom-es="Qué se ahorra">
+  <h2 data-i18n-html="s.t">Què s'estalvia cada llar · mòdul a mòdul</h2>
+  <p class="sub" data-i18n-html="s.s">La salut econòmica és la suma de molts estalvis petits: accedir a les coses en lloc de comprar-les, pagar amb temps el que no cal pagar amb diners i compartir el que surt més car sol. Cada eina del SOS ho calcula amb els seus valors de referència i ho publica amb forquilla, com una estimació.</p>
+  <div class="beneficis">
+    <a class="b diners mod" data-modul="library" href="biblioteca.html"><h3 data-i18n-html="s.b1">La Biblioteca de les Coses</h3><p data-i18n-html="s.b1d">Un trepant o una escala s'usen unes hores l'any. Agafar-los prestats costa el desgast, no la compra, i el que no es compra tampoc acaba als residus.</p></a>
+    <a class="b diners mod" href="compra.html#l-estalvi"><h3 data-i18n-html="s.b2">La Compra</h3><p data-i18n-html="s.b2d">La cistella feta en grup va directa als productors de proximitat: preu de comanda conjunta, menys intermediaris i l'estalvi dit per la seva causa.</p></a>
+    <a class="b diners mod" data-modul="timeBank" href="banc-temps.html"><h3 data-i18n-html="s.b3">El Banc de Temps</h3><p data-i18n-html="s.b3d">Les ajudes puntuals —una petita reparació, acompanyar algú al metge, una classe— es paguen en hores. Una hora rebuda és una hora que no es paga al mercat.</p></a>
+    <a class="b diners mod" data-modul="energy" href="energia.html"><h3 data-i18n-html="s.b4">L'Energia</h3><p data-i18n-html="s.b4d">L'autoconsum compartit abarateix la factura de cada llar segons quan consumeix, amb l'amortització real i el tràmit amb els seus terminis.</p></a>
+    <a class="b diners mod" data-modul="housing" href="habitatge.html"><h3 data-i18n-html="s.b5">L'Habitatge</h3><p data-i18n-html="s.b5d">La cessió d'ús canvia la compra o el lloguer de mercat per una quota pactada, amb l'entrada i la sortida escrites.</p></a>
+    <div class="b diners mod prox"><h3 data-i18n-html="s.b6">L'Aigua · pròximament</h3><p data-i18n-html="s.b6d">La mateixa lògica que l'energia: el consum compartit comptat i l'estalvi de cada llar. És el pròxim mòdul.</p></div>
+  </div>
+  <p class="dada"><b id="estTot"></b><span id="estTotT"></span></p>
+</section>
+
+<section id="empresa" data-pantalla-nom-ca="Empresa" data-pantalla-nom-es="Empresa">
+  <h2 data-i18n-html="m.t">Per a l'empresa · un entorn que funciona és un actiu</h2>
+  <p class="sub" data-i18n-html="m.s">Cap empresa viu aïllada: depèn de les persones que hi treballen, dels clients del territori i dels proveïdors que té a prop. Quan aquest entorn està cohesionat, l'empresa hi guanya.</p>
+  <div class="beneficis">
+    <div class="b salut"><h3 data-i18n-html="m.b1">Equips menys sols</h3><p data-i18n-html="m.b1d">Una de cada cinc persones treballadores al món diu sentir-se sola cada dia.<sup><a href="#f6">[6]</a></sup> Un equip connectat amb el seu entorn té més benestar i menys rotació.</p></div>
+    <div class="b valor"><h3 data-i18n-html="m.b2">El valor que no surt al balanç</h3><p data-i18n-html="m.b2d">La confiança, la reputació i el coneixement són intangibles que sostenen el negoci. El mapa de valor els fa visibles i els posa a treballar.</p></div>
+    <div class="b diners"><h3 data-i18n-html="m.b3">Clients, proveïdors i talent a prop</h3><p data-i18n-html="m.b3d">El directori del territori diu qui hi ha, què ofereix i què busca. La compra col·lectiva i la contractació local fan que el valor es quedi on es genera.</p></div>
+  </div>
+  <div class="eines">
+    <a href="online.html" data-i18n-html="e.di">El directori</a>
+    <a href="vna.html" data-i18n-html="e.vn">Què és un mapa de valor</a>
+    <a href="/cliente/" data-i18n-html="e.cl">Fes el mapa de la teva organització</a>
+  </div>
+</section>
+
+<section id="administracio" data-pantalla-nom-ca="Administració" data-pantalla-nom-es="Administración">
+  <h2 data-i18n-html="a.t">Per a l'administració pública · prevenir costa menys que atendre</h2>
+  <p class="sub" data-i18n-html="a.s">Les xarxes comunitàries no substitueixen cap servei públic: el fan arribar més lluny i n'alleugen la demanda. Les mateixes estratègies públiques contra la soledat ja ho recullen.<sup><a href="#f7">[7]</a></sup></p>
+  <div class="beneficis">
+    <div class="b diners"><h3 data-i18n-html="a.b1">Menys pressió sobre els serveis</h3><p data-i18n-html="a.b1d">La prescripció social —derivar des del centre de salut a activitats de la comunitat— va reduir de mitjana un 28 % les visites al metge de família als estudis revisats.<sup><a href="#f4">[4]</a></sup></p></div>
+    <div class="b salut"><h3 data-i18n-html="a.b2">Un retorn econòmic estudiat</h3><p data-i18n-html="a.b2d">L'avaluació de la London School of Economics sobre bancs de temps i altres projectes comunitaris va concloure que el retorn econòmic superava la inversió.<sup><a href="#f5">[5]</a></sup></p></div>
+    <div class="b"><h3 data-i18n-html="a.b3">Impacte que es pot justificar</h3><p data-i18n-html="a.b3d">Cada intercanvi queda registrat amb dades obertes i agregades: serveix per avaluar i justificar l'impacte social davant dels plans i dels Objectius de Desenvolupament Sostenible 3, 11 i 17.<sup><a href="#f10">[10]</a></sup></p></div>
+  </div>
+  <p class="dada"><b>1,17 %</b><span data-i18n-html="a.d">del PIB: el cost estimat de la soledat no desitjada a Espanya en salut, productivitat i qualitat de vida.<sup><a href="#f1">[1]</a></sup></span></p>
+</section>
+
+<section id="potencial" data-pantalla-nom-ca="El potencial" data-pantalla-nom-es="El potencial">
+  <h2 data-i18n-html="p.t">El potencial · de Catalunya a tot l'Estat</h2>
+  <p class="sub" data-i18n-html="p.s">Si una part de les llars fa servir aquests mòduls, l'estalvi se suma. Aquesta és l'extrapolació amb la població oficial i els valors de referència del SOS: una estimació per decidir on val la pena invertir, no una promesa.</p>
+  <div class="pot">
+    <div class="pot-t" id="potCat"></div>
+    <div class="pot-t" id="potEsp"></div>
+  </div>
+  <p class="nota" id="potFont"></p>
+  <div class="eines">
+    <a href="/SOS/#/fons/impacte" data-i18n-html="e.si">Prova-ho amb el teu municipi</a>
+  </div>
+</section>
+
+<section id="emprenedoria" data-pantalla-nom-ca="Emprenedoria" data-pantalla-nom-es="Emprendimiento">
+  <h2 data-i18n-html="r.t">I d'aquí neix l'emprenedoria · la MATRIU</h2>
+  <p class="sub" data-i18n-html="r.s">Quan la gent comparteix temps i coneixement, apareixen necessitats que algú pot resoldre. La MATRIU és la incubadora del SOS: acompanya aquestes idees fins que són un projecte que es sosté, amb el repartiment de cada aportació escrit des del primer dia.</p>
+  <ol class="passos">
+    <li><b data-i18n-html="r.p1">La necessitat</b><span data-i18n-html="r.p1d">surt dels intercanvis del territori</span></li>
+    <li><b data-i18n-html="r.p2">El mapa de valor</b><span data-i18n-html="r.p2d">qui hi participa i què es donen</span></li>
+    <li><b data-i18n-html="r.p3">El prototip</b><span data-i18n-html="r.p3d">es prova amb persones reals</span></li>
+    <li><b data-i18n-html="r.p4">El repartiment just</b><span data-i18n-html="r.p4d">cada aportació, comptada</span></li>
+    <li><b data-i18n-html="r.p5">El projecte que es sosté</b><span data-i18n-html="r.p5d">i torna valor a la xarxa</span></li>
+  </ol>
+  <p class="dada"><b>13,6 M</b><span data-i18n-html="r.d">de llocs de treball a les 2,8 milions d'entitats de l'economia social a la Unió Europea, que la Comissió Europea vol fer créixer amb un pla d'acció propi.<sup><a href="#f8">[8]</a></sup> A Espanya la reconeix la Llei 5/2011.<sup><a href="#f9">[9]</a></sup></span></p>
+  <div class="eines">
+    <a href="matriu.html" data-i18n-html="e.ma">La MATRIU</a>
+    <a href="formacio.html" data-i18n-html="e.fo">La formació</a>
+  </div>
+</section>
+
+<section id="fonts" data-pantalla-nom-ca="Fonts" data-pantalla-nom-es="Fuentes">
+  <h2 data-i18n-html="f.t">Les fonts</h2>
+  <p class="sub" data-i18n-html="f.s">Cada xifra d'aquesta pàgina surt d'una d'aquestes referències públiques.</p>
+  <ol class="fonts">
+    <li id="f1">Observatorio Estatal de la Soledad No Deseada (SoledadES) i Fundación ONCE (2023). <a href="https://www.infocop.es/el-impacto-negativo-de-la-soledad-no-deseada-y-sus-costes/" rel="noopener">El coste de la soledad no deseada en España</a>. I el <a href="https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/derechos-sociales-consumo-agenda-2030/paginas/2024/10062024-combatir-soledad-no-deseada.aspx" rel="noopener">Barómetro de la soledad no deseada en España 2024</a>.</li>
+    <li id="f2">Holt-Lunstad, J., Smith, T. B. i Layton, J. B. (2010). <a href="https://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.1000316" rel="noopener">Social Relationships and Mortality Risk: A Meta-analytic Review</a>. PLoS Medicine 7(7).</li>
+    <li id="f3">Organització Mundial de la Salut (2025). <a href="https://www.who.int/news/item/30-06-2025-social-connection-linked-to-improved-heath-and-reduced-risk-of-early-death" rel="noopener">Informe de la Comissió sobre la Connexió Social</a>.</li>
+    <li id="f4">Polley, M. et al. (2017). <a href="https://westminsterresearch.westminster.ac.uk/item/q1455" rel="noopener">A review of the evidence assessing impact of social prescribing on healthcare demand and cost implications</a>. University of Westminster.</li>
+    <li id="f5">Knapp, M., Bauer, A., Perkins, M. i Snell, T. (2013). <a href="https://researchonline.lse.ac.uk/id/eprint/46440" rel="noopener">Building community capital in social care: is there an economic case?</a> Community Development Journal 48(2). LSE.</li>
+    <li id="f6">Gallup (2024). <a href="https://www.gallup.com/workplace/645566/employees-worldwide-feel-lonely.aspx" rel="noopener">State of the Global Workplace</a>.</li>
+    <li id="f7">Ajuntament de Barcelona. <a href="https://ajuntament.barcelona.cat/usosdeltemps/en/actuacio/municipal-strategy-against-loneliness-2020-2030" rel="noopener">Estratègia municipal contra la soledat 2020-2030</a>.</li>
+    <li id="f8">Comissió Europea (2021). <a href="https://ec.europa.eu/commission/presscorner/api/files/document/print/en/ip_21_6568/IP_21_6568_EN.pdf" rel="noopener">Pla d'acció per a l'economia social</a>.</li>
+    <li id="f9"><a href="https://www.boe.es/buscar/act.php?id=BOE-A-2011-5708" rel="noopener">Llei 5/2011, de 29 de març, d'economia social</a>. BOE.</li>
+    <li id="f10">Nacions Unides. <a href="https://www.un.org/sustainabledevelopment/es/objetivos-de-desarrollo-sostenible/" rel="noopener">Objectius de Desenvolupament Sostenible</a>: 3 (salut i benestar), 11 (ciutats i comunitats sostenibles) i 17 (aliances).</li>
+    <li id="f11">Ostrom, E. (1990). <em>Governing the Commons</em>. Cambridge University Press. Premi Nobel d'Economia 2009, per la seva anàlisi de com les comunitats governen els béns comuns.</li>
+  </ol>
+  <p class="nota" data-i18n-html="f.n">Les xifres són de les fonts citades i no del SOS. El SOS no promet aquests resultats: posa les eines perquè cada territori els pugui mesurar.</p>
+</section>
+
+</main>
+
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-frase{margin-top:.5rem;font-weight:700;color:var(--text)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span>Avís legal i privacitat</span></a></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/visio.html" aria-current="page"><span>La visió</span></a></li><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/vna-suport.html"><span>L'editor del mapa</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html"><span>Formació acció</span></a></li><li><a href="/SOS/certificacio.html"><span>La certificació</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/cervell.html"><span>Crea el teu cervell</span></a></li><li><a href="/SOS/la-font.html"><span>La font i la colla</span></a></li><li><a href="/SOS/colla.html"><span>La colla en la pinya</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Participació</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>La campanya</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>Escola de participació</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+  </div>
+</footer>
+<script src="/SOS/lib/recorrido.js" defer></script>
+<!--/TT-PEU-->
+
+<script src="lib/impacte.js"></script>
+<script>
+/* La segona llengua. El català és a l'HTML; el castellà, aquí. Mateixa clau
+   de preferència que la resta del lloc (`tt_lang`) i `?lang=es` per enllaçar-hi. */
+const VI_ES = {
+  'h.k': 'La visión · el sistema operativo social',
+  'h.t': 'Una sociedad va bien cuando <em>lo que sabemos y tenemos circula</em>.',
+  'h.l': 'El SOS es un conjunto de herramientas para que el tiempo, el conocimiento y las cosas de cada territorio se compartan. Cuando eso pasa, mejora la calidad de vida en todos los niveles: la de las personas, la de las empresas y la de los servicios públicos. Cada parte gana algo distinto, y todas salen del mismo gesto.',
+  'h.c1': 'Para la ciudadanía', 'h.c1d': 'Compañía, salud y ahorro en la vida diaria',
+  'h.c2': 'Para la empresa', 'h.c2d': 'Equipos más unidos, clientes y talento cerca',
+  'h.c3': 'Para la administración', 'h.c3d': 'Prevención que alivia los servicios públicos',
+  'h.p': '<strong>Sumar, no restar.</strong> No es una ideología: es aplicar bien todo el conocimiento humano que ya tenemos, a favor de las personas, de los seres vivos y de la naturaleza. Lo que funciona —el vecindario que se ayuda, la empresa que cuida su entorno, el servicio público que previene— se hace visible y se multiplica.<sup><a href="#f11">[11]</a></sup>',
+  'c.t': 'Para la ciudadanía · estar acompañado también es salud',
+  'c.s': 'La soledad no deseada es hoy uno de los grandes riesgos para la salud. Las redes de apoyo —un banco de tiempo, el préstamo de objetos, la compra compartida— responden con algo sencillo: personas que se conocen y se echan una mano.',
+  'c.b1': 'Salud mental y compañía', 'c.b1d': 'Tener relaciones sociales sólidas aumenta un 50 % la probabilidad de supervivencia, según un metaanálisis de 148 estudios.<sup><a href="#f2">[2]</a></sup>',
+  'c.b2': 'Salud económica', 'c.b2d': 'Una hora vale una hora: lo que no se paga con dinero se paga con tiempo. Prestar y compartir objetos, energía o compras reduce el gasto de cada hogar. <a href="#estalvi">Módulo a módulo →</a>',
+  'c.b3': 'Aprender y ser reconocido', 'c.b3d': 'Cada aportación al barrio queda contada y puede convertirse en formación y en una competencia acreditada, con tu perfil y tus datos bajo tu control.',
+  'c.d': 'de las personas en España dicen sufrir soledad no deseada; en el mundo, una de cada seis. La OMS la relaciona con unas 871.000 muertes al año.<sup><a href="#f1">[1]</a></sup> <sup><a href="#f3">[3]</a></sup>',
+  'e.bt': 'El Banco de Tiempo', 'e.bi': 'La Biblioteca de las Cosas', 'e.co': 'La Compra', 'e.en': 'La Energía', 'e.ha': 'La Vivienda',
+  'm.t': 'Para la empresa · un entorno que funciona es un activo',
+  'm.s': 'Ninguna empresa vive aislada: depende de las personas que trabajan en ella, de los clientes del territorio y de los proveedores que tiene cerca. Cuando ese entorno está cohesionado, la empresa gana.',
+  'm.b1': 'Equipos menos solos', 'm.b1d': 'Una de cada cinco personas trabajadoras en el mundo dice sentirse sola cada día.<sup><a href="#f6">[6]</a></sup> Un equipo conectado con su entorno tiene más bienestar y menos rotación.',
+  'm.b2': 'El valor que no sale en el balance', 'm.b2d': 'La confianza, la reputación y el conocimiento son intangibles que sostienen el negocio. El mapa de valor los hace visibles y los pone a trabajar.',
+  'm.b3': 'Clientes, proveedores y talento cerca', 'm.b3d': 'El directorio del territorio dice quién hay, qué ofrece y qué busca. La compra colectiva y la contratación local hacen que el valor se quede donde se genera.',
+  's.t': 'Qué ahorra cada hogar · módulo a módulo',
+  's.s': 'La salud económica es la suma de muchos ahorros pequeños: acceder a las cosas en lugar de comprarlas, pagar con tiempo lo que no hace falta pagar con dinero y compartir lo que sale más caro solo. Cada herramienta del SOS lo calcula con sus valores de referencia y lo publica con horquilla, como una estimación.',
+  's.b1': 'La Biblioteca de las Cosas', 's.b1d': 'Un taladro o una escalera se usan unas horas al año. Tomarlos prestados cuesta el desgaste, no la compra, y lo que no se compra tampoco acaba en los residuos.',
+  's.b2': 'La Compra', 's.b2d': 'La cesta hecha en grupo va directa a los productores de proximidad: precio de pedido conjunto, menos intermediarios y el ahorro dicho por su causa.',
+  's.b3': 'El Banco de Tiempo', 's.b3d': 'Las ayudas puntuales —una pequeña reparación, acompañar a alguien al médico, una clase— se pagan en horas. Una hora recibida es una hora que no se paga en el mercado.',
+  's.b4': 'La Energía', 's.b4d': 'El autoconsumo compartido abarata la factura de cada hogar según cuándo consume, con la amortización real y el trámite con sus plazos.',
+  's.b5': 'La Vivienda', 's.b5d': 'La cesión de uso cambia la compra o el alquiler de mercado por una cuota pactada, con la entrada y la salida escritas.',
+  's.b6': 'El Agua · próximamente', 's.b6d': 'La misma lógica que la energía: el consumo compartido contado y el ahorro de cada hogar. Es el próximo módulo.',
+  'e.di': 'El directorio', 'e.vn': 'Qué es un mapa de valor', 'e.cl': 'Haz el mapa de tu organización',
+  'a.t': 'Para la administración pública · prevenir cuesta menos que atender',
+  'a.s': 'Las redes comunitarias no sustituyen ningún servicio público: lo hacen llegar más lejos y alivian su demanda. Las propias estrategias públicas contra la soledad ya lo recogen.<sup><a href="#f7">[7]</a></sup>',
+  'a.b1': 'Menos presión sobre los servicios', 'a.b1d': 'La prescripción social —derivar desde el centro de salud a actividades de la comunidad— redujo de media un 28 % las visitas al médico de familia en los estudios revisados.<sup><a href="#f4">[4]</a></sup>',
+  'a.b2': 'Un retorno económico estudiado', 'a.b2d': 'La evaluación de la London School of Economics sobre bancos de tiempo y otros proyectos comunitarios concluyó que el retorno económico superaba la inversión.<sup><a href="#f5">[5]</a></sup>',
+  'a.b3': 'Impacto que se puede justificar', 'a.b3d': 'Cada intercambio queda registrado con datos abiertos y agregados: sirve para evaluar y justificar el impacto social ante los planes y los Objetivos de Desarrollo Sostenible 3, 11 y 17.<sup><a href="#f10">[10]</a></sup>',
+  'a.d': 'del PIB: el coste estimado de la soledad no deseada en España en salud, productividad y calidad de vida.<sup><a href="#f1">[1]</a></sup>',
+  'r.t': 'Y de aquí nace el emprendimiento · la MATRIU',
+  'r.s': 'Cuando la gente comparte tiempo y conocimiento, aparecen necesidades que alguien puede resolver. La MATRIU es la incubadora del SOS: acompaña esas ideas hasta que son un proyecto que se sostiene, con el reparto de cada aportación escrito desde el primer día.',
+  'r.p1': 'La necesidad', 'r.p1d': 'sale de los intercambios del territorio',
+  'r.p2': 'El mapa de valor', 'r.p2d': 'quién participa y qué se dan',
+  'r.p3': 'El prototipo', 'r.p3d': 'se prueba con personas reales',
+  'r.p4': 'El reparto justo', 'r.p4d': 'cada aportación, contada',
+  'r.p5': 'El proyecto que se sostiene', 'r.p5d': 'y devuelve valor a la red',
+  'r.d': 'de empleos en los 2,8 millones de entidades de la economía social en la Unión Europea, que la Comisión Europea quiere hacer crecer con un plan de acción propio.<sup><a href="#f8">[8]</a></sup> En España la reconoce la Ley 5/2011.<sup><a href="#f9">[9]</a></sup>',
+  'p.t': 'El potencial · de Cataluña a todo el Estado',
+  'p.s': 'Si una parte de los hogares usa estos módulos, el ahorro se suma. Esta es la extrapolación con la población oficial y los valores de referencia del SOS: una estimación para decidir dónde vale la pena invertir, no una promesa.',
+  'e.si': 'Pruébalo con tu municipio',
+  'e.ma': 'La MATRIU', 'e.fo': 'La formación',
+  'f.t': 'Las fuentes', 'f.s': 'Cada cifra de esta página sale de una de estas referencias públicas.',
+  'f.n': 'Las cifras son de las fuentes citadas y no del SOS. El SOS no promete estos resultados: pone las herramientas para que cada territorio pueda medirlos.'
+};
+(function () {
+  const CA = {};
+  document.querySelectorAll('[data-i18n-html]').forEach(n => { CA[n.getAttribute('data-i18n-html')] = n.innerHTML; });
+  function aplica(l) {
+    const D = l === 'es' ? VI_ES : CA;
+    document.querySelectorAll('[data-i18n-html]').forEach(n => {
+      const v = D[n.getAttribute('data-i18n-html')];
+      if (v) n.innerHTML = v;
+    });
+    document.documentElement.lang = l;
+    document.querySelectorAll('.lang-b').forEach(b => b.classList.toggle('on', b.dataset.lang === l));
+    try { localStorage.setItem('tt_lang', l); } catch (e) {}
+    pintaPotencial(l);
+  }
+  let l = 'ca';
+  try { const g = localStorage.getItem('tt_lang'); if (g === 'es' || g === 'ca') l = g; } catch (e) {}
+  const q = /[?&]lang=(ca|es)\b/.exec(location.search); if (q) l = q[1];
+  document.querySelectorAll('.lang-b').forEach(b => b.addEventListener('click', () => aplica(b.dataset.lang)));
+  if (l !== 'ca') aplica(l);
+  else pintaPotencial('ca');
+})();
+/* El potencial surt de SOS/lib/impacte.js, el mateix càlcul que el simulador de l'app. */
+function pintaPotencial(l) {
+  if (!window.Impacte) return;
+  const I = window.Impacte, T = I.TERRITORIS;
+  const r1 = I.simula({ population: 1000, households: 1000, penetration: 1 }), per = k => r1.economic[k] / 1000;
+  document.querySelectorAll('[data-modul]').forEach(a => {
+    let x = a.querySelector('.b-x'); if (!x) { x = document.createElement('span'); x.className = 'b-x'; a.appendChild(x); }
+    x.textContent = '≈ ' + I.eur(per(a.dataset.modul), l) + (l === 'es' ? ' al año por hogar' : ' l\'any per llar');
+  });
+  document.getElementById('estTot').textContent = '≈ ' + I.eur(r1.economic.perHousehold, l);
+  document.getElementById('estTotT').innerHTML = l === 'es'
+    ? 'al año por hogar que participa, sumando banco de tiempo, biblioteca, vivienda, energía y cuidados. Son valores de referencia del SOS, ajustables en cada territorio: <a href="#potencial">mira qué da en Cataluña y en España</a>.'
+    : 'a l\'any per llar que hi participa, sumant banc de temps, biblioteca, habitatge, energia i cures. Són valors de referència del SOS, ajustables a cada territori: <a href="#potencial">mira què dona a Catalunya i a Espanya</a>.';
+  const txt = l === 'es'
+    ? { hab: 'habitantes', llars: 'hogares', a5: 'con el 5 % de los hogares, al año', par: '% de los hogares', font: 'Población: ' }
+    : { hab: 'habitants', llars: 'llars', a5: 'amb el 5 % de les llars, a l\'any', par: '% de les llars', font: 'Població: ' };
+  [['catalunya', 'potCat', 'var(--green)'], ['espanya', 'potEsp', 'var(--indigo)']].forEach(([k, id, c]) => {
+    const t = T[k], rs = I.escala(k), r5 = rs[1];
+    document.getElementById(id).innerHTML =
+      '<h3>' + t.nom[l] + '</h3><p class="pot-n">' + I.num(t.population, l) + ' ' + txt.hab + ' · ' + I.num(t.households, l) + ' ' + txt.llars + '</p>' +
+      '<p class="pot-n"><span class="pot-x">' + I.eur(r5.economic.total, l) + '</span> ' + txt.a5 + '</p>' +
+      I.barres(rs.map(x => ({ lbl: Math.round(x.inputs.penetration * 100) + ' ' + txt.par, v: x.economic.total, txt: I.eur(x.economic.total, l), color: c })), { lblW: 150, titol: t.nom[l] });
+  });
+  document.getElementById('potFont').innerHTML = txt.font + Object.values(T).map(t => '<a href="' + t.url + '" rel="noopener">' + t.font + '</a>').join(' · ');
+}
+</script>
+<script src="lib/pantalla.js" defer></script>
+</body>
+</html>

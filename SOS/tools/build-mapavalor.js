@@ -1519,8 +1519,8 @@ const VN = {
   'vn.cta3': { ca: 'Obre el SOS', es: 'Abre el SOS' },
   'vn.cta4': { ca: 'La formació, de N0 a N3', es: 'La formación, de N0 a N3' },
   'vn.peu3': {
-    ca: '<strong>I si el que busques és el curs:</strong> la ruta d\'aprenentatge viu a <a href="formacio.html">la formació</a>, amb setze mòduls de N0 a N3. Aquesta pàgina és el mètode i el cas; allà és on s\'aprèn a facilitar-lo.',
-    es: '<strong>Y si lo que buscas es el curso:</strong> la ruta de aprendizaje vive en <a href="formacio.html">la formación</a>, con dieciséis módulos de N0 a N3. Esta página es el método y el caso; allí es donde se aprende a facilitarlo.'
+    ca: '<strong>I si el que busques és el curs:</strong> la ruta d\'aprenentatge viu a <a href="formacio.html">la formació</a>, amb 22 mòduls de N0 a N3. Aquesta pàgina és el mètode i el cas; allà és on s\'aprèn a facilitar-lo.',
+    es: '<strong>Y si lo que buscas es el curso:</strong> la ruta de aprendizaje vive en <a href="formacio.html">la formación</a>, con 22 módulos de N0 a N3. Esta página es el método y el caso; allí es donde se aprende a facilitarlo.'
   },
   'vn.not.h2': { ca: 'Com es llegeix un mapa', es: 'Cómo se lee un mapa' },
   'vn.not.sub': {

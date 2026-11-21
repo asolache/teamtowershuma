@@ -106,6 +106,15 @@ nav a:hover{text-decoration:underline}
 .box.aptituds h4{color:var(--orange)}
 .box.eines h4{color:var(--purple)}
 .box.metode h4{color:var(--blue)}
+.box.cert-pr{border-left:3px solid var(--green);margin-top:1rem}
+.box.cert-pr h4{color:var(--green)}
+.box.cert-pr p{margin:.3rem 0}
+.box.pant-pr{border-left:3px solid var(--indigo);margin-top:1rem}
+.box.pant-pr h4{color:var(--indigo)}
+.box.pant-pr p{margin:.3rem 0}
+.vista-pant{margin:.35rem 0}
+.vista-pant summary{cursor:pointer;font-size:var(--t0)}
+.vista-pant iframe{display:block;width:100%;height:min(70vh,560px);margin-top:.4rem;border:1px solid var(--border);border-radius:8px;background:var(--bg)}
 .box.exercici h4{color:var(--red)}
 .box ul{margin:.3rem 0;padding-left:1.2rem;color:var(--light)}
 .box ul li{margin:.2rem 0;font-size:var(--t0)}
@@ -240,6 +249,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 .guia dl{margin:.4rem 0 0} .guia dt{font-weight:700;margin-top:.5rem} .guia dd{margin:.15rem 0 0;color:var(--light)}
 @media (max-width:560px){.expo{padding:1.1rem .9rem}}
 
+.mod-rol{margin:.2rem 0 .5rem;font-size:var(--t0);color:var(--light)}
 </style>
 </head>
 <body>
@@ -356,7 +366,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
   <a class="tn-brand" href="/SOS/">El <span>SOS</span></a>
   <a class="tn-casa" href="/">TeamTowers</a>
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
-  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/vna-suport.html"><b>L'editor del mapa</b><span>Rols, lliuraments, real i ideal: la vista avançada</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html" aria-current="page"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html"><b>Crea el teu cervell</b><span>Cinc vistes, per a les IA i el LMS</span></a><a href="/SOS/la-font.html"><b>La font i la colla</b><span>Totes les vistes en una pel·lícula</span></a><a href="/SOS/colla.html"><b>La colla en la pinya</b><span>Un tauler per factor del test, amb els forats</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌀</i><span>Molekulon</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>El Comando</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 herois</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>La Fàbrica de Superherois</b><span>De 6 a 13 anys, i cap nom real de cap criatura</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/visio.html"><b>La visió</b><span>Què hi guanya la ciutadania, l'empresa i l'administració</span></a><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/vna-suport.html"><b>L'editor del mapa</b><span>Rols, lliuraments, real i ideal: la vista avançada</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html" aria-current="page"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/certificacio.html"><b>La certificació</b><span>22 pràctiques a la comunitat, amb la IA de tutora</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html"><b>Crea el teu cervell</b><span>Cinc vistes, per a les IA i el LMS</span></a><a href="/SOS/la-font.html"><b>La font i la colla</b><span>Totes les vistes en una pel·lícula</span></a><a href="/SOS/colla.html"><b>La colla en la pinya</b><span>Un tauler per factor del test, amb els forats</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🤝</i><span>Participació</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>La campanya</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 personatges</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>Escola de participació</b><span>Alumnat de 6 a 13 anys, sense dades personals</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
   <a class="tn-in" href="/acceso"><span>Entra</span></a>
   <a class="tn-cta" href="/SOS/"><span>Obre el SOS</span> →</a>
 </nav>
@@ -487,6 +497,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div class="lvl l3"><div class="lvl-id">N3</div><div class="lvl-nm">Mentor/a</div><div class="lvl-ds">Formes altres gestors i certifiques la seva pràctica.</div><div class="lvl-ev">Evidència: ≥50 h · ≥3 comunitats · 2 ventures o 1 graduada</div></div>
 </div>
 <p class="lead" style="margin-top:1rem">Al SOS, <strong>el launcher → 🎓 Prepara la meva mentoria</strong> llegeix el teu ledger i genera l'itinerari adaptat: què ja domines, què et falta, quins mòduls et toquen i el guió de la sessió de 60 minuts. Aquesta pàgina és el repositori on t'hi prepares.</p>
+<p class="lead">Com es passa de nivell posant el model en marxa a la teva comunitat, amb la IA del SOS com a tutora i les dades confidencials: <a href="certificacio.html"><strong>la guia de certificació</strong></a>. Cada mòdul porta al final la seva pràctica «Per certificar».</p>
 </section>
 
 <section class="itineraris" id="itineraris">
@@ -498,7 +509,7 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <thead><tr><th>Rol</th><th>Camí curt (ser útil ja)</th><th>Amplia després</th><th>Fita</th></tr></thead>
 <tbody>
 <tr><td><span class="rt-r" style="--c:var(--indigo)">🏛 Guardian del territori</span></td><td>M1 · M3 · M5</td><td>M9 · M11 · M14 · M2</td><td>Signar decisions amb quòrum</td></tr>
-<tr><td><span class="rt-r" style="--c:var(--green)">🦸 Superheroi/na</span></td><td>M1 · M4 · M7</td><td>M10 · M3</td><td>Primer intercanvi signat</td></tr>
+<tr><td><span class="rt-r" style="--c:var(--green)">🦸 Ciutadà/ana</span></td><td>M1 · M4 · M7</td><td>M10 · M3</td><td>Primer intercanvi signat</td></tr>
 <tr><td><span class="rt-r" style="--c:var(--orange)">👥 Coordinador/a de comunitat</span></td><td>M1 · M3 · M4 · M9</td><td>M10 · M11 · M6</td><td>Onboarding de 5 persones</td></tr>
 <tr><td><span class="rt-r" style="--c:var(--blue)">🌐 Agent territorial</span></td><td>M1 · M3 · M8</td><td>M12 · M14 · M5</td><td>Ancorar un pack públic</td></tr>
 <tr><td><span class="rt-r" style="--c:var(--purple)">💫 Simpatitzant</span></td><td>M1 · M4</td><td>M7 · M10</td><td>Entendre on encaixes</td></tr>
@@ -578,34 +589,34 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div class="toc">
 <h3>Índex de mòduls</h3>
 <ol>
-<li><a href="#m1">Fonaments SOS i codex Antigravity</a> · <em>filosofia + stack W3C + local-first</em></li>
-<li><a href="#m2">Identitat descentralitzada i criptografia</a> · <em>did:sos, firma, cadena hash, carteres</em></li>
-<li><a href="#m3">Value Network Analysis (Verna Allee)</a> · <em>rols funcionals + fluxos recíprocs</em></li>
-<li><a href="#m4">Recursos comunitaris</a> · <em>banc de temps + biblioteca de les coses</em></li>
-<li><a href="#m5">Governança i Guardians</a> · <em>sabiduria + quòrum + assemblea federativa Penrose</em></li>
-<li><a href="#m6">MATRIU, Slicing Pie i intercooperació</a> · <em>ventures + equity dinàmic + Mondragón</em></li>
-<li><a href="#m7">Comando Molekulon i reputació</a> · <em>superheroi + cromos + multivers narratiu</em></li>
-<li><a href="#m8">Ancoratge públic i IA integrada</a> · <em>Nostr + IPFS/Arweave + AI adapter DRY</em></li>
+<li><a href="#m1">Sistemes digitals per a organitzacions</a> · <em>responsable digital</em></li>
+<li><a href="#m2">Identitat digital i signatura electrònica</a> · <em>responsable de dades</em></li>
+<li><a href="#m3">Anàlisi de xarxes de valor</a> · <em>analista de processos</em></li>
+<li><a href="#m4">Gestió de recursos compartits</a> · <em>gestor/a de recursos comunitaris</em></li>
+<li><a href="#m5">Governança participativa</a> · <em>secretaria i facilitació d'òrgans</em></li>
+<li><a href="#m6">Economia col·laborativa i intercooperació</a> · <em>promotor/a de projectes col·lectius</em></li>
+<li><a href="#m7">Participació ciutadana</a> · <em>dinamitzador/a de participació</em></li>
+<li><a href="#m8">Dades obertes i IA responsable</a> · <em>tècnic/a de dades</em></li>
 </ol>
 <h3 style="margin-top:1.2rem">Bloc B · L'ofici comunitari</h3>
 <ol start="9">
-<li><a href="#m9">Facilitació i dinamització de grups</a> · <em>portar la sala, no exposar-hi</em></li>
-<li><a href="#m10">Comunicació i captació de persones</a> · <em>que la gent vingui i es quedi</em></li>
-<li><a href="#m11">Conflictes, cures i relleu</a> · <em>el burnout mata més projectes que el mètode</em></li>
-<li><a href="#m12">Finançament i subvencions a Catalunya</a> · <em>convocatòries + justificació</em></li>
-<li><a href="#m13">Formes jurídiques i tràmits</a> · <em>associació · SCCL · SL · autònom</em></li>
-<li><a href="#m14">Mesura d'impacte i justificació</a> · <em>demostrar, no llistar</em></li>
-<li><a href="#m15">Dades, privadesa i RGPD</a> · <em>què és públic i què és irreversible</em></li>
-<li><a href="#m16">Formació de formadors</a> · <em>l'ofici de mentorar · N3</em></li>
+<li><a href="#m9">Dinamització de grups</a> · <em>dinamitzador/a comunitari/ària</em></li>
+<li><a href="#m10">Comunicació i captació</a> · <em>comunicador/a</em></li>
+<li><a href="#m11">Gestió de conflictes i cures</a> · <em>mediador/a</em></li>
+<li><a href="#m12">Finançament i subvencions</a> · <em>gestor/a de projectes</em></li>
+<li><a href="#m13">Formes jurídiques i tràmits</a> · <em>gestor/a administratiu/iva</em></li>
+<li><a href="#m14">Avaluació de l'impacte social</a> · <em>avaluador/a</em></li>
+<li><a href="#m15">Protecció de dades personals</a> · <em>responsable del tractament</em></li>
+<li><a href="#m16">Docència i tutoria</a> · <em>formador/a</em></li>
 </ol>
 <h3 style="margin-top:1.2rem">Bloc C · La teva web viva amb el teu cervell</h3>
 <ol start="17">
-<li><a href="#m17">El teu mapa de valor</a> · <em>qui aporta què, amb les deu regles</em></li>
-<li><a href="#m18">El teu cervell i la teva cultura</a> · <em>que la teva IA conegui casa teva</em></li>
-<li><a href="#m19">La teva web</a> · <em>del mapa a la web, sense perdre Google</em></li>
-<li><a href="#m20">Editar i publicar sense trencar</a> · <em>vista prèvia abans de publicar</em></li>
-<li><a href="#m21">Que vagi sol</a> · <em>formularis i fluxos connectats a la teva gestió</em></li>
-<li><a href="#m22">Treballar amb el teu Claude</a> · <em>demanar canvis i revisar-los tu</em></li>
+<li><a href="#m17">Mapa de valor de l'organització</a> · <em>direcció o consultoria</em></li>
+<li><a href="#m18">Gestió del coneixement per a la IA</a> · <em>gestor/a del coneixement</em></li>
+<li><a href="#m19">Web corporativa</a> · <em>responsable web</em></li>
+<li><a href="#m20">Publicació de continguts web</a> · <em>editor/a de continguts</em></li>
+<li><a href="#m21">Automatització de processos</a> · <em>tècnic/a de processos</em></li>
+<li><a href="#m22">Treball amb assistents d'IA</a> · <em>qualsevol rol</em></li>
 </ol>
 <ol start="23" style="list-style:none;padding-left:0;margin-top:.6rem">
 <li><a href="#manual">🔧 Manual tècnic · Desenvolupament i administració</a> · <em>carteres permaweb · Nostr · Claude API · allotjament propi</em></li>
@@ -625,7 +636,8 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 
 <section class="module mod-1" id="m1">
 <div class="num">MÒDUL 1 · 4-6 h</div>
-<h2>Fonaments SOS i codex Antigravity</h2>
+<h2>Sistemes digitals per a organitzacions</h2>
+<p class="mod-rol">Forma: <strong>Responsable digital</strong> · triar eines obertes i guardar les dades pròpies</p>
 <p class="subtitle">Comprendre la filosofia, l'stack tècnic i les línies vermelles del sistema.</p>
 <p class="lead">SOS no és una app més: és una manera d'entendre el desenvolupament comunitari com un sistema operatiu — capes, protocols, permisos, sobirania. Aquest mòdul et dóna el marc mental per tot el que vindrà després.</p>
 
@@ -660,11 +672,24 @@ a.emb-p:hover,a.emb-p:focus-visible{border-color:var(--indigo)}
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Llegeix el codex sencer. Obre <code>SOS/index.html</code> a l'editor. Cerca "Zero Redundancy" i observa on es materialitza. Fes una llista de tots els mòduls funcionals que trobes.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Obre SOS al navegador. Al DevTools: escriu <code>window.__SOS</code> i explora quantes funcions exposa (>150). Escull-ne 5 i escriu què creus que fa cadascuna. Verifica després amb el codi.</p></div>
+<!--TT-CERT-m1-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/eines" target="_blank" rel="noopener">Les eines del SOS</a> · <a href="/SOS/#/copia" target="_blank" rel="noopener">Còpia de seguretat i carpeta local</a></p>
+<details class="vista-pant"><summary>👁 Mira «Les eines del SOS» aquí</summary><iframe data-src="/SOS/#/eines" title="Les eines del SOS" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Còpia de seguretat i carpeta local» aquí</summary><iframe data-src="/SOS/#/copia" title="Còpia de seguretat i carpeta local" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Fes l'inventari de les eines digitals que fa servir la teva comunitat i tria'n una d'oberta per a cada necessitat, amb les dades guardades al vostre dispositiu.</p>
+<p><strong>L'evidència que queda:</strong> La fitxa d'inventari al node, amb el motiu de cada tria.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada eina tingui alternativa oberta i que cap dada quedi només en un servei de fora.</p>
+<p><a href="certificacio.html#cm1">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m1-->
 </section>
 
 <section class="module mod-2" id="m2">
 <div class="num">MÒDUL 2 · 6-8 h</div>
-<h2>Identitat descentralitzada i criptografia</h2>
+<h2>Identitat digital i signatura electrònica</h2>
+<p class="mod-rol">Forma: <strong>Responsable de dades</strong> · signar, verificar i custodiar</p>
 <p class="subtitle">Sobirania criptogràfica: `did:sos`, firma, cadena hash, carteres, xifratge multi-membre.</p>
 <p class="lead">Cada acció al SOS pot ser signada, encadenada i xifrada sense confiar en cap servidor. Aquest mòdul et dóna els fonaments per operar amb identitat auto-sobirana i comptabilitat verificable.</p>
 
@@ -752,11 +777,24 @@ l'altra banda hi diu la seva. 2) Dona-hi el vistiplau des del segon navegador. 3
 (📄 al teu ledger) i obre'l amb un editor de text: has de poder llegir el fet, les dues firmes i
 la petjada. 4) Canvia-hi una xifra a mà i torna a verificar-lo. <strong>Aquest quart pas és el
 mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que tocar-ho es noti.</p></div>
+<!--TT-CERT-m2-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/identitat" target="_blank" rel="noopener">La meva identitat</a> · <a href="/SOS/#/copia" target="_blank" rel="noopener">Còpia de seguretat</a></p>
+<details class="vista-pant"><summary>👁 Mira «La meva identitat» aquí</summary><iframe data-src="/SOS/#/identitat" title="La meva identitat" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Còpia de seguretat» aquí</summary><iframe data-src="/SOS/#/copia" title="Còpia de seguretat" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Crea la teva identitat digital al SOS, fes-ne la còpia de seguretat i signa la primera aportació real a la comunitat.</p>
+<p><strong>L'evidència que queda:</strong> La identitat (did) amb còpia guardada i una aportació signada al registre.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que la signatura es pugui verificar i que hi hagi còpia de la clau fora del dispositiu.</p>
+<p><a href="certificacio.html#cm2">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m2-->
 </section>
 
 <section class="module mod-3" id="m3">
 <div class="num">MÒDUL 3 · 5-7 h</div>
-<h2>Value Network Analysis (Verna Allee)</h2>
+<h2>Anàlisi de xarxes de valor</h2>
+<p class="mod-rol">Forma: <strong>Analista de processos</strong> · mapar rols i intercanvis i veure què hi falta</p>
 <p class="subtitle">Dissenyar xarxes de valor sostenibles: rols funcionals + fluxos tangibles/intangibles + reciprocitat.</p>
 <p class="lead">La metodologia VNA de Verna Allee és la base del disseny de qualsevol xarxa de valor a SOS. Ni organigrama, ni cadena de valor lineal: mapes relacionals amb rols funcionals i intercanvis bidireccionals.</p>
 
@@ -790,11 +828,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Del general al concret: primer defineix la metaskill (missió/visió/objectius). Després els 5-8 rols funcionals. Després els 6-12 intercanvis, amb barreja tangibles/intangibles. Comprova <code>buildHealth</code> per rols aïllats i topologia estrella.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Instancia una <strong>Comunitat energètica</strong> al SOS. Mira el mapa VNA generat. Identifica quins fluxos falten. Afegeix 3 intercanvis intangibles nous que reforcin la reciprocitat.</p></div>
+<!--TT-CERT-m3-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/vna.html" target="_blank" rel="noopener">El mapa de valor</a> · <a href="/SOS/vna-suport.html" target="_blank" rel="noopener">Suport al mapa de valor</a></p>
+<details class="vista-pant"><summary>👁 Mira «El mapa de valor» aquí</summary><iframe data-src="/SOS/vna.html" title="El mapa de valor" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Suport al mapa de valor» aquí</summary><iframe data-src="/SOS/vna-suport.html" title="Suport al mapa de valor" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Dibuixa el mapa de valor de la teva comunitat amb tres persones que hi participen: qui hi és, què es donen i què falta.</p>
+<p><strong>L'evidència que queda:</strong> El mapa al node, revisat amb les deu regles, i la llista del que falta.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que hi hagi intercanvis d'anada i tornada, intangibles inclosos, i que cada buit tingui una pregunta per a la sessió.</p>
+<p><a href="certificacio.html#cm3">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m3-->
 </section>
 
 <section class="module mod-4" id="m4">
 <div class="num">MÒDUL 4 · 4-6 h</div>
-<h2>Recursos comunitaris — Banc de temps i Biblioteca de les coses</h2>
+<h2>Gestió de recursos compartits</h2>
+<p class="mod-rol">Forma: <strong>Gestor/a de recursos comunitaris</strong> · banc de temps i préstec d'objectes</p>
 <p class="subtitle">Els dos comuns més universals: hores i objectes. Gestionats amb pings i matching descentralitzat.</p>
 <p class="lead">Cada minut donat i cada objecte compartit multiplica el valor de la comunitat sense multiplicar-ne el cost. Aquest mòdul t'ensenya a modelar i operar els dos comuns més accessibles.</p>
 
@@ -812,7 +863,7 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <li>Economia solidària aplicada</li>
 <li>Disseny de taxonomies (categoria/tipologia)</li>
 <li>Gestió operativa d'un banc de temps</li>
-<li>Onboarding de socis (superheroi flow)</li>
+<li>Alta de ciutadans (flux d'alta)</li>
 </ul></div>
 <div class="box aptituds"><h4>🌱 Aptituds que creixen</h4><ul>
 <li>Cura de la reciprocitat</li>
@@ -828,12 +879,25 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Comença amb 3-5 socis. Registra ofertes reals (no simulades). Fes un intercanvi que quedi al ledger firmat. Explora els <strong>Pings ecosistema</strong> per veure matchings automàtics entre bancs de temps adjacents.</p></div>
 
-<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Crea 2 bancs de temps (pobles A i B). Registra a A un/a superheroi que ofereix informàtica; a B un/a que la demana. Obre <strong>🔔 Pings ecosistema</strong>. Verifica que el matching cross-node apareix i que pots iniciar un intercanvi signat.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Crea 2 bancs de temps (pobles A i B). Registra a A un/a ciutadà/ana que ofereix informàtica; a B un/a que la demana. Obre <strong>🔔 Pings ecosistema</strong>. Verifica que el matching cross-node apareix i que pots iniciar un intercanvi signat.</p></div>
+<!--TT-CERT-m4-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/banc-temps.html" target="_blank" rel="noopener">El Banc de Temps</a> · <a href="/SOS/biblioteca.html" target="_blank" rel="noopener">La Biblioteca de les Coses</a></p>
+<details class="vista-pant"><summary>👁 Mira «El Banc de Temps» aquí</summary><iframe data-src="/SOS/banc-temps.html" title="El Banc de Temps" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «La Biblioteca de les Coses» aquí</summary><iframe data-src="/SOS/biblioteca.html" title="La Biblioteca de les Coses" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Posa en marxa un banc de temps o un préstec d'objectes amb almenys cinc persones del barri.</p>
+<p><strong>L'evidència que queda:</strong> Intercanvis registrats i signats per les dues parts durant quatre setmanes.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que els intercanvis siguin reals (dues signatures) i que hi participin persones diferents, no sempre les mateixes.</p>
+<p><a href="certificacio.html#cm4">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m4-->
 </section>
 
 <section class="module mod-5" id="m5">
 <div class="num">MÒDUL 5 · 6-8 h</div>
-<h2>Governança i Guardians — Sabiduria + Assemblea federativa</h2>
+<h2>Governança participativa</h2>
+<p class="mod-rol">Forma: <strong>Secretaria i facilitació d'òrgans</strong> · quòrum, actes i decisions</p>
 <p class="subtitle">Presa de decisions signada + votació ponderada matemàticament equitativa (llei Penrose).</p>
 <p class="lead">Sense governança clara, les xarxes de valor col·lapsen. SOS incorpora un sistema de propostes signades amb quòrum de guardians (stewards) i una assemblea federativa amb vot ponderat per √població amb correcció Gini.</p>
 
@@ -868,11 +932,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Configura una comarca amb 3 municipis de mides molt diferents. Simula una decisió a l'<strong>Assemblea federativa</strong>. Observa com √població reparteix pes just. Prova d'inflar la població d'un bloc: la correcció Gini el modula.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Reclama un node. Convida un altre navegador a l'ecosistema. Des d'observer sol·licita ser guardian. Des d'owner, aprova la petició. Verifica que el nou guardian pot votar propostes.</p></div>
+<!--TT-CERT-m5-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/tauler" target="_blank" rel="noopener">El tauler de la comunitat</a> · <a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a></p>
+<details class="vista-pant"><summary>👁 Mira «El tauler de la comunitat» aquí</summary><iframe data-src="/SOS/#/tauler" title="El tauler de la comunitat" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Registre públic signat» aquí</summary><iframe data-src="/SOS/#/registre" title="Registre públic signat" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Convoca i facilita una assemblea o reunió de l'òrgan de la comunitat i deixa la decisió presa per escrit.</p>
+<p><strong>L'evidència que queda:</strong> L'acta amb el quòrum, la decisió votada i les signatures de qui custodia el node.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que hi hagi quòrum, que el vot quedi signat i que l'acta digui qui fa què i quan.</p>
+<p><a href="certificacio.html#cm5">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m5-->
 </section>
 
 <section class="module mod-6" id="m6">
 <div class="num">MÒDUL 6 · 7-9 h</div>
-<h2>MATRIU · Slicing Pie · Intercooperació Mondragón</h2>
+<h2>Economia col·laborativa i intercooperació</h2>
+<p class="mod-rol">Forma: <strong>Promotor/a de projectes col·lectius</strong> · repartiment equitatiu i acords entre entitats</p>
 <p class="subtitle">Incubadora de projectes econòmics amb equity dinàmic i intercooperació entre ventures.</p>
 <p class="lead">La MATRIU és el mecanisme més complex de SOS: incubar iniciatives crítiques del territori amb Slicing Pie (Mike Moyer) i deixar-les cooperar entre elles estil Mondragón — sense advocats, sense despatxos, tot al navegador.</p>
 
@@ -909,11 +986,25 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Comença per un fons petit (2-3 socis, 20-40 hores mobilitzades). Incuba 2 ventures des de <code>CRITICAL_ACTIVITIES</code>. Assigna recursos i observa el <strong>Fons cooperatiu</strong> rollup. Executa una intercooperació entre ventures i verifica la cadena hash del log.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Configura MATRIU + banc de temps + biblioteca vinculats. Simula 1 any: 5 socis, 200h aportades, 2 ventures actives, 1 intercooperació entre elles. Obre el panell <strong>🔮 Valor del fons</strong> i valida el rang €-min/esperat/max.</p></div>
+<!--TT-CERT-m6-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/matriu.html" target="_blank" rel="noopener">La MATRIU</a> · <a href="/SOS/compra.html" target="_blank" rel="noopener">La Compra</a> · <a href="/SOS/#/federacions" target="_blank" rel="noopener">Federacions temàtiques</a></p>
+<details class="vista-pant"><summary>👁 Mira «La MATRIU» aquí</summary><iframe data-src="/SOS/matriu.html" title="La MATRIU" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «La Compra» aquí</summary><iframe data-src="/SOS/compra.html" title="La Compra" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Federacions temàtiques» aquí</summary><iframe data-src="/SOS/#/federacions" title="Federacions temàtiques" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Acorda amb una altra entitat del territori un projecte o un intercanvi, amb el repartiment de cada aportació escrit des del primer dia.</p>
+<p><strong>L'evidència que queda:</strong> L'acord d'intercooperació signat pels dos nodes i el primer repartiment calculat.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que el repartiment surti de les aportacions registrades i que l'acord digui com s'entra i com se surt.</p>
+<p><a href="certificacio.html#cm6">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m6-->
 </section>
 
 <section class="module mod-7" id="m7">
 <div class="num">MÒDUL 7 · 5-7 h</div>
-<h2>Comando Molekulon · Reputació · Multivers narratiu</h2>
+<h2>Participació ciutadana</h2>
+<p class="mod-rol">Forma: <strong>Dinamitzador/a de participació</strong> · registrar i reconèixer les aportacions</p>
 <p class="subtitle">La capa gamificada + narrativa transmedia: superherois, cromos, balanç entre obrir i tallar, i pel·lícula col·lectiva.</p>
 <p class="lead">La reputació al SOS és <strong>verificable</strong>: surt del ledger signat. La narrativa és <strong>viva</strong>: cada intercanvi és una llavor de la pel·lícula del Comando. Aquest mòdul t'ensenya a activar el marc que fa que la gent torni.</p>
 
@@ -921,7 +1012,7 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <ul>
 <li>Comprendre el balanç entre <strong>obrir i sembrar</strong> (creació, cura, ensenyament) i <strong>tallar i renovar</strong> (transformació, auditoria, reparació), i els arquetips.</li>
 <li>Calcular la reputació verificable d'una persona.</li>
-<li>Generar el <strong>cromo trading-card</strong> d'un superheroi.</li>
+<li>Generar el <strong>cromo trading-card</strong> d'un/a ciutadà/ana.</li>
 <li>Activar el <strong>Comando Catalunya</strong> vista amb protagonistes originals + roster real.</li>
 <li>Generar <strong>kits narratius</strong> (còmic + himne + escena performativa) amb IA.</li>
 <li>Publicar al <strong>Multivers Molekulon</strong>.</li>
@@ -947,14 +1038,27 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <p><code>reputationOf()</code> · <code>superheroCromo()</code> · <code>comandoRoster()</code> · <code>directorFilter()</code> · <code>openComandoView()</code> · <code>ARCHETYPES</code> · <code>ARCHETYPE_SETS</code> (vèdic/celta/andí/secular) · <code>SKILL_POLARITY</code> · <code>molekulonAffinity()</code> · <code>CANONICAL_HEROES</code> · <code>CROMO_TIERS</code> · <code>COMANDO_TARGET</code> (150.000) · <code>evaluateChallenges()</code> · <code>openNarrativeKit()</code> · <code>saveNarrative()</code> · <code>openMultiverse()</code></p>
 </div>
 
-<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Dóna d'alta 5 superherois amb superpoders diferents. Obre el <strong>Comando Catalunya</strong> i observa els cromos rank-ordenats. Genera un <strong>Kit narratiu</strong> pel grup més complementari. Guarda al multivers. Repeteix amb un altre grup.</p></div>
+<div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Dóna d'alta 5 ciutadans amb capacitats diferents. Obre el <strong>Comando Catalunya</strong> i observa els cromos rank-ordenats. Genera un <strong>Kit narratiu</strong> pel grup més complementari. Guarda al multivers. Repeteix amb un altre grup.</p></div>
 
-<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Al perfil transversal d'un superheroi, revisa els <strong>Reptes actius</strong>. Identifica quin repte cal completar per pujar a Bronze tier. Actua a SOS fins que el repte quedi ✓.</p></div>
+<div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Al perfil transversal d'un/a ciutadà/ana, revisa els <strong>Reptes actius</strong>. Identifica quin repte cal completar per pujar a Bronze tier. Actua a SOS fins que el repte quedi ✓.</p></div>
+<!--TT-CERT-m7-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/uneix-te.html" target="_blank" rel="noopener">Participa al teu barri</a> · <a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a></p>
+<details class="vista-pant"><summary>👁 Mira «Participa al teu barri» aquí</summary><iframe data-src="/SOS/uneix-te.html" title="Participa al teu barri" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Registre públic signat» aquí</summary><iframe data-src="/SOS/#/registre" title="Registre públic signat" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Organitza una acció oberta al barri i fes que cada aportació quedi registrada i reconeguda.</p>
+<p><strong>L'evidència que queda:</strong> Les aportacions de l'acció al registre i el reconeixement publicat a qui hi va participar, amb el seu permís.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que hi hagi persones noves i que el reconeixement surti només amb consentiment.</p>
+<p><a href="certificacio.html#cm7">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m7-->
 </section>
 
 <section class="module mod-8" id="m8">
 <div class="num">MÒDUL 8 · 6-8 h</div>
-<h2>Ancoratge públic i IA integrada</h2>
+<h2>Dades obertes i IA responsable</h2>
+<p class="mod-rol">Forma: <strong>Tècnic/a de dades</strong> · publicar amb garanties i fer servir la IA amb criteri</p>
 <p class="subtitle">Sortir a l'obert: Nostr, Anchor Pack per IPFS/Arweave, AI adapter DRY i simuladors d'impacte.</p>
 <p class="lead">Fins ara tot ha viscut al navegador. Ara aprens a projectar el sistema cap enfora amb proves públiques signades i amb IA integrada per generar mapes, valoracions i narrativa.</p>
 
@@ -991,6 +1095,18 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Un cop tens un node amb activitat real (Mòdul 6 completat), fes un cicle complet d'ancoratge: (a) genera Anchor Pack + CID · (b) puja'l a Arweave/IPFS · (c) publica el mainHash a Nostr. Cadascú pot verificar el pack sense confiar en TeamTowers.</p></div>
 
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Simula l'<strong>Impacte cas Catalunya</strong> per al teu municipi. Ajusta la penetració al 10%. Anota l'estalvi €/any + reducció solitud + tCO2. Fes captura i comparteix-la a xarxes amb link a SOS.</p></div>
+<!--TT-CERT-m8-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a> · <a href="/SOS/online.html" target="_blank" rel="noopener">SOS Online</a></p>
+<details class="vista-pant"><summary>👁 Mira «Registre públic signat» aquí</summary><iframe data-src="/SOS/#/registre" title="Registre públic signat" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «SOS Online» aquí</summary><iframe data-src="/SOS/online.html" title="SOS Online" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Publica en obert un resum agregat de l'activitat de la comunitat i fes servir la IA per preparar-lo, dient què li has donat.</p>
+<p><strong>L'evidència que queda:</strong> El resum publicat, el paquet d'ancoratge que el verifica i la nota de què ha llegit la IA.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que el resum no permeti identificar ningú i que l'ancoratge quadri amb el registre.</p>
+<p><a href="certificacio.html#cm8">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m8-->
 </section>
 
 <div class="bloc-sep" id="blocB">
@@ -1000,7 +1116,8 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 
 <section class="module mod-9" id="m9">
 <div class="num">MÒDUL 9 · 5-7 h · Bloc B</div>
-<h2>Facilitació i dinamització de grups</h2>
+<h2>Dinamització de grups</h2>
+<p class="mod-rol">Forma: <strong>Dinamitzador/a comunitari/ària</strong> · conduir sessions</p>
 <p class="subtitle">Portar una sala amb deu persones que no s'escolten, i sortir-ne amb un mapa que reconeixen com a seu.</p>
 <p class="lead">Sabies fer el mapa VNA; ara has d'aconseguir que el faci <em>la comunitat</em>. Un mapa dibuixat per tu és una opinió; un mapa dibuixat per elles és un acord.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1016,11 +1133,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Co-facilita abans de facilitar sol. Grava't (amb permís) i escolta quant parles: si passes del 20% del temps, no estàs facilitant, estàs exposant.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Facilita una sessió de mapatge real de 90 min. Mesura: quantes persones han parlat, quants intangibles han sortit sense que els proposessis tu, i si al final el grup ha reconegut el mapa com a seu.</p></div>
+<!--TT-CERT-m9-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/colla.html" target="_blank" rel="noopener">La colla en la pinya</a> · <a href="/SOS/#/gent" target="_blank" rel="noopener">La gent</a></p>
+<details class="vista-pant"><summary>👁 Mira «La colla en la pinya» aquí</summary><iframe data-src="/SOS/colla.html" title="La colla en la pinya" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «La gent» aquí</summary><iframe data-src="/SOS/#/gent" title="La gent" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Condueix tres sessions de grup amb una dinàmica preparada i un encàrrec al final de cadascuna.</p>
+<p><strong>L'evidència que queda:</strong> El guió de cada sessió, l'assistència i l'encàrrec que en va sortir.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada sessió acabi amb un encàrrec concret i que a la següent es revisi.</p>
+<p><a href="certificacio.html#cm9">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m9-->
 </section>
 
 <section class="module mod-10" id="m10">
 <div class="num">MÒDUL 10 · 4-6 h · Bloc B</div>
-<h2>Comunicació i captació de persones</h2>
+<h2>Comunicació i captació</h2>
+<p class="mod-rol">Forma: <strong>Comunicador/a</strong> · difondre, acollir i fidelitzar</p>
 <p class="subtitle">Els projectes comunitaris no moren per mal mètode. Moren perquè no hi va ningú.</p>
 <p class="lead">Tenir el millor mapa de valor del món no serveix de res amb quatre persones esgotades. Aquest mòdul va de la feina menys glamurosa i més decisiva: que la gent vingui i es quedi.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1036,11 +1166,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Prova la teva frase amb cinc persones alienes al projecte. Si l'han de repetir i no poden, la frase és teva, no seva. Reescriu fins que la puguin dir elles.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Fes una demanda concreta i acotada (una tasca, una data, dues hores) a deu persones. Compta quantes diuen que sí. Repeteix amb una demanda genèrica. Compara.</p></div>
+<!--TT-CERT-m10-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/uneix-te.html" target="_blank" rel="noopener">Participa al teu barri</a> · <a href="/SOS/#/alta" target="_blank" rel="noopener">Fes-te usuari/ària</a></p>
+<details class="vista-pant"><summary>👁 Mira «Participa al teu barri» aquí</summary><iframe data-src="/SOS/uneix-te.html" title="Participa al teu barri" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Fes-te usuari/ària» aquí</summary><iframe data-src="/SOS/#/alta" title="Fes-te usuari/ària" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Fes una campanya per acollir persones noves a la comunitat i acompanya-les fins a la primera aportació.</p>
+<p><strong>L'evidència que queda:</strong> Les persones acollides i la primera aportació de cadascuna, comptades sense dades personals.</p>
+<p><strong>Què revisa la IA tutora:</strong> Quantes persones fan el pas de mirar a participar, i on es queden les que no.</p>
+<p><a href="certificacio.html#cm10">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m10-->
 </section>
 
 <section class="module mod-11" id="m11">
 <div class="num">MÒDUL 11 · 5-7 h · Bloc B</div>
-<h2>Conflictes, cures i relleu</h2>
+<h2>Gestió de conflictes i cures</h2>
+<p class="mod-rol">Forma: <strong>Mediador/a</strong> · mediar, prevenir el desgast i preparar relleus</p>
 <p class="subtitle">El burnout dels que sempre donen és la primera causa de mort d'un projecte comunitari.</p>
 <p class="lead">Al SOS ho pots veure abans que passi: el mapa ensenya qui sosté què i el ledger ensenya qui aporta sempre. Aquest mòdul t'ensenya a llegir aquests senyals i a actuar-hi mentre encara es pot.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1056,11 +1199,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Revisa mensualment el balanç d'hores per persona. Si algú porta tres mesos donant molt més del que rep, això no és generositat: és una baixa que encara no s'ha produït.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Identifica la persona més sobrecarregada del teu node amb dades, no amb intuïció. Dissenya amb ella un pla de relleu de tres mesos i registra'l com a decisió pública.</p></div>
+<!--TT-CERT-m11-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/online.html" target="_blank" rel="noopener">SOS Online · qui hi ha</a> · <a href="/SOS/#/gent" target="_blank" rel="noopener">La gent i els rols</a></p>
+<details class="vista-pant"><summary>👁 Mira «SOS Online · qui hi ha» aquí</summary><iframe data-src="/SOS/online.html" title="SOS Online · qui hi ha" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «La gent i els rols» aquí</summary><iframe data-src="/SOS/#/gent" title="La gent i els rols" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Prepara el protocol de cures i relleu del teu equip i fes-lo servir en una situació real o en un simulacre.</p>
+<p><strong>L'evidència que queda:</strong> El protocol acordat i el registre de la mediació o del relleu fet.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que hi hagi relleu previst per a cada rol clau i que ningú porti sol més càrrega de la que pot.</p>
+<p><a href="certificacio.html#cm11">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m11-->
 </section>
 
 <section class="module mod-12" id="m12">
 <div class="num">MÒDUL 12 · 6-8 h · Bloc B</div>
-<h2>Finançament i subvencions a Catalunya</h2>
+<h2>Finançament i subvencions</h2>
+<p class="mod-rol">Forma: <strong>Gestor/a de projectes</strong> · buscar, sol·licitar i justificar</p>
 <p class="subtitle">El mur real d'un projecte comunitari no és la idea: és el calendari de convocatòries i la justificació.</p>
 <p class="lead">Saber fer un mapa de valor excel·lent i no saber d'on surten els diners per sostenir-lo és una manera elegant de fracassar. Aquest mòdul és el més prosaic i el que més projectes salva.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1077,11 +1233,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box eines"><h4>🧰 Enllaç amb el SOS</h4><p>Les hores del banc de temps i el <code>fundValue</code> amb el seu desglossament serveixen per acreditar <strong>aportació en espècie</strong> — sovint el cofinançament que falta per arribar al percentatge exigit.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Munta el calendari de convocatòries del teu territori per als propers 12 mesos. Tria'n una i prepara el pressupost complet, incloent-hi l'aportació en espècie treta del SOS.</p></div>
+<!--TT-CERT-m12-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/fons" target="_blank" rel="noopener">El fons cooperatiu</a> · <a href="/SOS/diagnostic-territori.html" target="_blank" rel="noopener">Diagnòstic comunitari</a></p>
+<details class="vista-pant"><summary>👁 Mira «El fons cooperatiu» aquí</summary><iframe data-src="/SOS/#/fons" title="El fons cooperatiu" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Diagnòstic comunitari» aquí</summary><iframe data-src="/SOS/diagnostic-territori.html" title="Diagnòstic comunitari" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Identifica una convocatòria pública o privada que encaixi amb la comunitat i prepara'n la sol·licitud.</p>
+<p><strong>L'evidència que queda:</strong> La sol·licitud presentada o a punt, amb el pressupost per hores i el pla de justificació.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que el pressupost surti de les hores reals del mapa i que es pugui justificar amb el registre.</p>
+<p><a href="certificacio.html#cm12">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m12-->
 </section>
 
 <section class="module mod-13" id="m13">
 <div class="num">MÒDUL 13 · 5-7 h · Bloc B</div>
 <h2>Formes jurídiques i tràmits</h2>
+<p class="mod-rol">Forma: <strong>Gestor/a administratiu/iva</strong> · triar la forma i fer els tràmits</p>
 <p class="subtitle">Associació, SCCL, SCP, SL, autònom col·laborador. Quina, quan i per què.</p>
 <p class="lead">La MATRIU ja et suggereix formes jurídiques segons el tipus de projecte. Aquest mòdul t'ensenya què hi ha darrere de cada suggeriment i com fer el tràmit sense encallar-te.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1098,11 +1267,25 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Treballa-ho amb l'Ateneu Cooperatiu del teu territori: l'acompanyament a la constitució és gratuït i ells coneixen les particularitats locals. Aquest mòdul et prepara per aprofitar-lo, no per substituir-lo.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Per a una venture real de la teva MATRIU, compara tres formes jurídiques amb cost, termini i implicacions. Argumenta la recomanació i registra-la com a decisió.</p></div>
+<!--TT-CERT-m13-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/diagnostic-org.html" target="_blank" rel="noopener">Diagnòstic d'organització</a> · <a href="/SOS/energia.html" target="_blank" rel="noopener">L'Energia</a> · <a href="/SOS/habitatge.html" target="_blank" rel="noopener">L'Habitatge</a></p>
+<details class="vista-pant"><summary>👁 Mira «Diagnòstic d'organització» aquí</summary><iframe data-src="/SOS/diagnostic-org.html" title="Diagnòstic d'organització" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «L'Energia» aquí</summary><iframe data-src="/SOS/energia.html" title="L'Energia" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «L'Habitatge» aquí</summary><iframe data-src="/SOS/habitatge.html" title="L'Habitatge" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Tria amb el grup la forma jurídica que us convé (o confirma la que teniu) i fes un tràmit real amb l'administració.</p>
+<p><strong>L'evidència que queda:</strong> La decisió raonada al node i el justificant del tràmit.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que la forma triada encaixi amb el que fa la comunitat i que el tràmit tingui data i responsable.</p>
+<p><a href="certificacio.html#cm13">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m13-->
 </section>
 
 <section class="module mod-14" id="m14">
 <div class="num">MÒDUL 14 · 5-7 h · Bloc B</div>
-<h2>Mesura d'impacte i justificació</h2>
+<h2>Avaluació de l'impacte social</h2>
+<p class="mod-rol">Forma: <strong>Avaluador/a</strong> · indicadors i informes</p>
 <p class="subtitle">Demostrar què has provocat, no llistar què has fet.</p>
 <p class="lead">Comptar activitats i assistents no és mesurar impacte. El SOS et dona mètriques relacionals — reciprocitat, hores donades, persones actives, ventures de cura — sostingudes per un ledger signat. Aquest mòdul t'ensenya a defensar-les davant de qui paga.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1119,11 +1302,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Explica sempre la incertesa. Un rang honest (<code>fundValue</code> dona ±30%) genera més confiança que una xifra exacta que ningú pot comprovar.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Redacta un informe d'impacte d'una pàgina del teu node: què ha canviat, per a qui, amb quines dades i com es pot verificar. Que algú de fora el llegeixi i et digui si s'ho creu.</p></div>
+<!--TT-CERT-m14-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/fons/impacte" target="_blank" rel="noopener">Simulador d'impacte</a> · <a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a></p>
+<details class="vista-pant"><summary>👁 Mira «Simulador d'impacte» aquí</summary><iframe data-src="/SOS/#/fons/impacte" title="Simulador d'impacte" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Registre públic signat» aquí</summary><iframe data-src="/SOS/#/registre" title="Registre públic signat" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Defineix tres indicadors d'impacte de la comunitat i fes-ne el primer informe amb dades del registre.</p>
+<p><strong>L'evidència que queda:</strong> L'informe d'impacte amb els indicadors, la font de cada xifra i el que s'ha après.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada xifra surti del registre o d'una font citada i que no n'hi hagi cap d'inventada.</p>
+<p><a href="certificacio.html#cm14">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m14-->
 </section>
 
 <section class="module mod-15" id="m15">
 <div class="num">MÒDUL 15 · 4-5 h · Bloc B</div>
-<h2>Dades, privadesa i RGPD</h2>
+<h2>Protecció de dades personals</h2>
+<p class="mod-rol">Forma: <strong>Responsable del tractament</strong> · RGPD i consentiments</p>
 <p class="subtitle">Una comunitat que gestiona dades de persones té obligacions legals, encara que sigui voluntària.</p>
 <p class="lead">El SOS és local-first i xifrat, cosa que et posa molt per davant de qualsevol full de càlcul compartit. Però local-first no vol dir exempt: si tractes dades de socis, has de saber què pots fer i què no.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1140,11 +1336,24 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box eines"><h4>⚠️ Regla d'or de l'ancoratge</h4><p>El que ancores a Arweave <strong>és per sempre</strong>. Abans de publicar, revisa el <code>toPublicPack</code>: ancora hashos i agregats, mai dades personals en clar. Un error aquí no té marxa enrere.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Fes l'inventari de dades personals del teu node. Per cadascuna: base legal, qui hi accedeix, quant temps es conserva. Després genera un Anchor Pack i verifica que no hi ha res personal en clar.</p></div>
+<!--TT-CERT-m15-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/config" target="_blank" rel="noopener">Configuració i dades</a> · <a href="/SOS/#/copia" target="_blank" rel="noopener">Còpia de seguretat xifrada</a></p>
+<details class="vista-pant"><summary>👁 Mira «Configuració i dades» aquí</summary><iframe data-src="/SOS/#/config" title="Configuració i dades" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Còpia de seguretat xifrada» aquí</summary><iframe data-src="/SOS/#/copia" title="Còpia de seguretat xifrada" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Fes el registre de tractaments de dades de la comunitat i recull els consentiments que falten.</p>
+<p><strong>L'evidència que queda:</strong> El registre de tractaments i els consentiments, guardats al node i no a fora.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada dada tingui finalitat i consentiment, i que es guardi el mínim.</p>
+<p><a href="certificacio.html#cm15">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m15-->
 </section>
 
 <section class="module mod-16" id="m16">
 <div class="num">MÒDUL 16 · 8-10 h · Bloc B · nivell N3</div>
-<h2>Formació de formadors · l'ofici de mentorar</h2>
+<h2>Docència i tutoria</h2>
+<p class="mod-rol">Forma: <strong>Formador/a</strong> · dissenyar, tutoritzar i avaluar</p>
 <p class="subtitle">Com acompanyar altres perquè aprenguin fent, sense fer-los la feina.</p>
 <p class="lead">Aquest mòdul és el que fa que el model se sostingui: cada promoció ha de poder formar la següent. Sense mentors, això és consultoria; amb mentors, és una xarxa.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1161,6 +1370,18 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 </div>
 <div class="box metode"><h4>🎓 Metodologia recomanada</h4><p>Acompanya els dos primers casos amb un mentor N3 al costat. Després de cada sessió, escriviu per separat què creieu que ha passat i compareu-ho: aquí és on s'aprèn a mentorar.</p></div>
 <div class="box exercici"><h4>✏ Exercici pràctic</h4><p>Acompanya una persona de N0 a N1 amb evidència al ledger. Registra cada sessió com a aportació de valor. Al final, escriu què faries diferent — i comparteix-ho amb els altres mentors.</p></div>
+<!--TT-CERT-m16-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/#/mentoria" target="_blank" rel="noopener">La meva mentoria</a> · <a href="/SOS/certificacio.html" target="_blank" rel="noopener">Guia de certificació</a></p>
+<details class="vista-pant"><summary>👁 Mira «La meva mentoria» aquí</summary><iframe data-src="/SOS/#/mentoria" title="La meva mentoria" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «Guia de certificació» aquí</summary><iframe data-src="/SOS/certificacio.html" title="Guia de certificació" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Acompanya dues persones de la teva comunitat en la seva primera pràctica certificable, com a tutor o tutora.</p>
+<p><strong>L'evidència que queda:</strong> Les dues sessions de mentoria registrades i les pràctiques que vas validar.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada sessió acabi amb encàrrec i que la teva validació digui en què t'has fixat.</p>
+<p><a href="certificacio.html#cm16">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m16-->
 </section>
 
 <div class="bloc-sep" id="blocC">
@@ -1170,7 +1391,8 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 
 <section class="module mod-17" id="m17">
 <div class="num">MÒDUL 17 · 3 h · Bloc C · N1</div>
-<h2>El teu mapa de valor</h2>
+<h2>Mapa de valor de l'organització</h2>
+<p class="mod-rol">Forma: <strong>Direcció o consultoria</strong> · qui aporta què, amb les deu regles</p>
 <p class="subtitle">Qui aporta què a casa teva, tangible i intangible, en un mapa que reconeixes com a teu.</p>
 <p class="lead">El punt de partida de tot. Abans de la web i abans de la IA, cal veure qui sosté el negoci i què s'intercanvia. El mapa és el que després llegirà el teu cervell.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1182,10 +1404,23 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <dt>Quan es torça</dt><dd>Si surt un organigrama, torna a la pregunta dels rols. Si només hi ha diners i serveis, pregunta què es perdria si una persona marxés demà.</dd>
 </dl></div>
 <div class="box exercici"><h4>✏ Evidència</h4><p>Un mapa que passa les deu regles, desat a «Els meus mapes».</p></div>
+<!--TT-CERT-m17-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/vna.html" target="_blank" rel="noopener">El mapa de valor</a> · <a href="/cliente/" target="_blank" rel="noopener">El mapa del client</a></p>
+<details class="vista-pant"><summary>👁 Mira «El mapa de valor» aquí</summary><iframe data-src="/SOS/vna.html" title="El mapa de valor" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «El mapa del client» aquí</summary><iframe data-src="/cliente/" title="El mapa del client" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Fes el mapa de valor de la teva organització amb l'equip: qui aporta què, dins i fora.</p>
+<p><strong>L'evidència que queda:</strong> El mapa revisat amb les deu regles i les tres anàlisis fetes.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que hi surtin els rols de fora (clients, proveïdors, territori) i els intangibles.</p>
+<p><a href="certificacio.html#cm17">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m17-->
 </section>
 <section class="module mod-18" id="m18">
 <div class="num">MÒDUL 18 · 2 h · Bloc C · N1</div>
-<h2>El teu cervell i la teva cultura</h2>
+<h2>Gestió del coneixement per a la IA</h2>
+<p class="mod-rol">Forma: <strong>Gestor/a del coneixement</strong> · que la IA conegui l'organització</p>
 <p class="subtitle">Que la teva IA conegui casa teva abans de demanar-li res.</p>
 <p class="lead">Una IA sense context escriu com tothom. El cervell del projecte guarda el teu mapa, les teves regles (vedes) i el que ja has decidit, i la IA el llegeix cada cop.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1197,10 +1432,22 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <dt>Quan es torça</dt><dd>Si les vedes són eslògans («som propers»), demana un exemple de frase que sí i una que no.</dd>
 </dl></div>
 <div class="box exercici"><h4>✏ Evidència</h4><p>El teu cervell amb les primeres vedes, i la comparació de respostes amb cervell i sense.</p></div>
+<!--TT-CERT-m18-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/cervell.html" target="_blank" rel="noopener">El teu cervell</a></p>
+<details class="vista-pant"><summary>👁 Mira «El teu cervell» aquí</summary><iframe data-src="/SOS/cervell.html" title="El teu cervell" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Escriu amb l'equip el cervell de l'organització: la cultura, les regles i el que ja sabeu, perquè la vostra IA us conegui.</p>
+<p><strong>L'evidència que queda:</strong> El cervell al repositori o al node, amb les seves àrees plenes.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada àrea tingui almenys un document i que les regles portin el motiu al costat.</p>
+<p><a href="certificacio.html#cm18">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m18-->
 </section>
 <section class="module mod-19" id="m19">
 <div class="num">MÒDUL 19 · 3 h · Bloc C · N1</div>
-<h2>La teva web</h2>
+<h2>Web corporativa</h2>
+<p class="mod-rol">Forma: <strong>Responsable web</strong> · del mapa a la web sense perdre posicionament</p>
 <p class="subtitle">Tenir la teva web i poder-la canviar sense perdre el posicionament que ja tens.</p>
 <p class="lead">Si ja tens web, s'importa tal com és i s'hi afegeix un gestor de continguts de codi obert. Si no en tens, surt del teu mapa: cada rol té la seva pàgina. En tots dos casos, la web queda a comptes al teu nom.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1212,10 +1459,22 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <dt>Quan es torça</dt><dd>Si una pàgina antiga porta visites i no té on anar, no es publica fins que tingui la seva redirecció.</dd>
 </dl></div>
 <div class="box exercici"><h4>✏ Evidència</h4><p>La teva web en vista prèvia, amb les adreces antigues comprovades.</p></div>
+<!--TT-CERT-m19-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/cliente/" target="_blank" rel="noopener">La web que surt del mapa</a></p>
+<details class="vista-pant"><summary>👁 Mira «La web que surt del mapa» aquí</summary><iframe data-src="/cliente/" title="La web que surt del mapa" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Fes sortir la web de l'organització del mapa de valor, sense perdre el posicionament que ja teniu.</p>
+<p><strong>L'evidència que queda:</strong> La web en vista prèvia i la comprovació que cap adreça antiga es perd.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada pàgina respongui a un rol del mapa i que les adreces antigues portin a la nova.</p>
+<p><a href="certificacio.html#cm19">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m19-->
 </section>
 <section class="module mod-20" id="m20">
 <div class="num">MÒDUL 20 · 1,5 h · Bloc C · N1</div>
-<h2>Editar i publicar sense trencar</h2>
+<h2>Publicació de continguts web</h2>
+<p class="mod-rol">Forma: <strong>Editor/a de continguts</strong> · vista prèvia abans de publicar</p>
 <p class="subtitle">Canviar textos, dates i programes tu mateixa, i revisar-ho abans que surti.</p>
 <p class="lead">La web viva és la que canvies quan cal, no quan algú té temps. Aquí aprens el panell d'edició i la vista prèvia: tot canvi es mira abans de publicar.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1227,10 +1486,22 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <dt>Quan es torça</dt><dd>Si el canvi trenca la maqueta, es desfà a la vista prèvia: per això existeix. No es publica res que no hagis vist.</dd>
 </dl></div>
 <div class="box exercici"><h4>✏ Evidència</h4><p>Un canvi publicat per tu.</p></div>
+<!--TT-CERT-m20-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/cliente/#panel" target="_blank" rel="noopener">El panell del client</a></p>
+<details class="vista-pant"><summary>👁 Mira «El panell del client» aquí</summary><iframe data-src="/cliente/#panel" title="El panell del client" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Publica tres canvis de contingut seguint el circuit: proposta, vista prèvia, revisió i publicació.</p>
+<p><strong>L'evidència que queda:</strong> Els tres canvis amb la seva vista prèvia i qui els va donar per bons.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que res no surti publicat sense vista prèvia revisada per una persona.</p>
+<p><a href="certificacio.html#cm20">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m20-->
 </section>
 <section class="module mod-21" id="m21">
 <div class="num">MÒDUL 21 · 2 h · Bloc C · N1</div>
-<h2>Que vagi sol</h2>
+<h2>Automatització de processos</h2>
+<p class="mod-rol">Forma: <strong>Tècnic/a de processos</strong> · formularis i fluxos connectats</p>
 <p class="subtitle">Decidir què s'automatitza i connectar els formularis i els fluxos amb la teva gestió.</p>
 <p class="lead">No tot s'ha d'automatitzar. Amb el tauler decideixes, intercanvi per intercanvi, què queda «Per definir», què està «Definit» i què ja «Va sol». El que es repeteix va sol; el tracte amb les persones, no.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1242,10 +1513,22 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <dt>Quan es torça</dt><dd>Si s'automatitza un intercanvi intangible (la confiança, l'acollida), es torna a «Definit»: aquest el porta una persona.</dd>
 </dl></div>
 <div class="box exercici"><h4>✏ Evidència</h4><p>Una targeta del teu tauler a «Que vagi sol», provada.</p></div>
+<!--TT-CERT-m21-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/ia.html" target="_blank" rel="noopener">Fluxos amb IA</a></p>
+<details class="vista-pant"><summary>👁 Mira «Fluxos amb IA» aquí</summary><iframe data-src="/SOS/ia.html" title="Fluxos amb IA" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Automatitza un procés repetitiu de l'organització: un formulari que arriba sol on ha d'arribar.</p>
+<p><strong>L'evidència que queda:</strong> El flux funcionant, amb la prova d'una entrada real de principi a fi.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que el procés automatitzat sigui tangible i repetitiu, i que l'intangible es quedi a les persones.</p>
+<p><a href="certificacio.html#cm21">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m21-->
 </section>
 <section class="module mod-22" id="m22">
 <div class="num">MÒDUL 22 · 2 h · Bloc C · N2</div>
-<h2>Treballar amb el teu Claude</h2>
+<h2>Treball amb assistents d'IA</h2>
+<p class="mod-rol">Forma: <strong>Qualsevol rol</strong> · demanar canvis, revisar-los i validar-los</p>
 <p class="subtitle">Demanar canvis a la teva IA amb el teu cervell, i revisar-los tu abans d'acceptar-los.</p>
 <p class="lead">L'últim pas és el que fa l'aprenentatge exponencial: la teva IA ja coneix casa teva, i tu saps demanar-li bé i revisar el que fa. A partir d'aquí, cada canvi nou t'ensenya alguna cosa i en queda constància.</p>
 <h3 class="section">Objectius formatius</h3>
@@ -1257,6 +1540,18 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <dt>Quan es torça</dt><dd>Si la IA fa més del que has demanat, no s'accepta: es torna a demanar amb el límit escrit.</dd>
 </dl></div>
 <div class="box exercici"><h4>✏ Evidència</h4><p>Un canvi demanat a la teva IA i revisat per tu, i una veda nova al cervell.</p></div>
+<!--TT-CERT-m22-->
+<div class="box pant-pr"><h4>🖥 La pantalla del SOS on ho fas</h4>
+<p><a href="/SOS/ia.html" target="_blank" rel="noopener">Fluxos amb IA</a> · <a href="/SOS/cervell.html" target="_blank" rel="noopener">El teu cervell</a></p>
+<details class="vista-pant"><summary>👁 Mira «Fluxos amb IA» aquí</summary><iframe data-src="/SOS/ia.html" title="Fluxos amb IA" loading="lazy"></iframe></details>
+<details class="vista-pant"><summary>👁 Mira «El teu cervell» aquí</summary><iframe data-src="/SOS/cervell.html" title="El teu cervell" loading="lazy"></iframe></details>
+</div>
+<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>
+<p><strong>Què fas:</strong> Treballa una setmana amb el vostre assistent d'IA: demana-li canvis, revisa'ls i valida'ls abans que entrin.</p>
+<p><strong>L'evidència que queda:</strong> Els canvis demanats, revisats i validats, amb el que la IA va proposar i el que vau decidir.</p>
+<p><strong>Què revisa la IA tutora:</strong> Que cada canvi tingui una persona que el valida i que el cervell s'actualitzi amb el que s'ha après.</p>
+<p><a href="certificacio.html#cm22">Com es valida i es certifica →</a></p></div>
+<!--/TT-CERT-m22-->
 </section>
 <section class="gestor" id="gestor">
 <h2>🎖 Programa de Gestor/a SOS</h2>
@@ -1286,7 +1581,7 @@ mòdul sencer</strong>: el que fa la triple entrada no és guardar bé, és que 
 <div class="comp-hd"><span class="comp-n">C2</span><h4>Obrir i sostenir una dinàmica</h4><span class="comp-m">M4 · 8 h</span></div>
 <p class="comp-d">Posar en marxa un banc de temps o una biblioteca de les coses i que segueixi viu tres mesos després.</p>
 <div class="grid2">
-<div class="box skills"><h4>Sabràs fer</h4><ul><li>Onboarding de socis sense fricció (flux superheroi)</li><li>Dissenyar el catàleg inicial amb els top-20 curats</li><li>Registrar intercanvis signats i gestionar venciments</li><li>Detectar i prevenir el burnout dels que sempre donen</li></ul></div>
+<div class="box skills"><h4>Sabràs fer</h4><ul><li>Onboarding de socis sense fricció (flux d'alta de ciutadans)</li><li>Dissenyar el catàleg inicial amb els top-20 curats</li><li>Registrar intercanvis signats i gestionar venciments</li><li>Detectar i prevenir el burnout dels que sempre donen</li></ul></div>
 <div class="box exercici"><h4>Evidència per superar-la</h4><p>Una dinàmica amb <strong>≥8 socis actius i ≥15 intercanvis signats</strong>, amb saldos que no estiguin tots del mateix costat. El desequilibri crònic és el senyal que la dinàmica no és recíproca.</p></div>
 </div>
 </div>
@@ -1754,12 +2049,11 @@ Object.keys(window.__SOS).length</code></pre>
 </section>
 
 <div class="expert-cert" id="cert">
-<h2>🎓 Expert/a SOS · llibre obert</h2>
-<p style="color:var(--light);margin:.4rem 0 1rem">Has completat els 8 mòduls. Domines:</p>
-<p style="color:var(--muted);font-size:var(--t0)"><span class="tag done">Filosofia + codex</span><span class="tag done">Criptografia W3C</span><span class="tag done">VNA Verna Allee</span><span class="tag done">Recursos comunitaris</span><span class="tag done">Governança federativa</span><span class="tag done">Slicing Pie + Mondragón</span><span class="tag done">Comando + narrativa</span><span class="tag done">Nostr + IPFS + IA</span></p>
-<p style="color:var(--light);margin-top:1rem">Estàs preparat/da per <strong>implementar SOS a qualsevol comunitat</strong> i per <strong>mentorar la següent promoció</strong>. La certificació no la dona ningú: surt del teu propi <strong>ledger signat</strong>. Cada hora, cada mapa, cada decisió votada és una prova que qualsevol pot verificar amb un Anchor Pack — sense confiar en TeamTowers ni en cap tribunal.</p>
-<p style="color:var(--muted);font-size:var(--t0);margin-top:.8rem">Al SOS: <strong>launcher → 🎓 Prepara la meva mentoria</strong> per veure el teu nivell, els teus buits i el guió de la propera sessió.</p>
-<p style="margin-top:1.2rem"><a class="btn-primary" href="index.html">Obre SOS i comença →</a></p>
+<h2>🎓 La certificació · es fa a la comunitat i el fet certifica</h2>
+<p style="color:var(--light);margin:.4rem 0 1rem">Cada un dels 22 mòduls acaba amb una pràctica real a la teva comunitat. Quan les pràctiques d'un nivell tenen les tres claus —l'evidència signada al registre, la revisió de la IA tutora i la signatura de dues persones de la xarxa—, el certificat és teu:</p>
+<p style="color:var(--muted);font-size:var(--t0)"><span class="tag done">N1 · Participant certificat/da</span><span class="tag done">N2 · Gestor/a de node</span><span class="tag done">N3 · Mentor/a de la xarxa</span><span class="tag done">Transformació digital de l'organització</span></p>
+<p style="color:var(--light);margin-top:1rem">La certificació no la dona ningú des de fora: surt del teu propi <strong>registre signat</strong>, i qualsevol la pot verificar amb el paquet d'ancoratge sense confiar en TeamTowers ni en cap servidor. Les dades es queden al vostre node, i la xarxa segueix funcionant encara que caigui internet.</p>
+<p style="margin-top:1.2rem"><a class="btn-primary" href="certificacio.html">Llegeix la guia de certificació →</a> <a class="btn" href="index.html">Obre el SOS i comença</a></p>
 </div>
 
 <!--TT-EMBUT-->
@@ -1842,11 +2136,12 @@ Object.keys(window.__SOS).length</code></pre>
 <footer class="tt-peu">
   <div class="tp-in">
     <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span>Avís legal i privacitat</span></a></div>
-    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/vna-suport.html"><span>L'editor del mapa</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html" aria-current="page"><span>Formació acció</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/cervell.html"><span>Crea el teu cervell</span></a></li><li><a href="/SOS/la-font.html"><span>La font i la colla</span></a></li><li><a href="/SOS/colla.html"><span>La colla en la pinya</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Molekulon</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>El Comando</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>La Fàbrica de Superherois</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/visio.html"><span>La visió</span></a></li><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/vna-suport.html"><span>L'editor del mapa</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html" aria-current="page"><span>Formació acció</span></a></li><li><a href="/SOS/certificacio.html"><span>La certificació</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/cervell.html"><span>Crea el teu cervell</span></a></li><li><a href="/SOS/la-font.html"><span>La font i la colla</span></a></li><li><a href="/SOS/colla.html"><span>La colla en la pinya</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Participació</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>La campanya</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>Escola de participació</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
   </div>
 </footer>
 <script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
 
+<script src="/SOS/lib/modul-pantalla.js" defer></script>
 </body>
 </html>

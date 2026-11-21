@@ -182,7 +182,7 @@ const SETUP = `
   const txt = await p.evaluate(() => (document.querySelector('.modal') || {}).innerText || '');
   ok('profileShowsAllRoles', /2 alhora/i.test(txt), txt.split('\n').find(l => /rols/i.test(l)) || '');
   ok('profileNamesMentor', /mentor/i.test(txt), 'mentora hi surt');
-  ok('profileNamesSuperhero', /superheroi/i.test(txt), 'superheroina també');
+  ok('profileNamesSuperhero', /usuari/i.test(txt), 'usuària també (abans «superheroina»)');
   ok('profileSaysWhyEachRole', /acompanya 1 iniciativa/i.test(txt), 'diu per què és mentora');
   ok('profileSaysWhere', /matriu de la comarca/i.test(txt) && /biblioteca del barri/i.test(txt), 'i on ho fa');
   ok('noErrors6', errs.length === 0, errs.join(' | '));

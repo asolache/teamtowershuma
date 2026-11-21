@@ -12,7 +12,7 @@
 |---|---|---|
 | 🎨 Art | El còmic, la música i el dibuix no il·lustren el projecte: en són la matèria. Cada personatge té la seva superarma, el seu vers i el seu tema. | La història (`#historia`) |
 | 📖 Ficció | Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable. | Els herois canònics (`#herois`) |
-| 🎓 Educació | El mateix relat és material d'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar. | A l'escola (`escola.html`) |
+| 🎓 Educació | El mateix relat és material d'aula: l'Escola de participació, de 6 a 13 anys, i vint-i-dos mòduls que la sèrie recorre, un per capítol. | A l'escola (`escola.html`) |
 | ✨ Inspiració | Ningú es mou per un informe. Es mou perquè algú altre s'ha mogut i ho ha explicat prou bé perquè es vegi que es podia. | El blog del Comando (`#blog`) |
 | 💪 Empoderament de les comunitats | Poder concret i comprovable: qui té les claus, qui decideix i qui cobra el que aporta. Cada aportació va signada i el registre és públic. | El registre públic (`index.html#/registre`) |
 | 🕊 Autonomia | Sense compte, sense contrasenya i sense demanar permís. La clau te la fa el navegador i no surt del teu aparell; si te'n vas, t'ho endús tot. | El teu perfil és teu (`#perfil`) |
@@ -67,6 +67,54 @@ I el decorat és **Molekulandia** (`molekulandia.html`).
 | Un taller, filmat | Directe | — | **falta l'enllaç** |
 
 **Pendent d'enllaç:** Pigmentón, Fraktalman, Tekno Kartoffeln, Un taller, filmat. Mentre no hi siguin, la pàgina els ensenya dient que encara no hi són — no com una porta tancada.
+
+## La sèrie del SOS · la cara del Comando
+
+Qui mira la sèrie aprèn a operar amb el model: cada capítol porta un mòdul de
+`formacio.html` i acaba amb la seva prova. Tot capítol té la mateixa forma:
+
+1. **El Mundo Muerto** — El vilà, o el problema, aturant un barri o una organització de debò.
+2. **El gest** — El personatge ensenya l'única cosa que el capítol vol que aprenguis.
+3. **Fes-ho tu** — El mateix gest, a la pantalla real del SOS o del mapa, pas a pas.
+4. **La prova** — Una evidència petita que pots fer avui. És l'evidència del mòdul.
+5. **Els crèdits** — Qui hi ha sortit, amb el que ha aportat de debò. Són plans de la pel·lícula.
+
+### Temporada 1 · Com s'arma la colla (Bloc A · Fonaments)
+
+| Cap. | Personatge | Vilà | Mòdul | Què aprèn qui mira | La prova |
+|---|---|---|---|---|---|
+| 1 | Horacio Motomachi | Max Miedox | [m1 · Sistemes digitals per a organitzacions](../../formacio.html#m1) | Què és un sistema digital que és teu: on viuen les dades i qui en té la clau. | Obrir el SOS i fer-se el perfil sense compte ni contrasenya. |
+| 2 | El Aviador | Mala Yerbax | [m2 · Identitat digital i signatura electrònica](../../formacio.html#m2) | Signar el que aportes i comprovar qui ha signat el que llegeixes. | Signar una primera aportació i verificar-ne la signatura. |
+| 3 | Pigmentón | — | [m3 · Anàlisi de xarxes de valor](../../formacio.html#m3) | Dibuixar una xarxa de valor: rols, i què dona i què rep cadascú. | Un mapa de valor amb cinc rols i els seus intercanvis. |
+| 4 | Reciclator | Mr. McGragor | [m4 · Gestió de recursos compartits](../../formacio.html#m4) | Posar en comú hores i objectes perquè no calgui comprar-ho de nou. | Oferir una hora o un objecte al banc de temps del barri. |
+| 5 | Mazinguer | Mala Yerbax | [m5 · Governança participativa](../../formacio.html#m5) | Decidir en grup amb regles clares que tothom pot llegir. | Una decisió presa amb proposta, termini i resultat registrats. |
+| 6 | Electroplasman | Mr. McGragor | [m6 · Economia col·laborativa i intercooperació](../../formacio.html#m6) | Repartir de manera justa el que aporta cadascú en un projecte col·lectiu. | El repartiment d'un projecte petit, amb les aportacions de cada persona. |
+| 7 | Afrodita | Max Miedox | [m7 · Participació ciutadana](../../formacio.html#m7) | Fer visible i reconeguda una aportació que ningú veia. | Una aportació registrada i confirmada per una altra persona. |
+| 8 | La Medusa Andaluza | Mala Yerbax | [m8 · Dades obertes i IA responsable](../../formacio.html#m8) | Publicar dades obertes i fer servir la IA amb criteri, sense que s'inventi res. | Una dada del grup publicada al registre públic. |
+
+### Temporada 2 · L'ofici de sostenir (Bloc B · L'ofici comunitari)
+
+| Cap. | Personatge | Vilà | Mòdul | Què aprèn qui mira | La prova |
+|---|---|---|---|---|---|
+| 9 | El Anguila | Max Miedox | [m9 · Dinamització de grups](../../formacio.html#m9) | Dinamitzar una trobada perquè tothom parli i surti una acció. | Una sessió de grup amb ordre del dia, ritme i acord final. |
+| 10 | Mazinguer | Max Miedox | [m10 · Comunicació i captació](../../formacio.html#m10) | Explicar el projecte perquè s'hi sumi gent nova. | Un missatge de crida i les tres primeres persones que hi responen. |
+| 11 | Guiri-Guay | Mala Yerbax | [m11 · Gestió de conflictes i cures](../../formacio.html#m11) | Tenir cura de l'equip i desfer un conflicte abans que es podreixi. | Una conversa de cura feta i el relleu d'una tasca acordat. |
+| 12 | Electroplasman | Mr. McGragor | [m12 · Finançament i subvencions](../../formacio.html#m12) | Trobar el finançament que encaixa i preparar-ne la sol·licitud. | Una convocatòria triada i el seu calendari apuntat. |
+| 13 | Barbamuda | Max Miedox | [m13 · Formes jurídiques i tràmits](../../formacio.html#m13) | Triar la forma jurídica que sosté el grup i fer-ne els tràmits. | La forma jurídica triada, amb la llista de tràmits. |
+| 14 | Fraktalman | Mr. McGragor | [m14 · Avaluació de l'impacte social](../../formacio.html#m14) | Mesurar l'impacte i justificar-lo amb el que ja està registrat. | Tres indicadors d'impacte llegits del registre del grup. |
+| 15 | Purpleman | Mr. McGragor | [m15 · Protecció de dades personals](../../formacio.html#m15) | Protegir les dades de les persones i complir el RGPD. | El registre de quines dades es guarden, per què i fins quan. |
+| 16 | Supergerminador | Max Miedox | [m16 · Docència i tutoria](../../formacio.html#m16) | Ensenyar el mètode a algú altre perquè es repliqui sol. | Una persona nova acompanyada fins a la seva primera evidència. |
+
+### Temporada 3 · La web viva (Bloc C · La teva web viva)
+
+| Cap. | Personatge | Vilà | Mòdul | Què aprèn qui mira | La prova |
+|---|---|---|---|---|---|
+| 17 | Pigmentón | — | [m17 · Mapa de valor de l'organització](../../formacio.html#m17) | Fer el mapa de valor de la teva organització. | Un mapa que passa les deu regles, desat a «Els meus mapes». |
+| 18 | Horacio Motomachi | Mala Yerbax | [m18 · Gestió del coneixement per a la IA](../../formacio.html#m18) | Donar a la IA el coneixement de l'organització perquè no s'inventi res. | La mateixa pregunta a la IA, amb el cervell i sense, comparada. |
+| 19 | La Medusa Andaluza | Mr. McGragor | [m19 · Web corporativa](../../formacio.html#m19) | Fer la web corporativa a partir del mapa de valor. | Una web en previsualització que surt del mapa. |
+| 20 | El Aviador | Max Miedox | [m20 · Publicació de continguts web](../../formacio.html#m20) | Editar i publicar continguts web sense trencar res. | Un canvi a la web revisat a la previsualització i publicat. |
+| 21 | El Anguila | — | [m21 · Automatització de processos](../../formacio.html#m21) | Automatitzar un formulari o un procés perquè vagi sol. | Un formulari que arriba sol on ha d'arribar. |
+| 22 | Supergerminador | Mr. McGragor | [m22 · Treball amb assistents d'IA](../../formacio.html#m22) | Treballar amb un assistent d'IA sense dependre de ningú. | Una tasca real feta amb l'assistent i revisada per tu. |
 
 ## El blog del Comando
 

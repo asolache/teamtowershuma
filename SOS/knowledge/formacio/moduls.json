@@ -1,0 +1,1028 @@
+{
+ "_generat": "SOS/tools/build-certificacio.js · no s'edita a mà",
+ "blocs": [
+  {
+   "id": "A",
+   "mods": [
+    "m1",
+    "m2",
+    "m3",
+    "m4",
+    "m5",
+    "m6",
+    "m7",
+    "m8"
+   ],
+   "ca": "Organitzacions comunitàries i economia social",
+   "es": "Organizaciones comunitarias y economía social"
+  },
+  {
+   "id": "B",
+   "mods": [
+    "m9",
+    "m10",
+    "m11",
+    "m12",
+    "m13",
+    "m14",
+    "m15",
+    "m16"
+   ],
+   "ca": "Dinamització comunitària",
+   "es": "Dinamización comunitaria"
+  },
+  {
+   "id": "C",
+   "mods": [
+    "m17",
+    "m18",
+    "m19",
+    "m20",
+    "m21",
+    "m22"
+   ],
+   "ca": "Transformació digital de l'organització",
+   "es": "Transformación digital de la organización"
+  }
+ ],
+ "moduls": [
+  {
+   "id": "m1",
+   "n": 1,
+   "bloc": "A",
+   "nivell": "N0",
+   "hores": 5,
+   "horesText": "4-6 h",
+   "rols": [
+    "guardian",
+    "superheroi",
+    "coordinador",
+    "agent",
+    "mentor",
+    "simpatitzant"
+   ],
+   "t": {
+    "ca": "Sistemes digitals per a organitzacions",
+    "es": "Sistemas digitales para organizaciones"
+   },
+   "rol": {
+    "ca": "Responsable digital · triar eines obertes i guardar les dades pròpies",
+    "es": "Responsable digital · elegir herramientas abiertas, guardar los datos propios"
+   },
+   "practica": {
+    "ca": {
+     "p": "Fes l'inventari de les eines digitals que fa servir la teva comunitat i tria'n una d'oberta per a cada necessitat, amb les dades guardades al vostre dispositiu.",
+     "e": "La fitxa d'inventari al node, amb el motiu de cada tria.",
+     "ia": "Que cada eina tingui alternativa oberta i que cap dada quedi només en un servei de fora."
+    },
+    "es": {
+     "p": "Haz el inventario de las herramientas digitales que usa tu comunidad y elige una abierta para cada necesidad, con los datos guardados en vuestro dispositivo.",
+     "e": "La ficha de inventario en el nodo, con el motivo de cada elección.",
+     "ia": "Que cada herramienta tenga alternativa abierta y que ningún dato quede solo en un servicio de fuera."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/eines",
+     "ca": "Les eines del SOS",
+     "es": "Las herramientas del SOS"
+    },
+    {
+     "u": "/SOS/#/copia",
+     "ca": "Còpia de seguretat i carpeta local",
+     "es": "Copia de seguridad y carpeta local"
+    }
+   ]
+  },
+  {
+   "id": "m2",
+   "n": 2,
+   "bloc": "A",
+   "nivell": "N1",
+   "hores": 7,
+   "horesText": "6-8 h",
+   "rols": [
+    "guardian",
+    "coordinador",
+    "agent"
+   ],
+   "t": {
+    "ca": "Identitat digital i signatura electrònica",
+    "es": "Identidad digital y firma electrónica"
+   },
+   "rol": {
+    "ca": "Responsable de dades · signar, verificar i custodiar",
+    "es": "Responsable de datos · firmar, verificar y custodiar"
+   },
+   "practica": {
+    "ca": {
+     "p": "Crea la teva identitat digital al SOS, fes-ne la còpia de seguretat i signa la primera aportació real a la comunitat.",
+     "e": "La identitat (did) amb còpia guardada i una aportació signada al registre.",
+     "ia": "Que la signatura es pugui verificar i que hi hagi còpia de la clau fora del dispositiu."
+    },
+    "es": {
+     "p": "Crea tu identidad digital en el SOS, haz la copia de seguridad y firma la primera aportación real a la comunidad.",
+     "e": "La identidad (did) con copia guardada y una aportación firmada en el registro.",
+     "ia": "Que la firma se pueda verificar y que haya copia de la clave fuera del dispositivo."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/identitat",
+     "ca": "La meva identitat",
+     "es": "Mi identidad"
+    },
+    {
+     "u": "/SOS/#/copia",
+     "ca": "Còpia de seguretat",
+     "es": "Copia de seguridad"
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "n": 3,
+   "bloc": "A",
+   "nivell": "N1",
+   "hores": 6,
+   "horesText": "5-7 h",
+   "rols": [
+    "guardian",
+    "coordinador",
+    "agent",
+    "mentor"
+   ],
+   "t": {
+    "ca": "Anàlisi de xarxes de valor",
+    "es": "Análisis de redes de valor"
+   },
+   "rol": {
+    "ca": "Analista de processos · mapar rols i intercanvis i veure què hi falta",
+    "es": "Analista de procesos · mapear roles e intercambios, ver qué falta"
+   },
+   "practica": {
+    "ca": {
+     "p": "Dibuixa el mapa de valor de la teva comunitat amb tres persones que hi participen: qui hi és, què es donen i què falta.",
+     "e": "El mapa al node, revisat amb les deu regles, i la llista del que falta.",
+     "ia": "Que hi hagi intercanvis d'anada i tornada, intangibles inclosos, i que cada buit tingui una pregunta per a la sessió."
+    },
+    "es": {
+     "p": "Dibuja el mapa de valor de tu comunidad con tres personas que participan: quién está, qué se dan y qué falta.",
+     "e": "El mapa en el nodo, revisado con las diez reglas, y la lista de lo que falta.",
+     "ia": "Que haya intercambios de ida y vuelta, intangibles incluidos, y que cada hueco tenga una pregunta para la sesión."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/vna.html",
+     "ca": "El mapa de valor",
+     "es": "El mapa de valor"
+    },
+    {
+     "u": "/SOS/vna-suport.html",
+     "ca": "Suport al mapa de valor",
+     "es": "Apoyo al mapa de valor"
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "n": 4,
+   "bloc": "A",
+   "nivell": "N1",
+   "hores": 5,
+   "horesText": "4-6 h",
+   "rols": [
+    "superheroi",
+    "coordinador",
+    "simpatitzant"
+   ],
+   "t": {
+    "ca": "Gestió de recursos compartits",
+    "es": "Gestión de recursos compartidos"
+   },
+   "rol": {
+    "ca": "Gestor/a de recursos comunitaris · banc de temps i préstec d'objectes",
+    "es": "Gestor/a de recursos comunitarios · banco de tiempo, préstamo de objetos"
+   },
+   "practica": {
+    "ca": {
+     "p": "Posa en marxa un banc de temps o un préstec d'objectes amb almenys cinc persones del barri.",
+     "e": "Intercanvis registrats i signats per les dues parts durant quatre setmanes.",
+     "ia": "Que els intercanvis siguin reals (dues signatures) i que hi participin persones diferents, no sempre les mateixes."
+    },
+    "es": {
+     "p": "Pon en marcha un banco de tiempo o un préstamo de objetos con al menos cinco personas del barrio.",
+     "e": "Intercambios registrados y firmados por las dos partes durante cuatro semanas.",
+     "ia": "Que los intercambios sean reales (dos firmas) y que participen personas distintas, no siempre las mismas."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/banc-temps.html",
+     "ca": "El Banc de Temps",
+     "es": "El Banco de Tiempo"
+    },
+    {
+     "u": "/SOS/biblioteca.html",
+     "ca": "La Biblioteca de les Coses",
+     "es": "La Biblioteca de las Cosas"
+    }
+   ]
+  },
+  {
+   "id": "m5",
+   "n": 5,
+   "bloc": "A",
+   "nivell": "N2",
+   "hores": 7,
+   "horesText": "6-8 h",
+   "rols": [
+    "guardian",
+    "agent"
+   ],
+   "t": {
+    "ca": "Governança participativa",
+    "es": "Gobernanza participativa"
+   },
+   "rol": {
+    "ca": "Secretaria i facilitació d'òrgans · quòrum, actes i decisions",
+    "es": "Secretaría y facilitación de órganos · quórum, actas, decisiones"
+   },
+   "practica": {
+    "ca": {
+     "p": "Convoca i facilita una assemblea o reunió de l'òrgan de la comunitat i deixa la decisió presa per escrit.",
+     "e": "L'acta amb el quòrum, la decisió votada i les signatures de qui custodia el node.",
+     "ia": "Que hi hagi quòrum, que el vot quedi signat i que l'acta digui qui fa què i quan."
+    },
+    "es": {
+     "p": "Convoca y facilita una asamblea o reunión del órgano de la comunidad y deja la decisión tomada por escrito.",
+     "e": "El acta con el quórum, la decisión votada y las firmas de quienes custodian el nodo.",
+     "ia": "Que haya quórum, que el voto quede firmado y que el acta diga quién hace qué y cuándo."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/tauler",
+     "ca": "El tauler de la comunitat",
+     "es": "El tablero de la comunidad"
+    },
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    }
+   ]
+  },
+  {
+   "id": "m6",
+   "n": 6,
+   "bloc": "A",
+   "nivell": "N2",
+   "hores": 8,
+   "horesText": "7-9 h",
+   "rols": [
+    "guardian",
+    "coordinador",
+    "mentor"
+   ],
+   "t": {
+    "ca": "Economia col·laborativa i intercooperació",
+    "es": "Economía colaborativa e intercooperación"
+   },
+   "rol": {
+    "ca": "Promotor/a de projectes col·lectius · repartiment equitatiu i acords entre entitats",
+    "es": "Promotor/a de proyectos colectivos · reparto equitativo, acuerdos entre entidades"
+   },
+   "practica": {
+    "ca": {
+     "p": "Acorda amb una altra entitat del territori un projecte o un intercanvi, amb el repartiment de cada aportació escrit des del primer dia.",
+     "e": "L'acord d'intercooperació signat pels dos nodes i el primer repartiment calculat.",
+     "ia": "Que el repartiment surti de les aportacions registrades i que l'acord digui com s'entra i com se surt."
+    },
+    "es": {
+     "p": "Acuerda con otra entidad del territorio un proyecto o un intercambio, con el reparto de cada aportación escrito desde el primer día.",
+     "e": "El acuerdo de intercooperación firmado por los dos nodos y el primer reparto calculado.",
+     "ia": "Que el reparto salga de las aportaciones registradas y que el acuerdo diga cómo se entra y cómo se sale."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/matriu.html",
+     "ca": "La MATRIU",
+     "es": "La MATRIU"
+    },
+    {
+     "u": "/SOS/compra.html",
+     "ca": "La Compra",
+     "es": "La Compra"
+    },
+    {
+     "u": "/SOS/#/federacions",
+     "ca": "Federacions temàtiques",
+     "es": "Federaciones temáticas"
+    }
+   ]
+  },
+  {
+   "id": "m7",
+   "n": 7,
+   "bloc": "A",
+   "nivell": "N1",
+   "hores": 6,
+   "horesText": "5-7 h",
+   "rols": [
+    "superheroi",
+    "coordinador",
+    "simpatitzant"
+   ],
+   "t": {
+    "ca": "Participació ciutadana",
+    "es": "Participación ciudadana"
+   },
+   "rol": {
+    "ca": "Dinamitzador/a de participació · registrar i reconèixer les aportacions",
+    "es": "Dinamizador/a de participación · registrar y reconocer aportaciones"
+   },
+   "practica": {
+    "ca": {
+     "p": "Organitza una acció oberta al barri i fes que cada aportació quedi registrada i reconeguda.",
+     "e": "Les aportacions de l'acció al registre i el reconeixement publicat a qui hi va participar, amb el seu permís.",
+     "ia": "Que hi hagi persones noves i que el reconeixement surti només amb consentiment."
+    },
+    "es": {
+     "p": "Organiza una acción abierta en el barrio y haz que cada aportación quede registrada y reconocida.",
+     "e": "Las aportaciones de la acción en el registro y el reconocimiento publicado a quien participó, con su permiso.",
+     "ia": "Que haya personas nuevas y que el reconocimiento salga solo con consentimiento."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/uneix-te.html",
+     "ca": "Participa al teu barri",
+     "es": "Participa en tu barrio"
+    },
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "n": 8,
+   "bloc": "A",
+   "nivell": "N2",
+   "hores": 7,
+   "horesText": "6-8 h",
+   "rols": [
+    "guardian",
+    "agent"
+   ],
+   "t": {
+    "ca": "Dades obertes i IA responsable",
+    "es": "Datos abiertos e IA responsable"
+   },
+   "rol": {
+    "ca": "Tècnic/a de dades · publicar amb garanties i fer servir la IA amb criteri",
+    "es": "Técnico/a de datos · publicar con garantías, usar la IA con criterio"
+   },
+   "practica": {
+    "ca": {
+     "p": "Publica en obert un resum agregat de l'activitat de la comunitat i fes servir la IA per preparar-lo, dient què li has donat.",
+     "e": "El resum publicat, el paquet d'ancoratge que el verifica i la nota de què ha llegit la IA.",
+     "ia": "Que el resum no permeti identificar ningú i que l'ancoratge quadri amb el registre."
+    },
+    "es": {
+     "p": "Publica en abierto un resumen agregado de la actividad de la comunidad y usa la IA para prepararlo, diciendo qué le has dado.",
+     "e": "El resumen publicado, el paquete de anclaje que lo verifica y la nota de qué ha leído la IA.",
+     "ia": "Que el resumen no permita identificar a nadie y que el anclaje cuadre con el registro."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    },
+    {
+     "u": "/SOS/online.html",
+     "ca": "SOS Online",
+     "es": "SOS Online"
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "n": 9,
+   "bloc": "B",
+   "nivell": "N1",
+   "hores": 6,
+   "horesText": "5-7 h",
+   "rols": [
+    "coordinador",
+    "mentor",
+    "guardian"
+   ],
+   "t": {
+    "ca": "Dinamització de grups",
+    "es": "Dinamización de grupos"
+   },
+   "rol": {
+    "ca": "Dinamitzador/a comunitari/ària · conduir sessions",
+    "es": "Dinamizador/a comunitario/a · conducir sesiones"
+   },
+   "practica": {
+    "ca": {
+     "p": "Condueix tres sessions de grup amb una dinàmica preparada i un encàrrec al final de cadascuna.",
+     "e": "El guió de cada sessió, l'assistència i l'encàrrec que en va sortir.",
+     "ia": "Que cada sessió acabi amb un encàrrec concret i que a la següent es revisi."
+    },
+    "es": {
+     "p": "Conduce tres sesiones de grupo con una dinámica preparada y un encargo al final de cada una.",
+     "e": "El guion de cada sesión, la asistencia y el encargo que salió.",
+     "ia": "Que cada sesión acabe con un encargo concreto y que en la siguiente se revise."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/colla.html",
+     "ca": "La colla en la pinya",
+     "es": "La colla en la piña"
+    },
+    {
+     "u": "/SOS/#/gent",
+     "ca": "La gent",
+     "es": "La gente"
+    }
+   ]
+  },
+  {
+   "id": "m10",
+   "n": 10,
+   "bloc": "B",
+   "nivell": "N1",
+   "hores": 5,
+   "horesText": "4-6 h",
+   "rols": [
+    "coordinador",
+    "superheroi",
+    "simpatitzant"
+   ],
+   "t": {
+    "ca": "Comunicació i captació",
+    "es": "Comunicación y captación"
+   },
+   "rol": {
+    "ca": "Comunicador/a · difondre, acollir i fidelitzar",
+    "es": "Comunicador/a · difundir, acoger y fidelizar"
+   },
+   "practica": {
+    "ca": {
+     "p": "Fes una campanya per acollir persones noves a la comunitat i acompanya-les fins a la primera aportació.",
+     "e": "Les persones acollides i la primera aportació de cadascuna, comptades sense dades personals.",
+     "ia": "Quantes persones fan el pas de mirar a participar, i on es queden les que no."
+    },
+    "es": {
+     "p": "Haz una campaña para acoger a personas nuevas en la comunidad y acompáñalas hasta su primera aportación.",
+     "e": "Las personas acogidas y la primera aportación de cada una, contadas sin datos personales.",
+     "ia": "Cuántas personas dan el paso de mirar a participar, y dónde se quedan las que no."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/uneix-te.html",
+     "ca": "Participa al teu barri",
+     "es": "Participa en tu barrio"
+    },
+    {
+     "u": "/SOS/#/alta",
+     "ca": "Fes-te usuari/ària",
+     "es": "Hazte usuario/a"
+    }
+   ]
+  },
+  {
+   "id": "m11",
+   "n": 11,
+   "bloc": "B",
+   "nivell": "N2",
+   "hores": 6,
+   "horesText": "5-7 h",
+   "rols": [
+    "coordinador",
+    "mentor",
+    "guardian",
+    "superheroi"
+   ],
+   "t": {
+    "ca": "Gestió de conflictes i cures",
+    "es": "Gestión de conflictos y cuidados"
+   },
+   "rol": {
+    "ca": "Mediador/a · mediar, prevenir el desgast i preparar relleus",
+    "es": "Mediador/a · mediar, prevenir el desgaste, preparar relevos"
+   },
+   "practica": {
+    "ca": {
+     "p": "Prepara el protocol de cures i relleu del teu equip i fes-lo servir en una situació real o en un simulacre.",
+     "e": "El protocol acordat i el registre de la mediació o del relleu fet.",
+     "ia": "Que hi hagi relleu previst per a cada rol clau i que ningú porti sol més càrrega de la que pot."
+    },
+    "es": {
+     "p": "Prepara el protocolo de cuidados y relevo de tu equipo y úsalo en una situación real o en un simulacro.",
+     "e": "El protocolo acordado y el registro de la mediación o del relevo hecho.",
+     "ia": "Que haya relevo previsto para cada rol clave y que nadie lleve solo más carga de la que puede."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/online.html",
+     "ca": "SOS Online · qui hi ha",
+     "es": "SOS Online · quién está"
+    },
+    {
+     "u": "/SOS/#/gent",
+     "ca": "La gent i els rols",
+     "es": "La gente y los roles"
+    }
+   ]
+  },
+  {
+   "id": "m12",
+   "n": 12,
+   "bloc": "B",
+   "nivell": "N2",
+   "hores": 7,
+   "horesText": "6-8 h",
+   "rols": [
+    "coordinador",
+    "guardian",
+    "agent"
+   ],
+   "t": {
+    "ca": "Finançament i subvencions",
+    "es": "Financiación y subvenciones"
+   },
+   "rol": {
+    "ca": "Gestor/a de projectes · buscar, sol·licitar i justificar",
+    "es": "Gestor/a de proyectos · buscar, solicitar y justificar"
+   },
+   "practica": {
+    "ca": {
+     "p": "Identifica una convocatòria pública o privada que encaixi amb la comunitat i prepara'n la sol·licitud.",
+     "e": "La sol·licitud presentada o a punt, amb el pressupost per hores i el pla de justificació.",
+     "ia": "Que el pressupost surti de les hores reals del mapa i que es pugui justificar amb el registre."
+    },
+    "es": {
+     "p": "Identifica una convocatoria pública o privada que encaje con la comunidad y prepara la solicitud.",
+     "e": "La solicitud presentada o lista, con el presupuesto por horas y el plan de justificación.",
+     "ia": "Que el presupuesto salga de las horas reales del mapa y que se pueda justificar con el registro."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/fons",
+     "ca": "El fons cooperatiu",
+     "es": "El fondo cooperativo"
+    },
+    {
+     "u": "/SOS/diagnostic-territori.html",
+     "ca": "Diagnòstic comunitari",
+     "es": "Diagnóstico comunitario"
+    }
+   ]
+  },
+  {
+   "id": "m13",
+   "n": 13,
+   "bloc": "B",
+   "nivell": "N2",
+   "hores": 6,
+   "horesText": "5-7 h",
+   "rols": [
+    "guardian",
+    "coordinador",
+    "agent"
+   ],
+   "t": {
+    "ca": "Formes jurídiques i tràmits",
+    "es": "Formas jurídicas y trámites"
+   },
+   "rol": {
+    "ca": "Gestor/a administratiu/iva · triar la forma i fer els tràmits",
+    "es": "Gestor/a administrativo/a · elegir forma, hacer trámites"
+   },
+   "practica": {
+    "ca": {
+     "p": "Tria amb el grup la forma jurídica que us convé (o confirma la que teniu) i fes un tràmit real amb l'administració.",
+     "e": "La decisió raonada al node i el justificant del tràmit.",
+     "ia": "Que la forma triada encaixi amb el que fa la comunitat i que el tràmit tingui data i responsable."
+    },
+    "es": {
+     "p": "Elige con el grupo la forma jurídica que os conviene (o confirma la que tenéis) y haz un trámite real con la administración.",
+     "e": "La decisión razonada en el nodo y el justificante del trámite.",
+     "ia": "Que la forma elegida encaje con lo que hace la comunidad y que el trámite tenga fecha y responsable."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/diagnostic-org.html",
+     "ca": "Diagnòstic d'organització",
+     "es": "Diagnóstico de organización"
+    },
+    {
+     "u": "/SOS/energia.html",
+     "ca": "L'Energia",
+     "es": "La Energía"
+    },
+    {
+     "u": "/SOS/habitatge.html",
+     "ca": "L'Habitatge",
+     "es": "La Vivienda"
+    }
+   ]
+  },
+  {
+   "id": "m14",
+   "n": 14,
+   "bloc": "B",
+   "nivell": "N2",
+   "hores": 6,
+   "horesText": "5-7 h",
+   "rols": [
+    "coordinador",
+    "agent",
+    "mentor"
+   ],
+   "t": {
+    "ca": "Avaluació de l'impacte social",
+    "es": "Evaluación del impacto social"
+   },
+   "rol": {
+    "ca": "Avaluador/a · indicadors i informes",
+    "es": "Evaluador/a · indicadores e informes"
+   },
+   "practica": {
+    "ca": {
+     "p": "Defineix tres indicadors d'impacte de la comunitat i fes-ne el primer informe amb dades del registre.",
+     "e": "L'informe d'impacte amb els indicadors, la font de cada xifra i el que s'ha après.",
+     "ia": "Que cada xifra surti del registre o d'una font citada i que no n'hi hagi cap d'inventada."
+    },
+    "es": {
+     "p": "Define tres indicadores de impacto de la comunidad y haz el primer informe con datos del registro.",
+     "e": "El informe de impacto con los indicadores, la fuente de cada cifra y lo aprendido.",
+     "ia": "Que cada cifra salga del registro o de una fuente citada y que no haya ninguna inventada."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/fons/impacte",
+     "ca": "Simulador d'impacte",
+     "es": "Simulador de impacto"
+    },
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    }
+   ]
+  },
+  {
+   "id": "m15",
+   "n": 15,
+   "bloc": "B",
+   "nivell": "N1",
+   "hores": 5,
+   "horesText": "4-5 h",
+   "rols": [
+    "guardian",
+    "agent",
+    "coordinador"
+   ],
+   "t": {
+    "ca": "Protecció de dades personals",
+    "es": "Protección de datos personales"
+   },
+   "rol": {
+    "ca": "Responsable del tractament · RGPD i consentiments",
+    "es": "Responsable de tratamiento · RGPD, consentimientos"
+   },
+   "practica": {
+    "ca": {
+     "p": "Fes el registre de tractaments de dades de la comunitat i recull els consentiments que falten.",
+     "e": "El registre de tractaments i els consentiments, guardats al node i no a fora.",
+     "ia": "Que cada dada tingui finalitat i consentiment, i que es guardi el mínim."
+    },
+    "es": {
+     "p": "Haz el registro de tratamientos de datos de la comunidad y recoge los consentimientos que faltan.",
+     "e": "El registro de tratamientos y los consentimientos, guardados en el nodo y no fuera.",
+     "ia": "Que cada dato tenga finalidad y consentimiento, y que se guarde lo mínimo."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/config",
+     "ca": "Configuració i dades",
+     "es": "Configuración y datos"
+    },
+    {
+     "u": "/SOS/#/copia",
+     "ca": "Còpia de seguretat xifrada",
+     "es": "Copia de seguridad cifrada"
+    }
+   ]
+  },
+  {
+   "id": "m16",
+   "n": 16,
+   "bloc": "B",
+   "nivell": "N3",
+   "hores": 9,
+   "horesText": "8-10 h",
+   "rols": [
+    "mentor"
+   ],
+   "t": {
+    "ca": "Docència i tutoria",
+    "es": "Docencia y tutoría"
+   },
+   "rol": {
+    "ca": "Formador/a · dissenyar, tutoritzar i avaluar",
+    "es": "Formador/a · diseñar, tutorizar y evaluar"
+   },
+   "practica": {
+    "ca": {
+     "p": "Acompanya dues persones de la teva comunitat en la seva primera pràctica certificable, com a tutor o tutora.",
+     "e": "Les dues sessions de mentoria registrades i les pràctiques que vas validar.",
+     "ia": "Que cada sessió acabi amb encàrrec i que la teva validació digui en què t'has fixat."
+    },
+    "es": {
+     "p": "Acompaña a dos personas de tu comunidad en su primera práctica certificable, como tutor o tutora.",
+     "e": "Las dos sesiones de mentoría registradas y las prácticas que validaste.",
+     "ia": "Que cada sesión acabe con encargo y que tu validación diga en qué te has fijado."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/mentoria",
+     "ca": "La meva mentoria",
+     "es": "Mi mentoría"
+    },
+    {
+     "u": "/SOS/certificacio.html",
+     "ca": "Guia de certificació",
+     "es": "Guía de certificación"
+    }
+   ]
+  },
+  {
+   "id": "m17",
+   "n": 17,
+   "bloc": "C",
+   "nivell": "N1",
+   "hores": 3,
+   "horesText": "3 h",
+   "rols": [
+    "coordinador",
+    "agent",
+    "mentor"
+   ],
+   "t": {
+    "ca": "Mapa de valor de l'organització",
+    "es": "Mapa de valor de la organización"
+   },
+   "rol": {
+    "ca": "Direcció o consultoria · qui aporta què, amb les deu regles",
+    "es": "Dirección o consultoría · quién aporta qué, con las diez reglas"
+   },
+   "practica": {
+    "ca": {
+     "p": "Fes el mapa de valor de la teva organització amb l'equip: qui aporta què, dins i fora.",
+     "e": "El mapa revisat amb les deu regles i les tres anàlisis fetes.",
+     "ia": "Que hi surtin els rols de fora (clients, proveïdors, territori) i els intangibles."
+    },
+    "es": {
+     "p": "Haz el mapa de valor de tu organización con el equipo: quién aporta qué, dentro y fuera.",
+     "e": "El mapa revisado con las diez reglas y los tres análisis hechos.",
+     "ia": "Que salgan los roles de fuera (clientes, proveedores, territorio) y los intangibles."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/vna.html",
+     "ca": "El mapa de valor",
+     "es": "El mapa de valor"
+    },
+    {
+     "u": "/cliente/",
+     "ca": "El mapa del client",
+     "es": "El mapa del cliente"
+    }
+   ]
+  },
+  {
+   "id": "m18",
+   "n": 18,
+   "bloc": "C",
+   "nivell": "N1",
+   "hores": 2,
+   "horesText": "2 h",
+   "rols": [
+    "coordinador",
+    "agent"
+   ],
+   "t": {
+    "ca": "Gestió del coneixement per a la IA",
+    "es": "Gestión del conocimiento para la IA"
+   },
+   "rol": {
+    "ca": "Gestor/a del coneixement · que la IA conegui l'organització",
+    "es": "Gestor/a del conocimiento · que la IA conozca la organización"
+   },
+   "practica": {
+    "ca": {
+     "p": "Escriu amb l'equip el cervell de l'organització: la cultura, les regles i el que ja sabeu, perquè la vostra IA us conegui.",
+     "e": "El cervell al repositori o al node, amb les seves àrees plenes.",
+     "ia": "Que cada àrea tingui almenys un document i que les regles portin el motiu al costat."
+    },
+    "es": {
+     "p": "Escribe con el equipo el cerebro de la organización: la cultura, las reglas y lo que ya sabéis, para que vuestra IA os conozca.",
+     "e": "El cerebro en el repositorio o en el nodo, con sus áreas llenas.",
+     "ia": "Que cada área tenga al menos un documento y que las reglas lleven el motivo al lado."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/cervell.html",
+     "ca": "El teu cervell",
+     "es": "Tu cerebro"
+    }
+   ]
+  },
+  {
+   "id": "m19",
+   "n": 19,
+   "bloc": "C",
+   "nivell": "N1",
+   "hores": 3,
+   "horesText": "3 h",
+   "rols": [
+    "coordinador",
+    "agent"
+   ],
+   "t": {
+    "ca": "Web corporativa",
+    "es": "Web corporativa"
+   },
+   "rol": {
+    "ca": "Responsable web · del mapa a la web sense perdre posicionament",
+    "es": "Responsable web · del mapa a la web sin perder posicionamiento"
+   },
+   "practica": {
+    "ca": {
+     "p": "Fes sortir la web de l'organització del mapa de valor, sense perdre el posicionament que ja teniu.",
+     "e": "La web en vista prèvia i la comprovació que cap adreça antiga es perd.",
+     "ia": "Que cada pàgina respongui a un rol del mapa i que les adreces antigues portin a la nova."
+    },
+    "es": {
+     "p": "Haz salir la web de la organización del mapa de valor, sin perder el posicionamiento que ya tenéis.",
+     "e": "La web en vista previa y la comprobación de que ninguna dirección antigua se pierde.",
+     "ia": "Que cada página responda a un rol del mapa y que las direcciones antiguas lleven a la nueva."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/cliente/",
+     "ca": "La web que surt del mapa",
+     "es": "La web que sale del mapa"
+    }
+   ]
+  },
+  {
+   "id": "m20",
+   "n": 20,
+   "bloc": "C",
+   "nivell": "N1",
+   "hores": 1.5,
+   "horesText": "1,5 h",
+   "rols": [
+    "coordinador",
+    "agent"
+   ],
+   "t": {
+    "ca": "Publicació de continguts web",
+    "es": "Publicación de contenidos web"
+   },
+   "rol": {
+    "ca": "Editor/a de continguts · vista prèvia abans de publicar",
+    "es": "Editor/a de contenidos · vista previa antes de publicar"
+   },
+   "practica": {
+    "ca": {
+     "p": "Publica tres canvis de contingut seguint el circuit: proposta, vista prèvia, revisió i publicació.",
+     "e": "Els tres canvis amb la seva vista prèvia i qui els va donar per bons.",
+     "ia": "Que res no surti publicat sense vista prèvia revisada per una persona."
+    },
+    "es": {
+     "p": "Publica tres cambios de contenido siguiendo el circuito: propuesta, vista previa, revisión y publicación.",
+     "e": "Los tres cambios con su vista previa y quién los dio por buenos.",
+     "ia": "Que nada salga publicado sin vista previa revisada por una persona."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/cliente/#panel",
+     "ca": "El panell del client",
+     "es": "El panel del cliente"
+    }
+   ]
+  },
+  {
+   "id": "m21",
+   "n": 21,
+   "bloc": "C",
+   "nivell": "N1",
+   "hores": 2,
+   "horesText": "2 h",
+   "rols": [
+    "coordinador",
+    "agent",
+    "guardian"
+   ],
+   "t": {
+    "ca": "Automatització de processos",
+    "es": "Automatización de procesos"
+   },
+   "rol": {
+    "ca": "Tècnic/a de processos · formularis i fluxos connectats",
+    "es": "Técnico/a de procesos · formularios y flujos conectados"
+   },
+   "practica": {
+    "ca": {
+     "p": "Automatitza un procés repetitiu de l'organització: un formulari que arriba sol on ha d'arribar.",
+     "e": "El flux funcionant, amb la prova d'una entrada real de principi a fi.",
+     "ia": "Que el procés automatitzat sigui tangible i repetitiu, i que l'intangible es quedi a les persones."
+    },
+    "es": {
+     "p": "Automatiza un proceso repetitivo de la organización: un formulario que llega solo donde tiene que llegar.",
+     "e": "El flujo funcionando, con la prueba de una entrada real de principio a fin.",
+     "ia": "Que el proceso automatizado sea tangible y repetitivo, y que lo intangible se quede en las personas."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/ia.html",
+     "ca": "Fluxos amb IA",
+     "es": "Flujos con IA"
+    }
+   ]
+  },
+  {
+   "id": "m22",
+   "n": 22,
+   "bloc": "C",
+   "nivell": "N2",
+   "hores": 2,
+   "horesText": "2 h",
+   "rols": [
+    "coordinador",
+    "agent",
+    "guardian"
+   ],
+   "t": {
+    "ca": "Treball amb assistents d'IA",
+    "es": "Trabajo con asistentes de IA"
+   },
+   "rol": {
+    "ca": "Qualsevol rol · demanar canvis, revisar-los i validar-los",
+    "es": "Cualquier rol · pedir cambios, revisarlos y validarlos"
+   },
+   "practica": {
+    "ca": {
+     "p": "Treballa una setmana amb el vostre assistent d'IA: demana-li canvis, revisa'ls i valida'ls abans que entrin.",
+     "e": "Els canvis demanats, revisats i validats, amb el que la IA va proposar i el que vau decidir.",
+     "ia": "Que cada canvi tingui una persona que el valida i que el cervell s'actualitzi amb el que s'ha après."
+    },
+    "es": {
+     "p": "Trabaja una semana con vuestro asistente de IA: pídele cambios, revísalos y valídalos antes de que entren.",
+     "e": "Los cambios pedidos, revisados y validados, con lo que la IA propuso y lo que decidisteis.",
+     "ia": "Que cada cambio tenga una persona que lo valida y que el cerebro se actualice con lo aprendido."
+    }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/ia.html",
+     "ca": "Fluxos amb IA",
+     "es": "Flujos con IA"
+    },
+    {
+     "u": "/SOS/cervell.html",
+     "ca": "El teu cervell",
+     "es": "Tu cerebro"
+    }
+   ]
+  }
+ ]
+}
