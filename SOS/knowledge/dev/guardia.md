@@ -2,7 +2,9 @@
 
 Aprovat per l'Álvaro el 13/11/2026: quan al seu pla de Claude li sobra saldo,
 una tasca programada el fa servir per polir el sistema en comptes de deixar-lo
-perdre. Treballa **aquesta cola**, de dalt a baix.
+perdre. Cada nit treballa **la cola que li toca pel dia** (taula de sota) i,
+dins d'aquella cola, la primera peça sense marcar. Això mana per sobre de
+«la primera peça de la cola» que pugui dir la tasca programada.
 
 ## Quan treballa
 
@@ -51,7 +53,9 @@ abans que el vegi un client.
    les 13:00 o les 20:00 (CLAUDE.md). Assignat a `asolache`.
 3. En el mateix PR, marca la peça `[x]` aquí amb el número del PR.
 
-## La cola (prioritzada · només coses que es poden fer soles i comprovar)
+## Les cues (prioritzades · només coses que es poden fer soles i comprovar)
+
+La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de dalt a baix.
 
 **A · Pantalles, no rotlles** (estàndard a `pantalles.md`)
 1. [x] `cataleg.html` en pantalles (bilingüe: `data-pantalla-nom` per idioma o noms des de l'i18n) (#368)
