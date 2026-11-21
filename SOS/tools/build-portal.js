@@ -140,7 +140,13 @@ const FORA = {
 };
 
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
-const MODUL = { m4: 'Recursos comunitaris', m6: 'Intercooperació', m11: 'Cures i relleu', m13: 'Formes jurídiques' };
+/* El nom del mòdul i les seves pantalles surten de moduls.json (veda 187: un
+   nom, un lloc). Abans eren quatre noms escrits aquí a mà, i ja no eren els
+   oficials. Cada pàgina ha de ser, a més, una de les pantalles del seu mòdul:
+   si no, la fitxa ensenyaria a anar a aprendre-la a un mòdul que no la cita. */
+const MODULS = JSON.parse(readFileSync(join(SOS, 'knowledge', 'formacio', 'moduls.json'), 'utf8')).moduls;
+const MODUL = Object.fromEntries(MODULS.map(m => [m.id, m.t.ca]));
+const PANT_DE = Object.fromEntries(MODULS.map(m => [m.id, (m.pantalles || []).map(p => p.u)]));
 const fitxa = (x, cls) => {
   const n = nav(x.p);
   const cos = `<span class="pg-ic">${x.ic}</span>` +
@@ -305,6 +311,14 @@ const TOTES = MUNTAR.concat(APREN, MON);
   const sense = MUNTAR.filter(x => !x.m || F.indexOf('id="' + x.m + '"') < 0).map(x => x.p);
   if (sense.length) bad('eines sense mòdul de formació (o mòdul inexistent): ' + sense.join(', '));
   else ok(`les ${MUNTAR.length} eines porten el seu mòdul de formació`);
+})();
+
+// 4 ter · I el mòdul la cita entre les seves pantalles (certificacio.json),
+//     perquè la tornada (lib/modul-pantalla.js) i la fitxa diguin el mateix.
+(() => {
+  const fora = MUNTAR.filter(x => x.m && !(PANT_DE[x.m] || []).includes('/SOS/' + x.p)).map(x => x.p + ' (' + x.m + ')');
+  if (fora.length) bad('eines que el seu mòdul no cita a «pantalles» de certificacio.json: ' + fora.join(', '));
+  else ok('cada eina és una de les pantalles del seu mòdul');
 })();
 
 // 5 · Els paquets porten durada, per a qui i què s'hi endú, llegits del
