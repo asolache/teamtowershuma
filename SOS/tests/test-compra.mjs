@@ -257,7 +257,7 @@ console.log('\n9 · Les dues dinàmiques del catàleg, i la pàgina que es pinta
     const C = window.__COMPRA, txt = document.body.textContent;
     const pans = [...document.querySelectorAll('.pan')].map(x => x.id);
     return { dins: C.DINAMIQUES.map(d => d.nom), txt,
-      pans, tabs: document.querySelectorAll('#tabs button').length,
+      pans, tabs: window.TTPantalla ? TTPantalla.pantalles.filter(x => x.id !== 'inici').length : 0,
       data: C.PREUS_REVISIO,
       files: document.querySelectorAll('#tCistella tbody tr').length,
       ample: document.documentElement.scrollWidth <= window.innerWidth + 1 };
@@ -266,7 +266,8 @@ console.log('\n9 · Les dues dinàmiques del catàleg, i la pàgina que es pinta
     'les dues dinàmiques surten pel seu nom: ' + r.dins.join(' i '));
   ok(r.txt.includes(r.data), `i els preus diuen quan es van revisar: ${r.data}`);
   /* Cada pestanya ha de tenir la seva pantalla i cap pantalla ha de quedar
-     sense pestanya: una pantalla òrfena és feina feta que no veurà ningú. */
+     sense pestanya: una pantalla òrfena és feina feta que no veurà ningú.
+     Les pestanyes ara les fa SOS/lib/pantalla.js (la peça comuna), més «Inici». */
   ok(r.tabs === 7 && r.pans.length === 7, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
   ok(r.files > 30, `la taula de la cistella es pinta sencera (${r.files} files)`);
   ok(r.ample, 'i a 390px la pàgina no desborda de costat');
@@ -358,10 +359,11 @@ console.log('\n11 · El mapa diu qui l\'omple, qui posa més del que rep i qui f
 console.log('\n12 · I el mapa es pinta, amb el graf i les taules');
 {
   const { ctx, p, errs } = await nova(390, 844);
-  await p.click('#tabs button[data-p=mapa]');
+  await p.click('.tt-pant-tabs a[href="#el-mapa"]');
+  await p.waitForFunction(() => TTPantalla.pantalles[TTPantalla.actual()].id === 'el-mapa');
   const r = await p.evaluate(() => {
     const C = window.__COMPRA;
-    const txt = document.getElementById('pMapa').textContent;
+    const txt = document.getElementById('el-mapa').textContent;
     return { grafs: document.querySelectorAll('#mapes .graf').length,
       seccions: document.querySelectorAll('#mapes section').length,
       inputs: document.querySelectorAll('#mapes [data-rol]').length,
@@ -599,17 +601,18 @@ console.log('\n12 · La caixa del grup quadra, i el que no quadra es diu pel seu
 console.log('\n13 · A la pantalla: es tanca, es desa i no es diu mai que ningú hagi pagat');
 {
   const { ctx, p, errs } = await nova();
-  await p.click('#tabs button[data-p="caixa"]');
+  await p.click('.tt-pant-tabs a[href="#la-caixa"]');
+  await p.waitForFunction(() => TTPantalla.pantalles[TTPantalla.actual()].id === 'la-caixa');
   const r = await p.evaluate(async () => {
     const C = window.__COMPRA;
-    const visible = !!document.querySelector('#pCaixa.on');
+    const visible = getComputedStyle(document.querySelector('#la-caixa')).display !== 'none';
     document.querySelector('#btnTanca').click();
     const G = C.estat();
     const un = G.socis[0];
     document.querySelector('#movSoci').value = un.id;
     document.querySelector('#movEur').value = '25';
     document.querySelector('#btnMov').click();
-    const txt = document.querySelector('#pCaixa').textContent.replace(/\s+/g, ' ');
+    const txt = document.querySelector('#la-caixa').textContent.replace(/\s+/g, ' ');
     /* Es desa: rellegint el que hi ha al navegador ha de sortir el mateix. */
     const desat = JSON.parse(localStorage.getItem(C.CLAU) || '{}');
     return { visible, txt, comandes: (desat.comandes || []).length,

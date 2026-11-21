@@ -15,6 +15,8 @@
 
    Ús:
      node SOS/tools/banc-mapes.mjs oficis --lot 10 --tope 3   (els oficis del catàleg NACE 2.1, de 10 en 10: vegeu A5)
+     node SOS/tools/banc-mapes.mjs oficis --lot 10 --a-ma      (sense API: escriu el lot a banc-mapes/resultats/a-ma/)
+     node SOS/tools/banc-mapes.mjs oficis --ingereix <fitxer>  (les respostes de la sessió: salut, descartats i base)
      node SOS/tools/banc-mapes.mjs jutja-oficis --lot 20 --tope 2
      node SOS/tools/banc-mapes.mjs casos --n 40 --tope 6
      node SOS/tools/banc-mapes.mjs corre --variant actual [--model claude-sonnet-5-5] --tope 15 --sortida out/
@@ -169,6 +171,59 @@ const SIS_OFICI_BASE = [
 export function salutOfici(o) {
   const m = { abast: o.es.diu, roles: o.es.roles, pairs: o.es.pairs };
   return MV.salut(m, { treu: ['processos'] });
+}
+
+/* El camí comú de les respostes, vinguin de l'API o de la sessió (--ingereix):
+   items = [{ id: 'cnae-55_10', o: {ofici} | cru: 'text que no és JSON' | error, model }].
+   Un error (sense resposta) no descarta: torna a sortir al lot següent. Torna els errors. */
+const LL_OK = l => l && typeof l.diu === 'string' && Array.isArray(l.roles) && Array.isArray(l.pairs) && typeof l.nom === 'string';
+export function ingereixOficis(items, base, gen, ara) {
+  const errors = [], ja = new Set(gen.oficis.map(o => o.cnae));
+  items.forEach(x => {
+    const codi = String(x.id || '').replace(/^cnae-/, '').replace('_', '.'), cl = base.classes.find(c => c.codi === codi);
+    if (!cl) { errors.push((x.id || '?') + ' (classe desconeguda)'); return; }
+    if (ja.has(codi)) return;
+    if (x.error || (!x.o && x.cru == null)) { errors.push(codi + ' (' + (x.error || 'buida') + ')'); return; }
+    const o = x.o;
+    if (!o) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'json' }); return; }
+    if (!LL_OK(o.es) || !LL_OK(o.ca) || !LL_OK(o.en) || !o.veda) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'esquema' }); return; }
+    const sal = salutOfici(o), mal = sal.regles.filter(r => !r.ok).map(r => r.id);
+    if (sal.punts < 70) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'salut ' + sal.punts + ' (' + mal.join(', ') + ')' }); return; }
+    ja.add(codi);
+    gen.oficis.push(Object.assign({ id: codi.replace('.', '') + '_' + slug(o.es.nom), cnae: codi, classe: cl.es, estat: 'esborrany', data: ara, model: x.model || 'sessio',
+      salut: sal.punts, falla: mal, arees_falten: MV.arees({ abast: o.es.diu, roles: o.es.roles, pairs: o.es.pairs }).falten.map(f => f.id) }, o));
+  });
+  gen.oficis.sort((p, q) => p.cnae.localeCompare(q.cnae));
+  return errors;
+}
+export const llegeixResposta = r => { const t = (r.content || []).filter(b => b.type === 'text').map(b => b.text).join(''); try { return { o: JSON.parse(t) }; } catch (e) { return { cru: t }; } };
+function desaGenerats(gen) {
+  writeFileSync(GENERATS, JSON.stringify(gen, null, 1) + '\n');
+  execFileSync(process.execPath, [join(ARREL, 'SOS', 'tools', 'build-base-vna.js')], { stdio: 'inherit' });
+}
+
+/* El lot a mà: les mateixes peticions que aniria a l'API (sistema, context i esquema), en un fitxer
+   que la sessió llegeix i contesta. Les respostes: { respostes: [{ custom_id, ofici }] } o { custom_id: ofici }. */
+export const A_MA = join(BANC, 'resultats', 'a-ma');
+export function lotAMa(codis, base, antic, ara) {
+  const ps = peticionsOficisCataleg(codis, base, antic, { model: 'sessio', effort: 'high' });
+  return { ordre: 'oficis', data: ara, codis, sistema: ps[0] ? ps[0].params.system[0].text : '', esquema: ESQ_OFICI,
+    respostes: 'El mateix nom amb -respostes.json: { "respostes": [{ "custom_id": "cnae-55_10", "ofici": { …l\'esquema… } }] }',
+    peticions: ps.map(p => ({ custom_id: p.custom_id, user: p.params.messages[0].content })) };
+}
+export function escriuLotAMa(codis, base, antic, ara, dir = A_MA) {
+  mkdirSync(dir, { recursive: true });
+  const f = join(dir, 'lot-' + ara + '-' + codis[0].replace('.', '_') + '.json');
+  writeFileSync(f, JSON.stringify(lotAMa(codis, base, antic, ara), null, 1) + '\n');
+  return f;
+}
+export function respostesDeFitxer(j, model) {
+  const l = Array.isArray(j) ? j : Array.isArray(j.respostes) ? j.respostes : Object.entries(j).map(([custom_id, ofici]) => ({ custom_id, ofici }));
+  return l.map(x => {
+    const id = x.custom_id || x.id, v = x.ofici !== undefined ? x.ofici : x.o;
+    if (typeof v === 'string') { try { return { id, o: JSON.parse(v), model }; } catch (e) { return { id, cru: v, model }; } }
+    return v && typeof v === 'object' ? { id, o: v, model } : { id, error: 'buida' };
+  });
 }
 
 const ESQ_NOTA_OFICI = S({ roles: { type: 'integer' }, intangibles: { type: 'integer' }, reciprocitat: { type: 'integer' }, especificitat: { type: 'integer' }, global: { type: 'integer' }, falla: STR });
@@ -422,6 +477,24 @@ async function main() {
   /* El cost probable, a més del pitjor: l'entrada sencera i la sortida que sol fer (3.500 tokens per ofici, 300 per nota). */
   const probable = (ps, sortida) => ps.reduce((s, p) => { const [pe, ps2] = (MODELS[p.params.model] && MODELS[p.params.model].preu) || [5, 25];
     return s + ((JSON.stringify(p.params.system).length + JSON.stringify(p.params.messages).length) / 2.5 * pe + sortida * ps2) / 1e6; }, 0) * (lotOn ? 0.5 : 1);
+  /* Sense API (20/11/2026): la sessió que corre el guardià escriu els oficis amb el saldo del pla. */
+  if (ordre === 'oficis' && a.lot && a['a-ma']) {
+    const base = llegeixJ(BASE), gen = llegeixGenerats(), codis = codisLot(base, gen, Number(a.lot) || 10, !!a.reintenta);
+    if (!codis.length) { console.log('oficis: no queda cap classe pendent'); return; }
+    const f = escriuLotAMa(codis, base, llegeixJ(ANTIC), new Date().toISOString().slice(0, 10));
+    console.log('lot a mà de ' + codis.length + ' classes (' + codis.join(' ') + ') → ' + f.replace(ARREL + '/', ''));
+    console.log('  escriu les respostes a ' + f.replace(ARREL + '/', '').replace(/\.json$/, '-respostes.json') + ' i passa-les amb --ingereix');
+    return;
+  }
+  if (ordre === 'oficis' && a.ingereix) {
+    const base = llegeixJ(BASE), gen = llegeixGenerats(), abans = [gen.oficis.length, gen.descartats.length];
+    const items = respostesDeFitxer(llegeixJ(resolve(a.ingereix)), a.model || 'sessio');
+    const errors = ingereixOficis(items, base, gen, new Date().toISOString().slice(0, 10));
+    desaGenerats(gen);
+    console.log('oficis: ' + (gen.oficis.length - abans[0]) + ' entrats · ' + (gen.descartats.length - abans[1]) + ' descartats · ' + gen.oficis.length + ' a la base');
+    if (errors.length) { console.error('✗ ' + errors.length + ' sense resposta: ' + errors.slice(0, 3).join(', ')); process.exitCode = 1; }
+    return;
+  }
   if (ordre === 'oficis' && a.lot) {
     const base = llegeixJ(BASE), antic = llegeixJ(ANTIC), gen = llegeixGenerats();
     const t = Object.assign({}, tria({ projecte: 'matriu', tasca: 'ofici' }), a.model ? { model: a.model } : {});
@@ -431,20 +504,8 @@ async function main() {
     console.log('lot de ' + codis.length + ' classes amb ' + t.model + ' (' + t.effort + ') · cost probable ~' + probable(ps, 3500).toFixed(2) + ' $ · queden ' + base.pendents.length + ' pendents en total');
     const rs = await crida(ps);
     if (!rs) return;
-    const ara = new Date().toISOString().slice(0, 10), errors = [];
-    rs.forEach(x => {
-      const codi = x.id.replace(/^cnae-/, '').replace('_', '.'), cl = base.classes.find(c => c.codi === codi);
-      /* Un error de l'API (clau, crèdit, xarxa) no diu res de l'ofici: no es descarta, es torna a provar al lot següent. */
-      if (!x.r) { errors.push(codi + ' (' + x.error + ')'); return; }
-      let o; try { o = jsonDe(x.r); } catch (e) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'json' }); return; }
-      const sal = salutOfici(o), mal = sal.regles.filter(r => !r.ok).map(r => r.id);
-      if (sal.punts < 70) { gen.descartats.push({ cnae: codi, data: ara, motiu: 'salut ' + sal.punts + ' (' + mal.join(', ') + ')' }); return; }
-      gen.oficis.push(Object.assign({ id: codi.replace('.', '') + '_' + slug(o.es.nom), cnae: codi, classe: cl.es, estat: 'esborrany', data: ara, model: x.r.model || t.model,
-        salut: sal.punts, falla: mal, arees_falten: MV.arees({ abast: o.es.diu, roles: o.es.roles, pairs: o.es.pairs }).falten.map(f => f.id) }, o));
-    });
-    gen.oficis.sort((p, q) => p.cnae.localeCompare(q.cnae));
-    writeFileSync(GENERATS, JSON.stringify(gen, null, 1) + '\n');
-    execFileSync(process.execPath, [join(ARREL, 'SOS', 'tools', 'build-base-vna.js')], { stdio: 'inherit' });
+    const errors = ingereixOficis(rs.map(x => x.r ? Object.assign(llegeixResposta(x.r), { id: x.id, model: x.r.model || t.model }) : { id: x.id, error: x.error }), base, gen, new Date().toISOString().slice(0, 10));
+    desaGenerats(gen);
     console.log('oficis: ' + gen.oficis.length + ' a la base · ' + gen.descartats.length + ' descartats · cost ' + costReal(rs, lotOn).toFixed(2) + ' $');
     if (errors.length) { console.error('✗ ' + errors.length + ' crides han fallat a l\'API: ' + errors.slice(0, 3).join(', ')); if (errors.length === rs.length) process.exitCode = 1; }
     return;

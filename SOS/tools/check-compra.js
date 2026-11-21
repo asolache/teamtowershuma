@@ -315,7 +315,7 @@ if (!blancaMov.length) {
     `[${blancaMov.join(', ')}] — una de les dues menteix`);
 }
 
-const panCaixa = (PAG.match(/<div class="pan" id="pCaixa">[\s\S]*?\n<\/div>/) || [''])[0];
+const panCaixa = (PAG.match(/<section class="pan" id="la-caixa"[^>]*>[\s\S]*?\n<\/section>\n/) || [''])[0];
 if (!panCaixa) bad('no es troba la pantalla de la caixa: la guarda no pot comprovar què hi diu');
 else {
   if (/no és un rebut/i.test(panCaixa))

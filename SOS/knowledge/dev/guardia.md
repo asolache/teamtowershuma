@@ -2,7 +2,9 @@
 
 Aprovat per l'Álvaro el 13/11/2026: quan al seu pla de Claude li sobra saldo,
 una tasca programada el fa servir per polir el sistema en comptes de deixar-lo
-perdre. Treballa **aquesta cola**, de dalt a baix.
+perdre. Cada nit treballa **la cola que li toca pel dia** (taula de sota) i,
+dins d'aquella cola, la primera peça sense marcar. Això mana per sobre de
+«la primera peça de la cola» que pugui dir la tasca programada.
 
 ## Quan treballa
 
@@ -51,16 +53,18 @@ abans que el vegi un client.
    les 13:00 o les 20:00 (CLAUDE.md). Assignat a `asolache`.
 3. En el mateix PR, marca la peça `[x]` aquí amb el número del PR.
 
-## La cola (prioritzada · només coses que es poden fer soles i comprovar)
+## Les cues (prioritzades · només coses que es poden fer soles i comprovar)
+
+La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de dalt a baix.
 
 **A · Pantalles, no rotlles** (estàndard a `pantalles.md`)
 1. [x] `cataleg.html` en pantalles (bilingüe: `data-pantalla-nom` per idioma o noms des de l'i18n) (#368)
 2. [x] `qui-som.html` en pantalles: sis pantalles amb noms en català i castellà (#390)
 3. [x] `SOS/vna.html` en pantalles (#369)
-4. [ ] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
+4. [x] `SOS/uneix-te.html`, `SOS/compra.html`, `premsa.html` en pantalles
    - [x] `premsa.html` · quatre pantalles, noms en català i castellà (#394)
    - [x] `SOS/uneix-te.html` · nou pantalles, de 2,2 alçades com a molt, noms en català (#400)
-   - [ ] `SOS/compra.html` · #386 ja és al main: és la següent
+   - [x] `SOS/compra.html` · Inici i les set pestanyes pròpies, ara de `pantalla.js`; taules, comanda i mapes llisquen (≤ 2,9 alçades) (#406)
 5. [x] Pantalles de més de 3 alçades a conecta/ia/escola: a `conecta/` els flujos (4,1) i el catàleg (5,7) ara són llistes que llisquen (1,5); ia i escola ja hi cabien; el test exigeix ≤ 3 (#397)
 6. [ ] `SOS/blog.html`: llista d'entrades que llisca i una entrada per pantalla
 7. [ ] `SOS/vedes.html`: filtre a dalt i llista que llisca
@@ -83,10 +87,10 @@ abans que el vegi un client.
 14. [ ] Pes: cap pàgina per sobre del seu sostre gzip (portada 67 KB, app 550 KB); avisar si s'hi acosta
 
 **D · El cervell de VNA** (`SOS/knowledge/vna/`, veda 186)
-15. [ ] Mode sense API a `banc-mapes.mjs`: `oficis --lot 10 --a-ma` escriu les
+15. [x] Mode sense API a `banc-mapes.mjs`: `oficis --lot 10 --a-ma` escriu les
     peticions del lot a `banc-mapes/resultats/a-ma/`, i `--ingereix <fitxer>`
     fa passar les respostes pel mateix camí (salut, descartats, `build-base-vna.js`).
-    Test que ho cobreixi.
+    Test que ho cobreixi. (#405)
 16. [ ] Lots de 10 en l'ordre de `pendents` (comença per l'hostaleria, 55.x).
     Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
     Cada ofici diu les àrees que li falten (`arees_falten`, de `MapaValor.arees`):
