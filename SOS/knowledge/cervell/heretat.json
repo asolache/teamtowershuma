@@ -104,7 +104,8 @@
     "herramientas/tools/automatitza.js": "SOS/tools/automatitza.js",
     "herramientas/tools/proces-web.js": "SOS/tools/proces-web.js",
     "herramientas/knowledge/cervell/automatitzable.json": "SOS/knowledge/cervell/automatitzable.json",
-    "saber/heredado/taxonomia-universal.json": "SOS/knowledge/cervell/taxonomia-universal.json"
+    "saber/heredado/taxonomia-universal.json": "SOS/knowledge/cervell/taxonomia-universal.json",
+    "herramientas/lib/aigua.js": "SOS/lib/aigua.js"
   },
   "serveis": {
     "web": "https://teamtowershuma.com/",

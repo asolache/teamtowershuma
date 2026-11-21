@@ -34,7 +34,8 @@
       "es": { "p": "Pon en marcha un banco de tiempo o un préstamo de objetos con al menos cinco personas del barrio.", "e": "Intercambios registrados y firmados por las dos partes durante cuatro semanas.", "ia": "Que los intercambios sean reales (dos firmas) y que participen personas distintas, no siempre las mismas." },
       "pantalles": [
         { "u": "/SOS/banc-temps.html", "ca": "El Banc de Temps", "es": "El Banco de Tiempo" },
-        { "u": "/SOS/biblioteca.html", "ca": "La Biblioteca de les Coses", "es": "La Biblioteca de las Cosas" } ] },
+        { "u": "/SOS/biblioteca.html", "ca": "La Biblioteca de les Coses", "es": "La Biblioteca de las Cosas" },
+        { "u": "/SOS/aigua.html", "ca": "L'Aigua", "es": "El Agua" } ] },
     "m5": {
       "ca": { "p": "Convoca i facilita una assemblea o reunió de l'òrgan de la comunitat i deixa la decisió presa per escrit.", "e": "L'acta amb el quòrum, la decisió votada i les signatures de qui custodia el node.", "ia": "Que hi hagi quòrum, que el vot quedi signat i que l'acta digui qui fa què i quan." },
       "es": { "p": "Convoca y facilita una asamblea o reunión del órgano de la comunidad y deja la decisión tomada por escrito.", "e": "El acta con el quórum, la decisión votada y las firmas de quienes custodian el nodo.", "ia": "Que haya quórum, que el voto quede firmado y que el acta diga quién hace qué y cuándo." },
