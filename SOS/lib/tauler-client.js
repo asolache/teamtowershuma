@@ -155,12 +155,12 @@
      L'itinerari és «Tu web viva con tu cerebro» (F1–F6); la font del temari és
      SOS/formacio.html. L'estat viu a S.tauler._formacio i viatja amb el mapa. */
   var FORMACIO = [
-    { id: 'f1', sec: 'm17', es: 'Tu mapa de valor', ca: 'El teu mapa de valor', h: 3, evEs: 'un mapa que pasa las diez reglas', evCa: 'un mapa que passa les deu regles' },
-    { id: 'f2', sec: 'm18', es: 'Tu cerebro y tu cultura', ca: 'El teu cervell i la teva cultura', h: 2, evEs: 'tu cerebro con tus primeras normas', evCa: 'el teu cervell amb les primeres normes' },
-    { id: 'f3', sec: 'm19', es: 'Tu web', ca: 'La teva web', h: 3, evEs: 'tu web en vista previa, sin perder Google', evCa: 'la teva web en vista prèvia, sense perdre Google' },
-    { id: 'f4', sec: 'm20', es: 'Editar y publicar sin romper', ca: 'Editar i publicar sense trencar', h: 1.5, evEs: 'un cambio publicado por ti', evCa: 'un canvi publicat per tu' },
-    { id: 'f5', sec: 'm21', es: 'Que vaya solo', ca: 'Que vagi sol', h: 2, evEs: 'una tarjeta de tu tablero en «Que vaya solo»', evCa: 'una targeta del teu tauler a «Que vagi sol»' },
-    { id: 'f6', sec: 'm22', es: 'Trabajar con tu Claude', ca: 'Treballar amb el teu Claude', h: 2, evEs: 'un cambio pedido a tu Claude y revisado por ti', evCa: 'un canvi demanat al teu Claude i revisat per tu' }
+    { id: 'f1', sec: 'm17', es: 'Mapa de valor de la organización', ca: 'Mapa de valor de l\'organització', h: 3, evEs: 'un mapa que pasa las diez reglas', evCa: 'un mapa que passa les deu regles' },
+    { id: 'f2', sec: 'm18', es: 'Gestión del conocimiento para la IA', ca: 'Gestió del coneixement per a la IA', h: 2, evEs: 'tu cerebro con tus primeras normas', evCa: 'el teu cervell amb les primeres normes' },
+    { id: 'f3', sec: 'm19', es: 'Web corporativa', ca: 'Web corporativa', h: 3, evEs: 'tu web en vista previa, sin perder Google', evCa: 'la teva web en vista prèvia, sense perdre Google' },
+    { id: 'f4', sec: 'm20', es: 'Publicación de contenidos web', ca: 'Publicació de continguts web', h: 1.5, evEs: 'un cambio publicado por ti', evCa: 'un canvi publicat per tu' },
+    { id: 'f5', sec: 'm21', es: 'Automatización de procesos', ca: 'Automatització de processos', h: 2, evEs: 'una tarjeta de tu tablero en «Que vaya solo»', evCa: 'una targeta del teu tauler a «Que vagi sol»' },
+    { id: 'f6', sec: 'm22', es: 'Trabajo con asistentes de IA', ca: 'Treball amb assistents d\'IA', h: 2, evEs: 'un cambio pedido a tu Claude y revisado por ti', evCa: 'un canvi demanat al teu Claude i revisat per tu' }
   ];
   /* `sec`: l'àncora de SOS/formacio.html on viu el contingut: el Bloc C,
      mòduls 17 a 22, amb la seva guia metodològica. */

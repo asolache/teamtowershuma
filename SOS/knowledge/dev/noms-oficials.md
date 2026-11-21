@@ -7,10 +7,7 @@ parli. El Comando Molekulon és una campanya indirecta: el llenguatge del SOS
 ha de ser oficial i clar per a la ciutadania que es forma i per al sector
 públic. Treure la fricció de cara al client.
 
-**Estat:** usuari, ciutadà i l'escola, aplicats; els 22 mòduls i la veda 187, en
-proposta. La resta s'aplica quan l'Álvaro
-la doni per bona, pàgina per pàgina, amb el fil que porta cada pàgina
-(`formacio.html` és del fil del catàleg; `SOS/index.html`, del de la UX).
+**Estat (21/11/2026):** tot aplicat; la veda 187 adoptada.
 
 ## 1 · Qui és qui: substituir «superheroi»
 
@@ -85,4 +82,4 @@ Els blocs: **A** → «Organitzacions comunitàries i economia social»; **B** �
 ## 4 · Decidit i pendent
 
 - Decidit (21/11): usuari a l'app, ciutadà al públic; «Escola de participació».
-- Pendent: els 22 títols de la taula de dalt i adoptar la veda 187.
+- Decidit (21/11): els 22 títols de la taula de dalt i la veda 187 («ok, está bien la estructura»).

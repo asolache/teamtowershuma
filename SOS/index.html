@@ -9069,14 +9069,14 @@ function elementOf(name){
 // necessita l'app per raonar sobre itineraris; el contingut pedagògic complet viu a
 // formacio.html (font única de la docència — aquí només l'esquelet referenciable).
 const FORMACIO_MODULES=[
-  {id:'m1',n:1,title:'Fonaments SOS i codex Antigravity',hours:5,level:'N0',roles:['guardian','superheroi','coordinador','agent','mentor','simpatitzant']},
-  {id:'m2',n:2,title:'Identitat descentralitzada i criptografia',hours:7,level:'N1',roles:['guardian','coordinador','agent']},
-  {id:'m3',n:3,title:'Value Network Analysis (Verna Allee)',hours:6,level:'N1',roles:['guardian','coordinador','agent','mentor']},
-  {id:'m4',n:4,title:'Recursos comunitaris · banc de temps i biblioteca',hours:5,level:'N1',roles:['superheroi','coordinador','simpatitzant']},
-  {id:'m5',n:5,title:'Governança i Guardians',hours:7,level:'N2',roles:['guardian','agent']},
-  {id:'m6',n:6,title:'MATRIU, Slicing Pie i intercooperació',hours:8,level:'N2',roles:['guardian','coordinador','mentor']},
-  {id:'m7',n:7,title:'Comando Molekulon i reputació',hours:6,level:'N1',roles:['superheroi','coordinador','simpatitzant']},
-  {id:'m8',n:8,title:'Ancoratge públic i IA integrada',hours:7,level:'N2',roles:['guardian','agent']},
+  {id:'m1',n:1,title:'Sistemes digitals per a organitzacions',hours:5,level:'N0',roles:['guardian','superheroi','coordinador','agent','mentor','simpatitzant']},
+  {id:'m2',n:2,title:'Identitat digital i signatura electrònica',hours:7,level:'N1',roles:['guardian','coordinador','agent']},
+  {id:'m3',n:3,title:'Anàlisi de xarxes de valor',hours:6,level:'N1',roles:['guardian','coordinador','agent','mentor']},
+  {id:'m4',n:4,title:'Gestió de recursos compartits',hours:5,level:'N1',roles:['superheroi','coordinador','simpatitzant']},
+  {id:'m5',n:5,title:'Governança participativa',hours:7,level:'N2',roles:['guardian','agent']},
+  {id:'m6',n:6,title:'Economia col·laborativa i intercooperació',hours:8,level:'N2',roles:['guardian','coordinador','mentor']},
+  {id:'m7',n:7,title:'Participació ciutadana',hours:6,level:'N1',roles:['superheroi','coordinador','simpatitzant']},
+  {id:'m8',n:8,title:'Dades obertes i IA responsable',hours:7,level:'N2',roles:['guardian','agent']},
   /* ═══ Bloc B · l'ofici, no l'eina ═══
      Els vuit primers ensenyen el SOS; aquests vuit ensenyen a sostenir una
      comunitat, que és el que de debò fa caure els projectes. Existien sencers a
@@ -9084,24 +9084,24 @@ const FORMACIO_MODULES=[
      de rol els oferia, i per tant la meitat més humana del temari era invisible
      per a qui només fa servir l'app. No és contingut nou —seria duplicar-lo— és
      l'esquelet que faltava per poder-hi apuntar. */
-  {id:'m9',n:9,title:'Facilitació i dinamització de grups',hours:6,level:'N1',roles:['coordinador','mentor','guardian']},
-  {id:'m10',n:10,title:'Comunicació i captació de persones',hours:5,level:'N1',roles:['coordinador','superheroi','simpatitzant']},
-  {id:'m11',n:11,title:'Conflictes, cures i relleu',hours:6,level:'N2',roles:['coordinador','mentor','guardian','superheroi']},
-  {id:'m12',n:12,title:'Finançament i subvencions a Catalunya',hours:7,level:'N2',roles:['coordinador','guardian','agent']},
+  {id:'m9',n:9,title:'Dinamització de grups',hours:6,level:'N1',roles:['coordinador','mentor','guardian']},
+  {id:'m10',n:10,title:'Comunicació i captació',hours:5,level:'N1',roles:['coordinador','superheroi','simpatitzant']},
+  {id:'m11',n:11,title:'Gestió de conflictes i cures',hours:6,level:'N2',roles:['coordinador','mentor','guardian','superheroi']},
+  {id:'m12',n:12,title:'Finançament i subvencions',hours:7,level:'N2',roles:['coordinador','guardian','agent']},
   {id:'m13',n:13,title:'Formes jurídiques i tràmits',hours:6,level:'N2',roles:['guardian','coordinador','agent']},
-  {id:'m14',n:14,title:'Mesura d\'impacte i justificació',hours:6,level:'N2',roles:['coordinador','agent','mentor']},
-  {id:'m15',n:15,title:'Dades, privadesa i RGPD',hours:5,level:'N1',roles:['guardian','agent','coordinador']},
-  {id:'m16',n:16,title:'Formació de formadors · l\'ofici de mentorar',hours:9,level:'N3',roles:['mentor']},
+  {id:'m14',n:14,title:'Avaluació de l\'impacte social',hours:6,level:'N2',roles:['coordinador','agent','mentor']},
+  {id:'m15',n:15,title:'Protecció de dades personals',hours:5,level:'N1',roles:['guardian','agent','coordinador']},
+  {id:'m16',n:16,title:'Docència i tutoria',hours:9,level:'N3',roles:['mentor']},
   /* ═══ Bloc C · la teva web viva amb el teu cervell ═══
      L'itinerari de l'acció-formació exponencial per a clients (negoci,
      escola, entitat). El tauler del client (SOS/lib/tauler-client.js) hi
      enllaça cada acció formativa. */
-  {id:'m17',n:17,title:'El teu mapa de valor',hours:3,level:'N1',roles:['coordinador','agent','mentor']},
-  {id:'m18',n:18,title:'El teu cervell i la teva cultura',hours:2,level:'N1',roles:['coordinador','agent']},
-  {id:'m19',n:19,title:'La teva web',hours:3,level:'N1',roles:['coordinador','agent']},
-  {id:'m20',n:20,title:'Editar i publicar sense trencar',hours:1.5,level:'N1',roles:['coordinador','agent']},
-  {id:'m21',n:21,title:'Que vagi sol',hours:2,level:'N1',roles:['coordinador','agent','guardian']},
-  {id:'m22',n:22,title:'Treballar amb el teu Claude',hours:2,level:'N2',roles:['coordinador','agent','guardian']}
+  {id:'m17',n:17,title:'Mapa de valor de l\'organització',hours:3,level:'N1',roles:['coordinador','agent','mentor']},
+  {id:'m18',n:18,title:'Gestió del coneixement per a la IA',hours:2,level:'N1',roles:['coordinador','agent']},
+  {id:'m19',n:19,title:'Web corporativa',hours:3,level:'N1',roles:['coordinador','agent']},
+  {id:'m20',n:20,title:'Publicació de continguts web',hours:1.5,level:'N1',roles:['coordinador','agent']},
+  {id:'m21',n:21,title:'Automatització de processos',hours:2,level:'N1',roles:['coordinador','agent','guardian']},
+  {id:'m22',n:22,title:'Treball amb assistents d\'IA',hours:2,level:'N2',roles:['coordinador','agent','guardian']}
 ];
 /* On viu la docència de cada mòdul. `formacio.html` és la font única —aquí només
    hi ha l'esquelet referenciable— i per això el que importa és que **l'àncora
