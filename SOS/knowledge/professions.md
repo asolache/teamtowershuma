@@ -29,7 +29,7 @@ Qui fa que una cosa comenci i qui la sosté quan ja no és nova. És el rol que 
 
 **Demana**: temps, contactes, ordre.
 
-**Es forma amb**: capítol 5 · m5 Governança i Guardians — Sabiduria + Assemblea federativa; capítol 6 · m6 MATRIU · Slicing Pie · Intercooperació Mondragón.
+**Es forma amb**: capítol 5 · m5 Governança participativa; capítol 6 · m6 Economia col·laborativa i intercooperació.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -46,7 +46,7 @@ Qui fa que un grup decideixi sense trencar-se, i qui recorda què s'havia dit. N
 
 **Demana**: ordre, cura, temps.
 
-**Es forma amb**: capítol 3 · m3 Value Network Analysis (Verna Allee); capítol 9 · m9 Facilitació i dinamització de grups; capítol 17 · m17 El teu mapa de valor.
+**Es forma amb**: capítol 3 · m3 Anàlisi de xarxes de valor; capítol 9 · m9 Dinamització de grups; capítol 17 · m17 Mapa de valor de l'organització.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -61,7 +61,7 @@ Qui ensenya el que sap i qui acompanya el que comença. La professió que multip
 
 **Demana**: veu, temps, cura.
 
-**Es forma amb**: capítol 16 · m16 Formació de formadors · l'ofici de mentorar; capítol 22 · m22 Treballar amb el teu Claude.
+**Es forma amb**: capítol 16 · m16 Docència i tutoria; capítol 22 · m22 Treball amb assistents d'IA.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -76,7 +76,7 @@ Qui sosté la gent, no les tasques. És la feina que fa que un projecte duri i l
 
 **Demana**: cura, temps, contactes.
 
-**Es forma amb**: capítol 11 · m11 Conflictes, cures i relleu.
+**Es forma amb**: capítol 11 · m11 Gestió de conflictes i cures.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -90,7 +90,7 @@ Qui sap què es pot fer i com, i qui signa que es pot fer. Sense això, un proje
 
 **Demana**: numeros, ordre, contactes.
 
-**Es forma amb**: capítol 12 · m12 Finançament i subvencions a Catalunya; capítol 13 · m13 Formes jurídiques i tràmits; capítol 15 · m15 Dades, privadesa i RGPD.
+**Es forma amb**: capítol 12 · m12 Finançament i subvencions; capítol 13 · m13 Formes jurídiques i tràmits; capítol 15 · m15 Protecció de dades personals.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -105,7 +105,7 @@ Qui compta el que passa i qui construeix l'eina que ho compta. La professió mé
 
 **Demana**: ordre, temps, numeros.
 
-**Es forma amb**: capítol 1 · m1 Fonaments SOS i codex Antigravity; capítol 2 · m2 Identitat descentralitzada i criptografia; capítol 8 · m8 Ancoratge públic i IA integrada; capítol 14 · m14 Mesura d'impacte i justificació; capítol 18 · m18 El teu cervell i la teva cultura; capítol 19 · m19 La teva web; capítol 20 · m20 Editar i publicar sense trencar; capítol 21 · m21 Que vagi sol.
+**Es forma amb**: capítol 1 · m1 Sistemes digitals per a organitzacions; capítol 2 · m2 Identitat digital i signatura electrònica; capítol 8 · m8 Dades obertes i IA responsable; capítol 14 · m14 Avaluació de l'impacte social; capítol 18 · m18 Gestió del coneixement per a la IA; capítol 19 · m19 Web corporativa; capítol 20 · m20 Publicació de continguts web; capítol 21 · m21 Automatització de processos.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -135,7 +135,7 @@ Qui allarga la vida de les coses. En un poble autosuficient no és un servei: é
 
 **Demana**: ofici, espai, temps.
 
-**Es forma amb**: capítol 4 · m4 Recursos comunitaris — Banc de temps i Biblioteca de les coses.
+**Es forma amb**: capítol 4 · m4 Gestió de recursos compartits.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -148,7 +148,7 @@ Qui explica el poble al poble. Sense això, tot el que hi passa és cert i no ho
 
 **Demana**: veu, contactes, ofici.
 
-**Es forma amb**: capítol 7 · m7 Comando Molekulon · Reputació · Multivers narratiu; capítol 10 · m10 Comunicació i captació de persones.
+**Es forma amb**: capítol 7 · m7 Participació ciutadana; capítol 10 · m10 Comunicació i captació.
 
 | Rol | Cops | On surt |
 |---|---|---|
