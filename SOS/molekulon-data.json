@@ -32,7 +32,7 @@
       "id": "educacio",
       "ic": "🎓",
       "nom": "Educació",
-      "que": "El mateix relat és material d'aula: l'Escola de participació, de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.",
+      "que": "El mateix relat és material d'aula: l'Escola de participació, de 6 a 13 anys, i vint-i-dos mòduls que la sèrie recorre, un per capítol.",
       "on": [
         "A l'escola",
         "escola.html"
@@ -674,6 +674,392 @@
         "img": "Negre. El nom del Comando, i a sota les dues portes.",
         "veu": "Tu ja vas guanyar una cursa de dos-cents milions. En falten cent cinquanta mil com tu. I tu, t'hi apuntes?",
         "retol": "COMANDO MOLEKULON"
+      }
+    ]
+  },
+  "serie": {
+    "format": [
+      {
+        "t": "El problema",
+        "d": "Un barri o una organització de debò, encallats en una cosa concreta.",
+        "ficcio": "El Mundo Muerto",
+        "ficcioD": "El vilà, o el problema, aturant un barri o una organització de debò."
+      },
+      {
+        "t": "El gest",
+        "d": "La persona que fa aquest ofici ensenya l'única cosa que el capítol vol que aprenguis.",
+        "ficcio": "El gest",
+        "ficcioD": "El personatge ensenya l'única cosa que el capítol vol que aprenguis."
+      },
+      {
+        "t": "Fes-ho tu",
+        "d": "El mateix gest, a la pantalla real del SOS o del mapa, pas a pas.",
+        "ficcio": "Fes-ho tu",
+        "ficcioD": "El mateix gest, a la pantalla real del SOS o del mapa, pas a pas."
+      },
+      {
+        "t": "La prova",
+        "d": "Una evidència petita que pots fer avui. És l'evidència del mòdul.",
+        "ficcio": "La prova",
+        "ficcioD": "Una evidència petita que pots fer avui. És l'evidència del mòdul."
+      },
+      {
+        "t": "Els crèdits",
+        "d": "Qui hi ha sortit, amb el que ha aportat de debò, signat al registre.",
+        "ficcio": "Els crèdits",
+        "ficcioD": "Qui hi ha sortit, amb el que ha aportat de debò. Són plans de la pel·lícula."
+      }
+    ],
+    "temporades": [
+      {
+        "n": 1,
+        "t": "Com s'arma la colla",
+        "bloc": "Bloc A · Fonaments",
+        "moduls": "m1–m8"
+      },
+      {
+        "n": 2,
+        "t": "L'ofici de sostenir",
+        "bloc": "Bloc B · L'ofici comunitari",
+        "moduls": "m9–m16"
+      },
+      {
+        "n": 3,
+        "t": "La web viva",
+        "bloc": "Bloc C · La teva web viva",
+        "moduls": "m17–m22"
+      }
+    ],
+    "capitols": [
+      {
+        "c": 1,
+        "t": 1,
+        "m": "m1",
+        "professio": "dades",
+        "servei": null,
+        "heroi": "Horacio Motomachi",
+        "vila": "Max Miedox",
+        "apren": "Què és un sistema digital que és teu: on viuen les dades i qui en té la clau.",
+        "prova": "Obrir el SOS i fer-se el perfil sense compte ni contrasenya.",
+        "modul": {
+          "t": "Sistemes digitals per a organitzacions",
+          "h": "4-6 h"
+        }
+      },
+      {
+        "c": 2,
+        "t": 1,
+        "m": "m2",
+        "professio": "dades",
+        "servei": null,
+        "heroi": "El Aviador",
+        "vila": "Mala Yerbax",
+        "apren": "Signar el que aportes i comprovar qui ha signat el que llegeixes.",
+        "prova": "Signar una primera aportació i verificar-ne la signatura.",
+        "modul": {
+          "t": "Identitat digital i signatura electrònica",
+          "h": "6-8 h"
+        }
+      },
+      {
+        "c": 3,
+        "t": 1,
+        "m": "m3",
+        "professio": "facilitacio",
+        "servei": "mapeig_vna",
+        "heroi": "Pigmentón",
+        "vila": null,
+        "apren": "Dibuixar una xarxa de valor: rols, i què dona i què rep cadascú.",
+        "prova": "Un mapa de valor amb cinc rols i els seus intercanvis.",
+        "modul": {
+          "t": "Anàlisi de xarxes de valor",
+          "h": "5-7 h"
+        }
+      },
+      {
+        "c": 4,
+        "t": 1,
+        "m": "m4",
+        "professio": "circular",
+        "servei": "banc_temps",
+        "heroi": "Reciclator",
+        "vila": "Mr. McGragor",
+        "apren": "Posar en comú hores i objectes perquè no calgui comprar-ho de nou.",
+        "prova": "Oferir una hora o un objecte al banc de temps del barri.",
+        "modul": {
+          "t": "Gestió de recursos compartits",
+          "h": "4-6 h"
+        }
+      },
+      {
+        "c": 5,
+        "t": 1,
+        "m": "m5",
+        "professio": "impuls",
+        "servei": null,
+        "heroi": "Mazinguer",
+        "vila": "Mala Yerbax",
+        "apren": "Decidir en grup amb regles clares que tothom pot llegir.",
+        "prova": "Una decisió presa amb proposta, termini i resultat registrats.",
+        "modul": {
+          "t": "Governança participativa",
+          "h": "6-8 h"
+        }
+      },
+      {
+        "c": 6,
+        "t": 1,
+        "m": "m6",
+        "professio": "impuls",
+        "servei": "coop_treball",
+        "heroi": "Electroplasman",
+        "vila": "Mr. McGragor",
+        "apren": "Repartir de manera justa el que aporta cadascú en un projecte col·lectiu.",
+        "prova": "El repartiment d'un projecte petit, amb les aportacions de cada persona.",
+        "modul": {
+          "t": "Economia col·laborativa i intercooperació",
+          "h": "7-9 h"
+        }
+      },
+      {
+        "c": 7,
+        "t": 1,
+        "m": "m7",
+        "professio": "relat",
+        "servei": "suport_mutu",
+        "heroi": "Afrodita",
+        "vila": "Max Miedox",
+        "apren": "Fer visible i reconeguda una aportació que ningú veia.",
+        "prova": "Una aportació registrada i confirmada per una altra persona.",
+        "modul": {
+          "t": "Participació ciutadana",
+          "h": "5-7 h"
+        }
+      },
+      {
+        "c": 8,
+        "t": 1,
+        "m": "m8",
+        "professio": "dades",
+        "servei": "cens_entitats",
+        "heroi": "La Medusa Andaluza",
+        "vila": "Mala Yerbax",
+        "apren": "Publicar dades obertes i fer servir la IA amb criteri, sense que s'inventi res.",
+        "prova": "Una dada del grup publicada al registre públic.",
+        "modul": {
+          "t": "Dades obertes i IA responsable",
+          "h": "6-8 h"
+        }
+      },
+      {
+        "c": 9,
+        "t": 2,
+        "m": "m9",
+        "professio": "facilitacio",
+        "servei": "suport_mutu",
+        "heroi": "El Anguila",
+        "vila": "Max Miedox",
+        "apren": "Dinamitzar una trobada perquè tothom parli i surti una acció.",
+        "prova": "Una sessió de grup amb ordre del dia, ritme i acord final.",
+        "modul": {
+          "t": "Dinamització de grups",
+          "h": "5-7 h"
+        }
+      },
+      {
+        "c": 10,
+        "t": 2,
+        "m": "m10",
+        "professio": "relat",
+        "servei": null,
+        "heroi": "Mazinguer",
+        "vila": "Max Miedox",
+        "apren": "Explicar el projecte perquè s'hi sumi gent nova.",
+        "prova": "Un missatge de crida i les tres primeres persones que hi responen.",
+        "modul": {
+          "t": "Comunicació i captació",
+          "h": "4-6 h"
+        }
+      },
+      {
+        "c": 11,
+        "t": 2,
+        "m": "m11",
+        "professio": "cura",
+        "servei": "suport_mutu",
+        "heroi": "Guiri-Guay",
+        "vila": "Mala Yerbax",
+        "apren": "Tenir cura de l'equip i desfer un conflicte abans que es podreixi.",
+        "prova": "Una conversa de cura feta i el relleu d'una tasca acordat.",
+        "modul": {
+          "t": "Gestió de conflictes i cures",
+          "h": "5-7 h"
+        }
+      },
+      {
+        "c": 12,
+        "t": 2,
+        "m": "m12",
+        "professio": "assessorament",
+        "servei": "matriu",
+        "heroi": "Electroplasman",
+        "vila": "Mr. McGragor",
+        "apren": "Trobar el finançament que encaixa i preparar-ne la sol·licitud.",
+        "prova": "Una convocatòria triada i el seu calendari apuntat.",
+        "modul": {
+          "t": "Finançament i subvencions",
+          "h": "6-8 h"
+        }
+      },
+      {
+        "c": 13,
+        "t": 2,
+        "m": "m13",
+        "professio": "assessorament",
+        "servei": "matriu",
+        "heroi": "Barbamuda",
+        "vila": "Max Miedox",
+        "apren": "Triar la forma jurídica que sosté el grup i fer-ne els tràmits.",
+        "prova": "La forma jurídica triada, amb la llista de tràmits.",
+        "modul": {
+          "t": "Formes jurídiques i tràmits",
+          "h": "5-7 h"
+        }
+      },
+      {
+        "c": 14,
+        "t": 2,
+        "m": "m14",
+        "professio": "dades",
+        "servei": null,
+        "heroi": "Fraktalman",
+        "vila": "Mr. McGragor",
+        "apren": "Mesurar l'impacte i justificar-lo amb el que ja està registrat.",
+        "prova": "Tres indicadors d'impacte llegits del registre del grup.",
+        "modul": {
+          "t": "Avaluació de l'impacte social",
+          "h": "5-7 h"
+        }
+      },
+      {
+        "c": 15,
+        "t": 2,
+        "m": "m15",
+        "professio": "assessorament",
+        "servei": "cens_entitats",
+        "heroi": "Purpleman",
+        "vila": "Mr. McGragor",
+        "apren": "Protegir les dades de les persones i complir el RGPD.",
+        "prova": "El registre de quines dades es guarden, per què i fins quan.",
+        "modul": {
+          "t": "Protecció de dades personals",
+          "h": "4-5 h"
+        }
+      },
+      {
+        "c": 16,
+        "t": 2,
+        "m": "m16",
+        "professio": "aprenentatge",
+        "servei": null,
+        "heroi": "Supergerminador",
+        "vila": "Max Miedox",
+        "apren": "Ensenyar el mètode a algú altre perquè es repliqui sol.",
+        "prova": "Una persona nova acompanyada fins a la seva primera evidència.",
+        "modul": {
+          "t": "Docència i tutoria",
+          "h": "8-10 h"
+        }
+      },
+      {
+        "c": 17,
+        "t": 3,
+        "m": "m17",
+        "professio": "facilitacio",
+        "servei": "negoci",
+        "heroi": "Pigmentón",
+        "vila": null,
+        "apren": "Fer el mapa de valor de la teva organització.",
+        "prova": "Un mapa que passa les deu regles, desat a «Els meus mapes».",
+        "modul": {
+          "t": "Mapa de valor de l'organització",
+          "h": "3 h"
+        }
+      },
+      {
+        "c": 18,
+        "t": 3,
+        "m": "m18",
+        "professio": "dades",
+        "servei": "negoci",
+        "heroi": "Horacio Motomachi",
+        "vila": "Mala Yerbax",
+        "apren": "Donar a la IA el coneixement de l'organització perquè no s'inventi res.",
+        "prova": "La mateixa pregunta a la IA, amb el cervell i sense, comparada.",
+        "modul": {
+          "t": "Gestió del coneixement per a la IA",
+          "h": "2 h"
+        }
+      },
+      {
+        "c": 19,
+        "t": 3,
+        "m": "m19",
+        "professio": "dades",
+        "servei": "negoci",
+        "heroi": "La Medusa Andaluza",
+        "vila": "Mr. McGragor",
+        "apren": "Fer la web corporativa a partir del mapa de valor.",
+        "prova": "Una web en previsualització que surt del mapa.",
+        "modul": {
+          "t": "Web corporativa",
+          "h": "3 h"
+        }
+      },
+      {
+        "c": 20,
+        "t": 3,
+        "m": "m20",
+        "professio": "dades",
+        "servei": "negoci",
+        "heroi": "El Aviador",
+        "vila": "Max Miedox",
+        "apren": "Editar i publicar continguts web sense trencar res.",
+        "prova": "Un canvi a la web revisat a la previsualització i publicat.",
+        "modul": {
+          "t": "Publicació de continguts web",
+          "h": "1,5 h"
+        }
+      },
+      {
+        "c": 21,
+        "t": 3,
+        "m": "m21",
+        "professio": "dades",
+        "servei": "negoci",
+        "heroi": "El Anguila",
+        "vila": null,
+        "apren": "Automatitzar un formulari o un procés perquè vagi sol.",
+        "prova": "Un formulari que arriba sol on ha d'arribar.",
+        "modul": {
+          "t": "Automatització de processos",
+          "h": "2 h"
+        }
+      },
+      {
+        "c": 22,
+        "t": 3,
+        "m": "m22",
+        "professio": "aprenentatge",
+        "servei": "negoci",
+        "heroi": "Supergerminador",
+        "vila": "Mr. McGragor",
+        "apren": "Treballar amb un assistent d'IA sense dependre de ningú.",
+        "prova": "Una tasca real feta amb l'assistent i revisada per tu.",
+        "modul": {
+          "t": "Treball amb assistents d'IA",
+          "h": "2 h"
+        }
       }
     ]
   }
