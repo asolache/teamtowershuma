@@ -135,7 +135,8 @@ const MON = [
 const FORA = {
   'pressupost.html': 'va al bloc del que es pot contractar',
   'intro.html': 'és la tira d\'enllaços secundaris, abans d\'entrar',
-  'uneix-te.html': 'és una de les tres portes de dalt, per a qui ve d\'una invitació'
+  'uneix-te.html': 'és una de les tres portes de dalt, per a qui ve d\'una invitació',
+  'visio.html': 'té el seu enllaç propi a la primera pantalla, sota «Comença al teu poble» (21/11/2026)'
 };
 
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
