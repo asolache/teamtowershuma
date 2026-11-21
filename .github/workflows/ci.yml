@@ -112,6 +112,9 @@ jobs:
       - name: Base única de mapes de valor
         run: node SOS/tools/build-base-vna.js --check && node SOS/tests/test-base-vna.mjs
 
+      - name: Els oficis sense API (lot a mà i --ingereix)
+        run: node SOS/tests/test-banc-oficis-a-ma.mjs
+
       # El nom de cada entregable damunt de les fletxes dels mapes de valor.
       - name: Etiquetes dels entregables
         run: node SOS/tests/test-mapa-etiquetes.mjs
