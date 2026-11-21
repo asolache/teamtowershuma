@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Guia de certificació · aprendre posant el model en marxa a la teva comunitat</title>
+<meta name="description" content="Com s'obté la certificació de la formació del SOS: 22 mòduls, cadascun amb una pràctica real a la teva comunitat, supervisada per la IA del SOS amb les dades confidencials, validada per persones i que funciona encara que caigui internet.">
+<meta property="og:title" content="Guia de certificació del SOS">
+<meta property="og:description" content="Es fa a la comunitat i el fet certifica: 22 pràctiques, la IA com a tutora, les dades a casa i la xarxa de nodes que no depèn de ningú.">
+<style>
+:root{
+/*TT-PELL*/
+  --bg           : #fbfaf7;   /* el paper */
+  --panel        : #f4f1ea;   /* el fons d'un bloc */
+  --card         : #ffffff;   /* una targeta, que és el més clar */
+  --text         : #15130f;   /* la tinta */
+  --light        : #4a463e;   /* text secundari · 9,1:1 */
+  --muted        : #5e594d;   /* text apagat · 6,8:1 · i 5,7 sobre un fons tenyit */
+  --border       : #ddd7c8;   /* la vora */
+  --border-strong: #cac3b0;   /* la vora que s'ha de veure */
+  --indigo       : #4f46e5;   /* 6,1:1 */
+  --blue         : #005795;   /* tangible · 6,2:1 · i 5,3 sobre un vel del seu to */
+  --purple       : #a3187f;   /* intangible · 6,8:1 */
+  --green        : #0c6640;   /* 5,9:1 · i 5,4 sobre un vel del seu to */
+  --orange       : #9c4408;   /* 5,9:1 · i 5,0 sobre --panel */
+  --red          : #c0392b;   /* 5,2:1 */
+  --gold         : #8a6000;   /* 5,3:1 */
+  --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
+  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --t0           : .9375rem;   /* 15 px · el terra */
+  --t1           : 1.0625rem;   /* 17 px · el cos */
+  --t2           : 1.25rem;
+  --t3           : clamp(1.3rem,2.4vw,1.65rem);
+  --t4           : clamp(1.75rem,4vw,2.6rem);
+  --t5           : clamp(2.1rem,6vw,3.5rem);
+/*/TT-PELL*/
+}
+/*TT-COMPONENTS*/
+/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
+/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
+   44 px d'alçada sempre. */
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
+  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  transition:background-color .15s,border-color .15s,color .15s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-ghost{background:transparent}
+.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
+.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+.btn-sm{padding:.45rem .85rem}
+.btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
+   botó amagat amb l'atribut es veuria. */
+.btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
+/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+.section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
+  text-transform:uppercase;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-header h2 em{font-style:normal;color:var(--blue)}
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
+/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
+   radi de 10 a 14 px i la vora de la pell. */
+.targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:14px}
+.targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
+/*/TT-COMPONENTS*/
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--bg),var(--panel));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.55;overflow-x:hidden}
+.wrap{max-width:980px;margin:0 auto;padding:0 1rem}
+a{color:var(--indigo)}
+
+/* ── La guia de certificació ─────────────────────────────────────────────
+   21/11/2026, encàrrec de l'Álvaro: com, amb els 22 mòduls, una persona
+   obté la certificació posant el model en marxa a la seva comunitat, amb la
+   IA del SOS com a tutora, les dades confidencials, i una xarxa de nodes
+   descentralitzada que segueix funcionant si cau internet. Llenguatge
+   oficial (veda 187, SOS/knowledge/dev/noms-oficials.md). Les 22 pràctiques
+   les escriu SOS/tools/build-certificacio.js des de
+   SOS/knowledge/formacio/certificacio.json: aquí no s'editen a mà. */
+.hero{padding:2.6rem 1rem 1.6rem;text-align:center}
+.kicker{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:var(--mono)}
+.hero h1{font-size:clamp(1.8rem,5.4vw,2.6rem);line-height:1.15;margin:.6rem auto .8rem;max-width:24ch}
+.hero h1 em{font-style:normal;color:var(--green)}
+.lead{font-size:clamp(1rem,2.3vw,1.15rem);color:var(--light);max-width:42rem;margin:0 auto 1.2rem}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;max-width:48rem;margin:1.2rem auto 0;text-align:left}
+.tres a{display:block;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;text-decoration:none;color:var(--text)}
+.tres a:hover,.tres a:focus-visible{border-color:var(--indigo)}
+.tres b{display:block;font-size:.98rem}
+.tres span{display:block;font-size:.85rem;color:var(--muted);margin-top:.2rem}
+.principi{max-width:42rem;margin:1.4rem auto 0;font-size:.92rem;color:var(--light);border-left:3px solid var(--green);padding:.2rem 0 .2rem .9rem;text-align:left}
+
+section{padding:1.8rem 0;border-top:1px solid var(--border)}
+h2{font-size:clamp(1.25rem,3.3vw,1.65rem);margin:0 0 .4rem}
+h3{font-size:1.02rem;margin:1.2rem 0 .4rem}
+.sub{color:var(--light);margin:0 0 1.1rem;max-width:64ch}
+.graella{display:grid;grid-template-columns:repeat(auto-fit,minmax(14.5rem,1fr));gap:.8rem}
+.b{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.95rem 1.05rem;border-top:3px solid var(--indigo)}
+.b.v{border-top-color:var(--green)}
+.b.o{border-top-color:var(--orange)}
+.b.p{border-top-color:var(--purple)}
+.b.g{border-top-color:var(--gold)}
+.b h3{margin:0 0 .35rem;font-size:1rem}
+.b p{margin:0;font-size:.9rem;color:var(--light)}
+.b .nv{font-family:var(--mono);font-size:.8rem;color:var(--muted);display:block;margin-bottom:.2rem}
+.b ul{margin:.4rem 0 0;padding-left:1.1rem;font-size:.9rem;color:var(--light)}
+.passos{list-style:none;counter-reset:p;display:grid;grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));gap:.7rem;padding:0;margin:1rem 0 0}
+.passos li{counter-increment:p;border-top:2px solid var(--green);padding-top:.45rem;font-size:.88rem;color:var(--light)}
+.passos li b{display:block;color:var(--text)}
+.passos li b::before{content:counter(p) " · ";font-family:var(--mono);font-weight:400;color:var(--green)}
+.si-no{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.nota{font-size:.85rem;color:var(--muted);margin-top:1rem}
+.avui{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:.05rem .4rem;border-radius:6px;border:1px solid var(--green);color:var(--green);margin-left:.3rem;vertical-align:middle}
+.avui.pend{border-color:var(--orange);color:var(--orange)}
+.eines{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.eines a{display:inline-flex;align-items:center;min-height:44px;padding:.35rem .85rem;border:1px solid var(--border);border-radius:999px;background:var(--card);text-decoration:none;color:var(--text);font-size:.9rem}
+.eines a:hover,.eines a:focus-visible{border-color:var(--indigo)}
+/* Les 22 pràctiques (generades) */
+.bloc-p{margin-top:1.2rem}
+.bloc-p > h3{font-family:var(--mono);font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pr{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--indigo);border-radius:10px;padding:.75rem .95rem;margin:.55rem 0}
+.pr.bB{border-left-color:var(--green)}
+.pr.bC{border-left-color:var(--purple)}
+.pr h4{margin:0;font-size:.98rem}
+.pr h4 a{text-decoration:none;color:var(--text)}
+.pr h4 a:hover,.pr h4 a:focus-visible{color:var(--indigo);text-decoration:underline}
+.pr .rol{font-size:.82rem;color:var(--muted);margin:.1rem 0 .4rem}
+.pr dl{display:grid;grid-template-columns:auto 1fr;gap:.2rem .7rem;margin:0;font-size:.88rem;color:var(--light)}
+.pr dt{font-weight:600;color:var(--text)}
+.pr dd{margin:0}
+.demo{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem}
+.demo-f{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.demo-f label{display:flex;flex-direction:column;gap:.25rem;font-size:.88rem;font-weight:600}
+.demo-f .ample{grid-column:1/-1}
+.demo-f select,.demo-f input,.demo-f textarea{font:inherit;font-weight:400;min-height:44px;padding:.45rem .6rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--bg);color:var(--text)}
+.pd-pla{margin:.8rem 0;font-size:.9rem;color:var(--light)}
+.pd-pla ol{padding-left:1.2rem;margin:.4rem 0}
+.pd-pla li{margin:.3rem 0}
+.pd-pla small{color:var(--muted)}
+@media(max-width:700px){.tres,.si-no,.demo-f{grid-template-columns:1fr}.pr dl{grid-template-columns:1fr}.pr dd{margin-bottom:.3rem}}
+</style>
+</head>
+<body data-pantalla>
+<!--TT-NAV-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
+   una còpia: hi ha guarda. Només tokens de la pell (build-pell.js), perquè els
+   àlies de les pàgines d'arrel —--white, --accent-indigo, --bg-panel— no
+   existeixen a les 24 del SOS i allà no peten: deixen el text sense color. */
+.tt-nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;
+  padding:.7rem 1.1rem;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);font-size:var(--t0);
+  font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
+  text-decoration:none;margin-right:.5rem;white-space:nowrap}
+.tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
+.tt-nav .tn-casa::before{content:'← '}
+.tt-nav .tn-casa:hover{color:var(--text)}
+.tt-nav .tn-ms{display:none;font:inherit;font-size:var(--t0)}
+.tt-nav .tn-gs{display:flex;gap:.15rem;flex-wrap:wrap;align-items:center}
+.tt-nav .tn-g{position:relative}
+.tt-nav .tn-g>summary{list-style:none;cursor:pointer;padding:.36rem .62rem;border-radius:8px;
+  color:var(--light);white-space:nowrap;border:1px solid transparent}
+.tt-nav .tn-g>summary::-webkit-details-marker{display:none}
+.tt-nav .tn-g>summary::after{content:' ▾';font-size:.78em;opacity:.65}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-i{font-style:normal;margin-right:.3rem}
+.tt-nav .tn-g>summary:hover{color:var(--text);background:var(--panel)}
+.tt-nav .tn-g>summary:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+.tt-nav .tn-g[open]>summary{background:var(--panel);color:var(--text);border-color:var(--border)}
+.tt-nav .tn-here>summary{color:var(--text);font-weight:600;box-shadow:inset 0 -2px 0 var(--indigo)}
+.tt-nav .tn-p{position:absolute;top:calc(100% + .35rem);left:0;min-width:272px;z-index:110;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:.35rem;
+  box-shadow:0 14px 40px rgba(21,19,15,.14);display:flex;flex-direction:column;gap:.1rem}
+.tt-nav .tn-p a{display:block;padding:.44rem .58rem;border-radius:8px;text-decoration:none;color:var(--light)}
+.tt-nav .tn-p a:hover{background:var(--panel);color:var(--text)}
+.tt-nav .tn-p a[aria-current]{background:var(--panel);color:var(--text);box-shadow:inset 2px 0 0 var(--indigo)}
+.tt-nav .tn-p b{display:block;font-size:var(--t0);font-weight:600;color:var(--text)}
+.tt-nav .tn-p span{display:block;font-size:var(--t0);color:var(--muted);line-height:1.4}
+.tt-nav .tn-lang{display:flex;align-items:center;gap:2px;margin-left:auto;
+  background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:2px}
+.tt-nav .tn-lang .lang-b{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font:inherit;font-size:var(--t0);padding:.16rem .5rem;border-radius:5px}
+.tt-nav .tn-lang .lang-b.on{background:var(--indigo);color:var(--on-accent);font-weight:700}
+.tt-nav .tn-lang .lang-b:not(.on):hover{color:var(--text)}
+/* Sense commutador de llengua, l'acció és qui empeny cap a la dreta. */
+.tt-nav .tn-lang~.tn-cta{margin-left:.55rem}
+.tt-nav .tn-in{margin-left:auto;color:var(--text);text-decoration:none;padding:.42rem .6rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-in:hover{background:var(--panel)}
+.tt-nav .tn-in+.tn-cta{margin-left:.25rem}
+.tt-nav .tn-lang~.tn-in{margin-left:.55rem}
+.tt-nav .tn-cta{margin-left:auto;background:var(--indigo);color:var(--on-accent);font-weight:600;
+  text-decoration:none;padding:.42rem .9rem;border-radius:9px;white-space:nowrap}
+.tt-nav .tn-cta:hover{filter:brightness(1.12)}
+@media(max-width:860px){
+  .tt-nav{padding:.42rem .6rem;gap:.25rem}
+  /* La marca baixa al terra —no per sota— perquè la marca, el commutador i
+     l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
+     partia i la barra passava de dues files a tres. */
+  .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-casa{order:1;margin-right:0}
+  /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
+     El primer intent posava els cinc grups **en columna** a mòbil, oberts
+     sempre. La barra passava a fer dos-cents píxels d'alçada i a 390 px treia
+     el dibuix i el botó del hero de la primera pantalla: test-portada.mjs va
+     dir «acaba a 1033 de 844». Una barra no pot costar un quart de pantalla.
+
+     En fila que embolcalla fa dues línies i prou, i el panell va **absolut i
+     d'amplada sencera** sota la barra: obrir-ne un no mou res del que hi ha
+     a sota, que és el que una columna sí que feia. */
+  /* El botó, i la fila que amaga. Tancada **no ocupa res**: la barra fa una
+     fila i el hero cap sencer a la primera pantalla. Oberta va absoluta i a
+     sobre, no empenyent: obrir el menú no ha de moure la pàgina de sota. */
+  /* Dues files, i cap més: a dalt la marca i l'acció; a sota «Menú» i les
+     llengües. A 360 px tot en una sola fila s'embolcallava i la barra pujava a
+     134 px, que tornava a treure el hero de la primera pantalla. */
+  .tt-nav .tn-ms{display:block;order:3;flex:1 1 auto;width:auto;margin-top:.1rem;
+    padding:.3rem .6rem;border-radius:8px;color:var(--text);
+    font-weight:600;text-align:left;cursor:pointer;
+    border:1px solid var(--border);background:var(--panel)}
+  .tt-nav .tn-ms::after{content:' ▾';opacity:.65}
+  .tt-nav[data-menu="obert"] .tn-ms::after{content:' ▴'}
+  .tt-nav .tn-ms:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+  /* Tancat no ocupa res; obert va **en flux** i empeny la pàgina cap avall.
+     Absolut amb overflow-y:auto semblava més net i no ho era: l'alçada se li
+     quedava clavada a la del contingut tancat —205 px mentre el contingut
+     n'arribava a 522— i els panells dels grups queien fora del seu
+     scrollport, pintats i impossibles de clicar. En flux no hi ha alçada a
+     resoldre, ni capa, ni retall: creix el que ha de créixer. */
+  .tt-nav .tn-gs{display:none}
+  .tt-nav[data-menu="obert"] .tn-gs{display:flex;flex-direction:column;align-items:stretch;
+    gap:.1rem;order:5;width:100%;margin-top:.25rem;padding-top:.25rem;
+    border-top:1px solid var(--border);order:5}
+  .tt-nav .tn-g>summary{width:100%}
+  /* El panell d'un grup, **en flux** dins de la columna i no absolut: la
+     columna ja és el desplegable i ja llisca, i un panell absolut a dins d'un
+     contenidor que llisca queda retallat —es pintava i no es podia clicar. */
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-p{position:static;min-width:0;box-shadow:none;border:0;
+    border-left:2px solid var(--indigo);border-radius:0 10px 10px 0;
+    margin:.2rem 0 .3rem .5rem;padding:.1rem .2rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 2px 0 0 var(--indigo)}
+  .tt-nav .tn-g{position:static}
+  .tt-nav .tn-g>summary{padding:.3rem .5rem}
+  .tt-nav .tn-here>summary{box-shadow:inset 0 -2px 0 var(--indigo)}
+  .tt-nav .tn-p{position:absolute;left:.5rem;right:.5rem;min-width:0;
+    top:calc(100% + .2rem);max-height:70vh;overflow-y:auto}
+  .tt-nav .tn-lang{order:4;margin-left:.3rem;margin-top:.1rem}
+  .tt-nav .tn-cta{order:2;margin-left:auto;padding:.34rem .65rem}
+}
+</style>
+<nav class="tt-nav" aria-label="Navegació del lloc">
+  <a class="tn-brand" href="/SOS/">El <span>SOS</span></a>
+  <a class="tn-casa" href="/">TeamTowers</a>
+  <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
+  <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/visio.html"><b>La visió</b><span>Què hi guanya la ciutadania, l'empresa i l'administració</span></a><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/vna-suport.html"><b>L'editor del mapa</b><span>Rols, lliuraments, real i ideal: la vista avançada</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/aigua.html"><b>L'Aigua</b><span>El consum de cada llar, l'estalvi mesurat i la planta solar</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/certificacio.html" aria-current="page"><b>La certificació</b><span>22 pràctiques a la comunitat, amb la IA de tutora</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html"><b>Crea el teu cervell</b><span>Cinc vistes, per a les IA i el LMS</span></a><a href="/SOS/la-font.html"><b>La font i la colla</b><span>Totes les vistes en una pel·lícula</span></a><a href="/SOS/colla.html"><b>La colla en la pinya</b><span>Un tauler per factor del test, amb els forats</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🤝</i><span>Participació</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>La campanya</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 personatges</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>Escola de participació</b><span>Alumnat de 6 a 13 anys, sense dades personals</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
+  <a class="tn-in" href="/acceso"><span>Entra</span></a>
+  <a class="tn-cta" href="/SOS/"><span>Obre el SOS</span> →</a>
+</nav>
+<script>
+(function () {
+  var n = document.querySelector('.tt-nav'), b = n && n.querySelector('.tn-ms');
+  if (!b) return;
+  var posa = function (o) { n.dataset.menu = o ? 'obert' : ''; b.setAttribute('aria-expanded', o ? 'true' : 'false'); };
+  b.addEventListener('click', function () { posa(n.dataset.menu !== 'obert'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && n.dataset.menu === 'obert') { posa(false); b.focus(); } });
+})();
+</script>
+<!--/TT-NAV-->
+
+<header class="hero">
+  <div class="kicker" data-i18n-html="h.k">Escola de participació · guia de certificació</div>
+  <h1 data-i18n-html="h.t">Aprens posant el model en marxa <em>a la teva comunitat</em>, i el fet et certifica.</h1>
+  <p class="lead" data-i18n-html="h.l">La formació té 22 mòduls en tres àrees. Cada mòdul acaba amb una pràctica real al teu barri, la teva entitat o la teva organització. La IA del SOS t'acompanya com a tutora, les dades es queden a casa vostra, i són persones de la xarxa les que validen. Aquesta guia explica el camí sencer.</p>
+  <div class="tres" role="group" aria-label="Per on començar">
+    <a href="#cami"><b data-i18n-html="h.c1">El camí</b><span data-i18n-html="h.c1d">Quatre nivells i què acredita cadascun</span></a>
+    <a href="#practiques"><b data-i18n-html="h.c2">Les 22 pràctiques</b><span data-i18n-html="h.c2d">Què es fa a la comunitat a cada mòdul</span></a>
+    <a href="#caiguda"><b data-i18n-html="h.c3">Si cau internet</b><span data-i18n-html="h.c3d">La xarxa segueix, d'igual a igual</span></a>
+  </div>
+  <p class="principi" data-i18n-html="h.p"><strong>Es fa, i el fet queda com a certificació.</strong> No hi ha examen: cada pràctica deixa una evidència signada al registre del vostre node, i aquesta evidència la pot verificar qualsevol persona sense haver de confiar en TeamTowers ni en cap servidor.</p>
+</header>
+
+<main class="wrap">
+
+<section id="cami" data-pantalla-nom-ca="El camí" data-pantalla-nom-es="El camino">
+  <h2 data-i18n-html="c.t">El camí · quatre nivells, i cadascun s'acredita amb el que has fet</h2>
+  <p class="sub" data-i18n-html="c.s">El nivell no el declara ningú: el calcula el SOS amb l'evidència del registre (hores aportades, comunitats on has participat, projectes que has acompanyat). Cada nivell dona un certificat, i cadascun obre el següent.</p>
+  <div class="graella">
+    <div class="b"><span class="nv">N0</span><h3 data-i18n-html="c.n0">Exploració</h3><p data-i18n-html="c.n0d">Tens perfil i identitat digital, i has fet el diagnòstic de la teva comunitat. <strong>Acredita:</strong> que coneixes el model i on és la teva comunitat.</p></div>
+    <div class="b v"><span class="nv">N1</span><h3 data-i18n-html="c.n1">Participant certificat/da</h3><p data-i18n-html="c.n1d">Has fet les pràctiques dels mòduls de nivell N1 i operes una dinàmica real. <strong>Acredita:</strong> participació comunitària i el primer ofici de l'àrea.</p></div>
+    <div class="b o"><span class="nv">N2</span><h3 data-i18n-html="c.n2">Gestor/a de node</h3><p data-i18n-html="c.n2d">Has fet les pràctiques de les àrees A i B, tens almenys 20 hores signades i sostens un node sencer, o tres comunitats. <strong>Acredita:</strong> que pots posar en marxa i governar una comunitat.</p></div>
+    <div class="b p"><span class="nv">N3</span><h3 data-i18n-html="c.n3">Mentor/a de la xarxa</h3><p data-i18n-html="c.n3d">Has fet el mòdul de docència, has acompanyat dues persones, has enllaçat el teu node amb un altre i has fet un simulacre de caiguda. Almenys 50 hores i tres comunitats. <strong>Acredita:</strong> que formes i certifiques altres.</p></div>
+  </div>
+  <h3 data-i18n-html="c.a">Les tres àrees</h3>
+  <div class="graella">
+    <div class="b"><span class="nv">m1–m8</span><h3 data-i18n-html="c.aA">Organitzacions comunitàries i economia social</h3><p data-i18n-html="c.aAd">Els fonaments: eines digitals, identitat, mapa de valor, recursos compartits, governança, intercooperació, participació i dades obertes.</p></div>
+    <div class="b v"><span class="nv">m9–m16</span><h3 data-i18n-html="c.aB">Dinamització comunitària</h3><p data-i18n-html="c.aBd">L'ofici: grups, comunicació, conflictes i cures, finançament, tràmits, impacte, protecció de dades i docència.</p></div>
+    <div class="b p"><span class="nv">m17–m22</span><h3 data-i18n-html="c.aC">Transformació digital de l'organització</h3><p data-i18n-html="c.aCd">Per a entitats i empreses: el mapa de valor de l'organització, el seu coneixement per a la IA, la web, la publicació, l'automatització i el treball amb assistents d'IA. Té el seu propi certificat.</p></div>
+  </div>
+</section>
+
+<section id="metode" data-pantalla-nom-ca="El mètode" data-pantalla-nom-es="El método">
+  <h2 data-i18n-html="m.t">El mètode · el mateix cicle a cada mòdul</h2>
+  <p class="sub" data-i18n-html="m.s">Cada mòdul es treballa igual. La teoria és curta i a la pàgina de la formació; el temps de debò es passa a la comunitat.</p>
+  <ol class="passos">
+    <li><b data-i18n-html="m.p1">Llegeixes el mòdul</b><span data-i18n-html="m.p1d">Objectius, capacitats i la guia, a la pàgina de la formació.</span></li>
+    <li><b data-i18n-html="m.p2">Fas la pràctica</b><span data-i18n-html="m.p2d">Una acció real a la teva comunitat, no un exercici.</span></li>
+    <li><b data-i18n-html="m.p3">Queda l'evidència</b><span data-i18n-html="m.p3d">Signada al registre del vostre node, al vostre dispositiu.</span></li>
+    <li><b data-i18n-html="m.p4">La IA la revisa</b><span data-i18n-html="m.p4d">Amb la llista del mòdul, i et diu què falta i per què.</span></li>
+    <li><b data-i18n-html="m.p5">Una persona la valida</b><span data-i18n-html="m.p5d">Algú d'un altre node i el teu mentor o mentora.</span></li>
+    <li><b data-i18n-html="m.p6">Torna a la xarxa</b><span data-i18n-html="m.p6d">El que heu après, sense dades personals, ajuda el node següent.</span></li>
+  </ol>
+  <h3 data-i18n-html="m.k">Les tres claus d'una pràctica certificada</h3>
+  <div class="graella">
+    <div class="b"><h3 data-i18n-html="m.k1">1 · El registre</h3><p data-i18n-html="m.k1d">L'evidència existeix i està signada per qui l'ha feta (i per l'altra part, si és un intercanvi). Ho comprova el SOS sol.</p></div>
+    <div class="b v"><h3 data-i18n-html="m.k2">2 · La IA tutora</h3><p data-i18n-html="m.k2d">Revisa l'evidència amb els criteris del mòdul i prepara la sessió de mentoria. Proposa; no certifica.</p></div>
+    <div class="b p"><h3 data-i18n-html="m.k3">3 · Les persones</h3><p data-i18n-html="m.k3d">Una persona d'un altre node de la xarxa i un mentor o mentora de nivell N3 la signen. Sense aquestes dues signatures, no compta.</p></div>
+  </div>
+</section>
+
+<section id="practiques" data-pantalla-nom-ca="Les 22 pràctiques" data-pantalla-nom-es="Las 22 prácticas">
+  <h2 data-i18n-html="p.t">Les 22 pràctiques · què es fa a la comunitat a cada mòdul</h2>
+  <p class="sub" data-i18n-html="p.s">Cada mòdul porta el nom de la seva àrea de coneixement i, a sota, el rol que forma. Toca el títol per anar al contingut del mòdul.</p>
+<!--TT-PRACTIQUES-->
+<!-- GENERAT per SOS/tools/build-certificacio.js des de SOS/knowledge/formacio/certificacio.json · no s'edita a mà. -->
+<div class="bloc-p" id="area-a">
+<h3 data-i18n-html="pr.bA">Àrea A · Organitzacions comunitàries i economia social</h3>
+<article class="pr bA" id="cm1">
+  <h4><a href="formacio.html#m1">1 · <span data-i18n-html="pr.m1.t">Sistemes digitals per a organitzacions</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m1.r">Forma: Responsable digital · triar eines obertes i guardar les dades pròpies</span> · 4-6 h · N0</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m1.p">Fes l'inventari de les eines digitals que fa servir la teva comunitat i tria'n una d'oberta per a cada necessitat, amb les dades guardades al vostre dispositiu.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m1.e">La fitxa d'inventari al node, amb el motiu de cada tria.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m1.i">Que cada eina tingui alternativa oberta i que cap dada quedi només en un servei de fora.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m1.s"><a href="/SOS/#/eines" target="_blank" rel="noopener">Les eines del SOS</a> · <a href="/SOS/#/copia" target="_blank" rel="noopener">Còpia de seguretat i carpeta local</a></dd></dl>
+</article>
+<article class="pr bA" id="cm2">
+  <h4><a href="formacio.html#m2">2 · <span data-i18n-html="pr.m2.t">Identitat digital i signatura electrònica</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m2.r">Forma: Responsable de dades · signar, verificar i custodiar</span> · 6-8 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m2.p">Crea la teva identitat digital al SOS, fes-ne la còpia de seguretat i signa la primera aportació real a la comunitat.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m2.e">La identitat (did) amb còpia guardada i una aportació signada al registre.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m2.i">Que la signatura es pugui verificar i que hi hagi còpia de la clau fora del dispositiu.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m2.s"><a href="/SOS/#/identitat" target="_blank" rel="noopener">La meva identitat</a> · <a href="/SOS/#/copia" target="_blank" rel="noopener">Còpia de seguretat</a></dd></dl>
+</article>
+<article class="pr bA" id="cm3">
+  <h4><a href="formacio.html#m3">3 · <span data-i18n-html="pr.m3.t">Anàlisi de xarxes de valor</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m3.r">Forma: Analista de processos · mapar rols i intercanvis i veure què hi falta</span> · 5-7 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m3.p">Dibuixa el mapa de valor de la teva comunitat amb tres persones que hi participen: qui hi és, què es donen i què falta.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m3.e">El mapa al node, revisat amb les deu regles, i la llista del que falta.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m3.i">Que hi hagi intercanvis d'anada i tornada, intangibles inclosos, i que cada buit tingui una pregunta per a la sessió.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m3.s"><a href="/SOS/vna.html" target="_blank" rel="noopener">El mapa de valor</a> · <a href="/SOS/vna-suport.html" target="_blank" rel="noopener">Suport al mapa de valor</a></dd></dl>
+</article>
+<article class="pr bA" id="cm4">
+  <h4><a href="formacio.html#m4">4 · <span data-i18n-html="pr.m4.t">Gestió de recursos compartits</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m4.r">Forma: Gestor/a de recursos comunitaris · banc de temps i préstec d'objectes</span> · 4-6 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m4.p">Posa en marxa un banc de temps o un préstec d'objectes amb almenys cinc persones del barri.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m4.e">Intercanvis registrats i signats per les dues parts durant quatre setmanes.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m4.i">Que els intercanvis siguin reals (dues signatures) i que hi participin persones diferents, no sempre les mateixes.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m4.s"><a href="/SOS/banc-temps.html" target="_blank" rel="noopener">El Banc de Temps</a> · <a href="/SOS/biblioteca.html" target="_blank" rel="noopener">La Biblioteca de les Coses</a> · <a href="/SOS/aigua.html" target="_blank" rel="noopener">L'Aigua</a></dd></dl>
+</article>
+<article class="pr bA" id="cm5">
+  <h4><a href="formacio.html#m5">5 · <span data-i18n-html="pr.m5.t">Governança participativa</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m5.r">Forma: Secretaria i facilitació d'òrgans · quòrum, actes i decisions</span> · 6-8 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m5.p">Convoca i facilita una assemblea o reunió de l'òrgan de la comunitat i deixa la decisió presa per escrit.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m5.e">L'acta amb el quòrum, la decisió votada i les signatures de qui custodia el node.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m5.i">Que hi hagi quòrum, que el vot quedi signat i que l'acta digui qui fa què i quan.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m5.s"><a href="/SOS/#/tauler" target="_blank" rel="noopener">El tauler de la comunitat</a> · <a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a></dd></dl>
+</article>
+<article class="pr bA" id="cm6">
+  <h4><a href="formacio.html#m6">6 · <span data-i18n-html="pr.m6.t">Economia col·laborativa i intercooperació</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m6.r">Forma: Promotor/a de projectes col·lectius · repartiment equitatiu i acords entre entitats</span> · 7-9 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m6.p">Acorda amb una altra entitat del territori un projecte o un intercanvi, amb el repartiment de cada aportació escrit des del primer dia.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m6.e">L'acord d'intercooperació signat pels dos nodes i el primer repartiment calculat.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m6.i">Que el repartiment surti de les aportacions registrades i que l'acord digui com s'entra i com se surt.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m6.s"><a href="/SOS/matriu.html" target="_blank" rel="noopener">La MATRIU</a> · <a href="/SOS/compra.html" target="_blank" rel="noopener">La Compra</a> · <a href="/SOS/#/federacions" target="_blank" rel="noopener">Federacions temàtiques</a></dd></dl>
+</article>
+<article class="pr bA" id="cm7">
+  <h4><a href="formacio.html#m7">7 · <span data-i18n-html="pr.m7.t">Participació ciutadana</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m7.r">Forma: Dinamitzador/a de participació · registrar i reconèixer les aportacions</span> · 5-7 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m7.p">Organitza una acció oberta al barri i fes que cada aportació quedi registrada i reconeguda.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m7.e">Les aportacions de l'acció al registre i el reconeixement publicat a qui hi va participar, amb el seu permís.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m7.i">Que hi hagi persones noves i que el reconeixement surti només amb consentiment.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m7.s"><a href="/SOS/uneix-te.html" target="_blank" rel="noopener">Participa al teu barri</a> · <a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a></dd></dl>
+</article>
+<article class="pr bA" id="cm8">
+  <h4><a href="formacio.html#m8">8 · <span data-i18n-html="pr.m8.t">Dades obertes i IA responsable</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m8.r">Forma: Tècnic/a de dades · publicar amb garanties i fer servir la IA amb criteri</span> · 6-8 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m8.p">Publica en obert un resum agregat de l'activitat de la comunitat i fes servir la IA per preparar-lo, dient què li has donat.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m8.e">El resum publicat, el paquet d'ancoratge que el verifica i la nota de què ha llegit la IA.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m8.i">Que el resum no permeti identificar ningú i que l'ancoratge quadri amb el registre.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m8.s"><a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a> · <a href="/SOS/online.html" target="_blank" rel="noopener">SOS Online</a></dd></dl>
+</article>
+</div>
+<div class="bloc-p" id="area-b">
+<h3 data-i18n-html="pr.bB">Àrea B · Dinamització comunitària</h3>
+<article class="pr bB" id="cm9">
+  <h4><a href="formacio.html#m9">9 · <span data-i18n-html="pr.m9.t">Dinamització de grups</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m9.r">Forma: Dinamitzador/a comunitari/ària · conduir sessions</span> · 5-7 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m9.p">Condueix tres sessions de grup amb una dinàmica preparada i un encàrrec al final de cadascuna.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m9.e">El guió de cada sessió, l'assistència i l'encàrrec que en va sortir.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m9.i">Que cada sessió acabi amb un encàrrec concret i que a la següent es revisi.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m9.s"><a href="/SOS/colla.html" target="_blank" rel="noopener">La colla en la pinya</a> · <a href="/SOS/#/gent" target="_blank" rel="noopener">La gent</a></dd></dl>
+</article>
+<article class="pr bB" id="cm10">
+  <h4><a href="formacio.html#m10">10 · <span data-i18n-html="pr.m10.t">Comunicació i captació</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m10.r">Forma: Comunicador/a · difondre, acollir i fidelitzar</span> · 4-6 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m10.p">Fes una campanya per acollir persones noves a la comunitat i acompanya-les fins a la primera aportació.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m10.e">Les persones acollides i la primera aportació de cadascuna, comptades sense dades personals.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m10.i">Quantes persones fan el pas de mirar a participar, i on es queden les que no.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m10.s"><a href="/SOS/uneix-te.html" target="_blank" rel="noopener">Participa al teu barri</a> · <a href="/SOS/#/alta" target="_blank" rel="noopener">Fes-te usuari/ària</a></dd></dl>
+</article>
+<article class="pr bB" id="cm11">
+  <h4><a href="formacio.html#m11">11 · <span data-i18n-html="pr.m11.t">Gestió de conflictes i cures</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m11.r">Forma: Mediador/a · mediar, prevenir el desgast i preparar relleus</span> · 5-7 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m11.p">Prepara el protocol de cures i relleu del teu equip i fes-lo servir en una situació real o en un simulacre.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m11.e">El protocol acordat i el registre de la mediació o del relleu fet.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m11.i">Que hi hagi relleu previst per a cada rol clau i que ningú porti sol més càrrega de la que pot.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m11.s"><a href="/SOS/online.html" target="_blank" rel="noopener">SOS Online · qui hi ha</a> · <a href="/SOS/#/gent" target="_blank" rel="noopener">La gent i els rols</a></dd></dl>
+</article>
+<article class="pr bB" id="cm12">
+  <h4><a href="formacio.html#m12">12 · <span data-i18n-html="pr.m12.t">Finançament i subvencions</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m12.r">Forma: Gestor/a de projectes · buscar, sol·licitar i justificar</span> · 6-8 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m12.p">Identifica una convocatòria pública o privada que encaixi amb la comunitat i prepara'n la sol·licitud.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m12.e">La sol·licitud presentada o a punt, amb el pressupost per hores i el pla de justificació.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m12.i">Que el pressupost surti de les hores reals del mapa i que es pugui justificar amb el registre.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m12.s"><a href="/SOS/#/fons" target="_blank" rel="noopener">El fons cooperatiu</a> · <a href="/SOS/diagnostic-territori.html" target="_blank" rel="noopener">Diagnòstic comunitari</a></dd></dl>
+</article>
+<article class="pr bB" id="cm13">
+  <h4><a href="formacio.html#m13">13 · <span data-i18n-html="pr.m13.t">Formes jurídiques i tràmits</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m13.r">Forma: Gestor/a administratiu/iva · triar la forma i fer els tràmits</span> · 5-7 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m13.p">Tria amb el grup la forma jurídica que us convé (o confirma la que teniu) i fes un tràmit real amb l'administració.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m13.e">La decisió raonada al node i el justificant del tràmit.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m13.i">Que la forma triada encaixi amb el que fa la comunitat i que el tràmit tingui data i responsable.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m13.s"><a href="/SOS/diagnostic-org.html" target="_blank" rel="noopener">Diagnòstic d'organització</a> · <a href="/SOS/energia.html" target="_blank" rel="noopener">L'Energia</a> · <a href="/SOS/habitatge.html" target="_blank" rel="noopener">L'Habitatge</a></dd></dl>
+</article>
+<article class="pr bB" id="cm14">
+  <h4><a href="formacio.html#m14">14 · <span data-i18n-html="pr.m14.t">Avaluació de l'impacte social</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m14.r">Forma: Avaluador/a · indicadors i informes</span> · 5-7 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m14.p">Defineix tres indicadors d'impacte de la comunitat i fes-ne el primer informe amb dades del registre.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m14.e">L'informe d'impacte amb els indicadors, la font de cada xifra i el que s'ha après.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m14.i">Que cada xifra surti del registre o d'una font citada i que no n'hi hagi cap d'inventada.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m14.s"><a href="/SOS/#/fons/impacte" target="_blank" rel="noopener">Simulador d'impacte</a> · <a href="/SOS/#/registre" target="_blank" rel="noopener">Registre públic signat</a></dd></dl>
+</article>
+<article class="pr bB" id="cm15">
+  <h4><a href="formacio.html#m15">15 · <span data-i18n-html="pr.m15.t">Protecció de dades personals</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m15.r">Forma: Responsable del tractament · RGPD i consentiments</span> · 4-5 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m15.p">Fes el registre de tractaments de dades de la comunitat i recull els consentiments que falten.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m15.e">El registre de tractaments i els consentiments, guardats al node i no a fora.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m15.i">Que cada dada tingui finalitat i consentiment, i que es guardi el mínim.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m15.s"><a href="/SOS/#/config" target="_blank" rel="noopener">Configuració i dades</a> · <a href="/SOS/#/copia" target="_blank" rel="noopener">Còpia de seguretat xifrada</a></dd></dl>
+</article>
+<article class="pr bB" id="cm16">
+  <h4><a href="formacio.html#m16">16 · <span data-i18n-html="pr.m16.t">Docència i tutoria</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m16.r">Forma: Formador/a · dissenyar, tutoritzar i avaluar</span> · 8-10 h · N3</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m16.p">Acompanya dues persones de la teva comunitat en la seva primera pràctica certificable, com a tutor o tutora.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m16.e">Les dues sessions de mentoria registrades i les pràctiques que vas validar.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m16.i">Que cada sessió acabi amb encàrrec i que la teva validació digui en què t'has fixat.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m16.s"><a href="/SOS/#/mentoria" target="_blank" rel="noopener">La meva mentoria</a> · <a href="/SOS/certificacio.html" target="_blank" rel="noopener">Guia de certificació</a></dd></dl>
+</article>
+</div>
+<div class="bloc-p" id="area-c">
+<h3 data-i18n-html="pr.bC">Àrea C · Transformació digital de l'organització</h3>
+<article class="pr bC" id="cm17">
+  <h4><a href="formacio.html#m17">17 · <span data-i18n-html="pr.m17.t">Mapa de valor de l'organització</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m17.r">Forma: Direcció o consultoria · qui aporta què, amb les deu regles</span> · 3 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m17.p">Fes el mapa de valor de la teva organització amb l'equip: qui aporta què, dins i fora.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m17.e">El mapa revisat amb les deu regles i les tres anàlisis fetes.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m17.i">Que hi surtin els rols de fora (clients, proveïdors, territori) i els intangibles.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m17.s"><a href="/SOS/vna.html" target="_blank" rel="noopener">El mapa de valor</a> · <a href="/cliente/" target="_blank" rel="noopener">El mapa del client</a></dd></dl>
+</article>
+<article class="pr bC" id="cm18">
+  <h4><a href="formacio.html#m18">18 · <span data-i18n-html="pr.m18.t">Gestió del coneixement per a la IA</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m18.r">Forma: Gestor/a del coneixement · que la IA conegui l'organització</span> · 2 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m18.p">Escriu amb l'equip el cervell de l'organització: la cultura, les regles i el que ja sabeu, perquè la vostra IA us conegui.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m18.e">El cervell al repositori o al node, amb les seves àrees plenes.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m18.i">Que cada àrea tingui almenys un document i que les regles portin el motiu al costat.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m18.s"><a href="/SOS/cervell.html" target="_blank" rel="noopener">El teu cervell</a></dd></dl>
+</article>
+<article class="pr bC" id="cm19">
+  <h4><a href="formacio.html#m19">19 · <span data-i18n-html="pr.m19.t">Web corporativa</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m19.r">Forma: Responsable web · del mapa a la web sense perdre posicionament</span> · 3 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m19.p">Fes sortir la web de l'organització del mapa de valor, sense perdre el posicionament que ja teniu.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m19.e">La web en vista prèvia i la comprovació que cap adreça antiga es perd.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m19.i">Que cada pàgina respongui a un rol del mapa i que les adreces antigues portin a la nova.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m19.s"><a href="/cliente/" target="_blank" rel="noopener">La web que surt del mapa</a></dd></dl>
+</article>
+<article class="pr bC" id="cm20">
+  <h4><a href="formacio.html#m20">20 · <span data-i18n-html="pr.m20.t">Publicació de continguts web</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m20.r">Forma: Editor/a de continguts · vista prèvia abans de publicar</span> · 1,5 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m20.p">Publica tres canvis de contingut seguint el circuit: proposta, vista prèvia, revisió i publicació.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m20.e">Els tres canvis amb la seva vista prèvia i qui els va donar per bons.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m20.i">Que res no surti publicat sense vista prèvia revisada per una persona.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m20.s"><a href="/cliente/#panel" target="_blank" rel="noopener">El panell del client</a></dd></dl>
+</article>
+<article class="pr bC" id="cm21">
+  <h4><a href="formacio.html#m21">21 · <span data-i18n-html="pr.m21.t">Automatització de processos</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m21.r">Forma: Tècnic/a de processos · formularis i fluxos connectats</span> · 2 h · N1</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m21.p">Automatitza un procés repetitiu de l'organització: un formulari que arriba sol on ha d'arribar.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m21.e">El flux funcionant, amb la prova d'una entrada real de principi a fi.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m21.i">Que el procés automatitzat sigui tangible i repetitiu, i que l'intangible es quedi a les persones.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m21.s"><a href="/SOS/ia.html" target="_blank" rel="noopener">Fluxos amb IA</a></dd></dl>
+</article>
+<article class="pr bC" id="cm22">
+  <h4><a href="formacio.html#m22">22 · <span data-i18n-html="pr.m22.t">Treball amb assistents d'IA</span></a></h4>
+  <p class="rol"><span data-i18n-html="pr.m22.r">Forma: Qualsevol rol · demanar canvis, revisar-los i validar-los</span> · 2 h · N2</p>
+  <dl><dt data-i18n-html="pr.lp">Pràctica</dt><dd data-i18n-html="pr.m22.p">Treballa una setmana amb el vostre assistent d'IA: demana-li canvis, revisa'ls i valida'ls abans que entrin.</dd>
+  <dt data-i18n-html="pr.le">Evidència</dt><dd data-i18n-html="pr.m22.e">Els canvis demanats, revisats i validats, amb el que la IA va proposar i el que vau decidir.</dd>
+  <dt data-i18n-html="pr.li">Revisa la IA</dt><dd data-i18n-html="pr.m22.i">Que cada canvi tingui una persona que el valida i que el cervell s'actualitzi amb el que s'ha après.</dd>
+  <dt data-i18n-html="pr.ls">Al SOS</dt><dd data-i18n-html="pr.m22.s"><a href="/SOS/ia.html" target="_blank" rel="noopener">Fluxos amb IA</a> · <a href="/SOS/cervell.html" target="_blank" rel="noopener">El teu cervell</a></dd></dl>
+</article>
+</div>
+<!--/TT-PRACTIQUES-->
+</section>
+
+<section id="tutora" data-pantalla-nom-ca="La IA tutora" data-pantalla-nom-es="La IA tutora">
+  <h2 data-i18n-html="t.t">La IA del SOS com a tutora · acompanya, no decideix</h2>
+  <p class="sub" data-i18n-html="t.s">La IA fa la part que cansa: llegir l'evidència, comparar-la amb els criteris del mòdul, veure què falta i preparar la sessió amb el mentor. La decisió sempre és d'una persona, i tot el que la IA fa es pot veure.</p>
+  <div class="si-no">
+    <div class="b v"><h3 data-i18n-html="t.si">El que fa</h3><ul data-i18n-html="t.sil">
+      <li>Llegeix el teu nivell i les teves evidències, i et diu quin mòdul et toca ara.</li>
+      <li>Revisa cada pràctica amb els criteris del mòdul («què revisa la IA», a cada pràctica).</li>
+      <li>Prepara el guió de 60 minuts de la mentoria: el que ja domines, el buit a treballar i l'encàrrec.</li>
+      <li>Ensenya a enllaçar nodes amb patrons d'altres comunitats, mai amb les seves dades.</li>
+      <li>Diu sempre què ha llegit per arribar a cada proposta.</li>
+    </ul></div>
+    <div class="b o"><h3 data-i18n-html="t.no">El que no fa mai</h3><ul data-i18n-html="t.nol">
+      <li>Certificar sola: la signatura és de persones.</li>
+      <li>Llegir el que no li has donat, ni guardar-ho fora del vostre node.</li>
+      <li>Rebre noms, contactes o continguts d'altres persones sense el seu consentiment.</li>
+      <li>Ser imprescindible: sense connexió, el SOS fa un pla local amb les mateixes regles.</li>
+    </ul></div>
+  </div>
+  <h3 data-i18n-html="t.v">Dues maneres d'activar-la</h3>
+  <div class="graella">
+    <div class="b"><h3 data-i18n-html="t.v1">Amb la clau de la teva organització</h3><p data-i18n-html="t.v1d">Poses la clau del vostre compte d'IA al SOS i la tutora treballa amb el vostre compte, des del vostre dispositiu. <span class="avui">ja hi és</span></p></div>
+    <div class="b v"><h3 data-i18n-html="t.v2">Amb saldo contractat a TeamTowers</h3><p data-i18n-html="t.v2d">Feu servir la nostra connexió amb un saldo contractat i un límit per persona, sense haver d'obrir cap compte. Cada tasca va al model més petit que la fa bé. <span class="avui">ja hi és</span></p></div>
+  </div>
+  <p class="nota" data-i18n-html="t.n">Avui al SOS: el nivell per evidència i «Prepara la meva mentoria» (llançador → 🎓), amb pla local si no hi ha IA <span class="avui">ja hi és</span>. La revisió de cada pràctica amb els criteris d'aquesta guia <span class="avui pend">en desenvolupament</span>.</p>
+</section>
+
+<section id="dades" data-pantalla-nom-ca="Dades confidencials" data-pantalla-nom-es="Datos confidenciales">
+  <h2 data-i18n-html="d.t">Les dades · confidencials per disseny, compartides només per aprendre</h2>
+  <p class="sub" data-i18n-html="d.s">Una formació que es fa a la comunitat toca dades de persones reals. Per això les regles són aquestes, i valen igual per a la IA, per al mentor i per a TeamTowers.</p>
+  <div class="graella">
+    <div class="b"><h3 data-i18n-html="d.r1">Les dades viuen al node</h3><p data-i18n-html="d.r1d">El registre, els mapes i les evidències es guarden al dispositiu de la comunitat, no en un servidor central. Qui custodia el node decideix què surt. <span class="avui">ja hi és</span></p></div>
+    <div class="b v"><h3 data-i18n-html="d.r2">Xifrat per a qui ha de llegir</h3><p data-i18n-html="d.r2d">El que es comparteix va xifrat per a la identitat digital de qui ho ha de rebre: ningú més ho pot obrir pel camí. <span class="avui">ja hi és</span></p></div>
+    <div class="b p"><h3 data-i18n-html="d.r3">A la IA, el mínim</h3><p data-i18n-html="d.r3d">La tutora rep recomptes, nivells i els mòduls, no els continguts ni els noms d'altres persones. Si una pràctica necessita més, ho demana i ho has d'acceptar.</p></div>
+    <div class="b g"><h3 data-i18n-html="d.r4">Verificar sense ensenyar</h3><p data-i18n-html="d.r4d">El certificat porta les empremtes (hash) de les evidències, no les evidències. Es pot comprovar que existeixen i que no s'han tocat sense veure què diuen. <span class="avui">ja hi és</span></p></div>
+    <div class="b"><h3 data-i18n-html="d.r5">El que puja és el que s'ha après</h3><p data-i18n-html="d.r5d">A la xarxa hi va el patró (quins rols, quins intercanvis, què va funcionar), mai qui ho va fer. Així un node nou arrenca amb el que ja saben els altres.</p></div>
+    <div class="b v"><h3 data-i18n-html="d.r6">Amb el reglament</h3><p data-i18n-html="d.r6d">Consentiment per a cada finalitat, el mínim de dades i dret a endur-se-les o esborrar-les. És el mòdul 15, i també es practica.</p></div>
+  </div>
+</section>
+
+<section id="xarxa" data-pantalla-nom-ca="Enllaçar nodes" data-pantalla-nom-es="Enlazar nodos">
+  <h2 data-i18n-html="x.t">Enllaçar nodes · de la comunitat a la xarxa, sense centre</h2>
+  <p class="sub" data-i18n-html="x.s">Cada comunitat és un node complet: té el seu registre, el seu mapa i la seva governança. La xarxa no és un servidor que els reuneix, és l'acord entre nodes. Això també s'aprèn fent, i és part del nivell N3.</p>
+  <ol class="passos">
+    <li><b data-i18n-html="x.p1">Cada node, el seu mapa</b><span data-i18n-html="x.p1d">Mòduls 3 i 17: qui hi ha i què es donen.</span></li>
+    <li><b data-i18n-html="x.p2">On es toquen</b><span data-i18n-html="x.p2d">Els intercanvis que van d'un node a l'altre: persones, coses, coneixement.</span></li>
+    <li><b data-i18n-html="x.p3">L'acord</b><span data-i18n-html="x.p3d">Mòduls 5 i 6: què es comparteix, qui decideix i com se surt.</span></li>
+    <li><b data-i18n-html="x.p4">Es presenten</b><span data-i18n-html="x.p4d">Cada node amb la seva identitat digital; s'aparellen directament, dispositiu a dispositiu.</span></li>
+    <li><b data-i18n-html="x.p5">Es verifiquen</b><span data-i18n-html="x.p5d">Amb el paquet d'ancoratge de cada node, sense haver de creure ningú.</span></li>
+    <li><b data-i18n-html="x.p6">Es mantenen vius</b><span data-i18n-html="x.p6d">Sincronitzen només el que porta informació, i cadascú conserva la seva còpia.</span></li>
+  </ol>
+  <p class="nota" data-i18n-html="x.n">Avui al SOS: aparellar dispositius directament (WebRTC, sense servidor), relés de presència oberts i configurables (Nostr), paquet d'ancoratge signat i sobres xifrats per destinatari <span class="avui">ja hi és</span>.</p>
+</section>
+
+<section id="caiguda" data-pantalla-nom-ca="Si cau internet" data-pantalla-nom-es="Si cae internet">
+  <h2 data-i18n-html="k.t">Si cau internet · seguir operant a l'antiga, d'igual a igual</h2>
+  <p class="sub" data-i18n-html="k.s">Una comunitat no pot dependre que una empresa, un núvol o una connexió funcionin. El SOS està fet perquè cada esglaó que cau en deixi un altre a sota, i la formació ho entrena.</p>
+  <div class="graella">
+    <div class="b"><span class="nv">0</span><h3 data-i18n-html="k.n0">Tot funciona</h3><p data-i18n-html="k.n0d">La web, els relés i la IA. És la manera còmoda, no l'única.</p></div>
+    <div class="b v"><span class="nv">1</span><h3 data-i18n-html="k.n1">Cauen els serveis centrals</h3><p data-i18n-html="k.n1d">El SOS instal·lat segueix obrint-se amb les dades del dispositiu. La tutoria passa al pla local. Els relés es canvien per uns altres o per un de propi.</p></div>
+    <div class="b o"><span class="nv">2</span><h3 data-i18n-html="k.n2">Cau internet, hi ha xarxa local</h3><p data-i18n-html="k.n2d">Dos dispositius a la mateixa wifi s'aparellen directament amb un codi que es passa en mà o amb un QR, i sincronitzen.</p></div>
+    <div class="b p"><span class="nv">3</span><h3 data-i18n-html="k.n3">No hi ha cap xarxa</h3><p data-i18n-html="k.n3d">La còpia del node va en un fitxer (un USB, el mòbil d'algú que viatja). Com que tot va signat, ningú la pot falsejar pel camí. Quan torna la xarxa, s'ajunta.</p></div>
+  </div>
+  <h3 data-i18n-html="k.s1">El simulacre, una pràctica més</h3>
+  <p class="sub" data-i18n-html="k.s2">Per arribar a N3, el node fa un simulacre: un dia sense serveis centrals, els intercanvis registrats igualment, i la sincronització amb un altre node per xarxa local o per fitxer. L'evidència és la mateixa que la de qualsevol pràctica: el registre signat i la prova que les dues còpies quadren.</p>
+  <p class="nota" data-i18n-html="k.n">Avui al SOS: funciona sense connexió un cop obert, còpia de seguretat en fitxer, aparellament amb codi o QR i relés intercanviables <span class="avui">ja hi és</span>. La guia del simulacre dins de l'app <span class="avui pend">en desenvolupament</span>.</p>
+</section>
+
+<section id="pla" data-pantalla-nom-ca="El pla" data-pantalla-nom-es="El plan">
+  <h2 data-i18n-html="q.t">El pla de desenvolupament · de qui ets al pla de treball</h2>
+  <p class="sub" data-i18n-html="q.s">El mentor o mentora no comença pels mòduls: comença per la persona. Què li agrada, què se li dona bé, quins rols fa i què fa falta a prop. D'aquí surt el pla, i el pla es treballa al mateix tauler que la resta de la feina.</p>
+  <ol class="passos">
+    <li><b data-i18n-html="q.p1">L'alta</b><span data-i18n-html="q.p1d">El perfil, l'ikigai i les skills. Les de LinkedIn s'importen amb les validacions de la teva xarxa.</span></li>
+    <li><b data-i18n-html="q.p2">La mentoria</b><span data-i18n-html="q.p2d">El mentor llegeix l'ikigai, els rols, les skills i el nivell que diu el registre.</span></li>
+    <li><b data-i18n-html="q.p3">El pla</b><span data-i18n-html="q.p3d">El nivell següent i les pràctiques que hi porten, ordenades pel que encaixa amb tu, amb el motiu de cada una.</span></li>
+    <li><b data-i18n-html="q.p4">El tauler</b><span data-i18n-html="q.p4d">Cada pràctica és una targeta del kanban: per fer, fent, fet i validat.</span></li>
+    <li><b data-i18n-html="q.p5">El pomodoro</b><span data-i18n-html="q.p5d">Si vols, blocs de 25 minuts: en acabar, el temps queda apuntat a la targeta.</span></li>
+    <li><b data-i18n-html="q.p6">El valor</b><span data-i18n-html="q.p6d">Validat pel mentor, compta a la comptabilitat de valor i com a evidència per al certificat.</span></li>
+  </ol>
+  <h3 data-i18n-html="q.li">Les skills de LinkedIn, sense entrar a LinkedIn</h3>
+  <p class="sub" data-i18n-html="q.lid">A LinkedIn, Configuració → Privadesa de dades → Obtén una còpia de les teves dades. Puges Skills.csv o el fitxer de recomanacions rebudes, o enganxes la llista d'aptituds del perfil o del CV. Es llegeix al teu navegador; de qui et valida només es compta quants són, mai qui. I res s'afegeix sol: acceptes les que són teves.</p>
+  <h3 data-i18n-html="q.pr">Prova-ho</h3>
+  <div class="demo" id="plaDemo">
+    <div class="demo-f">
+      <label><span data-i18n-html="q.f1">On ets ara</span>
+        <select id="pdNiv"><option value="N0" data-i18n-html="q.n0">N0 · Exploració</option><option value="N1" data-i18n-html="q.n1">N1 · Participant</option><option value="N2" data-i18n-html="q.n2">N2 · Gestor/a de node</option><option value="org" data-i18n-html="q.org">Organització · transformació digital</option></select></label>
+      <label><span data-i18n-html="q.f2">El teu rol</span>
+        <select id="pdRol"><option value="superheroi" data-i18n-html="q.r1">Persona que participa</option><option value="coordinador" data-i18n-html="q.r2">Coordinació de comunitat</option><option value="guardian" data-i18n-html="q.r3">Govern del territori</option><option value="agent" data-i18n-html="q.r4">Enllaç amb l'administració</option><option value="mentor" data-i18n-html="q.r5">Mentoria</option></select></label>
+      <label class="ample"><span data-i18n-html="q.f3">Què t'agrada i què fa falta a prop (separat per comes)</span>
+        <input id="pdIk" data-i18n-ph="q.f3p" placeholder="p. ex. acompanyar gent gran, préstec d'objectes, mediació"></label>
+      <label class="ample"><span data-i18n-html="q.f4">Les teves skills (enganxa la llista de LinkedIn, o puja el fitxer)</span>
+        <textarea id="pdSk" rows="3" data-i18n-ph="q.f4p" placeholder="Facilitació de grups&#10;12 validacions&#10;Gestió de projectes"></textarea>
+        <input type="file" id="pdSkF" accept=".csv,.txt"></label>
+    </div>
+    <p><button type="button" class="btn-primary" id="pdFes" data-i18n-html="q.fes">Fes-me el pla</button></p>
+    <div id="pdOut" aria-live="polite"></div>
+    <div id="pdKb"></div>
+  </div>
+  <p class="nota" data-i18n-html="q.n">Al SOS: el pla surt a «Prepara la meva mentoria» i el botó el porta al teu tauler, desat al teu dispositiu; la importació de LinkedIn és a l'alta i al perfil <span class="avui">ja hi és</span>. Aquí és una prova: es guarda només en aquest navegador.</p>
+</section>
+
+<section id="certificat" data-pantalla-nom-ca="El certificat" data-pantalla-nom-es="El certificado">
+  <h2 data-i18n-html="z.t">El certificat · és teu i el pot verificar qualsevol</h2>
+  <p class="sub" data-i18n-html="z.s">Quan les pràctiques d'un nivell tenen les tres claus, el certificat es genera al teu perfil i el tens tu, al teu dispositiu.</p>
+  <div class="graella">
+    <div class="b"><h3 data-i18n-html="z.b1">Què diu</h3><p data-i18n-html="z.b1d">El nivell, l'àrea, els mòduls amb les seves hores, la comunitat on s'han fet, i les empremtes de cada evidència. Signat per tu, pel mentor o mentora i pel node que valida.</p></div>
+    <div class="b v"><h3 data-i18n-html="z.b2">Com es verifica</h3><p data-i18n-html="z.b2d">Amb les signatures i el paquet d'ancoratge, a qualsevol SOS i sense connexió. No cal preguntar a TeamTowers si és bo.</p></div>
+    <div class="b p"><h3 data-i18n-html="z.b3">Per a què serveix</h3><p data-i18n-html="z.b3d">Per demostrar el que saps fer amb fets. Les hores, el programa i les evidències també serveixen per presentar-te al procediment oficial d'acreditació de competències professionals, que decideix l'administració.</p></div>
+  </div>
+  <p class="nota" data-i18n-html="z.n">El certificat del SOS no és un títol oficial. L'emissió com a credencial signada dins de l'app <span class="avui pend">en desenvolupament</span>; avui l'evidència ja queda al registre i es verifica amb el paquet d'ancoratge.</p>
+  <div class="eines">
+    <a href="formacio.html" data-i18n-html="z.e1">Els 22 mòduls</a>
+    <a href="formacio.html#itineraris" data-i18n-html="z.e2">Els itineraris per rol</a>
+    <a href="formacio.html#mentoria" data-i18n-html="z.e3">Preparar la mentoria</a>
+    <a href="vedes.html" data-i18n-html="z.e4">Les regles del codi</a>
+    <a href="index.html" data-i18n-html="z.e5">Obre el SOS i comença</a>
+  </div>
+</section>
+
+</main>
+
+<!--TT-PEU-->
+<style>
+/* GENERAT per SOS/tools/build-nav.js · no s'edita a mà: hi ha guarda. */
+.tt-peu{display:block;position:static;box-sizing:border-box;width:auto;max-width:none;margin:4rem 0 0;
+  padding:3rem 1.25rem 2.5rem;border:0;border-top:1px solid var(--border);background:var(--panel);
+  color:var(--light);text-align:left;font-size:var(--t0);line-height:1.6;letter-spacing:normal}
+.tt-peu .tp-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:2rem 3rem}
+.tt-peu .tp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.5rem 2rem}
+.tt-peu p,.tt-peu ul{margin:0;padding:0}
+.tt-peu ul{list-style:none}
+.tt-peu a{color:var(--light);text-decoration:none}
+/* 44 px de zona tàctil (guia §7) on es toca amb el dit; amb ratolí, una llista
+   de vint enllaços a 44 px és un peu de mitja pantalla. */
+.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{display:inline-flex;align-items:center;min-height:2rem}
+@media (pointer:coarse){.tt-peu li a,.tt-peu .tp-mail,.tt-peu .tp-casa,.tt-peu .tp-legal{min-height:44px}}
+.tt-peu a:hover,.tt-peu a:focus-visible{color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.tt-peu a[aria-current]{color:var(--text);font-weight:600}
+.tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
+.tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
+.tt-peu .tp-frase{margin-top:.5rem;font-weight:700;color:var(--text)}
+.tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
+.tt-peu .tp-legal{color:var(--muted)}
+.tt-peu .tp-g{margin-bottom:.25rem;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text);font-weight:600}
+@media (max-width:760px){
+  .tt-peu{padding:2.5rem 1rem 2rem}
+  .tt-peu .tp-in{grid-template-columns:1fr}
+  .tt-peu .tp-cols{grid-template-columns:1fr 1fr;gap:1.25rem 1rem}
+}
+</style>
+<footer class="tt-peu">
+  <div class="tp-in">
+    <div class="tp-marca"><a class="tp-logo" href="/SOS/">El <b>SOS</b></a><p class="tp-lema">Sistema Operatiu Social, de TeamTowers Humà</p><a class="tp-casa" href="/">← TeamTowers Humà</a><p class="tp-c">© 2026 TeamTowers Humà</p><a class="tp-legal" href="/avis-legal.html"><span>Avís legal i privacitat</span></a></div>
+    <div class="tp-cols"><div class="tp-col"><p class="tp-g"><span>Les eines</span></p><ul><li><a href="/SOS/visio.html"><span>La visió</span></a></li><li><a href="/SOS/intro.html"><span>De què va</span></a></li><li><a href="/SOS/vna-suport.html"><span>L'editor del mapa</span></a></li><li><a href="/SOS/matriu.html"><span>La MATRIU</span></a></li><li><a href="/SOS/banc-temps.html"><span>El Banc de Temps</span></a></li><li><a href="/SOS/biblioteca.html"><span>La Biblioteca de les Coses</span></a></li><li><a href="/SOS/compra.html"><span>La Compra</span></a></li><li><a href="/SOS/energia.html"><span>L'Energia</span></a></li><li><a href="/SOS/aigua.html"><span>L'Aigua</span></a></li><li><a href="/SOS/habitatge.html"><span>L'Habitatge</span></a></li><li><a href="/SOS/online.html"><span>El directori</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Aprèn</span></p><ul><li><a href="/SOS/formacio.html"><span>Formació acció</span></a></li><li><a href="/SOS/certificacio.html" aria-current="page"><span>La certificació</span></a></li><li><a href="/SOS/ia.html"><span>Fluxos amb IA</span></a></li><li><a href="/SOS/vedes.html"><span>Les vedes</span></a></li><li><a href="/SOS/cervell.html"><span>Crea el teu cervell</span></a></li><li><a href="/SOS/la-font.html"><span>La font i la colla</span></a></li><li><a href="/SOS/colla.html"><span>La colla en la pinya</span></a></li><li><a href="/SOS/blog.html"><span>Blog</span></a></li></ul></div><div class="tp-col"><p class="tp-g"><span>Participació</span></p><ul><li><a href="https://molekulon.org/" rel="noopener"><span>La campanya</span>&nbsp;↗</a></li><li><a href="/SOS/molekulandia.html"><span>Molekulandia</span></a></li><li><a href="/SOS/molekulon.html"><span>Un estat líquid</span></a></li><li><a href="/SOS/escola.html"><span>Escola de participació</span></a></li><li><a href="/SOS/joc.html"><span>El joc</span></a></li><li><a href="/SOS/uneix-te.html"><span>Uneix-t'hi</span></a></li></ul></div></div>
+  </div>
+</footer>
+<script src="/SOS/lib/recorrido.js" defer></script>
+<!--/TT-PEU-->
+
+<script>
+/* La segona llengua. El català és a l'HTML; el castellà, aquí. Mateixa clau
+   de preferència que la resta del lloc (`tt_lang`) i `?lang=es` per enllaçar-hi.
+   Les 22 pràctiques porten el seu castellà a CE_PRACTIQUES_ES (generat). */
+const CE_ES = {
+  'h.k': 'Escuela de participación · guía de certificación',
+  'h.t': 'Aprendes poniendo el modelo en marcha <em>en tu comunidad</em>, y el hecho te certifica.',
+  'h.l': 'La formación tiene 22 módulos en tres áreas. Cada módulo acaba con una práctica real en tu barrio, tu entidad o tu organización. La IA del SOS te acompaña como tutora, los datos se quedan en vuestra casa, y son personas de la red las que validan. Esta guía explica el camino entero.',
+  'h.c1': 'El camino', 'h.c1d': 'Cuatro niveles y qué acredita cada uno',
+  'h.c2': 'Las 22 prácticas', 'h.c2d': 'Qué se hace en la comunidad en cada módulo',
+  'h.c3': 'Si cae internet', 'h.c3d': 'La red sigue, de igual a igual',
+  'h.p': '<strong>Se hace, y el hecho queda como certificación.</strong> No hay examen: cada práctica deja una evidencia firmada en el registro de vuestro nodo, y esa evidencia la puede verificar cualquier persona sin tener que confiar en TeamTowers ni en ningún servidor.',
+  'c.t': 'El camino · cuatro niveles, y cada uno se acredita con lo que has hecho',
+  'c.s': 'El nivel no lo declara nadie: lo calcula el SOS con la evidencia del registro (horas aportadas, comunidades en las que has participado, proyectos que has acompañado). Cada nivel da un certificado, y cada uno abre el siguiente.',
+  'c.n0': 'Exploración', 'c.n0d': 'Tienes perfil e identidad digital, y has hecho el diagnóstico de tu comunidad. <strong>Acredita:</strong> que conoces el modelo y dónde está tu comunidad.',
+  'c.n1': 'Participante certificado/a', 'c.n1d': 'Has hecho las prácticas de los módulos de nivel N1 y operas una dinámica real. <strong>Acredita:</strong> participación comunitaria y el primer oficio del área.',
+  'c.n2': 'Gestor/a de nodo', 'c.n2d': 'Has hecho las prácticas de las áreas A y B, tienes al menos 20 horas firmadas y sostienes un nodo entero, o tres comunidades. <strong>Acredita:</strong> que puedes poner en marcha y gobernar una comunidad.',
+  'c.n3': 'Mentor/a de la red', 'c.n3d': 'Has hecho el módulo de docencia, has acompañado a dos personas, has enlazado tu nodo con otro y has hecho un simulacro de caída. Al menos 50 horas y tres comunidades. <strong>Acredita:</strong> que formas y certificas a otras personas.',
+  'c.a': 'Las tres áreas',
+  'c.aA': 'Organizaciones comunitarias y economía social', 'c.aAd': 'Los fundamentos: herramientas digitales, identidad, mapa de valor, recursos compartidos, gobernanza, intercooperación, participación y datos abiertos.',
+  'c.aB': 'Dinamización comunitaria', 'c.aBd': 'El oficio: grupos, comunicación, conflictos y cuidados, financiación, trámites, impacto, protección de datos y docencia.',
+  'c.aC': 'Transformación digital de la organización', 'c.aCd': 'Para entidades y empresas: el mapa de valor de la organización, su conocimiento para la IA, la web, la publicación, la automatización y el trabajo con asistentes de IA. Tiene su propio certificado.',
+  'm.t': 'El método · el mismo ciclo en cada módulo',
+  'm.s': 'Cada módulo se trabaja igual. La teoría es corta y está en la página de la formación; el tiempo de verdad se pasa en la comunidad.',
+  'm.p1': 'Lees el módulo', 'm.p1d': 'Objetivos, capacidades y la guía, en la página de la formación.',
+  'm.p2': 'Haces la práctica', 'm.p2d': 'Una acción real en tu comunidad, no un ejercicio.',
+  'm.p3': 'Queda la evidencia', 'm.p3d': 'Firmada en el registro de vuestro nodo, en vuestro dispositivo.',
+  'm.p4': 'La IA la revisa', 'm.p4d': 'Con la lista del módulo, y te dice qué falta y por qué.',
+  'm.p5': 'Una persona la valida', 'm.p5d': 'Alguien de otro nodo y tu mentor o mentora.',
+  'm.p6': 'Vuelve a la red', 'm.p6d': 'Lo aprendido, sin datos personales, ayuda al nodo siguiente.',
+  'm.k': 'Las tres llaves de una práctica certificada',
+  'm.k1': '1 · El registro', 'm.k1d': 'La evidencia existe y está firmada por quien la hizo (y por la otra parte, si es un intercambio). Lo comprueba el SOS solo.',
+  'm.k2': '2 · La IA tutora', 'm.k2d': 'Revisa la evidencia con los criterios del módulo y prepara la sesión de mentoría. Propone; no certifica.',
+  'm.k3': '3 · Las personas', 'm.k3d': 'Una persona de otro nodo de la red y un mentor o mentora de nivel N3 la firman. Sin esas dos firmas, no cuenta.',
+  'p.t': 'Las 22 prácticas · qué se hace en la comunidad en cada módulo',
+  'p.s': 'Cada módulo lleva el nombre de su área de conocimiento y, debajo, el rol que forma. Toca el título para ir al contenido del módulo.',
+  't.t': 'La IA del SOS como tutora · acompaña, no decide',
+  't.s': 'La IA hace la parte que cansa: leer la evidencia, compararla con los criterios del módulo, ver qué falta y preparar la sesión con el mentor. La decisión siempre es de una persona, y todo lo que hace la IA se puede ver.',
+  't.si': 'Lo que hace',
+  't.sil': '<li>Lee tu nivel y tus evidencias, y te dice qué módulo te toca ahora.</li><li>Revisa cada práctica con los criterios del módulo («qué revisa la IA», en cada práctica).</li><li>Prepara el guion de 60 minutos de la mentoría: lo que ya dominas, el hueco a trabajar y el encargo.</li><li>Enseña a enlazar nodos con patrones de otras comunidades, nunca con sus datos.</li><li>Dice siempre qué ha leído para llegar a cada propuesta.</li>',
+  't.no': 'Lo que no hace nunca',
+  't.nol': '<li>Certificar sola: la firma es de personas.</li><li>Leer lo que no le has dado, ni guardarlo fuera de vuestro nodo.</li><li>Recibir nombres, contactos o contenidos de otras personas sin su consentimiento.</li><li>Ser imprescindible: sin conexión, el SOS hace un plan local con las mismas reglas.</li>',
+  't.v': 'Dos maneras de activarla',
+  't.v1': 'Con la clave de tu organización', 't.v1d': 'Pones la clave de vuestra cuenta de IA en el SOS y la tutora trabaja con vuestra cuenta, desde vuestro dispositivo. <span class="avui">ya está</span>',
+  't.v2': 'Con saldo contratado en TeamTowers', 't.v2d': 'Usáis nuestra conexión con un saldo contratado y un límite por persona, sin tener que abrir ninguna cuenta. Cada tarea va al modelo más pequeño que la hace bien. <span class="avui">ya está</span>',
+  't.n': 'Hoy en el SOS: el nivel por evidencia y «Prepara mi mentoría» (lanzador → 🎓), con plan local si no hay IA <span class="avui">ya está</span>. La revisión de cada práctica con los criterios de esta guía <span class="avui pend">en desarrollo</span>.',
+  'd.t': 'Los datos · confidenciales por diseño, compartidos solo para aprender',
+  'd.s': 'Una formación que se hace en la comunidad toca datos de personas reales. Por eso las reglas son estas, y valen igual para la IA, para el mentor y para TeamTowers.',
+  'd.r1': 'Los datos viven en el nodo', 'd.r1d': 'El registro, los mapas y las evidencias se guardan en el dispositivo de la comunidad, no en un servidor central. Quien custodia el nodo decide qué sale. <span class="avui">ya está</span>',
+  'd.r2': 'Cifrado para quien tiene que leer', 'd.r2d': 'Lo que se comparte va cifrado para la identidad digital de quien lo tiene que recibir: nadie más lo puede abrir por el camino. <span class="avui">ya está</span>',
+  'd.r3': 'A la IA, lo mínimo', 'd.r3d': 'La tutora recibe recuentos, niveles y los módulos, no los contenidos ni los nombres de otras personas. Si una práctica necesita más, lo pide y lo tienes que aceptar.',
+  'd.r4': 'Verificar sin enseñar', 'd.r4d': 'El certificado lleva las huellas (hash) de las evidencias, no las evidencias. Se puede comprobar que existen y que no se han tocado sin ver qué dicen. <span class="avui">ya está</span>',
+  'd.r5': 'Lo que sube es lo aprendido', 'd.r5d': 'A la red va el patrón (qué roles, qué intercambios, qué funcionó), nunca quién lo hizo. Así un nodo nuevo arranca con lo que ya saben los demás.',
+  'd.r6': 'Con el reglamento', 'd.r6d': 'Consentimiento para cada finalidad, el mínimo de datos y derecho a llevárselos o borrarlos. Es el módulo 15, y también se practica.',
+  'x.t': 'Enlazar nodos · de la comunidad a la red, sin centro',
+  'x.s': 'Cada comunidad es un nodo completo: tiene su registro, su mapa y su gobernanza. La red no es un servidor que los reúne, es el acuerdo entre nodos. Esto también se aprende haciendo, y es parte del nivel N3.',
+  'x.p1': 'Cada nodo, su mapa', 'x.p1d': 'Módulos 3 y 17: quién hay y qué se dan.',
+  'x.p2': 'Dónde se tocan', 'x.p2d': 'Los intercambios que van de un nodo al otro: personas, cosas, conocimiento.',
+  'x.p3': 'El acuerdo', 'x.p3d': 'Módulos 5 y 6: qué se comparte, quién decide y cómo se sale.',
+  'x.p4': 'Se presentan', 'x.p4d': 'Cada nodo con su identidad digital; se emparejan directamente, dispositivo a dispositivo.',
+  'x.p5': 'Se verifican', 'x.p5d': 'Con el paquete de anclaje de cada nodo, sin tener que creer a nadie.',
+  'x.p6': 'Se mantienen vivos', 'x.p6d': 'Sincronizan solo lo que lleva información, y cada uno conserva su copia.',
+  'x.n': 'Hoy en el SOS: emparejar dispositivos directamente (WebRTC, sin servidor), relés de presencia abiertos y configurables (Nostr), paquete de anclaje firmado y sobres cifrados por destinatario <span class="avui">ya está</span>.',
+  'k.t': 'Si cae internet · seguir operando a la antigua, de igual a igual',
+  'k.s': 'Una comunidad no puede depender de que una empresa, una nube o una conexión funcionen. El SOS está hecho para que cada escalón que cae deje otro debajo, y la formación lo entrena.',
+  'k.n0': 'Todo funciona', 'k.n0d': 'La web, los relés y la IA. Es la manera cómoda, no la única.',
+  'k.n1': 'Caen los servicios centrales', 'k.n1d': 'El SOS instalado sigue abriéndose con los datos del dispositivo. La tutoría pasa al plan local. Los relés se cambian por otros o por uno propio.',
+  'k.n2': 'Cae internet, hay red local', 'k.n2d': 'Dos dispositivos en la misma wifi se emparejan directamente con un código que se pasa en mano o con un QR, y sincronizan.',
+  'k.n3': 'No hay ninguna red', 'k.n3d': 'La copia del nodo va en un fichero (un USB, el móvil de alguien que viaja). Como todo va firmado, nadie la puede falsear por el camino. Cuando vuelve la red, se junta.',
+  'k.s1': 'El simulacro, una práctica más',
+  'k.s2': 'Para llegar a N3, el nodo hace un simulacro: un día sin servicios centrales, los intercambios registrados igualmente, y la sincronización con otro nodo por red local o por fichero. La evidencia es la misma que la de cualquier práctica: el registro firmado y la prueba de que las dos copias cuadran.',
+  'k.n': 'Hoy en el SOS: funciona sin conexión una vez abierto, copia de seguridad en fichero, emparejamiento con código o QR y relés intercambiables <span class="avui">ya está</span>. La guía del simulacro dentro de la app <span class="avui pend">en desarrollo</span>.',
+  'q.t': 'El plan de desarrollo · de quién eres al plan de trabajo',
+  'q.s': 'El mentor o mentora no empieza por los módulos: empieza por la persona. Qué le gusta, qué se le da bien, qué roles hace y qué hace falta cerca. De ahí sale el plan, y el plan se trabaja en el mismo tablero que el resto del trabajo.',
+  'q.p1': 'El alta', 'q.p1d': 'El perfil, el ikigai y las skills. Las de LinkedIn se importan con las validaciones de tu red.',
+  'q.p2': 'La mentoría', 'q.p2d': 'El mentor lee el ikigai, los roles, las skills y el nivel que dice el registro.',
+  'q.p3': 'El plan', 'q.p3d': 'El nivel siguiente y las prácticas que llevan a él, ordenadas por lo que encaja contigo, con el motivo de cada una.',
+  'q.p4': 'El tablero', 'q.p4d': 'Cada práctica es una tarjeta del kanban: por hacer, haciendo, hecho y validado.',
+  'q.p5': 'El pomodoro', 'q.p5d': 'Si quieres, bloques de 25 minutos: al acabar, el tiempo queda apuntado en la tarjeta.',
+  'q.p6': 'El valor', 'q.p6d': 'Validado por el mentor, cuenta en la contabilidad de valor y como evidencia para el certificado.',
+  'q.li': 'Las skills de LinkedIn, sin entrar en LinkedIn',
+  'q.lid': 'En LinkedIn, Configuración → Privacidad de datos → Obtener una copia de tus datos. Subes Skills.csv o el fichero de recomendaciones recibidas, o pegas la lista de aptitudes del perfil o del CV. Se lee en tu navegador; de quién te valida solo se cuenta cuántos son, nunca quién. Y nada se añade solo: aceptas las que son tuyas.',
+  'q.pr': 'Pruébalo',
+  'q.n0': 'N0 · Exploración', 'q.n1': 'N1 · Participante', 'q.n2': 'N2 · Gestor/a de nodo',
+  'q.f1': 'Dónde estás ahora', 'q.org': 'Organización · transformación digital',
+  'q.f2': 'Tu rol', 'q.r1': 'Persona que participa', 'q.r2': 'Coordinación de comunidad', 'q.r3': 'Gobierno del territorio', 'q.r4': 'Enlace con la administración', 'q.r5': 'Mentoría',
+  'q.f3': 'Qué te gusta y qué hace falta cerca (separado por comas)',
+  'q.f4': 'Tus skills (pega la lista de LinkedIn, o sube el fichero)',
+  'q.fes': 'Hazme el plan',
+  'q.n': 'En el SOS: el plan sale en «Prepara mi mentoría» y el botón lo lleva a tu tablero, guardado en tu dispositivo; la importación de LinkedIn está en el alta y en el perfil <span class="avui">ya está</span>. Aquí es una prueba: se guarda solo en este navegador.',
+  'z.t': 'El certificado · es tuyo y lo puede verificar cualquiera',
+  'z.s': 'Cuando las prácticas de un nivel tienen las tres llaves, el certificado se genera en tu perfil y lo tienes tú, en tu dispositivo.',
+  'z.b1': 'Qué dice', 'z.b1d': 'El nivel, el área, los módulos con sus horas, la comunidad donde se han hecho, y las huellas de cada evidencia. Firmado por ti, por el mentor o mentora y por el nodo que valida.',
+  'z.b2': 'Cómo se verifica', 'z.b2d': 'Con las firmas y el paquete de anclaje, en cualquier SOS y sin conexión. No hace falta preguntar a TeamTowers si es bueno.',
+  'z.b3': 'Para qué sirve', 'z.b3d': 'Para demostrar lo que sabes hacer con hechos. Las horas, el programa y las evidencias también sirven para presentarte al procedimiento oficial de acreditación de competencias profesionales, que decide la administración.',
+  'z.n': 'El certificado del SOS no es un título oficial. La emisión como credencial firmada dentro de la app <span class="avui pend">en desarrollo</span>; hoy la evidencia ya queda en el registro y se verifica con el paquete de anclaje.',
+  'z.e1': 'Los 22 módulos', 'z.e2': 'Los itinerarios por rol', 'z.e3': 'Preparar la mentoría', 'z.e4': 'Las reglas del código', 'z.e5': 'Abre el SOS y empieza'
+};
+const PH_ES = { 'q.f3p': 'p. ej. acompañar a personas mayores, préstamo de objetos, mediación', 'q.f4p': 'Facilitación de grupos\n12 validaciones\nGestión de proyectos' };
+/*TT-PRACTIQUES-ES*/
+/* GENERAT per SOS/tools/build-certificacio.js · no s'edita a mà. */
+const CE_PRACTIQUES_ES = {
+ "pr.lp": "Práctica",
+ "pr.le": "Evidencia",
+ "pr.li": "Revisa la IA",
+ "pr.ls": "En el SOS",
+ "pr.bA": "Área A · Organizaciones comunitarias y economía social",
+ "pr.m1.t": "Sistemas digitales para organizaciones",
+ "pr.m1.r": "Forma: Responsable digital · elegir herramientas abiertas, guardar los datos propios",
+ "pr.m1.p": "Haz el inventario de las herramientas digitales que usa tu comunidad y elige una abierta para cada necesidad, con los datos guardados en vuestro dispositivo.",
+ "pr.m1.e": "La ficha de inventario en el nodo, con el motivo de cada elección.",
+ "pr.m1.i": "Que cada herramienta tenga alternativa abierta y que ningún dato quede solo en un servicio de fuera.",
+ "pr.m1.s": "<a href=\"/SOS/#/eines\" target=\"_blank\" rel=\"noopener\">Las herramientas del SOS</a> · <a href=\"/SOS/#/copia\" target=\"_blank\" rel=\"noopener\">Copia de seguridad y carpeta local</a>",
+ "pr.m2.t": "Identidad digital y firma electrónica",
+ "pr.m2.r": "Forma: Responsable de datos · firmar, verificar y custodiar",
+ "pr.m2.p": "Crea tu identidad digital en el SOS, haz la copia de seguridad y firma la primera aportación real a la comunidad.",
+ "pr.m2.e": "La identidad (did) con copia guardada y una aportación firmada en el registro.",
+ "pr.m2.i": "Que la firma se pueda verificar y que haya copia de la clave fuera del dispositivo.",
+ "pr.m2.s": "<a href=\"/SOS/#/identitat\" target=\"_blank\" rel=\"noopener\">Mi identidad</a> · <a href=\"/SOS/#/copia\" target=\"_blank\" rel=\"noopener\">Copia de seguridad</a>",
+ "pr.m3.t": "Análisis de redes de valor",
+ "pr.m3.r": "Forma: Analista de procesos · mapear roles e intercambios, ver qué falta",
+ "pr.m3.p": "Dibuja el mapa de valor de tu comunidad con tres personas que participan: quién está, qué se dan y qué falta.",
+ "pr.m3.e": "El mapa en el nodo, revisado con las diez reglas, y la lista de lo que falta.",
+ "pr.m3.i": "Que haya intercambios de ida y vuelta, intangibles incluidos, y que cada hueco tenga una pregunta para la sesión.",
+ "pr.m3.s": "<a href=\"/SOS/vna.html\" target=\"_blank\" rel=\"noopener\">El mapa de valor</a> · <a href=\"/SOS/vna-suport.html\" target=\"_blank\" rel=\"noopener\">Apoyo al mapa de valor</a>",
+ "pr.m4.t": "Gestión de recursos compartidos",
+ "pr.m4.r": "Forma: Gestor/a de recursos comunitarios · banco de tiempo, préstamo de objetos",
+ "pr.m4.p": "Pon en marcha un banco de tiempo o un préstamo de objetos con al menos cinco personas del barrio.",
+ "pr.m4.e": "Intercambios registrados y firmados por las dos partes durante cuatro semanas.",
+ "pr.m4.i": "Que los intercambios sean reales (dos firmas) y que participen personas distintas, no siempre las mismas.",
+ "pr.m4.s": "<a href=\"/SOS/banc-temps.html\" target=\"_blank\" rel=\"noopener\">El Banco de Tiempo</a> · <a href=\"/SOS/biblioteca.html\" target=\"_blank\" rel=\"noopener\">La Biblioteca de las Cosas</a> · <a href=\"/SOS/aigua.html\" target=\"_blank\" rel=\"noopener\">El Agua</a>",
+ "pr.m5.t": "Gobernanza participativa",
+ "pr.m5.r": "Forma: Secretaría y facilitación de órganos · quórum, actas, decisiones",
+ "pr.m5.p": "Convoca y facilita una asamblea o reunión del órgano de la comunidad y deja la decisión tomada por escrito.",
+ "pr.m5.e": "El acta con el quórum, la decisión votada y las firmas de quienes custodian el nodo.",
+ "pr.m5.i": "Que haya quórum, que el voto quede firmado y que el acta diga quién hace qué y cuándo.",
+ "pr.m5.s": "<a href=\"/SOS/#/tauler\" target=\"_blank\" rel=\"noopener\">El tablero de la comunidad</a> · <a href=\"/SOS/#/registre\" target=\"_blank\" rel=\"noopener\">Registro público firmado</a>",
+ "pr.m6.t": "Economía colaborativa e intercooperación",
+ "pr.m6.r": "Forma: Promotor/a de proyectos colectivos · reparto equitativo, acuerdos entre entidades",
+ "pr.m6.p": "Acuerda con otra entidad del territorio un proyecto o un intercambio, con el reparto de cada aportación escrito desde el primer día.",
+ "pr.m6.e": "El acuerdo de intercooperación firmado por los dos nodos y el primer reparto calculado.",
+ "pr.m6.i": "Que el reparto salga de las aportaciones registradas y que el acuerdo diga cómo se entra y cómo se sale.",
+ "pr.m6.s": "<a href=\"/SOS/matriu.html\" target=\"_blank\" rel=\"noopener\">La MATRIU</a> · <a href=\"/SOS/compra.html\" target=\"_blank\" rel=\"noopener\">La Compra</a> · <a href=\"/SOS/#/federacions\" target=\"_blank\" rel=\"noopener\">Federaciones temáticas</a>",
+ "pr.m7.t": "Participación ciudadana",
+ "pr.m7.r": "Forma: Dinamizador/a de participación · registrar y reconocer aportaciones",
+ "pr.m7.p": "Organiza una acción abierta en el barrio y haz que cada aportación quede registrada y reconocida.",
+ "pr.m7.e": "Las aportaciones de la acción en el registro y el reconocimiento publicado a quien participó, con su permiso.",
+ "pr.m7.i": "Que haya personas nuevas y que el reconocimiento salga solo con consentimiento.",
+ "pr.m7.s": "<a href=\"/SOS/uneix-te.html\" target=\"_blank\" rel=\"noopener\">Participa en tu barrio</a> · <a href=\"/SOS/#/registre\" target=\"_blank\" rel=\"noopener\">Registro público firmado</a>",
+ "pr.m8.t": "Datos abiertos e IA responsable",
+ "pr.m8.r": "Forma: Técnico/a de datos · publicar con garantías, usar la IA con criterio",
+ "pr.m8.p": "Publica en abierto un resumen agregado de la actividad de la comunidad y usa la IA para prepararlo, diciendo qué le has dado.",
+ "pr.m8.e": "El resumen publicado, el paquete de anclaje que lo verifica y la nota de qué ha leído la IA.",
+ "pr.m8.i": "Que el resumen no permita identificar a nadie y que el anclaje cuadre con el registro.",
+ "pr.m8.s": "<a href=\"/SOS/#/registre\" target=\"_blank\" rel=\"noopener\">Registro público firmado</a> · <a href=\"/SOS/online.html\" target=\"_blank\" rel=\"noopener\">SOS Online</a>",
+ "pr.bB": "Área B · Dinamización comunitaria",
+ "pr.m9.t": "Dinamización de grupos",
+ "pr.m9.r": "Forma: Dinamizador/a comunitario/a · conducir sesiones",
+ "pr.m9.p": "Conduce tres sesiones de grupo con una dinámica preparada y un encargo al final de cada una.",
+ "pr.m9.e": "El guion de cada sesión, la asistencia y el encargo que salió.",
+ "pr.m9.i": "Que cada sesión acabe con un encargo concreto y que en la siguiente se revise.",
+ "pr.m9.s": "<a href=\"/SOS/colla.html\" target=\"_blank\" rel=\"noopener\">La colla en la piña</a> · <a href=\"/SOS/#/gent\" target=\"_blank\" rel=\"noopener\">La gente</a>",
+ "pr.m10.t": "Comunicación y captación",
+ "pr.m10.r": "Forma: Comunicador/a · difundir, acoger y fidelizar",
+ "pr.m10.p": "Haz una campaña para acoger a personas nuevas en la comunidad y acompáñalas hasta su primera aportación.",
+ "pr.m10.e": "Las personas acogidas y la primera aportación de cada una, contadas sin datos personales.",
+ "pr.m10.i": "Cuántas personas dan el paso de mirar a participar, y dónde se quedan las que no.",
+ "pr.m10.s": "<a href=\"/SOS/uneix-te.html\" target=\"_blank\" rel=\"noopener\">Participa en tu barrio</a> · <a href=\"/SOS/#/alta\" target=\"_blank\" rel=\"noopener\">Hazte usuario/a</a>",
+ "pr.m11.t": "Gestión de conflictos y cuidados",
+ "pr.m11.r": "Forma: Mediador/a · mediar, prevenir el desgaste, preparar relevos",
+ "pr.m11.p": "Prepara el protocolo de cuidados y relevo de tu equipo y úsalo en una situación real o en un simulacro.",
+ "pr.m11.e": "El protocolo acordado y el registro de la mediación o del relevo hecho.",
+ "pr.m11.i": "Que haya relevo previsto para cada rol clave y que nadie lleve solo más carga de la que puede.",
+ "pr.m11.s": "<a href=\"/SOS/online.html\" target=\"_blank\" rel=\"noopener\">SOS Online · quién está</a> · <a href=\"/SOS/#/gent\" target=\"_blank\" rel=\"noopener\">La gente y los roles</a>",
+ "pr.m12.t": "Financiación y subvenciones",
+ "pr.m12.r": "Forma: Gestor/a de proyectos · buscar, solicitar y justificar",
+ "pr.m12.p": "Identifica una convocatoria pública o privada que encaje con la comunidad y prepara la solicitud.",
+ "pr.m12.e": "La solicitud presentada o lista, con el presupuesto por horas y el plan de justificación.",
+ "pr.m12.i": "Que el presupuesto salga de las horas reales del mapa y que se pueda justificar con el registro.",
+ "pr.m12.s": "<a href=\"/SOS/#/fons\" target=\"_blank\" rel=\"noopener\">El fondo cooperativo</a> · <a href=\"/SOS/diagnostic-territori.html\" target=\"_blank\" rel=\"noopener\">Diagnóstico comunitario</a>",
+ "pr.m13.t": "Formas jurídicas y trámites",
+ "pr.m13.r": "Forma: Gestor/a administrativo/a · elegir forma, hacer trámites",
+ "pr.m13.p": "Elige con el grupo la forma jurídica que os conviene (o confirma la que tenéis) y haz un trámite real con la administración.",
+ "pr.m13.e": "La decisión razonada en el nodo y el justificante del trámite.",
+ "pr.m13.i": "Que la forma elegida encaje con lo que hace la comunidad y que el trámite tenga fecha y responsable.",
+ "pr.m13.s": "<a href=\"/SOS/diagnostic-org.html\" target=\"_blank\" rel=\"noopener\">Diagnóstico de organización</a> · <a href=\"/SOS/energia.html\" target=\"_blank\" rel=\"noopener\">La Energía</a> · <a href=\"/SOS/habitatge.html\" target=\"_blank\" rel=\"noopener\">La Vivienda</a>",
+ "pr.m14.t": "Evaluación del impacto social",
+ "pr.m14.r": "Forma: Evaluador/a · indicadores e informes",
+ "pr.m14.p": "Define tres indicadores de impacto de la comunidad y haz el primer informe con datos del registro.",
+ "pr.m14.e": "El informe de impacto con los indicadores, la fuente de cada cifra y lo aprendido.",
+ "pr.m14.i": "Que cada cifra salga del registro o de una fuente citada y que no haya ninguna inventada.",
+ "pr.m14.s": "<a href=\"/SOS/#/fons/impacte\" target=\"_blank\" rel=\"noopener\">Simulador de impacto</a> · <a href=\"/SOS/#/registre\" target=\"_blank\" rel=\"noopener\">Registro público firmado</a>",
+ "pr.m15.t": "Protección de datos personales",
+ "pr.m15.r": "Forma: Responsable de tratamiento · RGPD, consentimientos",
+ "pr.m15.p": "Haz el registro de tratamientos de datos de la comunidad y recoge los consentimientos que faltan.",
+ "pr.m15.e": "El registro de tratamientos y los consentimientos, guardados en el nodo y no fuera.",
+ "pr.m15.i": "Que cada dato tenga finalidad y consentimiento, y que se guarde lo mínimo.",
+ "pr.m15.s": "<a href=\"/SOS/#/config\" target=\"_blank\" rel=\"noopener\">Configuración y datos</a> · <a href=\"/SOS/#/copia\" target=\"_blank\" rel=\"noopener\">Copia de seguridad cifrada</a>",
+ "pr.m16.t": "Docencia y tutoría",
+ "pr.m16.r": "Forma: Formador/a · diseñar, tutorizar y evaluar",
+ "pr.m16.p": "Acompaña a dos personas de tu comunidad en su primera práctica certificable, como tutor o tutora.",
+ "pr.m16.e": "Las dos sesiones de mentoría registradas y las prácticas que validaste.",
+ "pr.m16.i": "Que cada sesión acabe con encargo y que tu validación diga en qué te has fijado.",
+ "pr.m16.s": "<a href=\"/SOS/#/mentoria\" target=\"_blank\" rel=\"noopener\">Mi mentoría</a> · <a href=\"/SOS/certificacio.html\" target=\"_blank\" rel=\"noopener\">Guía de certificación</a>",
+ "pr.bC": "Área C · Transformación digital de la organización",
+ "pr.m17.t": "Mapa de valor de la organización",
+ "pr.m17.r": "Forma: Dirección o consultoría · quién aporta qué, con las diez reglas",
+ "pr.m17.p": "Haz el mapa de valor de tu organización con el equipo: quién aporta qué, dentro y fuera.",
+ "pr.m17.e": "El mapa revisado con las diez reglas y los tres análisis hechos.",
+ "pr.m17.i": "Que salgan los roles de fuera (clientes, proveedores, territorio) y los intangibles.",
+ "pr.m17.s": "<a href=\"/SOS/vna.html\" target=\"_blank\" rel=\"noopener\">El mapa de valor</a> · <a href=\"/cliente/\" target=\"_blank\" rel=\"noopener\">El mapa del cliente</a>",
+ "pr.m18.t": "Gestión del conocimiento para la IA",
+ "pr.m18.r": "Forma: Gestor/a del conocimiento · que la IA conozca la organización",
+ "pr.m18.p": "Escribe con el equipo el cerebro de la organización: la cultura, las reglas y lo que ya sabéis, para que vuestra IA os conozca.",
+ "pr.m18.e": "El cerebro en el repositorio o en el nodo, con sus áreas llenas.",
+ "pr.m18.i": "Que cada área tenga al menos un documento y que las reglas lleven el motivo al lado.",
+ "pr.m18.s": "<a href=\"/SOS/cervell.html\" target=\"_blank\" rel=\"noopener\">Tu cerebro</a>",
+ "pr.m19.t": "Web corporativa",
+ "pr.m19.r": "Forma: Responsable web · del mapa a la web sin perder posicionamiento",
+ "pr.m19.p": "Haz salir la web de la organización del mapa de valor, sin perder el posicionamiento que ya tenéis.",
+ "pr.m19.e": "La web en vista previa y la comprobación de que ninguna dirección antigua se pierde.",
+ "pr.m19.i": "Que cada página responda a un rol del mapa y que las direcciones antiguas lleven a la nueva.",
+ "pr.m19.s": "<a href=\"/cliente/\" target=\"_blank\" rel=\"noopener\">La web que sale del mapa</a>",
+ "pr.m20.t": "Publicación de contenidos web",
+ "pr.m20.r": "Forma: Editor/a de contenidos · vista previa antes de publicar",
+ "pr.m20.p": "Publica tres cambios de contenido siguiendo el circuito: propuesta, vista previa, revisión y publicación.",
+ "pr.m20.e": "Los tres cambios con su vista previa y quién los dio por buenos.",
+ "pr.m20.i": "Que nada salga publicado sin vista previa revisada por una persona.",
+ "pr.m20.s": "<a href=\"/cliente/#panel\" target=\"_blank\" rel=\"noopener\">El panel del cliente</a>",
+ "pr.m21.t": "Automatización de procesos",
+ "pr.m21.r": "Forma: Técnico/a de procesos · formularios y flujos conectados",
+ "pr.m21.p": "Automatiza un proceso repetitivo de la organización: un formulario que llega solo donde tiene que llegar.",
+ "pr.m21.e": "El flujo funcionando, con la prueba de una entrada real de principio a fin.",
+ "pr.m21.i": "Que el proceso automatizado sea tangible y repetitivo, y que lo intangible se quede en las personas.",
+ "pr.m21.s": "<a href=\"/SOS/ia.html\" target=\"_blank\" rel=\"noopener\">Flujos con IA</a>",
+ "pr.m22.t": "Trabajo con asistentes de IA",
+ "pr.m22.r": "Forma: Cualquier rol · pedir cambios, revisarlos y validarlos",
+ "pr.m22.p": "Trabaja una semana con vuestro asistente de IA: pídele cambios, revísalos y valídalos antes de que entren.",
+ "pr.m22.e": "Los cambios pedidos, revisados y validados, con lo que la IA propuso y lo que decidisteis.",
+ "pr.m22.i": "Que cada cambio tenga una persona que lo valida y que el cerebro se actualice con lo aprendido.",
+ "pr.m22.s": "<a href=\"/SOS/ia.html\" target=\"_blank\" rel=\"noopener\">Flujos con IA</a> · <a href=\"/SOS/cervell.html\" target=\"_blank\" rel=\"noopener\">Tu cerebro</a>"
+};
+/*/TT-PRACTIQUES-ES*/
+(function () {
+  const ES = Object.assign({}, CE_ES, typeof CE_PRACTIQUES_ES === 'object' ? CE_PRACTIQUES_ES : {});
+  const CA = {};
+  document.querySelectorAll('[data-i18n-html]').forEach(n => { CA[n.getAttribute('data-i18n-html')] = n.innerHTML; });
+  function aplica(l) {
+    const D = l === 'es' ? ES : CA;
+    document.querySelectorAll('[data-i18n-html]').forEach(n => {
+      const v = D[n.getAttribute('data-i18n-html')];
+      if (v) n.innerHTML = v;
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(n => {
+      const k = n.getAttribute('data-i18n-ph');
+      if (!n.dataset.phCa) n.dataset.phCa = n.placeholder;
+      n.placeholder = l === 'es' ? (PH_ES[k] || n.dataset.phCa) : n.dataset.phCa;
+    });
+    document.documentElement.lang = l;
+    document.querySelectorAll('.lang-b').forEach(b => b.classList.toggle('on', b.dataset.lang === l));
+    try { localStorage.setItem('tt_lang', l); } catch (e) {}
+  }
+  let l = 'ca';
+  try { const g = localStorage.getItem('tt_lang'); if (g === 'es' || g === 'ca') l = g; } catch (e) {}
+  const q = /[?&]lang=(ca|es)\b/.exec(location.search); if (q) l = q[1];
+  document.querySelectorAll('.lang-b').forEach(b => b.addEventListener('click', () => aplica(b.dataset.lang)));
+  if (l !== 'ca') aplica(l);
+})();
+</script>
+<script src="lib/pomodoro.js"></script>
+<script src="lib/kanban.js"></script>
+<script src="lib/pla-desenvolupament.js"></script>
+<script>
+/* La prova del pla: la mateixa regla que l'app (lib/pla-desenvolupament.js),
+   les pràctiques generades (knowledge/formacio/moduls.json) i el kanban únic.
+   Es desa només en aquest navegador. */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  if (!$('pdFes') || !window.PlaDesenvolupament) return;
+  var PD = window.PlaDesenvolupament, CLAU = 'tt.pla.demo', dades = null;
+  var L = function () { return (document.documentElement.lang || 'ca').slice(0, 2) === 'es' ? 'es' : 'ca'; };
+  var esc = function (x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function llegeix() { try { return JSON.parse(localStorage.getItem(CLAU) || 'null') || { cards: [], fora: [] }; } catch (e) { return { cards: [], fora: [] }; } }
+  function desa(k) { try { localStorage.setItem(CLAU, JSON.stringify(k)); } catch (e) { /* sense memòria */ } }
+  function tauler(k) {
+    Kanban.pinta($('pdKb'), { kanban: k, llengua: L(), prefix: 'pd-t-', pomoClau: 'tt.pla.demo.pomo',
+      persones: [{ id: 'jo', nom: L() === 'es' ? 'Tú' : 'Tu' }, { id: 'mentor', nom: 'Mentor/a' }], valida: [{ id: 'mentor', nom: 'Mentor/a' }], onCanvi: desa });
+  }
+  $('pdSkF').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0]; if (!f) return;
+    f.text().then(function (t) { $('pdSk').value = t; });
+  });
+  $('pdFes').addEventListener('click', function () {
+    var go = function () {
+      var es = L() === 'es', niv = $('pdNiv').value, sk = PD.importaSkills($('pdSk').value).skills;
+      var ik = $('pdIk').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+      var pl = PD.pla({ nivell: niv === 'org' ? 'N1' : niv, via: niv === 'org' ? 'organitzacio' : 'comunitat', rols: [$('pdRol').value], llengua: L(),
+        ikigai: { agrada: ik, falta: ik, bo: sk.map(function (x) { return x.label; }) } }, dades);
+      var h = '<div class="pd-pla"><strong>' + esc((pl.objectiu === 'C' ? '' : pl.objectiu + ' · ') + pl.objectiuNom) + '</strong> · ' + pl.passos.length + (es ? ' prácticas · ≈ ' : ' pràctiques · ≈ ') + pl.hores + ' h · ' + pl.pomodoros + ' pomodoros · ' + (es ? 'unas ' : 'unes ') + pl.setmanes + (es ? ' semanas a 3 h por semana' : ' setmanes a 3 h per setmana') +
+        (sk.length ? '<br><small>' + (es ? 'Skills leídas: ' : 'Skills llegides: ') + sk.slice(0, 8).map(function (x) { return esc(x.label) + (x.validacions ? ' ✓' + x.validacions : ''); }).join(' · ') + '</small>' : '') +
+        '<ol>' + pl.passos.map(function (x) { return '<li><a href="' + (x.n ? '#c' + x.id : '#caiguda') + '">' + (x.n ? x.n + ' · ' : '') + esc(x.titol) + '</a> — ' + esc(x.practica) + '<br><small>' + esc(x.motius.join(' · ')) + '</small></li>'; }).join('') + '</ol></div>';
+      $('pdOut').innerHTML = h;
+      var k = PD.afegeix(llegeix(), PD.targetes(pl, { qui: 'jo', llengua: L() }));
+      desa(k); tauler(k);
+    };
+    if (dades) return go();
+    fetch('knowledge/formacio/moduls.json').then(function (r) { return r.json(); }).then(function (d) { dades = d; go(); })
+      .catch(function () { $('pdOut').textContent = L() === 'es' ? 'No se han podido cargar las prácticas.' : 'No s\'han pogut carregar les pràctiques.'; });
+  });
+  var k0 = llegeix(); if (k0.cards.length && window.Kanban) tauler(k0);
+})();
+</script>
+<script src="lib/pantalla.js" defer></script>
+<script src="/SOS/lib/modul-pantalla.js" defer></script>
+</body>
+</html>

@@ -73,7 +73,7 @@ const EIXOS = [
     que: 'Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable.',
     on: ['Els herois canònics', '#herois'] },
   { id: 'educacio', ic: '🎓', nom: 'Educació',
-    que: 'El mateix relat és material d\'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.',
+    que: 'El mateix relat és material d\'aula: l\'Escola de participació, de 6 a 13 anys, i vint-i-dos mòduls que la sèrie recorre, un per capítol.',
     on: ['A l\'escola', 'escola.html'] },
   { id: 'inspiracio', ic: '✨', nom: 'Inspiració',
     que: 'Ningú es mou per un informe. Es mou perquè algú altre s\'ha mogut i ho ha explicat prou bé perquè es vegi que es podia.',
@@ -199,7 +199,7 @@ const VIDEOS = [
     d: 'El tema que enceta la saga del tercer còmic: el punxi per rematar la fauna i trobar els que falten.',
     url: null },
   { id: 'directe-taller', mena: 'directe', qui: [], titol: 'Un taller, filmat',
-    d: 'Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.', url: null }
+    d: 'Una sessió de l\'Escola de participació tal com passa, sense muntatge.', url: null }
 ];
 
 /* ══ EL BLOG DEL COMANDO ═════════════════════════════════════════════════════
@@ -218,6 +218,12 @@ const POSTS = [
   { anc: 'post-2', ic: '🦸', t: 'El teu perfil és una xarxa neuronal creativa',
     d: 'Ja no cal triar de quina cosa ets: ets una persona amb una reputació que travessa totes les capes.' }
 ];
+
+/* ══ LA SÈRIE DEL SOS ══════════════════════════════════════════════════════
+   Declarada a `serie-sos.js`, que també llegeix Molekulandia. Aquí només es
+   pinta la cara que hi posa el Comando: el personatge i el vilà de cada
+   capítol. */
+const { TEMPORADES, SERIE, FORMAT, moduls } = require('./serie-sos.js');
 
 /* ══ LA INTRO DEL COMANDO · esborrany de guió ════════════════════════════════
    `SOS/intro.html` és una pel·lícula de setze plans que ja existeix i està bé,
@@ -347,7 +353,7 @@ const INTRO = {
       retol: null },
     { n: 14, s: 10, titol: 'Com es fa un superheroi', de: null, qui: [], tall: false,
       canon: 'no tenen manera de veure', pantalla: true,
-      img: 'Tres imatges: una aula de la Fàbrica de Superherois, un cromo que s\'omple, i el kit narratiu escrivint una sinopsi.',
+      img: 'Tres imatges: una aula de l\'Escola de participació, un cromo que s\'omple, i el kit narratiu escrivint una sinopsi.',
       veu: 'Un superheroi són dues coses: saber què saps fer, i posar-ho on serveixi a algú altre. Si encara no saps què saps, per això hi ha escola. I si no tens la creativitat, te la posa una màquina.',
       retol: null },
     { n: 15, s: 7, titol: 'I tu, t\'hi apuntes?', de: null, qui: [], tall: true, cta: true,
@@ -400,6 +406,18 @@ const ALIATS = nom1(/^const COMANDO_ALLIES=\[[\s\S]*?\n\];/m);
 const VILANS = nom1(/^const COMANDO_VILLAINS=\[[\s\S]*?\n\];/m);
 const noms = new Set(HEROIS.map(h => h.name).concat(ALIATS, VILANS));
 if (!ALIATS.length || !VILANS.length) bad('no es poden llegir COMANDO_ALLIES o COMANDO_VILLAINS');
+/* ── La sèrie que ensenya ────────────────────────────────────────────────────
+   El nom i les hores de cada mòdul surten de `formacio.html`, que és on viuen:
+   aquí només es diu quin mòdul porta cada capítol. */
+const MODULS = moduls();
+require('./serie-sos.js').comprova(MODULS).forEach(bad);
+const nomsHeroi = new Set(HEROIS.map(h => h.name));
+SERIE.forEach(c => {
+  if (!nomsHeroi.has(c.heroi)) bad(`el capítol ${c.c} presenta ${c.heroi}, que no és a CANONICAL_HEROES`);
+  if (c.vila && !VILANS.includes(c.vila)) bad(`el capítol ${c.c} té de vilà ${c.vila}, que no és a COMANDO_VILLAINS`);
+});
+HEROIS.filter(h => !SERIE.some(c => c.heroi === h.name)).forEach(h =>
+  bad(`${h.name} no presenta cap capítol de la sèrie`));
 VIDEOS.forEach(v => {
   if (!Array.isArray(v.qui)) { bad(`el vídeo «${v.titol}» no declara \`qui\` com a llista`); return; }
   v.qui.filter(n => !noms.has(n)).forEach(n =>
@@ -554,6 +572,21 @@ const htmlVideos = () => {
       `aquesta mateixa targeta s'obre.</p>` : '');
 };
 
+const htmlSerie = () =>
+  `<ol class="srf">\n` + FORMAT.map(f =>
+    `  <li><b>${esc(f.ficcio)}</b> ${esc(f.ficcioD)}</li>`).join('\n') + `\n</ol>\n` +
+  TEMPORADES.map(t =>
+    `<details class="srt"${t.n === 1 ? ' open' : ''}><summary><span class="srt-n">Temporada ${t.n}</span> ` +
+    `${esc(t.t)} <span class="srt-b">${esc(t.bloc)}</span></summary>\n<ol class="src">\n` +
+    SERIE.filter(c => c.t === t.n).map(c => {
+      const md = MODULS[c.m];
+      return `  <li id="cap-${c.c}"><div class="src-cap">Capítol ${c.c} · ${esc(c.heroi)}` +
+        (c.vila ? ` contra ${esc(c.vila)}` : '') + `</div>` +
+        `<div class="src-ap">${esc(c.apren)}</div>` +
+        `<div class="src-pr"><span>La prova</span> ${esc(c.prova)}</div>` +
+        `<a class="src-m" href="formacio.html#${c.m}">Mòdul ${c.m.slice(1)} · ${esc(md.t)}${md.h ? ' · ' + esc(md.h) : ''} →</a></li>`;
+    }).join('\n') + `\n</ol></details>`).join('\n');
+
 const htmlPosts = () =>
   `<div class="posts">\n` + POSTS.map(p =>
     `  <a class="post" href="blog.html#${p.anc}"><span class="post-ic">${p.ic}</span>` +
@@ -599,6 +632,7 @@ const BLOCS = [
   ['<!--CM-EIXOS-->', '<!--/CM-EIXOS-->', htmlEixos],
   ['<!--CM-PASSOS-->', '<!--/CM-PASSOS-->', htmlPassos],
   ['<!--CM-VIDEOS-->', '<!--/CM-VIDEOS-->', htmlVideos],
+  ['<!--CM-SERIE-->', '<!--/CM-SERIE-->', htmlSerie],
   ['<!--CM-HEROIS-->', '<!--/CM-HEROIS-->', htmlHerois],
   ['<!--CM-POSTS-->', '<!--/CM-POSTS-->', htmlPosts]
 ];
@@ -649,6 +683,19 @@ ${VIDEOS.filter(v => !v.url).length
     ? `**Pendent d'enllaç:** ${VIDEOS.filter(v => !v.url).map(v => v.titol).join(', ')}. ` +
       'Mentre no hi siguin, la pàgina els ensenya dient que encara no hi són — no com una porta tancada.'
     : 'Totes les peces tenen enllaç.'}
+
+## La sèrie del SOS · la cara del Comando
+
+Qui mira la sèrie aprèn a operar amb el model: cada capítol porta un mòdul de
+\`formacio.html\` i acaba amb la seva prova. Tot capítol té la mateixa forma:
+
+${FORMAT.map((f, i) => `${i + 1}. **${f.ficcio}** — ${f.ficcioD}`).join('\n')}
+
+${TEMPORADES.map(t => `### Temporada ${t.n} · ${t.t} (${t.bloc})
+
+| Cap. | Personatge | Vilà | Mòdul | Què aprèn qui mira | La prova |
+|---|---|---|---|---|---|
+${SERIE.filter(c => c.t === t.n).map(c => `| ${c.c} | ${c.heroi} | ${c.vila || '—'} | [${c.m} · ${MODULS[c.m] ? MODULS[c.m].t : '?'}](../../formacio.html#${c.m}) | ${c.apren} | ${c.prova} |`).join('\n')}`).join('\n\n')}
 
 ## El blog del Comando
 
@@ -818,7 +865,8 @@ const dataJson = () => JSON.stringify({
   font: 'https://github.com/asolache/teamtowershuma',
   objectiu: OBJECTIU,
   tesi: TESI, eixos: EIXOS, passos: PASSOS, decorat: DECORAT,
-  herois: HEROIS, videos: VIDEOS, posts: POSTS, intro: INTRO
+  herois: HEROIS, videos: VIDEOS, posts: POSTS, intro: INTRO,
+  serie: { format: FORMAT, temporades: TEMPORADES, capitols: SERIE.map(c => Object.assign({}, c, { modul: MODULS[c.m] || null })) }
 }, null, 2) + '\n';
 
 if (CHECK) {
@@ -850,8 +898,8 @@ writeFileSync(fMd, md());
 writeFileSync(fIntro, mdIntro());
 writeFileSync(fJson, dataJson());
 console.log(`✅ Comando escrit · ${BLOCS.length} blocs, ${HEROIS.length} herois, ${EIXOS.length} eixos, ` +
-  `${PASSOS.length} passos, ${VIDEOS.length} peces (${VIDEOS.filter(v => !v.url).length} sense enllaç) i ${POSTS.length} entrades del blog`);
+  `${PASSOS.length} passos, ${SERIE.length} capítols, ${VIDEOS.length} peces (${VIDEOS.filter(v => !v.url).length} sense enllaç) i ${POSTS.length} entrades del blog`);
 console.log(`   i el guió de la intro · ${INTRO.plans.length} plans, ${mmss(INTRO.durada)}, ` +
   `${INTRO.plans.filter(p => !p.de).length} per filmar`);
 
-module.exports = { TESI, EIXOS, PASSOS, VIDEOS, POSTS, DECORAT, INTRO };
+module.exports = { TESI, EIXOS, PASSOS, VIDEOS, POSTS, DECORAT, INTRO, TEMPORADES, SERIE, FORMAT };

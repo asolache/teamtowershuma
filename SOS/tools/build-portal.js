@@ -99,6 +99,7 @@ const APREN = [
   { p: 'vna.html', ic: '🕸', guanya: 'El mapa de qui sosté què a la teva comunitat, amb els favors i la confiança que no compta ningú.' },
   { p: 'vna-suport.html', ic: '🧭', guanya: 'Les sis passes per dibuixar-lo, amb deu regles que revisen el mapa mentre s\'escriu.' },
   { p: 'formacio.html', ic: '🎓', guanya: 'De N0 a N3. El que fas queda al teu registre i el certificat és teu, no del projecte.' },
+  { p: 'certificacio.html', ic: '📜', guanya: 'Cada mòdul, una pràctica real a la teva comunitat. La IA fa de tutora, les dades es queden al node i la xarxa segueix si cau internet.' },
   { p: 'escola.html', ic: '🏫', guanya: 'El mateix a l\'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.' },
   { p: 'ia.html', ic: '🤖', guanya: 'Automatitzar el tangible i valorar l\'intangible, amb IA que proposa i mai decideix.' },
   { p: 'vedes.html', ic: '⛔', guanya: 'Cada regla amb el motiu escrit al costat. És el que evita repetir un error que ja va sortir car.' },
@@ -137,11 +138,18 @@ const MON = [
 const FORA = {
   'pressupost.html': 'va al bloc del que es pot contractar',
   'intro.html': 'és la tira d\'enllaços secundaris, abans d\'entrar',
-  'uneix-te.html': 'és una de les tres portes de dalt, per a qui ve d\'una invitació'
+  'uneix-te.html': 'és una de les tres portes de dalt, per a qui ve d\'una invitació',
+  'visio.html': 'té el seu enllaç propi a la primera pantalla, sota «Comença al teu poble» (21/11/2026)'
 };
 
 /* ══ ELS BLOCS ═══════════════════════════════════════════════════════════════ */
-const MODUL = { m4: 'Recursos comunitaris', m6: 'Intercooperació', m11: 'Cures i relleu', m13: 'Formes jurídiques' };
+/* El nom del mòdul i les seves pantalles surten de moduls.json (veda 187: un
+   nom, un lloc). Abans eren quatre noms escrits aquí a mà, i ja no eren els
+   oficials. Cada pàgina ha de ser, a més, una de les pantalles del seu mòdul:
+   si no, la fitxa ensenyaria a anar a aprendre-la a un mòdul que no la cita. */
+const MODULS = JSON.parse(readFileSync(join(SOS, 'knowledge', 'formacio', 'moduls.json'), 'utf8')).moduls;
+const MODUL = Object.fromEntries(MODULS.map(m => [m.id, m.t.ca]));
+const PANT_DE = Object.fromEntries(MODULS.map(m => [m.id, (m.pantalles || []).map(p => p.u)]));
 const fitxa = (x, cls) => {
   const n = nav(x.p);
   const cos = `<span class="pg-ic">${x.ic}</span>` +
@@ -306,6 +314,14 @@ const TOTES = MUNTAR.concat(APREN, MON);
   const sense = MUNTAR.filter(x => !x.m || F.indexOf('id="' + x.m + '"') < 0).map(x => x.p);
   if (sense.length) bad('eines sense mòdul de formació (o mòdul inexistent): ' + sense.join(', '));
   else ok(`les ${MUNTAR.length} eines porten el seu mòdul de formació`);
+})();
+
+// 4 ter · I el mòdul la cita entre les seves pantalles (certificacio.json),
+//     perquè la tornada (lib/modul-pantalla.js) i la fitxa diguin el mateix.
+(() => {
+  const fora = MUNTAR.filter(x => x.m && !(PANT_DE[x.m] || []).includes('/SOS/' + x.p)).map(x => x.p + ' (' + x.m + ')');
+  if (fora.length) bad('eines que el seu mòdul no cita a «pantalles» de certificacio.json: ' + fora.join(', '));
+  else ok('cada eina és una de les pantalles del seu mòdul');
 })();
 
 // 5 · Els paquets porten durada, per a qui i què s'hi endú, llegits del

@@ -214,11 +214,36 @@ console.log('\n6 · La pàgina: pestanyes, menú, mòbil');
     pro: document.querySelectorAll('#prototips .tg').length,
     inputs: document.querySelectorAll('input').length
   }));
-  ok(r.tabs === r.pans && r.tabs === 4, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
+  ok(r.tabs === r.pans && r.tabs === 5, `${r.tabs} pantalles, ${r.tabs} pestanyes`);
   ok(r.nav && r.aqui.indexOf('/SOS/molekulandia.html') >= 0, 'porta el menú del SOS i s\'hi marca a si mateixa');
   ok(r.act === 14 && r.pro === 6, `el terme ensenya les ${r.act} activitats crítiques i les ${r.pro} formes`);
   ok(r.inputs === 0, 'i no hi ha cap camp on escriure res de ningú: aquí no es demana cap dada');
   await ctx.close();
+}
+console.log('\n7 · La sèrie del SOS: un capítol per mòdul, amb noms oficials i sense ficció');
+{
+  const c3 = await b.newContext();
+  const p3 = await c3.newPage();
+  await p3.goto(F('molekulandia.html') + '#cap-12');
+  await p3.waitForTimeout(300);
+  const r = await p3.evaluate(() => ({
+    obert: document.querySelector('#pSerie').classList.contains('on'),
+    caps: document.querySelectorAll('#srTemps .src li').length,
+    temps: document.querySelectorAll('#srTemps details').length,
+    cap12: !!document.querySelector('#cap-12') && document.querySelector('#cap-12').closest('details').open,
+    moduls: [...document.querySelectorAll('#srTemps a.src-m')].map(a => a.getAttribute('href')),
+    /* El nom del mòdul el posa formacio.html, i canvia amb els noms oficials
+       (PR #408): el que es vigila aquí és el que diu aquesta pàgina. */
+    txt: [...document.querySelectorAll('#pSerie .lead, #srFormat, .src-cap, .src-ap, .src-pr')].map(e => e.textContent).join(' '),
+    profs: document.querySelectorAll('#profs a[href^="formacio.html#m"]').length
+  }));
+  ok(r.obert && r.cap12, 'un enllaç a #cap-12 obre la sèrie i la temporada on és el capítol');
+  ok(r.caps === 22 && r.temps === 3, `${r.caps} capítols en ${r.temps} temporades`);
+  ok(new Set(r.moduls).size === 22 && r.moduls.every(h => /^formacio\.html#m\d+$/.test(h)),
+    'cada capítol porta a un mòdul diferent de la formació');
+  ok(!/superhero|superheroi|Comando|Mundo Muerto|Mazinguer/i.test(r.txt), 'i aquí no hi ha ficció: ni superherois ni Comando');
+  ok(r.profs > 0, 'i les professions diuen amb quins mòduls es formen');
+  await c3.close();
 }
 {
   const c2 = await b.newContext({ viewport: { width: 390, height: 800 } });

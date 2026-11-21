@@ -5730,3 +5730,42 @@ repositori aturat.
 **Guarda:** `build-base-vna.js --check` i `test-base-vna.mjs` (cinc capes,
 tria la peça bona, troba el que falta, la cobertura suma el catàleg i la base no
 porta preus).
+
+## Veda 187 — L'estructura parla clar: àrea, rol i capacitats, en llenguatge oficial
+
+**Adoptada el 21/11/2026** per l'Álvaro, en demanar noms oficials a la
+formació: «que cada título defina más la temática y luego haya más detalle…
+más aclarativo de las áreas de conocimiento y roles… que quede in eternum como
+una veda de estructura universal para cualquier desarrollo comunitario», i
+«ok, está bien la estructura, me gusta… que sean 22».
+
+L'error que evita: estructures que només entén qui les ha fet. Mòduls amb nom
+de marca o de ficció («Comando Molekulon i reputació»), persones que es diuen
+«superheroi» davant d'un ajuntament, i el mateix nom escrit a mà en cinc
+pàgines que es desfasen.
+
+- **Tres nivells, sempre els mateixos:** àrea de coneixement → mòdul →
+  pràctica. L'àrea és una família professional oficial (CNCP) o una de les
+  dotze àrees de `taxonomia-universal.json`; l'activitat es referencia amb la
+  CNAE-2025.
+- **El títol diu la temàtica; el detall va a sota:** el títol és l'àrea de
+  coneixement en llenguatge oficial (sis paraules com a molt). A sota, el rol
+  que forma i dues o tres capacitats amb verb («mapar rols i intercanvis»).
+- **Les persones, pel seu rol davant de qui llegeix:** usuari/ària a l'app,
+  ciutadà/ana a les pàgines públiques, alumnat a la formació i a l'escola,
+  entitat i personal tècnic per al sector públic, persona sòcia als grups.
+- **La ficció i les marques són campanya, no estructura:** el Comando,
+  Molekulon o qualsevol relat poden fer d'exemple o de porta, mai de nom
+  d'àrea, de mòdul o de rol.
+- **El que s'enllaça no canvia quan canvia el nom:** `#m1`…`#m22`, els `id`,
+  les URL i les dades desades (el rol intern `superheroi` segueix sent la clau)
+  són estables. Canviar un nom no trenca cap enllaç ni cap posicionament.
+- **Un sol lloc per a cada nom:** el `h2` del mòdul a `formacio.html`; la resta
+  de pàgines (sèrie, Molekulandia, catàleg) el llegeixen del generador. Sempre
+  en català i castellà.
+- **Val per a qualsevol desenvolupament comunitari:** una web nova del SOS o
+  d'un client comença amb aquests tres nivells i aquestes regles de nom.
+
+**Guarda (quan s'adopti):** una comprovació que cap títol de mòdul ni d'àrea
+porti noms de la llista de ficció (Comando, Molekulon, superheroi) i que cada
+mòdul declari rol i capacitats.

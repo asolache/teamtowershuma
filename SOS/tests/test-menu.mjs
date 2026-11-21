@@ -205,8 +205,8 @@ console.log('\n4b · Molekulandia no és al calaix d\'eines');
 {
   const porta = h => (M.d.portes.find(g => g.destins.includes(h)) || {}).lbl;
   const sos = M.d.portes.find(g => /eines/.test(g.lbl));
-  const mon = M.d.portes.find(g => /Molekulon/.test(g.lbl));
-  ok(!!sos && !!mon, `hi ha una porta «Les eines» i una «Molekulon» · ${M.d.portes.map(p => p.lbl).join(' | ')}`);
+  const mon = M.d.portes.find(g => /Participació/.test(g.lbl));
+  ok(!!sos && !!mon, `hi ha una porta «Les eines» i una «Participació» (la campanya Molekulon) · ${M.d.portes.map(p => p.lbl).join(' | ')}`);
   ['/SOS/molekulandia.html', '/SOS/molekulon.html', '/SOS/escola.html', '/SOS/joc.html', '/SOS/uneix-te.html']
     .forEach(h => ok(porta(h) === mon.lbl, `${h} és a «${mon.lbl}» i no a cap altra · surt a «${porta(h)}»`));
   ['/SOS/matriu.html', '/SOS/banc-temps.html', '/SOS/online.html']

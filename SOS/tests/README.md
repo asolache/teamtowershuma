@@ -29,6 +29,7 @@ el fitxer, així que funcionen a qualsevol clon.
 | `test-publica.mjs` | V47 | Que el paquet públic sigui agregat i no filtri res |
 | `test-versions.mjs` | V48 | CID, pare, diferències i tornada enrere de les publicacions |
 | `test-pantalla.mjs` | 13/11/2026 | Pàgines com a pantalles: una sola a la vista, enllaç per pantalla, «Següent» i «Enrere», sense scroll de costat al mòbil |
+| `test-visio.mjs` | 21/11/2026 | La visió del SOS: pantalles a tauleta i mòbil, el potencial de Catalunya i Espanya surt de `lib/impacte.js`, cada cita té font, castellà, i el simulador de l'app obre amb Catalunya |
 | `test-qr.mjs` | V49 | Lectura de QR, i que digui la veritat on no pot |
 | `test-escala.mjs` | V50 | 500 nodes i 5.000 apunts, i accessibilitat |
 | `test-missions.mjs` | V51 | La portada de missions |

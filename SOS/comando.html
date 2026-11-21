@@ -173,6 +173,22 @@ a.vid:hover{border-color:var(--purple);transform:translateY(-2px)}
 .vid-no{color:var(--muted);font-size:.8rem;font-style:italic}
 .vids-nota{max-width:70ch;margin:1.3rem auto 0;color:var(--muted);font-size:.86rem;line-height:1.6}
 .vids-nota strong{color:var(--light)}
+/* La sèrie que ensenya: el format comú i una llista per temporada. Plegada
+   per temporades perquè vint-i-dos capítols oberts són un mur. */
+.srf{max-width:70ch;margin:1.6rem auto 1.4rem;padding-left:1.3rem;text-align:left;color:var(--light);font-size:.9rem;line-height:1.6}
+.srf b{color:var(--text)}
+.srt{max-width:860px;margin:.7rem auto;text-align:left;background:var(--card);border:1px solid rgba(21,19,15,.08);border-radius:14px;padding:.4rem 1.1rem}
+.srt summary{cursor:pointer;padding:.7rem 0;font-weight:700;font-size:1rem}
+.srt-n{font-family:'SF Mono',Monaco,monospace;font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--purple);margin-right:.4rem}
+.srt-b{display:block;font-weight:400;font-size:.8rem;color:var(--muted);margin-top:.15rem}
+.src{list-style:none;margin:0 0 .8rem;padding:0;display:grid;gap:.7rem}
+.src li{border-top:1px solid rgba(21,19,15,.08);padding-top:.7rem}
+.src-cap{font-family:'SF Mono',Monaco,monospace;font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--purple);margin-bottom:.25rem}
+.src-ap{font-weight:600;font-size:.94rem;margin-bottom:.3rem}
+.src-pr{color:var(--light);font-size:.85rem;line-height:1.5;margin-bottom:.35rem}
+.src-pr span{font-weight:600;color:var(--text)}
+.src-m{color:var(--green);font-weight:600;font-size:.82rem;text-decoration:none}
+.src-m:hover{text-decoration:underline}
 
 /* ── El blog del Comando ──────────────────────────────────────────────────── */
 .posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:.7rem;margin-top:2rem;text-align:left}
@@ -299,7 +315,7 @@ i cadascuna té la seva pantalla: si no la tingués, seria un cartell.</p>
 <div class="eixos">
   <div class="eix"><div class="eix-ic">🎨</div><div class="eix-n">Art</div><p class="eix-q">El còmic, la música i el dibuix no il·lustren el projecte: en són la matèria. Cada personatge té la seva superarma, el seu vers i el seu tema.</p><a class="eix-on" href="#historia">La història →</a></div>
   <div class="eix"><div class="eix-ic">📖</div><div class="eix-n">Ficció</div><p class="eix-q">Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable.</p><a class="eix-on" href="#herois">Els herois canònics →</a></div>
-  <div class="eix"><div class="eix-ic">🎓</div><div class="eix-n">Educació</div><p class="eix-q">El mateix relat és material d'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar.</p><a class="eix-on" href="escola.html">A l'escola →</a></div>
+  <div class="eix"><div class="eix-ic">🎓</div><div class="eix-n">Educació</div><p class="eix-q">El mateix relat és material d'aula: l'Escola de participació, de 6 a 13 anys, i vint-i-dos mòduls que la sèrie recorre, un per capítol.</p><a class="eix-on" href="escola.html">A l'escola →</a></div>
   <div class="eix"><div class="eix-ic">✨</div><div class="eix-n">Inspiració</div><p class="eix-q">Ningú es mou per un informe. Es mou perquè algú altre s'ha mogut i ho ha explicat prou bé perquè es vegi que es podia.</p><a class="eix-on" href="#blog">El blog del Comando →</a></div>
   <div class="eix"><div class="eix-ic">💪</div><div class="eix-n">Empoderament de les comunitats</div><p class="eix-q">Poder concret i comprovable: qui té les claus, qui decideix i qui cobra el que aporta. Cada aportació va signada i el registre és públic.</p><a class="eix-on" href="index.html#/registre">El registre públic →</a></div>
   <div class="eix"><div class="eix-ic">🕊</div><div class="eix-n">Autonomia</div><p class="eix-q">Sense compte, sense contrasenya i sense demanar permís. La clau te la fa el navegador i no surt del teu aparell; si te'n vas, t'ho endús tot.</p><a class="eix-on" href="#perfil">El teu perfil és teu →</a></div>
@@ -569,10 +585,62 @@ videoclip d'Horacio. I el Comando toca en directe, que és la prova que darrere 
   <div class="vid vid-buit"><div class="vid-mena">Videoclip</div><div class="vid-t">Pigmentón</div><p class="vid-d">Qui dibuixa la xarxa i dona a cadascú el color que li toca perquè pugui operar.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
   <div class="vid vid-buit"><div class="vid-mena">Tema</div><div class="vid-t">Fraktalman</div><p class="vid-d">La forma que es repeteix a totes les escales, convertida en cançó.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
   <div class="vid vid-buit"><div class="vid-mena">Tema</div><div class="vid-t">Tekno Kartoffeln</div><p class="vid-d">El tema que enceta la saga del tercer còmic: el punxi per rematar la fauna i trobar els que falten.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
-  <div class="vid vid-buit"><div class="vid-mena">Directe</div><div class="vid-t">Un taller, filmat</div><p class="vid-d">Una sessió de la Fàbrica de Superherois tal com passa, sense muntatge.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
+  <div class="vid vid-buit"><div class="vid-mena">Directe</div><div class="vid-t">Un taller, filmat</div><p class="vid-d">Una sessió de l'Escola de participació tal com passa, sense muntatge.</p><span class="vid-no">Encara no en tenim l'enllaç</span></div>
 </div>
 <p class="vids-nota">De les 18 peces que el projecte preveu, <strong>4 encara no tenen enllaç públic</strong>. Surten aquí perquè es vegi què hi ha i què falta — no com una promesa amb un enllaç que no obre: el dia que en tinguem l'adreça, aquesta mateixa targeta s'obre.</p>
 <!--/CM-VIDEOS-->
+</section>
+
+<!-- LA SÈRIE QUE ENSENYA ─────────────────────────────────────────────────
+     Cada capítol porta un mòdul de formacio.html i acaba amb la seva prova.
+     La llista la declara `build-comando.js` (SERIE); el nom del mòdul el llegeix
+     de formacio.html, que és on viu. -->
+<section id="serie" class="center">
+<h2>📺 La sèrie del SOS, amb la cara del Comando</h2>
+<p class="lead">Qui mira la sèrie <strong>aprèn a fer-ho</strong>. Cada capítol porta un mòdul de la
+<a href="formacio.html">formació</a>: el gest que ensenya, el mateix gest a la pantalla real i una prova petita que
+pots fer avui. Aquí la presenta un personatge del Comando; la versió sense ficció, amb els oficis i els serveis de
+la plaça, és a <a href="molekulandia.html#serie">Molekulandia</a>.</p>
+<!--CM-SERIE-->
+<ol class="srf">
+  <li><b>El Mundo Muerto</b> El vilà, o el problema, aturant un barri o una organització de debò.</li>
+  <li><b>El gest</b> El personatge ensenya l'única cosa que el capítol vol que aprenguis.</li>
+  <li><b>Fes-ho tu</b> El mateix gest, a la pantalla real del SOS o del mapa, pas a pas.</li>
+  <li><b>La prova</b> Una evidència petita que pots fer avui. És l'evidència del mòdul.</li>
+  <li><b>Els crèdits</b> Qui hi ha sortit, amb el que ha aportat de debò. Són plans de la pel·lícula.</li>
+</ol>
+<details class="srt" open><summary><span class="srt-n">Temporada 1</span> Com s'arma la colla <span class="srt-b">Bloc A · Fonaments</span></summary>
+<ol class="src">
+  <li id="cap-1"><div class="src-cap">Capítol 1 · Horacio Motomachi contra Max Miedox</div><div class="src-ap">Què és un sistema digital que és teu: on viuen les dades i qui en té la clau.</div><div class="src-pr"><span>La prova</span> Obrir el SOS i fer-se el perfil sense compte ni contrasenya.</div><a class="src-m" href="formacio.html#m1">Mòdul 1 · Sistemes digitals per a organitzacions · 4-6 h →</a></li>
+  <li id="cap-2"><div class="src-cap">Capítol 2 · El Aviador contra Mala Yerbax</div><div class="src-ap">Signar el que aportes i comprovar qui ha signat el que llegeixes.</div><div class="src-pr"><span>La prova</span> Signar una primera aportació i verificar-ne la signatura.</div><a class="src-m" href="formacio.html#m2">Mòdul 2 · Identitat digital i signatura electrònica · 6-8 h →</a></li>
+  <li id="cap-3"><div class="src-cap">Capítol 3 · Pigmentón</div><div class="src-ap">Dibuixar una xarxa de valor: rols, i què dona i què rep cadascú.</div><div class="src-pr"><span>La prova</span> Un mapa de valor amb cinc rols i els seus intercanvis.</div><a class="src-m" href="formacio.html#m3">Mòdul 3 · Anàlisi de xarxes de valor · 5-7 h →</a></li>
+  <li id="cap-4"><div class="src-cap">Capítol 4 · Reciclator contra Mr. McGragor</div><div class="src-ap">Posar en comú hores i objectes perquè no calgui comprar-ho de nou.</div><div class="src-pr"><span>La prova</span> Oferir una hora o un objecte al banc de temps del barri.</div><a class="src-m" href="formacio.html#m4">Mòdul 4 · Gestió de recursos compartits · 4-6 h →</a></li>
+  <li id="cap-5"><div class="src-cap">Capítol 5 · Mazinguer contra Mala Yerbax</div><div class="src-ap">Decidir en grup amb regles clares que tothom pot llegir.</div><div class="src-pr"><span>La prova</span> Una decisió presa amb proposta, termini i resultat registrats.</div><a class="src-m" href="formacio.html#m5">Mòdul 5 · Governança participativa · 6-8 h →</a></li>
+  <li id="cap-6"><div class="src-cap">Capítol 6 · Electroplasman contra Mr. McGragor</div><div class="src-ap">Repartir de manera justa el que aporta cadascú en un projecte col·lectiu.</div><div class="src-pr"><span>La prova</span> El repartiment d'un projecte petit, amb les aportacions de cada persona.</div><a class="src-m" href="formacio.html#m6">Mòdul 6 · Economia col·laborativa i intercooperació · 7-9 h →</a></li>
+  <li id="cap-7"><div class="src-cap">Capítol 7 · Afrodita contra Max Miedox</div><div class="src-ap">Fer visible i reconeguda una aportació que ningú veia.</div><div class="src-pr"><span>La prova</span> Una aportació registrada i confirmada per una altra persona.</div><a class="src-m" href="formacio.html#m7">Mòdul 7 · Participació ciutadana · 5-7 h →</a></li>
+  <li id="cap-8"><div class="src-cap">Capítol 8 · La Medusa Andaluza contra Mala Yerbax</div><div class="src-ap">Publicar dades obertes i fer servir la IA amb criteri, sense que s'inventi res.</div><div class="src-pr"><span>La prova</span> Una dada del grup publicada al registre públic.</div><a class="src-m" href="formacio.html#m8">Mòdul 8 · Dades obertes i IA responsable · 6-8 h →</a></li>
+</ol></details>
+<details class="srt"><summary><span class="srt-n">Temporada 2</span> L'ofici de sostenir <span class="srt-b">Bloc B · L'ofici comunitari</span></summary>
+<ol class="src">
+  <li id="cap-9"><div class="src-cap">Capítol 9 · El Anguila contra Max Miedox</div><div class="src-ap">Dinamitzar una trobada perquè tothom parli i surti una acció.</div><div class="src-pr"><span>La prova</span> Una sessió de grup amb ordre del dia, ritme i acord final.</div><a class="src-m" href="formacio.html#m9">Mòdul 9 · Dinamització de grups · 5-7 h →</a></li>
+  <li id="cap-10"><div class="src-cap">Capítol 10 · Mazinguer contra Max Miedox</div><div class="src-ap">Explicar el projecte perquè s'hi sumi gent nova.</div><div class="src-pr"><span>La prova</span> Un missatge de crida i les tres primeres persones que hi responen.</div><a class="src-m" href="formacio.html#m10">Mòdul 10 · Comunicació i captació · 4-6 h →</a></li>
+  <li id="cap-11"><div class="src-cap">Capítol 11 · Guiri-Guay contra Mala Yerbax</div><div class="src-ap">Tenir cura de l'equip i desfer un conflicte abans que es podreixi.</div><div class="src-pr"><span>La prova</span> Una conversa de cura feta i el relleu d'una tasca acordat.</div><a class="src-m" href="formacio.html#m11">Mòdul 11 · Gestió de conflictes i cures · 5-7 h →</a></li>
+  <li id="cap-12"><div class="src-cap">Capítol 12 · Electroplasman contra Mr. McGragor</div><div class="src-ap">Trobar el finançament que encaixa i preparar-ne la sol·licitud.</div><div class="src-pr"><span>La prova</span> Una convocatòria triada i el seu calendari apuntat.</div><a class="src-m" href="formacio.html#m12">Mòdul 12 · Finançament i subvencions · 6-8 h →</a></li>
+  <li id="cap-13"><div class="src-cap">Capítol 13 · Barbamuda contra Max Miedox</div><div class="src-ap">Triar la forma jurídica que sosté el grup i fer-ne els tràmits.</div><div class="src-pr"><span>La prova</span> La forma jurídica triada, amb la llista de tràmits.</div><a class="src-m" href="formacio.html#m13">Mòdul 13 · Formes jurídiques i tràmits · 5-7 h →</a></li>
+  <li id="cap-14"><div class="src-cap">Capítol 14 · Fraktalman contra Mr. McGragor</div><div class="src-ap">Mesurar l'impacte i justificar-lo amb el que ja està registrat.</div><div class="src-pr"><span>La prova</span> Tres indicadors d'impacte llegits del registre del grup.</div><a class="src-m" href="formacio.html#m14">Mòdul 14 · Avaluació de l'impacte social · 5-7 h →</a></li>
+  <li id="cap-15"><div class="src-cap">Capítol 15 · Purpleman contra Mr. McGragor</div><div class="src-ap">Protegir les dades de les persones i complir el RGPD.</div><div class="src-pr"><span>La prova</span> El registre de quines dades es guarden, per què i fins quan.</div><a class="src-m" href="formacio.html#m15">Mòdul 15 · Protecció de dades personals · 4-5 h →</a></li>
+  <li id="cap-16"><div class="src-cap">Capítol 16 · Supergerminador contra Max Miedox</div><div class="src-ap">Ensenyar el mètode a algú altre perquè es repliqui sol.</div><div class="src-pr"><span>La prova</span> Una persona nova acompanyada fins a la seva primera evidència.</div><a class="src-m" href="formacio.html#m16">Mòdul 16 · Docència i tutoria · 8-10 h →</a></li>
+</ol></details>
+<details class="srt"><summary><span class="srt-n">Temporada 3</span> La web viva <span class="srt-b">Bloc C · La teva web viva</span></summary>
+<ol class="src">
+  <li id="cap-17"><div class="src-cap">Capítol 17 · Pigmentón</div><div class="src-ap">Fer el mapa de valor de la teva organització.</div><div class="src-pr"><span>La prova</span> Un mapa que passa les deu regles, desat a «Els meus mapes».</div><a class="src-m" href="formacio.html#m17">Mòdul 17 · Mapa de valor de l'organització · 3 h →</a></li>
+  <li id="cap-18"><div class="src-cap">Capítol 18 · Horacio Motomachi contra Mala Yerbax</div><div class="src-ap">Donar a la IA el coneixement de l'organització perquè no s'inventi res.</div><div class="src-pr"><span>La prova</span> La mateixa pregunta a la IA, amb el cervell i sense, comparada.</div><a class="src-m" href="formacio.html#m18">Mòdul 18 · Gestió del coneixement per a la IA · 2 h →</a></li>
+  <li id="cap-19"><div class="src-cap">Capítol 19 · La Medusa Andaluza contra Mr. McGragor</div><div class="src-ap">Fer la web corporativa a partir del mapa de valor.</div><div class="src-pr"><span>La prova</span> Una web en previsualització que surt del mapa.</div><a class="src-m" href="formacio.html#m19">Mòdul 19 · Web corporativa · 3 h →</a></li>
+  <li id="cap-20"><div class="src-cap">Capítol 20 · El Aviador contra Max Miedox</div><div class="src-ap">Editar i publicar continguts web sense trencar res.</div><div class="src-pr"><span>La prova</span> Un canvi a la web revisat a la previsualització i publicat.</div><a class="src-m" href="formacio.html#m20">Mòdul 20 · Publicació de continguts web · 1,5 h →</a></li>
+  <li id="cap-21"><div class="src-cap">Capítol 21 · El Anguila</div><div class="src-ap">Automatitzar un formulari o un procés perquè vagi sol.</div><div class="src-pr"><span>La prova</span> Un formulari que arriba sol on ha d'arribar.</div><a class="src-m" href="formacio.html#m21">Mòdul 21 · Automatització de processos · 2 h →</a></li>
+  <li id="cap-22"><div class="src-cap">Capítol 22 · Supergerminador contra Mr. McGragor</div><div class="src-ap">Treballar amb un assistent d'IA sense dependre de ningú.</div><div class="src-pr"><span>La prova</span> Una tasca real feta amb l'assistent i revisada per tu.</div><a class="src-m" href="formacio.html#m22">Mòdul 22 · Treball amb assistents d'IA · 2 h →</a></li>
+</ol></details>
+<!--/CM-SERIE-->
 </section>
 
 <!-- CANONICAL HEROES -->

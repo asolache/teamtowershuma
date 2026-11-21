@@ -22,7 +22,7 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html cliente/index.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html cliente/index.html referencias/index.html
 
       # La portada de l'arrel és per on entra tothom i no la comprovava res.
       # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
@@ -371,6 +371,26 @@ jobs:
       - name: L'esquelet de la formació correspon a la docència
         run: node SOS/tools/check-formacio.js
 
+      # La pràctica a la comunitat de cada mòdul es declara una vegada
+      # (SOS/knowledge/formacio/certificacio.json) i surt a dues pàgines: la
+      # guia de certificació i la caixa «Per certificar» de cada mòdul.
+      - name: La guia de certificació té les 22 pràctiques al dia
+        run: node SOS/tools/build-certificacio.js --check
+
+      # El pla de desenvolupament: de l'ikigai i les skills (també les de
+      # LinkedIn) a les pràctiques i al kanban únic.
+      - name: El pla de desenvolupament tria i ordena com diu la guia
+        run: node SOS/tests/test-pla-desenvolupament.mjs
+
+      # Cada mòdul diu la pantalla del SOS on es fa, i cada pantalla torna al
+      # seu mòdul (certificacio.json → lib/modul-pantalla.js).
+      - name: Mòdul ↔ pantalla, en les dues direccions
+        run: node SOS/tests/test-modul-pantalla.mjs
+
+      # Les còpies que es fan soles a una carpeta de l'ordinador, xifrades.
+      - name: Còpies automàtiques a una carpeta
+        run: node SOS/tests/test-copia-carpeta.mjs
+
       # El diagnòstic i el pressupost comparteixen els blocs «qui ets» i «d'on
       # véns». Escrits dues vegades divergirien en silenci: el dia que un
       # conegués un tipus d'organització que l'altre no, qui vingués del primer
@@ -447,6 +467,11 @@ jobs:
       # l'enllaç signat diu qui és, el tope alt només per l'enllaç i res sense el testimoni.
       - name: Els convidats i el panell de l'Àlvar
         run: node SOS/tests/test-convidats.mjs
+
+      # Les referències dels clients (lib/referencies.mjs): només es veu el que qui
+      # l'escriu ha permès, i retirar-la tanca també l'enllaç amb què s'ensenya.
+      - name: Les referències dels clients
+        run: node SOS/tests/test-referencies.mjs
 
       # El router de models (netlify/lib/ia-router.mjs): cada tasca al model més
       # petit que la fa bé, el cost de cada crida i la despesa per projecte.

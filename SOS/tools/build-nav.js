@@ -160,6 +160,9 @@ const SOS_GRUPS = [
      L'aplicació i les seves dinàmiques. `online.html` —el directori— és aquí
      perquè **és la dinàmica `cens_entitats` de la taula `EINES`**. */
   { id: 'sos', lbl: T('Les eines', 'Las herramientas'), ic: '🖥', links: [
+    /* 21/11/2026 · Álvaro: primer la visió, després les eines. */
+    ['visio.html', T('La visió', 'La visión'),
+      T('Què hi guanya la ciutadania, l\'empresa i l\'administració', 'Qué gana la ciudadanía, la empresa y la administración')],
     ['intro.html', T('De què va', 'De qué va'),
       T('El SOS en setze plans', 'El SOS en dieciséis planos')],
     /* L'editor del mapa per a qui ja coneix el mètode. A la barra del lloc,
@@ -187,7 +190,12 @@ const SOS_GRUPS = [
   ] },
   /* ══ 2 · COM S'APRÈN ═════════════════════════════════════════════════ */
   { id: 'apren', lbl: T('Aprèn', 'Aprende'), ic: '📚', links: [
-    L.formacio, L.ia,
+    L.formacio,
+    /* 21/11/2026 · Álvaro: com es certifica posant el model en marxa a la
+       comunitat, amb la IA del SOS de tutora i la xarxa descentralitzada. */
+    ['certificacio.html', T('La certificació', 'La certificación'),
+      T('22 pràctiques a la comunitat, amb la IA de tutora', '22 prácticas en la comunidad, con la IA de tutora')],
+    L.ia,
     ['vedes.html', T('Les vedes', 'Las vedas'),
       T('Les regles, amb el motiu al costat', 'Las reglas, con el motivo al lado')],
     ['cervell.html', T('Crea el teu cervell', 'Crea tu cerebro'),
@@ -204,12 +212,12 @@ const SOS_GRUPS = [
      la història— i els cinc darrers d'aquí, perquè és on l'altra casa els
      envia. `comando.html` **no hi és**: la seva adreça fa 301 cap allà, i és
      l'únic 301 d'anada que no fa bucle —comprovat contra el seu `_redirects`. */
-  { id: 'mon', lbl: 'Molekulon', ic: '🌀', links: [
-    [MOLEKULON + '/', T('El Comando', 'El Comando'),
+  { id: 'mon', lbl: 'Participació', ic: '🤝', links: [
+    [MOLEKULON + '/', T('La campanya', 'La campaña'),
       T('La pel·lícula que farem 150.000', 'La película que haremos 150.000')],
     [MOLEKULON + '/historia', T('La història', 'La historia'),
       T('Els dos còmics i l\'acte III', 'Los dos cómics y el acto III')],
-    [MOLEKULON + '/personatges', T('Els 14 herois', 'Los 14 héroes'),
+    [MOLEKULON + '/personatges', T('Els 14 personatges', 'Los 14 personajes'),
       T('Poder, superarma i què vol dir en un equip', 'Poder, superarma y qué significa en un equipo')],
     [MOLEKULON + '/peli', T('La pel·lícula', 'La película'),
       T('El guió de 15 plans, i què falta filmar', 'El guion de 15 planos, y qué falta filmar')],
@@ -221,8 +229,8 @@ const SOS_GRUPS = [
       T('El poble sencer i les nou professions', 'El pueblo entero y las nueve profesiones')],
     ['molekulon.html', T('Un estat líquid', 'Un estado líquido'),
       T('Set federacions, i 19 nodes contra 47', 'Siete federaciones, y 19 nodos contra 47')],
-    ['escola.html', T('La Fàbrica de Superherois', 'La Fábrica de Superhéroes'),
-      T('De 6 a 13 anys, i cap nom real de cap criatura', 'De 6 a 13 años, y ningún nombre real de ninguna criatura')],
+    ['escola.html', T('Escola de participació', 'Escuela de participación'),
+      T('Alumnat de 6 a 13 anys, sense dades personals', 'Alumnado de 6 a 13 años, sin datos personales')],
     ['joc.html', T('El joc', 'El juego'),
       T('La plaça, a ritme', 'La plaza, a ritmo')],
     ['uneix-te.html', T('Uneix-t\'hi', 'Únete'),
@@ -275,11 +283,11 @@ const PAGINES_LLOC = ['blog.html', 'diagnostic.html', 'diagnostic-org.html', 'di
 
 /* Les pàgines que porten el menú. La llista és explícita a posta: afegir una
    pàgina al SOS ha de ser una decisió que inclogui dir on va al menú. */
-const PAGINES = ['aigua.html', 'banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html', 'crm.html', 'diagnostic.html',
+const PAGINES = ['aigua.html', 'banc-temps.html', 'biblioteca.html', 'blog.html', 'certificacio.html', 'compra.html', 'crm.html', 'diagnostic.html',
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
-  'uneix-te.html', 'vedes.html', 'cervell.html', 'la-font.html', 'colla.html', 'vna.html', 'vna-suport.html'];
+  'uneix-te.html', 'vedes.html', 'visio.html', 'cervell.html', 'la-font.html', 'colla.html', 'vna.html', 'vna-suport.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */
@@ -544,7 +552,9 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
      sent correcta a la vista. Era l'última costura que es veia mirant. */
   'vna.html',
   /* El blog, en català i en castellà des del 22/10/2026. */
-  'blog.html'];
+  'blog.html',
+  /* La visió, en català i en castellà des del 21/11/2026 (diccionari propi). */
+  'visio.html'];
 
 /* ══ LES CARPETES DEL LLOC (10/10/2026) ═══════════════════════════════════
    Les dues pàgines de «La teva web» viuen a la seva carpeta (`index.html` a

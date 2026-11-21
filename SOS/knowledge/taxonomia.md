@@ -172,6 +172,7 @@ aquesta llista i res més.
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
 - `SOS/knowledge/legal` · saber · Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js)
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
+- `SOS/knowledge/formacio` · saber · La formació: la pràctica a la comunitat de cada mòdul, l'evidència i el que en revisa la IA tutora (build-certificacio.js)
 - `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
 - `SOS/knowledge/vna/banc-mapes` · prova · El banc de mapes: casos de negoci, la rúbrica del jutge, les variants del prompt de /cliente/ i els resultats de cada passada (SOS/tools/banc-mapes.mjs)
 - `SOS/knowledge/dev/diagnosi-ux` · prova · Els diagnòstics d'UX de l'app: captures de totes les pantalles mirades per la IA amb tres ulls i l'informe amb el pla (SOS/tools/captura-ux.mjs, diagnosi-ux.mjs)
@@ -193,6 +194,7 @@ aquesta llista i res més.
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
 - `cliente` · obra · Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany
 - `visita` · obra · On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així
+- `referencias` · obra · Les referències dels clients sobre l'Àlvaro: escriure-la amb l'enllaç signat que ell envia i llegir-la (una o totes) només si qui la signa ho ha permès
 - `boreal-light` · obra · La vista proposta per a Boreal Light GmbH: què aportem a la seva representació a Espanya, l'aigua com a ecosistema i les preguntes per a la primera conversa. Sense preus ni condicions, i fora dels cercadors
 - `netlify` · obra · Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) el preu de cada client, només per a ell (proposta), i el seu dibuix, guardat amb el seu compte (fitxa), i la seva web d'ara, llegida amb el seu sí (llegeix-web), i el router que tria quin model de Claude fa cada tasca i compta el que gasta cada projecte (ia-router), i els proveïdors del banc de proves de la IA (ia-proveidors)
 - `data` · arxiu · Llavors de dades d'una versió anterior

@@ -208,6 +208,8 @@
 
         .hero-finan { font-size:var(--t0); color:var(--light); line-height:1.6; margin:0 0 1.6rem;
             border-left:2px solid var(--green); padding:.15rem 0 .15rem .9rem; max-width:480px; }
+        .hero-qui { font-size:var(--t0); color:var(--light); line-height:1.7; margin:1.6rem 0 1rem; max-width:70ch; }
+        .hero-qui strong { color:var(--text); }
         .hero-finan strong { color:var(--green); font-weight:600; }
         /* La prova al costat de la primera crida: tres xifres en una línia,
            amb el número gran i el que vol dir a sota, en petit. */
@@ -1001,8 +1003,8 @@
                     <a href="/SOS/?perfil=comunidad" data-perfil="comunidad" data-i18n="hero.p.comunitat">La meva comunitat o entitat</a>
                     <a href="/cliente/?perfil=cliente#espacio" data-perfil="cliente" data-i18n="hero.p.client">Ja treballo amb vosaltres</a>
                 </nav>
-                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Ningú no arriba a dalt sol. <em>Dibuixem com flueix el valor al teu negoci i fem que el que es repeteix vagi sol.</em></em></h1>
-                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Som consultors d'estratègia amb eina pròpia. Dibuixem el <strong>mapa de valor</strong> del teu negoci (qui et dona què, i què li dones) i d'aquí en surten la teva web, processos que van sols amb IA i la formació del teu equip. Per a pimes, autònoms, grans empreses i entitats.</strong>: és gratis i en surt el primer esbós de la web.</p>
+                <h1 class="fade-up" style="animation-delay:.1s" data-i18n-html="hero.h1">Ningú no arriba a dalt sol. <em>Dibuixem com flueix el valor al teu negoci i fem que el que es repeteix vagi sol.</em></h1>
+                <p class="hero-desc fade-up" style="animation-delay:.2s" data-i18n-html="hero.desc">Som consultors d'estratègia amb eina pròpia. Dibuixem el <strong>mapa de valor</strong> del teu negoci (qui et dona què, i què li dones) i d'aquí en surten la teva web, processos que van sols amb IA i la formació del teu equip. Per a pimes, autònoms, grans empreses i entitats.</p>
                 <ul class="hero-av fade-up" style="animation-delay:.25s">
                     <li data-i18n-html="hero.av1"><b>Diagnòstic</b> · veus el teu negoci en un sol dibuix i on se t'escapa el valor</li>
                     <li data-i18n-html="hero.av2"><b>Web i processos</b> · la web i les automatitzacions surten del mapa, no d'una plantilla</li>
@@ -1017,7 +1019,7 @@
             <div class="hero-cos">
                 <ul class="hero-proves fade-up" style="animation-delay:.38s">
                     <li><b>2009</b><span data-i18n="hero.pr1">primer banc de temps de León</span></li>
-                    <li><b>60.000+</b><span data-i18n="hero.pr2">persones formades des del 1996</span></li>
+                    <li><b>60.000+</b><span data-i18n="hero.pr2">participants al taller Fent Pinya</span></li>
                     <li><b>100 %</b><a href="/SOS/intro.html" data-i18n="hero.pr3">de l'eina és oberta i gratuïta</a></li>
                 </ul>
             </div>
@@ -1286,6 +1288,7 @@
                         <span data-i18n="hero.evo3.d">El mateix mètode convertit en un sistema viu: cada rol registra el que dona i rep, i el mapa avisa d'on s'encalla el valor.</span>
                     </li>
                 </ol>
+        <p class="hero-qui" data-i18n-html="hero.qui"><strong>Qui t'acompanya: Álvaro Solache.</strong> Psicòleg social i comunitari, consultor de xarxes de valor a Pantheon Work des del 2019, team coach a Mondragon Team Academy, cofundador de TeamTowers (el taller Fent Pinya, a més de 150 organitzacions) i desenvolupador de webs i fluxos amb IA. Per això el mapa, la web, la formació i l'equip surten de la mateixa mà.</p>
         <p class="hero-finan" data-i18n-html="hero.finan"><strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l'empresa amb el pressupost de formació o d'esdeveniments. En tots dos casos el pressupost s'ensenya desglossat.</p>
         <p class="hero-evok"><a href="/qui-som" data-i18n="hero.evok">I la prova que funciona: vint anys entregant-ho</a></p>
     </div>
@@ -2217,6 +2220,7 @@ ca: {
   'hero.evok':'I la prova que funciona: vint anys entregant-ho',
   'hero.q':'Què vols fer?','hero.p.negoci':'Tinc un negoci','hero.p.empresa':'Porto una empresa o un equip',
   'hero.p.consultor':'Sóc consultor o formador','hero.p.comunitat':'La meva comunitat o entitat','hero.p.client':'Ja treballo amb vosaltres',
+  'hero.qui':'<strong>Qui t\'acompanya: Álvaro Solache.</strong> Psicòleg social i comunitari, consultor de xarxes de valor a Pantheon Work des del 2019, team coach a Mondragon Team Academy, cofundador de TeamTowers (el taller Fent Pinya, a més de 150 organitzacions) i desenvolupador de webs i fluxos amb IA. Per això el mapa, la web, la formació i l\'equip surten de la mateixa mà.',
   'hero.finan':'<strong>Al sector públic es finança amb subvencions que ja existeixen</strong>, i a l\'empresa amb el pressupost de formació o d\'esdeveniments. En tots dos casos el pressupost s\'ensenya desglossat.',
   'ct.a11y.t':'Dos castells amb la mateixa torre i bases diferents',
   'ct.a11y.d':'A l\'esquerra, una torre sostinguda per quatre persones. A la dreta, la mateixa torre sostinguda per catorze. Quan en marxa una, la primera cau i la segona aguanta.',
@@ -2224,7 +2228,7 @@ ca: {
   'ct.esq.ok':'4 sostenint','ct.esq.ko':'Cau','ct.dre.ok':'14 sostenint','ct.dre.ko':'Aguanta',
   'ct.btn':'En marxa una →','ct.btn2':'↺ Torna-la a posar',
   'ct.peu':'Un castell no l\'aguanta qui hi puja: <strong>l\'aguanta la pinya</strong>. La nostra feina és eixamplar la base d\'un projecte fins que marxar-ne un no el tombi.',
-  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'El primer mapa és gratis i sense compromís: en cinc minuts tens el dibuix i l\'esbós de la web, i no s\'envia res fins que tu ho diguis. Ja saps què vols? <a href="/cataleg.html">Mira què contractes</a>.','hero.pr1':'primer banc de temps de León','hero.pr2':'persones formades des del 1996','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és com és la teva xarxa: en cinc minuts en tens el primer dibuix, i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg a la vista, el següent pas no és trucar: és dibuixar el teu mapa. D\'aquí surt quin paquet et toca.','band.btn':'Crea el teu mapa →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
+  'hero.cta1':'Crea el teu mapa de valor, gratis →','hero.note':'El primer mapa és gratis i sense compromís: en cinc minuts tens el dibuix i l\'esbós de la web, i no s\'envia res fins que tu ho diguis. Ja saps què vols? <a href="/cataleg.html">Mira què contractes</a>.','hero.pr1':'primer banc de temps de León','hero.pr2':'participants al taller Fent Pinya','hero.pr3':'de l\'eina és oberta i gratuïta','band.t':'Ja saps com va. La pregunta és com és la teva xarxa: en cinc minuts en tens el primer dibuix, i te l\'endús, l\'enviïs o no.','band2.t':'Amb el catàleg a la vista, el següent pas no és trucar: és dibuixar el teu mapa. D\'aquí surt quin paquet et toca.','band.btn':'Crea el teu mapa →','sticky.btn':'Crea el teu mapa →','cta.mail':'O escriu directament a <a id="ctaMail" href="#">l\'Álvaro</a> i ho valorem junts. Sense compromís.',
   'enfoc.eyebrow':'El mateix patró, tres vocabularis',
   'enfoc.h2':'Es diu diferent, <em>i és el mateix problema</em>',
   'enfoc.b.lead':'Mateixa metodologia, productes diferents, <strong>mateix objectiu</strong>: que l\'organització estigui millor psicosocialment i econòmicament. I es mesura d\'una sola manera — <strong>mapejant els fluxos de valor</strong>, els que es veuen i els que no.',
@@ -2698,6 +2702,7 @@ es: {
   'hero.evok':'Y la prueba de que funciona: veinte años entregándolo',
   'hero.q':'¿Qué quieres hacer?','hero.p.negoci':'Tengo un negocio','hero.p.empresa':'Llevo una empresa o un equipo',
   'hero.p.consultor':'Soy consultor o formador','hero.p.comunitat':'Mi comunidad o entidad','hero.p.client':'Ya trabajo con vosotros',
+  'hero.qui':'<strong>Quién te acompaña: Álvaro Solache.</strong> Psicólogo social y comunitario, consultor de redes de valor en Pantheon Work desde 2019, team coach en Mondragon Team Academy, cofundador de TeamTowers (el taller Fent Pinya, en más de 150 organizaciones) y desarrollador de webs y flujos con IA. Por eso el mapa, la web, la formación y el equipo salen de la misma mano.',
   'hero.finan':'<strong>En el sector público se financia con subvenciones que ya existen</strong>, y en la empresa con el presupuesto de formación o de eventos. En los dos casos el presupuesto se enseña desglosado.',
   'ct.a11y.t':'Dos castells con la misma torre y bases distintas',
   'ct.a11y.d':'A la izquierda, una torre sostenida por cuatro personas. A la derecha, la misma torre sostenida por catorce. Cuando se va una, la primera cae y la segunda aguanta.',
@@ -2705,7 +2710,7 @@ es: {
   'ct.esq.ok':'4 sosteniendo','ct.esq.ko':'Cae','ct.dre.ok':'14 sosteniendo','ct.dre.ko':'Aguanta',
   'ct.btn':'Se va una →','ct.btn2':'↺ Vuelve a ponerla',
   'ct.peu':'Un castell no lo aguanta quien se sube: <strong>lo aguanta la piña</strong>. Nuestro trabajo es ensanchar la base de un proyecto hasta que irse uno no lo tumbe.',
-  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'El primer mapa es gratis y sin compromiso: en cinco minutos tienes el dibujo y el esbozo de la web, y no se envía nada hasta que tú lo digas. ¿Ya sabes lo que quieres? <a href="/cataleg.html">Mira qué contratas</a>.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'personas formadas desde 1996','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es cómo es tu red: en cinco minutos tienes el primer dibujo, y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo a la vista, el siguiente paso no es llamar: es dibujar tu mapa. De ahí sale qué paquete te toca.','band.btn':'Crea tu mapa →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
+  'hero.cta1':'Crea tu mapa de valor, gratis →','hero.note':'El primer mapa es gratis y sin compromiso: en cinco minutos tienes el dibujo y el esbozo de la web, y no se envía nada hasta que tú lo digas. ¿Ya sabes lo que quieres? <a href="/cataleg.html">Mira qué contratas</a>.','hero.pr1':'primer banco de tiempo de León','hero.pr2':'participantes en el taller Fent Pinya','hero.pr3':'de la herramienta es abierta y gratuita','band.t':'Ya sabes cómo va. La pregunta es cómo es tu red: en cinco minutos tienes el primer dibujo, y te lo llevas, lo envíes o no.','band2.t':'Con el catálogo a la vista, el siguiente paso no es llamar: es dibujar tu mapa. De ahí sale qué paquete te toca.','band.btn':'Crea tu mapa →','sticky.btn':'Crea tu mapa →','cta.mail':'O escribe directamente a <a id="ctaMail" href="#">Álvaro</a> y lo valoramos juntos. Sin compromiso.',
   'enfoc.eyebrow':'El mismo patrón, tres vocabularios',
   'enfoc.h2':'Se dice distinto, <em>y es el mismo problema</em>',
   'enfoc.b.lead':'Misma metodología, productos distintos, <strong>mismo objetivo</strong>: que la organización esté mejor psicosocial y económicamente. Y se mide de una sola manera — <strong>mapeando los flujos de valor</strong>, los que se ven y los que no.',
