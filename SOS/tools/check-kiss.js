@@ -235,12 +235,16 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
    que fet en equip el mapa alinea l'equip i el fa pensar en sistema.
    I a 75 KB el 04/11/2026, a petició de l'Àlvaro: les vistes del cervell amb
    el seu enllaç i l'esquema del sistema sencer (navegador, domini, Netlify,
-   GitHub, Google i els connectors), que porta a /conecta/. */
+   GitHub, Google i els connectors), que porta a /conecta/.
+
+   `qui-som.html` puja de 32 a 34 KB el 21/11/2026, a petició de l'Álvaro
+   («una herramienta para tener referencias de clientes»): la secció
+   #referencies, amb el formulari que les recull i el permís de cadascú. */
 const SOSTRES = [
   ['SOS/vna.html', 95, 'el mètode sencer: el llenç, les vuit lectures, les construccions i el mapa de la casa'],
   ['index.html', 75, 'la portada ven el mapa de valor, el que t\'emportes (també l\'equip alineat), el teu camí, la intel·ligència amb l\'esquema del sistema i el que ja automatitzem, i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
-  ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
+  ['qui-som.html', 34, 'el perfil, la trajectòria, els clients, les referències i les objeccions'],
   ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut'],
   ['avis-legal.html', 20, 'el titular, les condicions i la privacitat completa (RGPD art. 13) en dues llengües, la barra i el peu']
 ];
