@@ -51,6 +51,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 77 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 14 · 1355 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
+| `SOS/knowledge/formacio/` | La formació: la pràctica a la comunitat de cada mòdul, l'evidència i el que en revisa la IA tutora (build-certificacio.js) | 1 · 15 KB |
 | `SOS/knowledge/legal/` | Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js) | 3 · 18 KB |
 | `SOS/knowledge/marketing/` | Veu de marca i material de difusió | 2 · 11 KB |
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona, com es millora i el seu currículum (dominis, competències, skill-seeds i SOPs) | 97 · 414 KB |
