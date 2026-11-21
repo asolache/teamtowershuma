@@ -80,7 +80,19 @@
      "e": "La ficha de inventario en el nodo, con el motivo de cada elección.",
      "ia": "Que cada herramienta tenga alternativa abierta y que ningún dato quede solo en un servicio de fuera."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/eines",
+     "ca": "Les eines del SOS",
+     "es": "Las herramientas del SOS"
+    },
+    {
+     "u": "/SOS/#/copia",
+     "ca": "Còpia de seguretat i carpeta local",
+     "es": "Copia de seguridad y carpeta local"
+    }
+   ]
   },
   {
    "id": "m2",
@@ -113,7 +125,19 @@
      "e": "La identidad (did) con copia guardada y una aportación firmada en el registro.",
      "ia": "Que la firma se pueda verificar y que haya copia de la clave fuera del dispositivo."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/identitat",
+     "ca": "La meva identitat",
+     "es": "Mi identidad"
+    },
+    {
+     "u": "/SOS/#/copia",
+     "ca": "Còpia de seguretat",
+     "es": "Copia de seguridad"
+    }
+   ]
   },
   {
    "id": "m3",
@@ -147,7 +171,19 @@
      "e": "El mapa en el nodo, revisado con las diez reglas, y la lista de lo que falta.",
      "ia": "Que haya intercambios de ida y vuelta, intangibles incluidos, y que cada hueco tenga una pregunta para la sesión."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/vna.html",
+     "ca": "El mapa de valor",
+     "es": "El mapa de valor"
+    },
+    {
+     "u": "/SOS/vna-suport.html",
+     "ca": "Suport al mapa de valor",
+     "es": "Apoyo al mapa de valor"
+    }
+   ]
   },
   {
    "id": "m4",
@@ -180,7 +216,19 @@
      "e": "Intercambios registrados y firmados por las dos partes durante cuatro semanas.",
      "ia": "Que los intercambios sean reales (dos firmas) y que participen personas distintas, no siempre las mismas."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/banc-temps.html",
+     "ca": "El Banc de Temps",
+     "es": "El Banco de Tiempo"
+    },
+    {
+     "u": "/SOS/biblioteca.html",
+     "ca": "La Biblioteca de les Coses",
+     "es": "La Biblioteca de las Cosas"
+    }
+   ]
   },
   {
    "id": "m5",
@@ -212,7 +260,19 @@
      "e": "El acta con el quórum, la decisión votada y las firmas de quienes custodian el nodo.",
      "ia": "Que haya quórum, que el voto quede firmado y que el acta diga quién hace qué y cuándo."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/tauler",
+     "ca": "El tauler de la comunitat",
+     "es": "El tablero de la comunidad"
+    },
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    }
+   ]
   },
   {
    "id": "m6",
@@ -245,7 +305,24 @@
      "e": "El acuerdo de intercooperación firmado por los dos nodos y el primer reparto calculado.",
      "ia": "Que el reparto salga de las aportaciones registradas y que el acuerdo diga cómo se entra y cómo se sale."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/matriu.html",
+     "ca": "La MATRIU",
+     "es": "La MATRIU"
+    },
+    {
+     "u": "/SOS/compra.html",
+     "ca": "La Compra",
+     "es": "La Compra"
+    },
+    {
+     "u": "/SOS/#/federacions",
+     "ca": "Federacions temàtiques",
+     "es": "Federaciones temáticas"
+    }
+   ]
   },
   {
    "id": "m7",
@@ -278,7 +355,19 @@
      "e": "Las aportaciones de la acción en el registro y el reconocimiento publicado a quien participó, con su permiso.",
      "ia": "Que haya personas nuevas y que el reconocimiento salga solo con consentimiento."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/uneix-te.html",
+     "ca": "Participa al teu barri",
+     "es": "Participa en tu barrio"
+    },
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    }
+   ]
   },
   {
    "id": "m8",
@@ -310,7 +399,19 @@
      "e": "El resumen publicado, el paquete de anclaje que lo verifica y la nota de qué ha leído la IA.",
      "ia": "Que el resumen no permita identificar a nadie y que el anclaje cuadre con el registro."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    },
+    {
+     "u": "/SOS/online.html",
+     "ca": "SOS Online",
+     "es": "SOS Online"
+    }
+   ]
   },
   {
    "id": "m9",
@@ -343,7 +444,19 @@
      "e": "El guion de cada sesión, la asistencia y el encargo que salió.",
      "ia": "Que cada sesión acabe con un encargo concreto y que en la siguiente se revise."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/colla.html",
+     "ca": "La colla en la pinya",
+     "es": "La colla en la piña"
+    },
+    {
+     "u": "/SOS/#/gent",
+     "ca": "La gent",
+     "es": "La gente"
+    }
+   ]
   },
   {
    "id": "m10",
@@ -376,7 +489,19 @@
      "e": "Las personas acogidas y la primera aportación de cada una, contadas sin datos personales.",
      "ia": "Cuántas personas dan el paso de mirar a participar, y dónde se quedan las que no."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/uneix-te.html",
+     "ca": "Participa al teu barri",
+     "es": "Participa en tu barrio"
+    },
+    {
+     "u": "/SOS/#/alta",
+     "ca": "Fes-te usuari/ària",
+     "es": "Hazte usuario/a"
+    }
+   ]
   },
   {
    "id": "m11",
@@ -410,7 +535,19 @@
      "e": "El protocolo acordado y el registro de la mediación o del relevo hecho.",
      "ia": "Que haya relevo previsto para cada rol clave y que nadie lleve solo más carga de la que puede."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/online.html",
+     "ca": "SOS Online · qui hi ha",
+     "es": "SOS Online · quién está"
+    },
+    {
+     "u": "/SOS/#/gent",
+     "ca": "La gent i els rols",
+     "es": "La gente y los roles"
+    }
+   ]
   },
   {
    "id": "m12",
@@ -443,7 +580,19 @@
      "e": "La solicitud presentada o lista, con el presupuesto por horas y el plan de justificación.",
      "ia": "Que el presupuesto salga de las horas reales del mapa y que se pueda justificar con el registro."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/fons",
+     "ca": "El fons cooperatiu",
+     "es": "El fondo cooperativo"
+    },
+    {
+     "u": "/SOS/diagnostic-territori.html",
+     "ca": "Diagnòstic comunitari",
+     "es": "Diagnóstico comunitario"
+    }
+   ]
   },
   {
    "id": "m13",
@@ -476,7 +625,24 @@
      "e": "La decisión razonada en el nodo y el justificante del trámite.",
      "ia": "Que la forma elegida encaje con lo que hace la comunidad y que el trámite tenga fecha y responsable."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/diagnostic-org.html",
+     "ca": "Diagnòstic d'organització",
+     "es": "Diagnóstico de organización"
+    },
+    {
+     "u": "/SOS/energia.html",
+     "ca": "L'Energia",
+     "es": "La Energía"
+    },
+    {
+     "u": "/SOS/habitatge.html",
+     "ca": "L'Habitatge",
+     "es": "La Vivienda"
+    }
+   ]
   },
   {
    "id": "m14",
@@ -509,7 +675,19 @@
      "e": "El informe de impacto con los indicadores, la fuente de cada cifra y lo aprendido.",
      "ia": "Que cada cifra salga del registro o de una fuente citada y que no haya ninguna inventada."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/fons/impacte",
+     "ca": "Simulador d'impacte",
+     "es": "Simulador de impacto"
+    },
+    {
+     "u": "/SOS/#/registre",
+     "ca": "Registre públic signat",
+     "es": "Registro público firmado"
+    }
+   ]
   },
   {
    "id": "m15",
@@ -542,7 +720,19 @@
      "e": "El registro de tratamientos y los consentimientos, guardados en el nodo y no fuera.",
      "ia": "Que cada dato tenga finalidad y consentimiento, y que se guarde lo mínimo."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/config",
+     "ca": "Configuració i dades",
+     "es": "Configuración y datos"
+    },
+    {
+     "u": "/SOS/#/copia",
+     "ca": "Còpia de seguretat xifrada",
+     "es": "Copia de seguridad cifrada"
+    }
+   ]
   },
   {
    "id": "m16",
@@ -573,7 +763,19 @@
      "e": "Las dos sesiones de mentoría registradas y las prácticas que validaste.",
      "ia": "Que cada sesión acabe con encargo y que tu validación diga en qué te has fijado."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/#/mentoria",
+     "ca": "La meva mentoria",
+     "es": "Mi mentoría"
+    },
+    {
+     "u": "/SOS/certificacio.html",
+     "ca": "Guia de certificació",
+     "es": "Guía de certificación"
+    }
+   ]
   },
   {
    "id": "m17",
@@ -606,7 +808,19 @@
      "e": "El mapa revisado con las diez reglas y los tres análisis hechos.",
      "ia": "Que salgan los roles de fuera (clientes, proveedores, territorio) y los intangibles."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/vna.html",
+     "ca": "El mapa de valor",
+     "es": "El mapa de valor"
+    },
+    {
+     "u": "/cliente/",
+     "ca": "El mapa del client",
+     "es": "El mapa del cliente"
+    }
+   ]
   },
   {
    "id": "m18",
@@ -638,7 +852,14 @@
      "e": "El cerebro en el repositorio o en el nodo, con sus áreas llenas.",
      "ia": "Que cada área tenga al menos un documento y que las reglas lleven el motivo al lado."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/cervell.html",
+     "ca": "El teu cervell",
+     "es": "Tu cerebro"
+    }
+   ]
   },
   {
    "id": "m19",
@@ -670,7 +891,14 @@
      "e": "La web en vista previa y la comprobación de que ninguna dirección antigua se pierde.",
      "ia": "Que cada página responda a un rol del mapa y que las direcciones antiguas lleven a la nueva."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/cliente/",
+     "ca": "La web que surt del mapa",
+     "es": "La web que sale del mapa"
+    }
+   ]
   },
   {
    "id": "m20",
@@ -702,7 +930,14 @@
      "e": "Los tres cambios con su vista previa y quién los dio por buenos.",
      "ia": "Que nada salga publicado sin vista previa revisada por una persona."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/cliente/#panel",
+     "ca": "El panell del client",
+     "es": "El panel del cliente"
+    }
+   ]
   },
   {
    "id": "m21",
@@ -735,7 +970,14 @@
      "e": "El flujo funcionando, con la prueba de una entrada real de principio a fin.",
      "ia": "Que el proceso automatizado sea tangible y repetitivo, y que lo intangible se quede en las personas."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/ia.html",
+     "ca": "Fluxos amb IA",
+     "es": "Flujos con IA"
+    }
+   ]
   },
   {
    "id": "m22",
@@ -768,7 +1010,19 @@
      "e": "Los cambios pedidos, revisados y validados, con lo que la IA propuso y lo que decidisteis.",
      "ia": "Que cada cambio tenga una persona que lo valida y que el cerebro se actualice con lo aprendido."
     }
-   }
+   },
+   "pantalles": [
+    {
+     "u": "/SOS/ia.html",
+     "ca": "Fluxos amb IA",
+     "es": "Flujos con IA"
+    },
+    {
+     "u": "/SOS/cervell.html",
+     "ca": "El teu cervell",
+     "es": "Tu cerebro"
+    }
+   ]
   }
  ]
 }

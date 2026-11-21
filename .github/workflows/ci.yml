@@ -378,6 +378,15 @@ jobs:
       - name: El pla de desenvolupament tria i ordena com diu la guia
         run: node SOS/tests/test-pla-desenvolupament.mjs
 
+      # Cada mòdul diu la pantalla del SOS on es fa, i cada pantalla torna al
+      # seu mòdul (certificacio.json → lib/modul-pantalla.js).
+      - name: Mòdul ↔ pantalla, en les dues direccions
+        run: node SOS/tests/test-modul-pantalla.mjs
+
+      # Les còpies que es fan soles a una carpeta de l'ordinador, xifrades.
+      - name: Còpies automàtiques a una carpeta
+        run: node SOS/tests/test-copia-carpeta.mjs
+
       # El diagnòstic i el pressupost comparteixen els blocs «qui ets» i «d'on
       # véns». Escrits dues vegades divergirien en silenci: el dia que un
       # conegués un tipus d'organització que l'altre no, qui vingués del primer
