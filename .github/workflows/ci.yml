@@ -22,7 +22,7 @@ jobs:
       # blanc i cap altra comprovació d'aquest fitxer se n'adonava. Aquesta SÍ
       # que atura la construcció.
       - name: Sintaxi dels HTML autocontinguts
-        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html cliente/index.html
+        run: node SOS/tools/check-syntax.js SOS/*.html index.html cataleg.html qui-som.html premsa.html avis-legal.html visita/index.html cliente/index.html referencias/index.html
 
       # La portada de l'arrel és per on entra tothom i no la comprovava res.
       # Hi mana el diccionari sobre l'HTML: una clau que hi és en català i no
@@ -443,6 +443,11 @@ jobs:
       # l'enllaç signat diu qui és, el tope alt només per l'enllaç i res sense el testimoni.
       - name: Els convidats i el panell de l'Àlvar
         run: node SOS/tests/test-convidats.mjs
+
+      # Les referències dels clients (lib/referencies.mjs): només es veu el que qui
+      # l'escriu ha permès, i retirar-la tanca també l'enllaç amb què s'ensenya.
+      - name: Les referències dels clients
+        run: node SOS/tests/test-referencies.mjs
 
       # El router de models (netlify/lib/ia-router.mjs): cada tasca al model més
       # petit que la fa bé, el cost de cada crida i la despesa per projecte.

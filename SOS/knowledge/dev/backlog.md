@@ -5645,3 +5645,18 @@ Es tanca cada punt quan l'Àlvar el valida a la preview.
   d'acotar en poques preguntes fins a donar-li les peces del mapa perquè només
   les validi i les col·loqui. Doc a
   `/mnt/project-files/producto/mapa-siguiente-paso/conocimiento-vna-y-acotado.md`.
+
+## Les referències dels clients sobre l'Àlvaro
+
+L'Àlvaro, 21/11/2026 (fil «Crear la herramienta de referencias de clientes»):
+una eina per tenir referències de clients i passar-les a un contacte; la
+primera, d'una clienta que fa tres anys que acompanya. Feta a
+`/referencias/` (lib i funció `referencies.mjs`, secció «Referencias» del
+panell). Es tanca quan l'Àlvaro l'ha provada a la preview i ha enviat la
+primera petició.
+
+- **Pendent · A la web, només amb fila:** una referència `publica` no surt
+  sola; posar-la a la web vol la seva fila a `trajectoria.md` i relaxar a posta
+  la regla 1 de `check-arrel.js`.
+- **Pendent · Al CRM:** si cal, la referència rebuda pot sumar-se a la fitxa
+  del client a Zoho (ara no hi va: el tractament diu que no).

@@ -57,7 +57,16 @@
       "formularios": [],
       "encargados": ["supabase", "netlify"],
       "plazo": "Hasta que la persona la retira.",
-      "transferencias": "Ninguna fuera de la UE prevista." }
+      "transferencias": "Ninguna fuera de la UE prevista." },
+    { "id": "referencias", "nombre": "Referencias de clientes",
+      "fines": "Recoger lo que un cliente cuenta de su trabajo con Alvaro Solache y enseñarlo solo como esa persona ha elegido: a nadie, a personas concretas por un enlace privado, o también en la web.",
+      "base": "Consentimiento (art. 6.1.a RGPD), que se da al enviar la referencia con la casilla de privacidad y se retira con el mismo enlace.",
+      "interesados": "Clientes a quienes Alvaro pide una referencia desde su panel.",
+      "datos": "Nombre, cargo y organización si los dan, lo que escriben, cómo quieren que aparezca su nombre (entero, iniciales o sin nombre), a quién dejan verla y la fecha. Se guarda en Netlify Blobs (almacén «referencies»); no pasa por ninguna IA ni por el CRM.",
+      "formularios": ["referencia"],
+      "encargados": ["netlify"],
+      "plazo": "Hasta que la persona la retira: retirarla la borra y cierra el enlace con que se enseña. Alvaro también la puede borrar desde su panel.",
+      "transferencias": "Las de Netlify, con sus garantías." }
   ],
   "seguridad": [
     "Los datos de tarjeta nunca pasan por nuestros sistemas (Stripe).",
