@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 614 · 26128 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 614 · 26167 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 173 KB |
@@ -39,7 +39,7 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 44 KB |
 | `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 147 · 1869 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 81 · 1686 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 81 · 1696 KB |
 
 ## saber
 
@@ -47,7 +47,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 240 · 4678 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 240 · 4684 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 77 KB |
 | `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 13 · 1347 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
@@ -56,7 +56,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona, com es millora i el seu currículum (dominis, competències, skill-seeds i SOPs) | 97 · 414 KB |
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 9 · 122 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 4 · 41 KB |
-| `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 20 · 201 KB |
+| `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 20 · 207 KB |
 | `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 66 · 2078 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
 
