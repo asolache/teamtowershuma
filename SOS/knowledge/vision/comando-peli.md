@@ -68,7 +68,7 @@ I el decorat és **Molekulandia** (`molekulandia.html`).
 
 **Pendent d'enllaç:** Pigmentón, Fraktalman, Tekno Kartoffeln, Un taller, filmat. Mentre no hi siguin, la pàgina els ensenya dient que encara no hi són — no com una porta tancada.
 
-## La sèrie que ensenya · capítol → mòdul
+## La sèrie del SOS · la cara del Comando
 
 Qui mira la sèrie aprèn a operar amb el model: cada capítol porta un mòdul de
 `formacio.html` i acaba amb la seva prova. Tot capítol té la mateixa forma:

@@ -29,6 +29,8 @@ Qui fa que una cosa comenci i qui la sosté quan ja no és nova. És el rol que 
 
 **Demana**: temps, contactes, ordre.
 
+**Es forma amb**: capítol 5 · m5 Governança i Guardians — Sabiduria + Assemblea federativa; capítol 6 · m6 MATRIU · Slicing Pie · Intercooperació Mondragón.
+
 | Rol | Cops | On surt |
 |---|---|---|
 | Grup motor | 2 | habitatge_cessio, habitatge |
@@ -44,6 +46,8 @@ Qui fa que un grup decideixi sense trencar-se, i qui recorda què s'havia dit. N
 
 **Demana**: ordre, cura, temps.
 
+**Es forma amb**: capítol 3 · m3 Value Network Analysis (Verna Allee); capítol 9 · m9 Facilitació i dinamització de grups; capítol 17 · m17 El teu mapa de valor.
+
 | Rol | Cops | On surt |
 |---|---|---|
 | Coordinació | 2 | consum_agroecologic, compra_collectiva |
@@ -56,6 +60,8 @@ Qui fa que un grup decideixi sense trencar-se, i qui recorda què s'havia dit. N
 Qui ensenya el que sap i qui acompanya el que comença. La professió que multiplica totes les altres.
 
 **Demana**: veu, temps, cura.
+
+**Es forma amb**: capítol 16 · m16 Formació de formadors · l'ofici de mentorar; capítol 22 · m22 Treballar amb el teu Claude.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -70,6 +76,8 @@ Qui sosté la gent, no les tasques. És la feina que fa que un projecte duri i l
 
 **Demana**: cura, temps, contactes.
 
+**Es forma amb**: capítol 11 · m11 Conflictes, cures i relleu.
+
 | Rol | Cops | On surt |
 |---|---|---|
 | Nucli de cura | 2 | suport_mutu, cures |
@@ -81,6 +89,8 @@ Qui sosté la gent, no les tasques. És la feina que fa que un projecte duri i l
 Qui sap què es pot fer i com, i qui signa que es pot fer. Sense això, un projecte s'encalla a la primera llicència.
 
 **Demana**: numeros, ordre, contactes.
+
+**Es forma amb**: capítol 12 · m12 Finançament i subvencions a Catalunya; capítol 13 · m13 Formes jurídiques i tràmits; capítol 15 · m15 Dades, privadesa i RGPD.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -95,6 +105,8 @@ Qui compta el que passa i qui construeix l'eina que ho compta. La professió mé
 
 **Demana**: ordre, temps, numeros.
 
+**Es forma amb**: capítol 1 · m1 Fonaments SOS i codex Antigravity; capítol 2 · m2 Identitat descentralitzada i criptografia; capítol 8 · m8 Ancoratge públic i IA integrada; capítol 14 · m14 Mesura d'impacte i justificació; capítol 18 · m18 El teu cervell i la teva cultura; capítol 19 · m19 La teva web; capítol 20 · m20 Editar i publicar sense trencar; capítol 21 · m21 Que vagi sol.
+
 | Rol | Cops | On surt |
 |---|---|---|
 | Nucli tècnic | 1 | digitalitzacio |
@@ -106,6 +118,8 @@ Qui compta el que passa i qui construeix l'eina que ho compta. La professió mé
 Qui fa, cultiva i transforma. L'ofici més antic del poble i el que el SOS connecta amb tota la resta.
 
 **Demana**: ofici, espai, temps.
+
+**Es forma amb**: cap capítol de la sèrie encara.
 
 | Rol | Cops | On surt |
 |---|---|---|
@@ -121,6 +135,8 @@ Qui allarga la vida de les coses. En un poble autosuficient no és un servei: é
 
 **Demana**: ofici, espai, temps.
 
+**Es forma amb**: capítol 4 · m4 Recursos comunitaris — Banc de temps i Biblioteca de les coses.
+
 | Rol | Cops | On surt |
 |---|---|---|
 | Servei de reparació | 1 | biblioteca_coses |
@@ -131,6 +147,8 @@ Qui allarga la vida de les coses. En un poble autosuficient no és un servei: é
 Qui explica el poble al poble. Sense això, tot el que hi passa és cert i no ho sap ningú.
 
 **Demana**: veu, contactes, ofici.
+
+**Es forma amb**: capítol 7 · m7 Comando Molekulon · Reputació · Multivers narratiu; capítol 10 · m10 Comunicació i captació de persones.
 
 | Rol | Cops | On surt |
 |---|---|---|
