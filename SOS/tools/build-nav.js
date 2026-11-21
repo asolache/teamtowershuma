@@ -160,6 +160,9 @@ const SOS_GRUPS = [
      L'aplicació i les seves dinàmiques. `online.html` —el directori— és aquí
      perquè **és la dinàmica `cens_entitats` de la taula `EINES`**. */
   { id: 'sos', lbl: T('Les eines', 'Las herramientas'), ic: '🖥', links: [
+    /* 21/11/2026 · Álvaro: primer la visió, després les eines. */
+    ['visio.html', T('La visió', 'La visión'),
+      T('Què hi guanya la ciutadania, l\'empresa i l\'administració', 'Qué gana la ciudadanía, la empresa y la administración')],
     ['intro.html', T('De què va', 'De qué va'),
       T('El SOS en setze plans', 'El SOS en dieciséis planos')],
     /* L'editor del mapa per a qui ja coneix el mètode. A la barra del lloc,
@@ -277,7 +280,7 @@ const PAGINES = ['banc-temps.html', 'biblioteca.html', 'blog.html', 'compra.html
   'diagnostic-org.html', 'diagnostic-territori.html',
   'energia.html', 'escola.html', 'formacio.html', 'habitatge.html', 'ia.html', 'intro.html',
   'matriu.html', 'molekulandia.html', 'molekulon.html', 'online.html', 'pressupost.html',
-  'uneix-te.html', 'vedes.html', 'cervell.html', 'la-font.html', 'colla.html', 'vna.html', 'vna-suport.html'];
+  'uneix-te.html', 'vedes.html', 'visio.html', 'cervell.html', 'la-font.html', 'colla.html', 'vna.html', 'vna-suport.html'];
 
 /* I les que no, amb el motiu. Una excepció sense motiu escrit és un descuit
    que d'aquí a sis mesos ningú sabrà si era volgut. */
@@ -542,7 +545,9 @@ const AMB_LLENGUA = ['index.html', 'cataleg.html', 'qui-som.html', 'premsa.html'
      sent correcta a la vista. Era l'última costura que es veia mirant. */
   'vna.html',
   /* El blog, en català i en castellà des del 22/10/2026. */
-  'blog.html'];
+  'blog.html',
+  /* La visió, en català i en castellà des del 21/11/2026 (diccionari propi). */
+  'visio.html'];
 
 /* ══ LES CARPETES DEL LLOC (10/10/2026) ═══════════════════════════════════
    Les dues pàgines de «La teva web» viuen a la seva carpeta (`index.html` a
