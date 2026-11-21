@@ -367,6 +367,17 @@ jobs:
       - name: L'esquelet de la formació correspon a la docència
         run: node SOS/tools/check-formacio.js
 
+      # La pràctica a la comunitat de cada mòdul es declara una vegada
+      # (SOS/knowledge/formacio/certificacio.json) i surt a dues pàgines: la
+      # guia de certificació i la caixa «Per certificar» de cada mòdul.
+      - name: La guia de certificació té les 22 pràctiques al dia
+        run: node SOS/tools/build-certificacio.js --check
+
+      # El pla de desenvolupament: de l'ikigai i les skills (també les de
+      # LinkedIn) a les pràctiques i al kanban únic.
+      - name: El pla de desenvolupament tria i ordena com diu la guia
+        run: node SOS/tests/test-pla-desenvolupament.mjs
+
       # El diagnòstic i el pressupost comparteixen els blocs «qui ets» i «d'on
       # véns». Escrits dues vegades divergirien en silenci: el dia que un
       # conegués un tipus d'organització que l'altre no, qui vingués del primer

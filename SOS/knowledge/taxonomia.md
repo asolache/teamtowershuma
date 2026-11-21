@@ -172,6 +172,7 @@ aquesta llista i res més.
 - `SOS/knowledge/marketing` · saber · Veu de marca i material de difusió
 - `SOS/knowledge/legal` · saber · Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js)
 - `SOS/knowledge/negoci` · saber · Model d'equip gestor, formació i mentoria
+- `SOS/knowledge/formacio` · saber · La formació: la pràctica a la comunitat de cada mòdul, l'evidència i el que en revisa la IA tutora (build-certificacio.js)
 - `SOS/knowledge/vna` · saber · Els casos de mapa de valor i els patrons que n'han sortit
 - `SOS/knowledge/vna/banc-mapes` · prova · El banc de mapes: casos de negoci, la rúbrica del jutge, les variants del prompt de /cliente/ i els resultats de cada passada (SOS/tools/banc-mapes.mjs)
 - `SOS/knowledge/dev/diagnosi-ux` · prova · Els diagnòstics d'UX de l'app: captures de totes les pantalles mirades per la IA amb tres ulls i l'informe amb el pla (SOS/tools/captura-ux.mjs, diagnosi-ux.mjs)

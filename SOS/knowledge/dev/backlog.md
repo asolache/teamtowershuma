@@ -40,6 +40,46 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 
 ## Bloc pendent (prioritzat)
 
+### La certificació a la comunitat, amb la IA de tutora (demanat 21/11/2026)
+
+L'Álvaro, 21/11/2026 (fil «Ampliar la formación con la guía de certificación»):
+que la formació expliqui com, amb els 22 mòduls, una persona es certifica
+posant el model en marxa a la seva comunitat, supervisada per la IA del SOS,
+amb les dades confidencials, ensenyant a enllaçar nodes, i descentralitzat de
+debò perquè, si cau internet, es pugui seguir operant d'igual a igual. Es tanca
+cada punt quan l'Álvaro el valida a la preview.
+
+- **Fet:** `SOS/certificacio.html` (ca/es, en pantalles): el camí N0–N3, el
+  mètode i les tres claus, les 22 pràctiques, la IA tutora, les dades, enllaçar
+  nodes, si cau internet i el certificat. Font única de les pràctiques:
+  `SOS/knowledge/formacio/certificacio.json`; `build-certificacio.js` les
+  escriu a la guia i a la caixa «Per certificar» de cada mòdul de
+  `formacio.html` (guarda al CI).
+- **Pendent 1 · La IA revisa cada pràctica:** `aiPrepareMentoring` ha de llegir
+  els criteris «Revisa la IA» del JSON i enviar a la IA només recomptes, nivell i
+  mòduls (avui envia també noms de projectes i ventures).
+- **Pendent 2 · Les dues signatures humanes:** validació d'una pràctica per una
+  persona d'un altre node i per un mentor N3, al registre.
+- **Pendent 3 · El certificat com a credencial signada** al perfil, amb les
+  empremtes de les evidències, verificable sense connexió.
+- **Pendent 4 · El simulacre de caiguda** guiat a l'app (un dia sense serveis
+  centrals i la sincronització per xarxa local o per fitxer).
+- **Pendent 5 · La versió en castellà de `formacio.html`.**
+- **Fet (21/11, demanat el mateix dia) · El pla de desenvolupament:** a «Prepara
+  la meva mentoria» el pla surt de l'ikigai, el rol, les skills (les validades
+  per la xarxa pesen) i el nivell; «Porta-ho al tauler» crea les targetes al
+  kanban únic (`__pla-<persona>` a IndexedDB) amb pomodoro i comptabilitat de
+  valor. Regla a `SOS/lib/pla-desenvolupament.js`, dades a
+  `knowledge/formacio/moduls.json` (generat). Importació de skills de LinkedIn
+  (Skills.csv, Endorsement_Received_Info.csv o text enganxat) a l'alta i al
+  perfil: només es compta quantes persones validen, mai qui. Prova a
+  `certificacio.html#pla`.
+- **Pendent 6 · Validat al registre signat:** que una targeta validada del pla
+  escrigui l'aportació al ledger del node (avui compta a la comptabilitat del
+  tauler).
+- **Pendent 7 · Revisar l'alta sencera** amb aquest ordre: perfil → ikigai →
+  skills (CV i LinkedIn) → rol → primer pla.
+
 ### Una sola entrada, amb el did del SOS (demanat 24/10/2026, veda 181)
 
 Es valida amb casos reals (l'Álvaro, 24/10): **el cas estrella és el proveïdor
