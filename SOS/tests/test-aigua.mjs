@@ -42,7 +42,9 @@ ok(/<body data-pantalla>/.test(P) && /lib\/pantalla\.js/.test(P), 'és de pantal
 ok(/lib\/aigua\.js/.test(P), 'fa servir la peça compartida');
 const text = P.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
 ok(!/\d[\d.,]*\s*€/.test(text), 'cap import en euros escrit a la pàgina');
-ok(/formacio\.html#m4/.test(P) && /\/boreal-light\//.test(P), 'enllaça el mòdul de formació i Boreal Light');
+ok(/formacio\.html#m4/.test(P), 'enllaça el mòdul de formació');
+// 21/11/2026 · Álvaro: «Quita el enlace hasta que sea público». La proposta de Boreal Light és noindex.
+ok(!/\/boreal-light\//.test(P), 'no enllaça la proposta de Boreal Light fins que sigui pública');
 const ids = [...P.matchAll(/<section id="([^"]+)"/g)].map(x => x[1]);
 ok(ids.length >= 5, ids.length + ' pantalles amb enllaç propi: ' + ids.join(', '));
 
