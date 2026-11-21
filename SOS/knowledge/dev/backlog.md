@@ -65,6 +65,20 @@ cada punt quan l'Álvaro el valida a la preview.
 - **Pendent 4 · El simulacre de caiguda** guiat a l'app (un dia sense serveis
   centrals i la sincronització per xarxa local o per fitxer).
 - **Pendent 5 · La versió en castellà de `formacio.html`.**
+- **Fet (21/11, demanat el mateix dia) · El pla de desenvolupament:** a «Prepara
+  la meva mentoria» el pla surt de l'ikigai, el rol, les skills (les validades
+  per la xarxa pesen) i el nivell; «Porta-ho al tauler» crea les targetes al
+  kanban únic (`__pla-<persona>` a IndexedDB) amb pomodoro i comptabilitat de
+  valor. Regla a `SOS/lib/pla-desenvolupament.js`, dades a
+  `knowledge/formacio/moduls.json` (generat). Importació de skills de LinkedIn
+  (Skills.csv, Endorsement_Received_Info.csv o text enganxat) a l'alta i al
+  perfil: només es compta quantes persones validen, mai qui. Prova a
+  `certificacio.html#pla`.
+- **Pendent 6 · Validat al registre signat:** que una targeta validada del pla
+  escrigui l'aportació al ledger del node (avui compta a la comptabilitat del
+  tauler).
+- **Pendent 7 · Revisar l'alta sencera** amb aquest ordre: perfil → ikigai →
+  skills (CV i LinkedIn) → rol → primer pla.
 
 ### Una sola entrada, amb el did del SOS (demanat 24/10/2026, veda 181)
 

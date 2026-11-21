@@ -132,7 +132,16 @@ h3{font-size:1.02rem;margin:1.2rem 0 .4rem}
 .pr dl{display:grid;grid-template-columns:auto 1fr;gap:.2rem .7rem;margin:0;font-size:.88rem;color:var(--light)}
 .pr dt{font-weight:600;color:var(--text)}
 .pr dd{margin:0}
-@media(max-width:700px){.tres,.si-no{grid-template-columns:1fr}.pr dl{grid-template-columns:1fr}.pr dd{margin-bottom:.3rem}}
+.demo{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem}
+.demo-f{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.demo-f label{display:flex;flex-direction:column;gap:.25rem;font-size:.88rem;font-weight:600}
+.demo-f .ample{grid-column:1/-1}
+.demo-f select,.demo-f input,.demo-f textarea{font:inherit;font-weight:400;min-height:44px;padding:.45rem .6rem;border:1px solid var(--border-strong);border-radius:8px;background:var(--bg);color:var(--text)}
+.pd-pla{margin:.8rem 0;font-size:.9rem;color:var(--light)}
+.pd-pla ol{padding-left:1.2rem;margin:.4rem 0}
+.pd-pla li{margin:.3rem 0}
+.pd-pla small{color:var(--muted)}
+@media(max-width:700px){.tres,.si-no,.demo-f{grid-template-columns:1fr}.pr dl{grid-template-columns:1fr}.pr dd{margin-bottom:.3rem}}
 </style>
 </head>
 <body data-pantalla>
@@ -552,6 +561,39 @@ h3{font-size:1.02rem;margin:1.2rem 0 .4rem}
   <p class="nota" data-i18n-html="k.n">Avui al SOS: funciona sense connexió un cop obert, còpia de seguretat en fitxer, aparellament amb codi o QR i relés intercanviables <span class="avui">ja hi és</span>. La guia del simulacre dins de l'app <span class="avui pend">en desenvolupament</span>.</p>
 </section>
 
+<section id="pla" data-pantalla-nom-ca="El pla" data-pantalla-nom-es="El plan">
+  <h2 data-i18n-html="q.t">El pla de desenvolupament · de qui ets al pla de treball</h2>
+  <p class="sub" data-i18n-html="q.s">El mentor o mentora no comença pels mòduls: comença per la persona. Què li agrada, què se li dona bé, quins rols fa i què fa falta a prop. D'aquí surt el pla, i el pla es treballa al mateix tauler que la resta de la feina.</p>
+  <ol class="passos">
+    <li><b data-i18n-html="q.p1">L'alta</b><span data-i18n-html="q.p1d">El perfil, l'ikigai i les skills. Les de LinkedIn s'importen amb les validacions de la teva xarxa.</span></li>
+    <li><b data-i18n-html="q.p2">La mentoria</b><span data-i18n-html="q.p2d">El mentor llegeix l'ikigai, els rols, les skills i el nivell que diu el registre.</span></li>
+    <li><b data-i18n-html="q.p3">El pla</b><span data-i18n-html="q.p3d">El nivell següent i les pràctiques que hi porten, ordenades pel que encaixa amb tu, amb el motiu de cada una.</span></li>
+    <li><b data-i18n-html="q.p4">El tauler</b><span data-i18n-html="q.p4d">Cada pràctica és una targeta del kanban: per fer, fent, fet i validat.</span></li>
+    <li><b data-i18n-html="q.p5">El pomodoro</b><span data-i18n-html="q.p5d">Si vols, blocs de 25 minuts: en acabar, el temps queda apuntat a la targeta.</span></li>
+    <li><b data-i18n-html="q.p6">El valor</b><span data-i18n-html="q.p6d">Validat pel mentor, compta a la comptabilitat de valor i com a evidència per al certificat.</span></li>
+  </ol>
+  <h3 data-i18n-html="q.li">Les skills de LinkedIn, sense entrar a LinkedIn</h3>
+  <p class="sub" data-i18n-html="q.lid">A LinkedIn, Configuració → Privadesa de dades → Obtén una còpia de les teves dades. Puges Skills.csv o el fitxer de recomanacions rebudes, o enganxes la llista d'aptituds del perfil o del CV. Es llegeix al teu navegador; de qui et valida només es compta quants són, mai qui. I res s'afegeix sol: acceptes les que són teves.</p>
+  <h3 data-i18n-html="q.pr">Prova-ho</h3>
+  <div class="demo" id="plaDemo">
+    <div class="demo-f">
+      <label><span data-i18n-html="q.f1">On ets ara</span>
+        <select id="pdNiv"><option value="N0" data-i18n-html="q.n0">N0 · Exploració</option><option value="N1" data-i18n-html="q.n1">N1 · Participant</option><option value="N2" data-i18n-html="q.n2">N2 · Gestor/a de node</option><option value="org" data-i18n-html="q.org">Organització · transformació digital</option></select></label>
+      <label><span data-i18n-html="q.f2">El teu rol</span>
+        <select id="pdRol"><option value="superheroi" data-i18n-html="q.r1">Persona que participa</option><option value="coordinador" data-i18n-html="q.r2">Coordinació de comunitat</option><option value="guardian" data-i18n-html="q.r3">Govern del territori</option><option value="agent" data-i18n-html="q.r4">Enllaç amb l'administració</option><option value="mentor" data-i18n-html="q.r5">Mentoria</option></select></label>
+      <label class="ample"><span data-i18n-html="q.f3">Què t'agrada i què fa falta a prop (separat per comes)</span>
+        <input id="pdIk" data-i18n-ph="q.f3p" placeholder="p. ex. acompanyar gent gran, préstec d'objectes, mediació"></label>
+      <label class="ample"><span data-i18n-html="q.f4">Les teves skills (enganxa la llista de LinkedIn, o puja el fitxer)</span>
+        <textarea id="pdSk" rows="3" data-i18n-ph="q.f4p" placeholder="Facilitació de grups&#10;12 validacions&#10;Gestió de projectes"></textarea>
+        <input type="file" id="pdSkF" accept=".csv,.txt"></label>
+    </div>
+    <p><button type="button" class="btn-primary" id="pdFes" data-i18n-html="q.fes">Fes-me el pla</button></p>
+    <div id="pdOut" aria-live="polite"></div>
+    <div id="pdKb"></div>
+  </div>
+  <p class="nota" data-i18n-html="q.n">Al SOS: el pla surt a «Prepara la meva mentoria» i el botó el porta al teu tauler, desat al teu dispositiu; la importació de LinkedIn és a l'alta i al perfil <span class="avui">ja hi és</span>. Aquí és una prova: es guarda només en aquest navegador.</p>
+</section>
+
 <section id="certificat" data-pantalla-nom-ca="El certificat" data-pantalla-nom-es="El certificado">
   <h2 data-i18n-html="z.t">El certificat · és teu i el pot verificar qualsevol</h2>
   <p class="sub" data-i18n-html="z.s">Quan les pràctiques d'un nivell tenen les tres claus, el certificat es genera al teu perfil i el tens tu, al teu dispositiu.</p>
@@ -684,6 +726,24 @@ const CE_ES = {
   'k.s1': 'El simulacro, una práctica más',
   'k.s2': 'Para llegar a N3, el nodo hace un simulacro: un día sin servicios centrales, los intercambios registrados igualmente, y la sincronización con otro nodo por red local o por fichero. La evidencia es la misma que la de cualquier práctica: el registro firmado y la prueba de que las dos copias cuadran.',
   'k.n': 'Hoy en el SOS: funciona sin conexión una vez abierto, copia de seguridad en fichero, emparejamiento con código o QR y relés intercambiables <span class="avui">ya está</span>. La guía del simulacro dentro de la app <span class="avui pend">en desarrollo</span>.',
+  'q.t': 'El plan de desarrollo · de quién eres al plan de trabajo',
+  'q.s': 'El mentor o mentora no empieza por los módulos: empieza por la persona. Qué le gusta, qué se le da bien, qué roles hace y qué hace falta cerca. De ahí sale el plan, y el plan se trabaja en el mismo tablero que el resto del trabajo.',
+  'q.p1': 'El alta', 'q.p1d': 'El perfil, el ikigai y las skills. Las de LinkedIn se importan con las validaciones de tu red.',
+  'q.p2': 'La mentoría', 'q.p2d': 'El mentor lee el ikigai, los roles, las skills y el nivel que dice el registro.',
+  'q.p3': 'El plan', 'q.p3d': 'El nivel siguiente y las prácticas que llevan a él, ordenadas por lo que encaja contigo, con el motivo de cada una.',
+  'q.p4': 'El tablero', 'q.p4d': 'Cada práctica es una tarjeta del kanban: por hacer, haciendo, hecho y validado.',
+  'q.p5': 'El pomodoro', 'q.p5d': 'Si quieres, bloques de 25 minutos: al acabar, el tiempo queda apuntado en la tarjeta.',
+  'q.p6': 'El valor', 'q.p6d': 'Validado por el mentor, cuenta en la contabilidad de valor y como evidencia para el certificado.',
+  'q.li': 'Las skills de LinkedIn, sin entrar en LinkedIn',
+  'q.lid': 'En LinkedIn, Configuración → Privacidad de datos → Obtener una copia de tus datos. Subes Skills.csv o el fichero de recomendaciones recibidas, o pegas la lista de aptitudes del perfil o del CV. Se lee en tu navegador; de quién te valida solo se cuenta cuántos son, nunca quién. Y nada se añade solo: aceptas las que son tuyas.',
+  'q.pr': 'Pruébalo',
+  'q.n0': 'N0 · Exploración', 'q.n1': 'N1 · Participante', 'q.n2': 'N2 · Gestor/a de nodo',
+  'q.f1': 'Dónde estás ahora', 'q.org': 'Organización · transformación digital',
+  'q.f2': 'Tu rol', 'q.r1': 'Persona que participa', 'q.r2': 'Coordinación de comunidad', 'q.r3': 'Gobierno del territorio', 'q.r4': 'Enlace con la administración', 'q.r5': 'Mentoría',
+  'q.f3': 'Qué te gusta y qué hace falta cerca (separado por comas)',
+  'q.f4': 'Tus skills (pega la lista de LinkedIn, o sube el fichero)',
+  'q.fes': 'Hazme el plan',
+  'q.n': 'En el SOS: el plan sale en «Prepara mi mentoría» y el botón lo lleva a tu tablero, guardado en tu dispositivo; la importación de LinkedIn está en el alta y en el perfil <span class="avui">ya está</span>. Aquí es una prueba: se guarda solo en este navegador.',
   'z.t': 'El certificado · es tuyo y lo puede verificar cualquiera',
   'z.s': 'Cuando las prácticas de un nivel tienen las tres llaves, el certificado se genera en tu perfil y lo tienes tú, en tu dispositivo.',
   'z.b1': 'Qué dice', 'z.b1d': 'El nivel, el área, los módulos con sus horas, la comunidad donde se han hecho, y las huellas de cada evidencia. Firmado por ti, por el mentor o mentora y por el nodo que valida.',
@@ -692,6 +752,7 @@ const CE_ES = {
   'z.n': 'El certificado del SOS no es un título oficial. La emisión como credencial firmada dentro de la app <span class="avui pend">en desarrollo</span>; hoy la evidencia ya queda en el registro y se verifica con el paquete de anclaje.',
   'z.e1': 'Los 22 módulos', 'z.e2': 'Los itinerarios por rol', 'z.e3': 'Preparar la mentoría', 'z.e4': 'Las reglas del código', 'z.e5': 'Abre el SOS y empieza'
 };
+const PH_ES = { 'q.f3p': 'p. ej. acompañar a personas mayores, préstamo de objetos, mediación', 'q.f4p': 'Facilitación de grupos\n12 validaciones\nGestión de proyectos' };
 /*TT-PRACTIQUES-ES*/
 /* GENERAT per SOS/tools/build-certificacio.js · no s'edita a mà. */
 const CE_PRACTIQUES_ES = {
@@ -823,6 +884,11 @@ const CE_PRACTIQUES_ES = {
       const v = D[n.getAttribute('data-i18n-html')];
       if (v) n.innerHTML = v;
     });
+    document.querySelectorAll('[data-i18n-ph]').forEach(n => {
+      const k = n.getAttribute('data-i18n-ph');
+      if (!n.dataset.phCa) n.dataset.phCa = n.placeholder;
+      n.placeholder = l === 'es' ? (PH_ES[k] || n.dataset.phCa) : n.dataset.phCa;
+    });
     document.documentElement.lang = l;
     document.querySelectorAll('.lang-b').forEach(b => b.classList.toggle('on', b.dataset.lang === l));
     try { localStorage.setItem('tt_lang', l); } catch (e) {}
@@ -832,6 +898,49 @@ const CE_PRACTIQUES_ES = {
   const q = /[?&]lang=(ca|es)\b/.exec(location.search); if (q) l = q[1];
   document.querySelectorAll('.lang-b').forEach(b => b.addEventListener('click', () => aplica(b.dataset.lang)));
   if (l !== 'ca') aplica(l);
+})();
+</script>
+<script src="lib/pomodoro.js"></script>
+<script src="lib/kanban.js"></script>
+<script src="lib/pla-desenvolupament.js"></script>
+<script>
+/* La prova del pla: la mateixa regla que l'app (lib/pla-desenvolupament.js),
+   les pràctiques generades (knowledge/formacio/moduls.json) i el kanban únic.
+   Es desa només en aquest navegador. */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  if (!$('pdFes') || !window.PlaDesenvolupament) return;
+  var PD = window.PlaDesenvolupament, CLAU = 'tt.pla.demo', dades = null;
+  var L = function () { return (document.documentElement.lang || 'ca').slice(0, 2) === 'es' ? 'es' : 'ca'; };
+  var esc = function (x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  function llegeix() { try { return JSON.parse(localStorage.getItem(CLAU) || 'null') || { cards: [], fora: [] }; } catch (e) { return { cards: [], fora: [] }; } }
+  function desa(k) { try { localStorage.setItem(CLAU, JSON.stringify(k)); } catch (e) { /* sense memòria */ } }
+  function tauler(k) {
+    Kanban.pinta($('pdKb'), { kanban: k, llengua: L(), prefix: 'pd-t-', pomoClau: 'tt.pla.demo.pomo',
+      persones: [{ id: 'jo', nom: L() === 'es' ? 'Tú' : 'Tu' }, { id: 'mentor', nom: 'Mentor/a' }], valida: [{ id: 'mentor', nom: 'Mentor/a' }], onCanvi: desa });
+  }
+  $('pdSkF').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0]; if (!f) return;
+    f.text().then(function (t) { $('pdSk').value = t; });
+  });
+  $('pdFes').addEventListener('click', function () {
+    var go = function () {
+      var es = L() === 'es', niv = $('pdNiv').value, sk = PD.importaSkills($('pdSk').value).skills;
+      var ik = $('pdIk').value.split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+      var pl = PD.pla({ nivell: niv === 'org' ? 'N1' : niv, via: niv === 'org' ? 'organitzacio' : 'comunitat', rols: [$('pdRol').value], llengua: L(),
+        ikigai: { agrada: ik, falta: ik, bo: sk.map(function (x) { return x.label; }) } }, dades);
+      var h = '<div class="pd-pla"><strong>' + esc((pl.objectiu === 'C' ? '' : pl.objectiu + ' · ') + pl.objectiuNom) + '</strong> · ' + pl.passos.length + (es ? ' prácticas · ≈ ' : ' pràctiques · ≈ ') + pl.hores + ' h · ' + pl.pomodoros + ' pomodoros · ' + (es ? 'unas ' : 'unes ') + pl.setmanes + (es ? ' semanas a 3 h por semana' : ' setmanes a 3 h per setmana') +
+        (sk.length ? '<br><small>' + (es ? 'Skills leídas: ' : 'Skills llegides: ') + sk.slice(0, 8).map(function (x) { return esc(x.label) + (x.validacions ? ' ✓' + x.validacions : ''); }).join(' · ') + '</small>' : '') +
+        '<ol>' + pl.passos.map(function (x) { return '<li><a href="' + (x.n ? '#c' + x.id : '#caiguda') + '">' + (x.n ? x.n + ' · ' : '') + esc(x.titol) + '</a> — ' + esc(x.practica) + '<br><small>' + esc(x.motius.join(' · ')) + '</small></li>'; }).join('') + '</ol></div>';
+      $('pdOut').innerHTML = h;
+      var k = PD.afegeix(llegeix(), PD.targetes(pl, { qui: 'jo', llengua: L() }));
+      desa(k); tauler(k);
+    };
+    if (dades) return go();
+    fetch('knowledge/formacio/moduls.json').then(function (r) { return r.json(); }).then(function (d) { dades = d; go(); })
+      .catch(function () { $('pdOut').textContent = L() === 'es' ? 'No se han podido cargar las prácticas.' : 'No s\'han pogut carregar les pràctiques.'; });
+  });
+  var k0 = llegeix(); if (k0.cards.length && window.Kanban) tauler(k0);
 })();
 </script>
 <script src="lib/pantalla.js" defer></script>

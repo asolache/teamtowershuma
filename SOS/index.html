@@ -1951,6 +1951,8 @@ body.sos-taller .lent-z{min-width:56px}
 <script src="lib/cas-sos.js" defer></script>
 <script src="lib/mapa-anima.js" defer></script>
 <script src="lib/pomodoro.js"></script>
+<script src="lib/kanban.js"></script>
+<script src="lib/pla-desenvolupament.js"></script>
 <script type="module">
 /* ═══════════════════ EMAIL OFUSCAT ═══════════════════ */
 const _U='asolache', _D='mac'+'.'+'com';
@@ -4927,6 +4929,14 @@ function dossierBlocksHTML(d,p,opts){
       </div>
       <div class="ent-desc" style="margin-top:.3rem">L'anàlisi local no fa cap crida a internet: és un lector de vocabulari dins la pàgina. Un PDF o un .docx el navegador no els sap llegir sense llibreries externes — obre'l i enganxa el text.</div>
       <div id="${p}CVOut" style="margin-top:.5rem"></div>
+      <div class="ent-grp-lbl" style="margin-top:.8rem">in · Les teves skills de LinkedIn, amb qui te les valida</div>
+      <div class="ent-desc">A LinkedIn: <em>Configuració → Privadesa de dades → Obtén una còpia de les teves dades</em>, marca «Aptituds» i «Recomanacions». Puja <code>Skills.csv</code> o <code>Endorsement_Received_Info.csv</code>, o enganxa a dalt la llista d'aptituds del teu perfil. No entrem a LinkedIn ni et demanem la contrasenya; de qui et valida només comptem quants són, mai els noms.</div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem">
+        <button type="button" class="btn btn-ghost btn-sm" id="${p}LiPick">📎 Puja el fitxer de LinkedIn</button>
+        <input type="file" id="${p}LiFile" accept=".csv,.txt" style="display:none">
+        <button type="button" class="btn btn-ghost btn-sm" id="${p}LiText">🔎 Llegeix el text de dalt com a llista de skills</button>
+      </div>
+      <div id="${p}LiOut" style="margin-top:.5rem"></div>
     </div>
   </details>
   <details class="sh-more" id="${p}MoreSk"${opts.open?' open':''}>
@@ -4974,7 +4984,7 @@ function wireDossierBlocks(bg,d,p,opts){
     wants:((d&&d.wants)||[]).slice(),declared:((d&&d.declared)||[]).slice(),character:(d&&d.character)||null};
   const chip=(txt,sub,on)=>{const b=el('span','ent-b');b.innerHTML=esc(txt)+(sub?' <span style="opacity:.6">'+esc(sub)+'</span>':'')+' <button type="button" class="chip-x" aria-label="Treu">✕</button>';b.querySelector('.chip-x').onclick=on;return b;};
   const renderChips=()=>{
-    const sk=q('SkillChips');sk.innerHTML='';st.skillsFree.forEach((s,i)=>sk.appendChild(chip(s.label,tbCatMeta(s.cat).label,()=>{st.skillsFree.splice(i,1);renderChips();})));
+    const sk=q('SkillChips');sk.innerHTML='';st.skillsFree.forEach((s,i)=>sk.appendChild(chip(s.label,tbCatMeta(s.cat).label+(s.validacions?' · ✓ '+s.validacions:''),()=>{st.skillsFree.splice(i,1);renderChips();})));
     const rs=q('ResChips');rs.innerHTML='';st.resources.forEach((r,i)=>rs.appendChild(chip(r.label,libTypeMeta(r.typ).label,()=>{st.resources.splice(i,1);renderChips();})));
     const wt=q('WantChips');wt.innerHTML='';st.wants.forEach((w,i)=>wt.appendChild(chip(w.label||w,'',()=>{st.wants.splice(i,1);renderChips();})));
   };
@@ -5040,6 +5050,31 @@ function wireDossierBlocks(bg,d,p,opts){
       b.classList.add('sel');b.disabled=true;renderChips();
     });
   };
+  /* LinkedIn · el parser viu a lib/pla-desenvolupament.js (importaSkills). Com
+     el CV: es proposa i la persona accepta; la categoria la diu el lector local. */
+  const liMostra=text=>{
+    const box=q('LiOut'),PD=window.PlaDesenvolupament;
+    const r=PD?PD.importaSkills(text):{skills:[]};
+    if(!r.skills.length){box.innerHTML='<div class="ai-note"><span class="ic">🔎</span><span>No hi he trobat cap llista de skills. Prova amb Skills.csv o amb el text de l\'apartat Aptituds.</span></div>';return;}
+    box.innerHTML='<div class="ent-desc" style="margin-bottom:.4rem">'+r.skills.length+' skills trobades'+(r.skills.some(x=>x.validacions)?', amb les validacions de la teva xarxa':'')+'. <strong>Res s\'afegeix sol</strong>: accepta les que siguin teves.</div>'+
+      '<div class="ent-badges">'+r.skills.map((x,i)=>'<button type="button" class="btn btn-ghost btn-sm liadd" data-i="'+i+'">+ '+esc(x.label)+(x.validacions?' · ✓ '+x.validacions:'')+'</button>').join('')+'</div>';
+    box.querySelectorAll('.liadd').forEach(b=>b.onclick=()=>{
+      const x=r.skills[+b.dataset.i];
+      if(!st.skillsFree.some(y=>y.label.toLowerCase()===x.label.toLowerCase())){
+        const cat=((parseCVLocal(x.label).skills||[])[0]||{}).cat||'altres';
+        st.skillsFree.push({label:x.label,cat,from:'linkedin',validacions:x.validacions||0});
+      }
+      const more=bg.querySelector('#'+p+'MoreSk');if(more)more.open=true;
+      b.classList.add('sel');b.disabled=true;renderChips();
+    });
+  };
+  q('LiPick').onclick=()=>q('LiFile').click();
+  q('LiFile').onchange=async e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    try{liMostra(await f.text());toast('in '+f.name+' llegit en local');}catch(err){toast('No s\'ha pogut llegir');}
+    e.target.value='';
+  };
+  q('LiText').onclick=()=>liMostra(q('CV').value);
   const collect=()=>({
     cv:q('CV').value.trim()?Object.assign({},st.cv||{},{text:q('CV').value}):null,
     skillsFree:st.skillsFree,resources:st.resources,wants:st.wants,declared:st.declared,
@@ -21563,8 +21598,73 @@ function openMentoringPlan(personName){
       (p.modules.length?'<div class="mp-mods">'+p.modules.map(m=>'<a class="mp-mod" href="'+esc(moduleUrl(m.id))+'" target="_blank" rel="noopener"><span class="mp-mod-n">M'+m.n+'</span><span class="mp-mod-t">'+esc(m.title)+'</span><span class="mp-mod-l">'+esc(m.level)+' · '+m.hours+'h</span></a>').join('')+'</div>':'<div class="ent-desc">Ja té coberts els mòduls del seu rol — toca formar altres.</div>')+
       '<div class="ent-grp-lbl">🗓 Guió de la sessió · 60 min</div>'+
       '<div class="mp-sess">'+p.sessionPlan.map(s=>'<div class="mp-step"><span class="mp-min">'+s.min+"'</span><span class=\"mp-step-b\"><span class=\"mp-step-t\">"+esc(s.title)+'</span><span class="mp-step-w">'+esc(s.what)+'</span></span></div>').join('')+'</div>'+
-      '<div class="mp-assign"><div class="mp-assign-l">📌 Encàrrec amb què marxa</div><div>'+esc(p.assignment)+'</div></div>';
+      '<div class="mp-assign"><div class="mp-assign-l">📌 Encàrrec amb què marxa</div><div>'+esc(p.assignment)+'</div></div>'+
+      '<div id="mpPla"></div>';
+    pintaPlaDesenvolupament(personName,p,bg.querySelector('#mpPla'));
   })();
+}
+/* ═══ El pla de desenvolupament · de la mentoria al tauler (21/11/2026) ═══
+   Àlvaro: el mentor coneix l'ikigai, els rols i les skills de la persona; d'aquí
+   surt el pla de desenvolupament, les pràctiques per certificar-se i el pla de
+   treball al kanban únic, amb pomodoro i comptabilitat de valor. La regla és a
+   lib/pla-desenvolupament.js i les pràctiques a knowledge/formacio/moduls.json
+   (generat des de la guia de certificació): aquí només es llegeix el que el SOS
+   ja sap de la persona i es pinta. El tauler és de la persona i viu a la seva
+   base local (`__pla-<persona>`), com la resta del SOS. */
+let _modulsFormacio=null;
+async function modulsFormacio(){
+  if(_modulsFormacio)return _modulsFormacio;
+  const r=await fetch('knowledge/formacio/moduls.json',{cache:'no-cache'});
+  if(!r.ok)throw new Error('no es troben les pràctiques');
+  return(_modulsFormacio=await r.json());
+}
+async function taulerPla(personName){
+  try{const all=await dbGetAll();const r=all.find(n=>n.id==='__pla-'+personKey(personName));return r&&r.kanban?r.kanban:{cards:[],fora:[]};}
+  catch(e){return{cards:[],fora:[]};}
+}
+async function desaTaulerPla(personName,kanban){try{await dbPut({id:'__pla-'+personKey(personName),type:'meta',kanban,ts:now()});}catch(e){toast('No s\'ha pogut desar el tauler');}}
+function entradaPla(personName,p,kanban){
+  const ik=ikigaiQuadrants(personName),it=id=>((ik.quadrants.find(q=>q.id===id)||{}).items||[]).map(i=>i.t);
+  const d=dossierOf(personKey(personName))||{};
+  const validades=(d.skillsFree||[]).filter(s=>s.validacions>0).map(s=>s.label);
+  const fets=(kanban.cards||[]).filter(c=>c.origen&&c.origen.tipus==='modul'&&window.Kanban&&Kanban.columna(c)==='valid').map(c=>c.origen.id);
+  return{nivell:p.level,rols:[p.role],fets,llengua:(document.documentElement.lang||'ca').slice(0,2)==='es'?'es':'ca',
+    ikigai:{agrada:it('agrada').concat((d.wants||[]).map(w=>w.label||w)),bo:it('bo').concat(validades),falta:it('falta')}};
+}
+async function pintaPlaDesenvolupament(personName,p,box){
+  if(!box||!window.PlaDesenvolupament)return;
+  let dades;
+  try{dades=await modulsFormacio();}
+  catch(e){box.innerHTML='<div class="ai-note"><span class="ic">⚠</span><span>Per fer el pla de desenvolupament cal haver obert el SOS amb connexió una vegada.</span></div>';return;}
+  const kanban=await taulerPla(personName),e=entradaPla(personName,p,kanban);
+  const pl=PlaDesenvolupament.pla(e,dades);
+  const usat=[].concat(e.ikigai.agrada.slice(0,3),e.ikigai.bo.slice(0,3),e.ikigai.falta.slice(0,2));
+  box.innerHTML='<div class="ent-grp-lbl" style="margin-top:1rem">🧭 Pla de desenvolupament · cap a '+esc(pl.objectiu==='C'?pl.objectiuNom:pl.objectiu+' · '+pl.objectiuNom)+'</div>'+
+    '<div class="ent-desc">'+pl.passos.length+' pràctiques · ≈ '+pl.hores+' h · '+pl.pomodoros+' pomodoros · unes '+pl.setmanes+' setmanes a '+pl.horesSetmana+' h per setmana.'+
+    (usat.length?' Ordenat amb el seu ikigai i les seves skills: '+usat.map(esc).join(' · ')+'.':' Sense ikigai ni skills declarades: ordre del nivell. Omple el perfil i el pla s\'hi ajusta.')+'</div>'+
+    '<ol class="mp-list ok" style="margin-top:.4rem">'+pl.passos.slice(0,8).map(x=>'<li><strong>'+(x.n?'M'+x.n+' · ':'')+esc(x.titol)+'</strong> — '+esc(x.practica)+' <span style="opacity:.7">('+esc(x.motius.join(' · '))+')</span></li>').join('')+
+    (pl.passos.length>8?'<li style="opacity:.7">… i '+(pl.passos.length-8)+' més al tauler</li>':'')+'</ol>'+
+    '<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem"><button type="button" class="btn btn-primary btn-sm" id="mpPlaKb">📋 Porta-ho al tauler de treball</button>'+
+    '<a class="btn btn-ghost btn-sm" href="certificacio.html#pla" target="_blank" rel="noopener">Com funciona →</a></div>';
+  box.querySelector('#mpPlaKb').onclick=async()=>{
+    const k=PlaDesenvolupament.afegeix(kanban,PlaDesenvolupament.targetes(pl,{qui:personName,llengua:e.llengua}));
+    await desaTaulerPla(personName,k);
+    openTaulerPla(personName);
+  };
+}
+/* El tauler: el motor únic (lib/kanban.js) amb el seu pomodoro i la seva
+   comptabilitat de valor. «Fet» demana la prova (l'evidència de la pràctica) i
+   «Validat», temps apuntat i qui valida: el mentor o mentora. */
+async function openTaulerPla(personName){
+  const kanban=await taulerPla(personName);
+  const bg=modal('<h2>📋 Pla de treball · '+esc(personName)+'</h2><p class="m-sub">Cada pràctica és una targeta. Un pomodoro la posa en marxa i el temps queda apuntat; «Fet» demana l\'evidència i «Validat», que el mentor o mentora la revisi. Només el validat compta a la comptabilitat de valor.</p><div id="tpKb"></div><div class="modal-actions"><button class="btn btn-primary" id="tpClose">Tanca</button></div>');
+  bg.querySelector('.modal').classList.add('wz-modal');
+  bg.querySelector('#tpClose').onclick=closeModal;
+  const L=(document.documentElement.lang||'ca').slice(0,2)==='es'?'es':'ca';
+  Kanban.pinta(bg.querySelector('#tpKb'),{kanban,llengua:L,prefix:'pla-',pomoClau:'tt.pla.pomo',
+    persones:[{id:personName,nom:personName},{id:'mentor',nom:L==='es'?'Mentor/a':'Mentor/a'}],
+    valida:[{id:'mentor',nom:'Mentor/a'}],
+    onCanvi:k=>desaTaulerPla(personName,k)});
 }
 // ═══════════ openActivityLog · registre viu de tota l'activitat de l'ecosistema ═══════════
 function openActivityLog(){

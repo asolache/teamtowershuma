@@ -43,9 +43,12 @@ for (const m of noms.matchAll(/^\| (m\d+) \| ([^|]+) \| ([^|]+) \| ([^|]+) \|/gm
   ES[m[1]] = { t: m[3].trim(), r: m[4].trim() };
 
 /* Nivell de cada mòdul a l'app. */
-const NIV = {};
+const NIV = {}, APP = {};
 const iF = app.indexOf('const FORMACIO_MODULES=[');
-for (const m of app.slice(iF, app.indexOf('\n];', iF)).matchAll(/\{id:'(m\d+)'[^}]*?level:'(N\d)'/g)) NIV[m[1]] = m[2];
+for (const m of app.slice(iF, app.indexOf('\n];', iF)).matchAll(/\{id:'(m\d+)',n:(\d+),title:'(?:[^'\\]|\\.)*',hours:([\d.]+),level:'(N\d)',roles:\[([^\]]*)\]/g)) {
+  NIV[m[1]] = m[4];
+  APP[m[1]] = { n: +m[2], h: +m[3], roles: m[5].split(',').map(r => r.replace(/'/g, '').trim()).filter(Boolean) };
+}
 
 /* Cada mòdul de formacio.html: on comença, on acaba, títol, rol i hores. */
 function modul(id) {
@@ -65,7 +68,7 @@ const LBL = {
   es: { p: 'Práctica', e: 'Evidencia', ia: 'Revisa la IA', n: 'Nivel' }
 };
 
-const html = [], dicES = {
+const html = [], moduls = [], dicES = {
   'pr.lp': LBL.es.p, 'pr.le': LBL.es.e, 'pr.li': LBL.es.ia
 };
 const caixes = {};
@@ -94,6 +97,10 @@ dades.blocs.forEach(b => {
       [`pr.${id}.t`]: esc(E.t), [`pr.${id}.r`]: `${ROL.es}: ${esc(E.r)}`,
       [`pr.${id}.p`]: esc(P.es.p), [`pr.${id}.e`]: esc(P.es.e), [`pr.${id}.i`]: esc(P.es.ia)
     });
+    moduls.push({ id, n: (APP[id] || {}).n || +id.slice(1), bloc: b.id, nivell: nv, hores: (APP[id] || {}).h || 0,
+      horesText: M.hores, rols: (APP[id] || {}).roles || [],
+      t: { ca: M.t, es: E.t }, rol: { ca: M.r, es: E.r },
+      practica: { ca: P.ca, es: P.es } });
     caixes[id] = [`<!--TT-CERT-${id}-->`,
       `<div class="box cert-pr"><h4>🎓 Per certificar · la pràctica a la comunitat</h4>`,
       `<p><strong>Què fas:</strong> ${esc(P.ca.p)}</p>`,
@@ -130,10 +137,15 @@ const ordre = Object.keys(caixes).map(id => {
 }).sort((a, b) => b.fi - a.fi);
 ordre.forEach(({ id, fi }) => { form2 = form2.slice(0, fi) + caixes[id] + '\n' + form2.slice(fi); });
 
-const canvis = [[F_CERT, cert, cert2], [F_FORM, form, form2]].filter(([, a, b]) => a !== b);
+/* Les mateixes dades, en una peça que llegeix el navegador (el pla de
+   desenvolupament, SOS/lib/pla-desenvolupament.js): generada, no s'edita. */
+const F_MOD = join(SOS, 'knowledge', 'formacio', 'moduls.json');
+let modAra = ''; try { modAra = readFileSync(F_MOD, 'utf8'); } catch (e) { /* primera vegada */ }
+const mod2 = JSON.stringify({ _generat: 'SOS/tools/build-certificacio.js · no s\'edita a mà', blocs: dades.blocs, moduls }, null, 1) + '\n';
+const canvis = [[F_CERT, cert, cert2], [F_FORM, form, form2], [F_MOD, modAra, mod2]].filter(([, a, b]) => a !== b);
 if (CHECK) {
   if (canvis.length) { canvis.forEach(([f]) => no(`${f.replace(SOS, 'SOS')} no està al dia: corre build-certificacio.js`)); process.exit(1); }
-  console.log(`  ✓ ${totes} pràctiques al dia a certificacio.html i formacio.html`);
+  console.log(`  ✓ ${totes} pràctiques al dia a certificacio.html, formacio.html i moduls.json`);
 } else {
   canvis.forEach(([f, , b]) => writeFileSync(f, b));
   console.log(`  ✓ ${totes} pràctiques · ${canvis.length} fitxer(s) escrit(s)`);
