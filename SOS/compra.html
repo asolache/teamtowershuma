@@ -102,13 +102,6 @@ nav.top .links a:hover{color:var(--text)}
   font-size:.82rem;color:var(--light);text-align:left}
 .avis strong{color:var(--text)}
 
-/* Pestanyes */
-.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:2rem 0 1.2rem;border-bottom:1px solid var(--border);padding-bottom:.7rem}
-.tabs button{font:inherit;font-size:.86rem;padding:.5rem .9rem;border-radius:9px;cursor:pointer;
-  border:1px solid var(--border);background:var(--card);color:var(--light)}
-.tabs button.on{background:var(--indigo);border-color:var(--indigo);color:#fff;font-weight:600}
-.pan{display:none} .pan.on{display:block}
-
 section.box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;margin-bottom:1rem}
 section.box h3{font-size:1.02rem;margin-bottom:.5rem}
 section.box .lead{color:var(--light);font-size:.9rem;margin:.2rem 0 .8rem}
@@ -129,6 +122,14 @@ th,td{text-align:left;padding:.36rem .4rem;border-bottom:1px solid var(--border)
 th{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 td.n,th.n{text-align:right;font-family:var(--mono);white-space:nowrap}
 .taula{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* Pantalles, no rotlles (SOS/knowledge/dev/pantalles.md): a partir de tauleta,
+   les taules llargues, la comanda i els mapes llisquen ells, no la pàgina; cap
+   pantalla passa de tres alçades. Sense pantalla.js, o en imprimir, sencers. */
+@media screen and (min-width:640px){
+  html.tt-pant-on .pan>.box>.taula,html.tt-pant-on #comanda,html.tt-pant-on #mapes{
+    max-height:max(22rem,calc(100dvh - 15rem));overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+  html.tt-pant-on .pan>.box>.taula thead th{position:sticky;top:0;z-index:1;background:var(--panel)}
+}
 tr.no80 td:first-child{border-left:2px solid var(--orange);padding-left:.35rem}
 
 input,select{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--border);
@@ -207,7 +208,7 @@ ol.passos li{margin-bottom:.2rem}
 }
 </style>
 </head>
-<body>
+<body data-pantalla>
 <!--TT-NAV-->
 <style>
 /* GENERAT per SOS/tools/build-nav.js · no s'edita a mà, i cap pàgina en declara
@@ -355,18 +356,9 @@ ol.passos li{margin-bottom:.2rem}
 
 <main class="wrap">
 
-<div class="tabs" id="tabs">
-  <button data-p="cistella" class="on">1 · La cistella</button>
-  <button data-p="socis">2 · Els socis</button>
-  <button data-p="comanda">3 · La comanda</button>
-  <button data-p="estalvi">4 · L'estalvi</button>
-  <button data-p="mapa">5 · El mapa de valor</button>
-  <button data-p="caixa">6 · La caixa</button>
-  <button data-p="metode">7 · Com es fa</button>
-</div>
 
 <!-- ══ 1 · LA CISTELLA ═══════════════════════════════════════════════════ -->
-<div class="pan on" id="pCistella">
+<section class="pan" id="la-cistella" data-pantalla-nom="1 · La cistella">
   <section class="box">
     <h3>La regla del 80%, mesurada i no promesa</h3>
     <p class="lead">Un producte compta si compleix <strong>les tres coses</strong>: és de
@@ -402,10 +394,10 @@ ol.passos li{margin-bottom:.2rem}
     queda és la qualitat i saber d'on ve. Edita'ls amb els del teu territori: es desen aquí.</p>
     <div class="taula"><table id="tPreus"></table></div>
   </section>
-</div>
+</section>
 
 <!-- ══ 2 · ELS SOCIS ═════════════════════════════════════════════════════ -->
-<div class="pan" id="pSocis">
+<section class="pan" id="els-socis" data-pantalla-nom="2 · Els socis">
   <section class="box">
     <h3>Els socis</h3>
     <p class="lead">Cada llar té la seva cistella, que arrenca de la que hi ha per defecte i
@@ -428,10 +420,10 @@ ol.passos li{margin-bottom:.2rem}
     <p class="mut" id="s80d"></p>
     <div class="taula"><table id="tSoci"></table></div>
   </section>
-</div>
+</section>
 
 <!-- ══ 3 · LA COMANDA ════════════════════════════════════════════════════ -->
-<div class="pan" id="pComanda">
+<section class="pan" id="la-comanda" data-pantalla-nom="3 · La comanda">
   <section class="box">
     <h3>La comanda, productor per productor</h3>
     <p class="lead">Cada pagès té el seu <strong>mínim de comanda</strong> i el seu <strong>ritme</strong>:
@@ -442,10 +434,10 @@ ol.passos li{margin-bottom:.2rem}
     de 5 kg no es parteix. El que sobra no és diner cremat, i més avall es diu què és.</p>
     <div id="comanda"></div>
   </section>
-</div>
+</section>
 
 <!-- ══ 4 · L'ESTALVI ═════════════════════════════════════════════════════ -->
-<div class="pan" id="pEstalvi">
+<section class="pan" id="l-estalvi" data-pantalla-nom="4 · L'estalvi">
   <section class="box">
     <h3>D'on surt l'estalvi</h3>
     <p class="lead">Separat per causes, perquè un percentatge sol no es pot comprovar ni discutir.
@@ -466,10 +458,10 @@ ol.passos li{margin-bottom:.2rem}
     </div>
     <div class="taula"><table id="tSocisEstalvi"></table></div>
   </section>
-</div>
+</section>
 
 <!-- ══ 5 · EL MAPA DE VALOR ══════════════════════════════════════════════ -->
-<div class="pan" id="pMapa">
+<section class="pan" id="el-mapa" data-pantalla-nom="5 · El mapa de valor">
   <section class="box">
     <h3>Aquesta pàgina és l'eina de dues dinàmiques del catàleg</h3>
     <p class="lead">No és una calculadora amb un nom a sobre: és <strong>l'eina de dos tipus de
@@ -493,10 +485,10 @@ ol.passos li{margin-bottom:.2rem}
   </section>
 
   <div id="mapes"></div>
-</div>
+</section>
 
 <!-- ══ 6 · LA CAIXA ══════════════════════════════════════════════════════ -->
-<div class="pan" id="pCaixa">
+<section class="pan" id="la-caixa" data-pantalla-nom="6 · La caixa">
   <section class="box">
     <h3>Aquesta comanda</h3>
     <p class="lead">Mentre no es tanca, això és un càlcul: canvia cada cop que algú toca una
@@ -542,10 +534,10 @@ ol.passos li{margin-bottom:.2rem}
     pugui ensenyar, que registri l'intercanvi al <a href="index.html">SOS</a>, que sí que el
     signa i l'encadena.</p>
   </section>
-</div>
+</section>
 
-<!-- ══ 6 · COM ES FA ═════════════════════════════════════════════════════ -->
-<div class="pan" id="pMetode">
+<!-- ══ 7 · COM ES FA ═════════════════════════════════════════════════════ -->
+<section class="pan" id="com-es-fa" data-pantalla-nom="7 · Com es fa">
   <section class="box metode">
     <h3>El mètode de compra</h3>
     <p class="lead">El que sap qui compra per a molta gent, i que no surt als fullets.</p>
@@ -607,7 +599,7 @@ ol.passos li{margin-bottom:.2rem}
     El temari que li toca és el mòdul
     <a href="formacio.html#m4" target="_blank" rel="noopener">m4 · Recursos comunitaris</a>.</p>
   </section>
-</div>
+</section>
 
 </main>
 
@@ -650,6 +642,7 @@ ol.passos li{margin-bottom:.2rem}
 </footer>
 <script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
+<script src="lib/pantalla.js" defer></script>
 
 <script>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1722,11 +1715,6 @@ function pintaCaixa(){
 function pinta(){pintaCistella();pintaSocis();pintaComanda();pintaEstalvi();pintaMapa();pintaCaixa();}
 
 /* ── Enganxar-ho ────────────────────────────────────────────────────────── */
-$('#tabs').addEventListener('click',e=>{
-  const b=e.target.closest('[data-p]');if(!b)return;
-  $$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
-  $$('.pan').forEach(p=>p.classList.toggle('on',p.id==='p'+b.dataset.p[0].toUpperCase()+b.dataset.p.slice(1)));
-});
 /* La cistella per defecte és una plantilla: canviar-la canvia la base de tothom
    qui encara no l'hagi tocada. Per no fer desaparèixer feina de ningú, aquí
    només es toca la mida de la llar de mostra i els preus. */
