@@ -445,8 +445,8 @@ const PAQUETS = [
 
   { id: 'escola', sector: ['admin', 'tercer'], fam: 'formacio', ve: 'repo', punt: 'nou',
     preuMin: 1800, preuMax: 3200, font: 'estimacio', publica: true, enllac: '/SOS/escola.html',
-    nom: 'La Fàbrica de Superherois',
-    nomEs: 'La Fábrica de Superhéroes',
+    nom: 'L\'Escola de participació',
+    nomEs: 'La Escuela de participación',
     qui: 'Escoles i AFA · 6 a 13 anys',
     quiEs: 'Escuelas y AFA · 6 a 13 años',
     dura: '8 sessions',

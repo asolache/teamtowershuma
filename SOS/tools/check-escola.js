@@ -34,7 +34,7 @@ const ok = m => console.log('  ✓ ' + m);
 const bad = m => { fails++; console.log('  ✗ ' + m); };
 const pl = (n, u, m) => `${n} ${n === 1 ? u : m}`;
 
-console.log('\nGuarda del programa d\'escola · Fàbrica de Superherois');
+console.log('\nGuarda del programa d\'escola · Escola de participació');
 
 /* ── Les llistes del SOS, que són les que manen ─────────────────────────── */
 const catsSOS = new Set(

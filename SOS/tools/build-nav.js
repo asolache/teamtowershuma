@@ -202,12 +202,12 @@ const SOS_GRUPS = [
      la història— i els cinc darrers d'aquí, perquè és on l'altra casa els
      envia. `comando.html` **no hi és**: la seva adreça fa 301 cap allà, i és
      l'únic 301 d'anada que no fa bucle —comprovat contra el seu `_redirects`. */
-  { id: 'mon', lbl: 'Molekulon', ic: '🌀', links: [
-    [MOLEKULON + '/', T('El Comando', 'El Comando'),
+  { id: 'mon', lbl: 'Participació', ic: '🤝', links: [
+    [MOLEKULON + '/', T('La campanya', 'La campaña'),
       T('La pel·lícula que farem 150.000', 'La película que haremos 150.000')],
     [MOLEKULON + '/historia', T('La història', 'La historia'),
       T('Els dos còmics i l\'acte III', 'Los dos cómics y el acto III')],
-    [MOLEKULON + '/personatges', T('Els 14 herois', 'Los 14 héroes'),
+    [MOLEKULON + '/personatges', T('Els 14 personatges', 'Los 14 personajes'),
       T('Poder, superarma i què vol dir en un equip', 'Poder, superarma y qué significa en un equipo')],
     [MOLEKULON + '/peli', T('La pel·lícula', 'La película'),
       T('El guió de 15 plans, i què falta filmar', 'El guion de 15 planos, y qué falta filmar')],
@@ -219,8 +219,8 @@ const SOS_GRUPS = [
       T('El poble sencer i les nou professions', 'El pueblo entero y las nueve profesiones')],
     ['molekulon.html', T('Un estat líquid', 'Un estado líquido'),
       T('Set federacions, i 19 nodes contra 47', 'Siete federaciones, y 19 nodos contra 47')],
-    ['escola.html', T('La Fàbrica de Superherois', 'La Fábrica de Superhéroes'),
-      T('De 6 a 13 anys, i cap nom real de cap criatura', 'De 6 a 13 años, y ningún nombre real de ninguna criatura')],
+    ['escola.html', T('Escola de participació', 'Escuela de participación'),
+      T('Alumnat de 6 a 13 anys, sense dades personals', 'Alumnado de 6 a 13 años, sin datos personales')],
     ['joc.html', T('El joc', 'El juego'),
       T('La plaça, a ritme', 'La plaza, a ritmo')],
     ['uneix-te.html', T('Uneix-t\'hi', 'Únete'),

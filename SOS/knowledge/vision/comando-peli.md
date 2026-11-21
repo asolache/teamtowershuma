@@ -12,7 +12,7 @@
 |---|---|---|
 | 🎨 Art | El còmic, la música i el dibuix no il·lustren el projecte: en són la matèria. Cada personatge té la seva superarma, el seu vers i el seu tema. | La història (`#historia`) |
 | 📖 Ficció | Una història inventada és el permís per dir en veu alta el que passa de debò a la teva feina i al teu barri. El Mundo Muerto no és una metàfora amable. | Els herois canònics (`#herois`) |
-| 🎓 Educació | El mateix relat és material d'aula: la Fàbrica de Superherois de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar. | A l'escola (`escola.html`) |
+| 🎓 Educació | El mateix relat és material d'aula: l'Escola de participació, de 6 a 13 anys, i setze mòduls de N0 a N3 per a qui hi vulgui treballar. | A l'escola (`escola.html`) |
 | ✨ Inspiració | Ningú es mou per un informe. Es mou perquè algú altre s'ha mogut i ho ha explicat prou bé perquè es vegi que es podia. | El blog del Comando (`#blog`) |
 | 💪 Empoderament de les comunitats | Poder concret i comprovable: qui té les claus, qui decideix i qui cobra el que aporta. Cada aportació va signada i el registre és públic. | El registre públic (`index.html#/registre`) |
 | 🕊 Autonomia | Sense compte, sense contrasenya i sense demanar permís. La clau te la fa el navegador i no surt del teu aparell; si te'n vas, t'ho endús tot. | El teu perfil és teu (`#perfil`) |
