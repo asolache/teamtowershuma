@@ -119,6 +119,10 @@ jobs:
       - name: Etiquetes dels entregables
         run: node SOS/tests/test-mapa-etiquetes.mjs
 
+      # L'Aigua: la peça compartida (lib/aigua.js) i la pantalla, amb les fonts i sense preus.
+      - name: L'Aigua
+        run: node SOS/tests/test-aigua.mjs
+
       # La colla castellera surt a dos llocs: la portada i el mapa de valor.
       # Són dues còpies deliberades, i per això mateix poden divergir en
       # silenci — que és exactament el que va passar amb els herois.
