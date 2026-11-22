@@ -1,3 +1,12 @@
+---
+tipo: modelo
+de: huma
+rol: [estrategia, finanzas, personas]
+fase: crea
+visible: privada
+estado: borrador
+etiquetas: [formacio, preus]
+---
 # Model de negoci · servei de formació i mentoria SOS
 
 > A qui va dirigit, què compra cadascú, amb quins diners ho paga i quin itinerari

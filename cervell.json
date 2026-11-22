@@ -54,9 +54,13 @@
   "codex": "SOS/knowledge/codex.md",
   "documents": [
     "SOS/knowledge/negoci/arquitectura-portades.md",
+    "SOS/knowledge/negoci/cataleg-teamtowers-2026.md",
+    "SOS/knowledge/negoci/cost-mapa-valor.md",
     "SOS/knowledge/negoci/equip-gestor-v1.md",
+    "SOS/knowledge/negoci/formacio-mentoria.md",
     "SOS/knowledge/negoci/frontera-molekulon.md",
     "SOS/knowledge/negoci/mapa-kanban-ia.md",
+    "SOS/knowledge/negoci/mapa-web.md",
     "SOS/knowledge/vna/sectors/"
   ],
   "folksonomia": "SOS/knowledge/folksonomia.json"
