@@ -1,3 +1,12 @@
+---
+tipo: proceso
+de: casa
+rol: [sistemas, operaciones]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [guardia, ia]
+---
 # El guardià · el saldo del pla que no es perd
 
 Aprovat per l'Álvaro el 13/11/2026: quan al seu pla de Claude li sobra saldo,
@@ -100,6 +109,10 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
     També mira les dotze àrees: les que falten, ¿són de debò fora de l'ofici?
 18. [ ] Cada 4 lots: la cobertura de `base.json` (exacta / aproximada /
     només sector) en una línia aquí, per veure si el client ha de triar menys.
+19. [ ] Qui decideix (`MapaValor.decideix`, 22/11/2026): a cada ofici i model
+    sense ningú que decideixi, el rol que ho fa (propietària, gerència, junta)
+    amb el que dona i rep. `build-base-vna.js` ho compta: avui 33 de 35 peces
+    amb intercanvis no ho diuen, 13 d'elles oficis.
 
 **E · L'àrea de torn** (les 12 de `taxonomia-universal.json`, per ordre; dues
 per setmana, la volta sencera en sis setmanes)

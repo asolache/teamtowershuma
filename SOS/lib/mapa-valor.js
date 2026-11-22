@@ -221,6 +221,24 @@ const arees=function arees(m) {
     diu: !falten.length ? `Les ${AREES.length} àrees hi són o s'han marcat com que no hi toquen`
       : `${falten.length} de ${AREES.length} àrees sense ningú: ${falten.map(f => f.ca).join(', ')}. Pregunta-ho a la sessió o marca-les «no-aplica»` };
 };
-const MapaValor={REGLES,AREES,arees,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};
+const decideix=function decideix(m) {
+  m = m || {};
+  const rols = m.roles || [], f = fluxos(m);
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const pregunta = { ca: 'Qui decideix en aquesta xarxa (propietària, gerència, junta…), i què hi dona i què en rep?',
+    es: '¿Quién decide en esta red (propietaria, gerencia, junta…), y qué da y qué recibe?' };
+  const st = m.arees && typeof m.arees.strategy === 'string' && m.arees.strategy !== 'no-aplica' ? m.arees.strategy.trim() : '';
+  const DIR = ['direc', 'gerent', 'gerenc', 'junta', 'patronat', 'patronato', 'propietari', 'consell rector', 'consejo rector', 'presiden'];
+  let qui = typeof m.decideix === 'string' ? m.decideix.trim() : '', per = 'decideix';
+  if (!qui && st) { qui = st; per = 'arees'; }
+  if (!qui) { qui = rols.find(r => DIR.some(w => norm(r).includes(w))) || ''; per = 'nom'; }
+  if (!qui) return { ok: false, qui: null, per: null, pregunta,
+    diu: 'El mapa no diu qui decideix' + (m.centre ? `: si és ${m.centre}, digues-ho amb «decideix»` : '') };
+  if (!rols.includes(qui)) return { ok: false, qui, per, pregunta, diu: `«${qui}» decideix, però no és cap rol del mapa` };
+  const dona = f.some(x => x.de === qui), rep = f.some(x => x.a === qui);
+  if (!dona || !rep) return { ok: false, qui, per, pregunta, diu: `${qui} decideix, però al mapa ${dona ? 'no rep' : 'no dona'} res` };
+  return { ok: true, qui, per, diu: `Decideix ${qui}, i dona i rep al mapa` };
+};
+const MapaValor={REGLES,AREES,arees,decideix,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};
 if (typeof module !== 'undefined' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: huma
+rol: [operaciones, comunicación]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [guia, mapa-de-valor]
+---
 # Que l'eina s'expliqui sola · guia contextual i flux de valor per rol
 
 > Una eina que s'ha d'explicar en una reunió no s'usarà quan no hi hagi reunió.

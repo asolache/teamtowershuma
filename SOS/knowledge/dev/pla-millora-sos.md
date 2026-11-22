@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: huma
+rol: [sistemas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [backlog]
+---
 # Pla de millora del SOS · `sos.teamtowershuma.com`
 
 > **Mesurat el 10 de setembre de 2026** sobre `SOS/index.html` (V78 · 20.788

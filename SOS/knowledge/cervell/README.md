@@ -1,3 +1,12 @@
+---
+tipo: modelo
+de: casa
+rol: [sistemas, estrategia]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [cervell]
+---
 # El cervell d'un projecte · reutilitzable
 
 **Demanat per l'Àlvar el 09/10/2026:** «que el model de cervell del projecte sigui

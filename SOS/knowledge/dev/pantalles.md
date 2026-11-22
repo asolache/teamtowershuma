@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: huma
+rol: [sistemas]
+fase: sostiene
+visible: privada
+estado: vigente
+etiquetas: [pantalles]
+---
 # Pantalles, no rotlles
 
 Decisió de l'Álvaro (13/11/2026): **només la portada fa scroll llarg**. La resta

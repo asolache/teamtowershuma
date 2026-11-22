@@ -1,3 +1,12 @@
+---
+tipo: visión
+de: huma
+rol: [estrategia, red]
+fase: transforma
+visible: privada
+estado: vigente
+etiquetas: [mapa-de-valor, territori]
+---
 # Mapa de valor estratègic de la regió · projecte fundador
 
 ## Metaskill

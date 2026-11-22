@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: huma
+rol: [personas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [dossier]
+---
 # El dossier personal · el que aportes tu, no el ledger
 
 > El ledger diu **què has fet**. El dossier diu **qui ets i què saps fer**

@@ -106,5 +106,19 @@ console.log('\nT5 · Un rol no és una organització');
   ok(MV.salut(m).punts === MV.salut(Object.assign({}, m, { arees: undefined })).punts, 'les àrees no canvien la nota de les deu regles');
 }
 
+/* Qui decideix (22/11/2026): el mapa nomena el rol que decideix, i aquest rol dona i rep. */
+{
+  const P = [['Gerencia', 'Equipo', 'tangible', 'Turnos', 'intangible', 'Avisos'], ['Clientes', 'Equipo', 'tangible', 'Pago', 'tangible', 'Servicio']];
+  const base = { roles: ['El negocio', 'Equipo', 'Clientes', 'Gerencia'], pairs: P, centre: 'El negocio' };
+  const sense = MV.decideix({ roles: ['El negocio', 'Clientes'], pairs: [['El negocio', 'Clientes', 'tangible', 'Servicio', 'tangible', 'Pago']], centre: 'El negocio' });
+  ok(!sense.ok && sense.pregunta.es && sense.pregunta.ca && sense.diu.includes('El negocio'), 'el centre no decideix sol: es pregunta, en català i castellà');
+  const nom = MV.decideix(base);
+  ok(nom.ok && nom.qui === 'Gerencia' && nom.per === 'nom', 'un rol amb nom de direcció decideix si dona i rep');
+  ok(MV.decideix(Object.assign({}, base, { decideix: 'El negocio' })).ok === false, 'qui decideix i no dona ni rep res no val');
+  ok(MV.decideix(Object.assign({}, base, { arees: { strategy: 'Equipo' } })).qui === 'Equipo', 'arees.strategy diu qui decideix');
+  ok(!MV.decideix(Object.assign({}, base, { decideix: 'La junta' })).ok, 'qui decideix ha de ser un rol del mapa');
+  ok(MV.salut(base).punts === MV.salut(Object.assign({}, base, { decideix: 'Gerencia' })).punts, 'qui decideix no canvia la nota de les deu regles');
+}
+
 console.log(fails ? `\n❌ ${fails} de ${n} fallen\n` : `\n✅ ${n} comprovacions · el nucli del mapa és un de sol\n`);
 process.exit(fails ? 1 : 0);
