@@ -157,4 +157,4 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 
 ---
 
-*47 carpetes declarades · generat des de l'arbre, no escrit.*
+*46 carpetes declarades · generat des de l'arbre, no escrit.*
