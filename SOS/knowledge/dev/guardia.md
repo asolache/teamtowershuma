@@ -107,11 +107,28 @@ per setmana, la volta sencera en sis setmanes)
   els que hi falten, els enllaços morts i el que el VNA hi diu (els rols i
   intangibles de la base que toquen l'àrea). Un PR petit o, si no cal res, una
   línia aquí.
-- [ ] direcció i estratègia · [ ] comunicació · [ ] màrqueting · [ ] vendes ·
+- [x] direcció i estratègia (#PR) · [ ] comunicació · [ ] màrqueting · [ ] vendes ·
   [ ] finances · [ ] logística · [ ] producció · [ ] operacions · [ ] persones ·
   [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
+- Torn de **direcció i estratègia** (22/11/2026, #PR):
+  - Documents: de 25 amb el tronc comú, només `vna/sectors/negoci.md` porta el
+    rol; el pla de negoci de la casa (`negoci/formacio-mentoria.md`) i els altres
+    quatre de `negoci/` sense capçalera no hi són (vegeu «Esperen l'Álvaro»).
+    `cervell.js --check` i `build-nav.js --check` en verd; cap enllaç intern mort
+    a `negoci/` ni a `vna/sectors/negoci.md`.
+  - VNA (`MapaValor.arees` sobre les 80 peces de `base.json`): 31 cobreixen
+    l'àrea (sobretot per «direcció», «gerent», «patronat»), 49 no. Hi falten
+    13 dels 14 oficis i els 7 models, `negoci` inclòs: el centre («El negocio»,
+    «La bodega»…) decideix, però cap rol ni intercanvi ho diu. Per a la cua D:
+    a cada ofici, el rol de qui decideix (propietària, gerència, junta) amb el
+    que dona i rep, o `arees.strategy` amb el rol del centre.
 
 ## Esperen l'Álvaro (el guardià no les toca)
 
 - `mapa-web/`: és de venda; ¿fa de «landing» amb scroll o va en pantalles?
 - `SOS/formacio.html`: la porta el fil del catàleg formatiu.
+- `SOS/knowledge/negoci/`: `formacio-mentoria.md`, `cost-mapa-valor.md`,
+  `cataleg-teamtowers-2026.md` i `mapa-web.md` no porten el tronc comú i tenen
+  xifres en euros, i el sedàs atura un document públic amb preus. ¿Es fan
+  privats, es treuen les xifres o queden fora del cervell? (torn d'estratègia,
+  22/11/2026)
