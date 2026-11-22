@@ -1,3 +1,12 @@
+---
+tipo: propuesta
+de: teamtowers
+rol: [ventas, marketing]
+fase: crea
+visible: privada
+estado: borrador
+etiquetas: [disseny-web, mapa-de-valor, preus]
+---
 # Web de red · mapa de valor y web en una sesión de 2 h 30
 
 > **Estado:** borrador (08/10/2026, revisado tras la revisión técnica, de copy y de

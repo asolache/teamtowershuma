@@ -1,3 +1,12 @@
+---
+tipo: modelo
+de: teamtowers
+rol: [finanzas, ventas]
+fase: sostiene
+visible: privada
+estado: vigente
+etiquetas: [preus, taller]
+---
 # El mapa de cost · d'on surt un preu
 
 > Fins al setembre del 2026 la portada publicava la tarifa del taller Fent Pinya

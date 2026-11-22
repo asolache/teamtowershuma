@@ -1,3 +1,12 @@
+---
+tipo: informe
+de: teamtowers
+rol: [ventas, marketing]
+fase: sostiene
+visible: privada
+estado: vigente
+etiquetas: [preus, cataleg]
+---
 # Catàleg TeamTowers 2026 · el que hi diu, i el que hi milloraria
 
 > El catàleg comercial de la línia castellera, buidat al repositori perquè

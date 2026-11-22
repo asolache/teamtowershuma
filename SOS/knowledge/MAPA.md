@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 634 · 26596 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 634 · 26597 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 173 KB |
@@ -94,9 +94,13 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 | document | què és | rol | de | estat | qui ho veu | etiquetes |
 |---|---|---|---|---|---|---|
 | [`SOS/knowledge/negoci/arquitectura-portades.md`](negoci/arquitectura-portades.md) | informe | màrqueting, comunicació | TeamTowers Huma i SOS | vigent | pública | portada, embut, mesura |
+| [`SOS/knowledge/negoci/cataleg-teamtowers-2026.md`](negoci/cataleg-teamtowers-2026.md) | informe | vendes, màrqueting | TeamTowers | vigent | privada | preus, cataleg |
+| [`SOS/knowledge/negoci/cost-mapa-valor.md`](negoci/cost-mapa-valor.md) | model | finances, vendes | TeamTowers | vigent | privada | preus, taller |
 | [`SOS/knowledge/negoci/equip-gestor-v1.md`](negoci/equip-gestor-v1.md) | pla | persones, xarxa i aliances | TeamTowers Huma i SOS | esborrany | pública | territori, equip-gestor, formacio |
+| [`SOS/knowledge/negoci/formacio-mentoria.md`](negoci/formacio-mentoria.md) | model | direcció i estratègia, finances, persones | TeamTowers Huma i SOS | esborrany | privada | formacio, preus |
 | [`SOS/knowledge/negoci/frontera-molekulon.md`](negoci/frontera-molekulon.md) | decisió | sistemes i dades, màrqueting | La casa | vigent | pública | molekulon, redireccions, menu |
 | [`SOS/knowledge/negoci/mapa-kanban-ia.md`](negoci/mapa-kanban-ia.md) | pla | sistemes i dades, operacions | TeamTowers Huma i SOS | esborrany | pública | kanban, mapa-viu, automatitzacio |
+| [`SOS/knowledge/negoci/mapa-web.md`](negoci/mapa-web.md) | proposta | vendes, màrqueting | TeamTowers | esborrany | privada | disseny-web, mapa-de-valor, preus |
 | [`SOS/knowledge/vna/sectors/acollida.md`](vna/sectors/acollida.md) | model | persones, xarxa i aliances, comunicació | La casa | esborrany | pública | veda, mapa-de-valor, acollida |
 | [`SOS/knowledge/vna/sectors/alimentacio.md`](vna/sectors/alimentacio.md) | model | producció, logística, vendes | La casa | esborrany | pública | veda, mapa-de-valor, alimentacio |
 | [`SOS/knowledge/vna/sectors/cultura.md`](vna/sectors/cultura.md) | model | comunicació, màrqueting, xarxa i aliances | La casa | esborrany | pública | veda, mapa-de-valor, cultura |
@@ -119,7 +123,7 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 | [`SOS/knowledge/vna/sectors/territori.md`](vna/sectors/territori.md) | model | operacions, xarxa i aliances, legal i compliment | La casa | esborrany | pública | veda, mapa-de-valor, territori |
 | [`SOS/knowledge/vna/sectors/turisme.md`](vna/sectors/turisme.md) | model | màrqueting, vendes, xarxa i aliances | La casa | esborrany | pública | veda, mapa-de-valor, turisme |
 
-**Etiquetes i el rol d'on pengen:** acollida → sense rol (1) · alimentacio → sense rol (1) · automatitzacio → sistemes i dades (1) · cultura → sense rol (1) · cura-social → sense rol (1) · cures → persones (1) · digitalitzacio → sense rol (1) · dinamitzacio-comercial → sense rol (1) · economia-circular → sense rol (1) · embut → vendes (1) · energia → sense rol (1) · equip-gestor → persones (1) · formacio → persones (2) · habitatge → sense rol (1) · joventut → sense rol (1) · kanban → operacions (1) · mapa-de-valor → direcció i estratègia (21) · mapa-viu → sistemes i dades (1) · menu → màrqueting (1) · mesura → lliure (1) · mobilitat → sense rol (1) · molekulon → xarxa i aliances (1) · negoci → sense rol (1) · ocupacio → sense rol (1) · portada → màrqueting (1) · producte-artesa → sense rol (1) · producte-digital → sense rol (1) · redireccions → sistemes i dades (1) · servei-proximitat → sense rol (1) · servei-tecnic → sense rol (1) · territori → xarxa i aliances (2) · turisme → sense rol (1) · veda → sense rol (21)
+**Etiquetes i el rol d'on pengen:** acollida → sense rol (1) · alimentacio → sense rol (1) · automatitzacio → sistemes i dades (1) · cataleg → vendes (1) · cultura → sense rol (1) · cura-social → sense rol (1) · cures → persones (1) · digitalitzacio → sense rol (1) · dinamitzacio-comercial → sense rol (1) · disseny-web → màrqueting (1) · economia-circular → sense rol (1) · embut → vendes (1) · energia → sense rol (1) · equip-gestor → persones (1) · formacio → persones (3) · habitatge → sense rol (1) · joventut → sense rol (1) · kanban → operacions (1) · mapa-de-valor → direcció i estratègia (22) · mapa-viu → sistemes i dades (1) · menu → màrqueting (1) · mesura → lliure (1) · mobilitat → sense rol (1) · molekulon → xarxa i aliances (1) · negoci → sense rol (1) · ocupacio → sense rol (1) · portada → màrqueting (1) · preus → vendes (4) · producte-artesa → sense rol (1) · producte-digital → sense rol (1) · redireccions → sistemes i dades (1) · servei-proximitat → sense rol (1) · servei-tecnic → sense rol (1) · taller → persones (1) · territori → xarxa i aliances (2) · turisme → sense rol (1) · veda → sense rol (21)
 
 **Candidates: es repeteixen i no pengen de cap rol. Decideix a la folksonomia si pugen a un rol o queden lliures:** veda
 

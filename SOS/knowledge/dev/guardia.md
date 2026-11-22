@@ -122,13 +122,11 @@ per setmana, la volta sencera en sis setmanes)
     «La bodega»…) decideix, però cap rol ni intercanvi ho diu. Per a la cua D:
     a cada ofici, el rol de qui decideix (propietària, gerència, junta) amb el
     que dona i rep, o `arees.strategy` amb el rol del centre.
+  - Decidit per l'Álvaro (22/11/2026): de moment, tot el que porta xifres va a
+    privat. Els quatre de `negoci/` amb euros entren al cervell com a `privada`;
+    més endavant, una auditoria del cervell (organització i estructura).
 
 ## Esperen l'Álvaro (el guardià no les toca)
 
 - `mapa-web/`: és de venda; ¿fa de «landing» amb scroll o va en pantalles?
 - `SOS/formacio.html`: la porta el fil del catàleg formatiu.
-- `SOS/knowledge/negoci/`: `formacio-mentoria.md`, `cost-mapa-valor.md`,
-  `cataleg-teamtowers-2026.md` i `mapa-web.md` no porten el tronc comú i tenen
-  xifres en euros, i el sedàs atura un document públic amb preus. ¿Es fan
-  privats, es treuen les xifres o queden fora del cervell? (torn d'estratègia,
-  22/11/2026)
