@@ -92,7 +92,7 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
     fa passar les respostes pel mateix camí (salut, descartats, `build-base-vna.js`).
     Test que ho cobreixi. (#405)
 16. [ ] Lots de 10 en l'ordre de `pendents` (comença per l'hostaleria, 55.x).
-    Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
+    Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#417)».
     Cada ofici diu les àrees que li falten (`arees_falten`, de `MapaValor.arees`):
     una àrea crítica que falta va a «falta», o l'ofici no entra.
 17. [ ] La jutgessa del dissabte: `rubrica-ofici.md` sobre els oficis de la
@@ -107,10 +107,10 @@ per setmana, la volta sencera en sis setmanes)
   els que hi falten, els enllaços morts i el que el VNA hi diu (els rols i
   intangibles de la base que toquen l'àrea). Un PR petit o, si no cal res, una
   línia aquí.
-- [x] direcció i estratègia (#PR) · [ ] comunicació · [ ] màrqueting · [ ] vendes ·
+- [x] direcció i estratègia (#417) · [ ] comunicació · [ ] màrqueting · [ ] vendes ·
   [ ] finances · [ ] logística · [ ] producció · [ ] operacions · [ ] persones ·
   [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
-- Torn de **direcció i estratègia** (22/11/2026, #PR):
+- Torn de **direcció i estratègia** (22/11/2026, #417):
   - Documents: de 25 amb el tronc comú, només `vna/sectors/negoci.md` porta el
     rol; el pla de negoci de la casa (`negoci/formacio-mentoria.md`) i els altres
     quatre de `negoci/` sense capçalera no hi són (vegeu «Esperen l'Álvaro»).
