@@ -75,6 +75,8 @@ const MUNTAR = [
     guanya: 'Agregar la demanda abarateix el que sol comprar-se car i sol, i deixa el marge al poble en comptes de al camió.' },
   { p: 'energia.html', ic: '⚡', m: 'm13',
     guanya: 'La teulada és de qui hi viu. Es reparteix l\'excedent, es veu qui hi ha posat què i la factura deixa de decidir-la un altre.' },
+  { p: 'aigua.html', ic: '💧', m: 'm4',
+    guanya: 'L\'aigua del poble comptada: el que gasta cada llar, l\'estalvi mesurat amb el comptador i no promès, i el que perd la xarxa. On no hi ha aigua bona, una planta solar.' },
   { p: 'habitatge.html', ic: '🏘', m: 'm13',
     guanya: 'Quota d\'ús per sota del mercat i sense especulació: accés estable i llarg, amb l\'entrada i la sortida escrites abans de necessitar-les.' },
   { p: 'online.html', ic: '🤝', m: 'm11',
