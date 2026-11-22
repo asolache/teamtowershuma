@@ -34,7 +34,7 @@ comunitari.
 | Peça | On viu |
 |---|---|
 | Les vuit disciplines de la planta i l'evidència N1 i N2 de cadascuna | `aigua-solar-xarxa.md` |
-| Els nivells N0 a N3 i la certificació per evidència al ledger | `SOS/formacio.html` · `negoci/formacio-mentoria.md` |
+| Els nivells N0 a N3 i la certificació per evidència al ledger | `SOS/formacio.html` · `Teamtowers-estrategia/negocio-huma/formacio-mentoria.md` (privat) |
 | Primer valor, després quota, després web pròpia | `embut-comu.md` |
 | Oficis i professions | `professions.md` (el genera `build-molekulandia.js`) |
 | Comunitat energètica i autoconsum compartit | `SOS/energia.html` |
