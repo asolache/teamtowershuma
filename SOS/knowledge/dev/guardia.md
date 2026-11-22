@@ -92,7 +92,7 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
     fa passar les respostes pel mateix camí (salut, descartats, `build-base-vna.js`).
     Test que ho cobreixi. (#405)
 16. [ ] Lots de 10 en l'ordre de `pendents` (comença per l'hostaleria, 55.x).
-    Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#417)».
+    Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
     Cada ofici diu les àrees que li falten (`arees_falten`, de `MapaValor.arees`):
     una àrea crítica que falta va a «falta», o l'ofici no entra.
 17. [ ] La jutgessa del dissabte: `rubrica-ofici.md` sobre els oficis de la
