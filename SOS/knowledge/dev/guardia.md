@@ -112,7 +112,7 @@ per setmana, la volta sencera en sis setmanes)
   [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
 - Torn de **direcció i estratègia** (22/11/2026, #417):
   - Documents: de 25 amb el tronc comú, només `vna/sectors/negoci.md` porta el
-    rol; el pla de negoci de la casa (`negoci/formacio-mentoria.md`) i els altres
+    rol; el pla de negoci de la casa (ara a `Teamtowers-estrategia/negocio-huma/formacio-mentoria.md`, privat) i els altres
     quatre de `negoci/` sense capçalera no hi són (vegeu «Esperen l'Álvaro»).
     `cervell.js --check` i `build-nav.js --check` en verd; cap enllaç intern mort
     a `negoci/` ni a `vna/sectors/negoci.md`.
@@ -123,7 +123,8 @@ per setmana, la volta sencera en sis setmanes)
     a cada ofici, el rol de qui decideix (propietària, gerència, junta) amb el
     que dona i rep, o `arees.strategy` amb el rol del centre.
   - Decidit per l'Álvaro (22/11/2026): de moment, tot el que porta xifres va a
-    privat. Els quatre de `negoci/` amb euros entren al cervell com a `privada`;
+    privat. Els quatre de `negoci/` amb euros entren al cervell com a `privada` (#419)
+    i el mateix dia passen al repositori privat `Teamtowers-estrategia/negocio-huma/`;
     més endavant, una auditoria del cervell (organització i estructura).
 
 ## Esperen l'Álvaro (el guardià no les toca)

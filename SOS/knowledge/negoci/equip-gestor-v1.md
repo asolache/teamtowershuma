@@ -44,7 +44,7 @@ funcionant.
 
 ## 1. Per on començar · el col·lectiu
 
-Hi ha vuit segments al [model de negoci](formacio-mentoria.md). Per al **primer**
+Hi ha vuit segments al model de negoci (privat, `Teamtowers-estrategia/negocio-huma/formacio-mentoria.md`). Per al **primer**
 equip no s'escull el que més paga ni el que més multiplica: s'escull **el que
 produeix el cas d'èxit més ràpid i més defensable**.
 
