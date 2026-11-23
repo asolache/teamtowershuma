@@ -586,6 +586,11 @@ jobs:
       - name: Els taulers de la colla
         run: node SOS/tests/test-colla-taulers.mjs
 
+      # La teva colla a la portada: el pilar només porta enxaneta, els castells
+      # coronen amb aixecador i dosos, i els compostos coronen cada part.
+      - name: La teva colla, dibuixada
+        run: node SOS/tests/test-castell-colla.mjs
+
       # Cada acció del llançador declara quan serveix. Una que no ho digui no
       # sortiria mai a la portada i no petaria res: seguiria al menú sencer i
       # semblaria que tot està bé. I si totes servissin sempre, la portada
