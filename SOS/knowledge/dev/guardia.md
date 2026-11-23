@@ -104,6 +104,8 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
     Marca aquí el lot i el PR: «lot N · codis · entrats/descartats (#PR)».
     Cada ofici diu les àrees que li falten (`arees_falten`, de `MapaValor.arees`):
     una àrea crítica que falta va a «falta», o l'ofici no entra.
+    - [x] lot 1 · 55.10 55.30 55.40 55.90 56.12 56.21 56.22 56.40 46.11 46.12 · 10/0 · salut 100, les dotze àrees i qui decideix a tots (#424)
+    - Nota: `test-vna` ja falla a main (els dotze textos de la pinya de la portada); no és d'aquest lot.
 17. [ ] La jutgessa del dissabte: `rubrica-ofici.md` sobre els oficis de la
     setmana; els de nota baixa tornen a `pendents` amb el motiu.
     També mira les dotze àrees: les que falten, ¿són de debò fora de l'ofici?
