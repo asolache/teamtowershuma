@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: casa
+rol: [ventas, marketing]
+fase: crea
+visible: pública
+estado: vigente
+etiquetas: [embut]
+---
 # L'embut comú de l'ecosistema · primer valor, després quota, després web pròpia
 
 > **Demanat per l'Àlvar el 22/10/2026:** «Tots els stakeholders de l'ecosistema

@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: huma
+rol: [ventas, sistemas]
+fase: crea
+visible: privada
+estado: vigente
+etiquetas: [espai-client, pagament]
+---
 # L'alta en un toc · del mapa a la web, pagant amb Apple Pay
 
 **Demanat per l'Àlvar (09/10/2026):** que mentre es dibuixa el mapa de valor

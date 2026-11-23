@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: casa
+rol: [sistemas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [cervell, estructura]
+---
 # L'estructura estàndard d'un cervell
 
 > Decidit per l'Àlvar el 23/10/2026: «ja està tot inventat». L'estructura de

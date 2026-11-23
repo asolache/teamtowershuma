@@ -13,12 +13,12 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 630 · 26543 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 630 · 26554 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 173 KB |
 | `SOS/fonts/` | Les dues fonts de l'app, allotjades aquí perquè arrencar no depengui de ningú de fora | 8 · 93 KB |
-| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 44 · 908 KB |
+| `SOS/lib/` | El que l'app carrega quan ho fa servir: el mapa de comarques, el codificador de QR i el mapa viu (fluxos vius i xarxa real) | 44 · 910 KB |
 | `SOS/media/` | Imatges i material que serveixen les pàgines | 28 · 11030 KB |
 | `SOS/plantilla-web/` | La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu | 8 · 400 KB |
 | `SOS/registre/` | El registre públic: hashes, totals i altes. Mai files | 2 · 7 KB |
@@ -39,8 +39,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 46 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 154 · 1900 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 83 · 1715 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 154 · 1902 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 83 · 1718 KB |
 
 ## saber
 
@@ -48,9 +48,9 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 239 · 4699 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 239 · 4704 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 77 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 14 · 1358 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 14 · 1361 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/formacio/` | La formació: la pràctica a la comunitat de cada mòdul, l'evidència i el que en revisa la IA tutora (build-certificacio.js) | 2 · 50 KB |
 | `SOS/knowledge/legal/` | Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js) | 3 · 20 KB |
@@ -58,7 +58,7 @@ El que sabem i encara no és obra. Es cita, no es copia.
 | `SOS/knowledge/matriu/` | El model de la MATRIU: com funciona, com es millora i el seu currículum (dominis, competències, skill-seeds i SOPs) | 97 · 414 KB |
 | `SOS/knowledge/negoci/` | Model d'equip gestor, formació i mentoria | 5 · 69 KB |
 | `SOS/knowledge/references/` | Els referents conceptuals, citats i no copiats | 4 · 41 KB |
-| `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 20 · 207 KB |
+| `SOS/knowledge/vision/` | Decisions d'arquitectura vives i auditories fetes | 20 · 209 KB |
 | `SOS/knowledge/vna/` | Els casos de mapa de valor i els patrons que n'han sortit | 66 · 2078 KB |
 | `SOS/prompts/` | Un fitxer per intent d'IA: el que se li demana, versionat | 8 · 8 KB |
 
@@ -93,10 +93,38 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 
 | document | què és | rol | de | estat | qui ho veu | etiquetes |
 |---|---|---|---|---|---|---|
+| [`SOS/knowledge/cervell/estructura.md`](cervell/estructura.md) | decisió | sistemes i dades | La casa | vigent | pública | cervell, estructura |
+| [`SOS/knowledge/cervell/README.md`](cervell/README.md) | model | sistemes i dades, direcció i estratègia | La casa | vigent | pública | cervell |
+| [`SOS/knowledge/dev/alta-en-un-toc.md`](dev/alta-en-un-toc.md) | pla | vendes, sistemes i dades | TeamTowers Huma i SOS | vigent | privada | espai-client, pagament |
+| [`SOS/knowledge/dev/backlog.md`](dev/backlog.md) | pla | sistemes i dades, operacions | TeamTowers Huma i SOS | vigent | privada | backlog |
+| [`SOS/knowledge/dev/guardia.md`](dev/guardia.md) | procés | sistemes i dades, operacions | La casa | vigent | pública | guardia, ia |
+| [`SOS/knowledge/dev/guia-estil-ia.md`](dev/guia-estil-ia.md) | procés | sistemes i dades, comunicació | TeamTowers Huma i SOS | vigent | pública | navegacio |
+| [`SOS/knowledge/dev/guia-zoho-nivell2.md`](dev/guia-zoho-nivell2.md) | procés | sistemes i dades, vendes | La casa | vigent | pública | crm |
+| [`SOS/knowledge/dev/noms-oficials.md`](dev/noms-oficials.md) | decisió | comunicació, persones | TeamTowers Huma i SOS | vigent | pública | noms-oficials, formacio |
+| [`SOS/knowledge/dev/pantalles.md`](dev/pantalles.md) | decisió | sistemes i dades | TeamTowers Huma i SOS | vigent | privada | pantalles |
+| [`SOS/knowledge/dev/pla-disseny.md`](dev/pla-disseny.md) | pla | sistemes i dades, màrqueting | TeamTowers Huma i SOS | vigent | pública | disseny-web |
+| [`SOS/knowledge/dev/pla-millora-sos.md`](dev/pla-millora-sos.md) | pla | sistemes i dades | TeamTowers Huma i SOS | vigent | pública | backlog |
 | [`SOS/knowledge/negoci/arquitectura-portades.md`](negoci/arquitectura-portades.md) | informe | màrqueting, comunicació | TeamTowers Huma i SOS | vigent | pública | portada, embut, mesura |
 | [`SOS/knowledge/negoci/equip-gestor-v1.md`](negoci/equip-gestor-v1.md) | pla | persones, xarxa i aliances | TeamTowers Huma i SOS | esborrany | pública | territori, equip-gestor, formacio |
 | [`SOS/knowledge/negoci/frontera-molekulon.md`](negoci/frontera-molekulon.md) | decisió | sistemes i dades, màrqueting | La casa | vigent | pública | molekulon, redireccions, menu |
 | [`SOS/knowledge/negoci/mapa-kanban-ia.md`](negoci/mapa-kanban-ia.md) | pla | sistemes i dades, operacions | TeamTowers Huma i SOS | esborrany | pública | kanban, mapa-viu, automatitzacio |
+| [`SOS/knowledge/vision/aigua-escola-sector.md`](vision/aigua-escola-sector.md) | proposta | xarxa i aliances, persones | TeamTowers Huma i SOS | esborrany | privada | boreal, formacio |
+| [`SOS/knowledge/vision/aigua-solar-xarxa.md`](vision/aigua-solar-xarxa.md) | proposta | xarxa i aliances, producció | TeamTowers Huma i SOS | esborrany | pública | boreal, certificacio |
+| [`SOS/knowledge/vision/auditoria-mapes.md`](vision/auditoria-mapes.md) | informe | direcció i estratègia, sistemes i dades | TeamTowers Huma i SOS | vigent | pública | mapa-de-valor, auditoria |
+| [`SOS/knowledge/vision/backlog-beta-i-escala.md`](vision/backlog-beta-i-escala.md) | pla | sistemes i dades, operacions | TeamTowers Huma i SOS | vigent | privada | backlog, mapa-de-valor |
+| [`SOS/knowledge/vision/dossier-personal.md`](vision/dossier-personal.md) | decisió | persones | TeamTowers Huma i SOS | vigent | pública | dossier |
+| [`SOS/knowledge/vision/embut-comu.md`](vision/embut-comu.md) | decisió | vendes, màrqueting | La casa | vigent | pública | embut |
+| [`SOS/knowledge/vision/fons-ment-xarxa.md`](vision/fons-ment-xarxa.md) | visió | finances, xarxa i aliances | TeamTowers Huma i SOS | esborrany | pública | fons-cooperatiu |
+| [`SOS/knowledge/vision/guia-i-flux-de-valor.md`](vision/guia-i-flux-de-valor.md) | decisió | operacions, comunicació | TeamTowers Huma i SOS | vigent | pública | guia, mapa-de-valor |
+| [`SOS/knowledge/vision/mapa-estrategic-regio.md`](vision/mapa-estrategic-regio.md) | visió | direcció i estratègia, xarxa i aliances | TeamTowers Huma i SOS | vigent | privada | mapa-de-valor, territori |
+| [`SOS/knowledge/vision/molekulon-estat-liquid.md`](vision/molekulon-estat-liquid.md) | decisió | comunicació, màrqueting | TeamTowers Huma i SOS | vigent | pública | molekulon |
+| [`SOS/knowledge/vision/molekulon-org-pla.md`](vision/molekulon-org-pla.md) | pla | comunicació, màrqueting | TeamTowers Huma i SOS | esborrany | privada | molekulon |
+| [`SOS/knowledge/vision/muntatge-imac-ipad.md`](vision/muntatge-imac-ipad.md) | procés | sistemes i dades | La casa | vigent | pública | muntatge |
+| [`SOS/knowledge/vision/quatre-preguntes.md`](vision/quatre-preguntes.md) | informe | direcció i estratègia | TeamTowers Huma i SOS | vigent | pública | creixement |
+| [`SOS/knowledge/vision/review-ux-flux-de-valor.md`](vision/review-ux-flux-de-valor.md) | informe | sistemes i dades, direcció i estratègia | TeamTowers Huma i SOS | vigent | pública | ux, mapa-de-valor |
+| [`SOS/knowledge/vision/taulers-colla.md`](vision/taulers-colla.md) | proposta | producció, vendes | TeamTowers Huma i SOS | esborrany | pública | taulers |
+| [`SOS/knowledge/vision/tokenitzacio-actius.md`](vision/tokenitzacio-actius.md) | pla | finances, legal i compliment | La casa | esborrany | privada | web3 |
+| [`SOS/knowledge/vision/tokenitzacio-leads-publics.md`](vision/tokenitzacio-leads-publics.md) | informe | xarxa i aliances, vendes | TeamTowers Huma i SOS | vigent | privada | web3, sector-public |
 | [`SOS/knowledge/vna/sectors/acollida.md`](vna/sectors/acollida.md) | model | persones, xarxa i aliances, comunicació | La casa | esborrany | pública | veda, mapa-de-valor, acollida |
 | [`SOS/knowledge/vna/sectors/alimentacio.md`](vna/sectors/alimentacio.md) | model | producció, logística, vendes | La casa | esborrany | pública | veda, mapa-de-valor, alimentacio |
 | [`SOS/knowledge/vna/sectors/cultura.md`](vna/sectors/cultura.md) | model | comunicació, màrqueting, xarxa i aliances | La casa | esborrany | pública | veda, mapa-de-valor, cultura |
@@ -119,7 +147,7 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 | [`SOS/knowledge/vna/sectors/territori.md`](vna/sectors/territori.md) | model | operacions, xarxa i aliances, legal i compliment | La casa | esborrany | pública | veda, mapa-de-valor, territori |
 | [`SOS/knowledge/vna/sectors/turisme.md`](vna/sectors/turisme.md) | model | màrqueting, vendes, xarxa i aliances | La casa | esborrany | pública | veda, mapa-de-valor, turisme |
 
-**Etiquetes i el rol d'on pengen:** acollida → sense rol (1) · alimentacio → sense rol (1) · automatitzacio → sistemes i dades (1) · cultura → sense rol (1) · cura-social → sense rol (1) · cures → persones (1) · digitalitzacio → sense rol (1) · dinamitzacio-comercial → sense rol (1) · economia-circular → sense rol (1) · embut → vendes (1) · energia → sense rol (1) · equip-gestor → persones (1) · formacio → persones (2) · habitatge → sense rol (1) · joventut → sense rol (1) · kanban → operacions (1) · mapa-de-valor → direcció i estratègia (21) · mapa-viu → sistemes i dades (1) · menu → màrqueting (1) · mesura → lliure (1) · mobilitat → sense rol (1) · molekulon → xarxa i aliances (1) · negoci → sense rol (1) · ocupacio → sense rol (1) · portada → màrqueting (1) · producte-artesa → sense rol (1) · producte-digital → sense rol (1) · redireccions → sistemes i dades (1) · servei-proximitat → sense rol (1) · servei-tecnic → sense rol (1) · territori → xarxa i aliances (2) · turisme → sense rol (1) · veda → sense rol (21)
+**Etiquetes i el rol d'on pengen:** acollida → sense rol (1) · alimentacio → sense rol (1) · auditoria → lliure (1) · automatitzacio → sistemes i dades (1) · backlog → sistemes i dades (3) · boreal → xarxa i aliances (2) · certificacio → persones (1) · cervell → sistemes i dades (2) · creixement → direcció i estratègia (1) · crm → vendes (1) · cultura → sense rol (1) · cura-social → sense rol (1) · cures → persones (1) · digitalitzacio → sense rol (1) · dinamitzacio-comercial → sense rol (1) · disseny-web → màrqueting (1) · dossier → persones (1) · economia-circular → sense rol (1) · embut → vendes (2) · energia → sense rol (1) · equip-gestor → persones (1) · espai-client → vendes (1) · estructura → sistemes i dades (1) · fons-cooperatiu → finances (1) · formacio → persones (4) · guardia → sistemes i dades (1) · guia → operacions (1) · habitatge → sense rol (1) · ia → sistemes i dades (1) · joventut → sense rol (1) · kanban → operacions (1) · mapa-de-valor → direcció i estratègia (26) · mapa-viu → sistemes i dades (1) · menu → màrqueting (1) · mesura → lliure (1) · mobilitat → sense rol (1) · molekulon → xarxa i aliances (3) · muntatge → sistemes i dades (1) · navegacio → sistemes i dades (1) · negoci → sense rol (1) · noms-oficials → comunicació (1) · ocupacio → sense rol (1) · pagament → vendes (1) · pantalles → sistemes i dades (1) · portada → màrqueting (1) · producte-artesa → sense rol (1) · producte-digital → sense rol (1) · redireccions → sistemes i dades (1) · sector-public → xarxa i aliances (1) · servei-proximitat → sense rol (1) · servei-tecnic → sense rol (1) · taulers → producció (1) · territori → xarxa i aliances (3) · turisme → sense rol (1) · ux → sistemes i dades (1) · veda → sense rol (21) · web3 → sistemes i dades (2)
 
 **Candidates: es repeteixen i no pengen de cap rol. Decideix a la folksonomia si pugen a un rol o queden lliures:** veda
 

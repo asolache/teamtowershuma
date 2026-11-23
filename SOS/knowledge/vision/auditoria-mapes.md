@@ -1,3 +1,12 @@
+---
+tipo: informe
+de: huma
+rol: [estrategia, sistemas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [mapa-de-valor, auditoria]
+---
 # Auditoria dels mapes precarregats · abans i després
 
 > Un mapa que neix ambre ensenya a la comunitat que ambre és normal.

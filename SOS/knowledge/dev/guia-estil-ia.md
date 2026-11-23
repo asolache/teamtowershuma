@@ -1,3 +1,12 @@
+---
+tipo: proceso
+de: huma
+rol: [sistemas, comunicación]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [navegacio]
+---
 # Guia d'arquitectura de la informació i estil · SOS
 
 > Com s'organitza la navegació del SOS i per què. Serveix per decidir on posar

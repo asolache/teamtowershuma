@@ -1,3 +1,12 @@
+---
+tipo: propuesta
+de: huma
+rol: [producción, ventas]
+fase: crea
+visible: pública
+estado: borrador
+etiquetas: [taulers]
+---
 # Els taulers de la colla · obra de xarxa de valor
 
 > **Demanat per l'Àlvaro el 16/11/2026:** «hice un modelo de juego de tableros

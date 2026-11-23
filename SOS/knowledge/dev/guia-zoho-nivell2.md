@@ -1,3 +1,12 @@
+---
+tipo: proceso
+de: casa
+rol: [sistemas, ventas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [crm]
+---
 # Guia · el formulari del web entra a Zoho CRM sol (nivell 2)
 
 **Per a qui:** l'Àlvar, o qui administri el Netlify i el Zoho del pilot. No cal

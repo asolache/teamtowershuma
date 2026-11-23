@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: huma
+rol: [comunicación, personas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [noms-oficials, formacio]
+---
 # Noms oficials per a la formació i per a qui fa servir el SOS
 
 Encàrrec de l'Álvaro (21/11/2026): els àmbits de formació, amb noms més

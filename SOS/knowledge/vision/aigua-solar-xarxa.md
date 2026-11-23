@@ -1,3 +1,12 @@
+---
+tipo: propuesta
+de: huma
+rol: [red, producción]
+fase: crea
+visible: pública
+estado: borrador
+etiquetas: [boreal, certificacio]
+---
 # L'aigua solar · la xarxa de professionals certificats per disciplina
 
 > **Demanat per l'Àlvar el 14/11/2026:** posar a la matriu el projecte

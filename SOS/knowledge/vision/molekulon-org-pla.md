@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: huma
+rol: [comunicación, marketing]
+fase: crea
+visible: privada
+estado: borrador
+etiquetas: [molekulon]
+---
 # molekulon.org · pla de la web pública del Comando
 
 > **Això és un pla, no una obra feta.** Escrit el 2026-09-20 a partir de

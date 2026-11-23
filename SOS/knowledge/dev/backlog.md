@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: huma
+rol: [sistemas, operaciones]
+fase: sostiene
+visible: privada
+estado: vigente
+etiquetas: [backlog]
+---
 # Backlog de desenvolupament SOS
 
 Font única de veritat del desenvolupament. Cada bloc pendent es prioritza, i el
@@ -39,6 +48,28 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 - **#32 · AI adapter DRY + codex V11-V15**
 
 ## Bloc pendent (prioritzat)
+
+### El cervell entra per les dotze àrees (demanat 22/11/2026)
+
+L'Álvaro, 22/11/2026 (fil «Auditar cómo funciona el cerebro»): auditar el
+cervell i, amb el seu «Si a todo», que les dotze àrees siguin l'única porta.
+L'auditoria (fitxer privat del projecte) va trobar tres eixos sense pont
+(cares, àrees i koshas) i només 25 de 198 documents a les àrees.
+
+- [x] Capçalera comuna a `vision/`, `dev/` i `cervell/`: 28 documents més
+  (57 en total). Els generats (`comando-*`, `pujades.md`, l'informe d'UX) i la
+  plantilla dels fills no la porten: la donaria el seu generador.
+- [x] `MapaValor.decideix`: qui decideix, revisió a part com les àrees (no
+  canvia les deu regles ni la nota). Cua D del guardià, punt 19.
+- [ ] Les vedes diuen a quina àrea serveixen (`rol`), i la vista
+  «L'organització» és l'única entrada.
+- [ ] El codex partit per àrees, amb índex generat i un sol format de títol.
+- [ ] Treure els 21 `sector-antic` de `base.json` quan els 14 sectors nous els
+  cobreixin.
+- [ ] `v2/`–`v9/` i `ia/` a una etiqueta d'arxiu; `backlog.md` partit.
+
+Es tanca quan la vista de l'organització mostra cada àrea amb els seus
+documents i vedes, i cap àrea és buida sense dir per què.
 
 ### La certificació a la comunitat, amb la IA de tutora (demanat 21/11/2026)
 

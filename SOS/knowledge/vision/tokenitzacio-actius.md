@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: casa
+rol: [finanzas, legal]
+fase: crea
+visible: privada
+estado: borrador
+etiquetas: [web3]
+---
 # Tokenitzar els actius de l'Àlvar al SOS · obra de xarxa de valor
 
 > **Demanat per l'Àlvar el 16/11/2026:** «Quiero iniciar proyecto de

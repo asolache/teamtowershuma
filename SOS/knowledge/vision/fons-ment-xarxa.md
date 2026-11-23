@@ -1,3 +1,12 @@
+---
+tipo: visión
+de: huma
+rol: [finanzas, red]
+fase: transforma
+visible: pública
+estado: borrador
+etiquetas: [fons-cooperatiu]
+---
 # La ment xarxa com a fons cooperatiu · obra de xarxa de valor
 
 > **Demanat per l'Àlvar el 17/10/2026:** «La ment xarxa ens connecta per ser el

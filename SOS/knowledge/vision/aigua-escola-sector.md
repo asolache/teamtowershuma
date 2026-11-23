@@ -1,3 +1,12 @@
+---
+tipo: propuesta
+de: huma
+rol: [red, personas]
+fase: crea
+visible: privada
+estado: borrador
+etiquetas: [boreal, formacio]
+---
 # L'aigua com a escola · cada planta, un sector nou al voltant
 
 > **Demanat per l'Àlvar el 16/11/2026:** «Boreal Light me gustaría enfocarme
