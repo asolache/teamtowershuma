@@ -1,3 +1,12 @@
+---
+tipo: informe
+de: huma
+rol: [sistemas, estrategia]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [ux, mapa-de-valor]
+---
 # Revisió UX del SOS · el flux de valor cap al fons cooperatiu
 
 > Revisió completa de l'app contra una tesi concreta: **Catalunya com a primera

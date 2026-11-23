@@ -465,7 +465,36 @@ function salut(m, op) {
    `require('./SOS/tools/build-vna-suport.js').revisa(mapa)`, i una lectura que
    reescrivís quatre fitxers de passada seria una sorpresa. A sota hi comencen
    els destins, que només corren quan s'executa el fitxer. */
-module.exports = { PASSES, REGLES, ANALISIS, AREES, arees, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut, fusiona, exporta, orgsDe, lecturaOrgs, mapaOrg, llocOrg, ESCALA, escalaOrg };
+/* ══ 4c · QUI DECIDEIX ═════════════════════════════════════════════════════
+   L'Álvaro (22/11/2026, auditoria del cervell): les dotze àrees són l'única
+   porta del cervell, i la primera, direcció i estratègia, és la que més falta
+   als mapes (el guardià, #417: 49 de 80 peces no diuen qui decideix, 13 dels
+   14 oficis). Com les àrees, no és una regla més ni canvia la nota: diu si el
+   mapa nomena **el rol que decideix** i si aquest rol dona i rep alguna cosa.
+   Qui decideix es diu de tres maneres, per ordre: `decideix: 'La gerència'`,
+   `arees: { strategy: 'La gerència' }`, o un rol amb nom de direcció
+   (gerència, junta, propietària…). El centre del mapa no compta sol: que
+   «El negocio» sigui al mig no diu que decideixi. */
+function decideix(m) {
+  m = m || {};
+  const rols = m.roles || [], f = fluxos(m);
+  const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const pregunta = { ca: 'Qui decideix en aquesta xarxa (propietària, gerència, junta…), i què hi dona i què en rep?',
+    es: '¿Quién decide en esta red (propietaria, gerencia, junta…), y qué da y qué recibe?' };
+  const st = m.arees && typeof m.arees.strategy === 'string' && m.arees.strategy !== 'no-aplica' ? m.arees.strategy.trim() : '';
+  const DIR = ['direc', 'gerent', 'gerenc', 'junta', 'patronat', 'patronato', 'propietari', 'consell rector', 'consejo rector', 'presiden'];
+  let qui = typeof m.decideix === 'string' ? m.decideix.trim() : '', per = 'decideix';
+  if (!qui && st) { qui = st; per = 'arees'; }
+  if (!qui) { qui = rols.find(r => DIR.some(w => norm(r).includes(w))) || ''; per = 'nom'; }
+  if (!qui) return { ok: false, qui: null, per: null, pregunta,
+    diu: 'El mapa no diu qui decideix' + (m.centre ? `: si és ${m.centre}, digues-ho amb «decideix»` : '') };
+  if (!rols.includes(qui)) return { ok: false, qui, per, pregunta, diu: `«${qui}» decideix, però no és cap rol del mapa` };
+  const dona = f.some(x => x.de === qui), rep = f.some(x => x.a === qui);
+  if (!dona || !rep) return { ok: false, qui, per, pregunta, diu: `${qui} decideix, però al mapa ${dona ? 'no rep' : 'no dona'} res` };
+  return { ok: true, qui, per, diu: `Decideix ${qui}, i dona i rep al mapa` };
+}
+
+module.exports = { PASSES, REGLES, ANALISIS, AREES, arees, decideix, fluxos, tocats, textos, revisa, systemPrompt, deApp, aApp, salut, fusiona, exporta, orgsDe, lecturaOrgs, mapaOrg, llocOrg, ESCALA, escalaOrg };
 if (require.main !== module) return;
 
 /* ══ 6 · ELS DESTINS ══════════════════════════════════════════════════════ */
@@ -561,8 +590,8 @@ posa('SOS/vna-suport.html', 'VS-MOTOR', MOTOR, 'js');
     'const orgsDe=' + orgsDe.toString() + ';', 'const lecturaOrgs=' + lecturaOrgs.toString() + ';', 'const mapaOrg=' + mapaOrg.toString() + ';', 'const llocOrg=' + llocOrg.toString() + ';',
     'const ESCALA=[' + ESCALA.map(e => `{id:${JSON.stringify(e.id)},t:${JSON.stringify(e.t)},porta:${e.porta.toString()}}`).join(',\n') + '];',
     'const escalaOrg=' + escalaOrg.toString() + ';',
-    'const AREES=' + JSON.stringify(AREES) + ';', 'const arees=' + arees.toString() + ';',
-    'const MapaValor={REGLES,AREES,arees,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};',
+    'const AREES=' + JSON.stringify(AREES) + ';', 'const arees=' + arees.toString() + ';', 'const decideix=' + decideix.toString() + ';',
+    'const MapaValor={REGLES,AREES,arees,decideix,fluxos,tocats,textos,revisa,salut,deApp,aApp,fusiona,exporta,orgsDe,lecturaOrgs,mapaOrg,llocOrg,ESCALA,escalaOrg,SYSTEM_PROMPT};',
     'if (typeof module !== \'undefined\' && module.exports) module.exports = MapaValor; else g.MapaValor = MapaValor;',
     '})(typeof globalThis !== \'undefined\' ? globalThis : this);', ''].join('\n');
   const ara = existsSync(f) ? readFileSync(f, 'utf8') : '';

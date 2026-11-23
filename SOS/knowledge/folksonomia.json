@@ -39,6 +39,24 @@
     "web-vella": "marketing",
     "taller": "people",
     "disseny-web": "marketing",
-    "ia": "systems"
+    "ia": "systems",
+    "boreal": "network",
+    "certificacio": "people",
+    "auditoria": null,
+    "backlog": "systems",
+    "dossier": "people",
+    "fons-cooperatiu": "finance",
+    "guia": "operations",
+    "muntatge": "systems",
+    "creixement": "strategy",
+    "ux": "systems",
+    "taulers": "production",
+    "sector-public": "network",
+    "pagament": "sales",
+    "guardia": "systems",
+    "navegacio": "systems",
+    "crm": "sales",
+    "noms-oficials": "communication",
+    "pantalles": "systems"
   }
 }

@@ -1,3 +1,12 @@
+---
+tipo: proceso
+de: casa
+rol: [sistemas, operaciones]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [guardia, ia]
+---
 # El guardià · el saldo del pla que no es perd
 
 Aprovat per l'Álvaro el 13/11/2026: quan al seu pla de Claude li sobra saldo,
@@ -100,6 +109,10 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
     També mira les dotze àrees: les que falten, ¿són de debò fora de l'ofici?
 18. [ ] Cada 4 lots: la cobertura de `base.json` (exacta / aproximada /
     només sector) en una línia aquí, per veure si el client ha de triar menys.
+19. [ ] Qui decideix (`MapaValor.decideix`, 22/11/2026): a cada ofici i model
+    sense ningú que decideixi, el rol que ho fa (propietària, gerència, junta)
+    amb el que dona i rep. `build-base-vna.js` ho compta: avui 33 de 35 peces
+    amb intercanvis no ho diuen, 13 d'elles oficis.
 
 **E · L'àrea de torn** (les 12 de `taxonomia-universal.json`, per ordre; dues
 per setmana, la volta sencera en sis setmanes)
@@ -112,7 +125,7 @@ per setmana, la volta sencera en sis setmanes)
   [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
 - Torn de **direcció i estratègia** (22/11/2026, #417):
   - Documents: de 25 amb el tronc comú, només `vna/sectors/negoci.md` porta el
-    rol; el pla de negoci de la casa (`negoci/formacio-mentoria.md`) i els altres
+    rol; el pla de negoci de la casa (ara a `Teamtowers-estrategia/negocio-huma/formacio-mentoria.md`, privat) i els altres
     quatre de `negoci/` sense capçalera no hi són (vegeu «Esperen l'Álvaro»).
     `cervell.js --check` i `build-nav.js --check` en verd; cap enllaç intern mort
     a `negoci/` ni a `vna/sectors/negoci.md`.
@@ -123,7 +136,8 @@ per setmana, la volta sencera en sis setmanes)
     a cada ofici, el rol de qui decideix (propietària, gerència, junta) amb el
     que dona i rep, o `arees.strategy` amb el rol del centre.
   - Decidit per l'Álvaro (22/11/2026): de moment, tot el que porta xifres va a
-    privat. Els quatre de `negoci/` amb euros entren al cervell com a `privada`;
+    privat. Els quatre de `negoci/` amb euros entren al cervell com a `privada` (#419)
+    i el mateix dia passen al repositori privat `Teamtowers-estrategia/negocio-huma/`;
     més endavant, una auditoria del cervell (organització i estructura).
 
 ## Esperen l'Álvaro (el guardià no les toca)

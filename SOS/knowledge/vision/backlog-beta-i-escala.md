@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: huma
+rol: [sistemas, operaciones]
+fase: crea
+visible: privada
+estado: vigente
+etiquetas: [backlog, mapa-de-valor]
+---
 # Backlog cap a la beta — i el mapa de valor dels següents passos
 
 > Estat de partida mesurat el 2026-08-08 sobre `SOS/index.html` (V63, 360 KB

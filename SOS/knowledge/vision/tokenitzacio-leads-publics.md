@@ -1,3 +1,12 @@
+---
+tipo: informe
+de: huma
+rol: [red, ventas]
+fase: crea
+visible: privada
+estado: vigente
+etiquetas: [web3, sector-public]
+---
 # Entitats públiques de cadena de blocs a Europa · llista de leads
 
 > **Demanat per l'Àlvar el 16/11/2026:** connectar amb una llista d'entitats

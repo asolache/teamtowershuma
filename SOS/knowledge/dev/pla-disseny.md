@@ -1,3 +1,12 @@
+---
+tipo: plan
+de: huma
+rol: [sistemas, marketing]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [disseny-web]
+---
 # Pla de millora i estandardització del disseny
 
 > **Escrit el 10/10/2026**, el dia que la barra única es parteix en dues (la del

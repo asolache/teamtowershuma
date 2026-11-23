@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: huma
+rol: [comunicación, marketing]
+fase: transforma
+visible: pública
+estado: vigente
+etiquetas: [molekulon]
+---
 # Molekulon · Molekulandia com a estat líquid
 
 > Decisió d'arquitectura i disseny del món. Escrita el 2026-09-16, després de

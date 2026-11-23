@@ -137,4 +137,8 @@ if (process.argv.includes('--check')) {
   writeFileSync(SORTIDA, text);
   const b = JSON.parse(text), c = b.cobertura;
   console.log('base.json: ' + b.peces.length + ' peces ' + JSON.stringify(b.tipus) + ' · ' + b.cataleg.classes + ' classes: ' + c.exacta + ' exactes, ' + c.aproximada + ' aproximades, ' + c.nomesSector + ' només sector, ' + c.res + ' res · ' + (text.length / 1024).toFixed(0) + ' KB');
+  /* Qui decideix (MapaValor.decideix): les peces amb intercanvis que no ho diuen, per a la cua D del guardià. */
+  { const MV = require('../lib/mapa-valor.js'), amb = b.peces.filter(p => (p.intercanvis || []).length);
+    const no = amb.filter(p => !MV.decideix({ roles: p.rols.map(r => r.nom), pairs: p.intercanvis, centre: p.centre }).ok);
+    console.log('qui decideix: ' + no.length + ' de ' + amb.length + ' peces amb intercanvis no ho diuen (' + no.filter(p => p.tipus === 'ofici').length + ' oficis)'); }
 }

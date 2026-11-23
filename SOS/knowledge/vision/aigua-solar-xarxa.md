@@ -1,3 +1,12 @@
+---
+tipo: propuesta
+de: huma
+rol: [red, producción]
+fase: crea
+visible: pública
+estado: borrador
+etiquetas: [boreal, certificacio]
+---
 # L'aigua solar · la xarxa de professionals certificats per disciplina
 
 > **Demanat per l'Àlvar el 14/11/2026:** posar a la matriu el projecte
@@ -26,8 +35,8 @@ per l'evidència del que ha fet, i la xarxa —no una empresa— és qui respon.
 
 | Peça | On viu |
 |---|---|
-| Els nivells N0 a N3 i la certificació per evidència al ledger | `SOS/formacio.html` («Els 4 nivells») · `negoci/formacio-mentoria.md` §4c |
-| L'escala N1, N2, N3 per contractar per hores | `negoci/cost-mapa-valor.md` |
+| Els nivells N0 a N3 i la certificació per evidència al ledger | `SOS/formacio.html` («Els 4 nivells») · `Teamtowers-estrategia/negocio-huma/formacio-mentoria.md` (privat) §4c |
+| L'escala N1, N2, N3 per contractar per hores | `Teamtowers-estrategia/negocio-huma/cost-mapa-valor.md` (privat) |
 | L'itinerari adaptat a partir del ledger | El launcher del SOS, «Prepara la meva mentoria» |
 | Un cervell per professional, exportable a LMS (SCORM 1.2) | `SOS/cervell.html` · `cervell/` |
 | La fitxa de proveïdor i l'espai de partner | Events Penedès · `netlify/functions/espai-partner.mjs` |

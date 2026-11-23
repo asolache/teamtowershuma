@@ -1,3 +1,12 @@
+---
+tipo: informe
+de: huma
+rol: [estrategia]
+fase: transforma
+visible: pública
+estado: vigente
+etiquetas: [creixement]
+---
 # Quatre preguntes de creixement
 
 > Anàlisi feta el 2026-08-09 llegint el codi, no de memòria. Cada afirmació sobre

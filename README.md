@@ -151,8 +151,8 @@ qué horas y a qué nivel.
 Qué entrega cada paquete, con el detalle y en las dos lenguas, está en la
 portada: [teamtowershuma.netlify.app](https://teamtowershuma.netlify.app).
 La segmentación completa —ocho públicos, sus dolores y sus vías de
-financiación— está en
-[`SOS/knowledge/negoci/formacio-mentoria.md`](SOS/knowledge/negoci/formacio-mentoria.md).
+financiación— está en el repositorio
+privado de estrategia (`negocio-huma/formacio-mentoria.md`), porque lleva cifras.
 
 ## 🖥️ El SOS, proyecto por sí solo
 

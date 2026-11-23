@@ -1,3 +1,12 @@
+---
+tipo: proceso
+de: casa
+rol: [sistemas]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [muntatge]
+---
 # Muntatge del SOS des d'un iMac vell i un iPad
 
 Pla de configuració real per treballar amb SOS des de dos aparells que ja tens,

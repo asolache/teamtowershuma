@@ -5,7 +5,7 @@
  * corporatius amb vint anys d'entrega darrere (castells per a equips, VNA,
  * comunitats de pràctica, RRHH, producció d'esdeveniments, formació d'equips).
  * La portada en venia tretze de comunitaris que el README ignorava. I
- * `SOS/knowledge/negoci/formacio-mentoria.md` —que és l'únic que té públics,
+ * `Teamtowers-estrategia/negocio-huma/formacio-mentoria.md` (privat) —que és l'únic que té públics,
  * dolors, vies de finançament i preus— no arribava a cap pantalla.
  *
  * Cap dels tres es podia portar a una visita, perquè cap deia el que decideix
@@ -140,7 +140,7 @@ const PUNTS = {
        quanta colla cal moure i on és, i publicar-ne una xifra tancada seria
        comprometre'n una que després s'ha de desdir.
      · `negoci`   — surt de les forquilles del model de negoci
-       (`SOS/knowledge/negoci/formacio-mentoria.md` §3), pensades i escrites.
+       (`Teamtowers-estrategia/negocio-huma/formacio-mentoria.md` §3, privat), pensades i escrites.
      · `estimacio`— encara no s'ha facturat prou vegades per tenir tarifa.
        Es diu, i és el que la primera conversa ha de tancar.
 
@@ -239,7 +239,7 @@ const SOSTRE_PUBLIC = 5000;
    `ve` diu d'on surt cadascun, i no és decoració: la guarda comprova que cap
    servei del README s'hagi quedat pel camí i que cap paquet se l'hagi
    inventat ningú.
-     · S1–S7  → SOS/knowledge/negoci/formacio-mentoria.md §3
+     · S1–S7  → Teamtowers-estrategia/negocio-huma/formacio-mentoria.md §3 (privat)
      · README → els sis serveis del README, que ja s'entreguen
      · repo   → una peça que ja existeix al repositori i es pot ensenyar */
 const PAQUETS = [

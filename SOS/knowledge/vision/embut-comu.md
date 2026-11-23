@@ -1,3 +1,12 @@
+---
+tipo: decisión
+de: casa
+rol: [ventas, marketing]
+fase: crea
+visible: pública
+estado: vigente
+etiquetas: [embut]
+---
 # L'embut comú de l'ecosistema · primer valor, després quota, després web pròpia
 
 > **Demanat per l'Àlvar el 22/10/2026:** «Tots els stakeholders de l'ecosistema
@@ -13,7 +22,7 @@
 
 ## No és la «web embut»
 
-`negoci/mapa-web.md` diu que la web del client no és un embut per captar
+`Teamtowers-estrategia/negocio-huma/mapa-web.md` (privat) diu que la web del client no és un embut per captar
 contactes: és la peça de la seva xarxa on cada rol troba el que rep i el que
 aporta. Això no canvia. **Aquest embut no és el d'una web, és el camí d'una
 relació**: com algú passa de rebre valor nostre a tenir el seu propi lloc a la
@@ -23,7 +32,7 @@ xarxa. Es fa servir la paraula de l'Àlvar.
 
 | Pas | Què rep la persona | Què hi posa | Peces que ja existeixen |
 |---|---|---|---|
-| **1 · Primer, valor** | Una cosa útil que s'emporta encara que no contracti res | Temps i atenció | Fent Pinya a la sala (teamtowers.eu); el diagnòstic (`negoci/formacio-mentoria.md` §6); el seu cervell gratis (`SOS/cervell.html`); l'esborrany del mapa abans de la visita (`SOS/vna-suport.html`, bloc «0»); l'agenda d'Events Penedès; els fils oberts del SOS |
+| **1 · Primer, valor** | Una cosa útil que s'emporta encara que no contracti res | Temps i atenció | Fent Pinya a la sala (teamtowers.eu); el diagnòstic (`Teamtowers-estrategia/negocio-huma/formacio-mentoria.md` (privat) §6); el seu cervell gratis (`SOS/cervell.html`); l'esborrany del mapa abans de la visita (`SOS/vna-suport.html`, bloc «0»); l'agenda d'Events Penedès; els fils oberts del SOS |
 | **2 · Una pàgina al nostre entorn, amb quota** | Una pàgina seva dins d'una web de la xarxa, que es manté sola | Una quota recurrent | L'espai de client (`cliente/`); l'espai de cada agència (`netlify/functions/espai-partner.mjs`); la fitxa de proveïdor que el partner manté a Events Penedès; la quota del sistema viu (`dev/backlog.md`, «Ingressos recurrents») |
 | **3 · La seva pròpia web** | Una web i un cervell a nom seu, que s'endú si marxa | El servei o el paquet | La plantilla «Deploy to Netlify» (`SOS/plantilla-web/`); el servei mapa i web (`mapa-web/`); el cervell instal·lat amb `cervell.js --nou` |
 
