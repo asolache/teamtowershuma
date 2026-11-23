@@ -41,13 +41,18 @@ const RE = /(\w+):\s*\{title:'((?:[^'\\]|\\.)*)',\s*t:'((?:[^'\\]|\\.)*)',\s*i:'
 const portada = [...bloc.matchAll(RE)].map(m => ({
   id: m[1], title: net(m[2]), t: net(m[3]), i: net(m[4]) }));
 
-if (!portada.length) {
-  /* Sense l'original no es diu «tot bé»: es diu que no s'ha pogut mirar. */
-  bad('no es troba COLLA_CA a index.html: aquesta guarda no pot comprovar res');
+/* ⚠ Des del 23/11/2026 la portada **ja no porta `COLLA_CA`**: eren dades
+   d'un dibuix (`collaSvg`) retirat el 04/10/2026, i ningú les llegia. Amb la
+   còpia fora, `vna.html` és l'única font de la colla i les regles 1 i 2 no
+   tenen res a comparar. Ho diu en veu alta, i les 3 i 4 segueixen mirant. Si
+   un dia la portada torna a copiar la colla, aquesta guarda torna a mirar-la. */
+if (!portada.length && /COLLA_CA/.test(PORTADA)) {
+  bad('la portada declara COLLA_CA i no s\'entén: aquesta guarda no pot comprovar res');
   console.log('\n❌ 1 problema.');
   process.exit(1);
 }
-ok(`la portada declara ${portada.length} rols de la colla`);
+if (portada.length) ok(`la portada declara ${portada.length} rols de la colla`);
+else ok('la portada ja no copia la colla: vna.html n\'és l\'única font');
 
 /* ── Els de la pàgina del mapa ──────────────────────────────────────────── */
 const RE2 = /\{id:'(\w+)',x:\d+,y:\d+,lab:'\w+',curt:'((?:[^'\\]|\\.)*)',\s*title:'((?:[^'\\]|\\.)*)',\s*t:'((?:[^'\\]|\\.)*)',\s*i:'((?:[^'\\]|\\.)*)',\s*poble:'((?:[^'\\]|\\.)*)'\}/g;
@@ -61,9 +66,10 @@ if (pagina.length !== declarats) {
 
 /* ── 1 i 2 · els mateixos, i dient el mateix ────────────────────────────── */
 const idsP = new Set(portada.map(r => r.id)), idsV = new Set(pagina.map(r => r.id));
-const falten = [...idsP].filter(i => !idsV.has(i));
-const sobren = [...idsV].filter(i => !idsP.has(i));
-if (!falten.length && !sobren.length) ok('els dotze rols són els mateixos als dos llocs');
+const falten = !portada.length ? [] : [...idsP].filter(i => !idsV.has(i));
+const sobren = !portada.length ? [] : [...idsV].filter(i => !idsP.has(i));
+if (!portada.length) { /* una sola còpia: res a comparar */ }
+else if (!falten.length && !sobren.length) ok('els dotze rols són els mateixos als dos llocs');
 else {
   if (falten.length) bad(`vna.html no té ${pl(falten.length, 'rol', 'rols')} de la portada: ${falten.join(', ')}`);
   if (sobren.length) bad(`vna.html s'inventa ${pl(sobren.length, 'rol', 'rols')}: ${sobren.join(', ')}`);

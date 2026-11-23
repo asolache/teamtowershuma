@@ -205,20 +205,8 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function f1(x) { return Math.round(x * 10) / 10; }
 
-  /* El ninot, a peu dret a (X, Y) de pantalla. `tipus`: 'ple', 'teoric', 'forat'. */
-  function ninot(X, Y, s, tipus, col, attrs) {
-    var w = 11 * s, h = 24 * s, cap = 5.2 * s;
-    var cls = 'ct-n ct-' + tipus;
-    var st = tipus === 'ple' ? 'fill="' + col + '" stroke="var(--text)" stroke-width="' + f1(0.6 * s) + '"'
-      : 'fill="none" stroke="' + col + '" stroke-width="' + f1(1.1 * s) + '" stroke-dasharray="' + f1(2.5 * s) + ' ' + f1(2 * s) + '"';
-    return '<g class="' + cls + '" ' + (attrs || '') + '>'
-      + '<ellipse cx="' + f1(X) + '" cy="' + f1(Y) + '" rx="' + f1(w * 0.75) + '" ry="' + f1(w * 0.32) + '" class="ct-ombra"/>'
-      + '<rect x="' + f1(X - w / 2) + '" y="' + f1(Y - h * 0.45) + '" width="' + f1(w) + '" height="' + f1(h * 0.45) + '" rx="' + f1(s) + '" ' + st + '/>'
-      + '<rect x="' + f1(X - w / 2 - s) + '" y="' + f1(Y - h * 0.86) + '" width="' + f1(w + 2 * s) + '" height="' + f1(h * 0.42) + '" rx="' + f1(1.6 * s) + '" ' + st + '/>'
-      + '<circle cx="' + f1(X) + '" cy="' + f1(Y - h * 0.86 - cap * 0.9) + '" r="' + f1(cap) + '" ' + (tipus === 'ple' ? 'fill="var(--gold)" stroke="var(--text)" stroke-width="' + f1(0.6 * s) + '"' : st) + '/>'
-      + '<rect x="' + f1(X - 1.8 * s) + '" y="' + f1(Y - h * 0.86 - cap * 2.2) + '" width="' + f1(3.6 * s) + '" height="' + f1(1.6 * s) + '" ' + (tipus === 'ple' ? 'fill="var(--gold)"' : st) + '/>'
-      + '</g>';
-  }
+  /* El ninot és de `lib/ninot.js`: el mateix dibuix a tots els taulers. */
+  var ninot = typeof module === 'object' && module.exports ? require('./ninot.js') : arrel.Ninot;
 
   function colorDe(m, q) {
     if (!q) return 'var(--muted)';

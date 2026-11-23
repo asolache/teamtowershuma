@@ -140,7 +140,7 @@
 
         /* HERO */
         /* El terra de 15 px allarga el hero: el ritme es cenyeix perquè la crida quedi sobre el plec. */
-        .pt:not(.pt-tot) main>:is(section,nav,.cta-band):not(.peli,.hero,.cl-mur,.cta-final,.pt-pant,.pt-vis),.pt:not(.pt-tot) :is(.hero-desc,.hero-av,.hero-actions,.hero-note,.hero-cos,.hero-visual){display:none}
+        .pt:not(.pt-tot) main>:is(section,nav,.cta-band):not(.peli,.hero,.colla-c,.cl-mur,.cta-final,.pt-pant,.pt-vis),.pt:not(.pt-tot) :is(.hero-desc,.hero-av,.hero-actions,.hero-note,.hero-cos,.hero-visual){display:none}
         .pt:not(.pt-tot) .hero{min-height:auto;padding:4rem 0 1rem}.pt:not(.pt-tot) .hero-grid{display:block}
         .pt .hero-perfils{font-family:var(--sans);display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.7rem;margin:0 0 2rem;animation:none;opacity:1}
         .pt .hero-perfils .hp-q{grid-column:1/-1;font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;letter-spacing:-.02em;text-align:center;margin:0 0 1rem}
@@ -797,6 +797,10 @@
         .intel { padding:5rem 0 4rem; background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
         .intel .section-header, .automat .section-header { margin-bottom:3rem; }
         .mapa-viu { padding:4rem 0; border-bottom:1px solid var(--border); } .mapa-viu .section-header { margin-bottom:1.5rem; }
+        .cc-g { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:1.5rem 2.5rem; align-items:start; }
+        .cc-et { padding-left:1.2rem; line-height:1.55; color:var(--light); } .cc-et li { margin:0 0 .6rem; } .cc-et b { color:var(--text); }
+        .cc-acc { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1.2rem; }
+        @media (max-width:800px) { .cc-g { grid-template-columns:1fr; } }
         .cervell-ex { display:grid; grid-template-columns:1fr; gap:.4rem 1.5rem; align-items:center; margin-top:2.5rem; border:1px solid var(--border); border-radius:12px; background:var(--card); padding:.6rem 1.2rem; }
         .cervell-ex-n { font-size:var(--t0); color:var(--muted); line-height:1.55; margin:0 0 .6rem; }
         a.int { display:flex; flex-direction:column; gap:.4rem; color:inherit; text-decoration:none; }
@@ -1111,6 +1115,31 @@
     </div>
 </section>
 
+<!-- LA TEVA COLLA (23/11/2026) · la consultoria castellera sistèmica, amb el
+     cervell com a part del valor. El dibuix és de SOS/lib/castell-colla.js. -->
+<section class="colla-c" id="la-teva-colla" aria-labelledby="cc-t">
+    <div class="container">
+        <div class="section-header fade-up">
+            <div class="section-eyebrow" data-i18n="cc.k">Consultoria castellera sistèmica · des del 2005 fent pinya</div>
+            <h2 id="cc-t" data-i18n-html="cc.h2">Et dibuixem <em>la teva colla</em>: els rols, els castells i el que lliura cadascú</h2>
+            <p data-i18n="cc.intro">En 21 anys de Fent Pinya amb empreses hem après que una organització funciona com una colla castellera. La casa és el castell, i cada flux de valor n'és un pilar: una columna que s'ha d'aixecar sencera, des del baix que aguanta el pes fins a l'enxaneta que corona davant el client. Partim del teu mapa de valor i el convertim en el castell de la teva casa.</p>
+        </div>
+        <div class="cc-g">
+            <div data-castell-colla="tres"><p data-i18n="cc.pos">De dalt a baix: enxaneta, aixecador, dosos, i el tronc —cinquens, quarts, terços, segons i baixos—. A sota, la pinya: crosses, contraforts, agulles, primeres mans, vents, laterals i els cordons. El pilar només porta enxaneta.</p></div>
+            <div>
+                <h3 data-i18n="cc.et">El que t'emportes</h3>
+                <ol class="cc-et">
+                    <li data-i18n-html="cc.e1"><b>El mapa de valor de la casa.</b> Qui dona què a qui, també la confiança i els favors que no surten a cap factura.</li>
+                    <li data-i18n-html="cc.e2"><b>El dibuix de la teva colla.</b> Cada flux, un pilar; cada rol, la seva posició, de l'enxaneta als cordons. I quin castell podeu fer avui: un pilar, una torre, un tres o un cinc.</li>
+                    <li data-i18n-html="cc.e3"><b>Els forats i les sobrecàrregues.</b> On falta algú, qui aguanta massa i quins fluxos no es toquen: sense vents, la casa són silos.</li>
+                    <li data-i18n-html="cc.e4"><b>El cervell de la colla.</b> El que s'aprèn a cada assaig queda escrit i ordenat, i el castell següent comença amb tot això. És el cervell de TeamTowers Humà, i és teu.</li>
+                </ol>
+                <p class="cc-acc"><a class="btn-primary" href="/cliente/" data-i18n="cc.a1">Dibuixa la teva colla →</a> <a class="btn-ghost" href="/SOS/cervell.html" data-i18n="cc.a2">Mira el cervell per dins</a> <a class="btn-ghost" href="https://www.teamtowers.eu/colla" rel="noopener" data-i18n="cc.a3">Viu-ho en un taller Fent Pinya ↗</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="mapa-viu" id="mapa-viu" aria-labelledby="mvv-t">
     <div class="container">
         <div class="section-header fade-up">
@@ -1237,6 +1266,8 @@
 <script src="/SOS/lib/mapa-etiquetes.js" defer></script>
 <script src="/SOS/lib/mapa-anima.js" defer></script>
 <script src="/SOS/lib/portada.js" defer></script>
+<script src="/SOS/lib/ninot.js" defer></script>
+<script src="/SOS/lib/castell-colla.js" defer></script>
 <script src="/SOS/cervell/pla.js" defer></script>
 <script src="/SOS/cervell/franja.js" defer></script>
     </div>
@@ -1823,6 +1854,18 @@
 // ── Traduccions ──────────────────────────────────────────────────────────────
 var T = {
 ca: {
+  'cc.k':'Consultoria castellera sistèmica · des del 2005 fent pinya',
+  'cc.h2':'Et dibuixem <em>la teva colla</em>: els rols, els castells i el que lliura cadascú',
+  'cc.intro':'En 21 anys de Fent Pinya amb empreses hem après que una organització funciona com una colla castellera. La casa és el castell, i cada flux de valor n\'és un pilar: una columna que s\'ha d\'aixecar sencera, des del baix que aguanta el pes fins a l\'enxaneta que corona davant el client. Partim del teu mapa de valor i el convertim en el castell de la teva casa.',
+  'cc.pos':'De dalt a baix: enxaneta, aixecador, dosos, i el tronc —cinquens, quarts, terços, segons i baixos—. A sota, la pinya: crosses, contraforts, agulles, primeres mans, vents, laterals i els cordons. El pilar només porta enxaneta.',
+  'cc.et':'El que t\'emportes',
+  'cc.e1':'<b>El mapa de valor de la casa.</b> Qui dona què a qui, també la confiança i els favors que no surten a cap factura.',
+  'cc.e2':'<b>El dibuix de la teva colla.</b> Cada flux, un pilar; cada rol, la seva posició, de l\'enxaneta als cordons. I quin castell podeu fer avui: un pilar, una torre, un tres o un cinc.',
+  'cc.e3':'<b>Els forats i les sobrecàrregues.</b> On falta algú, qui aguanta massa i quins fluxos no es toquen: sense vents, la casa són silos.',
+  'cc.e4':'<b>El cervell de la colla.</b> El que s\'aprèn a cada assaig queda escrit i ordenat, i el castell següent comença amb tot això. És el cervell de TeamTowers Humà, i és teu.',
+  'cc.a1':'Dibuixa la teva colla →',
+  'cc.a2':'Mira el cervell per dins',
+  'cc.a3':'Viu-ho en un taller Fent Pinya ↗',
   'cvv.t':'Mira el cervell per dins:',
   'cvv.org':'L\'organització',
   'cvv.3d':'En 3D',
@@ -2306,6 +2349,18 @@ ca: {
   'cta.pr.nota':'El servei de diagnòstic al territori és nou i <strong>encara no en tenim testimonis</strong>. Preferim dir-ho que inventar-ne un: el que sí que pots comprovar avui és l\'eina, el mètode i la trajectòria de qui hi ha darrere.',
 },
 es: {
+  'cc.k':'Consultoría castellera sistémica · desde 2005 haciendo piña',
+  'cc.h2':'Te dibujamos <em>tu colla</em>: los roles, los castells y lo que entrega cada uno',
+  'cc.intro':'En 21 años de Fent Pinya con empresas hemos aprendido que una organización funciona como una colla castellera. La casa es el castell, y cada flujo de valor es uno de sus pilares: una columna que se tiene que levantar entera, desde el baix que aguanta el peso hasta la enxaneta que corona delante del cliente. Partimos de tu mapa de valor y lo convertimos en el castell de tu casa.',
+  'cc.pos':'De arriba abajo: enxaneta, aixecador, dosos, y el tronco —cinquens, quarts, terços, segons y baixos—. Debajo, la piña: crosses, contraforts, agulles, primeras manos, vents, laterales y los cordones. El pilar solo lleva enxaneta.',
+  'cc.et':'Lo que te llevas',
+  'cc.e1':'<b>El mapa de valor de la casa.</b> Quién da qué a quién, también la confianza y los favores que no salen en ninguna factura.',
+  'cc.e2':'<b>El dibujo de tu colla.</b> Cada flujo, un pilar; cada rol, su posición, de la enxaneta a los cordones. Y qué castell podéis hacer hoy: un pilar, una torre, un tres o un cinco.',
+  'cc.e3':'<b>Los huecos y las sobrecargas.</b> Dónde falta alguien, quién aguanta demasiado y qué flujos no se tocan: sin vents, la casa son silos.',
+  'cc.e4':'<b>El cerebro de la colla.</b> Lo que se aprende en cada ensayo queda escrito y ordenado, y el castell siguiente empieza con todo eso. Es el cerebro de TeamTowers Humà, y es tuyo.',
+  'cc.a1':'Dibuja tu colla →',
+  'cc.a2':'Mira el cerebro por dentro',
+  'cc.a3':'Vívelo en un taller Fent Pinya ↗',
   'cvv.t':'Mira el cerebro por dentro:',
   'sis.t':'Cómo está hecho: el sistema entero',
   'sis.nav':'El navegador',
@@ -2789,37 +2844,6 @@ es: {
   }
 };
 
-// Tooltips Castellers en CA
-var COLLA_CA = {
-baixos:     {title:'Baixos — Àncora de Terra',        t:'Tangible: transmet tota la compressió estructural al terra',            i:'Intangible: seguretat psicològica per a cada nivell superior — la certesa que la base aguanta'},
-crosses:    {title:'Crosses — Suport Axil·lar',       t:'Tangible: evita que els Baixos s\'enfonsin sota càrrega axial',         i:'Intangible: micro-ajustos a través del tacte — sense paraules, només senyals de pressió'},
-contraforts:{title:'Contraforts — Pressió Posterior', t:'Tangible: absorbeix la pressió posterior per mantenir l\'alineació',    i:'Intangible: confiança cega — no poden veure la torre, només sentir-la'},
-mans:       {title:'Mans — Estabilitzadors de Maluc', t:'Tangible: empenyen cap amunt i estabilitzen els pisos superiors',       i:'Intangible: calma distribuïda — si les Mans són fermes, la confiança puja'},
-laterals:   {title:'Laterals — Guardes Laterals',     t:'Tangible: eviten l\'oscil·lació lateral de tota l\'estructura',         i:'Intangible: lectura de risc en temps real — senten micro-oscil·lacions abans que siguin visibles'},
-segons:     {title:'Segons — 2n Pis',                 t:'Tangible: distribueixen el pes geomètricament; ofereixen plataforma d\'espatlles', i:'Intangible: confiança biomecànica cap amunt — si els segons tremolen, el pànic es propaga'},
-tercos:     {title:'Terços — 3r Pis',                 t:'Tangible: ancorats pel folre en castells complexos',                   i:'Intangible: enfocament cognitiu — cada esglaó estreny l\'atenció al pur equilibri'},
-dosos:      {title:'Dosos — Base de la Corona',       t:'Tangible: ofereixen la plataforma física final per a l\'Acotxador',    i:'Intangible: ancora emocional — últim contacte humà abans del cim'},
-acotxador:  {title:'Acotxador — Pont de Seguretat',   t:'Tangible: ofereix la superfície dorsal per al pas final de l\'Enxaneta', i:'Intangible: empatia en alçada — el contacte visual redueix l\'ansietat vertiginosa'},
-enxaneta:   {title:'Enxaneta — L\'Àpex',              t:'Tangible: aixeca el braç (l\'aleta) — valida la càrrega estructuralment', i:'Intangible: catarsi col·lectiva — allibera la tensió de tota la xarxa simultàniament'},
-cap:        {title:'Cap de Colla — Director',         t:'Tangible: ordres operacionals precises, senyals de temps',              i:'Intangible: visió macroscòpica + autoritat distribuïda en castells complexos'},
-musics:     {title:'Músics — Rellotge de Xarxa',      t:'Tangible: telemetria acústica — la melodia assenyala la fase exacta de l\'Enxaneta als Baixos', i:'Intangible: estat de flux grupal — el ritme sincronitza respiració, enfocament i motivació'}
-};
-
-var COLLA_ES = {
-baixos:     {title:'Baixos — Ancla de Tierra',       t:'Tangible: transmite toda la compresión estructural al suelo',            i:'Intangible: seguridad psicológica para cada nivel superior — la certeza de que la base aguanta'},
-crosses:    {title:'Crosses — Soporte Axilar',       t:'Tangible: evita que los Baixos se hundan bajo carga axial',              i:'Intangible: microajustes a través del tacto — sin palabras, solo señales de presión'},
-contraforts:{title:'Contraforts — Presión Trasera',  t:'Tangible: absorbe la presión trasera para mantener la alineación',       i:'Intangible: confianza ciega — no pueden ver la torre, solo sentirla'},
-mans:       {title:'Mans — Estabilizadores de Cadera',t:'Tangible: empujan hacia arriba y estabilizan el glúteo de los pisos superiores', i:'Intangible: calma distribuida — si los Mans están firmes, la confianza sube'},
-laterals:   {title:'Laterals — Guardas Laterales',   t:'Tangible: previenen la oscilación lateral de toda la estructura',        i:'Intangible: lectura de riesgo en tiempo real — sienten micro-oscilaciones antes de que sean visibles'},
-segons:     {title:'Segons — 2° Piso',               t:'Tangible: distribuyen el peso geométricamente; ofrecen plataforma de hombros', i:'Intangible: confianza biomecánica hacia arriba — si los segundos tiemblan, el pánico se propaga'},
-tercos:     {title:'Terços — 3er Piso',              t:'Tangible: anclados por el folre en castillos complejos',                 i:'Intangible: enfoque cognitivo — cada peldaño estrecha la atención al puro equilibrio'},
-dosos:      {title:'Dosos — Base de la Corona',      t:'Tangible: ofrecen la plataforma física final para el Acotxador',         i:'Intangible: ancla emocional — último contacto humano antes de la cima'},
-acotxador:  {title:'Acotxador — Puente de Seguridad',t:'Tangible: ofrece la superficie dorsal para el paso final del Enxaneta',  i:'Intangible: empatía en altura — el contacto visual reduce la ansiedad vertiginosa'},
-enxaneta:   {title:'Enxaneta — El Ápice',            t:'Tangible: levanta el brazo (la aleta) — valida la carga estructuralmente', i:'Intangible: catarsis colectiva — libera la tensión de toda la red simultáneamente'},
-cap:        {title:'Cap de Colla — Director',        t:'Tangible: comandos operacionales precisos, señales de tiempo',           i:'Intangible: visión macroscópica + autoridad distribuida en castillos complejos'},
-musics:     {title:'Músics — Reloj de Red',          t:'Tangible: telemetría acústica — la melodía señala la fase exacta del Enxaneta a los Baixos', i:'Intangible: estado de flujo grupal — el ritmo sincroniza respiración, enfoque y motivación'}
-};
-
 /* `?lang=es` mana sobre la memoria: un enllaç en castellà s'ha d'obrir en castellà. */
 var currentLang = (/[?&]lang=(ca|es)\b/.exec(location.search) || [])[1] || localStorage.getItem('tt_lang') || 'ca';
 
@@ -2973,39 +2997,6 @@ if ('IntersectionObserver' in window) {
 } else {
     document.querySelectorAll('.fade-up').forEach(function(el){ el.classList.add('visible'); });
 }
-
-var tooltip  = document.getElementById('collaTooltip');
-var tTitle   = document.getElementById('collaTooltipTitle');
-var tT       = document.getElementById('collaTooltipT');
-var tI       = document.getElementById('collaTooltipI');
-var svgEl    = document.getElementById('collaSvg');
-
-document.querySelectorAll('.colla-node').forEach(function(node) {
-    node.addEventListener('mouseenter', function(e) {
-        var id   = this.dataset.id;
-        var data = (currentLang === 'es' && COLLA_ES[id]) ? COLLA_ES[id] : COLLA_CA[id];
-        if (!data) return;
-        tTitle.textContent = data.title;
-        tT.textContent     = data.t;
-        tI.textContent     = data.i;
-        tooltip.style.display = 'block';
-        var circle = this.querySelector('circle');
-        if (circle) { circle.style.filter = 'brightness(1.4)'; circle.setAttribute('stroke-width','3'); }
-    });
-    node.addEventListener('mousemove', function(e) {
-        var rect = svgEl.parentElement.getBoundingClientRect();
-        var x = e.clientX - rect.left + 14;
-        var y = e.clientY - rect.top  - 10;
-        if (x + 230 > rect.width) x = e.clientX - rect.left - 244;
-        tooltip.style.left = x + 'px';
-        tooltip.style.top  = y + 'px';
-    });
-    node.addEventListener('mouseleave', function() {
-        tooltip.style.display = 'none';
-        var circle = this.querySelector('circle');
-        if (circle) { circle.style.filter = ''; circle.removeAttribute('stroke-width'); }
-    });
-});
 
 /* ── LES RENGLES · triar construcció ───────────────────────────────────────
    Pestanyes de tota la vida. El que fa el JavaScript és ensenyar-ne una i
