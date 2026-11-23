@@ -1,6 +1,3467 @@
 {
  "versio": 1,
  "estat": "esborrany",
- "oficis": [],
+ "oficis": [
+  {
+   "id": "4611_agente_comercial_de_productos_agrarios",
+   "cnae": "46.11",
+   "classe": "Actividades de intermediarios del comercio al por mayor de materias primas agrarias, animales vivos, materias primas textiles y productos semielaborados",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🌾",
+   "paraules": "corredor, cereal, cosecha, agricultores, ganaderos, lotes, compradores, cooperativa, collita, pagesos, ramaders, lots, compradors",
+   "veda": {
+    "clau": [
+     "**Pagesos → agent: confiança.** Deixar la collita en mans d'algú és el que es dona.",
+     "**Agent → pagesos: informació.** Saber el mercat val més que la comissió.",
+     "**Cooperatives → agent: xarxa.** Una cooperativa obre moltes portes alhora."
+    ],
+    "falta": [
+     "El que l'agent sap del camp i no s'escriu enlloc",
+     "Qui substitueix l'agent si falta"
+    ],
+    "preguntes": [
+     "Amb quins pagesos treballeu cada temporada?",
+     "Com sabeu què demanaran els compradors?",
+     "Qui us porta la paperassa dels contractes?"
+    ],
+    "senyals": [
+     "Pagesos que repeteixen any rere any",
+     "Compradors que us truquen primer",
+     "Poques incidències en els lliuraments"
+    ]
+   },
+   "es": {
+    "nom": "Agente comercial de productos agrarios",
+    "diu": "Para una agencia pequeña o un autónomo que pone en contacto a quien cultiva o cría con quien compra al por mayor.",
+    "roles": [
+     "Gerencia de la agencia comercial",
+     "Agricultores y ganaderos",
+     "Compradores mayoristas e industria",
+     "Cooperativas agrarias",
+     "Transportistas",
+     "Equipo de oficina y asesoría",
+     "Agricultor que recomienda"
+    ],
+    "pairs": [
+     [
+      "Agricultores y ganaderos",
+      "Gerencia de la agencia comercial",
+      "tangible",
+      "lotes de cosecha para vender",
+      "tangible",
+      "contrato de venta cerrado"
+     ],
+     [
+      "Agricultores y ganaderos",
+      "Gerencia de la agencia comercial",
+      "intangible",
+      "confianza y datos del campo",
+      "intangible",
+      "boletín de mercado y precios"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Compradores mayoristas e industria",
+      "tangible",
+      "partidas con calidad garantizada",
+      "tangible",
+      "pedido y comisión facturada"
+     ],
+     [
+      "Compradores mayoristas e industria",
+      "Gerencia de la agencia comercial",
+      "intangible",
+      "información de demanda",
+      "intangible",
+      "seriedad en las entregas"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Transportistas",
+      "tangible",
+      "encargos de transporte",
+      "tangible",
+      "carga entregada a tiempo"
+     ],
+     [
+      "Cooperativas agrarias",
+      "Gerencia de la agencia comercial",
+      "intangible",
+      "colaboración en la red de socios",
+      "intangible",
+      "compradores nuevos para sus socios"
+     ],
+     [
+      "Cooperativas agrarias",
+      "Agricultores y ganaderos",
+      "tangible",
+      "producción agrupada y almacén",
+      "tangible",
+      "cuotas de socio"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Equipo de oficina y asesoría",
+      "tangible",
+      "contrato y formación",
+      "intangible",
+      "consejo fiscal a tiempo"
+     ],
+     [
+      "Agricultor que recomienda",
+      "Agricultores y ganaderos",
+      "intangible",
+      "recomendación de confianza",
+      "intangible",
+      "experiencia compartida"
+     ],
+     [
+      "Transportistas",
+      "Compradores mayoristas e industria",
+      "tangible",
+      "mercancía en destino",
+      "intangible",
+      "aviso de incidencias"
+     ]
+    ],
+    "passos": [
+     "Conocer qué produce cada zona y cuándo",
+     "Escuchar qué piden los compradores",
+     "Aliarse con las cooperativas",
+     "Ordenar contratos y transporte",
+     "Compartir el boletín de mercado"
+    ],
+    "centre": "Gerencia de la agencia comercial",
+    "bona": "El agente vale lo que vale su palabra a los dos lados del trato."
+   },
+   "ca": {
+    "nom": "Agent comercial de productes agraris",
+    "diu": "Per a una agència petita o un autònom que posa en contacte qui conrea o cria amb qui compra a l'engròs.",
+    "roles": [
+     "Gerència de l'agència comercial",
+     "Pagesos i ramaders",
+     "Compradors majoristes i indústria",
+     "Cooperatives agràries",
+     "Transportistes",
+     "Equip d'oficina i assessoria",
+     "Pagès que recomana"
+    ],
+    "pairs": [
+     [
+      "Pagesos i ramaders",
+      "Gerència de l'agència comercial",
+      "tangible",
+      "lots de collita per vendre",
+      "tangible",
+      "contracte de venda tancat"
+     ],
+     [
+      "Pagesos i ramaders",
+      "Gerència de l'agència comercial",
+      "intangible",
+      "confiança i dades del camp",
+      "intangible",
+      "butlletí de mercat i preus"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Compradors majoristes i indústria",
+      "tangible",
+      "partides amb qualitat garantida",
+      "tangible",
+      "comanda i comissió facturada"
+     ],
+     [
+      "Compradors majoristes i indústria",
+      "Gerència de l'agència comercial",
+      "intangible",
+      "informació de demanda",
+      "intangible",
+      "serietat en els lliuraments"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Transportistes",
+      "tangible",
+      "encàrrecs de transport",
+      "tangible",
+      "càrrega lliurada a temps"
+     ],
+     [
+      "Cooperatives agràries",
+      "Gerència de l'agència comercial",
+      "intangible",
+      "col·laboració en la xarxa de socis",
+      "intangible",
+      "compradors nous per als socis"
+     ],
+     [
+      "Cooperatives agràries",
+      "Pagesos i ramaders",
+      "tangible",
+      "producció agrupada i magatzem",
+      "tangible",
+      "quotes de soci"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Equip d'oficina i assessoria",
+      "tangible",
+      "contracte i formació",
+      "intangible",
+      "consell fiscal a temps"
+     ],
+     [
+      "Pagès que recomana",
+      "Pagesos i ramaders",
+      "intangible",
+      "recomanació de confiança",
+      "intangible",
+      "experiència compartida"
+     ],
+     [
+      "Transportistes",
+      "Compradors majoristes i indústria",
+      "tangible",
+      "mercaderia a destí",
+      "intangible",
+      "avís d'incidències"
+     ]
+    ],
+    "passos": [
+     "Conèixer què produeix cada zona i quan",
+     "Escoltar què demanen els compradors",
+     "Aliar-se amb les cooperatives",
+     "Endreçar contractes i transport",
+     "Compartir el butlletí de mercat"
+    ],
+    "centre": "Gerència de l'agència comercial",
+    "bona": "L'agent val el que val la seva paraula als dos costats del tracte."
+   },
+   "en": {
+    "nom": "Agricultural commodities agent",
+    "diu": "For a small agency or freelancer linking growers and breeders with wholesale buyers.",
+    "roles": [
+     "Agency management",
+     "Farmers and breeders",
+     "Wholesale and industrial buyers",
+     "Farm cooperatives",
+     "Hauliers",
+     "Office team and advisers",
+     "Farmer who recommends"
+    ],
+    "pairs": [
+     [
+      "Farmers and breeders",
+      "Agency management",
+      "tangible",
+      "harvest lots for sale",
+      "tangible",
+      "closed sales contract"
+     ],
+     [
+      "Farmers and breeders",
+      "Agency management",
+      "intangible",
+      "trust and field data",
+      "intangible",
+      "market and price bulletin"
+     ],
+     [
+      "Agency management",
+      "Wholesale and industrial buyers",
+      "tangible",
+      "consignments with assured quality",
+      "tangible",
+      "order and invoiced commission"
+     ],
+     [
+      "Wholesale and industrial buyers",
+      "Agency management",
+      "intangible",
+      "demand information",
+      "intangible",
+      "reliable deliveries"
+     ],
+     [
+      "Agency management",
+      "Hauliers",
+      "tangible",
+      "haulage orders",
+      "tangible",
+      "load delivered on time"
+     ],
+     [
+      "Farm cooperatives",
+      "Agency management",
+      "intangible",
+      "cooperation across the members network",
+      "intangible",
+      "new buyers for their members"
+     ],
+     [
+      "Farm cooperatives",
+      "Farmers and breeders",
+      "tangible",
+      "pooled production and storage",
+      "tangible",
+      "membership fees"
+     ],
+     [
+      "Agency management",
+      "Office team and advisers",
+      "tangible",
+      "contract and training",
+      "intangible",
+      "timely tax advice"
+     ],
+     [
+      "Farmer who recommends",
+      "Farmers and breeders",
+      "intangible",
+      "trusted recommendation",
+      "intangible",
+      "shared experience"
+     ],
+     [
+      "Hauliers",
+      "Wholesale and industrial buyers",
+      "tangible",
+      "goods at destination",
+      "intangible",
+      "incident notices"
+     ]
+    ],
+    "passos": [
+     "Learn what each area produces and when",
+     "Listen to what buyers ask for",
+     "Partner with cooperatives",
+     "Organise contracts and haulage",
+     "Share the market bulletin"
+    ],
+    "centre": "Agency management",
+    "bona": "An agent is worth what their word is worth on both sides of the deal."
+   }
+  },
+  {
+   "id": "4612_agente_comercial_de_productos_quimicos_y_metales",
+   "cnae": "46.12",
+   "classe": "Actividades de intermediarios del comercio al por mayor de combustibles, minerales, metales y productos químicos industriales",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "⚗️",
+   "paraules": "representante, química, metales, combustibles, talleres, fabricantes, catálogo, seguridad, representant, metalls, tallers, fabricants, catàleg",
+   "veda": {
+    "clau": [
+     "**Agent → tallers: consell tècnic.** El coneixement val més que el preu.",
+     "**Agent → fabricants: mercat.** Les dades de la zona són el que no tenen.",
+     "**Assessoria → agència: seguretat.** Un permís caducat atura la venda."
+    ],
+    "falta": [
+     "El que passa amb els residus i envasos",
+     "El coneixement tècnic que només té una persona"
+    ],
+    "preguntes": [
+     "Quins fabricants representeu i des de quan?",
+     "Qui respon quan un client té un problema?",
+     "Com porteu els permisos de transport?"
+    ],
+    "senyals": [
+     "Tallers que us recomanen",
+     "Fabricants que us amplien el catàleg",
+     "Cap incidència de seguretat"
+    ]
+   },
+   "es": {
+    "nom": "Agente comercial de productos químicos y metales",
+    "diu": "Para un agente o una agencia pequeña que representa a fabricantes de combustibles, metales o químicos ante talleres e industrias.",
+    "roles": [
+     "Gerencia de la agencia comercial",
+     "Fabricantes representados",
+     "Talleres e industrias clientes",
+     "Equipo comercial y técnico",
+     "Transportistas de mercancías peligrosas",
+     "Asesoría de seguridad y normativa",
+     "Cliente que recomienda"
+    ],
+    "pairs": [
+     [
+      "Fabricantes representados",
+      "Gerencia de la agencia comercial",
+      "tangible",
+      "contrato de representación y catálogo",
+      "tangible",
+      "pedidos de la zona"
+     ],
+     [
+      "Fabricantes representados",
+      "Gerencia de la agencia comercial",
+      "intangible",
+      "formación de producto",
+      "intangible",
+      "información del mercado y datos de ventas"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Talleres e industrias clientes",
+      "tangible",
+      "suministro con fichas de seguridad",
+      "tangible",
+      "pedido y pago"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Talleres e industrias clientes",
+      "intangible",
+      "consejo técnico y boletín de novedades",
+      "intangible",
+      "confianza y fidelidad"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Equipo comercial y técnico",
+      "tangible",
+      "contrato, objetivos y formación",
+      "tangible",
+      "visitas y seguimiento de clientes"
+     ],
+     [
+      "Equipo comercial y técnico",
+      "Talleres e industrias clientes",
+      "intangible",
+      "atención rápida ante problemas",
+      "intangible",
+      "reseñas y nuevos contactos"
+     ],
+     [
+      "Transportistas de mercancías peligrosas",
+      "Talleres e industrias clientes",
+      "tangible",
+      "entrega segura de la carga",
+      "tangible",
+      "albarán firmado"
+     ],
+     [
+      "Gerencia de la agencia comercial",
+      "Transportistas de mercancías peligrosas",
+      "tangible",
+      "encargos de transporte",
+      "tangible",
+      "carga entregada sin incidencias"
+     ],
+     [
+      "Asesoría de seguridad y normativa",
+      "Gerencia de la agencia comercial",
+      "tangible",
+      "normativa y permisos al día",
+      "tangible",
+      "honorarios de la asesoría"
+     ],
+     [
+      "Cliente que recomienda",
+      "Talleres e industrias clientes",
+      "intangible",
+      "recomendación en la red de talleres",
+      "intangible",
+      "experiencia compartida"
+     ]
+    ],
+    "passos": [
+     "Elegir bien a qué fabricantes representar",
+     "Conocer los talleres e industrias de la zona",
+     "Formar al equipo en producto y seguridad",
+     "Ordenar transporte y permisos",
+     "Devolver datos de mercado a los fabricantes"
+    ],
+    "centre": "Gerencia de la agencia comercial",
+    "bona": "El cliente compra seguridad: que el producto llegue bien y que alguien responda si algo falla."
+   },
+   "ca": {
+    "nom": "Agent comercial de productes químics i metalls",
+    "diu": "Per a un agent o una agència petita que representa fabricants de combustibles, metalls o químics davant de tallers i indústries.",
+    "roles": [
+     "Gerència de l'agència comercial",
+     "Fabricants representats",
+     "Tallers i indústries clients",
+     "Equip comercial i tècnic",
+     "Transportistes de mercaderies perilloses",
+     "Assessoria de seguretat i normativa",
+     "Client que recomana"
+    ],
+    "pairs": [
+     [
+      "Fabricants representats",
+      "Gerència de l'agència comercial",
+      "tangible",
+      "contracte de representació i catàleg",
+      "tangible",
+      "comandes de la zona"
+     ],
+     [
+      "Fabricants representats",
+      "Gerència de l'agència comercial",
+      "intangible",
+      "formació de producte",
+      "intangible",
+      "informació del mercat i dades de vendes"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Tallers i indústries clients",
+      "tangible",
+      "subministrament amb fitxes de seguretat",
+      "tangible",
+      "comanda i pagament"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Tallers i indústries clients",
+      "intangible",
+      "consell tècnic i butlletí de novetats",
+      "intangible",
+      "confiança i fidelitat"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Equip comercial i tècnic",
+      "tangible",
+      "contracte, objectius i formació",
+      "tangible",
+      "visites i seguiment de clients"
+     ],
+     [
+      "Equip comercial i tècnic",
+      "Tallers i indústries clients",
+      "intangible",
+      "atenció ràpida davant de problemes",
+      "intangible",
+      "ressenyes i contactes nous"
+     ],
+     [
+      "Transportistes de mercaderies perilloses",
+      "Tallers i indústries clients",
+      "tangible",
+      "lliurament segur de la càrrega",
+      "tangible",
+      "albarà signat"
+     ],
+     [
+      "Gerència de l'agència comercial",
+      "Transportistes de mercaderies perilloses",
+      "tangible",
+      "encàrrecs de transport",
+      "tangible",
+      "càrrega lliurada sense incidències"
+     ],
+     [
+      "Assessoria de seguretat i normativa",
+      "Gerència de l'agència comercial",
+      "tangible",
+      "normativa i permisos al dia",
+      "tangible",
+      "honoraris de l'assessoria"
+     ],
+     [
+      "Client que recomana",
+      "Tallers i indústries clients",
+      "intangible",
+      "recomanació a la xarxa de tallers",
+      "intangible",
+      "experiència compartida"
+     ]
+    ],
+    "passos": [
+     "Triar bé quins fabricants representar",
+     "Conèixer els tallers i indústries de la zona",
+     "Formar l'equip en producte i seguretat",
+     "Endreçar transport i permisos",
+     "Retornar dades de mercat als fabricants"
+    ],
+    "centre": "Gerència de l'agència comercial",
+    "bona": "El client compra seguretat: que el producte arribi bé i que algú respongui si alguna cosa falla."
+   },
+   "en": {
+    "nom": "Chemicals and metals sales agent",
+    "diu": "For an agent or small agency representing fuel, metal or chemical makers to workshops and industry.",
+    "roles": [
+     "Agency management",
+     "Represented manufacturers",
+     "Workshop and industrial customers",
+     "Sales and technical team",
+     "Hazardous goods hauliers",
+     "Safety and compliance adviser",
+     "Customer who recommends"
+    ],
+    "pairs": [
+     [
+      "Represented manufacturers",
+      "Agency management",
+      "tangible",
+      "agency contract and catalogue",
+      "tangible",
+      "orders from the territory"
+     ],
+     [
+      "Represented manufacturers",
+      "Agency management",
+      "intangible",
+      "product training",
+      "intangible",
+      "market insight and sales data"
+     ],
+     [
+      "Agency management",
+      "Workshop and industrial customers",
+      "tangible",
+      "supply with safety data sheets",
+      "tangible",
+      "order and payment"
+     ],
+     [
+      "Agency management",
+      "Workshop and industrial customers",
+      "intangible",
+      "technical advice and news bulletin",
+      "intangible",
+      "trust and loyalty"
+     ],
+     [
+      "Agency management",
+      "Sales and technical team",
+      "tangible",
+      "contract, goals and training",
+      "tangible",
+      "visits and customer follow-up"
+     ],
+     [
+      "Sales and technical team",
+      "Workshop and industrial customers",
+      "intangible",
+      "quick help with problems",
+      "intangible",
+      "reviews and new contacts"
+     ],
+     [
+      "Hazardous goods hauliers",
+      "Workshop and industrial customers",
+      "tangible",
+      "safe delivery of the load",
+      "tangible",
+      "signed delivery note"
+     ],
+     [
+      "Agency management",
+      "Hazardous goods hauliers",
+      "tangible",
+      "haulage orders",
+      "tangible",
+      "load delivered without incident"
+     ],
+     [
+      "Safety and compliance adviser",
+      "Agency management",
+      "tangible",
+      "rules and permits up to date",
+      "tangible",
+      "adviser fees"
+     ],
+     [
+      "Customer who recommends",
+      "Workshop and industrial customers",
+      "intangible",
+      "recommendation across the workshop network",
+      "intangible",
+      "shared experience"
+     ]
+    ],
+    "passos": [
+     "Choose carefully which makers to represent",
+     "Get to know local workshops and industry",
+     "Train the team on product and safety",
+     "Organise haulage and permits",
+     "Feed market data back to makers"
+    ],
+    "centre": "Agency management",
+    "bona": "Customers buy safety: the product arrives well and someone answers if it fails."
+   }
+  },
+  {
+   "id": "5510_hotel_pequeno",
+   "cnae": "55.10",
+   "classe": "Hoteles y alojamientos similares",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🏨",
+   "paraules": "hotel, hostal, acogida, huéspedes, recepción, habitaciones, desayuno, reseñas, hospitalitat, hostes, recepció, habitacions, esmorzar",
+   "veda": {
+    "clau": [
+     "**Hoste → hotel: ressenya.** La ressenya sincera val més que la comissió d'una plataforma.",
+     "**Equip → hostes: atenció.** La recepció és qui fa sentir l'hoste a casa.",
+     "**Proveïdors → hostes: territori.** El producte local explica on ets."
+    ],
+    "falta": [
+     "El que l'equip sap dels hostes que tornen",
+     "La dependència de les plataformes de reserva"
+    ],
+    "preguntes": [
+     "Per quin canal us arriben la majoria d'hostes?",
+     "Qui de l'equip coneix millor els hostes que tornen?",
+     "Quins productes de la zona podríeu servir a l'esmorzar?"
+    ],
+    "senyals": [
+     "Hostes que tornen i ho diuen",
+     "Reserves directes que creixen",
+     "L'equip proposa millores"
+    ]
+   },
+   "es": {
+    "nom": "Hotel pequeño",
+    "diu": "Para un hotel pequeño o un alojamiento familiar que vive de la acogida y colabora con su territorio.",
+    "roles": [
+     "Gerencia del hotel",
+     "Huéspedes",
+     "Equipo de recepción y pisos",
+     "Plataformas de reserva",
+     "Proveedores locales",
+     "Huésped que recomienda",
+     "Ayuntamiento y oficina de turismo"
+    ],
+    "pairs": [
+     [
+      "Gerencia del hotel",
+      "Huéspedes",
+      "tangible",
+      "habitación limpia y desayuno",
+      "tangible",
+      "pago de la estancia"
+     ],
+     [
+      "Gerencia del hotel",
+      "Huéspedes",
+      "intangible",
+      "acogida y consejos del lugar",
+      "intangible",
+      "reseñas sinceras y fidelidad"
+     ],
+     [
+      "Gerencia del hotel",
+      "Equipo de recepción y pisos",
+      "tangible",
+      "contrato, horarios y formación",
+      "tangible",
+      "recepción, limpieza y mantenimiento"
+     ],
+     [
+      "Equipo de recepción y pisos",
+      "Huéspedes",
+      "intangible",
+      "atención cercana día a día",
+      "intangible",
+      "agradecimiento y peticiones"
+     ],
+     [
+      "Plataformas de reserva",
+      "Gerencia del hotel",
+      "tangible",
+      "reservas y visibilidad web",
+      "tangible",
+      "comisión y disponibilidad"
+     ],
+     [
+      "Huésped que recomienda",
+      "Huéspedes",
+      "intangible",
+      "recomendación de confianza",
+      "intangible",
+      "experiencias compartidas"
+     ],
+     [
+      "Huésped que recomienda",
+      "Gerencia del hotel",
+      "intangible",
+      "boca a boca y redes",
+      "intangible",
+      "trato especial al volver"
+     ],
+     [
+      "Proveedores locales",
+      "Gerencia del hotel",
+      "tangible",
+      "productos de la zona para la cocina",
+      "tangible",
+      "pedidos y pago puntual"
+     ],
+     [
+      "Ayuntamiento y oficina de turismo",
+      "Gerencia del hotel",
+      "tangible",
+      "licencia y promoción del destino",
+      "tangible",
+      "tasa turística y normativa cumplida"
+     ],
+     [
+      "Proveedores locales",
+      "Huéspedes",
+      "intangible",
+      "producto con historia del territorio",
+      "intangible",
+      "interés y compras directas"
+     ]
+    ],
+    "passos": [
+     "Dibujar quién llega y por qué canal",
+     "Cuidar la acogida y lo que pide el equipo",
+     "Atar proveedores de la zona",
+     "Pedir reseñas y premiar a quien recomienda",
+     "Repasar licencia y normativa cada temporada"
+    ],
+    "centre": "Gerencia del hotel",
+    "bona": "Que el huésped se lleve el lugar, no solo la cama."
+   },
+   "ca": {
+    "nom": "Hotel petit",
+    "diu": "Per a un hotel petit o un allotjament familiar que viu de l'acollida i col·labora amb el seu territori.",
+    "roles": [
+     "Gerència de l'hotel",
+     "Hostes",
+     "Equip de recepció i pisos",
+     "Plataformes de reserva",
+     "Proveïdors locals",
+     "Hoste que recomana",
+     "Ajuntament i oficina de turisme"
+    ],
+    "pairs": [
+     [
+      "Gerència de l'hotel",
+      "Hostes",
+      "tangible",
+      "habitació neta i esmorzar",
+      "tangible",
+      "pagament de l'estada"
+     ],
+     [
+      "Gerència de l'hotel",
+      "Hostes",
+      "intangible",
+      "acollida i consells del lloc",
+      "intangible",
+      "ressenyes sinceres i fidelitat"
+     ],
+     [
+      "Gerència de l'hotel",
+      "Equip de recepció i pisos",
+      "tangible",
+      "contracte, horaris i formació",
+      "tangible",
+      "recepció, neteja i manteniment"
+     ],
+     [
+      "Equip de recepció i pisos",
+      "Hostes",
+      "intangible",
+      "atenció propera dia a dia",
+      "intangible",
+      "agraïment i peticions"
+     ],
+     [
+      "Plataformes de reserva",
+      "Gerència de l'hotel",
+      "tangible",
+      "reserves i visibilitat web",
+      "tangible",
+      "comissió i disponibilitat"
+     ],
+     [
+      "Hoste que recomana",
+      "Hostes",
+      "intangible",
+      "recomanació de confiança",
+      "intangible",
+      "experiències compartides"
+     ],
+     [
+      "Hoste que recomana",
+      "Gerència de l'hotel",
+      "intangible",
+      "boca-orella i xarxes",
+      "intangible",
+      "tracte especial en tornar"
+     ],
+     [
+      "Proveïdors locals",
+      "Gerència de l'hotel",
+      "tangible",
+      "productes de la zona per a la cuina",
+      "tangible",
+      "comandes i pagament puntual"
+     ],
+     [
+      "Ajuntament i oficina de turisme",
+      "Gerència de l'hotel",
+      "tangible",
+      "llicència i promoció del destí",
+      "tangible",
+      "taxa turística i normativa complerta"
+     ],
+     [
+      "Proveïdors locals",
+      "Hostes",
+      "intangible",
+      "producte amb història del territori",
+      "intangible",
+      "interès i compres directes"
+     ]
+    ],
+    "passos": [
+     "Dibuixar qui arriba i per quin canal",
+     "Cuidar l'acollida i el que demana l'equip",
+     "Lligar proveïdors de la zona",
+     "Demanar ressenyes i premiar qui recomana",
+     "Repassar llicència i normativa cada temporada"
+    ],
+    "centre": "Gerència de l'hotel",
+    "bona": "Que l'hoste s'emporti el lloc, no només el llit."
+   },
+   "en": {
+    "nom": "Small hotel",
+    "diu": "For a small or family-run hotel that lives on hospitality and works with its local area.",
+    "roles": [
+     "Hotel management",
+     "Guests",
+     "Front desk and housekeeping team",
+     "Booking platforms",
+     "Local suppliers",
+     "Guest who recommends",
+     "Town hall and tourist office"
+    ],
+    "pairs": [
+     [
+      "Hotel management",
+      "Guests",
+      "tangible",
+      "clean room and breakfast",
+      "tangible",
+      "payment for the stay"
+     ],
+     [
+      "Hotel management",
+      "Guests",
+      "intangible",
+      "welcome and local tips",
+      "intangible",
+      "honest reviews and loyalty"
+     ],
+     [
+      "Hotel management",
+      "Front desk and housekeeping team",
+      "tangible",
+      "contract, schedules and training",
+      "tangible",
+      "front desk, cleaning and upkeep"
+     ],
+     [
+      "Front desk and housekeeping team",
+      "Guests",
+      "intangible",
+      "warm day-to-day attention",
+      "intangible",
+      "thanks and requests"
+     ],
+     [
+      "Booking platforms",
+      "Hotel management",
+      "tangible",
+      "bookings and online visibility",
+      "tangible",
+      "commission and availability"
+     ],
+     [
+      "Guest who recommends",
+      "Guests",
+      "intangible",
+      "trusted recommendation",
+      "intangible",
+      "shared experiences"
+     ],
+     [
+      "Guest who recommends",
+      "Hotel management",
+      "intangible",
+      "word of mouth and social media",
+      "intangible",
+      "special treatment on return"
+     ],
+     [
+      "Local suppliers",
+      "Hotel management",
+      "tangible",
+      "local produce for the kitchen",
+      "tangible",
+      "orders and prompt payment"
+     ],
+     [
+      "Town hall and tourist office",
+      "Hotel management",
+      "tangible",
+      "licence and destination promotion",
+      "tangible",
+      "tourist tax and rules met"
+     ],
+     [
+      "Local suppliers",
+      "Guests",
+      "intangible",
+      "produce with local history",
+      "intangible",
+      "interest and direct purchases"
+     ]
+    ],
+    "passos": [
+     "Map who arrives and through which channel",
+     "Care for the welcome and what the team needs",
+     "Bring in local suppliers",
+     "Ask for reviews and reward those who recommend",
+     "Check licence and rules every season"
+    ],
+    "centre": "Hotel management",
+    "bona": "Let guests take the place home, not just the bed."
+   }
+  },
+  {
+   "id": "5530_camping_familiar",
+   "cnae": "55.30",
+   "classe": "Campings y aparcamientos para caravanas",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🏕️",
+   "paraules": "camping, parcela, caravana, autocaravana, acampada, naturaleza, familias, càmping, parcel·la, natura, famílies, tenda",
+   "veda": {
+    "clau": [
+     "**Famílies → càmping: retorn.** La família que repeteix porta la següent.",
+     "**Equip → campistes: ajuda.** Un cop de mà en arribar fa la ressenya.",
+     "**Comerços → campistes: territori.** Les excursions fan que l'estada duri més."
+    ],
+    "falta": [
+     "La convivència entre campistes com a valor",
+     "El que s'aprèn de les avaries per a la temporada següent"
+    ],
+    "preguntes": [
+     "Quantes famílies conegudes torneu a veure cada estiu?",
+     "Amb quins comerços o guies ja feu coses junts?",
+     "Qui s'encarrega dels avisos d'avaries?"
+    ],
+    "senyals": [
+     "Famílies que reserven la mateixa parcel·la",
+     "Comerços que us recomanen",
+     "Poques queixes de convivència"
+    ]
+   },
+   "es": {
+    "nom": "Camping familiar",
+    "diu": "Para un camping o un área de caravanas pequeña que vive de la naturaleza y de las familias que repiten.",
+    "roles": [
+     "Gerencia del camping",
+     "Campistas y caravanistas",
+     "Equipo de recepción y mantenimiento",
+     "Familias que repiten y recomiendan",
+     "Proveedores y servicios técnicos",
+     "Comercios y guías de la zona",
+     "Ayuntamiento y medio ambiente"
+    ],
+    "pairs": [
+     [
+      "Gerencia del camping",
+      "Campistas y caravanistas",
+      "tangible",
+      "parcela, agua y electricidad",
+      "tangible",
+      "pago de la reserva y la estancia"
+     ],
+     [
+      "Gerencia del camping",
+      "Campistas y caravanistas",
+      "intangible",
+      "ambiente tranquilo y normas claras",
+      "intangible",
+      "respeto y reseñas sinceras"
+     ],
+     [
+      "Gerencia del camping",
+      "Equipo de recepción y mantenimiento",
+      "tangible",
+      "contrato, turnos y formación",
+      "tangible",
+      "recepción, limpieza y mantenimiento"
+     ],
+     [
+      "Equipo de recepción y mantenimiento",
+      "Campistas y caravanistas",
+      "intangible",
+      "ayuda con la instalación",
+      "intangible",
+      "avisos de averías y gratitud"
+     ],
+     [
+      "Familias que repiten y recomiendan",
+      "Campistas y caravanistas",
+      "intangible",
+      "recomendación entre familias",
+      "intangible",
+      "compañía y planes compartidos"
+     ],
+     [
+      "Familias que repiten y recomiendan",
+      "Gerencia del camping",
+      "intangible",
+      "boca a boca y redes",
+      "intangible",
+      "trato preferente al volver"
+     ],
+     [
+      "Proveedores y servicios técnicos",
+      "Gerencia del camping",
+      "tangible",
+      "suministro de gas y material",
+      "tangible",
+      "pedidos y pago puntual"
+     ],
+     [
+      "Comercios y guías de la zona",
+      "Campistas y caravanistas",
+      "tangible",
+      "excursiones y producto local",
+      "intangible",
+      "visitantes curiosos por la zona"
+     ],
+     [
+      "Comercios y guías de la zona",
+      "Gerencia del camping",
+      "intangible",
+      "colaboración en actividades",
+      "intangible",
+      "difusión de sus servicios en la web"
+     ],
+     [
+      "Ayuntamiento y medio ambiente",
+      "Gerencia del camping",
+      "tangible",
+      "licencia y normas de acampada",
+      "tangible",
+      "tasas y datos de ocupación"
+     ]
+    ],
+    "passos": [
+     "Ver qué familias repiten y por qué",
+     "Cuidar normas y convivencia",
+     "Aliarse con comercios y guías",
+     "Ordenar mantenimiento y proveedores",
+     "Repasar licencia y medio ambiente"
+    ],
+    "centre": "Gerencia del camping",
+    "bona": "El camping crece cuando las familias sienten que la temporada es suya."
+   },
+   "ca": {
+    "nom": "Càmping familiar",
+    "diu": "Per a un càmping o una àrea d'autocaravanes petita que viu de la natura i de les famílies que repeteixen.",
+    "roles": [
+     "Gerència del càmping",
+     "Campistes i caravanistes",
+     "Equip de recepció i manteniment",
+     "Famílies que repeteixen i recomanen",
+     "Proveïdors i serveis tècnics",
+     "Comerços i guies de la zona",
+     "Ajuntament i medi ambient"
+    ],
+    "pairs": [
+     [
+      "Gerència del càmping",
+      "Campistes i caravanistes",
+      "tangible",
+      "parcel·la, aigua i electricitat",
+      "tangible",
+      "pagament de la reserva i l'estada"
+     ],
+     [
+      "Gerència del càmping",
+      "Campistes i caravanistes",
+      "intangible",
+      "ambient tranquil i normes clares",
+      "intangible",
+      "respecte i ressenyes sinceres"
+     ],
+     [
+      "Gerència del càmping",
+      "Equip de recepció i manteniment",
+      "tangible",
+      "contracte, torns i formació",
+      "tangible",
+      "recepció, neteja i manteniment"
+     ],
+     [
+      "Equip de recepció i manteniment",
+      "Campistes i caravanistes",
+      "intangible",
+      "ajuda amb la instal·lació",
+      "intangible",
+      "avisos d'avaries i gratitud"
+     ],
+     [
+      "Famílies que repeteixen i recomanen",
+      "Campistes i caravanistes",
+      "intangible",
+      "recomanació entre famílies",
+      "intangible",
+      "companyia i plans compartits"
+     ],
+     [
+      "Famílies que repeteixen i recomanen",
+      "Gerència del càmping",
+      "intangible",
+      "boca-orella i xarxes",
+      "intangible",
+      "tracte preferent en tornar"
+     ],
+     [
+      "Proveïdors i serveis tècnics",
+      "Gerència del càmping",
+      "tangible",
+      "subministrament de gas i material",
+      "tangible",
+      "comandes i pagament puntual"
+     ],
+     [
+      "Comerços i guies de la zona",
+      "Campistes i caravanistes",
+      "tangible",
+      "excursions i producte local",
+      "intangible",
+      "visitants curiosos per la zona"
+     ],
+     [
+      "Comerços i guies de la zona",
+      "Gerència del càmping",
+      "intangible",
+      "col·laboració en activitats",
+      "intangible",
+      "difusió dels seus serveis al web"
+     ],
+     [
+      "Ajuntament i medi ambient",
+      "Gerència del càmping",
+      "tangible",
+      "llicència i normes d'acampada",
+      "tangible",
+      "taxes i dades d'ocupació"
+     ]
+    ],
+    "passos": [
+     "Veure quines famílies repeteixen i per què",
+     "Cuidar normes i convivència",
+     "Aliar-se amb comerços i guies",
+     "Endreçar manteniment i proveïdors",
+     "Repassar llicència i medi ambient"
+    ],
+    "centre": "Gerència del càmping",
+    "bona": "El càmping creix quan les famílies senten que la temporada és seva."
+   },
+   "en": {
+    "nom": "Family campsite",
+    "diu": "For a campsite or small caravan area that lives on nature and returning families.",
+    "roles": [
+     "Campsite management",
+     "Campers and caravanners",
+     "Reception and maintenance team",
+     "Returning families who recommend",
+     "Suppliers and technical services",
+     "Local shops and guides",
+     "Town hall and environment office"
+    ],
+    "pairs": [
+     [
+      "Campsite management",
+      "Campers and caravanners",
+      "tangible",
+      "pitch, water and power",
+      "tangible",
+      "payment for booking and stay"
+     ],
+     [
+      "Campsite management",
+      "Campers and caravanners",
+      "intangible",
+      "quiet atmosphere and clear rules",
+      "intangible",
+      "respect and honest reviews"
+     ],
+     [
+      "Campsite management",
+      "Reception and maintenance team",
+      "tangible",
+      "contract, shifts and training",
+      "tangible",
+      "reception, cleaning and upkeep"
+     ],
+     [
+      "Reception and maintenance team",
+      "Campers and caravanners",
+      "intangible",
+      "help with setting up",
+      "intangible",
+      "fault reports and gratitude"
+     ],
+     [
+      "Returning families who recommend",
+      "Campers and caravanners",
+      "intangible",
+      "family-to-family recommendation",
+      "intangible",
+      "company and shared plans"
+     ],
+     [
+      "Returning families who recommend",
+      "Campsite management",
+      "intangible",
+      "word of mouth and social media",
+      "intangible",
+      "preferential treatment on return"
+     ],
+     [
+      "Suppliers and technical services",
+      "Campsite management",
+      "tangible",
+      "gas and materials supply",
+      "tangible",
+      "orders and prompt payment"
+     ],
+     [
+      "Local shops and guides",
+      "Campers and caravanners",
+      "tangible",
+      "excursions and local produce",
+      "intangible",
+      "visitors curious about the area"
+     ],
+     [
+      "Local shops and guides",
+      "Campsite management",
+      "intangible",
+      "joint activities",
+      "intangible",
+      "promotion of their services online"
+     ],
+     [
+      "Town hall and environment office",
+      "Campsite management",
+      "tangible",
+      "licence and camping rules",
+      "tangible",
+      "fees and occupancy data"
+     ]
+    ],
+    "passos": [
+     "See which families return and why",
+     "Care for rules and coexistence",
+     "Partner with shops and guides",
+     "Organise upkeep and suppliers",
+     "Review licence and environment"
+    ],
+    "centre": "Campsite management",
+    "bona": "A campsite grows when families feel the season is theirs."
+   }
+  },
+  {
+   "id": "5540_agencia_de_gestion_de_viviendas_turisticas",
+   "cnae": "55.40",
+   "classe": "Actividades de intermediación para servicios de alojamiento",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🔑",
+   "paraules": "gestión, viviendas, alquiler, vacacional, llaves, propietarios, viajeros, reservas, gestió, habitatges, lloguer, claus, viatgers",
+   "veda": {
+    "clau": [
+     "**Propietaris → agència: confiança.** Deixar la casa és el que de debò es dona.",
+     "**Equip → viatgers: benvinguda.** Els detalls fan la ressenya.",
+     "**Agència → propietaris: tranquil·litat.** Un informe clar val més que una trucada."
+    ],
+    "falta": [
+     "La relació amb el veïnat de l'edifici",
+     "El que l'equip de neteja veu i ningú recull"
+    ],
+    "preguntes": [
+     "Què us pregunten més sovint els propietaris?",
+     "Qui avisa quan hi ha un desperfecte?",
+     "Quina part de les reserves us arriba sense plataforma?"
+    ],
+    "senyals": [
+     "Propietaris que en porten d'altres",
+     "Viatgers que repeteixen",
+     "Veïns sense queixes"
+    ]
+   },
+   "es": {
+    "nom": "Agencia de gestión de viviendas turísticas",
+    "diu": "Para una agencia pequeña que gestiona viviendas de vacaciones entre sus propietarios y los viajeros.",
+    "roles": [
+     "Dirección de la agencia",
+     "Propietarios de viviendas",
+     "Viajeros",
+     "Equipo de limpieza y mantenimiento",
+     "Plataformas de reserva",
+     "Viajero que recomienda",
+     "Ayuntamiento y registro turístico"
+    ],
+    "pairs": [
+     [
+      "Dirección de la agencia",
+      "Propietarios de viviendas",
+      "tangible",
+      "gestión de reservas y cobros",
+      "tangible",
+      "comisión de gestión"
+     ],
+     [
+      "Propietarios de viviendas",
+      "Dirección de la agencia",
+      "intangible",
+      "confianza para cuidar su casa",
+      "intangible",
+      "tranquilidad y datos de ocupación"
+     ],
+     [
+      "Dirección de la agencia",
+      "Viajeros",
+      "tangible",
+      "estancia reservada y llaves",
+      "tangible",
+      "pago de la reserva"
+     ],
+     [
+      "Dirección de la agencia",
+      "Viajeros",
+      "intangible",
+      "consejos de comercios vecinos",
+      "intangible",
+      "reseñas y fidelidad"
+     ],
+     [
+      "Dirección de la agencia",
+      "Equipo de limpieza y mantenimiento",
+      "tangible",
+      "encargos de limpieza, material y formación",
+      "tangible",
+      "viviendas listas entre estancias"
+     ],
+     [
+      "Equipo de limpieza y mantenimiento",
+      "Viajeros",
+      "intangible",
+      "detalles de bienvenida",
+      "intangible",
+      "avisos de desperfectos"
+     ],
+     [
+      "Plataformas de reserva",
+      "Dirección de la agencia",
+      "tangible",
+      "visibilidad y reservas en la plataforma",
+      "tangible",
+      "contenido del anuncio y calendario al día"
+     ],
+     [
+      "Viajero que recomienda",
+      "Viajeros",
+      "intangible",
+      "recomendación de confianza",
+      "intangible",
+      "experiencias compartidas en redes"
+     ],
+     [
+      "Viajero que recomienda",
+      "Dirección de la agencia",
+      "intangible",
+      "boca a boca",
+      "intangible",
+      "trato especial al repetir"
+     ],
+     [
+      "Ayuntamiento y registro turístico",
+      "Dirección de la agencia",
+      "tangible",
+      "licencia y número de registro",
+      "tangible",
+      "declaraciones y normativa cumplida"
+     ]
+    ],
+    "passos": [
+     "Escuchar qué teme cada propietario",
+     "Ordenar limpieza y llaves",
+     "Cuidar el anuncio y las reseñas",
+     "Informar a los propietarios con datos claros",
+     "Tener licencias y registros al día"
+    ],
+    "centre": "Dirección de la agencia",
+    "bona": "El propietario confía cuando sabe qué pasa en su casa sin tener que preguntar."
+   },
+   "ca": {
+    "nom": "Agència de gestió d'habitatges turístics",
+    "diu": "Per a una agència petita que gestiona habitatges de vacances entre els propietaris i els viatgers.",
+    "roles": [
+     "Direcció de l'agència",
+     "Propietaris d'habitatges",
+     "Viatgers",
+     "Equip de neteja i manteniment",
+     "Plataformes de reserva",
+     "Viatger que recomana",
+     "Ajuntament i registre turístic"
+    ],
+    "pairs": [
+     [
+      "Direcció de l'agència",
+      "Propietaris d'habitatges",
+      "tangible",
+      "gestió de reserves i cobraments",
+      "tangible",
+      "comissió de gestió"
+     ],
+     [
+      "Propietaris d'habitatges",
+      "Direcció de l'agència",
+      "intangible",
+      "confiança per cuidar la seva casa",
+      "intangible",
+      "tranquil·litat i dades d'ocupació"
+     ],
+     [
+      "Direcció de l'agència",
+      "Viatgers",
+      "tangible",
+      "estada reservada i claus",
+      "tangible",
+      "pagament de la reserva"
+     ],
+     [
+      "Direcció de l'agència",
+      "Viatgers",
+      "intangible",
+      "consells de comerços veïns",
+      "intangible",
+      "ressenyes i fidelitat"
+     ],
+     [
+      "Direcció de l'agència",
+      "Equip de neteja i manteniment",
+      "tangible",
+      "encàrrecs de neteja, material i formació",
+      "tangible",
+      "habitatges a punt entre estades"
+     ],
+     [
+      "Equip de neteja i manteniment",
+      "Viatgers",
+      "intangible",
+      "detalls de benvinguda",
+      "intangible",
+      "avisos de desperfectes"
+     ],
+     [
+      "Plataformes de reserva",
+      "Direcció de l'agència",
+      "tangible",
+      "visibilitat i reserves a la plataforma",
+      "tangible",
+      "contingut de l'anunci i calendari al dia"
+     ],
+     [
+      "Viatger que recomana",
+      "Viatgers",
+      "intangible",
+      "recomanació de confiança",
+      "intangible",
+      "experiències compartides a les xarxes"
+     ],
+     [
+      "Viatger que recomana",
+      "Direcció de l'agència",
+      "intangible",
+      "boca-orella",
+      "intangible",
+      "tracte especial en repetir"
+     ],
+     [
+      "Ajuntament i registre turístic",
+      "Direcció de l'agència",
+      "tangible",
+      "llicència i número de registre",
+      "tangible",
+      "declaracions i normativa complerta"
+     ]
+    ],
+    "passos": [
+     "Escoltar què tem cada propietari",
+     "Endreçar neteja i claus",
+     "Cuidar l'anunci i les ressenyes",
+     "Informar els propietaris amb dades clares",
+     "Tenir llicències i registres al dia"
+    ],
+    "centre": "Direcció de l'agència",
+    "bona": "El propietari confia quan sap què passa a casa seva sense haver de preguntar."
+   },
+   "en": {
+    "nom": "Holiday rental management agency",
+    "diu": "For a small agency managing holiday homes between owners and travellers.",
+    "roles": [
+     "Agency management",
+     "Home owners",
+     "Travellers",
+     "Cleaning and maintenance team",
+     "Booking platforms",
+     "Traveller who recommends",
+     "Town hall and tourism register"
+    ],
+    "pairs": [
+     [
+      "Agency management",
+      "Home owners",
+      "tangible",
+      "booking and payment handling",
+      "tangible",
+      "management fee"
+     ],
+     [
+      "Home owners",
+      "Agency management",
+      "intangible",
+      "trust to look after their home",
+      "intangible",
+      "peace of mind and occupancy data"
+     ],
+     [
+      "Agency management",
+      "Travellers",
+      "tangible",
+      "booked stay and keys",
+      "tangible",
+      "booking payment"
+     ],
+     [
+      "Agency management",
+      "Travellers",
+      "intangible",
+      "tips on neighbourhood shops",
+      "intangible",
+      "reviews and loyalty"
+     ],
+     [
+      "Agency management",
+      "Cleaning and maintenance team",
+      "tangible",
+      "cleaning jobs, supplies and training",
+      "tangible",
+      "homes ready between stays"
+     ],
+     [
+      "Cleaning and maintenance team",
+      "Travellers",
+      "intangible",
+      "welcome touches",
+      "intangible",
+      "damage reports"
+     ],
+     [
+      "Booking platforms",
+      "Agency management",
+      "tangible",
+      "visibility and bookings on the platform",
+      "tangible",
+      "listing content and up-to-date calendar"
+     ],
+     [
+      "Traveller who recommends",
+      "Travellers",
+      "intangible",
+      "trusted recommendation",
+      "intangible",
+      "experiences shared on social media"
+     ],
+     [
+      "Traveller who recommends",
+      "Agency management",
+      "intangible",
+      "word of mouth",
+      "intangible",
+      "special treatment on return"
+     ],
+     [
+      "Town hall and tourism register",
+      "Agency management",
+      "tangible",
+      "licence and registration number",
+      "tangible",
+      "filings and rules met"
+     ]
+    ],
+    "passos": [
+     "Listen to what each owner fears",
+     "Organise cleaning and keys",
+     "Care for listings and reviews",
+     "Report to owners with clear data",
+     "Keep licences and registers up to date"
+    ],
+    "centre": "Agency management",
+    "bona": "Owners trust you when they know what happens at home without asking."
+   }
+  },
+  {
+   "id": "5590_residencia_de_estudiantes_o_albergue",
+   "cnae": "55.90",
+   "classe": "Otros servicios de alojamiento",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🛏️",
+   "paraules": "residencia, estudiantes, albergue, convivencia, plaza, comedor, curso, residència, estudiants, alberg, convivència, plaça, menjador",
+   "veda": {
+    "clau": [
+     "**Antics residents → residents: xarxa.** Els contactes que deixen valen tant com la plaça.",
+     "**Equip → residents: tracte.** La cuina i la recepció són la casa.",
+     "**Universitats → residència: derivació.** La confiança de l'escola omple places."
+    ],
+    "falta": [
+     "La veu dels residents en les decisions",
+     "La relació amb el veïnat del barri"
+    ],
+    "preguntes": [
+     "Qui proposa les normes de convivència?",
+     "Com us arriben els residents nous?",
+     "Què en saben les famílies del dia a dia?"
+    ],
+    "senyals": [
+     "Antics residents que tornen a les trobades",
+     "Poques baixes a mig curs",
+     "Residents que proposen activitats"
+    ]
+   },
+   "es": {
+    "nom": "Residencia de estudiantes o albergue",
+    "diu": "Para una residencia de estudiantes, un albergue o un alojamiento de temporada que cuida la convivencia.",
+    "roles": [
+     "Dirección de la residencia",
+     "Residentes y estudiantes",
+     "Familias",
+     "Equipo de recepción, cocina y limpieza",
+     "Universidades y escuelas",
+     "Proveedores",
+     "Antiguos residentes que recomiendan"
+    ],
+    "pairs": [
+     [
+      "Dirección de la residencia",
+      "Residentes y estudiantes",
+      "tangible",
+      "habitación, comidas y espacios de estudio",
+      "tangible",
+      "pago de la cuota"
+     ],
+     [
+      "Dirección de la residencia",
+      "Residentes y estudiantes",
+      "intangible",
+      "convivencia cuidada y acompañamiento",
+      "intangible",
+      "participación y sugerencias"
+     ],
+     [
+      "Dirección de la residencia",
+      "Familias",
+      "intangible",
+      "tranquilidad y avisos a tiempo",
+      "tangible",
+      "reserva de plaza y pago"
+     ],
+     [
+      "Dirección de la residencia",
+      "Equipo de recepción, cocina y limpieza",
+      "tangible",
+      "contrato, turnos en la app y formación",
+      "tangible",
+      "recepción, cocina y limpieza"
+     ],
+     [
+      "Equipo de recepción, cocina y limpieza",
+      "Residentes y estudiantes",
+      "intangible",
+      "trato cercano en el día a día",
+      "intangible",
+      "respeto de las normas de convivencia"
+     ],
+     [
+      "Universidades y escuelas",
+      "Dirección de la residencia",
+      "intangible",
+      "derivación de estudiantes y colaboración",
+      "intangible",
+      "un entorno seguro para estudiar"
+     ],
+     [
+      "Proveedores",
+      "Dirección de la residencia",
+      "tangible",
+      "suministro de alimentos y material",
+      "tangible",
+      "pedidos y pago puntual"
+     ],
+     [
+      "Antiguos residentes que recomiendan",
+      "Residentes y estudiantes",
+      "intangible",
+      "consejos y red de contactos",
+      "intangible",
+      "relevo y comunidad viva"
+     ],
+     [
+      "Antiguos residentes que recomiendan",
+      "Dirección de la residencia",
+      "intangible",
+      "recomendación, reseñas y difusión en redes",
+      "intangible",
+      "invitación a encuentros"
+     ],
+     [
+      "Proveedores",
+      "Equipo de recepción, cocina y limpieza",
+      "intangible",
+      "consejo sobre producto de temporada",
+      "intangible",
+      "comentarios sobre la calidad"
+     ]
+    ],
+    "passos": [
+     "Acordar las normas de convivencia con los residentes",
+     "Ordenar turnos de cocina y limpieza",
+     "Hablar con universidades y escuelas",
+     "Mantener viva la red de antiguos residentes",
+     "Informar a las familias con regularidad"
+    ],
+    "centre": "Dirección de la residencia",
+    "bona": "Una residencia funciona cuando los residentes sienten las normas como suyas."
+   },
+   "ca": {
+    "nom": "Residència d'estudiants o alberg",
+    "diu": "Per a una residència d'estudiants, un alberg o un allotjament de temporada que cuida la convivència.",
+    "roles": [
+     "Direcció de la residència",
+     "Residents i estudiants",
+     "Famílies",
+     "Equip de recepció, cuina i neteja",
+     "Universitats i escoles",
+     "Proveïdors",
+     "Antics residents que recomanen"
+    ],
+    "pairs": [
+     [
+      "Direcció de la residència",
+      "Residents i estudiants",
+      "tangible",
+      "habitació, àpats i espais d'estudi",
+      "tangible",
+      "pagament de la quota"
+     ],
+     [
+      "Direcció de la residència",
+      "Residents i estudiants",
+      "intangible",
+      "convivència cuidada i acompanyament",
+      "intangible",
+      "participació i suggeriments"
+     ],
+     [
+      "Direcció de la residència",
+      "Famílies",
+      "intangible",
+      "tranquil·litat i avisos a temps",
+      "tangible",
+      "reserva de plaça i pagament"
+     ],
+     [
+      "Direcció de la residència",
+      "Equip de recepció, cuina i neteja",
+      "tangible",
+      "contracte, torns a l'app i formació",
+      "tangible",
+      "recepció, cuina i neteja"
+     ],
+     [
+      "Equip de recepció, cuina i neteja",
+      "Residents i estudiants",
+      "intangible",
+      "tracte proper en el dia a dia",
+      "intangible",
+      "respecte de les normes de convivència"
+     ],
+     [
+      "Universitats i escoles",
+      "Direcció de la residència",
+      "intangible",
+      "derivació d'estudiants i col·laboració",
+      "intangible",
+      "un entorn segur per estudiar"
+     ],
+     [
+      "Proveïdors",
+      "Direcció de la residència",
+      "tangible",
+      "subministrament d'aliments i material",
+      "tangible",
+      "comandes i pagament puntual"
+     ],
+     [
+      "Antics residents que recomanen",
+      "Residents i estudiants",
+      "intangible",
+      "consells i xarxa de contactes",
+      "intangible",
+      "relleu i comunitat viva"
+     ],
+     [
+      "Antics residents que recomanen",
+      "Direcció de la residència",
+      "intangible",
+      "recomanació, ressenyes i difusió a les xarxes",
+      "intangible",
+      "invitació a trobades"
+     ],
+     [
+      "Proveïdors",
+      "Equip de recepció, cuina i neteja",
+      "intangible",
+      "consell sobre producte de temporada",
+      "intangible",
+      "comentaris sobre la qualitat"
+     ]
+    ],
+    "passos": [
+     "Acordar les normes de convivència amb els residents",
+     "Endreçar torns de cuina i neteja",
+     "Parlar amb universitats i escoles",
+     "Mantenir viva la xarxa d'antics residents",
+     "Informar les famílies amb regularitat"
+    ],
+    "centre": "Direcció de la residència",
+    "bona": "Una residència funciona quan els residents senten les normes com a seves."
+   },
+   "en": {
+    "nom": "Student residence or hostel",
+    "diu": "For a student residence, hostel or seasonal lodging that cares for coexistence.",
+    "roles": [
+     "Residence management",
+     "Residents and students",
+     "Families",
+     "Reception, kitchen and cleaning team",
+     "Universities and schools",
+     "Suppliers",
+     "Former residents who recommend"
+    ],
+    "pairs": [
+     [
+      "Residence management",
+      "Residents and students",
+      "tangible",
+      "room, meals and study spaces",
+      "tangible",
+      "payment of the fee"
+     ],
+     [
+      "Residence management",
+      "Residents and students",
+      "intangible",
+      "cared-for coexistence and support",
+      "intangible",
+      "involvement and suggestions"
+     ],
+     [
+      "Residence management",
+      "Families",
+      "intangible",
+      "peace of mind and timely notices",
+      "tangible",
+      "place booking and payment"
+     ],
+     [
+      "Residence management",
+      "Reception, kitchen and cleaning team",
+      "tangible",
+      "contract, shifts in the app and training",
+      "tangible",
+      "reception, kitchen and cleaning"
+     ],
+     [
+      "Reception, kitchen and cleaning team",
+      "Residents and students",
+      "intangible",
+      "friendly day-to-day care",
+      "intangible",
+      "respect for house rules"
+     ],
+     [
+      "Universities and schools",
+      "Residence management",
+      "intangible",
+      "student referrals and cooperation",
+      "intangible",
+      "a safe place to study"
+     ],
+     [
+      "Suppliers",
+      "Residence management",
+      "tangible",
+      "food and materials supply",
+      "tangible",
+      "orders and prompt payment"
+     ],
+     [
+      "Former residents who recommend",
+      "Residents and students",
+      "intangible",
+      "advice and a network of contacts",
+      "intangible",
+      "continuity and a living community"
+     ],
+     [
+      "Former residents who recommend",
+      "Residence management",
+      "intangible",
+      "recommendation, reviews and social sharing",
+      "intangible",
+      "invitations to gatherings"
+     ],
+     [
+      "Suppliers",
+      "Reception, kitchen and cleaning team",
+      "intangible",
+      "advice on seasonal produce",
+      "intangible",
+      "feedback on quality"
+     ]
+    ],
+    "passos": [
+     "Agree house rules with residents",
+     "Organise kitchen and cleaning shifts",
+     "Talk to universities and schools",
+     "Keep the former residents network alive",
+     "Keep families regularly informed"
+    ],
+    "centre": "Residence management",
+    "bona": "A residence works when residents feel the rules are their own."
+   }
+  },
+  {
+   "id": "5612_puesto_de_comida",
+   "cnae": "56.12",
+   "classe": "Puestos de comidas",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🌮",
+   "paraules": "puesto, mercado, foodtruck, feria, cocina, platos, calle, parada, mercat, fira, cuina, plats, carrer, temporada",
+   "veda": {
+    "clau": [
+     "**Parada → clients: història.** La recepta explicada fa que es recordi.",
+     "**Productors → fira: caràcter.** El producte local distingeix el mercat.",
+     "**Client → clients: boca-orella.** Una foto a les xarxes porta la cua."
+    ],
+    "falta": [
+     "Qui us avisa de les fires noves",
+     "El que passa quan plou o el mercat s'anul·la"
+    ],
+    "preguntes": [
+     "A quins mercats la gent ja us coneix?",
+     "Quins productors us agradaria explicar?",
+     "Qui cuina i qui atén quan hi ha cua?"
+    ],
+    "senyals": [
+     "Clients que pregunten on sereu",
+     "Organitzadors que us conviden",
+     "Productors que us recomanen"
+    ]
+   },
+   "es": {
+    "nom": "Puesto de comida",
+    "diu": "Para un puesto de comida en mercados, ferias o una furgoneta que trabaja con producto de la red local.",
+    "roles": [
+     "Propietaria del puesto",
+     "Clientes",
+     "Equipo de cocina y barra",
+     "Productores y proveedores",
+     "Organizadores de mercados y ferias",
+     "Cliente que recomienda",
+     "Ayuntamiento y sanidad"
+    ],
+    "pairs": [
+     [
+      "Propietaria del puesto",
+      "Clientes",
+      "tangible",
+      "comida preparada al momento",
+      "tangible",
+      "pago en el puesto o digital"
+     ],
+     [
+      "Propietaria del puesto",
+      "Clientes",
+      "intangible",
+      "trato cercano y receta con historia",
+      "intangible",
+      "fidelidad y reseñas"
+     ],
+     [
+      "Propietaria del puesto",
+      "Equipo de cocina y barra",
+      "tangible",
+      "contrato, turnos y formación",
+      "tangible",
+      "cocina y atención en la barra"
+     ],
+     [
+      "Equipo de cocina y barra",
+      "Clientes",
+      "intangible",
+      "simpatía y rapidez",
+      "intangible",
+      "comentarios sobre los platos"
+     ],
+     [
+      "Productores y proveedores",
+      "Propietaria del puesto",
+      "tangible",
+      "producto fresco de temporada",
+      "tangible",
+      "pedidos y pago puntual"
+     ],
+     [
+      "Productores y proveedores",
+      "Organizadores de mercados y ferias",
+      "intangible",
+      "producto local que da carácter a la feria",
+      "intangible",
+      "difusión de su origen"
+     ],
+     [
+      "Organizadores de mercados y ferias",
+      "Propietaria del puesto",
+      "tangible",
+      "plaza en mercados y eventos",
+      "tangible",
+      "cuota de participación"
+     ],
+     [
+      "Cliente que recomienda",
+      "Clientes",
+      "intangible",
+      "recomendación boca a boca",
+      "intangible",
+      "planes compartidos"
+     ],
+     [
+      "Cliente que recomienda",
+      "Propietaria del puesto",
+      "intangible",
+      "fotos en redes y visibilidad",
+      "intangible",
+      "un detalle al repetir"
+     ],
+     [
+      "Ayuntamiento y sanidad",
+      "Propietaria del puesto",
+      "tangible",
+      "licencia de venta ambulante",
+      "tangible",
+      "normativa sanitaria cumplida"
+     ]
+    ],
+    "passos": [
+     "Elegir los mercados y ferias que encajan",
+     "Atar productores de temporada",
+     "Preparar al equipo para las horas punta",
+     "Pedir fotos y reseñas",
+     "Tener licencia y sanidad al día"
+    ],
+    "centre": "Propietaria del puesto",
+    "bona": "La gente vuelve al puesto por la persona que cocina tanto como por el plato."
+   },
+   "ca": {
+    "nom": "Parada de menjar",
+    "diu": "Per a una parada de menjar en mercats, fires o una furgoneta que treballa amb producte de la xarxa local.",
+    "roles": [
+     "Propietària de la parada",
+     "Clients",
+     "Equip de cuina i barra",
+     "Productors i proveïdors",
+     "Organitzadors de mercats i fires",
+     "Client que recomana",
+     "Ajuntament i sanitat"
+    ],
+    "pairs": [
+     [
+      "Propietària de la parada",
+      "Clients",
+      "tangible",
+      "menjar preparat al moment",
+      "tangible",
+      "pagament a la parada o digital"
+     ],
+     [
+      "Propietària de la parada",
+      "Clients",
+      "intangible",
+      "tracte proper i recepta amb història",
+      "intangible",
+      "fidelitat i ressenyes"
+     ],
+     [
+      "Propietària de la parada",
+      "Equip de cuina i barra",
+      "tangible",
+      "contracte, torns i formació",
+      "tangible",
+      "cuina i atenció a la barra"
+     ],
+     [
+      "Equip de cuina i barra",
+      "Clients",
+      "intangible",
+      "simpatia i rapidesa",
+      "intangible",
+      "comentaris sobre els plats"
+     ],
+     [
+      "Productors i proveïdors",
+      "Propietària de la parada",
+      "tangible",
+      "producte fresc de temporada",
+      "tangible",
+      "comandes i pagament puntual"
+     ],
+     [
+      "Productors i proveïdors",
+      "Organitzadors de mercats i fires",
+      "intangible",
+      "producte local que dona caràcter a la fira",
+      "intangible",
+      "difusió del seu origen"
+     ],
+     [
+      "Organitzadors de mercats i fires",
+      "Propietària de la parada",
+      "tangible",
+      "plaça en mercats i esdeveniments",
+      "tangible",
+      "quota de participació"
+     ],
+     [
+      "Client que recomana",
+      "Clients",
+      "intangible",
+      "recomanació boca-orella",
+      "intangible",
+      "plans compartits"
+     ],
+     [
+      "Client que recomana",
+      "Propietària de la parada",
+      "intangible",
+      "fotos a les xarxes i visibilitat",
+      "intangible",
+      "un detall en repetir"
+     ],
+     [
+      "Ajuntament i sanitat",
+      "Propietària de la parada",
+      "tangible",
+      "llicència de venda ambulant",
+      "tangible",
+      "normativa sanitària complerta"
+     ]
+    ],
+    "passos": [
+     "Triar els mercats i fires que encaixen",
+     "Lligar productors de temporada",
+     "Preparar l'equip per a les hores punta",
+     "Demanar fotos i ressenyes",
+     "Tenir llicència i sanitat al dia"
+    ],
+    "centre": "Propietària de la parada",
+    "bona": "La gent torna a la parada per la persona que cuina tant com pel plat."
+   },
+   "en": {
+    "nom": "Food stall",
+    "diu": "For a food stall at markets, fairs or a food truck working with produce from the local network.",
+    "roles": [
+     "Stall owner",
+     "Customers",
+     "Kitchen and counter team",
+     "Growers and suppliers",
+     "Market and fair organisers",
+     "Customer who recommends",
+     "Town hall and health office"
+    ],
+    "pairs": [
+     [
+      "Stall owner",
+      "Customers",
+      "tangible",
+      "food cooked on the spot",
+      "tangible",
+      "payment at the stall or digital"
+     ],
+     [
+      "Stall owner",
+      "Customers",
+      "intangible",
+      "friendly service and a recipe with a story",
+      "intangible",
+      "loyalty and reviews"
+     ],
+     [
+      "Stall owner",
+      "Kitchen and counter team",
+      "tangible",
+      "contract, shifts and training",
+      "tangible",
+      "cooking and counter service"
+     ],
+     [
+      "Kitchen and counter team",
+      "Customers",
+      "intangible",
+      "friendliness and speed",
+      "intangible",
+      "feedback on the dishes"
+     ],
+     [
+      "Growers and suppliers",
+      "Stall owner",
+      "tangible",
+      "fresh seasonal produce",
+      "tangible",
+      "orders and prompt payment"
+     ],
+     [
+      "Growers and suppliers",
+      "Market and fair organisers",
+      "intangible",
+      "local produce that gives the fair character",
+      "intangible",
+      "promotion of their origin"
+     ],
+     [
+      "Market and fair organisers",
+      "Stall owner",
+      "tangible",
+      "a pitch at markets and events",
+      "tangible",
+      "participation fee"
+     ],
+     [
+      "Customer who recommends",
+      "Customers",
+      "intangible",
+      "word-of-mouth recommendation",
+      "intangible",
+      "shared plans"
+     ],
+     [
+      "Customer who recommends",
+      "Stall owner",
+      "intangible",
+      "social media photos and visibility",
+      "intangible",
+      "a small treat on return"
+     ],
+     [
+      "Town hall and health office",
+      "Stall owner",
+      "tangible",
+      "street trading licence",
+      "tangible",
+      "health rules met"
+     ]
+    ],
+    "passos": [
+     "Choose the markets and fairs that fit",
+     "Bring in seasonal growers",
+     "Prepare the team for rush hours",
+     "Ask for photos and reviews",
+     "Keep licence and health checks up to date"
+    ],
+    "centre": "Stall owner",
+    "bona": "People come back to the stall for the cook as much as for the dish."
+   }
+  },
+  {
+   "id": "5621_catering_para_eventos",
+   "cnae": "56.21",
+   "classe": "Servicios ocasionales de catering",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🍽️",
+   "paraules": "catering, eventos, bodas, menú, invitados, cocina, sala, banquete, esdeveniments, casaments, convidats, cuina, banquet",
+   "veda": {
+    "clau": [
+     "**Espais → càtering: recomanació.** La majoria d'encàrrecs arriben per l'espai.",
+     "**Càtering → clients: tranquil·litat.** El que es compra és no patir el dia clau.",
+     "**Convidats → càtering: difusió.** Cada convidat és un client futur."
+    ],
+    "falta": [
+     "El que passa amb el menjar que sobra",
+     "La relació amb l'equip eventual entre temporades"
+    ],
+    "preguntes": [
+     "Quins espais us recomanen més?",
+     "Com recolliu les al·lèrgies dels convidats?",
+     "Qui de l'equip torna cada temporada?"
+    ],
+    "senyals": [
+     "Espais que us truquen primer",
+     "Convidats que demanen el contacte",
+     "Equip que repeteix"
+    ]
+   },
+   "es": {
+    "nom": "Catering para eventos",
+    "diu": "Para un catering pequeño que cocina para bodas, celebraciones y eventos de empresa.",
+    "roles": [
+     "Gerencia del catering",
+     "Clientes del evento",
+     "Invitados",
+     "Equipo de cocina y sala",
+     "Proveedores y productores",
+     "Espacios y organizadores de eventos",
+     "Quien recomienda"
+    ],
+    "pairs": [
+     [
+      "Clientes del evento",
+      "Gerencia del catering",
+      "tangible",
+      "encargo y pago del servicio",
+      "tangible",
+      "menú servido y coordinado"
+     ],
+     [
+      "Clientes del evento",
+      "Gerencia del catering",
+      "intangible",
+      "confianza y margen para decidir",
+      "intangible",
+      "tranquilidad el día clave"
+     ],
+     [
+      "Gerencia del catering",
+      "Equipo de cocina y sala",
+      "tangible",
+      "contrato, fichas digitales y formación",
+      "tangible",
+      "cocina y servicio en sala"
+     ],
+     [
+      "Equipo de cocina y sala",
+      "Invitados",
+      "intangible",
+      "atención amable y discreta",
+      "intangible",
+      "agradecimiento y buen ambiente"
+     ],
+     [
+      "Proveedores y productores",
+      "Gerencia del catering",
+      "tangible",
+      "materia prima de calidad",
+      "tangible",
+      "pedidos y pago puntual"
+     ],
+     [
+      "Espacios y organizadores de eventos",
+      "Gerencia del catering",
+      "intangible",
+      "recomendación a sus clientes",
+      "intangible",
+      "colaboración fiable en cada evento"
+     ],
+     [
+      "Espacios y organizadores de eventos",
+      "Clientes del evento",
+      "tangible",
+      "espacio y logística del día",
+      "tangible",
+      "reserva y pago del espacio"
+     ],
+     [
+      "Quien recomienda",
+      "Gerencia del catering",
+      "intangible",
+      "boca a boca y reseñas",
+      "intangible",
+      "trato atento al recomendar"
+     ],
+     [
+      "Invitados",
+      "Gerencia del catering",
+      "intangible",
+      "comentarios y difusión en redes",
+      "intangible",
+      "cuidado de alergias e intolerancias"
+     ],
+     [
+      "Proveedores y productores",
+      "Espacios y organizadores de eventos",
+      "intangible",
+      "producto local para el espacio",
+      "intangible",
+      "nuevos clientes para el productor"
+     ]
+    ],
+    "passos": [
+     "Escuchar qué evento quiere el cliente",
+     "Pactar con espacios y organizadores",
+     "Elegir proveedores y productores",
+     "Preparar al equipo y las fichas",
+     "Pedir reseñas después del evento"
+    ],
+    "centre": "Gerencia del catering",
+    "bona": "El mejor catering es el que el cliente no tiene que vigilar."
+   },
+   "ca": {
+    "nom": "Càtering per a esdeveniments",
+    "diu": "Per a un càtering petit que cuina per a casaments, celebracions i esdeveniments d'empresa.",
+    "roles": [
+     "Gerència del càtering",
+     "Clients de l'esdeveniment",
+     "Convidats",
+     "Equip de cuina i sala",
+     "Proveïdors i productors",
+     "Espais i organitzadors d'esdeveniments",
+     "Qui recomana"
+    ],
+    "pairs": [
+     [
+      "Clients de l'esdeveniment",
+      "Gerència del càtering",
+      "tangible",
+      "encàrrec i pagament del servei",
+      "tangible",
+      "menú servit i coordinat"
+     ],
+     [
+      "Clients de l'esdeveniment",
+      "Gerència del càtering",
+      "intangible",
+      "confiança i marge per decidir",
+      "intangible",
+      "tranquil·litat el dia clau"
+     ],
+     [
+      "Gerència del càtering",
+      "Equip de cuina i sala",
+      "tangible",
+      "contracte, fitxes digitals i formació",
+      "tangible",
+      "cuina i servei a sala"
+     ],
+     [
+      "Equip de cuina i sala",
+      "Convidats",
+      "intangible",
+      "atenció amable i discreta",
+      "intangible",
+      "agraïment i bon ambient"
+     ],
+     [
+      "Proveïdors i productors",
+      "Gerència del càtering",
+      "tangible",
+      "matèria primera de qualitat",
+      "tangible",
+      "comandes i pagament puntual"
+     ],
+     [
+      "Espais i organitzadors d'esdeveniments",
+      "Gerència del càtering",
+      "intangible",
+      "recomanació als seus clients",
+      "intangible",
+      "col·laboració fiable a cada esdeveniment"
+     ],
+     [
+      "Espais i organitzadors d'esdeveniments",
+      "Clients de l'esdeveniment",
+      "tangible",
+      "espai i logística del dia",
+      "tangible",
+      "reserva i pagament de l'espai"
+     ],
+     [
+      "Qui recomana",
+      "Gerència del càtering",
+      "intangible",
+      "boca-orella i ressenyes",
+      "intangible",
+      "tracte atent en recomanar"
+     ],
+     [
+      "Convidats",
+      "Gerència del càtering",
+      "intangible",
+      "comentaris i difusió a les xarxes",
+      "intangible",
+      "cura d'al·lèrgies i intoleràncies"
+     ],
+     [
+      "Proveïdors i productors",
+      "Espais i organitzadors d'esdeveniments",
+      "intangible",
+      "producte local per a l'espai",
+      "intangible",
+      "clients nous per al productor"
+     ]
+    ],
+    "passos": [
+     "Escoltar quin esdeveniment vol el client",
+     "Pactar amb espais i organitzadors",
+     "Triar proveïdors i productors",
+     "Preparar l'equip i les fitxes",
+     "Demanar ressenyes després de l'esdeveniment"
+    ],
+    "centre": "Gerència del càtering",
+    "bona": "El millor càtering és el que el client no ha de vigilar."
+   },
+   "en": {
+    "nom": "Event catering",
+    "diu": "For a small caterer cooking for weddings, celebrations and company events.",
+    "roles": [
+     "Catering management",
+     "Event clients",
+     "Guests",
+     "Kitchen and floor team",
+     "Suppliers and growers",
+     "Venues and event planners",
+     "Who recommends"
+    ],
+    "pairs": [
+     [
+      "Event clients",
+      "Catering management",
+      "tangible",
+      "order and payment for the service",
+      "tangible",
+      "menu served and coordinated"
+     ],
+     [
+      "Event clients",
+      "Catering management",
+      "intangible",
+      "trust and room to decide",
+      "intangible",
+      "peace of mind on the big day"
+     ],
+     [
+      "Catering management",
+      "Kitchen and floor team",
+      "tangible",
+      "contract, digital recipe sheets and training",
+      "tangible",
+      "cooking and table service"
+     ],
+     [
+      "Kitchen and floor team",
+      "Guests",
+      "intangible",
+      "kind and discreet attention",
+      "intangible",
+      "thanks and good atmosphere"
+     ],
+     [
+      "Suppliers and growers",
+      "Catering management",
+      "tangible",
+      "quality ingredients",
+      "tangible",
+      "orders and prompt payment"
+     ],
+     [
+      "Venues and event planners",
+      "Catering management",
+      "intangible",
+      "recommendation to their clients",
+      "intangible",
+      "reliable cooperation at every event"
+     ],
+     [
+      "Venues and event planners",
+      "Event clients",
+      "tangible",
+      "venue and logistics on the day",
+      "tangible",
+      "venue booking and payment"
+     ],
+     [
+      "Who recommends",
+      "Catering management",
+      "intangible",
+      "word of mouth and reviews",
+      "intangible",
+      "attentive treatment when referring"
+     ],
+     [
+      "Guests",
+      "Catering management",
+      "intangible",
+      "comments and social sharing",
+      "intangible",
+      "care for allergies and intolerances"
+     ],
+     [
+      "Suppliers and growers",
+      "Venues and event planners",
+      "intangible",
+      "local produce for the venue",
+      "intangible",
+      "new customers for the grower"
+     ]
+    ],
+    "passos": [
+     "Listen to the event the client wants",
+     "Agree with venues and planners",
+     "Choose suppliers and growers",
+     "Prepare the team and recipe sheets",
+     "Ask for reviews after the event"
+    ],
+    "centre": "Catering management",
+    "bona": "The best caterer is the one the client never has to watch."
+   }
+  },
+  {
+   "id": "5622_cocina_de_comedores_colectivos",
+   "cnae": "56.22",
+   "classe": "Servicios regulares de catering y otros servicios de comidas",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🥗",
+   "paraules": "comedor, menú, escuela, empresa, cocina, colectividades, dietas, monitores, menjador, escola, cuina, col·lectivitats, dietes",
+   "veda": {
+    "clau": [
+     "**Monitors → comensals: acompanyament.** L'hora de dinar també educa.",
+     "**Cuina → famílies: transparència.** El menú publicat evita la desconfiança.",
+     "**Proveïdors → comensals: origen.** Saber d'on ve el menjar canvia com es menja."
+    ],
+    "falta": [
+     "El que es llença i per què",
+     "La veu dels comensals en el menú"
+    ],
+    "preguntes": [
+     "Com sabeu què agrada i què sobra?",
+     "Qui parla amb les famílies quan hi ha un problema?",
+     "Quins proveïdors teniu a prop?"
+    ],
+    "senyals": [
+     "Menys menjar llençat",
+     "Famílies que pregunten pel menú",
+     "Centres que renoven el contracte"
+    ]
+   },
+   "es": {
+    "nom": "Cocina de comedores colectivos",
+    "diu": "Para una cocina que sirve cada día comedores de escuelas, empresas o residencias.",
+    "roles": [
+     "Gerencia de la cocina colectiva",
+     "Centros contratantes",
+     "Comensales",
+     "Familias",
+     "Equipo de cocina y monitores de comedor",
+     "Proveedores de proximidad",
+     "Administración sanitaria"
+    ],
+    "pairs": [
+     [
+      "Centros contratantes",
+      "Gerencia de la cocina colectiva",
+      "tangible",
+      "contrato de servicio y pago",
+      "tangible",
+      "menús diarios servidos"
+     ],
+     [
+      "Centros contratantes",
+      "Gerencia de la cocina colectiva",
+      "intangible",
+      "confianza y continuidad",
+      "intangible",
+      "informes de calidad con datos"
+     ],
+     [
+      "Gerencia de la cocina colectiva",
+      "Equipo de cocina y monitores de comedor",
+      "tangible",
+      "contrato, turnos y formación",
+      "tangible",
+      "elaboración y servicio de comidas"
+     ],
+     [
+      "Equipo de cocina y monitores de comedor",
+      "Comensales",
+      "intangible",
+      "acompañamiento a la hora de comer",
+      "intangible",
+      "gusto por los platos y respeto"
+     ],
+     [
+      "Gerencia de la cocina colectiva",
+      "Familias",
+      "intangible",
+      "boletín de menús en la web y avisos",
+      "intangible",
+      "comentarios y confianza"
+     ],
+     [
+      "Familias",
+      "Centros contratantes",
+      "intangible",
+      "opiniones sobre el comedor",
+      "intangible",
+      "participación en la comunidad escolar"
+     ],
+     [
+      "Proveedores de proximidad",
+      "Gerencia de la cocina colectiva",
+      "tangible",
+      "producto fresco de temporada",
+      "tangible",
+      "pedidos estables y pago puntual"
+     ],
+     [
+      "Proveedores de proximidad",
+      "Comensales",
+      "intangible",
+      "alimentos con origen conocido",
+      "intangible",
+      "hábitos de comer sano"
+     ],
+     [
+      "Administración sanitaria",
+      "Gerencia de la cocina colectiva",
+      "tangible",
+      "inspección y normativa sanitaria",
+      "tangible",
+      "registros de control cumplidos"
+     ],
+     [
+      "Gerencia de la cocina colectiva",
+      "Comensales",
+      "tangible",
+      "menús adaptados a alergias",
+      "intangible",
+      "satisfacción y menos sobras"
+     ]
+    ],
+    "passos": [
+     "Escuchar a centros y familias",
+     "Pactar con proveedores de proximidad",
+     "Formar al equipo y a los monitores",
+     "Publicar menús y recoger opiniones",
+     "Llevar al día los registros sanitarios"
+    ],
+    "centre": "Gerencia de la cocina colectiva",
+    "bona": "Un comedor se gana la confianza cuando las familias saben qué come su hijo y por qué."
+   },
+   "ca": {
+    "nom": "Cuina de menjadors col·lectius",
+    "diu": "Per a una cuina que serveix cada dia menjadors d'escoles, empreses o residències.",
+    "roles": [
+     "Gerència de la cuina col·lectiva",
+     "Centres contractants",
+     "Comensals",
+     "Famílies",
+     "Equip de cuina i monitors de menjador",
+     "Proveïdors de proximitat",
+     "Administració sanitària"
+    ],
+    "pairs": [
+     [
+      "Centres contractants",
+      "Gerència de la cuina col·lectiva",
+      "tangible",
+      "contracte de servei i pagament",
+      "tangible",
+      "menús diaris servits"
+     ],
+     [
+      "Centres contractants",
+      "Gerència de la cuina col·lectiva",
+      "intangible",
+      "confiança i continuïtat",
+      "intangible",
+      "informes de qualitat amb dades"
+     ],
+     [
+      "Gerència de la cuina col·lectiva",
+      "Equip de cuina i monitors de menjador",
+      "tangible",
+      "contracte, torns i formació",
+      "tangible",
+      "elaboració i servei d'àpats"
+     ],
+     [
+      "Equip de cuina i monitors de menjador",
+      "Comensals",
+      "intangible",
+      "acompanyament a l'hora de dinar",
+      "intangible",
+      "gust pels plats i respecte"
+     ],
+     [
+      "Gerència de la cuina col·lectiva",
+      "Famílies",
+      "intangible",
+      "butlletí de menús al web i avisos",
+      "intangible",
+      "comentaris i confiança"
+     ],
+     [
+      "Famílies",
+      "Centres contractants",
+      "intangible",
+      "opinions sobre el menjador",
+      "intangible",
+      "participació en la comunitat escolar"
+     ],
+     [
+      "Proveïdors de proximitat",
+      "Gerència de la cuina col·lectiva",
+      "tangible",
+      "producte fresc de temporada",
+      "tangible",
+      "comandes estables i pagament puntual"
+     ],
+     [
+      "Proveïdors de proximitat",
+      "Comensals",
+      "intangible",
+      "aliments amb origen conegut",
+      "intangible",
+      "hàbits de menjar sa"
+     ],
+     [
+      "Administració sanitària",
+      "Gerència de la cuina col·lectiva",
+      "tangible",
+      "inspecció i normativa sanitària",
+      "tangible",
+      "registres de control complerts"
+     ],
+     [
+      "Gerència de la cuina col·lectiva",
+      "Comensals",
+      "tangible",
+      "menús adaptats a al·lèrgies",
+      "intangible",
+      "satisfacció i menys sobres"
+     ]
+    ],
+    "passos": [
+     "Escoltar centres i famílies",
+     "Pactar amb proveïdors de proximitat",
+     "Formar l'equip i els monitors",
+     "Publicar menús i recollir opinions",
+     "Portar al dia els registres sanitaris"
+    ],
+    "centre": "Gerència de la cuina col·lectiva",
+    "bona": "Un menjador es guanya la confiança quan les famílies saben què menja el seu fill i per què."
+   },
+   "en": {
+    "nom": "Canteen and contract catering kitchen",
+    "diu": "For a kitchen serving school, company or care home canteens every day.",
+    "roles": [
+     "Canteen kitchen management",
+     "Contracting centres",
+     "Diners",
+     "Families",
+     "Kitchen team and lunchtime supervisors",
+     "Nearby suppliers",
+     "Health authority"
+    ],
+    "pairs": [
+     [
+      "Contracting centres",
+      "Canteen kitchen management",
+      "tangible",
+      "service contract and payment",
+      "tangible",
+      "daily meals served"
+     ],
+     [
+      "Contracting centres",
+      "Canteen kitchen management",
+      "intangible",
+      "trust and continuity",
+      "intangible",
+      "quality reports with data"
+     ],
+     [
+      "Canteen kitchen management",
+      "Kitchen team and lunchtime supervisors",
+      "tangible",
+      "contract, shifts and training",
+      "tangible",
+      "cooking and serving meals"
+     ],
+     [
+      "Kitchen team and lunchtime supervisors",
+      "Diners",
+      "intangible",
+      "support at mealtime",
+      "intangible",
+      "enjoyment of the food and respect"
+     ],
+     [
+      "Canteen kitchen management",
+      "Families",
+      "intangible",
+      "menu newsletter online and notices",
+      "intangible",
+      "feedback and trust"
+     ],
+     [
+      "Families",
+      "Contracting centres",
+      "intangible",
+      "views on the canteen",
+      "intangible",
+      "a voice in the school community"
+     ],
+     [
+      "Nearby suppliers",
+      "Canteen kitchen management",
+      "tangible",
+      "fresh seasonal produce",
+      "tangible",
+      "steady orders and prompt payment"
+     ],
+     [
+      "Nearby suppliers",
+      "Diners",
+      "intangible",
+      "food with a known origin",
+      "intangible",
+      "healthy eating habits"
+     ],
+     [
+      "Health authority",
+      "Canteen kitchen management",
+      "tangible",
+      "inspection and health rules",
+      "tangible",
+      "control records kept"
+     ],
+     [
+      "Canteen kitchen management",
+      "Diners",
+      "tangible",
+      "menus adapted to allergies",
+      "intangible",
+      "satisfaction and less waste"
+     ]
+    ],
+    "passos": [
+     "Listen to centres and families",
+     "Agree with nearby suppliers",
+     "Train the team and supervisors",
+     "Publish menus and gather views",
+     "Keep health records up to date"
+    ],
+    "centre": "Canteen kitchen management",
+    "bona": "A canteen earns trust when families know what their child eats and why."
+   }
+  },
+  {
+   "id": "5640_cooperativa_de_reparto_de_comida",
+   "cnae": "56.40",
+   "classe": "Actividades de intermediación para los servicios de comidas y bebidas",
+   "estat": "esborrany",
+   "data": "2026-11-23",
+   "model": "sessio",
+   "salut": 100,
+   "falla": [],
+   "arees_falten": [],
+   "icona": "🛵",
+   "paraules": "reparto, pedidos, restaurantes, barrio, bicicleta, cooperativa, app, comida, repartiment, comandes, restaurants, barri, bici",
+   "veda": {
+    "clau": [
+     "**Cooperativa → restaurants: dades.** Saber què es demana val tant com la comanda.",
+     "**Repartidors → clients: tracte.** La porta és l'última impressió.",
+     "**Associació veïnal → restaurants: xarxa.** El barri sencer fa de prescriptor."
+    ],
+    "falta": [
+     "La veu dels repartidors en les decisions",
+     "El que es fa amb els envasos"
+    ],
+    "preguntes": [
+     "Quins restaurants del barri ja hi confien?",
+     "Com es reparteixen els torns del dia?",
+     "Quines dades voldrien veure els restaurants?"
+    ],
+    "senyals": [
+     "Restaurants que en porten d'altres",
+     "Repartidors que es queden",
+     "Clients que demanen sempre al barri"
+    ]
+   },
+   "es": {
+    "nom": "Cooperativa de reparto de comida",
+    "diu": "Para una cooperativa o plataforma local que lleva a casa la comida de los restaurantes del barrio.",
+    "roles": [
+     "Junta de la cooperativa",
+     "Restaurantes del barrio",
+     "Clientes",
+     "Equipo de repartidores",
+     "Comercios y asociación vecinal",
+     "Cliente que recomienda",
+     "Ayuntamiento"
+    ],
+    "pairs": [
+     [
+      "Restaurantes del barrio",
+      "Junta de la cooperativa",
+      "tangible",
+      "cuota por pedido",
+      "tangible",
+      "pedidos y visibilidad en la app"
+     ],
+     [
+      "Restaurantes del barrio",
+      "Junta de la cooperativa",
+      "intangible",
+      "contenido de la carta y fotos",
+      "intangible",
+      "datos de lo que piden"
+     ],
+     [
+      "Junta de la cooperativa",
+      "Clientes",
+      "tangible",
+      "pedido entregado a tiempo",
+      "tangible",
+      "pago del pedido"
+     ],
+     [
+      "Junta de la cooperativa",
+      "Clientes",
+      "intangible",
+      "atención si algo falla",
+      "intangible",
+      "reseñas y fidelidad"
+     ],
+     [
+      "Junta de la cooperativa",
+      "Equipo de repartidores",
+      "tangible",
+      "turnos, seguro y formación",
+      "tangible",
+      "reparto en bicicleta"
+     ],
+     [
+      "Equipo de repartidores",
+      "Clientes",
+      "intangible",
+      "trato amable en la puerta",
+      "intangible",
+      "agradecimiento y buena nota"
+     ],
+     [
+      "Comercios y asociación vecinal",
+      "Restaurantes del barrio",
+      "intangible",
+      "red de comercios y difusión",
+      "intangible",
+      "más vida en el barrio"
+     ],
+     [
+      "Cliente que recomienda",
+      "Clientes",
+      "intangible",
+      "recomendación de confianza",
+      "intangible",
+      "planes compartidos"
+     ],
+     [
+      "Cliente que recomienda",
+      "Junta de la cooperativa",
+      "intangible",
+      "boca a boca en redes",
+      "intangible",
+      "trato especial al repetir"
+     ],
+     [
+      "Ayuntamiento",
+      "Junta de la cooperativa",
+      "tangible",
+      "permisos y normativa de reparto",
+      "tangible",
+      "cumplimiento y datos de movilidad"
+     ]
+    ],
+    "passos": [
+     "Sumar a los primeros restaurantes del barrio",
+     "Organizar turnos y seguro del equipo",
+     "Aliarse con comercios y vecinos",
+     "Compartir datos útiles con los restaurantes",
+     "Revisar permisos y normativa"
+    ],
+    "centre": "Junta de la cooperativa",
+    "bona": "El reparto de barrio gana cuando el restaurante siente que la plataforma es suya."
+   },
+   "ca": {
+    "nom": "Cooperativa de repartiment de menjar",
+    "diu": "Per a una cooperativa o plataforma local que porta a casa el menjar dels restaurants del barri.",
+    "roles": [
+     "Junta de la cooperativa",
+     "Restaurants del barri",
+     "Clients",
+     "Equip de repartidors",
+     "Comerços i associació veïnal",
+     "Client que recomana",
+     "Ajuntament"
+    ],
+    "pairs": [
+     [
+      "Restaurants del barri",
+      "Junta de la cooperativa",
+      "tangible",
+      "quota per comanda",
+      "tangible",
+      "comandes i visibilitat a l'app"
+     ],
+     [
+      "Restaurants del barri",
+      "Junta de la cooperativa",
+      "intangible",
+      "contingut de la carta i fotos",
+      "intangible",
+      "dades del que demanen"
+     ],
+     [
+      "Junta de la cooperativa",
+      "Clients",
+      "tangible",
+      "comanda lliurada a temps",
+      "tangible",
+      "pagament de la comanda"
+     ],
+     [
+      "Junta de la cooperativa",
+      "Clients",
+      "intangible",
+      "atenció si alguna cosa falla",
+      "intangible",
+      "ressenyes i fidelitat"
+     ],
+     [
+      "Junta de la cooperativa",
+      "Equip de repartidors",
+      "tangible",
+      "torns, assegurança i formació",
+      "tangible",
+      "repartiment en bicicleta"
+     ],
+     [
+      "Equip de repartidors",
+      "Clients",
+      "intangible",
+      "tracte amable a la porta",
+      "intangible",
+      "agraïment i bona nota"
+     ],
+     [
+      "Comerços i associació veïnal",
+      "Restaurants del barri",
+      "intangible",
+      "xarxa de comerços i difusió",
+      "intangible",
+      "més vida al barri"
+     ],
+     [
+      "Client que recomana",
+      "Clients",
+      "intangible",
+      "recomanació de confiança",
+      "intangible",
+      "plans compartits"
+     ],
+     [
+      "Client que recomana",
+      "Junta de la cooperativa",
+      "intangible",
+      "boca-orella a les xarxes",
+      "intangible",
+      "tracte especial en repetir"
+     ],
+     [
+      "Ajuntament",
+      "Junta de la cooperativa",
+      "tangible",
+      "permisos i normativa de repartiment",
+      "tangible",
+      "compliment i dades de mobilitat"
+     ]
+    ],
+    "passos": [
+     "Sumar els primers restaurants del barri",
+     "Organitzar torns i assegurança de l'equip",
+     "Aliar-se amb comerços i veïns",
+     "Compartir dades útils amb els restaurants",
+     "Revisar permisos i normativa"
+    ],
+    "centre": "Junta de la cooperativa",
+    "bona": "El repartiment de barri guanya quan el restaurant sent que la plataforma és seva."
+   },
+   "en": {
+    "nom": "Food delivery cooperative",
+    "diu": "For a local cooperative or platform delivering food from neighbourhood restaurants.",
+    "roles": [
+     "Cooperative board",
+     "Neighbourhood restaurants",
+     "Customers",
+     "Delivery riders team",
+     "Shops and residents association",
+     "Customer who recommends",
+     "Town hall"
+    ],
+    "pairs": [
+     [
+      "Neighbourhood restaurants",
+      "Cooperative board",
+      "tangible",
+      "fee per order",
+      "tangible",
+      "orders and visibility in the app"
+     ],
+     [
+      "Neighbourhood restaurants",
+      "Cooperative board",
+      "intangible",
+      "menu content and photos",
+      "intangible",
+      "data on what people order"
+     ],
+     [
+      "Cooperative board",
+      "Customers",
+      "tangible",
+      "order delivered on time",
+      "tangible",
+      "payment for the order"
+     ],
+     [
+      "Cooperative board",
+      "Customers",
+      "intangible",
+      "help when something goes wrong",
+      "intangible",
+      "reviews and loyalty"
+     ],
+     [
+      "Cooperative board",
+      "Delivery riders team",
+      "tangible",
+      "shifts, insurance and training",
+      "tangible",
+      "delivery by bike"
+     ],
+     [
+      "Delivery riders team",
+      "Customers",
+      "intangible",
+      "kindness at the door",
+      "intangible",
+      "thanks and a good rating"
+     ],
+     [
+      "Shops and residents association",
+      "Neighbourhood restaurants",
+      "intangible",
+      "shop network and promotion",
+      "intangible",
+      "a livelier neighbourhood"
+     ],
+     [
+      "Customer who recommends",
+      "Customers",
+      "intangible",
+      "trusted recommendation",
+      "intangible",
+      "shared plans"
+     ],
+     [
+      "Customer who recommends",
+      "Cooperative board",
+      "intangible",
+      "word of mouth on social media",
+      "intangible",
+      "special treatment on return"
+     ],
+     [
+      "Town hall",
+      "Cooperative board",
+      "tangible",
+      "permits and delivery rules",
+      "tangible",
+      "compliance and mobility data"
+     ]
+    ],
+    "passos": [
+     "Bring in the first neighbourhood restaurants",
+     "Organise team shifts and insurance",
+     "Partner with shops and residents",
+     "Share useful data with restaurants",
+     "Review permits and rules"
+    ],
+    "centre": "Cooperative board",
+    "bona": "Local delivery wins when restaurants feel the platform is theirs."
+   }
+  }
+ ],
  "descartats": []
 }
