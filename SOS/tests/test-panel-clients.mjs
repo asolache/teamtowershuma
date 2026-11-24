@@ -35,7 +35,7 @@ for (const [nom, opc] of [['iPhone', Object.assign({}, devices['iPhone 13'], { d
   });
   await p.goto(URL_);
   if (nom === 'iPhone') ok(await p.$eval('#pn-clau', e => parseFloat(getComputedStyle(e).fontSize) >= 16), 'la clave tiene 16 px: Safari no amplía la pantalla');
-  await p.fill('#pn-clau', 't'.repeat(32)); await p.click('text=Entrar');
+  await p.fill('#pn-clau', 't'.repeat(32)); await p.click('#panel button:has-text("Entrar")');
   await p.waitForSelector('.pn-tauler');
   const a = s => p.locator('.pn-k', { hasText: s });
   ok(await a('María').evaluate(e => e.closest('.pn-col').id) === 'pn-col-propuesta', 'María, en la fase que le puso él');

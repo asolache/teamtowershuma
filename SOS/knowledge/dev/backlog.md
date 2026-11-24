@@ -49,6 +49,18 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 
 ## Bloc pendent (prioritzat)
 
+### Les cinc capes amb paraules de tothom (demanat 24/11/2026, veda 188)
+
+L'Álvaro, 24/11/2026 (fil «Usar nombres comprensibles para las 5 capas»): a
+totes les pàgines, la paraula comprensible de cada capa i no el sànscrit, que
+només surt on s'explica l'origen. Es tanca quan l'Álvaro ho valida a la preview.
+
+- [x] Una sola font, `SOS/lib/capes.js` (ca i es), que llegeixen `pla.js`,
+  `vista.js`, `franja.js`, `explora.js`, `exporta.js`, `base-vna.js` i
+  `font-anima.js`. «Criteri/Criterio» a tot arreu (abans `/cliente/` deia
+  «Discerniment»). «kosha» → «capa» als textos de les vistes.
+- [x] Guarda `SOS/tools/check-capes.js` al CI.
+
 ### El cervell entra per les dotze àrees (demanat 22/11/2026)
 
 L'Álvaro, 22/11/2026 (fil «Auditar cómo funciona el cerebro»): auditar el
@@ -5731,3 +5743,24 @@ primera petició.
   la regla 1 de `check-arrel.js`.
 - **Pendent · Al CRM:** si cal, la referència rebuda pot sumar-se a la fitxa
   del client a Zoho (ara no hi va: el tractament diu que no).
+
+## L'espai de clients: qui ets, quin mapa veus i com s'hi entra
+
+L'Àlvaro, 24/11/2026 (fil «Rediseñar el apartado de clientes»): «queda todo
+apilotonado. Me sale María, hola María, pero luego me enseña otros contenidos»
+i «no me queda claro cómo se entra». Es tanca quan ho ha mirat a la preview i
+el PR és mergeat.
+
+- **Fet · Entrar amb el correu d'un altre:** el correu sol ja no obre un compte
+  que existeix (`identitat.mjs`, `perCorreu`): només un de nou, lligat a
+  l'aparell; qui té enllaç personal hi entra amb l'enllaç.
+- **Fet · El compte té un mapa:** només aquell s'hi desa (`I.mapa` a
+  `/cliente/`); els altres mapes del navegador no pugen ni reben res.
+- **Fet · Pantalles:** `/cliente/` va amb `SOS/lib/pantalla.js` quan el pas a
+  pas és tancat; una barra a dalt diu qui ha entrat i quin mapa es veu.
+- **Pendent · L'Àlvaro:** mirar al panell si la fitxa desada de la María és la
+  seva (organització «ELE Barcelona»); si no, es torna a deixar preparada.
+- **Fet (24/11/2026, decisió de l'Àlvaro) · «Entra» porta a `/cliente/#cuenta`:** abans portava a `/acceso`
+  (l'altre portal), que conserva la seva adreça directa.
+- **Pendent · El correu comprovat:** un enllaç d'un sol ús enviat al correu
+  (cal un enviador) deixaria tornar a entrar des de qualsevol aparell.

@@ -76,8 +76,13 @@ const b = await chromium.launch(Object.assign({ args: ['--no-sandbox'] },
    el pas a pas té les seves al final. */
 const nouCtx = b.newContext.bind(b);
 b.newContext = async (o = {}) => {
-  const { guia, ...op } = o; const c = await nouCtx(op);
+  const { guia, pantalles, ...op } = o; const c = await nouCtx(op);
   if (!guia) await c.addInitScript(() => { try { localStorage.setItem('tt.guia', 'off'); } catch (e) { /* res */ } });
+  /* Des del 24/11/2026 la pàgina sencera va en pantalles (SOS/lib/pantalla.js).
+     Les proves del que fa cada camp la miren sense el motor (la pàgina «de
+     sempre», que és com queda si el motor no carrega); les pantalles i la
+     barra de qui ets tenen les seves al final. */
+  if (!pantalles) await c.addInitScript(() => { document.addEventListener('readystatechange', () => { if (document.readyState === 'interactive' && document.body) document.body.removeAttribute('data-pantalla'); }); });
   return c;
 };
 
@@ -148,6 +153,8 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   await p.fill('#cl-casa', '');
   /* Con el dibujo empezado, un modelo no lo pisa: enseña quién suele estar, para añadirlos uno a uno. */
   const filesAbans = await p.locator('#cl-files .fila').count();
+  /* Elegido un modelo, la lista se pliega (24/11/2026): se vuelve a abrir tocando su título. */
+  const obreModels = async () => { if (!(await p.evaluate(() => document.querySelector('#cl-models-d').open))) await p.click('#cl-models-d > summary'); };
   await p.click('#cl-models button:has-text("Educación")');
   ok(await p.isVisible('#cl-rols') && /Quién suele estar en «.*Educación/.test(await p.textContent('#cl-rols h3')) && await p.locator('#cl-files .fila').count() === filesAbans,
     'con el dibujo empezado, un modelo enseña quién suele estar y no toca nada');
@@ -165,6 +172,8 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
   ok(await p.getAttribute('#cl-models button:has-text("Educación")', 'aria-pressed') === 'true', 'y queda marcado el modelo elegido');
   /* Los catorce sectores de la Matriu (SECTORS de models-mapa.js), con el mismo botón. */
   ok(await p.locator('#cl-sectors button').count() === 14, 'y también los catorce sectores de la Matriu');
+  ok(!(await p.evaluate(() => document.querySelector('#cl-models-d').open)) && await p.isVisible('#cl-rols'), 'elegido el modelo, la lista se pliega y debajo queda quién suele estar');
+  await obreModels();
   await p.click('#cl-sectors button:has-text("Vivienda asequible")');
   p.once('dialog', d => d.accept());
   await p.click('#cl-rols button:has-text("Cambiar todo por este modelo")');
@@ -173,6 +182,7 @@ for (const [nom, vp] of [['mòbil', { width: 375, height: 800 }], ['escriptori',
     && /Financiación ética|Unidades de convivencia/.test(vals) && !/Educación|Alumnado/.test(vals),
     'un sector (vivienda) cambia quién está alrededor, en castellano, y respeta tu centro');
   p.once('dialog', d => d.accept());
+  await obreModels();
   await p.click('#cl-models button:has-text("Educación")');
   await p.fill('#cl-casa', 'Equipo de formación');
   await p.fill('#cl-retorn', RESPOSTA); await p.click('#cl-omple');
@@ -407,7 +417,7 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.waitForSelector('#cl-progs li', { timeout: 8000 });
   const pP = ia().filter(x => x[1].pas === 'programes');
   ok(pP.length === 1 && pP[0][1].dades.pagines.length === 3 && /Curso FELE Intensivo/.test(await p.textContent('#cl-progs')), 'con su web leída, sus programas se rellenan solos (una vez)');
-  ok(/He encontrado 1 programas/.test(await p.textContent('#cl-prog-res')) && await p.isVisible('#cl-espai a[href="#programas"]'), 'se lo dice, y «Programas» sale en la barra de su espacio');
+  ok(/He encontrado 1 programas/.test(await p.textContent('#cl-prog-res')) && await p.isVisible('#programas'), 'se lo dice, y «Programas» sale en su espacio');
   await p.click('#cl-progs summary'); await p.fill('#cl-p0-dates', '2 febrero 2027\n6 abril 2027');
   const sP = await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')));
   ok(sP.programes[0].dates.join('|') === '2 febrero 2027|6 abril 2027' && sP.formularis.length === 2 && sP.formularis[1].camps.some(c => c.tipus === 'programa'), 'cambia las fechas en su ficha, y tiene los dos formularios de siempre');
@@ -415,7 +425,7 @@ console.log('\n══ /cliente/ · la IA ══');
   await p.locator('#cl-forms li:nth-child(1) .fcamp').last().locator('input').first().fill('Cómo nos conociste');
   ok((await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).formularis[0].camps.map(c => c.etiqueta))).includes('Cómo nos conociste'), 'añade una pregunta a su formulario');
   await p.fill('#cl-pie-nom', 'Mi escuela de idiomas'); await p.fill('#cl-pie-url', 'idiomas.example');
-  await p.click('#cl-espai a[href="#vista"]');
+  await p.evaluate(() => { location.hash = '#vista'; });
   await p.waitForSelector('#cl-marc-caixa.pantalla #cl-pags button', { timeout: 15000 });
   ok(await p.locator('#cl-pags button:has-text("Programas")').count() === 1 && await p.locator('#cl-pags button:has-text("Contacto")').count() === 1, 'su web a pantalla completa (#vista): con sus programas y su contacto en el menú');
   await p.click('#cl-pags button:has-text("Programas")');
@@ -457,7 +467,8 @@ console.log('\n══ /cliente/ · la IA ══');
   ok(fx()[0] && fx()[0][1].sessio === SES && !('fitxa' in fx()[0][1]) && !fx()[0][1].foto, 'al entrar, pide su ficha guardada, con su sesión');
   ok(await espera(() => desada && desada.alrededor.some(x => x.quien === 'Antiguos alumnos') && desada.marca && desada.marca.lema), 'y lo que cambia se guarda con su cuenta, solo');
   ok(/se guarda con tu cuenta/.test(await p.textContent('#cl-ia [data-ia="sessio"]')), 'se lo dice, con el botón para borrarlo');
-  await p.evaluate(() => localStorage.removeItem('tt.cliente.v1'));
+  /* Otro aparato: ni la ficha ni «Mis mapas» ni cuál era el mapa de la cuenta; solo la sesión (su enlace). */
+  await p.evaluate(() => { localStorage.removeItem('tt.cliente.v1'); localStorage.removeItem('tt.cliente.mapas'); const i = JSON.parse(localStorage.getItem('tt.cliente.ia')); delete i.mapa; localStorage.setItem('tt.cliente.ia', JSON.stringify(i)); });
   await p.reload();
   await p.waitForFunction(() => document.querySelectorAll('#cl-files .fila').length >= 7, null, { timeout: 6000 });
   ok(await p.inputValue('#cl-casa') === 'Equipo de formación' && await p.inputValue('#cl-p-objetivo') !== '', 'en otro aparato (aquí, el navegador vacío), al entrar recupera su dibujo');
@@ -536,6 +547,8 @@ console.log('\n══ /cliente/ · en català i la suggeriment de model ══')
   ok(await p.evaluate(() => document.querySelectorAll('#cl-files .fila').length >= 3), 'con un toque, su mapa: quién está alrededor y qué se dan');
   const capes = await p.textContent('#cl-kosha');
   ok(/Cuerpo/.test(capes) && /Propósito/.test(capes), 'enseña las cinco capas del mapa, de Cuerpo a Propósito');
+  ok(!(await p.evaluate(() => document.querySelector('#cl-models-d').open)), 'elegido el oficio, la lista de modelos se pliega');
+  await p.click('#cl-models-d > summary');
   await p.fill('#cl-busca', 'peluquería');
   await p.waitForFunction(() => /Peluquería/.test(document.querySelector('#cl-busca-r').textContent));
   ok(/aún sin mapa propio/.test(await p.textContent('#cl-busca-r')), 'una actividad oficial sin mapa propio lo dice, sin inventarse uno');
@@ -601,7 +614,7 @@ console.log('\n══ El enlace de invitación ══');
   ok(S.org === 'Escuela Sol' && S.web === 'https://escuela.example' && S.integrades[0].url === 'https://idiomas.example' && S.integrades[0].nom === 'Idiomas Sol', 'llega con su organización, su web y la otra web del pie ya puestas');
   ok(!/org=|para=/.test(await p.evaluate(() => location.search)) && await p.evaluate(() => Object.values(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).some(m => m.s.org === 'Otra escuela')), 'la barra queda limpia (su mapa, con su enlace) y el mapa que había se guarda en «Mis mapas»');
   ok(await p.isVisible('#cl-benvinguda') && /Hola, María/.test(await p.textContent('#cl-benvinguda')) && await p.locator('#cl-benvinguda li').count() === 6, 'la bienvenida, con su nombre y los seis pasos enlazados');
-  ok(await p.isVisible('#cl-espai a[href="#programas"]') && await p.isVisible('#programas') && await p.inputValue('#cl-pie-url') === 'https://idiomas.example', 'su barra lleva «Programas» porque es su proceso, y el pie ya tiene su otra web');
+  ok(await p.isVisible('#programas') && await p.isVisible('#programas') && await p.inputValue('#cl-pie-url') === 'https://idiomas.example', 'su espacio lleva «Programas» porque es su proceso, y el pie ya tiene su otra web');
   ok(/Ponerlos en mi web/.test(await p.textContent('#cl-forms')), 'los formularios, propuestos hasta que los pone');
   await p.reload(); await p.waitForTimeout(300);
   ok(await p.evaluate(() => JSON.parse(localStorage.getItem('tt.cliente.v1')).org) === 'Escuela Sol' && await p.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes).length) === 2, 'al volver con su enlace, sigue en su mapa sin duplicarlo');
@@ -616,7 +629,7 @@ console.log('\n══ El enlace de invitación ══');
    preguntes del Panteó per veure els forats. */
 console.log('\n══ El paso a paso ══');
 for (const [nom, vp] of [['mòbil', { width: 390, height: 844 }], ['escriptori', { width: 1280, height: 900 }]]) {
-  const ctx = await b.newContext({ viewport: vp, guia: true });
+  const ctx = await b.newContext({ viewport: vp, guia: true, pantalles: true });
   const p = await ctx.newPage(); const errs = [];
   p.on('pageerror', e => errs.push(e.message));
   await p.route('**/.netlify/functions/**', r => r.fulfill({ status: 404, body: '{}' }));
@@ -629,9 +642,10 @@ for (const [nom, vp] of [['mòbil', { width: 390, height: 844 }], ['escriptori',
   ok(await p.evaluate(() => { const g = document.getElementById('gc').getBoundingClientRect(); return g.bottom > 0 && g.top < innerHeight; }), nom + ': el paso a paso queda a la vista, no bajo el menú');
   const alt = [];
   for (let i = 0; i < 5; i++) { await p.evaluate(i => GuiaCliente.va(i), i); alt.push(await p.evaluate(() => document.documentElement.scrollHeight)); }
-  const sencera = await p.evaluate(() => { GuiaCliente.posa(false); return document.documentElement.scrollHeight; });
-  await p.evaluate(() => { GuiaCliente.posa(true); GuiaCliente.va(0); });
-  ok(Math.max(...alt) * 2 < sencera, nom + ': cada paso mide menos de la mitad que la página entera (' + Math.max(...alt) + ' px frente a ' + sencera + ')');
+  ok(Math.max(...alt) < 6 * vp.height, nom + ': ningún paso mide más de seis pantallas (' + Math.max(...alt) + ' px)');
+  ok(await p.evaluate(() => !document.documentElement.classList.contains('tt-pant-on') && !document.querySelector('.tt-pant-tabs').offsetParent), nom + ': con el paso a paso, las pestañas de pantallas no salen (nunca dos recorridos a la vez)');
+  ok(await p.isVisible('#cl-qui') && /Sin entrar.*solo en este navegador/.test(await p.textContent('#cl-qui-t')) && await p.getAttribute('#cl-qui-b a', 'href') === '#cuenta', nom + ': arriba dice que no ha entrado, que el mapa está solo en este navegador, y dónde se entra');
+  await p.evaluate(() => { GuiaCliente.va(0); });
   await p.locator('#cl-models button').first().click();
   await p.waitForTimeout(1000);
   ok(await pas() === 1 && await p.isVisible('#gc-panteo') && await p.isVisible('#cl-files'), nom + ': al elegir un modelo, pasa solo a «Tus huecos», con las doce preguntas');
@@ -641,9 +655,87 @@ for (const [nom, vp] of [['mòbil', { width: 390, height: 844 }], ['escriptori',
   ok(Array.isArray(S.panteo) && S.panteo[0] === 'zeus' && /1 de 12/.test(await p.textContent('#gc-panteo')), nom + ': lo que toca se guarda con su mapa y cuenta los huecos');
   ok(/Las 12 preguntas.*con alguien Zeus; huecos .*Hestia/.test(await p.evaluate(() => GuiaCliente.resum(TTCliente.estat()))), nom + ': y viaja con el envío');
   await p.click('#gc .gc-tot, #gc a:has-text("Ver toda la página"), button:has-text("Ver toda la página")');
-  ok(await p.isVisible('#inicio') && await p.isVisible('#preguntas'), nom + ': «Ver toda la página» la devuelve entera');
+  /* La página entera ya no es un rollo: una pantalla cada vez, con su pestaña y su enlace. */
+  await p.waitForFunction(() => document.documentElement.classList.contains('tt-pant-on'));
+  const tabs = () => p.evaluate(() => [...document.querySelectorAll('.tt-pant-tabs a')].filter(a => a.offsetParent).map(a => a.getAttribute('href')).join(','));
+  ok((await vis()).split(',').length === 1 && await tabs() === '#inicio,#alrededor,#web,#formularios,#cuentanos,#preguntas,#cuenta,#enviar,#tareas,#tablero,#propuesta',
+    nom + ': «Ver toda la página» la abre en pantallas, una cada vez; lo que está oculto (panel, tu espacio, programas) no tiene pestaña (' + await tabs() + ')');
+  const mides = [];
+  for (const h of (await tabs()).split(',')) { await p.evaluate(h => { location.hash = h; }, h); await p.waitForTimeout(60); mides.push([h, await vis(), await p.evaluate(() => document.documentElement.scrollHeight)]); }
+  ok(mides.every(m => m[1] === m[0].slice(1)), nom + ': cada pestaña es un enlace que abre su pantalla y solo esa');
+  ok(Math.max(...mides.map(m => m[2])) < 6 * vp.height, nom + ': ninguna pantalla mide más de seis pantallas de alto (la más larga, ' + mides.slice().sort((x, y) => y[2] - x[2])[0][0] + ' ' + Math.max(...mides.map(m => m[2])) + ' px; antes la página medía más de 20.000)');
+  await p.evaluate(() => { location.hash = '#tablero'; }); await p.waitForTimeout(60);
+  ok(await p.isVisible('#cl-tauler') && !(await p.isVisible('#cl-files')), nom + ': el tablero tiene su pantalla, fuera de la del mapa');
+  await p.evaluate(() => { location.hash = '#cl-envia'; }); await p.waitForTimeout(80);
+  ok(await vis() === 'enviar', nom + ': un enlace a algo de dentro abre la pantalla donde vive');
+  ok(await p.isVisible('#cl-qui') && !(await p.isVisible('#cl-avanc-p')) && !(await p.isVisible('.gc-torna')), nom + ': la barra de quién eres sigue arriba, y abajo solo queda «anterior · siguiente»');
+  await p.evaluate(() => { location.hash = '#inicio'; }); await p.waitForTimeout(60);
+  await p.click('#cl-guia');
+  ok(await p.evaluate(() => document.body.classList.contains('gc-on') && !document.documentElement.classList.contains('tt-pant-on')) && await pas() === 0, nom + ': desde el inicio se vuelve al paso a paso');
+  await p.click('button:has-text("Ver toda la página")');
   ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), nom + ': sin desplazarse de lado');
   ok(!errs.length, nom + ': sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+/* ── Quién eres y qué mapa ves (24/11/2026) ──────────────────────────────
+   L'Àlvar: «me sale María, hola María, pero luego me enseña otros contenidos».
+   Havia obert l'enllaç de la María al seu navegador: la sessió era d'ella i els
+   mapes, d'ell; el mapa obert pujava al compte d'ella i el d'ella podia caure
+   damunt d'un altre. Ara el compte té un mapa, i només aquell s'hi desa. */
+console.log('\n══ La cuenta y los mapas del navegador no se mezclan ══');
+{
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, pantalles: true });
+  const p = await ctx.newPage(); const errs = [], pujat = [];
+  p.on('pageerror', e => errs.push(e.message));
+  const SES = Buffer.from(JSON.stringify({ via: 'convit', id: 'mail:x', nom: 'María', exp: Date.now() + 1e9 })).toString('base64url') + '.firma';
+  const ELE = { org: 'ELE Barcelona', casa: 'La escuela', actualitzada: '2099-01-01T00:00:00.000Z', respuestas: {}, alrededor: [{ quien: 'Quien quiere ser profesor', meDa: 'la matrícula', meDaEs: 'tangible', leDoy: 'el curso', leDoyEs: 'tangible' }] };
+  let ident = { status: 400, cos: { estat: 'error', motiu: 'Este correo ya tiene su espacio. Ábrelo con tu enlace personal o desde el aparato donde lo creaste; si no lo tienes, escríbenos y te mandamos uno.' } }, demanat = null, fitxaEstat = 200;
+  await p.route('**/.netlify/functions/**', r => {
+    const u = r.request().url(), cos = r.request().method() === 'POST' ? JSON.parse(r.request().postData() || '{}') : null;
+    if (/identitat/.test(u)) { if (cos) { demanat = cos; return r.fulfill({ status: ident.status, contentType: 'application/json', body: JSON.stringify(ident.cos) }); } return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ vies: ['correu'] }) }); }
+    if (/fitxa/.test(u)) { if (cos.fitxa) pujat.push(cos.fitxa.org); return r.fulfill({ status: fitxaEstat, contentType: 'application/json', body: JSON.stringify(fitxaEstat === 401 ? { estat: 'identifica' } : cos.fitxa ? { estat: 'desada' } : cos.foto ? { estat: 'cap' } : { estat: 'fet', fitxa: ELE }) }); }
+    r.fulfill({ status: 404, body: '{}' });
+  });
+  await p.addInitScript(SES => {
+    if (sessionStorage.getItem('fet')) return; sessionStorage.setItem('fet', '1'); localStorage.setItem('tt_lang', 'es');
+    const m = { org: 'Bodega del Garraf', casa: 'La bodega', mapaId: 'mmeu', nom: 'Álvaro', mail: 'a@exemple.cat', cuenta: true, respuestas: {}, alrededor: [{ quien: 'Quien viene a una cata', meDa: 'la entrada', meDaEs: 'tangible', leDoy: 'la cata', leDoyEs: 'tangible' }] };
+    localStorage.setItem('tt.cliente.v1', JSON.stringify(m)); localStorage.setItem('tt.cliente.mapas', JSON.stringify({ mapes: { mmeu: { s: m, avanc: '' } } }));
+    localStorage.setItem('tt.cliente.ia', JSON.stringify({ sessio: SES, nom: 'María', via: 'convit' }));
+  }, SES);
+  await p.goto(URL_ + '?mapa=mmeu#alrededor');
+  await p.waitForFunction(() => /María/.test(document.querySelector('#cl-qui-t').textContent) && document.querySelector('#cl-qui.avis'));
+  const E = () => p.evaluate(() => ({ S: TTCliente.estat(), M: JSON.parse(localStorage.getItem('tt.cliente.mapas')).mapes, I: JSON.parse(localStorage.getItem('tt.cliente.ia')) }));
+  let e = await E();
+  ok(e.S.org === 'Bodega del Garraf' && e.S.alrededor[0].quien === 'Quien viene a una cata' && !e.S.invitacio, 'con la sesión de otra persona, el mapa abierto no se toca: sigue siendo el de este navegador');
+  ok(Object.keys(e.M).length === 2 && e.I.mapa && e.I.mapa !== 'mmeu' && e.M[e.I.mapa].s.org === 'ELE Barcelona', 'el mapa de la cuenta se guarda aparte, en «Mis mapas»');
+  ok(/María.*estás viendo «Bodega del Garraf»/.test(await p.textContent('#cl-qui-t')) && /no es el de tu cuenta/.test(await p.textContent('#cl-qui-t')) && /ELE Barcelona/.test(await p.textContent('#cl-qui-b a')),
+    'arriba lo dice claro: quién ha entrado, qué mapa se ve, que no es el de su cuenta, y un botón para abrir el suyo');
+  await p.fill('#cl-casa', 'La bodega de siempre'); await p.waitForTimeout(2200);
+  ok(!pujat.length && await p.isHidden('#espacio'), 'lo que se cambia en ese mapa no sube a la cuenta de la otra persona, ni se ve «Tu espacio» de ella');
+  await p.click('#cl-qui-b a'); await p.waitForFunction(() => window.TTCliente && TTCliente.estat().org === 'ELE Barcelona' && /guardado en tu cuenta/.test(document.querySelector('#cl-qui-t').textContent));
+  e = await E();
+  ok(e.S.mapaId === e.I.mapa && e.M.mmeu.s.org === 'Bodega del Garraf' && e.M.mmeu.s.casa === 'La bodega de siempre', 'el botón abre el mapa de la cuenta, y el otro queda como estaba en «Mis mapas»');
+  await p.fill('#cl-casa', 'La escuela de María'); await p.waitForTimeout(2200);
+  ok(pujat.length && pujat.every(o => o === 'ELE Barcelona'), 'solo el mapa de la cuenta se guarda en ella');
+  /* «Mi enlace»: su llave para otro aparato. */
+  await ctx.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+  await p.click('#cl-qui-b button.curt'); await p.waitForTimeout(150);
+  const copiat = await p.evaluate(() => navigator.clipboard.readText()).catch(() => '');
+  ok(copiat.endsWith('/cliente/index.html#sessio=' + SES), '«Mi enlace» copia el enlace que abre su espacio en otro aparato');
+  /* Salir, y volver con el correo de otra persona: no entra. */
+  await p.click('#cl-qui-b button:has-text("Salir")');
+  ok(/Sin entrar/.test(await p.textContent('#cl-qui-t')) && (await E()).S.org === 'ELE Barcelona', 'al salir lo dice, y no borra nada de este navegador');
+  await p.evaluate(() => { location.hash = '#propuesta'; }); await p.waitForTimeout(100);
+  await p.check('#cl-prop [data-ia="priv"]'); await p.click('#cl-prop button:has-text("Con mi correo")');
+  await p.waitForFunction(() => [...document.querySelectorAll('.aviso')].some(a => /ya tiene su espacio/.test(a.textContent)));
+  ok(/^[0-9a-f]{48}$/.test(demanat.aparell) && demanat.via === 'correu' && /Sin entrar/.test(await p.textContent('#cl-qui-t')), 'con el correo va la llave de este aparato; si el correo ya tiene espacio, no entra y se le dice cómo');
+  /* Una sesión que el servidor ya no acepta se cierra sola. */
+  fitxaEstat = 401;
+  await p.evaluate(SES => { localStorage.setItem('tt.cliente.ia', JSON.stringify({ sessio: SES, nom: 'María', via: 'correu' })); }, SES);
+  await p.reload(); await p.waitForFunction(() => /Sin entrar/.test(document.querySelector('#cl-qui-t').textContent) && [...document.querySelectorAll('.aviso')].some(a => /Tu sesión ha terminado/.test(a.textContent)));
+  ok(!(await E()).I.sessio, 'una sesión que ya no vale se cierra y lo dice');
+  ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'sin desplazarse de lado');
+  ok(!errs.length, 'sin errores de JavaScript' + (errs.length ? ': ' + errs[0] : ''));
   await ctx.close();
 }
 await b.close(); srv.close();

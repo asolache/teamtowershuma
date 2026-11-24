@@ -68,13 +68,13 @@
   function t(k) { return TXT[ll()][k]; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
 
-  var CSS = '.tt-rc{border:1px solid var(--border);border-radius:14px;padding:0;max-width:min(30rem,calc(100vw - 32px));width:100%;background:var(--card,var(--bg));color:var(--text)}'
+  var CSS = '.tt-rc{border:1px solid var(--border);border-radius:16px;box-shadow:0 24px 60px -20px rgba(21,19,15,.35);padding:0;max-width:min(30rem,calc(100vw - 32px));width:100%;background:var(--card,var(--bg));color:var(--text)}'
     + '.tt-rc::backdrop{background:rgba(0,0,0,.45)}'
     + '.tt-rc form{display:grid;gap:.75rem;padding:1.25rem}'
     + '.tt-rc h2{margin:0;font-size:1.25rem}'
     + '.tt-rc p{margin:0;color:var(--muted);font-size:15px}'
-    + '.tt-rc label{display:grid;gap:.25rem;font-size:15px}'
-    + '.tt-rc input,.tt-rc textarea{font:inherit;font-size:16px;padding:.6rem .7rem;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text)}'
+    + '.tt-rc label{display:grid;gap:.4rem;font-size:15px;font-weight:600}'
+    + '.tt-rc input,.tt-rc textarea{width:100%}'
     + '.tt-rc textarea{min-height:5.5rem;resize:vertical}'
     + '.tt-rc .rc-acc{display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap}'
     + '.tt-rc .rc-r{color:var(--text)}'

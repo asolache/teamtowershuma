@@ -87,7 +87,15 @@ const PELL = [
      pàgina vol tinta i el botó segueix volent blanc— i un sol nom per a dues
      coses deixava els botons a 3:1. */
   ['--on-accent', '#ffffff', 'text a sobre d\'un accent ple'],
-  ['--mono', '\'SF Mono\',Monaco,Consolas,monospace', ''],
+  /* La mono és la JetBrains Mono que `SOS/fonts/fonts.css` ja serveix: abans
+     el token deia «SF Mono», que fora d'un Mac no hi és, i les etiquetes
+     sortien amb la Courier del sistema (24/11/2026, «que quedi de luxe»). */
+  ['--mono', '\'JetBrains Mono\',ui-monospace,\'SF Mono\',Menlo,Consolas,monospace', ''],
+  /* El relleu: dues ombres i l'anell del focus, i res més. Tot el que flota
+     (targeta, botó, camp) en fa servir una d'aquestes. */
+  ['--ombra-1', '0 1px 2px rgba(21,19,15,.06)', ''],
+  ['--ombra-2', '0 12px 28px -12px rgba(21,19,15,.2)', ''],
+  ['--anell', '0 0 0 4px rgba(79,70,229,.18)', ''],
   /* L'escala. Cap text del lloc per sota de `--t0`, i hi ha guarda. */
   ['--t0', '.9375rem', '15 px · el terra'],
   ['--t1', '1.0625rem', '17 px · el cos'],
@@ -120,7 +128,8 @@ const PELL_FOSC = [
   ['--orange', '#ff9100', ''],
   ['--red', '#ff5252', ''],
   ['--gold', '#facc15', ''],
-  ['--on-accent', '#ffffff', '']
+  ['--on-accent', '#ffffff', ''],
+  ['--anell', '0 0 0 4px rgba(99,102,241,.32)', '']
 ];
 
 /* La paleta s'exporta perquè és **la llista dels tokens que existeixen**, i

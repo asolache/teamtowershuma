@@ -26,7 +26,10 @@
   --red          : #c0392b;   /* 5,2:1 */
   --gold         : #8a6000;   /* 5,3:1 */
   --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
-  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --mono         : 'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --ombra-1      : 0 1px 2px rgba(21,19,15,.06);
+  --ombra-2      : 0 12px 28px -12px rgba(21,19,15,.2);
+  --anell        : 0 0 0 4px rgba(79,70,229,.18);
   --t0           : .9375rem;   /* 15 px · el terra */
   --t1           : 1.0625rem;   /* 17 px · el cos */
   --t2           : 1.25rem;
@@ -37,36 +40,51 @@
 }
 /*TT-COMPONENTS*/
 /* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
-/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
-   44 px d'alçada sempre. */
-.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
-  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+:where(h1,h2,h3){letter-spacing:-.022em;text-wrap:balance}
+:where(p,li){text-wrap:pretty}
+::selection{background:rgba(79,70,229,.18)}
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  min-height:44px;padding:.72rem 1.4rem;border:1px solid var(--border-strong);border-radius:12px;
   background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
-  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
-  transition:background-color .15s,border-color .15s,color .15s}
-.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
-.btn-ghost{background:transparent}
-.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
-.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+  letter-spacing:-.005em;text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  box-shadow:var(--ombra-1);
+  transition:background-color .15s,border-color .15s,color .15s,box-shadow .2s,transform .2s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo);box-shadow:var(--ombra-2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;box-shadow:none}
+.btn-primary{border-color:var(--indigo);color:var(--on-accent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--indigo) 86%,#fff),var(--indigo));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 8px 20px -10px var(--indigo)}
+.btn-primary:hover{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 12px 26px -10px var(--indigo)}
+.btn:active,.btn-primary:active,.btn-ghost:active{transform:none}
 .btn-sm{padding:.45rem .85rem}
 .btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
-/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
-   botó amagat amb l'atribut es veuria. */
 .btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
-/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+input:where(:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden])),select,textarea{
+  box-sizing:border-box;min-height:48px;padding:.72rem .95rem;border:1px solid var(--border-strong);border-radius:12px;
+  background-color:var(--card);color:var(--text);font:inherit;font-size:max(16px,var(--t0));line-height:1.4;
+  box-shadow:inset var(--ombra-1);transition:border-color .15s,box-shadow .15s}
+:is(input,select,textarea):hover{border-color:var(--muted)}
+:is(input,select,textarea):focus{outline:none;border-color:var(--indigo);box-shadow:var(--anell)}
+:where(input,textarea)::placeholder{color:var(--muted);opacity:.75}
+:where(textarea){min-height:7rem;resize:vertical;line-height:1.55}
+select{-webkit-appearance:none;appearance:none;padding-right:2.6rem;background-repeat:no-repeat;
+  background-position:right .95rem center;background-size:12px;
+  background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%23857f72' stroke-width='1.6'/></svg>")}
+:where(input){accent-color:var(--indigo)}
+:where(input,select,textarea):disabled{opacity:.55;cursor:not-allowed}
+:where(input,select,textarea):user-invalid{border-color:var(--red)}
 .section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
-.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
-  text-transform:uppercase;margin-bottom:1.25rem}
-.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;color:var(--indigo);
+  text-transform:uppercase;font-weight:500;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.25rem}
 .section-header h2 em{font-style:normal;color:var(--blue)}
-.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
-/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
-   radi de 10 a 14 px i la vora de la pell. */
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.75}
 .targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
-  background:var(--card);border:1px solid var(--border);border-radius:14px}
+  background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--ombra-1)}
 .targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
-.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;letter-spacing:-.015em;margin:0}
 .targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
 /*/TT-COMPONENTS*/
 *{box-sizing:border-box}
@@ -246,7 +264,7 @@ sup a{text-decoration:none;font-size:.75em}
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g tn-here"><summary><i class="tn-i" aria-hidden="true">🖥</i><span>Les eines</span></summary><div class="tn-p"><a href="/SOS/visio.html" aria-current="page"><b>La visió</b><span>Què hi guanya la ciutadania, l'empresa i l'administració</span></a><a href="/SOS/intro.html"><b>De què va</b><span>El SOS en setze plans</span></a><a href="/SOS/vna-suport.html"><b>L'editor del mapa</b><span>Rols, lliuraments, real i ideal: la vista avançada</span></a><a href="/SOS/matriu.html"><b>La MATRIU</b><span>La incubadora: etapes, portes i propietat</span></a><a href="/SOS/banc-temps.html"><b>El Banc de Temps</b><span>Una hora val una hora, i el saldo que ho diu</span></a><a href="/SOS/biblioteca.html"><b>La Biblioteca de les Coses</b><span>Donar o deixar, i què val cada préstec</span></a><a href="/SOS/compra.html"><b>La Compra</b><span>Grup de consum i compra col·lectiva</span></a><a href="/SOS/energia.html"><b>L'Energia</b><span>Comunitat energètica i autoconsum compartit</span></a><a href="/SOS/aigua.html"><b>L'Aigua</b><span>El consum de cada llar, l'estalvi mesurat i la planta solar</span></a><a href="/SOS/habitatge.html"><b>L'Habitatge</b><span>Cessió d'ús: quota, entrada i sortida</span></a><a href="/SOS/online.html"><b>El directori</b><span>Qui hi ha al territori, què ofereix i què busca</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">📚</i><span>Aprèn</span></summary><div class="tn-p"><a href="/SOS/formacio.html"><b>Formació acció</b><span>Els mòduls, de N0 a N3, i el certificat és teu</span></a><a href="/SOS/certificacio.html"><b>La certificació</b><span>22 pràctiques a la comunitat, amb la IA de tutora</span></a><a href="/SOS/ia.html"><b>Fluxos amb IA</b><span>Automatitzar el tangible, valorar l'intangible</span></a><a href="/SOS/vedes.html"><b>Les vedes</b><span>Les regles, amb el motiu al costat</span></a><a href="/SOS/cervell.html"><b>Crea el teu cervell</b><span>Cinc vistes, per a les IA i el LMS</span></a><a href="/SOS/la-font.html"><b>La font i la colla</b><span>Totes les vistes en una pel·lícula</span></a><a href="/SOS/colla.html"><b>La colla en la pinya</b><span>Un tauler per factor del test, amb els forats</span></a><a href="/SOS/blog.html"><b>Blog</b><span>Cada capacitat, explicada</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🤝</i><span>Participació</span></summary><div class="tn-p"><a href="https://molekulon.org/" rel="noopener"><b>La campanya</b><span>La pel·lícula que farem 150.000</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/historia" rel="noopener"><b>La història</b><span>Els dos còmics i l'acte III</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/personatges" rel="noopener"><b>Els 14 personatges</b><span>Poder, superarma i què vol dir en un equip</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/peli" rel="noopener"><b>La pel·lícula</b><span>El guió de 15 plans, i què falta filmar</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/musica" rel="noopener"><b>La banda</b><span>Onze videoclips i els directes</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="https://molekulon.org/comic" rel="noopener"><b>El còmic</b><span>Els números publicats i on es compren</span><i class="tn-f" aria-hidden="true">molekulon.org ↗</i></a><a href="/SOS/molekulandia.html"><b>Molekulandia</b><span>El poble sencer i les nou professions</span></a><a href="/SOS/molekulon.html"><b>Un estat líquid</b><span>Set federacions, i 19 nodes contra 47</span></a><a href="/SOS/escola.html"><b>Escola de participació</b><span>Alumnat de 6 a 13 anys, sense dades personals</span></a><a href="/SOS/joc.html"><b>El joc</b><span>La plaça, a ritme</span></a><a href="/SOS/uneix-te.html"><b>Uneix-t'hi</b><span>El que ja fas al barri, comptat</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b on" data-lang="ca">CA</button><button type="button" class="lang-b" data-lang="es">ES</button></div>
-  <a class="tn-in" href="/acceso"><span>Entra</span></a>
+  <a class="tn-in" href="/cliente/#cuenta"><span>Entra</span></a>
   <a class="tn-cta" href="/SOS/"><span>Obre el SOS</span> →</a>
 </nav>
 <script>

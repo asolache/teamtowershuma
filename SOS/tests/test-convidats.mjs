@@ -11,9 +11,9 @@
    · El tope alt només val per a qui ha entrat pel seu enllaç, i mai passa de 10 $.
    · El panell ensenya la despesa i com va l'espai, mai el text del dibuix. */
 import { handler as panell, gestiona, resum } from '../../netlify/functions/convidats.mjs';
-import { perConvit, perCorreu, sessio, handler as identitat } from '../../netlify/functions/identitat.mjs';
+import { perConvit, perCorreu, sessio, NO_ES_TEU, handler as identitat } from '../../netlify/functions/identitat.mjs';
 import { pule } from '../../netlify/functions/pule-mapa.mjs';
-import { topeConvit, tope, deTestimoni, clauDe } from '../../netlify/lib/convidats.mjs';
+import { topeConvit, vetada, tope, deTestimoni, clauDe } from '../../netlify/lib/convidats.mjs';
 import { secret, llegeix, empremta } from '../../netlify/lib/signatura.mjs';
 import { clau as clauFitxa } from '../../netlify/functions/fitxa.mjs';
 
@@ -63,8 +63,30 @@ console.log("\nEntrar amb l'enllaç");
   const r = await perConvit({ inv: inv(M.enllac), privacitat: true }, ENV, R.convidats);
   const s = llegeix(r.sessio, secret(ENV));
   ok(r.estat === 'fet' && s.via === 'convit' && s.id === 'mail:' + empremta('maria@elebarcelona.com') && s.mail === 'maria@elebarcelona.com', 'amb la casella, entra amb el seu compte (el mateix que amb el correu) i via convit');
-  const c = perCorreu({ nom: 'María', mail: 'maria@elebarcelona.com', privacitat: true }, ENV), sc = llegeix(c.sessio, secret(ENV));
-  ok(sc.id === s.id, 'és el mateix compte que si escriu el correu: la mateixa fitxa');
+  /* 24/11/2026: escriure el correu d'algú ja no obre el seu compte. */
+  const RC = () => ({ comptes: memoria(), convidats: R.convidats, fitxes: memoria(), propostes: memoria() });
+  const AP = 'a'.repeat(32), AP2 = 'b'.repeat(32);
+  const robat = await perCorreu({ nom: 'María', mail: 'maria@elebarcelona.com', privacitat: true, aparell: AP }, ENV, RC());
+  ok(robat.estat === 'error' && robat.motiu === NO_ES_TEU && !robat.sessio, "qui escriu el correu d'un convidat no entra al seu compte: té enllaç personal");
+  {
+    const X = RC(), qui = { nom: 'Pau', mail: 'pau@exemple.cat', privacitat: true };
+    const nou = await perCorreu(Object.assign({ aparell: AP }, qui), ENV, X), sn = llegeix(nou.sessio, secret(ENV));
+    ok(nou.estat === 'fet' && sn.via === 'correu' && sn.id === 'mail:' + empremta('pau@exemple.cat'), 'un correu nou obre un compte nou');
+    ok(![...X.comptes.m.values()].join().includes(AP), "de l'aparell només se'n guarda l'empremta");
+    ok((await perCorreu(Object.assign({ aparell: AP }, qui), ENV, X)).estat === 'fet', "des del mateix aparell hi torna");
+    ok((await perCorreu(Object.assign({ aparell: AP2 }, qui), ENV, X)).motiu === NO_ES_TEU, "des d'un altre aparell, amb el correu sol, no");
+    ok((await perCorreu(qui, ENV, X)).motiu === NO_ES_TEU, 'sense clau d\'aparell, tampoc');
+    const caducada = sessio({ via: 'correu', id: sn.id, nom: 'Pau', mail: 'pau@exemple.cat' }, ENV, Date.now() - 40 * 24 * 3600 * 1000);
+    ok(llegeix(caducada, secret(ENV)) === null && (await perCorreu(Object.assign({ aparell: AP2, sessio: caducada }, qui), ENV, X)).estat === 'fet', "amb una sessió seva, encara que hagi caducat, sí (i l'aparell queda lligat)");
+    ok((await perCorreu(Object.assign({ aparell: AP2 }, qui), ENV, X)).estat === 'fet' && (await perCorreu(Object.assign({ aparell: AP }, qui), ENV, X)).estat === 'fet', 'i des de llavors els dos aparells hi tornen');
+    ok((await perCorreu(Object.assign({ aparell: 'c'.repeat(32), sessio: r.sessio }, qui), ENV, X)).motiu === NO_ES_TEU, "la sessió d'un altre no obre res");
+    const V = RC(); await V.fitxes.set(clauFitxa('mail:' + empremta('vell@exemple.cat')), { org: 'Vell' });
+    ok((await perCorreu({ nom: 'V', mail: 'vell@exemple.cat', privacitat: true, aparell: AP }, ENV, V)).motiu === NO_ES_TEU, "un compte d'abans que ja té coses guardades no s'obre amb el correu sol");
+    ok((await perCorreu({ nom: 'V', mail: 'nou@exemple.cat', privacitat: true, aparell: AP }, ENV, {})).estat === 'sense-config', 'sense magatzem no entra ningú (tancat per defecte)');
+  }
+  const c = { sessio: sessio({ via: 'correu', id: s.id, nom: 'María', mail: 'maria@elebarcelona.com' }, ENV) }, sc = llegeix(c.sessio, secret(ENV));
+  ok(await vetada(sc, R.convidats) === true && await vetada(s, R.convidats) === false && await vetada(llegeix(sessio({ via: 'correu', id: 'mail:x', nom: 'Pau', mail: 'pau@exemple.cat' }, ENV), secret(ENV)), R.convidats) === false,
+    "una sessió «amb el correu» d'un convidat (les d'abans de l'arreglo) ja no val; la de l'enllaç i les dels altres, sí");
   ok((await R.convidats.get('llista')).convidats[clauDe('maria@elebarcelona.com')].entrat, 'el panell sap quan ha entrat');
   const tocat = inv(M.enllac).slice(0, -2) + 'xx';
   ok((await perConvit({ inv: tocat, privacitat: true }, ENV, R.convidats)).estat === 'error', 'un enllaç tocat no obre res');

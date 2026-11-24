@@ -5769,3 +5769,33 @@ pàgines que es desfasen.
 **Guarda (quan s'adopti):** una comprovació que cap títol de mòdul ni d'àrea
 porti noms de la llista de ficció (Comando, Molekulon, superheroi) i que cada
 mòdul declari rol i capacitats.
+
+## Veda 188 — Les capes es diuen amb paraules de tothom; el sànscrit, només on s'explica
+
+**Adoptada el 24/11/2026** per l'Álvaro: «en todas las páginas donde salen
+las 5 capas pongamos siempre la palabra comprensible… aunque en la parte de
+explicación tiene que salir el origen… que se pueda ver la multidimensionalidad
+de forma comprensible para todo el mundo».
+
+L'error que evita: les cinc capes escrites amb el nom de la kosha (Annamaya,
+Pranamaya…) a les vistes, els mapes i les llegendes, i la paraula de cada dia
+escrita a mà en quatre fitxers que es desfasen («Criteri» en un lloc,
+«Discerniment» en un altre).
+
+- **A tot arreu, la paraula de tothom:** Cos, Energia, Ment, Criteri, Propòsit
+  (Cuerpo, Energía, Mente, Criterio, Propósito), en la llengua de la pàgina.
+  Tampoc no es diu «kosha» a qui mira: es diu «capa».
+- **L'origen, on s'explica:** el nom sànscrit i el Vedanta només surten a la
+  secció que explica d'on vénen les capes (`cervell.html#koshes`), als
+  articles del blog que ho expliquen i a les referències del codex.
+- **Un sol lloc per als noms:** `SOS/lib/capes.js`. Les vistes del cervell, la
+  portada, `/cliente/` i la base de mapes (`base-vna.js`) en llegeixen la
+  paraula; cap altre fitxer no en té una llista pròpia. Una llengua nova
+  s'afegeix allà i arriba a totes les pàgines.
+- **Els identificadors no canvien:** `anna`, `prana`, `mano`, `vijnana`,
+  `ananda` i les claus de la base (`discerniment`…) són dades desades i
+  segueixen igual.
+
+**Guarda:** `node SOS/tools/check-capes.js` (CI): cinc capes amb paraula en
+cada llengua, cap nom sànscrit fora dels llocs que l'expliquen i cap llista de
+paraules de capa fora de `capes.js`.
