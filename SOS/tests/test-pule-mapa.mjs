@@ -66,11 +66,14 @@ console.log('\n2 · Identificar-se');
   const CERV = Object.assign({ CERVELL_GH_CLIENT_ID: 'cerv', CERVELL_GH_CLIENT_SECRET: 's' }, ENV);
   ok(vies(CERV).join() === 'correu,github', 'la GitHub App del cervell també serveix per identificar-se');
   ok(aGithub(Object.assign({ URL: 'https://x.test' }, CERV), 'n', 0).on.includes('client_id=cerv'), 'i n\'agafa el client_id');
-  ok(perCorreu({ nom: 'María', mail: 'no-es-correu', privacitat: true }, ENV).estat === 'error', 'un correu dolent no entra');
-  ok(perCorreu({ nom: 'María', mail: 'm@x.es' }, ENV).estat === 'error', 'sense la casella de privacitat no entra');
-  const r = perCorreu({ nom: 'María', mail: 'M@X.es', privacitat: true }, ENV), d = llegeix(r.sessio, secret(ENV));
+  /* Des del 24/11/2026 el correu sol només obre un compte nou, lligat a l'aparell (test-convidats.mjs). */
+  const mem = () => { const m = new Map(); return { get: async k => (m.has(k) ? JSON.parse(m.get(k)) : null), set: async (k, v) => { m.set(k, JSON.stringify(v)); }, del: async k => { m.delete(k); } }; };
+  const RG = { comptes: mem(), convidats: mem(), fitxes: mem(), propostes: mem() }, AP = 'a'.repeat(32);
+  ok((await perCorreu({ nom: 'María', mail: 'no-es-correu', privacitat: true, aparell: AP }, ENV, RG)).estat === 'error', 'un correu dolent no entra');
+  ok((await perCorreu({ nom: 'María', mail: 'm@x.es', aparell: AP }, ENV, RG)).estat === 'error', 'sense la casella de privacitat no entra');
+  const r = await perCorreu({ nom: 'María', mail: 'M@X.es', privacitat: true, aparell: AP }, ENV, RG), d = llegeix(r.sessio, secret(ENV));
   ok(r.estat === 'fet' && d.via === 'correu' && /^mail:[0-9a-f]{40}$/.test(d.id), 'amb nom, correu i casella: sessió signada amb l\'empremta');
-  ok(d.id === llegeix(perCorreu({ nom: 'M', mail: 'm@x.es', privacitat: true }, ENV).sessio, secret(ENV)).id, 'el mateix correu és la mateixa persona (el tope no es reinicia)');
+  ok(d.id === llegeix((await perCorreu({ nom: 'M', mail: 'm@x.es', privacitat: true, aparell: AP }, ENV, RG)).sessio, secret(ENV)).id, 'el mateix correu, des del mateix aparell, és la mateixa persona (el tope no es reinicia)');
   ok(d.exp > Date.now() + 29 * 864e5, 'la sessió dura 30 dies');
   const GH = Object.assign({ GITHUB_CLIENT_ID: 'cid', GITHUB_CLIENT_SECRET: 'csec' }, ENV);
   const a = aGithub(GH, 'nonce1');

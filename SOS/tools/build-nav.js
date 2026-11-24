@@ -270,10 +270,13 @@ const MARCA = ['/', 'Team', 'Towers', 'Humà'];
    costat de la marca: qui és a dins no ha de perdre el camí de sortida. */
 const SOS_CTA = ['/SOS/', T('Obre el SOS', 'Abre el SOS')];
 /* ── Una sola entrada (Àlvaro, 24/10/2026, veda 181) ─────────────────────────
-   Totes les webs porten el mateix accés: el portal del pas 2, amb GitHub o amb
-   correu i contrasenya. Aquí no es fa cap inici de sessió: és un enllaç a
-   /acceso, que `_redirects` porta a acceso.teamtowershuma.com. */
-const ENTRA = ['/acceso', T('Entra', 'Entra')];
+   Totes les webs porten el mateix accés, i aquí no es fa cap inici de sessió:
+   és un enllaç. Fins al 24/11/2026 era /acceso (el portal del pas 2, que
+   `_redirects` porta a acceso.teamtowershuma.com). */
+/* L'Àlvaro, 24/11/2026: «Entra» porta a l'espai de client, a «Tu cuenta», que és
+   on entra qui fa el seu mapa. El portal del pas 2 (/acceso) conserva la seva
+   adreça directa. */
+const ENTRA = ['/cliente/#cuenta', T('Entra', 'Entra')];
 const SOS_MARCA = ['/SOS/', 'El ', 'SOS', ''];
 
 /* Les pàgines de `SOS/` que **venen** una de les tres ofertes, i que per tant

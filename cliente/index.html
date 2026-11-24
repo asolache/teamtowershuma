@@ -37,7 +37,10 @@
   --red          : #c0392b;   /* 5,2:1 */
   --gold         : #8a6000;   /* 5,3:1 */
   --on-accent    : #ffffff;   /* text a sobre d'un accent ple */
-  --mono         : 'SF Mono',Monaco,Consolas,monospace;
+  --mono         : 'JetBrains Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --ombra-1      : 0 1px 2px rgba(21,19,15,.06);
+  --ombra-2      : 0 12px 28px -12px rgba(21,19,15,.2);
+  --anell        : 0 0 0 4px rgba(79,70,229,.18);
   --t0           : .9375rem;   /* 15 px · el terra */
   --t1           : 1.0625rem;   /* 17 px · el cos */
   --t2           : 1.25rem;
@@ -53,36 +56,51 @@
         }
 /*TT-COMPONENTS*/
 /* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
-/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
-   44 px d'alçada sempre. */
-.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
-  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+:where(h1,h2,h3){letter-spacing:-.022em;text-wrap:balance}
+:where(p,li){text-wrap:pretty}
+::selection{background:rgba(79,70,229,.18)}
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  min-height:44px;padding:.72rem 1.4rem;border:1px solid var(--border-strong);border-radius:12px;
   background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
-  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
-  transition:background-color .15s,border-color .15s,color .15s}
-.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
-.btn-ghost{background:transparent}
-.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
-.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+  letter-spacing:-.005em;text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  box-shadow:var(--ombra-1);
+  transition:background-color .15s,border-color .15s,color .15s,box-shadow .2s,transform .2s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo);box-shadow:var(--ombra-2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;box-shadow:none}
+.btn-primary{border-color:var(--indigo);color:var(--on-accent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--indigo) 86%,#fff),var(--indigo));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 8px 20px -10px var(--indigo)}
+.btn-primary:hover{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 12px 26px -10px var(--indigo)}
+.btn:active,.btn-primary:active,.btn-ghost:active{transform:none}
 .btn-sm{padding:.45rem .85rem}
 .btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
-/* `display:inline-flex` guanya al `[hidden]` del navegador: sense això, un
-   botó amagat amb l'atribut es veuria. */
 .btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
-/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+input:where(:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden])),select,textarea{
+  box-sizing:border-box;min-height:48px;padding:.72rem .95rem;border:1px solid var(--border-strong);border-radius:12px;
+  background-color:var(--card);color:var(--text);font:inherit;font-size:max(16px,var(--t0));line-height:1.4;
+  box-shadow:inset var(--ombra-1);transition:border-color .15s,box-shadow .15s}
+:is(input,select,textarea):hover{border-color:var(--muted)}
+:is(input,select,textarea):focus{outline:none;border-color:var(--indigo);box-shadow:var(--anell)}
+:where(input,textarea)::placeholder{color:var(--muted);opacity:.75}
+:where(textarea){min-height:7rem;resize:vertical;line-height:1.55}
+select{-webkit-appearance:none;appearance:none;padding-right:2.6rem;background-repeat:no-repeat;
+  background-position:right .95rem center;background-size:12px;
+  background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%23857f72' stroke-width='1.6'/></svg>")}
+:where(input){accent-color:var(--indigo)}
+:where(input,select,textarea):disabled{opacity:.55;cursor:not-allowed}
+:where(input,select,textarea):user-invalid{border-color:var(--red)}
 .section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
-.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
-  text-transform:uppercase;margin-bottom:1.25rem}
-.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;color:var(--indigo);
+  text-transform:uppercase;font-weight:500;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.25rem}
 .section-header h2 em{font-style:normal;color:var(--blue)}
-.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
-/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
-   radi de 10 a 14 px i la vora de la pell. */
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.75}
 .targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
-  background:var(--card);border:1px solid var(--border);border-radius:14px}
+  background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--ombra-1)}
 .targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
-.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;letter-spacing:-.015em;margin:0}
 .targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}
 /*/TT-COMPONENTS*/
         @media (min-width: 600px) { :root { --gutter: 2rem; } }
@@ -110,7 +128,7 @@
         .pn-conv h4 { font-size: var(--t2); margin: 0; }
         .pn-ac { display: grid; gap: .5rem; border-top: 1px dashed var(--border); padding-top: .75rem; margin-top: .5rem; }
         .pn-ac label { display: grid; gap: .2rem; }
-        .pn-ac textarea, .pn-ac input { font: inherit; font-size: 16px; padding: .5rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+        
         .pn-gast { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
         .pn-gast .barra-e { width: 6rem; height: .5rem; border-radius: 99px; background: #e4e0fb; overflow: hidden; display: inline-block; }
         .pn-gast .barra-e i { display: block; height: 100%; background: var(--indigo); }
@@ -139,14 +157,16 @@
         .nota { font-size: var(--t0); color: var(--muted); max-width: 64ch; }
         .accions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; margin-top: 1.2rem; }
 
-        .camps { display: grid; gap: 1rem; max-width: 46rem; }
+        .camps { display: grid; gap: 1.15rem 1.25rem; max-width: 46rem; }
+        .camps ~ .camps { margin-top: 1.15rem; }
         @media (min-width: 760px) { .camps.dos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-        .camp { display: grid; gap: .3rem; }
+        .camp { display: grid; gap: .45rem; }
         .camp[hidden] { display: none; }
-        .camp label, .camp .et { font-weight: 600; }
+        .camp label, .camp .et { font-weight: 600; font-size: var(--t0); }
         .camp small { font-size: var(--t0); color: var(--muted); }
-        .camp input, .camp textarea, .camp select, .fila input, .fila select { width: 100%; min-height: 44px; padding: .55rem .75rem; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--card); }
-        .camp textarea { min-height: 6.5rem; resize: vertical; line-height: 1.5; }
+        /* El camp és el compartit (bloc TT-COMPONENTS): aquí només l'amplada. */
+        .camp input, .camp textarea, .camp select, .fila input, .fila select { width: 100%; }
+        
         .camp textarea.gran { min-height: 9rem; }
 
         .compte { display: none; background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--green); border-radius: 12px; padding: .9rem 1.1rem; max-width: 46rem; margin-top: 1rem; }
@@ -169,6 +189,7 @@
         .vistes label:has(input:checked) { border: 2px solid var(--indigo); }
         .vistes input { width: 1.2rem; height: 1.2rem; accent-color: var(--indigo); }
         .models { margin-top: 1.2rem; max-width: 70ch; }
+        .models-tria { margin-top: .4rem; } .models-tria:not(:has(> :not([hidden]))) { display: none; }
         .models-sec { margin: .9rem 0 0; font-size: var(--t0); color: var(--muted); }
         .bona { margin-top: .8rem; line-height: 1.55; max-width: 70ch; }
         .rols-model { margin-top: 1rem; padding: .9rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); display: grid; gap: .6rem; max-width: 72ch; }
@@ -180,7 +201,7 @@
         .sug .btn { margin-left: .4rem; }
         .model-xips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
         .busca-ofici { margin: .8rem 0 1rem; }
-        .busca-ofici input { display: block; width: 100%; margin-top: .4rem; font: inherit; padding: .6rem .8rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); }
+        .busca-ofici input { display: block; width: 100%; margin-top: .4rem; }
         .capes-mapa { margin-top: 1rem; padding: .8rem 1rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
         .capes-mapa h3 { margin: 0 0 .3rem; font-size: var(--t1, 1.05rem); }
         .capes-mapa .capes { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0; padding: 0; list-style: none; }
@@ -222,7 +243,7 @@
         .progs .camps, .forms .camps { margin-top: .4rem; }
         .fcamp { display: grid; grid-template-columns: 1fr; gap: .4rem; padding: .6rem 0; border-top: 1px dashed var(--border); }
         @media (min-width: 700px) { .fcamp { grid-template-columns: 1.4fr 1fr auto auto; align-items: end; } }
-        .fcamp input, .fcamp select { width: 100%; min-height: 44px; padding: .45rem .6rem; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--card); }
+        .fcamp input, .fcamp select { width: 100%; }
         .fcamp label { font-size: var(--t0); color: var(--muted); display: grid; gap: .2rem; }
         .fcamp .chk { display: flex; align-items: center; gap: .4rem; min-height: 44px; }
         .fcamp .chk input { width: auto; min-height: auto; }
@@ -278,6 +299,32 @@
         .estructura .e-nota { margin-top: 1.2rem; font-size: var(--t0); color: var(--muted); }
         .boceto .tornar { display: none; }
         .boceto.pantalla .tornar { display: inline-flex; }
+        /* La barra de quién eres (24/11/2026) y las pantallas (SOS/lib/pantalla.js). */
+        .qui { border-bottom: 1px solid var(--border); background: var(--panel); font-size: var(--t0); }
+        .qui .container { display: flex; align-items: center; gap: .3rem .6rem; padding-top: .35rem; padding-bottom: .35rem; }
+        .qui-t { margin: 0; flex: 1 1 0; min-width: 0; line-height: 1.3; color: var(--light); }
+        .qui-t b { color: var(--text); }
+        .qui-t .qui-av { display: block; color: var(--orange); font-weight: 600; }
+        .qui-b { display: flex; flex: none; gap: .35rem; }
+        .qui.avis .container { flex-wrap: wrap; } .qui.avis .qui-t { flex-basis: 100%; }
+        @media (max-width: 560px) { .qui-b .curt { font-size: 0; padding: .15rem .55rem; } .qui-b .curt::before { content: '🔗'; font-size: 1rem; } }
+        .qui-b button, .qui-b a { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; min-height: 2.2rem; padding: .15rem .7rem; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--card); color: var(--text); font-weight: 600; }
+        html.tt-pant-on .qui-b a.pri, .qui-b a.pri { max-width: 100%; white-space: normal; }
+        .qui.avis .qui-b { flex: 1 1 100%; flex-wrap: wrap; }
+        .qui-b .pri { background: var(--indigo); border-color: var(--indigo); color: var(--on-accent, #fff); }
+        .qui-b button:focus-visible, .qui-b a:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; }
+        @media (pointer: coarse) { .qui-b button, .qui-b a { min-height: 44px; } }
+        body.modo-panel .qui, body.ed-obert .qui, body.modo-panel .tt-pant-pag { display: none !important; }
+        html.tt-pant-on main > section { padding-top: 1.6rem; padding-bottom: 2.2rem; }
+        html.tt-pant-on main > section > .container > .tablero:first-child, html.tt-pant-on main > section > .container > .bloc-web:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+        html.tt-pant-on main > section > .container > :first-child > h3:first-child { font-size: var(--t3, 1.5rem); line-height: 1.15; }
+        html.tt-pant-on .avanc-pill, html.tt-pant-on .gc-torna { display: none; }
+        html.tt-pant-on .viu-b { bottom: calc(4.2rem + env(safe-area-inset-bottom, 0px)); }
+        html.tt-pant-on .aviso { bottom: 8.2rem; }
+        details.models > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: .5rem; font-weight: 600; }
+        details.models > summary::before { content: '▸'; color: var(--indigo); }
+        details.models[open] > summary::before { content: '▾'; }
+        details.models > summary::-webkit-details-marker { display: none; }
         .tablero { margin-top: 2rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
         .tablero > p { max-width: 70ch; }
         .auto ul { display: grid; gap: .3rem; margin: .6rem 0; padding-left: 1.1rem; }
@@ -518,7 +565,7 @@
 /*/TT-PROCES*/
     </style>
 </head>
-<body>
+<body data-pantalla data-pantalla-inici="pantalla-inici">
 <a class="salta" href="#contenido">Saltar al contenido</a>
 <!--TT-NAV-->
 <style>
@@ -637,7 +684,7 @@
   <button type="button" class="tn-ms" aria-expanded="false" aria-controls="tt-gs" data-i18n="nv.menu">Menú</button>
   <div class="tn-gs" id="tt-gs"><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🗺</i><span data-i18n="nv.g.valor">Mapa de valor</span></summary><div class="tn-p"><a href="/SOS/vna.html"><b data-i18n="nv.t.vna">Qué es</b><span data-i18n="nv.d.vna">Qué es un mapa de valor, sobre un caso</span></a><a href="/cliente/#alrededor"><b data-i18n="nv.t.carpeta-cliente">Hacer uno</b><span data-i18n="nv.d.carpeta-cliente">Dibuja quién te rodea y qué os dais, gratis</span></a><a href="/cataleg.html"><b data-i18n="nv.t.arrel-cataleg">Qué contratas</b><span data-i18n="nv.d.arrel-cataleg">Paquetes por flujos: horas e IA</span></a><a href="/SOS/pressupost.html"><b data-i18n="nv.t.pressupost">Precios y contratación</b><span data-i18n="nv.d.pressupost">Del borrador al negocio operativo, y el resto a medida</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🌐</i><span data-i18n="nv.g.web">Tu web</span></summary><div class="tn-p"><a href="/mapa-web/"><b data-i18n="nv.t.carpeta-mapa-web">Mapa y web en una hora</b><span data-i18n="nv.d.carpeta-mapa-web">El mapa de tu negocio y la web, en una sesión</span></a><a href="/conecta/"><b data-i18n="nv.t.carpeta-conecta">Servicios conectables</b><span data-i18n="nv.d.carpeta-conecta">Tu web con tu IA, el CRM y los cobros</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🎓</i><span data-i18n="nv.g.formacio">SOS y formación</span></summary><div class="tn-p"><a href="/SOS/"><b data-i18n="nv.t.app">Entra al SOS</b><span data-i18n="nv.d.app">El sistema que mantiene vivo el mapa, sin cuenta</span></a><a href="/SOS/formacio.html"><b data-i18n="nv.t.formacio">Formación acción</b><span data-i18n="nv.d.formacio">Los módulos, de N0 a N3, y el certificado es tuyo</span></a><a href="/SOS/ia.html"><b data-i18n="nv.t.ia">Flujos con IA</b><span data-i18n="nv.d.ia">Automatizar lo tangible, valorar lo intangible</span></a></div></details><details class="tn-g"><summary><i class="tn-i" aria-hidden="true">🏛</i><span data-i18n="nv.g.casa">Quiénes somos</span></summary><div class="tn-p"><a href="/qui-som.html"><b data-i18n="nv.t.arrel-qui-som">Quiénes somos</b><span data-i18n="nv.d.arrel-qui-som">Veinte años, los clientes y de dónde viene el método</span></a><a href="/premsa.html"><b data-i18n="nv.t.arrel-premsa">Prensa</b><span data-i18n="nv.d.arrel-premsa">Lo que se ha dicho fuera</span></a><a href="/SOS/blog.html"><b data-i18n="nv.t.blog">Blog</b><span data-i18n="nv.d.blog">Cada capacidad, explicada</span></a></div></details></div>
   <div class="tn-lang"><button type="button" class="lang-b" data-lang="ca">CA</button><button type="button" class="lang-b on" data-lang="es">ES</button></div>
-  <a class="tn-in" href="/acceso"><span data-i18n="nv.entra">Entra</span></a>
+  <a class="tn-in" href="/cliente/#cuenta"><span data-i18n="nv.entra">Entra</span></a>
   <a class="tn-cta" href="/SOS/diagnostic.html"><span data-i18n="nv.cta">Crea tu mapa</span> →</a>
 </nav>
 <script>
@@ -651,24 +698,16 @@
 </script>
 <!--/TT-NAV-->
 
+<!-- Quién eres y qué mapa ves (24/11/2026): una sola línea, siempre en el mismo sitio. -->
+<div class="qui" id="cl-qui" data-pantalla-fix role="region" aria-label="Quién eres y qué mapa ves"><div class="container"><p class="qui-t" id="cl-qui-t" aria-live="polite"></p><div class="qui-b" id="cl-qui-b"></div></div></div>
 <main id="contenido">
-<nav class="espai" id="cl-espai" aria-label="Tu espacio">
-    <ul>
-        <li><a href="#alrededor" data-e="alrededor">Tu mapa</a></li>
-        <li><a href="#web" data-e="web">Tu web</a></li>
-        <li><a href="#programas" data-e="programas">Programas</a></li>
-        <li><a href="#formularios" data-e="formularios">Formularios</a></li>
-        <li><a href="#tablero" data-e="tablero">Tablero</a></li>
-        <li><a href="#vista" data-e="vista">Estructura</a></li>
-    </ul>
-</nav>
 
 <!-- «Tu espacio» (14/11/2026): el de quien ya trabaja con nosotros; lo pinta SOS/lib/acollida.js con lo que Álvaro deja desde su panel. -->
-<section id="espacio" hidden>
+<section id="espacio" data-pantalla-nom="Tu espacio" data-pantalla-nom-ca="El teu espai" hidden>
     <div class="container"><div class="ac-cos"></div></div>
 </section>
 
-<section id="inicio">
+<section id="inicio" data-pantalla-nom="Inicio" data-pantalla-nom-ca="Inici">
     <div class="container">
         <p class="eyebrow">Tu espacio de cliente</p>
         <h1>Empieza tu proyecto aquí, a tu ritmo.</h1>
@@ -681,11 +720,12 @@
             <ol id="cl-avanc"></ol>
         </div>
         <p class="nota" style="margin-top:1rem"><a href="#alrededor">Empieza por tu mapa</a>. ¿No sabes si te hace falta? <a href="/SOS/diagnostic.html?lang=es">Hazte el diagnóstico de 3 minutos</a>.</p>
+        <p class="nota" style="margin-top:1rem" id="cl-guia-p" hidden><button type="button" class="btn btn-ghost btn-sm" id="cl-guia">Prefiero hacerlo paso a paso (5 pasos)</button></p>
         <p class="nota" style="margin-top:1rem">¿Ya trabajas con nosotros? Tu página, tu plan y nuestra conversación están en <a href="#espacio">tu espacio</a>.</p>
     </div>
 </section>
 
-<section id="alrededor" aria-labelledby="t-alrededor">
+<section id="alrededor" data-pantalla-nom="1 · Tu mapa" data-pantalla-nom-ca="1 · El teu mapa" aria-labelledby="t-alrededor">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">1 · Quién está a tu alrededor</p>
@@ -722,8 +762,9 @@
             </div>
         </div>
         <div class="camps"><div class="camp"><label for="cl-casa">Cómo llamas a lo que haces tú</label><input id="cl-casa" data-c="casa" placeholder="Tu equipo, Equipo de formación, La bodega…"><small>Es el centro del dibujo.</small></div></div>
-        <div class="models">
-            <p><b>¿No sabes por dónde empezar?</b> Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
+        <details class="models" id="cl-models-d">
+            <summary>¿No sabes por dónde empezar? Empieza con un modelo</summary>
+            <p>Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.</p>
             <div class="busca-ofici">
                 <label for="cl-busca"><b>Busca tu oficio</b> entre las 651 actividades oficiales y empieza con su mapa:</label>
                 <input id="cl-busca" type="search" autocomplete="off" placeholder="peluquería, bodega, academia de baile…">
@@ -735,6 +776,8 @@
             <div class="model-xips" id="cl-oficis" role="group" aria-label="Modelos por oficio"></div>
             <p class="models-sec">O por sector, si tu proyecto mira al territorio:</p>
             <div class="model-xips" id="cl-sectors" role="group" aria-label="Modelos por sector"></div>
+        </details>
+        <div class="models models-tria">
             <p class="bona" id="cl-bona" hidden></p>
             <div class="rols-model" id="cl-rols" aria-live="polite" hidden></div>
             <div class="capes-mapa" id="cl-kosha" aria-live="polite" hidden></div>
@@ -760,20 +803,10 @@
         <ul class="salut" id="cl-salut" aria-live="polite"></ul>
         <div class="auto" id="cl-auto" aria-live="polite" hidden></div>
         <details class="auto caso" id="cl-caso" hidden></details>
-        <div class="tablero" id="tareas" aria-labelledby="t-tareas">
-            <h3 id="t-tareas">Tus tareas: de la lista a lo validado</h3>
-            <p>Todo lo que hay que hacer en tu proyecto, lo tuyo y lo nuestro, en un solo sitio. Cada tarea pasa de «Por hacer» a «Haciendo», a «Hecho» (con la prueba de lo que se ha entregado) y a «Validado». Con el botón ⏱ trabajas 25 minutos seguidos y el tiempo queda apuntado en la tarea. Solo lo validado cuenta como trabajo hecho.</p>
-            <div id="cl-tareas"></div>
-        </div>
-        <div class="tablero" id="tablero" aria-labelledby="t-tablero">
-            <h3 id="t-tablero">Tu tablero: que lo que se repite vaya solo</h3>
-            <p>Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.</p>
-            <div id="cl-tauler"></div>
-        </div>
     </div>
 </section>
 
-<section id="web" class="alt" aria-labelledby="t-web">
+<section id="web" data-pantalla-nom="2 · Tu web" data-pantalla-nom-ca="2 · La teva web" class="alt" aria-labelledby="t-web">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">2 · Qué web quieres</p>
@@ -810,25 +843,6 @@
             </div>
             <div id="cl-llig-res" aria-live="polite"></div>
         </div>
-        <div class="bloc-web" id="programas" aria-labelledby="t-programas">
-            <h3 id="t-programas">Tus programas</h3>
-            <p>Los cursos o programas que quieres promocionar. Cada uno tiene su página en tu web, con las fechas y un formulario para pedir información. Los cambias aquí cuando quieras: tu web los lee de aquí.</p>
-            <div class="accions"><button type="button" class="btn btn-primary" id="cl-prog-ia" hidden>✦ Sacarlos de mi web</button><button type="button" class="btn btn-ghost" id="cl-prog-nou">＋ Añadir un programa</button></div>
-            <div id="cl-prog-res" aria-live="polite"></div>
-            <ol class="progs" id="cl-progs"></ol>
-        </div>
-        <div class="bloc-web" id="formularios" aria-labelledby="t-formularios">
-            <h3 id="t-formularios">Tus formularios</h3>
-            <p>Lo que preguntas a quien te escribe. Empiezas con dos, el de contacto y el de información de un programa, y los cambias a tu gusto: qué campos, cuáles son obligatorios y dónde salen. Lo que te escriben te llega por correo.</p>
-            <ol class="forms" id="cl-forms"></ol>
-            <div class="accions"><button type="button" class="btn btn-ghost" id="cl-form-nou">＋ Otro formulario</button></div>
-        </div>
-        <div class="bloc-web" id="cl-pie">
-            <h3>Otra web tuya, enlazada en el pie</h3>
-            <p>Si tienes otra web (tu escuela de idiomas, tu tienda…), ponemos un enlace en el pie de esta. Solo el enlace.</p>
-            <div class="camps dos"><div class="camp"><label for="cl-pie-nom">Cómo se llama</label><input id="cl-pie-nom" placeholder="Mi escuela de idiomas"></div>
-                <div class="camp"><label for="cl-pie-url">Su dirección</label><input id="cl-pie-url" type="url" inputmode="url" placeholder="https://"></div></div>
-        </div>
         <div class="ia" id="cl-ia-web" hidden>
             <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">✦</span>
                 <div><h3>Escribe tus textos con IA</h3><p>A partir de tu dibujo: la frase que dice lo que haces, la presentación y lo que encuentra cada uno en su sección. Cámbialos a tu gusto y míralos en la estructura.</p></div></div>
@@ -856,7 +870,36 @@
     </div>
 </section>
 
-<section id="cuentanos" aria-labelledby="t-cuentanos">
+<section id="programas" class="alt" aria-labelledby="t-programas" data-pantalla-nom="Programas" data-pantalla-nom-ca="Programes">
+    <div class="container">
+        <div class="bloc-web">
+            <h3 id="t-programas">Tus programas</h3>
+            <p>Los cursos o programas que quieres promocionar. Cada uno tiene su página en tu web, con las fechas y un formulario para pedir información. Los cambias aquí cuando quieras: tu web los lee de aquí.</p>
+            <div class="accions"><button type="button" class="btn btn-primary" id="cl-prog-ia" hidden>✦ Sacarlos de mi web</button><button type="button" class="btn btn-ghost" id="cl-prog-nou">＋ Añadir un programa</button></div>
+            <div id="cl-prog-res" aria-live="polite"></div>
+            <ol class="progs" id="cl-progs"></ol>
+        </div>
+    </div>
+</section>
+
+<section id="formularios" aria-labelledby="t-formularios" data-pantalla-nom="Formularios" data-pantalla-nom-ca="Formularis">
+    <div class="container">
+        <div class="bloc-web">
+            <h3 id="t-formularios">Tus formularios</h3>
+            <p>Lo que preguntas a quien te escribe. Empiezas con dos, el de contacto y el de información de un programa, y los cambias a tu gusto: qué campos, cuáles son obligatorios y dónde salen. Lo que te escriben te llega por correo.</p>
+            <ol class="forms" id="cl-forms"></ol>
+            <div class="accions"><button type="button" class="btn btn-ghost" id="cl-form-nou">＋ Otro formulario</button></div>
+        </div>
+        <div class="bloc-web" id="cl-pie">
+            <h3>Otra web tuya, enlazada en el pie</h3>
+            <p>Si tienes otra web (tu escuela de idiomas, tu tienda…), ponemos un enlace en el pie de esta. Solo el enlace.</p>
+            <div class="camps dos"><div class="camp"><label for="cl-pie-nom">Cómo se llama</label><input id="cl-pie-nom" placeholder="Mi escuela de idiomas"></div>
+                <div class="camp"><label for="cl-pie-url">Su dirección</label><input id="cl-pie-url" type="url" inputmode="url" placeholder="https://"></div></div>
+        </div>
+    </div>
+</section>
+
+<section id="cuentanos" data-pantalla-nom="3 · Lo que quieres" data-pantalla-nom-ca="3 · El que vols" aria-labelledby="t-cuentanos">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">3 · Lo que quieres</p>
@@ -886,7 +929,7 @@
     </div>
 </section>
 
-<section id="preguntas" class="alt" aria-labelledby="t-preguntas">
+<section id="preguntas" data-pantalla-nom="4 · Preguntas" data-pantalla-nom-ca="4 · Preguntes" class="alt" aria-labelledby="t-preguntas">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">4 · Las preguntas</p>
@@ -898,12 +941,12 @@
     </div>
 </section>
 
-<section id="cuenta" class="alt" aria-labelledby="t-cuenta">
+<section id="cuenta" data-pantalla-nom="5 · Tu cuenta" data-pantalla-nom-ca="5 · El teu compte" class="alt" aria-labelledby="t-cuenta">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">5 · Tu cuenta</p>
             <h2 id="t-cuenta">Quién eres y dónde te contestamos.</h2>
-            <p>Tu cuenta es tu correo. Lo que escribas se guarda en este navegador; si quieres seguir en otro, descarga tu ficha y cárgala allí.</p>
+            <p>Tu cuenta es tu correo. Sin entrar, lo que escribes se queda en este navegador. Si entras, aquí abajo, se guarda con tu cuenta y lo abres en cualquier aparato con tu enlace personal.</p>
         </div>
         <div class="camps dos">
             <div class="camp"><label for="cl-nom">Tu nombre</label><input id="cl-nom" autocomplete="name" data-c="nom"></div>
@@ -917,12 +960,19 @@
             <label class="btn btn-ghost" for="cl-carrega">Cargar una ficha</label>
             <input type="file" id="cl-carrega" accept="application/json,.json" hidden>
         </div>
+        <div class="ia" id="cl-entra" hidden data-per="Para guardar tu mapa con tu cuenta, dinos quién eres. Elige cómo:" data-priv=" He leído cómo tratáis mis datos. Mi dibujo se guarda con mi cuenta.">
+            <div class="ia-cap"><span class="ia-estrella" aria-hidden="true">☁</span>
+                <div><h3>Entra para guardarlo con tu cuenta</h3><p>Al entrar, tu mapa se guarda con tu cuenta y te damos tu enlace personal para abrirlo en otro aparato. Si te mandamos un enlace, ábrelo: ya entra por ti.</p></div></div>
+            <div class="ia-qui" data-ia="qui"></div>
+            <div class="ia-sessio" data-ia="sessio" hidden></div>
+            <p class="nota ia-boto" hidden>Ya estás dentro. Tu enlace personal está arriba, en el botón 🔗.</p>
+        </div>
         <p class="nota">El cerebro de tu proyecto es una carpeta con tu mapa, lo que has decidido, las herramientas que usas y lo que queda por hablar. Cualquier IA que la lea antes de trabajar contigo empieza sabiendo lo que ya hemos aprendido.</p>
         <p class="compte" id="cl-compte" role="status"></p>
     </div>
 </section>
 
-<section id="enviar" aria-labelledby="t-enviar">
+<section id="enviar" data-pantalla-nom="6 · Enviar" data-pantalla-nom-ca="6 · Enviar" aria-labelledby="t-enviar">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">6 · Nos lo envías</p>
@@ -948,7 +998,27 @@
     </div>
 </section>
 
-<section id="propuesta" class="alt" aria-labelledby="t-propuesta">
+<section id="tareas" class="alt" aria-labelledby="t-tareas" data-pantalla-nom="Tareas" data-pantalla-nom-ca="Tasques">
+    <div class="container">
+        <div class="tablero">
+            <h3 id="t-tareas">Tus tareas: de la lista a lo validado</h3>
+            <p>Todo lo que hay que hacer en tu proyecto, lo tuyo y lo nuestro, en un solo sitio. Cada tarea pasa de «Por hacer» a «Haciendo», a «Hecho» (con la prueba de lo que se ha entregado) y a «Validado». Con el botón ⏱ trabajas 25 minutos seguidos y el tiempo queda apuntado en la tarea. Solo lo validado cuenta como trabajo hecho.</p>
+            <div id="cl-tareas"></div>
+        </div>
+    </div>
+</section>
+
+<section id="tablero" aria-labelledby="t-tablero" data-pantalla-nom="Tablero" data-pantalla-nom-ca="Tauler">
+    <div class="container">
+        <div class="tablero">
+            <h3 id="t-tablero">Tu tablero: que lo que se repite vaya solo</h3>
+            <p>Cada cosa que das o recibes en tu mapa es una tarjeta. Defínela con tres cosas (cuándo pasa, qué necesita y quién la revisa) y pasa a «Definido». Si la puede preparar una máquina, pídela en «Que vaya solo» y la dejamos funcionando contigo. Se guarda con tu mapa y nos llega cuando lo envías.</p>
+            <div id="cl-tauler"></div>
+        </div>
+    </div>
+</section>
+
+<section id="propuesta" data-pantalla-nom="Tu propuesta" data-pantalla-nom-ca="La teva proposta" class="alt" aria-labelledby="t-propuesta">
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">7 · Tu propuesta</p>
@@ -972,7 +1042,7 @@
 </section>
 
 <!-- El panel de Álvaro (05/11/2026): solo con #panel y su clave; panel.js no se carga para nadie más. -->
-<section id="panel" class="alt" aria-labelledby="t-panel" hidden>
+<section id="panel" data-pantalla-nom="Panel" data-pantalla-nom-ca="Panell" class="alt" aria-labelledby="t-panel" hidden>
     <div class="container">
         <div class="cabeza">
             <p class="eyebrow">Solo para Álvaro</p>
@@ -1076,6 +1146,7 @@
 <script src="/SOS/lib/mapa-valor.js"></script>
 <script src="/SOS/lib/diagnosi-client.js"></script>
 <script src="/SOS/lib/models-mapa.js"></script>
+<script src="/SOS/lib/capes.js"></script>
 <script src="/SOS/lib/base-vna.js"></script>
 <script src="/SOS/lib/cas-automatitzat.js"></script>
 <script src="/SOS/lib/tauler-client.js"></script>
@@ -1257,7 +1328,13 @@
         'Nos lo envías': "Ens ho envies",
         '5 · Tu cuenta': '5 · El teu compte',
         'Quién eres y dónde te contestamos.': 'Qui ets i on et contestem.',
-        'Tu cuenta es tu correo. Lo que escribas se guarda en este navegador; si quieres seguir en otro, descarga tu ficha y cárgala allí.': "El teu compte és el teu correu. El que escriguis es desa en aquest navegador; si vols continuar en un altre, descarrega la teva fitxa i carrega-la allà.",
+        'Tu cuenta es tu correo. Sin entrar, lo que escribes se queda en este navegador. Si entras, aquí abajo, se guarda con tu cuenta y lo abres en cualquier aparato con tu enlace personal.': "El teu compte és el teu correu. Sense entrar, el que escrius es queda en aquest navegador. Si entres, aquí sota, es desa amb el teu compte i l'obres en qualsevol aparell amb el teu enllaç personal.",
+        'He leído cómo tratáis mis datos. Mi dibujo se guarda con mi cuenta.': "He llegit com tracteu les meves dades. El meu dibuix es desa amb el meu compte.",
+        'Hola, {0}: tu mapa ya se guarda con tu cuenta': 'Hola, {0}: el teu mapa ja es desa amb el teu compte',
+        'Entra para guardarlo con tu cuenta': "Entra per desar-ho amb el teu compte",
+        'Al entrar, tu mapa se guarda con tu cuenta y te damos tu enlace personal para abrirlo en otro aparato. Si te mandamos un enlace, ábrelo: ya entra por ti.': "En entrar, el teu mapa es desa amb el teu compte i et donem el teu enllaç personal per obrir-lo en un altre aparell. Si et vam enviar un enllaç, obre'l: ja entra per tu.",
+        'Para guardar tu mapa con tu cuenta, dinos quién eres. Elige cómo:': "Per desar el teu mapa amb el teu compte, digues-nos qui ets. Tria com:",
+        'Ya estás dentro. Tu enlace personal está arriba, en el botón 🔗.': "Ja ets dins. El teu enllaç personal és a dalt, al botó 🔗.",
         'Tu nombre': 'El teu nom',
         'Tu correo': 'El teu correu',
         'Tu organización': 'La teva organització',
@@ -1312,7 +1389,14 @@
         'Llama a cada uno por lo que hace («quien quiere ser profesor», «quien me recomienda»), no por su nombre. Marca «no se paga» lo que es confianza, ideas, recomendaciones o reputación: suele ser lo que más cuenta y lo que la web casi nunca dice.': "Anomena cadascú pel que fa («qui vol ser professor», «qui em recomana»), no pel seu nom. Marca «no es paga» el que és confiança, idees, recomanacions o reputació: sol ser el que més compta i el que la web gairebé mai no diu.",
         'Cómo llamas a lo que haces tú': 'Com anomenes el que fas tu',
         'Es el centro del dibujo.': 'És el centre del dibuix.',
-        '¿No sabes por dónde empezar?': 'No saps per on començar?',
+        '¿No sabes por dónde empezar? Empieza con un modelo': 'No saps per on començar? Comença amb un model',
+        'Prefiero hacerlo paso a paso (5 pasos)': "M'estimo més fer-ho pas a pas (5 passos)",
+        'Sin entrar': 'Sense entrar', '«{0}» se guarda solo en este navegador.': '«{0}» es desa només en aquest navegador.', 'Entrar': 'Entrar',
+        'estás viendo «{0}»': 'estàs veient «{0}»', 'Este mapa es de este navegador: no es el de tu cuenta ni se guarda en ella.': "Aquest mapa és d'aquest navegador: no és el del teu compte ni s'hi desa.",
+        'Abrir el de mi cuenta: {0}': 'Obrir el del meu compte: {0}', '☁ guardado en tu cuenta': '☁ desat al teu compte', 'solo en este navegador': 'només en aquest navegador', 'en este navegador': 'en aquest navegador',
+        '🔗 Mi enlace': '🔗 El meu enllaç', 'Enlace copiado. Abre tu espacio en otro aparato con él. Es tu llave: no lo compartas.': "Enllaç copiat. Obre el teu espai en un altre aparell amb ell. És la teva clau: no el comparteixis.",
+        'Tu enlace personal': 'El teu enllaç personal', 'Tu sesión ha terminado. Entra otra vez con tu enlace personal.': "La teva sessió s'ha acabat. Entra una altra vegada amb el teu enllaç personal.",
+        'Este correo ya tiene su espacio. Ábrelo con tu enlace personal o desde el aparato donde lo creaste; si no lo tienes, escríbenos y te mandamos uno.': "Aquest correu ja té el seu espai. Obre'l amb el teu enllaç personal o des de l'aparell on el vas crear; si no el tens, escriu-nos i te n'enviem un.",
         'Elige el modelo que más se parece a lo que haces: rellena quién suele estar alrededor y qué se dan. Luego cambia lo que no encaje y ponlo con tus palabras.': "Tria el model que més s'assembla al que fas: omple qui sol haver-hi al voltant i què es donen. Després canvia el que no encaixi i posa-ho amb les teves paraules.",
         'O por sector, si tu proyecto mira al territorio:': 'O per sector, si el teu projecte mira al territori:',
         'Añadir a alguien': 'Afegir algú',
@@ -1733,8 +1817,9 @@
         var p = persona();
         posa(clona(M.mapes[id].s)); S.mapaId = id;
         if (p.mail && !S.mail) { S.nom = p.nom; S.mail = p.mail; S.cuenta = p.cuenta; }
-        /* Abrirlo cuenta como tocarlo: así, con cuenta, es el que se guarda allí. */
-        S.actualitzada = new Date().toISOString(); escriuMapa(); desaM();
+        /* Abrirlo no lo hace «el de la cuenta» (24/11/2026): con la cuenta solo se
+           guarda su mapa (I.mapa, bloque 7); los demás viven en este navegador. */
+        escriuMapa(); desaM();
     })();
     /* El enlace de invitación (04/11/2026, María, la primera clienta): llega con su
        organización, su web y la otra web que va en el pie ya puestas, sin escribir
@@ -2021,6 +2106,7 @@
 
     /* 1 · De quién es el mapa y qué abarca: toda la organización o un zoom en un área. */
     function pintaTitol() {
+        if (window.ttQui) window.ttQui();
         var z = S.alcance === 'zoom', org = (S.org || '').trim(), area = (S.area || '').trim(), h = $('#cl-mapa-tit');
         document.querySelectorAll('#cl-alcance [data-alc]').forEach(function (b) { b.setAttribute('aria-checked', String(b.dataset.alc === (z ? 'zoom' : 'global'))); });
         $('#cl-area-c').hidden = !z;
@@ -2532,6 +2618,8 @@
     function pintaRols() {
         var c = $('#cl-rols'), id = VIST || S.modelo, x = id && totsModels().filter(function (y) { return y.id === id; })[0];
         c.textContent = ''; c.hidden = !x; if (!x) return;
+        /* Elegido o mirado un modelo, la lista se pliega: lo que toca ahora está justo debajo. */
+        var md = $('#cl-models-d'); if (md && !document.body.classList.contains('gc-on')) md.open = false;
         var m = mapaDe(x.id), rols = m.roles.filter(function (r) { return r !== m.centre; });
         c.appendChild(el('h3', {}, t('Quién suele estar en «{0}»', x.icona + ' ' + x[LL].nom)));
         c.appendChild(el('p', { class: 'nota' }, t('Añade a quien te sirva, uno a uno, con lo que suele dar y recibir. Luego ponlo con tus palabras.')));
@@ -2760,12 +2848,54 @@
     var IA = (function () {
         var CI = 'tt.cliente.ia', I = {};
         try { I = JSON.parse(localStorage.getItem(CI) || 'null') || {}; } catch (e) { I = {}; }
-        function desaI() { try { localStorage.setItem(CI, JSON.stringify(I)); } catch (e) { /* sin memoria */ } }
-        var VIES = [], ACTIVA = false, caixes = [$('#cl-ia'), $('#cl-ia-llig'), $('#cl-ia-web'), $('#cl-prop')];
+        function desaI() { try { localStorage.setItem(CI, JSON.stringify(I)); } catch (e) { /* sin memoria */ } pintaQui(); }
+        /* La llave de este aparato (24/11/2026): el correo solo no dice quién eres;
+           tu cuenta se abre desde el aparato que la creó, o con tu enlace. */
+        function aparell() {
+            var k = ''; try { k = localStorage.getItem('tt.cliente.aparell') || ''; } catch (e) { k = ''; }
+            if (!/^[\w-]{20,80}$/.test(k)) {
+                var a = new Uint8Array(24); (window.crypto || window.msCrypto).getRandomValues(a);
+                k = [].map.call(a, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+                try { localStorage.setItem('tt.cliente.aparell', k); } catch (e) { /* sin memoria: vale para esta visita */ }
+            }
+            return k;
+        }
+        /* Salir no borra nada de este navegador; guarda la sesión de antes para
+           poder volver a entrar con el correo desde aquí. */
+        function surt() { var ab = I.via === 'correu' ? I.sessio : (I.abans || ''); I = ab ? { abans: ab } : {}; PUJA = null; desaI(); pinta(); pintaAcollida(); }
+        window.ttQui = pintaQui; window.ttDins = function () { return !!I.sessio; };
+        function meva() { return !!(I.sessio && !I.sense && I.mapa && I.mapa === S.mapaId); }
+        function enllacMeu() { return location.origin + location.pathname + '#sessio=' + I.sessio; }
+        /* ── Quién eres y qué mapa ves: una línea, arriba, en todas las pantallas ── */
+        function pintaQui() {
+            var tx = $('#cl-qui-t'), bs = $('#cl-qui-b'); if (!tx || !bs) return;
+            tx.textContent = ''; bs.textContent = ''; $('#cl-qui').classList.remove('avis');
+            var nom = nomMapa(S), b = function (txt, fn, pri) { var x = el('button', { type: 'button' }, t(txt)); if (pri) x.className = 'pri'; x.addEventListener('click', fn); bs.appendChild(x); return x; };
+            if (!I.sessio) {
+                tx.appendChild(el('b', {}, t('Sin entrar')));
+                tx.appendChild(document.createTextNode(' · ' + t('«{0}» se guarda solo en este navegador.', nom)));
+                var a = el('a', { href: '#cuenta', class: 'pri' }, t('Entrar')); bs.appendChild(a);
+                return;
+            }
+            tx.appendChild(el('b', {}, I.nom || t('tú')));
+            var altre = I.mapa && I.mapa !== S.mapaId && M.mapes[I.mapa];
+            if (altre) {
+                $('#cl-qui').classList.add('avis');
+                tx.appendChild(document.createTextNode(' · ' + t('estás viendo «{0}»', nom)));
+                tx.appendChild(el('span', { class: 'qui-av' }, t('Este mapa es de este navegador: no es el de tu cuenta ni se guarda en ella.')));
+                var am = el('a', { href: urlMapa(I.mapa), class: 'pri' }, t('Abrir el de mi cuenta: {0}', nomMapa(altre.s))); bs.appendChild(am);
+            } else tx.appendChild(document.createTextNode(' · «' + nom + '» · ' + t(meva() && PUJA ? '☁ guardado en tu cuenta' : I.sense ? 'solo en este navegador' : 'en este navegador')));
+            b('🔗 Mi enlace', function () {
+                var u = enllacMeu(), fet = function () { aviso(t('Enlace copiado. Abre tu espacio en otro aparato con él. Es tu llave: no lo compartas.')); };
+                if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(fet, function () { prompt(t('Tu enlace personal'), u); }); else prompt(t('Tu enlace personal'), u);
+            }).className = 'curt';
+            b('Salir', surt);
+        }
+        var VIES = [], ACTIVA = false, caixes = [$('#cl-ia'), $('#cl-ia-llig'), $('#cl-ia-web'), $('#cl-prop'), $('#cl-entra')];
         /* Al volver de GitHub, la sesión llega en el fragmento: se guarda y se borra de la barra. */
         var h = /^#sessio=([\w-]+\.[\w-]+)$/.exec(location.hash);
         if (h) {
-            try { var d = JSON.parse(decodeURIComponent(escape(atob(h[1].split('.')[0].replace(/-/g, '+').replace(/_/g, '/'))))); I.sessio = h[1]; I.nom = d.nom; I.via = d.via; desaI(); } catch (e) { /* sesión ilegible */ }
+            try { var d = JSON.parse(decodeURIComponent(escape(atob(h[1].split('.')[0].replace(/-/g, '+').replace(/_/g, '/'))))); I = { sessio: h[1], nom: d.nom, via: d.via }; desaI(); } catch (e) { /* sesión ilegible */ }
             history.replaceState(null, '', location.pathname + '#alrededor');
             setTimeout(function () { aviso(t('Hola, {0}: ya puedes usar la IA', I.nom || '')); var c = $('#cl-ia'); if (c) c.scrollIntoView({ block: 'center' }); }, 300);
         } else if (location.hash === '#sessio-error') { history.replaceState(null, '', location.pathname + '#alrededor'); setTimeout(function () { aviso(t('No hemos podido entrar con GitHub. Prueba otra vez o usa tu correo.')); }, 300); }
@@ -2782,7 +2912,7 @@
             caixes.forEach(function (cx) {
                 if (!cx) return;
                 /* Leer su web no es IA: va aunque la IA no esté activa (como su propuesta). */
-                var esIA = cx.id !== 'cl-prop' && cx.id !== 'cl-ia-llig';
+                var esIA = cx.id !== 'cl-prop' && cx.id !== 'cl-ia-llig' && cx.id !== 'cl-entra';
                 cx.hidden = (esIA && !ACTIVA) || (!VIES.length && !I.sessio);
                 var qui = cx.querySelector('[data-ia="qui"]'), ses = cx.querySelector('[data-ia="sessio"]'), boto = cx.querySelector('.ia-boto');
                 qui.textContent = ''; ses.textContent = '';
@@ -2791,8 +2921,8 @@
                     qui.hidden = true; ses.hidden = false; boto.hidden = false;
                     ses.appendChild(el('span', {}, t('Hola, {0}', I.nom || t('tú')) + ' · ' + t(I.via === 'github' ? 'con GitHub' : I.via === 'convit' ? 'con tu enlace' : 'con tu correo')));
                     if (esIA) energia(ses);
-                    var sb = el('button', { type: 'button' }, t('Salir')); sb.addEventListener('click', function () { I = {}; PUJA = null; desaI(); pinta(); }); ses.appendChild(sb);
-                    if (PUJA && cx.id === (ACTIVA ? 'cl-ia' : 'cl-prop')) {
+                    var sb = el('button', { type: 'button' }, t('Salir')); sb.addEventListener('click', surt); ses.appendChild(sb);
+                    if (PUJA && (cx.id === (ACTIVA ? 'cl-ia' : 'cl-prop') || cx.id === 'cl-entra')) {
                         var dz = el('span', { class: 'ia-desat' }, t('☁ Tu dibujo se guarda con tu cuenta: ábrelo desde cualquier aparato.') + ' '), bb = el('button', { type: 'button' }, t('Borrarlo de allí'));
                         bb.addEventListener('click', esborra); dz.appendChild(bb); ses.appendChild(dz);
                     }
@@ -2819,9 +2949,9 @@
             if (!priv(cx)) return;
             if (!S.cuenta || !S.mail) { aviso(t('Primero crea tu cuenta con tu correo (paso 5)')); location.hash = 'cuenta'; return; }
             b.disabled = true;
-            fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true }) })
+            fetch('/.netlify/functions/identitat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'correu', nom: S.nom, mail: S.mail, privacitat: true, aparell: aparell(), sessio: I.sessio || I.abans || '' }) })
                 .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.motiu || t('No se ha podido')); return j; }); })
-                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); sincronitza(); aviso(t(cx.id === 'cl-prop' ? 'Hola, {0}: ya puedes ver tu propuesta' : 'Hola, {0}: ya puedes usar la IA', j.nom)); })
+                .then(function (j) { I = { sessio: j.sessio, nom: j.nom, via: 'correu' }; desaI(); pinta(); sincronitza(); aviso(t(cx.id === 'cl-prop' ? 'Hola, {0}: ya puedes ver tu propuesta' : cx.id === 'cl-entra' ? 'Hola, {0}: tu mapa ya se guarda con tu cuenta' : 'Hola, {0}: ya puedes usar la IA', j.nom)); })
                 .catch(function (e) { b.disabled = false; aviso(e.message); });
         }
 
@@ -2873,31 +3003,55 @@
         /* Al guardar, el servidor junta sus tareas con las que haya puesto Álvaro
            desde su panel; si ha cambiado algo, se repinta el tablero. */
         function puja() {
-            if (!I.sessio || I.sense) return;
+            if (!I.sessio || I.sense || !meva()) return;
             fitxa({ fitxa: S }).then(function (r) {
                 if (!r || r.estat !== 'desada' || !r.kanban || JSON.stringify(r.kanban) === JSON.stringify(window.Kanban ? window.Kanban.neteja(S.kanban) : S.kanban)) return;
                 S.kanban = r.kanban; try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ } pintaTareas();
             });
         }
+        /* La cuenta tiene **un** mapa, y solo ese se guarda en ella (24/11/2026).
+           Antes, el mapa que hubiera abierto en el navegador subía a la cuenta de
+           quien hubiera entrado, y el de la cuenta podía caer encima de otro: si
+           Álvaro abría el enlace de María en su móvil, sus mapas y los de ella se
+           mezclaban. Ahora `I.mapa` dice cuál es el mapa de la cuenta en este
+           navegador; los demás no suben ni reciben nada. */
+        function mateixaOrg(f) { var a = (S.org || '').trim().toLowerCase(), b = ((f && f.org) || '').trim().toLowerCase(); return !a || !b || a === b; }
+        function lliga() { if (!S.mapaId) { S.mapaId = nouId(); } I.mapa = S.mapaId; escriuMapa(); desaI(); }
         function sincronitza() {
             PUJA = null;
-            if (!I.sessio || I.sense) return;
+            if (!I.sessio || I.sense) { pintaQui(); return; }
             fitxa({}).then(function (r) {
+                /* La sesión ya no vale (caducó, o era de un correo sin comprobar). */
+                if (r.estat === 'identifica') { surt(); aviso(t('Tu sesión ha terminado. Entra otra vez con tu enlace personal.')); return; }
                 if (r.estat !== 'fet' && r.estat !== 'cap') return;
+                if (I.mapa && I.mapa !== S.mapaId && !M.mapes[I.mapa]) { delete I.mapa; }
+                var te = r.estat === 'fet', ja;
+                if (!I.mapa) {
+                    if (!te || (buida(S) && mapaBuit(S)) || mateixaOrg(r.fitxa)) lliga();
+                    else if ((ja = Object.keys(M.mapes).filter(function (k) { return k !== S.mapaId && ((M.mapes[k].s || {}).org || '').trim().toLowerCase() === (r.fitxa.org || '').trim().toLowerCase() && (r.fitxa.org || '').trim(); })[0])) { I.mapa = ja; desaI(); }
+                    else if (quants() < MAX_M) {
+                        /* Hay otro mapa abierto, de otra organización: el de la cuenta se
+                           guarda aparte en «Mis mapas» y no se toca el que se está viendo. */
+                        var id = nouId(), nou = Object.assign(base(), r.fitxa, { mapaId: id });
+                        M.mapes[id] = { s: nou, avanc: '' }; desaM(); I.mapa = id; desaI();
+                        if (typeof MAPES !== 'undefined') MAPES.pinta();
+                    }
+                }
+                if (!meva()) { pinta(); pintaQui(); pintaAcollida(); return; }
                 /* Su espacio, si Álvaro se lo ha dejado preparado: llega por ahí. */
-                if (r.estat === 'fet' && r.fitxa.acollida) {
+                if (te && r.fitxa.acollida) {
                     var nova = JSON.stringify(r.fitxa.acollida) !== JSON.stringify(S.acollida || null);
                     S.acollida = r.fitxa.acollida; try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
                     if (nova && !location.hash) location.hash = '#espacio';
                     pintaAcollida();
                 }
-                if (r.estat === 'fet' && ((buida(S) && !S.mapaId) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
-                    Object.assign(S, r.fitxa); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
+                if (te && (buida(S) || (r.fitxa.actualitzada || '') > (S.actualitzada || ''))) {
+                    Object.assign(S, r.fitxa, { mapaId: I.mapa }); try { localStorage.setItem(CLAU, JSON.stringify(S)); } catch (e) { /* sin memoria */ }
                     if (!S.alrededor.length) S.alrededor = [{ quien: '', meDa: '', meDaEs: 'tangible', leDoy: '', leDoyEs: 'intangible' }];
                     pintaTot(); viu(); aviso(t('Hemos recuperado tu dibujo guardado'));
                 } else if (!buida(S)) puja();
                 PUJA = function () { clearTimeout(pujaT); pujaT = setTimeout(puja, 1500); };
-                pinta();
+                pinta(); pintaQui();
                 fitxa({ foto: true }).then(function (f) { if (f.estat === 'foto' && f.lectura.estat === 'fet' && !FOTO) lectura(f.lectura); });
             });
         }
@@ -2907,10 +3061,10 @@
         function pintaAcollida() {
             var s = document.getElementById('espacio'), A = window.AcollidaClient;
             if (!s || !A) return;
-            var vol = !!A.pantalla();
-            s.hidden = !S.acollida && !vol;
+            var vol = !!A.pantalla(), ac = I.sessio && !meva() ? null : (S.acollida || null);
+            s.hidden = !ac && !vol;
             if (s.hidden) return;
-            A.pinta(s.querySelector('.ac-cos'), { acollida: S.acollida || null, kanban: S.kanban, llengua: LL,
+            A.pinta(s.querySelector('.ac-cos'), { acollida: ac, kanban: S.kanban, llengua: LL,
                 persones: (S.alrededor || []).filter(function (f) { return f.quien; }).length });
             if (vol) s.scrollIntoView({ block: 'start' });
         }
@@ -3202,6 +3356,12 @@
         fetch('/.netlify/functions/identitat').then(function (r) { return r.json(); }).then(function (j) { VIES = j.vies || []; pinta(); }).catch(function () { VIES = []; pinta(); });
         fetch('/.netlify/functions/pule-mapa').then(function (r) { ACTIVA = r.ok; pinta(); }).catch(function () { ACTIVA = false; pinta(); });
         pinta(); sincronitza();
+        (function () { var d = $('#cl-models-d'); if (d) d.open = !(S.alrededor || []).some(function (f) { return f && (f.quien || '').trim(); }); })();
+        window.addEventListener('load', function () {
+            var g = window.GuiaCliente, b = $('#cl-guia'); if (!g || !b) return;
+            $('#cl-guia-p').hidden = false;
+            b.addEventListener('click', function () { g.posa(true, true); g.va(0, true); });
+        });
         /* Sus programas, de su web de ahora (pule-mapa, pas 'programes'): rellenan las fichas que luego edita. */
         function programes(boto, res) {
             if (!FOTO) return Promise.resolve(null);
@@ -3398,10 +3558,10 @@
             c.appendChild(el('h2', { id: 'cl-benv-t', class: 'eyebrow' }, v.para ? t('Hola, {0}', v.para) : t('Hola')));
             c.appendChild(el('p', {}, t('Este es tu espacio para preparar la web nueva de {0}. Lo que cambias se guarda solo; puedes volver cuando quieras con este mismo enlace.', S.org || t('tu proyecto'))));
             var ol = el('ol');
-            [['#cuenta', 'Entra con tu correo: así lo que haces se guarda con tu cuenta.'], ['#web', 'Leemos tu web de ahora, con tu permiso, para no perder lo que Google ya conoce.'],
+            [[window.ttDins && window.ttDins() ? '' : '#cuenta', 'Entra con tu correo: así lo que haces se guarda con tu cuenta.'], ['#web', 'Leemos tu web de ahora, con tu permiso, para no perder lo que Google ya conoce.'],
                 ['#programas', 'Revisa tus programas, sobre todo las fechas.'], ['#formularios', 'Elige qué te preguntan en los formularios.'],
                 ['#vista', 'Mira cómo queda organizada tu web nueva.'], ['#tablero', 'En tu tablero, lo que se repite y puede ir solo.']].forEach(function (x) {
-                if (x[0] === '#programas' && !teProgrames()) return;
+                if (!x[0] || (x[0] === '#programas' && !teProgrames())) return;
                 var li = el('li'); li.appendChild(el('a', { href: x[0] }, t(x[1]))); ol.appendChild(li);
             });
             c.appendChild(ol);
@@ -3508,5 +3668,6 @@
 </script>
 <script src="/SOS/lib/panteo.js"></script>
 <script src="/SOS/lib/guia-cliente.js" defer></script>
+<script src="/SOS/lib/pantalla.js" defer></script>
 </body>
 </html>

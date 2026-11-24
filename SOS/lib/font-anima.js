@@ -35,6 +35,9 @@
     MOB = ample < 560;
     R_PIL = MOB ? 40 : 46; PAS = MOB ? 24 : 29; R_ET = MOB ? 176 : 214;
   }
+  /* Els noms de les capes, de SOS/lib/capes.js (veda 188): es carrega abans. */
+  var CP = (typeof module !== 'undefined' && module.exports) ? require('./capes.js') : g.Capes;
+  var capes = function (ll) { return CP ? CP.paraules(ll) : {}; };
   var KC = { anna: '#b45309', prana: '#15803d', mano: '#0e7490', vijnana: '#1d4ed8', ananda: '#7c3aed' };
   /* De cada escena, un servei: la pel·lícula és també el mapa del que hi ha.
      L'última no en té cap: és l'entrada, un sol camp cap a «Crea el teu mapa». */
@@ -45,7 +48,7 @@
     ca: {
       k: 'La font i la colla', a11y: 'Pel·lícula en nou escenes: de la font a la pinya, el castell, l\'arbre, el mapa mental, el mapa de valor i la teva colla',
       pausa: 'Atura', segueix: 'Continua', ant: 'Escena anterior', seg: 'Escena següent',
-      kosha: { anna: 'Cos', prana: 'Energia', mano: 'Ment', vijnana: 'Criteri', ananda: 'Propòsit' },
+      kosha: capes('ca'),
       e: [
         ['La font', 'Al mig de tot, una font. On hi ha aigua bona, neix tot.'],
         ['La pinya', 'Cada rengla és una àrea: una filera de persones del centre cap enfora, una línia de força. Cada cordó, un cercle de gent al voltant de la font.'],
@@ -74,7 +77,7 @@
     es: {
       k: 'La fuente y la colla', a11y: 'Película en nueve escenas: de la fuente a la pinya, el castell, el árbol, el mapa mental, el mapa de valor y tu colla',
       pausa: 'Pausa', segueix: 'Sigue', ant: 'Escena anterior', seg: 'Escena siguiente',
-      kosha: { anna: 'Cuerpo', prana: 'Energía', mano: 'Mente', vijnana: 'Criterio', ananda: 'Propósito' },
+      kosha: capes('es'),
       e: [
         ['La fuente', 'En el centro de todo, una fuente. Donde hay agua buena, nace todo.'],
         ['La pinya', 'Cada rengla es un área: una hilera de personas del centro hacia fuera, una línea de fuerza. Cada cordón, un círculo de gente alrededor de la fuente.'],

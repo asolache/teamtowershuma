@@ -67,14 +67,16 @@
   function llegeix(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
   /* Què es veu a cada pas. `veu`: el que es mostra de cada secció (i el que ho
-     conté); `amaga`: el que, a dins, sobra. Tot amb els id que la pàgina ja té. */
+     conté); `amaga`: el que, a dins, sobra. Tot amb els id que la pàgina ja té.
+     Un camp es mostra sencer (`.camp:has(#id)`), amb la seva etiqueta: un
+     requadre en blanc sense dir què hi va no és un formulari (24/11/2026). */
   var PASSOS = [
-    { s: ['#alrededor'], veu: ['#cl-mapes', '#cl-org', '#cl-mapa-tit', '#cl-casa', '#cl-models', '#cl-bona', '#cl-rols'],
+    { s: ['#alrededor'], veu: ['#cl-mapes', '.camp:has(#cl-org)', '#cl-mapa-tit', '.camp:has(#cl-casa)', '#cl-models', '#cl-bona', '#cl-rols'],
       amaga: ['#alrededor .cabeza', '#alrededor .manera', '.models-sec', '#cl-oficis', '#cl-sectors', '.busca-ofici'] },
     { s: ['#alrededor'], veu: ['#cl-files', '#cl-afegeix', '#gc-h-salut', '#cl-salut-n', '#cl-salut', '#gc-panteo', '#cl-ia'], amaga: ['#alrededor .cabeza'] },
-    { s: ['#alrededor'], veu: ['#tablero', '#cl-auto', '#cl-caso'], amaga: ['#alrededor .cabeza'] },
+    { s: ['#alrededor', '#tablero'], veu: ['#cl-auto', '#cl-caso', '#tablero > .container'], amaga: ['#alrededor .cabeza'] },
     { s: ['#web'], veu: ['#cl-nivells', '#gc-h-capes', '#cl-capes', '#cl-boceto', '#cl-boceto-r', '#cl-marc-caixa'], amaga: ['#web .cabeza'] },
-    { s: ['#cuenta', '#enviar'], veu: ['#cl-nom', '#cl-crea', '#cl-compte', '#cl-priv', '#cl-envia', '#cl-envia-r', '#enviar > .container > .nota'],
+    { s: ['#cuenta', '#enviar'], veu: ['.camp:has(#cl-nom)', '.camp:has(#cl-mail)', '#cl-crea', '#cl-entra', '#cl-compte', 'label[for="cl-priv"]', '#cl-envia', '#cl-envia-r', '#enviar > .container > .nota'],
       amaga: ['#cuenta .cabeza', '#enviar .cabeza', '#cl-baixa', '#cl-cervell', 'label[for="cl-carrega"]', '#cuenta .nota'] }
   ];
   /* Les adreces que obren un pas. La resta, si no es veu al pas a pas, obre la pàgina sencera. */
@@ -99,6 +101,7 @@
     '.gc-nav .gc-tot{all:unset;cursor:pointer;color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:.9rem;min-height:44px;display:inline-flex;align-items:center}' +
     '.gc-torna{position:fixed;left:1rem;bottom:1rem;z-index:60}.gc-on .gc-torna{display:none}' +
     '.gc-avis{margin:.8rem 0 0;padding:.6rem .8rem;border-left:3px solid var(--green);background:var(--panel);font-weight:600}' +
+    '#gc-panteo>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.5rem;min-height:44px;margin-top:1.2rem}#gc-panteo>summary::-webkit-details-marker{display:none}#gc-panteo>summary::before{content:"▸";color:var(--indigo)}#gc-panteo[open]>summary::before{content:"▾"}#gc-panteo>summary h3{margin:0}' +
     '.gc-pt{margin:1.6rem 0 .2rem}.gc-pd{margin:0 0 .6rem;color:var(--light)}' +
     '.gc-px{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr));gap:.4rem;list-style:none;margin:0;padding:0}' +
     '.gc-px button{all:unset;box-sizing:border-box;display:flex;gap:.5rem;align-items:flex-start;width:100%;min-height:44px;padding:.5rem .6rem;border-radius:10px;border:1.5px dashed var(--border-strong);background:var(--card);cursor:pointer;font-size:.88rem;line-height:1.3;color:var(--light)}' +
@@ -110,7 +113,7 @@
 
   /* ── La capçalera i la navegació ──────────────────────────────────────── */
   var main = $('main'), pas = 0;
-  var cap = h('section', { class: 'gc', id: 'gc', 'aria-labelledby': 'gc-t' }), cc = h('div', { class: 'container' });
+  var cap = h('section', { class: 'gc', id: 'gc', 'aria-labelledby': 'gc-t', 'data-pantalla-fix': '' }), cc = h('div', { class: 'container' });
   var kick = h('p', { class: 'gc-k' }); kick.appendChild(document.createTextNode(T.k + ' · '));
   kick.appendChild(h('a', { href: '/SOS/la-font.html' }, T.valor));
   var ol = h('ol', { class: 'gc-pas' });
@@ -140,9 +143,10 @@
 
   /* ── Les dotze preguntes del panteó, al pas dels forats ─────────────────── */
   var P = window.Panteo, cli = function () { return window.TTCliente && window.TTCliente.estat ? window.TTCliente.estat() : null; };
-  var pBox = h('div', { id: 'gc-panteo' }), pRes = h('p', { class: 'gc-pr', 'aria-live': 'polite' });
+  var pBox = h('details', { id: 'gc-panteo' }), pRes = h('p', { class: 'gc-pr', 'aria-live': 'polite' });
   if (P) {
-    pBox.appendChild(h('h3', { class: 'gc-pt' }, T.pt)); pBox.appendChild(h('p', { class: 'gc-pd' }, T.pd));
+    /* Al pas a pas van obertes; a la pàgina en pantalles, plegades sota el seu títol. */
+    var pSum = h('summary'); pSum.appendChild(h('h3', { class: 'gc-pt' }, T.pt)); pBox.appendChild(pSum); pBox.appendChild(h('p', { class: 'gc-pd' }, T.pd));
     var ul = h('ul', { class: 'gc-px' });
     P.ORDRE.forEach(function (id) {
       var a = P.ARQ[id], li = h('li'), b = h('button', { type: 'button', 'aria-pressed': 'false', 'data-arq': id });
@@ -187,6 +191,7 @@
   function neteja() { $$('[data-gc]').forEach(function (e) { e.removeAttribute('data-gc'); }); $$('main>section.gc-ara').forEach(function (s) { if (s !== cap) s.classList.remove('gc-ara'); }); }
   function aplica(i) {
     neteja();
+    var md = $('#cl-models-d'); if (md && i === 0) md.open = true;
     var p = PASSOS[i], veu = [];
     p.veu.forEach(function (s) { $$(s).forEach(function (e) { veu.push(e); }); });
     p.s.forEach(function (sel) {
@@ -222,7 +227,11 @@
   }
   function posa(on, desa) {
     document.body.classList.toggle('gc-on', on);
-    if (!on) { neteja(); nav.remove(); }
+    /* Amb el pas a pas tancat, la pàgina sencera va en pantalles (lib/pantalla.js,
+       24/11/2026): mai un rotlle de trenta pantalles de mòbil. Mai els dos alhora. */
+    pBox.open = on;
+    if (on) document.body.setAttribute('data-pantalla-pausa', ''); else document.body.removeAttribute('data-pantalla-pausa');
+    if (!on) { neteja(); nav.remove(); var md = $('#cl-models-d'), cr = $('#cl-rols'); if (md && cr && !cr.hidden) md.open = false; }
     if (desa) guarda('tt.guia', on ? null : 'off');
   }
 
