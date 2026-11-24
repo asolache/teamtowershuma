@@ -626,7 +626,16 @@ function nav(pagina) {
      petava contra la seva pròpia sortida. */
   return OBRE + '\n' + CSS + '\n' +
     `<nav class="tt-nav" aria-label="${ll === 'es' ? 'Navegación del sitio' : 'Navegació del lloc'}">\n` +
-    `  <a class="tn-brand" href="${marca[0]}">${esc(marca[1])}<span>${esc(marca[2])}</span>${marca[3] ? ' ' + esc(marca[3]) : ''}</a>\n` +
+    /* ── EL LOGO (24/11/2026) ─────────────────────────────────────────────
+       Àlvaro: el logo de TeamTowers (teamtowers.eu) amb «Humà» a sota, com a
+       signatura. Al lloc va el logo; al SOS, la marca en text. Al mòbil, sense
+       l'emblema: amb ell la marca i l'acció no caben en una fila de 390 px.
+       Els fitxers i el perquè de la lletra són a /marca/. */
+    (lloc
+      ? `  <a class="tn-brand tn-logo" href="${marca[0]}"><picture>`
+        + `<source media="(max-width:860px)" srcset="/marca/teamtowers-huma-text.svg" width="262" height="72">`
+        + `<img src="/marca/teamtowers-huma-barra.svg" width="362" height="72" alt="TeamTowers Humà"></picture></a>\n`
+      : `  <a class="tn-brand" href="${marca[0]}">${esc(marca[1])}<span>${esc(marca[2])}</span>${marca[3] ? ' ' + esc(marca[3]) : ''}</a>\n`) +
     (lloc ? '' : `  <a class="tn-casa" href="/">TeamTowers</a>\n`) +
     /* ── EL «MENÚ» DE MÒBIL, I PER QUÈ PORTA SCRIPT (05/10/2026) ──────────
        Cinc portes no caben en una barra curta a 360–414 px, i els tres camins
@@ -712,6 +721,8 @@ const CSS = `<style>
 .tt-nav .tn-brand{font-weight:700;font-size:var(--t1);letter-spacing:-.02em;color:var(--text);
   text-decoration:none;margin-right:.5rem;white-space:nowrap}
 .tt-nav .tn-brand span{color:var(--indigo)}
+.tt-nav .tn-logo{display:flex;align-items:center}
+.tt-nav .tn-logo img{display:block;height:42px;width:auto}
 .tt-nav .tn-casa{color:var(--muted);text-decoration:none;white-space:nowrap;margin-right:.35rem}
 .tt-nav .tn-casa::before{content:'← '}
 .tt-nav .tn-casa:hover{color:var(--text)}
@@ -757,6 +768,7 @@ const CSS = `<style>
      l'acció càpiguen en **una** fila de 390 px. Amb la marca a --t1 la fila es
      partia i la barra passava de dues files a tres. */
   .tt-nav .tn-brand{font-size:var(--t0);margin-right:.2rem}
+  .tt-nav .tn-logo img{height:30px}
   .tt-nav .tn-casa{order:1;margin-right:0}
   /* ── PER QUÈ UNA FILA QUE EMBOLCALLA, I NO UNA COLUMNA ──────────────────
      El primer intent posava els cinc grups **en columna** a mòbil, oberts
@@ -853,6 +865,8 @@ const PEU_CSS = `<style>
 .tt-peu a[aria-current]{color:var(--text);font-weight:600}
 .tt-peu .tp-logo{font-size:var(--t2);font-weight:700;color:var(--text)}
 .tt-peu .tp-logo b{color:var(--indigo);font-weight:700}
+.tt-peu .tp-segell{display:block;margin-bottom:.4rem}
+.tt-peu .tp-segell img{display:block;width:170px;height:auto}
 .tt-peu .tp-lema{margin-top:.5rem;color:var(--muted)}
 .tt-peu .tp-frase{margin-top:.5rem;font-weight:700;color:var(--text)}
 .tt-peu .tp-c{margin-top:.6rem;color:var(--muted);font-family:var(--mono)}
@@ -884,7 +898,7 @@ function peu(pagina) {
       }).join('') + `</ul></div>`;
   };
   const marca = lloc
-    ? `<a class="tp-logo" href="/">Team<b>Towers</b> Humà</a>`
+    ? `<a class="tp-logo tp-segell" href="/"><img src="/marca/teamtowers-huma-segell.svg" width="260" height="183" alt="TeamTowers Humà" loading="lazy"></a>`
       /* El lema de la marca, a la llengua de la pàgina (19/11/2026). */
       + `<p class="tp-frase"><span${i18n('nv.peu.lema')}>${ll === 'es' ? 'Nadie llega arriba solo.' : 'Ningú no arriba a dalt sol.'}</span></p>`
       /* Els valors són de la marca i es diuen en català a totes dues llengües. */
