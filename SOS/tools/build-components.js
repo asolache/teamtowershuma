@@ -57,44 +57,74 @@ const pl = (n, u, m) => `${n} ${n === 1 ? u : m}`;
    Només tokens de la pell (`build-pell.js`). Cap font: hereten la de la
    pàgina, perquè el SOS i l'arrel encara en tenen dues i un botó que en
    portés una tercera seria la costura que aquest fitxer tanca. */
+/* Els comentaris del CSS viuen aquí i no dins del bloc: el bloc va a 39
+   pàgines i cada comentari pesava a totes (24/11/2026).
+   · La lletra: títols una mica més junts i partits amb equilibri. Amb
+     \`:where\` no pesen res: qualsevol regla de la pàgina hi guanya.
+   · Botons, guia de marca §6: un primari per pantalla, la resta amb vora, 44 px
+     d'alçada sempre, relleu i un píxel amunt en passar-hi. \`display:inline-flex\`
+     guanya al \`[hidden]\` del navegador, per això la regla de \`[hidden]\`.
+   · Els camps: el mateix camp a totes les pàgines (48 px, la vora de la pell,
+     fons de targeta lleugerament enfonsat i, en entrar-hi, l'anell indi). Van
+     per element, amb el pes d'un element (\`input:where(…)\`): guanyen al
+     \`*{padding:0}\` de les pàgines i perden amb qualsevol regla amb classe.
+     Cap formulari no s'ha de marcar: la pàgina només hi posa l'amplada.
+   · La capçalera d'una secció: etiqueta, títol i entradeta.
+   · La targeta: la de «Tres serveis» de la portada n'és el model (radi de 10 a
+     14 px, la vora de la pell i l'ombra que reposa). */
 const CSS = `/* GENERAT per SOS/tools/build-components.js · no s'edita a mà: hi ha guarda. */
-/* Botons · guia de marca §6: un primari per pantalla, la resta amb vora, i
-   44 px d'alçada sempre. */
-.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
-  min-height:44px;padding:.7rem 1.35rem;border:1px solid var(--border-strong);border-radius:10px;
+:where(h1,h2,h3){letter-spacing:-.022em;text-wrap:balance}
+:where(p,li){text-wrap:pretty}
+::selection{background:rgba(79,70,229,.18)}
+.btn,.btn-primary,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  min-height:44px;padding:.72rem 1.4rem;border:1px solid var(--border-strong);border-radius:12px;
   background:var(--card);color:var(--text);font:inherit;font-size:var(--t0);font-weight:600;line-height:1.25;
-  text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
-  transition:background-color .15s,border-color .15s,color .15s}
-.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo)}
-.btn-ghost{background:transparent}
-.btn-primary{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent)}
-.btn-primary:hover{background:var(--blue);border-color:var(--blue);color:var(--on-accent)}
+  letter-spacing:-.005em;text-align:center;text-decoration:none;cursor:pointer;touch-action:manipulation;
+  box-shadow:var(--ombra-1);
+  transition:background-color .15s,border-color .15s,color .15s,box-shadow .2s,transform .2s}
+.btn:hover,.btn-ghost:hover{border-color:var(--indigo);color:var(--indigo);box-shadow:var(--ombra-2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;box-shadow:none}
+.btn-primary{border-color:var(--indigo);color:var(--on-accent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--indigo) 86%,#fff),var(--indigo));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 8px 20px -10px var(--indigo)}
+.btn-primary:hover{background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);transform:translateY(-1px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 12px 26px -10px var(--indigo)}
+.btn:active,.btn-primary:active,.btn-ghost:active{transform:none}
 .btn-sm{padding:.45rem .85rem}
 .btn:focus-visible,.btn-primary:focus-visible,.btn-ghost:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
 .btn:disabled,.btn-primary:disabled,.btn-ghost:disabled,.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
-/* \`display:inline-flex\` guanya al \`[hidden]\` del navegador: sense això, un
-   botó amagat amb l'atribut es veuria. */
 .btn[hidden],.btn-primary[hidden],.btn-ghost[hidden]{display:none}
-/* La capçalera d'una secció: etiqueta, títol i entradeta. */
+input:where(:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=hidden])),select,textarea{
+  box-sizing:border-box;min-height:48px;padding:.72rem .95rem;border:1px solid var(--border-strong);border-radius:12px;
+  background-color:var(--card);color:var(--text);font:inherit;font-size:max(16px,var(--t0));line-height:1.4;
+  box-shadow:inset var(--ombra-1);transition:border-color .15s,box-shadow .15s}
+:is(input,select,textarea):hover{border-color:var(--muted)}
+:is(input,select,textarea):focus{outline:none;border-color:var(--indigo);box-shadow:var(--anell)}
+:where(input,textarea)::placeholder{color:var(--muted);opacity:.75}
+:where(textarea){min-height:7rem;resize:vertical;line-height:1.55}
+select{-webkit-appearance:none;appearance:none;padding-right:2.6rem;background-repeat:no-repeat;
+  background-position:right .95rem center;background-size:12px;
+  background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%23857f72' stroke-width='1.6'/></svg>")}
+:where(input){accent-color:var(--indigo)}
+:where(input,select,textarea):disabled{opacity:.55;cursor:not-allowed}
+:where(input,select,textarea):user-invalid{border-color:var(--red)}
 .section-header{text-align:center;max-width:720px;margin:0 auto 5rem}
-.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);
-  text-transform:uppercase;margin-bottom:1.25rem}
-.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.section-eyebrow{font-family:var(--mono);font-size:var(--t0);letter-spacing:.08em;color:var(--indigo);
+  text-transform:uppercase;font-weight:500;margin-bottom:1.25rem}
+.section-header h2{font-size:clamp(2.1rem,4vw,3.2rem);font-weight:700;line-height:1.1;letter-spacing:-.03em;margin-bottom:1.25rem}
 .section-header h2 em{font-style:normal;color:var(--blue)}
-.section-header p{font-size:var(--t1);color:var(--light);line-height:1.8}
-/* La targeta: la de «Tres serveis» de la portada n'és el model. Guia §6:
-   radi de 10 a 14 px i la vora de la pell. */
+.section-header p{font-size:var(--t1);color:var(--light);line-height:1.75}
 .targeta{display:flex;flex-direction:column;gap:.6rem;padding:1.6rem 1.5rem;
-  background:var(--card);border:1px solid var(--border);border-radius:14px}
+  background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--ombra-1)}
 .targeta-k{font-family:var(--mono);font-size:var(--t0);letter-spacing:.06em;color:var(--indigo);font-weight:600}
-.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;margin:0}
+.targeta-t{font-size:var(--t2);font-weight:650;color:var(--text);line-height:1.3;letter-spacing:-.015em;margin:0}
 .targeta-d{font-size:var(--t0);color:var(--light);line-height:1.6;margin:0}`;
 
 /* Els noms que només aquest bloc pot declarar. Surten del CSS i no d'una llista
    escrita a part: el dia que s'hi afegeixi un component, la guarda el vigila
    sense que ningú se'n recordi. */
 const NOMS = [...new Set([...CSS.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/\.([a-z][\w-]*)/g)].map(m => m[1]))]
-  .filter(n => !/^(?:hover|focus-visible|disabled)$/.test(n));
+  .filter(n => !/^(?:hover|focus-visible|disabled|w3|org)$/.test(n));
 
 function bloc() { return OBRE + '\n' + CSS + '\n' + TANCA; }
 const OBRE = '/*TT-COMPONENTS*/', TANCA = '/*/TT-COMPONENTS*/';

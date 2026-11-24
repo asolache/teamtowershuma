@@ -67,14 +67,16 @@
   function llegeix(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 
   /* Què es veu a cada pas. `veu`: el que es mostra de cada secció (i el que ho
-     conté); `amaga`: el que, a dins, sobra. Tot amb els id que la pàgina ja té. */
+     conté); `amaga`: el que, a dins, sobra. Tot amb els id que la pàgina ja té.
+     Un camp es mostra sencer (`.camp:has(#id)`), amb la seva etiqueta: un
+     requadre en blanc sense dir què hi va no és un formulari (24/11/2026). */
   var PASSOS = [
-    { s: ['#alrededor'], veu: ['#cl-mapes', '#cl-org', '#cl-mapa-tit', '#cl-casa', '#cl-models', '#cl-bona', '#cl-rols'],
+    { s: ['#alrededor'], veu: ['#cl-mapes', '.camp:has(#cl-org)', '#cl-mapa-tit', '.camp:has(#cl-casa)', '#cl-models', '#cl-bona', '#cl-rols'],
       amaga: ['#alrededor .cabeza', '#alrededor .manera', '.models-sec', '#cl-oficis', '#cl-sectors', '.busca-ofici'] },
     { s: ['#alrededor'], veu: ['#cl-files', '#cl-afegeix', '#gc-h-salut', '#cl-salut-n', '#cl-salut', '#gc-panteo', '#cl-ia'], amaga: ['#alrededor .cabeza'] },
     { s: ['#alrededor', '#tablero'], veu: ['#cl-auto', '#cl-caso', '#tablero > .container'], amaga: ['#alrededor .cabeza'] },
     { s: ['#web'], veu: ['#cl-nivells', '#gc-h-capes', '#cl-capes', '#cl-boceto', '#cl-boceto-r', '#cl-marc-caixa'], amaga: ['#web .cabeza'] },
-    { s: ['#cuenta', '#enviar'], veu: ['#cl-nom', '#cl-crea', '#cl-entra', '#cl-compte', '#cl-priv', '#cl-envia', '#cl-envia-r', '#enviar > .container > .nota'],
+    { s: ['#cuenta', '#enviar'], veu: ['.camp:has(#cl-nom)', '.camp:has(#cl-mail)', '#cl-crea', '#cl-entra', '#cl-compte', 'label[for="cl-priv"]', '#cl-envia', '#cl-envia-r', '#enviar > .container > .nota'],
       amaga: ['#cuenta .cabeza', '#enviar .cabeza', '#cl-baixa', '#cl-cervell', 'label[for="cl-carrega"]', '#cuenta .nota'] }
   ];
   /* Les adreces que obren un pas. La resta, si no es veu al pas a pas, obre la pàgina sencera. */
