@@ -190,6 +190,7 @@ aquesta llista i res més.
 - `SOS/cervell` · obra · El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles
 - `SOS/plantilla-web` · obra · La plantilla del botó «Deploy to Netlify»: la web del client, a nom seu
 - `.github` · prova · El CI: quines guardes corren i en quin ordre
+- `marca` · obra · El logo de TeamTowers Humà: el de teamtowers.eu amb «Humà» a sota, en quatre talls (sencer, barra, mòbil i segell) i el perquè de la lletra
 - `mapa-web` · obra · Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany
 - `conecta` · obra · Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany
 - `cliente` · obra · Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany
