@@ -71,7 +71,7 @@ console.log('\n4 · El navegador del client no esborra el seu espai');
   const src = readFileSync(new URL('../../netlify/functions/fitxa.mjs', import.meta.url), 'utf8');
   ok(/if \(abans && abans\.acollida\) f\.acollida = abans\.acollida;/.test(src), 'la fitxa que desa el client conserva l\'acollida');
   const cl = readFileSync(new URL('../../cliente/index.html', import.meta.url), 'utf8');
-  ok(/<section id="espacio" hidden>/.test(cl) && cl.includes('/SOS/lib/acollida.js'), '/cliente/ porta «Tu espacio»');
+  ok(/<section id="espacio"[^>]* hidden>/.test(cl) && cl.includes('/SOS/lib/acollida.js'), '/cliente/ porta «Tu espacio»');
   const home = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   ok(/href="\/cliente\/\?perfil=cliente#espacio" data-perfil="cliente"/.test(home), 'i «Ya trabajo con vosotros» hi porta');
 }
