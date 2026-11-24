@@ -49,6 +49,18 @@ que es tanca es tanca **amb el que s'ha mesurat**, no amb un «fet».
 
 ## Bloc pendent (prioritzat)
 
+### Les cinc capes amb paraules de tothom (demanat 24/11/2026, veda 188)
+
+L'Álvaro, 24/11/2026 (fil «Usar nombres comprensibles para las 5 capas»): a
+totes les pàgines, la paraula comprensible de cada capa i no el sànscrit, que
+només surt on s'explica l'origen. Es tanca quan l'Álvaro ho valida a la preview.
+
+- [x] Una sola font, `SOS/lib/capes.js` (ca i es), que llegeixen `pla.js`,
+  `vista.js`, `franja.js`, `explora.js`, `exporta.js`, `base-vna.js` i
+  `font-anima.js`. «Criteri/Criterio» a tot arreu (abans `/cliente/` deia
+  «Discerniment»). «kosha» → «capa» als textos de les vistes.
+- [x] Guarda `SOS/tools/check-capes.js` al CI.
+
 ### El cervell entra per les dotze àrees (demanat 22/11/2026)
 
 L'Álvaro, 22/11/2026 (fil «Auditar cómo funciona el cerebro»): auditar el

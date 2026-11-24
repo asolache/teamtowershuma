@@ -364,6 +364,12 @@ jobs:
       - name: La pàgina dels vedes correspon al codex
         run: node SOS/tools/build-vedes.js --check
 
+      # Veda 188: les cinc capes es diuen amb la paraula de tothom (Cos, Energia,
+      # Ment, Criteri, Propòsit) i surten d'un sol lloc, SOS/lib/capes.js. El
+      # sànscrit només on s'explica l'origen.
+      - name: Les capes amb paraules de tothom
+        run: node SOS/tools/check-capes.js
+
       # `formacio.html` és la font única de la docència i FORMACIO_MODULES només
       # n'és l'esquelet referenciable. Que siguin dues coses està bé; que es
       # desincronitzin en silenci, no —la pàgina va arribar a tenir 16 mòduls

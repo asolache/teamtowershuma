@@ -103,7 +103,7 @@ const APREN = [
   { p: 'escola.html', ic: '🏫', guanya: 'El mateix a l\'aula, amb una regla que no es toca: cap nom real de cap criatura, enlloc.' },
   { p: 'ia.html', ic: '🤖', guanya: 'Automatitzar el tangible i valorar l\'intangible, amb IA que proposa i mai decideix.' },
   { p: 'vedes.html', ic: '⛔', guanya: 'Cada regla amb el motiu escrit al costat. És el que evita repetir un error que ja va sortir car.' },
-  { p: 'cervell.html', ic: '🧠', guanya: 'El teu codex en tres dimensions, per koshas, i te l\'emportes per a les teves IA i el teu LMS.' },
+  { p: 'cervell.html', ic: '🧠', guanya: 'El teu codex en tres dimensions, per capes, i te l\'emportes per a les teves IA i el teu LMS.' },
   { p: 'la-font.html', ic: '💧', guanya: 'La pinya, el castell, l\'arbre, el mapa mental i el mapa de valor en una sola pel·lícula, amb els forats que la teva colla pot ocupar.' },
   { p: 'colla.html', ic: '🧩', guanya: 'La teva colla en una pinya, una rengla per factor del test: on és cadascú, quins forats hi ha i qui els pot aprendre a cobrir.' },
   { p: 'blog.html', ic: '📝', guanya: 'Cada capacitat explicada a part, per si vols entendre-la abans de fer-la servir.' }

@@ -31,17 +31,17 @@
       tria: 'Toca una veda para leerla y ver con cuáles conecta.', ley: 'Cómo leerlo', veda: 'Veda', privada: 'privada',
       fijada: '(fijada)', propuesta: '(propuesta)', soloTu: 'privada, solo la ves tú', ensena: 'Lo que enseña:',
       cita: 'Cita a', citan: 'La citan', ent: 'Entrelazadas', dispara: 'Disparar', cerrar: 'Cerrar',
-      masa: 'Masa', pot: 'potencial', enc: function (v, c) { return 'enciende ' + v + ' vedas en ' + c + (c === 1 ? ' kosha' : ' koshas'); },
-      tret: function (n, v, c, q) { return 'Disparo desde la veda ' + n + ': enciende ' + v + ' vedas en ' + c + ' koshas, ' + q + ' por enlace cuántico.'; },
+      masa: 'Masa', pot: 'potencial', enc: function (v, c) { return 'enciende ' + v + ' vedas en ' + c + (c === 1 ? ' capa' : ' capas'); },
+      tret: function (n, v, c, q) { return 'Disparo desde la veda ' + n + ': enciende ' + v + ' vedas en ' + c + ' capas, ' + q + ' por enlace cuántico.'; },
       paso: function (n, t, c) { return 'Veda ' + n + ' · ' + t + ' · ' + c; },
-      et3d: 'El cerebro en tres dimensiones: las cinco koshas como esferas, del cuerpo fuera al propósito en el centro. Gira arrastrando o con las flechas; usa el buscador para elegir una veda.',
+      et3d: 'El cerebro en tres dimensiones: las cinco capas como esferas, del cuerpo fuera al propósito en el centro. Gira arrastrando o con las flechas; usa el buscador para elegir una veda.',
       et2d: 'Grafo de las vedas por capa',
-      L3d: 'Cada esfera es una kosha: el cuerpo fuera y el propósito en el centro. El tamaño de una veda es su masa. Las líneas grises son citas; las punteadas verdes, enlaces cuánticos. Arrastra para girar y acerca con los botones o con Ctrl y la rueda. Toca una veda y pulsa «Disparar» para ver qué enciende.',
+      L3d: 'Cada esfera es una capa: el cuerpo fuera y el propósito en el centro. El tamaño de una veda es su masa. Las líneas grises son citas; las punteadas verdes, enlaces cuánticos. Arrastra para girar y acerca con los botones o con Ctrl y la rueda. Toca una veda y pulsa «Disparar» para ver qué enciende.',
       Lcast: 'Los tres pisos del castell: la pinya (cuerpo y energía) aguanta el tronc (mente y criterio), que sube el pom de dalt (propósito). De izquierda a derecha, el orden en que se escribió cada veda; las líneas son citas. Pulsa «Cómo creció» para verlo construirse.',
       Lcapas: 'De izquierda a derecha, el orden en que se escribió cada veda. Las líneas son citas entre vedas. Un borde oscuro es una capa ya fijada; el resto es propuesta. Un borde punteado es privado y solo lo ves tú. Acerca con los botones, arrastra para moverte y usa las flechas para pasar de una veda a la siguiente.',
       grav: 'Gravedad', gravP: 'Las vedas con más masa: las que más citan o más las citan. Sostienen el resto.', citas: ' citas',
       potT: 'Potencial', potP: 'Las que más cerebro encienden al dispararse. Toca una y pulsa «Disparar».',
-      qT: 'Enlaces cuánticos', qP: function (n) { return n + ' pares de koshas distintas que no se citan y se activan juntas. Los más fuertes:'; },
+      qT: 'Enlaces cuánticos', qP: function (n) { return n + ' pares de capas distintas que no se citan y se activan juntas. Los más fuertes:'; },
       opt: 'Optimización', falten: 'Citas que faltan.', faltenP: 'Estas parejas se apoyan en las mismas vedas y aún no se citan: una cita entre ellas cerraría el circuito.',
       soltes: function (s, t, g) { return '<b>Vedas sueltas.</b> ' + s + ' de ' + t + ' no citan ni las citan. ' + g + ' de ellas ya tienen un enlace cuántico que dice con cuál conectarlas.'; },
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya es más ancha que el tronco, como pide la regla de los castells.' : 'No aguanta: el tronco ha crecido más que la pinya. Toca bajar vedas a la obra y a la energía.'); },
@@ -59,17 +59,17 @@
       tria: 'Toca una veda per llegir-la i veure amb quines connecta.', ley: 'Com es llegeix', veda: 'Veda', privada: 'privada',
       fijada: '(fixada)', propuesta: '(proposta)', soloTu: 'privada, només la veus tu', ensena: 'El que ensenya:',
       cita: 'Cita', citan: 'La citen', ent: 'Entrellaçades', dispara: 'Dispara', cerrar: 'Tanca',
-      masa: 'Massa', pot: 'potencial', enc: function (v, c) { return 'encén ' + v + ' vedes en ' + c + (c === 1 ? ' kosha' : ' koshas'); },
-      tret: function (n, v, c, q) { return 'Tret des de la veda ' + n + ': encén ' + v + ' vedes en ' + c + ' koshas, ' + q + ' per enllaç quàntic.'; },
+      masa: 'Massa', pot: 'potencial', enc: function (v, c) { return 'encén ' + v + ' vedes en ' + c + (c === 1 ? ' capa' : ' capes'); },
+      tret: function (n, v, c, q) { return 'Tret des de la veda ' + n + ': encén ' + v + ' vedes en ' + c + ' capes, ' + q + ' per enllaç quàntic.'; },
       paso: function (n, t, c) { return 'Veda ' + n + ' · ' + t + ' · ' + c; },
-      et3d: 'El cervell en tres dimensions: les cinc koshas com a esferes, del cos a fora al propòsit al centre. Gira arrossegant o amb les fletxes; fes servir el cercador per triar una veda.',
+      et3d: 'El cervell en tres dimensions: les cinc capes com a esferes, del cos a fora al propòsit al centre. Gira arrossegant o amb les fletxes; fes servir el cercador per triar una veda.',
       et2d: 'Grafe de les vedes per capa',
-      L3d: 'Cada esfera és una kosha: el cos a fora i el propòsit al centre. La mida d\'una veda és la seva massa. Les línies grises són cites; les puntejades verdes, enllaços quàntics. Arrossega per girar i apropa amb els botons o amb Ctrl i la roda. Toca una veda i prem «Dispara» per veure què encén.',
+      L3d: 'Cada esfera és una capa: el cos a fora i el propòsit al centre. La mida d\'una veda és la seva massa. Les línies grises són cites; les puntejades verdes, enllaços quàntics. Arrossega per girar i apropa amb els botons o amb Ctrl i la roda. Toca una veda i prem «Dispara» per veure què encén.',
       Lcast: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i criteri), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda; les línies són cites. Prem «Com va créixer» per veure\'l construir-se.',
       Lcapas: 'D\'esquerra a dreta, l\'ordre en què es va escriure cada veda. Les línies són cites entre vedes. Una vora fosca és una capa ja fixada; la resta és proposta. Una vora puntejada és privada i només la veus tu. Apropa amb els botons, arrossega per moure\'t i fes servir les fletxes per passar d\'una veda a la següent.',
       grav: 'Gravetat', gravP: 'Les vedes amb més massa: les que més citen o més les citen. Sostenen la resta.', citas: ' cites',
       potT: 'Potencial', potP: 'Les que més cervell encenen en disparar-se. Toca\'n una i prem «Dispara».',
-      qT: 'Enllaços quàntics', qP: function (n) { return n + ' parelles de koshas diferents que no es citen i s\'activen juntes. Les més fortes:'; },
+      qT: 'Enllaços quàntics', qP: function (n) { return n + ' parelles de capes diferents que no es citen i s\'activen juntes. Les més fortes:'; },
       opt: 'Optimització', falten: 'Cites que falten.', faltenP: 'Aquestes parelles s\'aguanten en les mateixes vedes i encara no es citen: una cita entre elles tancaria el circuit.',
       soltes: function (s, t, g) { return '<b>Vedes soltes.</b> ' + s + ' de ' + t + ' no citen ni les citen. ' + g + ' ja tenen un enllaç quàntic que diu amb quina connectar-les.'; },
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya és més ampla que el tronc.' : 'No aguanta: el tronc ha crescut més que la pinya.'); },
@@ -184,7 +184,7 @@
     var panel = $('.cx-panel'), now = $('.cx-now'), g3 = $('.cx-g3'), g2 = $('.cx-g2'), ley = $('.cx-ley p');
     var rng = $('.cx-ctl input'), tv = $('.cx-ctl output'), ctl = $('.cx-ctl'), play = $('[data-cx="play"]');
     var q = $('.cx-busca input'), res = $('.cx-res'), sabs = $('.cx-sab');
-    $('.cx-k3').innerHTML = PUB.capas.map(function (c) { return '<span style="--c:' + col(c.id) + '"><i></i>' + esc(c.s) + '</span>'; }).join('');
+    $('.cx-k3').innerHTML = PUB.capas.map(function (c) { return '<span style="--c:' + col(c.id) + '"><i></i>' + esc((raiz.Capes && raiz.Capes.nom(c.id, op.lang)) || c.n) + '</span>'; }).join('');
 
     var D, AN, byId, vec, cita, citada, pos = {}, nEls = {}, eEls = [], sel = null, sab = null, vista = '3d', timer = null;
     var W = 1000, H = 560, top = 24, estret = false;

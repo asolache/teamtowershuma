@@ -13,12 +13,12 @@
   var T = {
     ca: {
       tria: 'Toca una veda per llegir-la i veure amb quines connecta.', cita: 'Cita', citen: 'La citen', ent: 'Entrellaçades',
-      massa: 'Massa', pot: 'potencial', enc: function (v, c) { return 'encén ' + v + ' vedes en ' + c + (c === 1 ? ' kosha' : ' koshas'); },
-      dispara: 'Dispara', tret: function (n, v, c, q) { return 'Tret des de la veda ' + n + ': encén ' + v + ' vedes en ' + c + ' koshas, ' + q + ' per enllaç quàntic.'; },
-      ley: 'Cada esfera és una kosha: el cos a fora i el propòsit al centre. La mida d\'una veda és la seva massa. Les línies grises són cites; les puntejades verdes, enllaços quàntics. Arrossega per girar; acosta amb els botons o amb Ctrl i la roda.',
+      massa: 'Massa', pot: 'potencial', enc: function (v, c) { return 'encén ' + v + ' vedes en ' + c + (c === 1 ? ' capa' : ' capes'); },
+      dispara: 'Dispara', tret: function (n, v, c, q) { return 'Tret des de la veda ' + n + ': encén ' + v + ' vedes en ' + c + ' capes, ' + q + ' per enllaç quàntic.'; },
+      ley: 'Cada esfera és una capa: el cos a fora i el propòsit al centre. La mida d\'una veda és la seva massa. Les línies grises són cites; les puntejades verdes, enllaços quàntics. Arrossega per girar; acosta amb els botons o amb Ctrl i la roda.',
       grav: 'Gravetat', gravP: 'Les vedes amb més massa: les que més citen o més les citen. Sostenen la resta.', cites: ' cites',
       potT: 'Potencial', potP: 'Les que més cervell encenen quan es disparen.',
-      qT: 'Enllaços quàntics', qP: function (n) { return n + ' parelles de koshas diferents que no es citen i s\'activen juntes. Les més fortes:'; },
+      qT: 'Enllaços quàntics', qP: function (n) { return n + ' parelles de capes diferents que no es citen i s\'activen juntes. Les més fortes:'; },
       opt: 'Optimització', falten: 'Cites que falten.', faltenP: 'Aquestes parelles es recolzen en les mateixes vedes i encara no es citen.',
       soltes: function (s, t, g) { return '<b>Vedes soltes.</b> ' + s + ' de ' + t + ' no citen ni les citen. ' + g + ' ja tenen un enllaç quàntic que diu amb quina connectar-les.'; },
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya és més ampla que el tronc.' : 'No aguanta: el tronc ha crescut més que la pinya.'); },
@@ -28,12 +28,12 @@
     },
     es: {
       tria: 'Toca una veda para leerla y ver con cuáles conecta.', cita: 'Cita a', citen: 'La citan', ent: 'Entrelazadas',
-      massa: 'Masa', pot: 'potencial', enc: function (v, c) { return 'enciende ' + v + ' vedas en ' + c + (c === 1 ? ' kosha' : ' koshas'); },
-      dispara: 'Disparar', tret: function (n, v, c, q) { return 'Disparo desde la veda ' + n + ': enciende ' + v + ' vedas en ' + c + ' koshas, ' + q + ' por enlace cuántico.'; },
-      ley: 'Cada esfera es una kosha: el cuerpo fuera y el propósito en el centro. El tamaño de una veda es su masa. Las líneas grises son citas; las punteadas verdes, enlaces cuánticos. Arrastra para girar; acerca con los botones o con Ctrl y la rueda.',
+      massa: 'Masa', pot: 'potencial', enc: function (v, c) { return 'enciende ' + v + ' vedas en ' + c + (c === 1 ? ' capa' : ' capas'); },
+      dispara: 'Disparar', tret: function (n, v, c, q) { return 'Disparo desde la veda ' + n + ': enciende ' + v + ' vedas en ' + c + ' capas, ' + q + ' por enlace cuántico.'; },
+      ley: 'Cada esfera es una capa: el cuerpo fuera y el propósito en el centro. El tamaño de una veda es su masa. Las líneas grises son citas; las punteadas verdes, enlaces cuánticos. Arrastra para girar; acerca con los botones o con Ctrl y la rueda.',
       grav: 'Gravedad', gravP: 'Las vedas con más masa: las que más citan o más las citan. Sostienen el resto.', cites: ' citas',
       potT: 'Potencial', potP: 'Las que más cerebro encienden al dispararse.',
-      qT: 'Enlaces cuánticos', qP: function (n) { return n + ' pares de koshas distintas que no se citan y se activan juntas. Los más fuertes:'; },
+      qT: 'Enlaces cuánticos', qP: function (n) { return n + ' pares de capas distintas que no se citan y se activan juntas. Los más fuertes:'; },
       opt: 'Optimización', falten: 'Citas que faltan.', faltenP: 'Estas parejas se apoyan en las mismas vedas y aún no se citan.',
       soltes: function (s, t, g) { return '<b>Vedas sueltas.</b> ' + s + ' de ' + t + ' no citan ni las citan. ' + g + ' ya tienen un enlace cuántico que dice con cuál conectarlas.'; },
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya es más ancha que el tronco.' : 'No aguanta: el tronco ha crecido más que la pinya.'); },
@@ -73,10 +73,9 @@
     var byId = {}; D.nodos.forEach(function (n) { byId[n.id] = n; });
     var capaDe = {}; D.capas.forEach(function (c) { capaDe[c.id] = c; });
     var AN = F.analiza(D), col = function (k) { return 'var(--k-' + k + ')'; };
-    /* El nom de cada capa: la paraula de tothom i, al costat, el de la kosha
-       («Cos · Annamaya»), perquè el lector entengui de què parla (03/11/2026). */
-    var PAR = raiz.CervellPla && raiz.CervellPla.PARAULES, par = PAR && (PAR[(op.lang || 'ca').slice(0, 2)] || PAR.ca);
-    function nomCapa(c) { var w = (par && par[c.id]) || c.n; return w && w !== c.s ? w + ' · ' + c.s : c.s; }
+    /* El nom de cada capa: la paraula de tothom, en la llengua de la pàgina. El
+       sànscrit només surt on s'explica l'origen (veda 188, `SOS/lib/capes.js`). */
+    function nomCapa(c) { return (raiz.Capes && raiz.Capes.nom(c.id, op.lang)) || c.n; }
     caixa.innerHTML =
       '<div class="cv-3d"><canvas tabindex="0" role="img" aria-label="' + esc(t.ley) + '"></canvas>' +
       '<div class="cv-z"><button type="button" data-z="mes" aria-label="' + t.mes + '">+</button><button type="button" data-z="menys" aria-label="' + t.menys + '">−</button><button type="button" data-z="tot">' + t.tot + '</button></div>' +

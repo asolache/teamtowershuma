@@ -43,7 +43,7 @@
       '## ' + t.sost + '\n\n' + llista(AN.gravedad, function (n) { return '- **' + v(n.id) + '** · ' + AN.masa[n.id] + t.cites; }) + '\n\n' +
       ordre.map(function (c) {
         var ns = D.nodos.filter(function (n) { return n.capa === c.id; });
-        return ns.length ? '## ' + c.s + '\n\n' + llista(ns, function (n) { return '- **V' + n.n + ' · ' + n.t + '.** ' + curt(n.aprende || n.txt, 260); }) + '\n\n' : '';
+        return ns.length ? '## ' + ((raiz.Capes && raiz.Capes.nom(c.id, meta.lang)) || c.n) + '\n\n' + llista(ns, function (n) { return '- **V' + n.n + ' · ' + n.t + '.** ' + curt(n.aprende || n.txt, 260); }) + '\n\n' : '';
       }).join('') +
       '## ' + t.juntes + '\n\n' + llista(AN.cuanticos.slice(0, 20), function (e) { return '- ' + v(e.a) + ' ↔ ' + v(e.b); }) + '\n';
   }
