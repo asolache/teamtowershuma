@@ -5748,7 +5748,7 @@ el PR és mergeat.
   pas és tancat; una barra a dalt diu qui ha entrat i quin mapa es veu.
 - **Pendent · L'Àlvaro:** mirar al panell si la fitxa desada de la María és la
   seva (organització «ELE Barcelona»); si no, es torna a deixar preparada.
-- **Pendent · L'Àlvaro decideix:** el botó «Entra» del menú porta a `/acceso`
-  (l'altre portal), no a `/cliente/`. Cal dir on ha de portar.
+- **Fet (24/11/2026, decisió de l'Àlvaro) · «Entra» porta a `/cliente/#cuenta`:** abans portava a `/acceso`
+  (l'altre portal), que conserva la seva adreça directa.
 - **Pendent · El correu comprovat:** un enllaç d'un sol ús enviat al correu
   (cal un enviador) deixaria tornar a entrar des de qualsevol aparell.

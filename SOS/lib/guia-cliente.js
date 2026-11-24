@@ -74,7 +74,7 @@
     { s: ['#alrededor'], veu: ['#cl-files', '#cl-afegeix', '#gc-h-salut', '#cl-salut-n', '#cl-salut', '#gc-panteo', '#cl-ia'], amaga: ['#alrededor .cabeza'] },
     { s: ['#alrededor', '#tablero'], veu: ['#cl-auto', '#cl-caso', '#tablero > .container'], amaga: ['#alrededor .cabeza'] },
     { s: ['#web'], veu: ['#cl-nivells', '#gc-h-capes', '#cl-capes', '#cl-boceto', '#cl-boceto-r', '#cl-marc-caixa'], amaga: ['#web .cabeza'] },
-    { s: ['#cuenta', '#enviar'], veu: ['#cl-nom', '#cl-crea', '#cl-compte', '#cl-priv', '#cl-envia', '#cl-envia-r', '#enviar > .container > .nota'],
+    { s: ['#cuenta', '#enviar'], veu: ['#cl-nom', '#cl-crea', '#cl-entra', '#cl-compte', '#cl-priv', '#cl-envia', '#cl-envia-r', '#enviar > .container > .nota'],
       amaga: ['#cuenta .cabeza', '#enviar .cabeza', '#cl-baixa', '#cl-cervell', 'label[for="cl-carrega"]', '#cuenta .nota'] }
   ];
   /* Les adreces que obren un pas. La resta, si no es veu al pas a pas, obre la pàgina sencera. */
