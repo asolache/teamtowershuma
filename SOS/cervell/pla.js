@@ -61,16 +61,17 @@
 
   /* Les franges: els tres pisos del castell, cadascun amb les seves koshas, o
      les cinc koshas soles. El propòsit dalt i l'obra a baix. */
-  /* `paraules`: les paraules universals per a cada capa ({ anna: 'Cos', … }),
-     per a qui no coneix les koshas; sense, el nom sànscrit. */
-  function franges(D, vista, paraules) {
-    var capaDe = {}; D.capas.forEach(function (c) { capaDe[c.id] = paraules && paraules[c.id] ? { n: c.n, s: paraules[c.id] } : c; });
+  /* Cada capa es diu amb la paraula de tothom, en la llengua de la pàgina; el
+     nom sànscrit només surt on s'explica l'origen (veda 188, `SOS/lib/capes.js`). */
+  function paraula(c, ll) { return (raiz.Capes && raiz.Capes.nom(c.id, ll)) || c.n; }
+  function franges(D, vista, ll) {
     if (vista === 'castellera' && raiz.CerebroFuerzas) {
+      var capaDe = {}; D.capas.forEach(function (c) { capaDe[c.id] = c; });
       return raiz.CerebroFuerzas.CASTELLERA.map(function (p) {
-        return { n: p.n, s: p.capas.map(function (k) { return capaDe[k].s; }).join(' · '), capas: p.capas, pis: true };
+        return { n: p.n, s: p.capas.map(function (k) { return paraula(capaDe[k], ll); }).join(' · '), capas: p.capas, pis: true };
       });
     }
-    return D.capas.slice().reverse().map(function (c) { return { n: c.n, s: capaDe[c.id].s, capas: [c.id] }; });
+    return D.capas.slice().reverse().map(function (c) { return { n: paraula(c, ll), s: '', capas: [c.id] }; });
   }
 
   /* On va cada veda: x per l'ordre en què es va escriure, y per la franja (i,
@@ -107,13 +108,6 @@
 
   /* La pinya des de dalt: cada kosha, un pilar amb les seves quatre rengles,
      i cada veda a la rengla que li toca segons amb qui parla. */
-  /* Les paraules universals de les cinc capes, per a qui no coneix les koshas.
-     Un sol lloc per a tothom que les ensenya (la portada, la pàgina del cervell,
-     les webs filles): «Criteri» i no «Discerniment», més planer (22/10/2026). */
-  var PARAULES = {
-    ca: { anna: 'Cos', prana: 'Energia', mano: 'Ment', vijnana: 'Criteri', ananda: 'Propòsit' },
-    es: { anna: 'Cuerpo', prana: 'Energía', mano: 'Mente', vijnana: 'Criterio', ananda: 'Propósito' }
-  };
   function pinya(D, W, H) {
     var R = Math.min(W, H) / 2 - 40, cx = W / 2, cy = H / 2, R0 = R * .16, pos = {}, capa = {}, cites = {};
     D.nodos.forEach(function (n) { capa[n.id] = n.capa; cites[n.id] = { dins: 0, fora: 0 }; });
@@ -146,7 +140,7 @@
     /* En una pantalla estreta, mitja amplada: els punts i els noms dels pisos
        es dibuixen el doble de grans, i les koshas de cada pis no hi caben. */
     var pin = op.vista === 'pinya', mapa = op.vista === 'mapa' || pin, estret = caixa.clientWidth < 600, W = pin ? 820 : mapa ? 640 : estret ? 500 : 1000;
-    var H = mapa ? 640 : (op.alt || 300) * (estret ? .8 : 1), dalt = 10, x0 = estret ? 120 : 170, x1 = W - 16, bs = franges(D, mapa ? 'capes' : op.vista || 'castellera', op.paraules), alt = (H - dalt - 10) / bs.length;
+    var H = mapa ? 640 : (op.alt || 300) * (estret ? .8 : 1), dalt = 10, x0 = estret ? 120 : 170, x1 = W - 16, ll = op.lang || document.documentElement.lang || 'ca', bs = franges(D, mapa ? 'capes' : op.vista || 'castellera', ll), alt = (H - dalt - 10) / bs.length;
     var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': op.etiqueta || '' }); if (mapa) svg.setAttribute('class', pin ? 'cp-mapa cp-pinya' : 'cp-mapa');
     caixa.innerHTML = ''; caixa.appendChild(svg);
     var gB = el('g', {}, svg), gE = el('g', {}, svg), gN = el('g', {}, svg);
@@ -156,7 +150,7 @@
     var compte = bs.map(function () { return 0; }), etiq = [];
     if (pin) {
       var A = pinya(D, W, H); pos = A.pos;
-      bs = D.capas.map(function (c) { return { n: c.n, s: c.s, capas: [c.id] }; }); compte = bs.map(function () { return 0; });
+      bs = D.capas.map(function (c) { return { n: paraula(c, ll), s: '', capas: [c.id] }; }); compte = bs.map(function () { return 0; });
       el('circle', { cx: A.cx, cy: A.cy, r: A.R0 * .8, 'class': 'cp-a' }, gB);
       el('text', { x: A.cx, y: A.cy + 4, 'text-anchor': 'middle', 'class': 'cp-s' }, gB).textContent = 'TRONC';
       A.pilars.forEach(function (p) {
@@ -168,16 +162,16 @@
         });
         var lx = A.cx + (A.R0 * .55) * Math.cos(p.a), ly = A.cy + (A.R0 * .55) * Math.sin(p.a);
         var t = el('text', { x: A.cx + (A.R + 8) * Math.cos(p.a), y: A.cy + (A.R + 8) * Math.sin(p.a) + (Math.sin(p.a) < -.9 ? -2 : 12), 'text-anchor': Math.cos(p.a) > .3 ? 'start' : Math.cos(p.a) < -.3 ? 'end' : 'middle', 'class': 'cp-s', fill: col(p.capa.id) }, gB);
-        t.textContent = p.capa.s.toUpperCase(); etiq.push(t);
+        t.textContent = paraula(p.capa, ll).toUpperCase(); etiq.push(t);
         el('circle', { cx: lx, cy: ly, r: 5, fill: col(p.capa.id) }, gB);
       });
     } else if (mapa) {
       A = anells(D, W, H, op.noms); pos = A.pos;
-      bs = D.capas.map(function (c) { return { n: c.n, s: c.s, capas: [c.id] }; }); compte = bs.map(function () { return 0; });
+      bs = D.capas.map(function (c) { return { n: paraula(c, ll), s: '', capas: [c.id] }; }); compte = bs.map(function () { return 0; });
       D.capas.forEach(function (c) {
         el('circle', { cx: A.cx, cy: A.cy, r: A.R * A.RADI[c.id], 'class': 'cp-a' }, gB);
         var t = el('text', { x: A.cx, y: A.cy - A.R * A.RADI[c.id] + 14, 'text-anchor': 'middle', 'class': 'cp-s', fill: col(c.id) }, gB);
-        t.textContent = c.s.toUpperCase(); etiq.push(t);
+        t.textContent = paraula(c, ll).toUpperCase(); etiq.push(t);
       });
     } else bs.forEach(function (b, i) {
       var sub = alt / b.capas.length;
@@ -215,7 +209,7 @@
         if (vis) compte[pos[n.id].pis]++;
       });
       eEls.forEach(function (e) { e.el.classList.toggle('cp-x', byId[e.a[0]].i >= k || byId[e.a[1]].i >= k); });
-      etiq.forEach(function (t, i) { t.textContent = (mapa ? bs[i].s.toUpperCase() : bs[i].n) + ' · ' + compte[i]; });
+      etiq.forEach(function (t, i) { t.textContent = (mapa ? bs[i].n.toUpperCase() : bs[i].n) + ' · ' + compte[i]; });
       if (pin && op.lectura) lectura(k);
       var u = D.nodos[k - 1]; if (op.ara && u) op.ara.textContent = nom(u);
       if (rang) { rang.value = k; sort.textContent = k + ' / ' + D.nodos.length; }
@@ -225,20 +219,19 @@
        kosha ni una pinya: una barra per àrea, amb tres colors que diuen el
        mateix que les rengles (veda que sosté la seva àrea, que lliga amb una
        altra, que va sola), i una frase amb el que se'n treu. */
-    var DIA = PARAULES.ca;
     var DIU_MENA = { primera: 'sosté la seva àrea', vent: 'lliga amb una altra àrea', lateral: 'va sola' };
     function lectura(k) {
       var per = A.pilars.map(function () { return { primera: 0, vent: 0, lateral: 0 }; });
       D.nodos.forEach(function (n, i) { if (i < k) per[pos[n.id].pis][A.menaDe[n.id]]++; });
       var tot = per.map(function (x) { return x.primera + x.vent + x.lateral; }), max = Math.max.apply(null, tot.concat(1));
-      var nomDe = function (p) { return DIA[p.capa.id] || p.capa.n; };
+      var nomDe = function (p) { return paraula(p.capa, ll); };
       var seg = function (x, m, i) {
         if (!x[m]) return '';
         var w = 100 * x[m] / max, cl = m === 'vent' ? 'cp-lp-v' : m === 'lateral' ? 'cp-lp-s' : '';
         return '<i class="' + cl + '" style="width:' + w + '%' + (m === 'primera' ? ';background:' + col(A.pilars[i].capa.id) : '') + '" title="' + x[m] + ' ' + DIU_MENA[m] + '">' + (w > 7 ? x[m] : '') + '</i>';
       };
       var llista = A.pilars.map(function (p, i) {
-        return '<div class="cp-lp-f"><b>' + nomDe(p) + '<small>' + p.capa.s + '</small></b><div class="cp-lp-b" role="img" aria-label="' + nomDe(p) + ': ' +
+        return '<div class="cp-lp-f"><b>' + nomDe(p) + '</b><div class="cp-lp-b" role="img" aria-label="' + nomDe(p) + ': ' +
           per[i].primera + ' ' + DIU_MENA.primera + ', ' + per[i].vent + ' ' + DIU_MENA.vent + ', ' + per[i].lateral + ' ' + DIU_MENA.lateral + '">' +
           seg(per[i], 'primera', i) + seg(per[i], 'vent', i) + seg(per[i], 'lateral', i) + '</div></div>';
       }).join('');
@@ -282,5 +275,5 @@
     return { nodos: nodos, aristas: J.cites.map(function (c) { return ['tt:' + c[0], 'tt:' + c[1]]; }), capas: J.capes };
   }
 
-  raiz.CervellPla = { munta: munta, dades: dades, franges: franges, geometria: geometria, corba: corba, PARAULES: PARAULES };
+  raiz.CervellPla = { munta: munta, dades: dades, franges: franges, geometria: geometria, corba: corba, paraula: paraula };
 })(window);

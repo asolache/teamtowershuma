@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>El teu cervell · el codex en tres dimensions</title>
-<meta name="description" content="El codex de qualsevol persona o projecte dibuixat per koshas, amb les seves forces, i exportable per a les teves IA i per al teu LMS local.">
+<meta name="description" content="El codex de qualsevol persona o projecte dibuixat per capes, amb les seves forces, i exportable per a les teves IA i per al teu LMS local.">
 <meta property="og:title" content="El teu cervell">
 <meta property="og:description" content="El teu codex en tres dimensions, per a les teves IA i per al teu LMS.">
 <meta name="robots" content="index,follow">
@@ -324,7 +324,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 
   <h2 id="emporta">Te l'emportes</h2>
   <div class="surt">
-    <article><h3>Per a les teves IA</h3><p>Un cervell.md amb les vedes per kosha, les que sostenen i les que s'activen juntes. Desa'l com a CLAUDE.md o enganxa'l a les instruccions del projecte.</p><button type="button" data-surt="md">cervell.md</button></article>
+    <article><h3>Per a les teves IA</h3><p>Un cervell.md amb les vedes per capa, les que sostenen i les que s'activen juntes. Desa'l com a CLAUDE.md o enganxa'l a les instruccions del projecte.</p><button type="button" data-surt="md">cervell.md</button></article>
     <article><h3>Per a una eina</h3><p>Les mateixes dades en JSON, amb la massa, el potencial i els enllaços quàntics de cada veda.</p><button type="button" data-surt="json">cervell-dades.json</button></article>
     <article><h3>Sense connexió</h3><p>Tot el cervell en un sol fitxer HTML que s'obre sense internet, en qualsevol ordinador.</p><button type="button" data-surt="html">cervell.html</button></article>
     <article><h3>Per al teu LMS</h3><p>Un paquet SCORM 1.2 que s'importa a Moodle i a gairebé qualsevol LMS local, i hi queda marcat com a vist.</p><button type="button" data-surt="scorm">cervell-scorm.zip</button></article>
@@ -369,6 +369,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 </footer>
 <script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
+<script src="/SOS/lib/capes.js"></script>
 <script src="cervell/codex-parse.js"></script>
 <script src="cervell/forces.js"></script>
 <script src="cervell/3d.js"></script>
@@ -381,7 +382,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 (function () {
   var CP = window.CodexParse, estat = document.getElementById('estat'), caixa = document.getElementById('cv');
   var MATRIU = CP.MATRIU, D = null, AN = null, meta = null, vista = null;
-  var CODI = ['forces.js', '3d.js', 'vista.js'];
+  var CODI = ['../lib/capes.js', 'forces.js', '3d.js', 'vista.js'];
 
   /* La sessió de GitHub viu en aquesta pestanya (sessionStorage) i s'esborra en
      tancar-la o en sortir. L'entrada és la GitHub App del cervell, només de lectura,
@@ -466,7 +467,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   function dibuixa(codex, op) {
     var L = CP.lee(codex, op);
     if (vista) vista.atura();
-    D = { nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS.map(function (c) { var w = CervellPla.PARAULES.ca[c.id]; return w ? Object.assign({}, c, { n: w }) : c; }) };
+    D = { nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS.map(function (c) { return Object.assign({}, c, { n: Capes.nom(c.id, 'ca') }); }) };
     meta = { nom: op.nom, font: op.font, id: op.nom.replace(/[^\w-]/g, '-'), lang: 'ca', data: new Date().toISOString().slice(0, 10), url: 'teamtowershuma.com/SOS/cervell.html' };
     vista = CervellVista.munta(caixa, D, { lang: 'ca' });
     AN = vista && vista.analisi;
@@ -481,9 +482,9 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   var ara = 'org', pla = null, org = null, cvOrg = document.getElementById('cvOrg'), DOCS = [], UNI = null, REPO = null, cvPla = document.getElementById('cvPla'), temps = document.getElementById('cvTemps');
   var DIU = {
     org: 'El cervell i, a sota, la seva cultura i les dotze àrees de qualsevol organització. Toca una àrea per veure\'n els documents, i un aprenentatge per trobar-lo al cervell.',
-    '3d': 'Cada esfera és una kosha, el cos a fora i el propòsit al centre. Els quadrats de fora són els documents, del color de la seva àrea, units a les vedes que citen.',
+    '3d': 'Cada esfera és una capa, el cos a fora i el propòsit al centre. Els quadrats de fora són els documents, del color de la seva àrea, units a les vedes que citen.',
     castellera: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i criteri), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda.',
-    capes: 'Les cinc koshas, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
+    capes: 'Les cinc capes, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
     mapa: 'Com un mapa de valor: cada veda és un node i cada cita, un lliurament. El propòsit al centre i l\'obra a fora.',
     repo: 'El repositori com un mapa mental: la carpeta on ets al centre i el que porta al voltant, amb els fills de cada carpeta més petits. Toca una carpeta per entrar-hi i el centre per tornar enrere; la vista d\'àguila de la cantonada és tot el repositori i et diu on ets. Els documents del cervell porten el color de la seva àrea.',
     pinya: 'La pinya vista des de dalt, com una xarxa d\'àrees. Cada àrea és un pilar, i cada veda s\'hi posa segons amb qui parla: les que sostenen la seva àrea, les que la lliguen amb una altra (rosa) i les que van soles (puntejades). Sota, el mateix en barres: com més rosa, més lligada; una àrea sense rosa és un silo.'

@@ -111,7 +111,8 @@
     return codi[src] || (codi[src] = new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { delete codi[src]; ko(); }; document.head.appendChild(s); }));
   }
   function carregaPla() {
-    return (window.CerebroFuerzas ? Promise.resolve() : script('cervell/forces.js'))
+    return (window.Capes ? Promise.resolve() : script('lib/capes.js'))
+      .then(function () { return window.CerebroFuerzas ? 0 : script('cervell/forces.js'); })
       .then(function () { return window.CervellPla ? 0 : script('cervell/pla.js'); });
   }
   function carregaCervell() {
