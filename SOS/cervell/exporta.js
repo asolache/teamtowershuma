@@ -51,14 +51,14 @@
   function json(D, AN, meta) {
     return JSON.stringify({
       nom: meta.nom, font: meta.font, generat: meta.data, capas: D.capas.map(function (c) { return { id: c.id, s: c.s, d: c.d }; }),
-      nodos: D.nodos.map(function (n) { return { id: n.id, n: n.n, t: n.t, capa: n.capa, fecha: n.fecha, saberes: n.saberes, aprende: n.aprende, txt: n.txt, masa: AN.masa[n.id], potencial: AN.potencial[n.id] }; }),
+      nodos: D.nodos.map(function (n) { return { id: n.id, n: n.n, t: n.t, capa: n.capa, fecha: n.fecha, saberes: n.saberes, aprende: n.aprende, arees: n.arees || {}, txt: n.txt, masa: AN.masa[n.id], potencial: AN.potencial[n.id] }; }),
       aristas: D.aristas, cuanticos: AN.cuanticos.map(function (e) { return [e.a, e.b, e.f]; })
     }, null, 1);
   }
 
   /* El fitxer sense connexió: dades i codi a dins, cap petició a fora. */
   function html(D, meta, codi, scorm) {
-    var dades = JSON.stringify({ nodos: D.nodos, aristas: D.aristas, capas: D.capas }).replace(/</g, '\\u003c');
+    var dades = JSON.stringify({ arees: D.arees || [], nodos: D.nodos, aristas: D.aristas, capas: D.capas }).replace(/</g, '\\u003c');
     var tanca = function (s) { return s.replace(/<\/script/gi, '<\\/script'); };
     var es = meta.lang === 'es', tit = (es ? 'El cerebro de ' : 'El cervell de ') + meta.nom.replace(/</g, '&lt;');
     var peu = (es ? 'Del codex de ' : 'Del codex de ') + meta.font.replace(/</g, '&lt;') + ' · ' + meta.data + (es ? ' · funciona sin conexión.' : ' · funciona sense connexió.');

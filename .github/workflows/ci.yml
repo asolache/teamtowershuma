@@ -107,6 +107,10 @@ jobs:
       - name: Nucli del mapa de valor
         run: node SOS/tests/test-mapa-valor.mjs
 
+      # El cervell per àrees: cada veda al punt d'equilibri entre les àrees que l'estiren.
+      - name: El cervell per àrees
+        run: node SOS/tests/test-cervell-arees.mjs
+
       # La base única de mapes de valor (SOS/knowledge/vna/base.json): al dia
       # amb les seves fonts, i el que en llegeix la web (SOS/lib/base-vna.js).
       - name: Base única de mapes de valor

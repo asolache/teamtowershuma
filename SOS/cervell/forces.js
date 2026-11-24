@@ -151,10 +151,66 @@
     }
     return P;
   }
+  /* Les dotze àrees a l'espai (24/11/2026). L'Álvaro: «que en el espacio 3D
+     quede definido un espacio para cada una de ellas y que por fuerzas
+     gravitatorias […] se ubiquen en el punto de equilibrio de fuerzas».
+     Les dotze zones són els dotze vèrtexs d'un icosàedre, l'única manera de
+     posar dotze punts a la mateixa distància del centre i dels seus veïns.
+     La primera àrea (direcció i estratègia) queda a dalt de tot. */
+  function zones(ids) {
+    var f = (1 + Math.sqrt(5)) / 2, v = [];
+    [-1, 1].forEach(function (a) { [-1, 1].forEach(function (b) { v.push([0, a, b * f], [a, b * f, 0], [b * f, 0, a]); }); });
+    var th = Math.atan2(-f, 1), c = Math.cos(th), sn = Math.sin(th);
+    v = v.map(function (p) { return esfera([p[0], p[1] * c - p[2] * sn, p[1] * sn + p[2] * c], 1); });
+    v.sort(function (p, q) { return q[1] - p[1] || Math.atan2(p[2], p[0]) - Math.atan2(q[2], q[0]); });
+    var Z = {}; ids.forEach(function (id, i) { if (v[i]) Z[id] = v[i]; }); return Z;
+  }
+  /* Cada àrea estira la veda amb la força del seu pes (`n.arees`, de
+     codex-parse.js): una veda d'una sola àrea cau a la seva zona; una de dues
+     queda entre totes dues, més a prop de la que pesa més. Les citacions
+     l'acosten una mica a les vedes que cita, i les vedes es separen entre elles
+     per no caure al mateix punt. Una veda sense àrea cau al centre: la cultura.
+     El que surt és el punt on les forces s'equilibren. */
+  function colocaArees(D, an, ids, vueltas) {
+    var Z = zones(ids), P = {}, ns = D.nodos, obj = {};
+    ns.forEach(function (n) {
+      var w = n.arees || {}, t = [0, 0, 0], tot = 0;
+      Object.keys(w).forEach(function (k) { if (!Z[k]) return; tot += w[k]; for (var j = 0; j < 3; j++) t[j] += Z[k][j] * w[k]; });
+      if (tot) for (var j = 0; j < 3; j++) t[j] /= tot;
+      /* Al punt mitjà, la força total és zero; la distància al centre diu com de
+         repartida està la veda: d'una sola àrea, a la zona; de moltes, endins. */
+      /* El centre s'esponja una mica (r^0,6), perquè les vedes de moltes àrees no
+         s'amunteguin al mig; l'ordre de les distàncies no canvia. */
+      var r = Math.sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2]), e = r ? Math.pow(r, 0.6) / r * 0.92 : 0;
+      obj[n.id] = [t[0] * e, t[1] * e, t[2] * e];
+      var h = (n.n * 2654435761 % 1000) / 1000, g = ((n.n + n.id.length) * 40503 % 1000) / 1000;
+      P[n.id] = [obj[n.id][0] + (h - 0.5) * 0.2, obj[n.id][1] + (g - 0.5) * 0.2, obj[n.id][2] + (((h + g) % 1) - 0.5) * 0.2];
+    });
+    var links = D.aristas.filter(function (a) { return P[a[0]] && P[a[1]]; });
+    for (var t = 0; t < (vueltas || 140); t++) {
+      var F = {}; ns.forEach(function (n) { var p = P[n.id], o = obj[n.id]; F[n.id] = [(o[0] - p[0]) * 0.08, (o[1] - p[1]) * 0.08, (o[2] - p[2]) * 0.08]; });
+      for (var i = 0; i < ns.length; i++) for (var j = i + 1; j < ns.length; j++) {
+        var a = P[ns[i].id], b = P[ns[j].id], dx = a[0] - b[0], dy = a[1] - b[1], dz = a[2] - b[2];
+        var d2 = dx * dx + dy * dy + dz * dz + 1e-4; if (d2 > 0.04) continue;
+        var f = 0.00035 / d2;
+        F[ns[i].id][0] += dx * f; F[ns[i].id][1] += dy * f; F[ns[i].id][2] += dz * f;
+        F[ns[j].id][0] -= dx * f; F[ns[j].id][1] -= dy * f; F[ns[j].id][2] -= dz * f;
+      }
+      links.forEach(function (l) { var a = P[l[0]], b = P[l[1]]; for (var k = 0; k < 3; k++) { var d = (b[k] - a[k]) * 0.004; F[l[0]][k] += d; F[l[1]][k] -= d; } });
+      ns.forEach(function (n) { var p = P[n.id], f = F[n.id]; for (var k = 0; k < 3; k++) p[k] += Math.max(-0.05, Math.min(0.05, f[k])); });
+    }
+    return { P: P, Z: Z };
+  }
+  /* Un color per àrea, prou separats entre ells per llegir-se en clar i en fosc. */
+  var COLOR_AREA = { strategy: '#7c3aed', communication: '#db2777', marketing: '#e11d48', sales: '#ea580c', finance: '#ca8a04', logistics: '#65a30d',
+    production: '#16a34a', operations: '#0d9488', people: '#0891b2', network: '#2563eb', systems: '#4f46e5', legal: '#78716c' };
+  /* L'àrea que més pesa d'una veda, o null. */
+  function areaMajor(n) { var w = n.arees || {}, m = null; Object.keys(w).forEach(function (k) { if (!m || w[k] > w[m]) m = k; }); return m; }
+
   function esfera(v, r) {
     var m = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) || 1;
     return [v[0] / m * r, v[1] / m * r, v[2] / m * r];
   }
 
-  return { CASTELLERA: CASTELLERA, RADIO: RADIO, grafo: grafo, cuanticos: cuanticos, dispara: dispara, analiza: analiza, coloca: coloca };
+  return { CASTELLERA: CASTELLERA, RADIO: RADIO, zones: zones, colocaArees: colocaArees, COLOR_AREA: COLOR_AREA, areaMajor: areaMajor, grafo: grafo, cuanticos: cuanticos, dispara: dispara, analiza: analiza, coloca: coloca };
 });
