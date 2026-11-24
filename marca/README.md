@@ -6,7 +6,7 @@
 |---|---|
 | `teamtowers-huma.svg` | El logo entero, con las proporciones del original. Documentos y presentaciones. |
 | `teamtowers-huma-barra.svg` | La barra de la web en escritorio: el emblema baja a la altura del texto para que «HUMÀ» se lea a 42 px. |
-| `teamtowers-huma-text.svg` | La barra en el móvil, sin el emblema, para que la marca y el botón quepan en una fila de 390 px. |
+| `teamtowers-huma-text.svg` | Sin el emblema, para sitios estrechos. En la barra del móvil se consigue recortando la de escritorio por CSS, para no pesar más. |
 | `teamtowers-huma-segell.svg` | El sello: emblema arriba, «HUMÀ» entre filetes rojos. Pie de la web, redes y portadas. |
 
 - «teamtowers» y el emblema son los del logo original, pasados a vectorial desde `v9/logoteamtowers.png`. No se redibujan.

@@ -215,7 +215,10 @@ else bad(`pes ${kb} KB gzip · PASSA el sostre de ${MAX_GZIP_KB} KB. O s'aprima,
    portada es baixava 141 KB i hi trobava el catàleg sencer i la trajectòria;
    ara se'n baixa 58 i, si vol el catàleg, 42 més.
 
-   `premsa.html` puja de 12 a 14 KB a posta (09/10/2026): hi arriba l'embut
+   `premsa.html` puja de 14 a 15 KB a posta (24/11/2026): la barra i el peu
+   porten el logo de TeamTowers amb «Humà» (marca/). Mesurat: 14,48 → 14,59 KB,
+   que arrodonit passava a 15. El CSS del logo ja només va a les pàgines del lloc.
+   I de 12 a 14 KB a posta (09/10/2026): hi arriba l'embut
    «Per on començar» (`build-embut.js`), que és el pas següent de qui hi entra
    des d'un mitjà. Sense ell, la pàgina de prova s'acabava en un correu.
 
@@ -241,7 +244,7 @@ const SOSTRES = [
   ['index.html', 75, 'la portada ven el mapa de valor, el que t\'emportes (també l\'equip alineat), el teu camí, la intel·ligència amb l\'esquema del sistema i el que ja automatitzem, i porta a les altres tres pàgines'],
   ['cataleg.html', 48, 'vint-i-un paquets i el mapa de cost'],
   ['qui-som.html', 32, 'el perfil, la trajectòria, els clients i les objeccions'],
-  ['premsa.html', 14, 'nou aparicions amb font, la barra i l\'embut'],
+  ['premsa.html', 15, 'nou aparicions amb font, la barra, l\'embut i el logo'],
   ['avis-legal.html', 20, 'el titular, les condicions i la privacitat completa (RGPD art. 13) en dues llengües, la barra i el peu']
 ];
 SOSTRES.forEach(([rel, max, que]) => {
