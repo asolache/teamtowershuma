@@ -47,7 +47,7 @@
     var her = (op.herencia && op.herencia.vedes) || {}, temaDe = {};
     Object.keys(her).forEach(function (t) { her[t].forEach(function (n) { temaDe[n] = t; }); });
     var caps = Array.from(codex.matchAll(/^##+ (?:Veda (\d+) — (.+)|V(\d+) · (.+))$/gm));
-    var nodos = [], aristas = [];
+    var nodos = [], aristas = [], textos = [];
     caps.forEach(function (m, i) {
       var num = +(m[1] || m[3]);
       if (hijo && plantilla.has((m[2] || m[4]).trim())) return;
@@ -64,6 +64,7 @@
       var max = Math.max.apply(null, puntos);
       var propuesta = max ? CAPAS[puntos.indexOf(max)].id : 'vijnana';
       var s = sint.vedas[hijo ? id : num] || {};
+      textos.push({ t: titulo.toLowerCase(), x: texto, diu: (cuerpo.match(/\*\*(?:[ÀA]rees?|[ÁA]reas?)\s*:?\*\*\s*:?\s*([^\n.]+)/i) || cuerpo.match(/^\s*(?:[ÀA]rees?|[ÁA]reas?)\s*:\s*([^\n.]+)/im) || [])[1] || '' });
       nodos.push({ id: id, fuente: nom, n: num, t: titulo, fecha: fecha, tema: temaDe[num] || null,
         capa: fijadas[id] || propuesta, fijada: !!fijadas[id],
         saberes: s.saberes || [], aprende: s.aprende || null,
@@ -72,6 +73,7 @@
       new Set(Array.from(cuerpo.matchAll(/\b(?:[Vv]ed[ae]s?|V)\s?(\d{1,3})\b/g)).map(function (x) { return +x[1]; }))
         .forEach(function (c) { if (c !== num) aristas.push([id, nom + ':' + c, hijo ? op.matriz + ':' + c : null]); });
     });
+    if (op.arees) arees(nodos, textos, op.arees);
     return { nodos: nodos, aristas: aristas };
   }
 
@@ -231,5 +233,53 @@
     });
   }
 
-  return { CAPAS: CAPAS, arbre: arbre, documents: documents, capcalera: capcalera, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
+
+  /* Les dotze àrees de cada veda (24/11/2026): perquè el 3D les col·loqui al
+     punt d'equilibri entre les àrees que les atreuen. Una veda que diu
+     «**Àrees:** vendes, finances» al seu cos mana; si no, es deduïx de les
+     paraules de cada àrea (MapaValor.AREES), pesades per com de rares són al
+     codex: «valor» surt a totes les vedes i no col·loca cap veda enlloc.
+     Cada veda guarda fins a tres àrees, amb pesos que sumen 1. */
+  /* Les paraules de les àrees surten dels mapes de valor; un codex parla també
+     d'obra (codi, pàgines, guardes). Aquestes s'hi sumen només per llegir vedes. */
+  var MES_CODEX = {
+    strategy: ['missio', 'visio', 'prioritat', 'decisio', 'criteri', 'govern', 'pla de negoci'],
+    communication: ['blog', 'relat', 'idioma', 'llengua', 'traduc', 'narrativ', 'post', 'bilingu'],
+    marketing: ['marca', 'portada', 'landing', 'embut', 'campanya', 'cercador'],
+    sales: ['oferta', 'paquet', 'proposta', 'lead', 'encarrec'],
+    finance: ['diner', 'euro', 'preu', 'token', 'ledger', 'slicing', 'fons', 'subvenc'],
+    logistics: ['proveidor', 'enviament', 'estoc'],
+    production: ['producte', 'obra', 'artesa'],
+    operations: ['kanban', 'tasca', 'proces', 'pantall', 'flux', 'servei', 'tanda'],
+    people: ['persona', 'formacio', 'modul', 'competenc', 'certific', 'aprenentatge', 'escola'],
+    network: ['territori', 'colla', 'node', 'federac', 'veina', 'municipi'],
+    systems: ['html', 'css', 'w3c', 'codi', 'pagina', 'fitxer', 'test', 'prova', 'guarda', 'pwa', 'navegador', 'build', 'json', 'github', 'netlify', 'funcio', 'script', 'servidor', 'api', 'repositori', 'xifrat', 'cervell', 'codex'],
+    legal: ['rgpd', 'privacitat', 'llicencia', 'contracte', 'consentiment', 'llei', 'normativa']
+  };
+  /* I aquestes, en un codex, no diuen àrea: hi surten per tot arreu o volen dir una altra cosa. */
+  var NO_CODEX = ['valor', 'sos', 'espais', 'espacios', 'material'];
+  function arees(nodos, textos, AREES) {
+    var norm = function (s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/·/g, ''); };
+    var tok = function (s) { return norm(s).split(/[^a-z0-9ñç]+/).filter(Boolean); };
+    var ws = AREES.map(function (a) { return a.paraules.concat(MES_CODEX[a.id] || []).map(norm).filter(function (w) { return w && w.indexOf(' ') < 0 && NO_CODEX.indexOf(w) < 0; }); });
+    var toca = function (w, ts) { var n = 0; ts.forEach(function (t) { if (w.length < 4 ? t === w : t.indexOf(w) === 0) n++; }); return n; };
+    var conte = textos.map(function (x) { var ts = tok(x.x), tt = tok(x.t); return ws.map(function (l) { return l.reduce(function (s, w) { return s + toca(w, ts) + 2 * toca(w, tt); }, 0); }); });
+    var df = AREES.map(function (a, k) { return conte.filter(function (c) { return c[k] > 0; }).length; }), N = textos.length || 1;
+    nodos.forEach(function (n, i) {
+      var diu = textos[i].diu.split(/[,;]| i | y | and /).map(function (x) { return tok(x).join(' '); }).filter(Boolean), fix = [];
+      diu.forEach(function (d) { AREES.forEach(function (a) { if (fix.indexOf(a.id) < 0 && [a.id, norm(a.ca), norm(a.es), norm(a.en)].concat(ws[AREES.indexOf(a)]).indexOf(d) >= 0) fix.push(a.id); }); });
+      var w = {};
+      if (fix.length) { fix.slice(0, 3).forEach(function (id) { w[id] = 1; }); n.areesFixades = true; }
+      else {
+        var sc = conte[i].map(function (c, k) { return c ? c * Math.log(1 + N / (df[k] + 1)) : 0; });
+        var max = Math.max.apply(null, sc);
+        AREES.map(function (a, k) { return [a.id, sc[k]]; }).filter(function (x) { return x[1] > 0 && x[1] >= max * 0.34; })
+          .sort(function (x, y) { return y[1] - x[1]; }).slice(0, 3).forEach(function (x) { w[x[0]] = x[1]; });
+      }
+      var tot = Object.keys(w).reduce(function (s, k) { return s + w[k]; }, 0);
+      Object.keys(w).forEach(function (k) { w[k] = Math.round(w[k] / tot * 100) / 100; });
+      n.arees = w;
+    });
+  }
+  return { CAPAS: CAPAS, arees: arees, arbre: arbre, documents: documents, capcalera: capcalera, SABERES: SABERES, RUTA_CODEX: RUTA_CODEX, RUTA_HERENCIA: RUTA_HERENCIA, RUTA_PLANTILLA: RUTA_PLANTILLA, RUTA_HIJO: RUTA_HIJO, MATRIU: MATRIU, PECES: PECES, plantilla: plantilla, lee: lee, limpia: limpia, lector: lector, repos: repos, deRepo: deRepo };
 });

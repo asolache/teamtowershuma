@@ -14,22 +14,36 @@
     };
     var kc = {}; ['anna', 'prana', 'mano', 'vijnana', 'ananda'].forEach(function (k) { kc[k] = tono('--k-' + k, '#888'); });
     var quieto = raiz.matchMedia && raiz.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var D, an, P, byId, docs = [], sel = null, encima = null, luz = null, t0 = 0, vivo = false, raf = 0;
+    var D, an, P, PK, PA = null, Z = null, AR = [], modo = 'koshas', crus = [], byId, docs = [], sel = null, encima = null, luz = null, t0 = 0, vivo = false, raf = 0;
     var cam = { yaw: 0.6, pitch: -0.35, dist: 3.1 }, W = 0, H = 0, ppp = 1, proy = {}, ultimo = 0;
 
     function monta(datos, analisis) {
-      D = datos; an = analisis; P = F.coloca(D, an); byId = {};
+      D = datos; an = analisis; PK = F.coloca(D, an); byId = {};
       D.nodos.forEach(function (n) { byId[n.id] = n; });
-      if (sel && !byId[sel]) sel = null; luz = null; pinta();
+      /* Les dotze àrees, si el cervell les porta: llavors s'obre per àrees. */
+      AR = (D.arees || []).map(function (a) { return { id: a.id, n: a.n, c: F.COLOR_AREA[a.id] || C.apagado }; });
+      PA = null; Z = null;
+      if (AR.length) { var r = F.colocaArees(D, an, AR.map(function (a) { return a.id; })); PA = r.P; Z = r.Z; }
+      modo = PA ? 'arees' : 'koshas'; P = PA || PK;
+      if (sel && !byId[sel] && !esArea(sel)) sel = null; luz = null; pinta();
+    }
+    function esArea(id) { return typeof id === 'string' && id.indexOf('area:') === 0 && Z && !!Z[id.slice(5)]; }
+    /* Per koshas o per àrees: les mateixes vedes, una altra llei que les col·loca. */
+    function posaModo(m) {
+      if (m === 'arees' && !PA) m = 'koshas';
+      modo = m; P = m === 'arees' ? PA : PK;
+      if (esArea(sel) && m !== 'arees') sel = null;
+      ponDocs(crus); return modo;
     }
     /* Els documents del cervell: quadrats a fora de tot, un sector per àrea, i
        una línia fins a cada veda que citen. No entren a l'anàlisi de forces. */
     function ponDocs(ds) {
+      crus = ds || [];
       var arees = []; (ds || []).forEach(function (d) { if (arees.indexOf(d.area) < 0) arees.push(d.area); });
       var oro = Math.PI * (3 - Math.sqrt(5)), dir = {};
       arees.forEach(function (a, i) { var y = 1 - 2 * (i + 0.5) / arees.length, r = Math.sqrt(1 - y * y); dir[a] = [Math.cos(oro * i) * r, y, Math.sin(oro * i) * r]; });
       docs = (ds || []).map(function (d, i) {
-        var h = (i * 2654435761 % 1000) / 1000, g = (i * 40503 % 1000) / 1000, v = dir[d.area];
+        var h = (i * 2654435761 % 1000) / 1000, g = (i * 40503 % 1000) / 1000, v = modo === 'arees' && Z && Z[d.area] ? Z[d.area] : dir[d.area];
         v = [v[0] + (h - 0.5) * 0.45, v[1] + (g - 0.5) * 0.45, v[2] + (((h + g) % 1) - 0.5) * 0.45];
         var m = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) || 1;
         return Object.assign({}, d, { p: [v[0] / m * 1.22, v[1] / m * 1.22, v[2] / m * 1.22], vedes: (d.vedes || []).filter(function (k) { return byId && byId[k]; }) });
@@ -56,12 +70,21 @@
       cx.setTransform(ppp, 0, 0, ppp, 0, 0); cx.clearRect(0, 0, W, H);
       /* Las esferas de cada kosha, del cuerpo (fuera) al propósito (dentro). */
       var c0 = gira([0, 0, 0]);
-      Object.keys(F.RADIO).forEach(function (k) {
+      proy = {};
+      if (modo === 'koshas') Object.keys(F.RADIO).forEach(function (k) {
         cx.beginPath(); cx.arc(c0.x, c0.y, F.RADIO[k] * c0.e, 0, 6.2832);
         cx.strokeStyle = kc[k]; cx.globalAlpha = 0.28; cx.lineWidth = 1; cx.setLineDash([2, 5]); cx.stroke();
       });
-      cx.setLineDash([]);
-      proy = {}; D.nodos.forEach(function (n) { proy[n.id] = gira(P[n.id]); });
+      else AR.slice().map(function (a) { var q = gira(Z[a.id]); proy['area:' + a.id] = q; return [a, q]; })
+        .sort(function (x, y) { return y[1].z - x[1].z; }).forEach(function (x) {
+          /* La zona de cada àrea: un halo del seu color, on cauen les vedes que només són d'ella. */
+          var a = x[0], q = x[1], on = !sel || sel === 'area:' + a.id || (byId[sel] && byId[sel].arees && byId[sel].arees[a.id]);
+          cx.beginPath(); cx.arc(q.x, q.y, Math.max(10, 0.16 * q.e), 0, 6.2832);
+          cx.fillStyle = a.c; cx.globalAlpha = (on ? 0.12 : 0.04) * alfa(q.z) * 1.4; cx.fill();
+          cx.strokeStyle = a.c; cx.globalAlpha = (on ? 0.6 : 0.15) * alfa(q.z); cx.lineWidth = sel === 'area:' + a.id ? 2.5 : 1; cx.stroke();
+        });
+      cx.setLineDash([]); cx.globalAlpha = 1;
+      D.nodos.forEach(function (n) { proy[n.id] = gira(P[n.id]); });
       docs.forEach(function (d) { proy[d.id] = gira(d.p); });
       /* Del document a les vedes que cita: puntejat fi, en el color de l'àrea. */
       cx.setLineDash([2, 3]);
@@ -80,8 +103,9 @@
         cx.fillRect(p.x - r, p.y - r, r * 2, r * 2);
         if (sel === d.id) { cx.lineWidth = 2.5; cx.strokeStyle = C.tinta; cx.globalAlpha = 1; cx.strokeRect(p.x - r, p.y - r, r * 2, r * 2); }
       });
-      var dSel = sel && !byId[sel] ? docs.filter(function (d) { return d.id === sel; })[0] : null,
-        vecSel = sel ? (dSel ? dSel.vedes.reduce(function (o, k) { o[k] = 1; return o; }, {}) : an.vec[sel] || {}) : null, fase = (ahora - t0) / 1000;
+      var dSel = sel && !byId[sel] && !esArea(sel) ? docs.filter(function (d) { return d.id === sel; })[0] : null,
+        vecSel = sel ? (esArea(sel) ? D.nodos.reduce(function (o, n) { if (n.arees && n.arees[sel.slice(5)]) o[n.id] = 1; return o; }, {})
+          : dSel ? dSel.vedes.reduce(function (o, k) { o[k] = 1; return o; }, {}) : an.vec[sel] || {}) : null, fase = (ahora - t0) / 1000;
       var encendida = function (id) {
         if (!luz || !luz[id]) return 0;
         var t = fase - luz[id].onda * 0.45; if (t < 0) return 0;
@@ -111,6 +135,12 @@
       /* Las vedas, de la más lejana a la más cercana. El tamaño es su masa. */
       var orden = D.nodos.slice().sort(function (a, b) { return proy[b.id].z - proy[a.id].z; });
       var q = sel ? cuantDe(sel) : null;
+      /* La veda triada, per àrees: una línia fins a cada àrea que l'estira, més gruixuda com més pesa. */
+      if (modo === 'arees' && byId[sel]) Object.keys(byId[sel].arees || {}).forEach(function (k) {
+        var p = proy[sel], z = proy['area:' + k]; if (!z) return;
+        cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(z.x, z.y);
+        cx.strokeStyle = F.COLOR_AREA[k] || C.apagado; cx.globalAlpha = 0.9; cx.lineWidth = 1 + byId[sel].arees[k] * 4; cx.stroke();
+      });
       orden.forEach(function (n) {
         var p = proy[n.id], r = (2.2 + Math.min(an.masa[n.id], 8) * 0.8) * p.e / 180, l = encendida(n.id);
         var cerca = !sel || n.id === sel || vecSel[n.id] || q[n.id];
@@ -119,7 +149,7 @@
           cx.fillStyle = C.brahma; cx.globalAlpha = 0.25 * l; cx.fill();
         }
         cx.beginPath(); cx.arc(p.x, p.y, Math.max(2, r), 0, 6.2832);
-        cx.fillStyle = kc[n.capa]; cx.globalAlpha = (cerca || l ? 1 : 0.15) * alfa(p.z); cx.fill();
+        cx.fillStyle = modo === 'arees' ? F.COLOR_AREA[F.areaMajor(n)] || C.apagado : kc[n.capa]; cx.globalAlpha = (cerca || l ? 1 : 0.15) * alfa(p.z); cx.fill();
         if (n.id === sel || n.privado || n.fijada) {
           cx.lineWidth = n.id === sel ? 2.5 : 1.4; cx.strokeStyle = C.tinta; cx.globalAlpha = cerca ? 1 : 0.3;
           if (n.privado) cx.setLineDash([2, 2]);
@@ -127,8 +157,19 @@
         }
       });
       cx.globalAlpha = 1;
+      /* El nom de cada àrea, a la seva zona: només les que miren cap aquí, perquè al mòbil no es tapin. */
+      if (modo === 'arees') {
+        cx.font = '700 11px "Space Grotesk", system-ui, sans-serif'; cx.textAlign = 'center';
+        AR.forEach(function (a) {
+          var z = proy['area:' + a.id]; if (!z || (z.z > 0.25 && sel !== 'area:' + a.id)) return;
+          var y = z.y - Math.max(10, 0.16 * z.e) - 4;
+          cx.globalAlpha = sel && sel !== 'area:' + a.id ? 0.45 : 1;
+          cx.lineWidth = 3; cx.strokeStyle = C.papel; cx.strokeText(a.n, z.x, y); cx.fillStyle = a.c; cx.fillText(a.n, z.x, y);
+        });
+        cx.textAlign = 'start'; cx.globalAlpha = 1;
+      }
       [sel, encima].forEach(function (id, i) {
-        if (!id || !proy[id] || (i && id === sel)) return;
+        if (!id || !proy[id] || (i && id === sel) || esArea(id)) return;
         var p = proy[id], n = byId[id] || docs.filter(function (d) { return d.id === id; })[0], txt = n.titol ? '▪ ' + n.titol : n.n + ' · ' + n.t;
         if (txt.length > 48) txt = txt.slice(0, 46) + '…';
         cx.font = '600 12px "Space Grotesk", system-ui, sans-serif';
@@ -178,7 +219,9 @@
     });
     raiz.addEventListener('pointerup', function (e) {
       var a = arrastre; arrastre = null; if (!a || a.movido || e.target !== lienzo) return;
-      var k = cercano(e); if (k) op.alElegir(k); else { sel = null; op.alElegir(null); pinta(); }
+      var k = cercano(e);
+      if (esArea(k)) { sel = k; luz = null; if (op.alArea) op.alArea(k.slice(5)); pinta(); return; }
+      if (k) op.alElegir(k); else { sel = null; op.alElegir(null); pinta(); }
     });
     raiz.addEventListener('pointercancel', function () { arrastre = null; });
     lienzo.addEventListener('wheel', function (e) { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); zoom(e.deltaY > 0 ? 1.12 : 1 / 1.12); }, { passive: false });
@@ -190,13 +233,13 @@
 
     function zoom(f) { cam.dist = Math.max(1.4, Math.min(6, cam.dist * f)); pinta(); }
     function centra() { cam = { yaw: 0.6, pitch: -0.35, dist: 3.1 }; pinta(); }
-    function selecciona(id) { sel = id && (byId[id] || docs.some(function (d) { return d.id === id; })) ? id : null; pinta(); }
+    function selecciona(id) { sel = id && (byId[id] || esArea(id) || docs.some(function (d) { return d.id === id; })) ? id : null; pinta(); }
     function dispara(id) {
       if (!byId[id]) return null;
       sel = id; luz = F.dispara(id, an.vec, an.cuanticos); t0 = performance.now(); pinta();
       return luz;
     }
-    return { monta: monta, ponDocs: ponDocs, activa: activa, selecciona: selecciona, dispara: dispara, zoom: zoom, centra: centra };
+    return { monta: monta, ponDocs: ponDocs, modo: posaModo, quinModo: function () { return modo; }, teArees: function () { return !!PA; }, activa: activa, selecciona: selecciona, dispara: dispara, zoom: zoom, centra: centra };
   }
   raiz.Cerebro3D = Cerebro3D;
 })(window);

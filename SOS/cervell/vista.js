@@ -24,7 +24,11 @@
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya és més ampla que el tronc.' : 'No aguanta: el tronc ha crescut més que la pinya.'); },
       comp: 'comparteixen saber', mateixa: 'citen la mateixa veda', mateixes: function (n) { return 'citen les mateixes ' + n; },
       mes: 'Acosta', menys: 'Allunya', tot: 'Tot', buit: 'Aquest codex encara no té vedes.',
-      doc: 'Document', docs: function (n) { return n + (n === 1 ? ' document' : ' documents'); }
+      doc: 'Document', docs: function (n) { return n + (n === 1 ? ' document' : ' documents'); },
+      perK: 'Per koshas', perA: 'Per àrees', area: 'Àrea',
+      leyA: 'Cada zona de color és una de les dotze àrees de qualsevol organització. Cada veda cau on s\'equilibren les àrees que l\'estiren: la d\'una sola àrea, a la seva zona; la que en toca més d\'una, entre elles, més a prop de la que pesa més. Toca una àrea per veure les seves vedes. Arrossega per girar.',
+      areaP: function (n, s) { return n + (n === 1 ? ' veda l\'estira' : ' vedes l\'estiren') + (s ? ', ' + s + ' només ella' : '') + '. Les que en toquen més d\'una queden entre àrees, al punt d\'equilibri.'; },
+      areaBuida: 'Encara cap veda parla d\'aquesta àrea. És un forat de la cultura: una veda nova pot dir «**Àrees:**» al seu text.'
     },
     es: {
       tria: 'Toca una veda para leerla y ver con cuáles conecta.', cita: 'Cita a', citen: 'La citan', ent: 'Entrelazadas',
@@ -39,7 +43,11 @@
       cast: function (p, t, d, ok) { return '<b>La castellera.</b> Pinya ' + p + ' · tronc ' + t + ' · pom de dalt ' + d + '. ' + (ok ? 'Aguanta: la pinya es más ancha que el tronco.' : 'No aguanta: el tronco ha crecido más que la pinya.'); },
       comp: 'comparten saber', mateixa: 'citan la misma veda', mateixes: function (n) { return 'citan las mismas ' + n; },
       mes: 'Acercar', menys: 'Alejar', tot: 'Todo', buit: 'Este codex aún no tiene vedas.',
-      doc: 'Documento', docs: function (n) { return n + (n === 1 ? ' documento' : ' documentos'); }
+      doc: 'Documento', docs: function (n) { return n + (n === 1 ? ' documento' : ' documentos'); },
+      perK: 'Por koshas', perA: 'Por áreas', area: 'Área',
+      leyA: 'Cada zona de color es una de las doce áreas de cualquier organización. Cada veda cae donde se equilibran las áreas que la atraen: la de una sola área, en su zona; la que toca más de una, entre ellas, más cerca de la que pesa más. Toca un área para ver sus vedas. Arrastra para girar.',
+      areaP: function (n, s) { return n + (n === 1 ? ' veda la atrae' : ' vedas la atraen') + (s ? ', ' + s + ' solo ella' : '') + '. Las que tocan más de una quedan entre áreas, en el punto de equilibrio.'; },
+      areaBuida: 'Aún ninguna veda habla de esta área. Es un hueco de la cultura: una veda nueva puede decir «**Áreas:**» en su texto.'
     }
   };
   var CSS = '.cv{--k-anna:#b45309;--k-prana:#15803d;--k-mano:#0e7490;--k-vijnana:#1d4ed8;--k-ananda:#7c3aed;--cv-l:var(--border,#ddd7c8);--cv-c:var(--card,#fff);--cv-t:var(--text,#15130f);--cv-m:var(--muted,#5e594d)}' +
@@ -48,7 +56,7 @@
     '.cv-3d canvas:focus-visible{outline:2px solid #2563eb;outline-offset:2px}' +
     '.cv-k{position:absolute;left:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:4px 12px;font:500 .75rem ui-monospace,monospace;color:var(--cv-m);pointer-events:none}' +
     '.cv-k i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:5px}' +
-    '.cv-z{position:absolute;right:10px;top:10px;display:flex;gap:4px}' +
+    '.cv-z{position:absolute;right:10px;top:10px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;max-width:calc(100% - 20px)}' +
     '.cv button{font:600 .9rem inherit;font-family:inherit;min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--cv-l);background:var(--cv-c);color:var(--cv-t);cursor:pointer}' +
     '.cv button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}' +
     '.cv .cv-go{min-height:32px;font-weight:500;font-size:.85rem;padding:3px 11px;margin:4px 4px 0 0;text-align:left}' +
@@ -79,14 +87,32 @@
     function nomCapa(c) { var w = (par && par[c.id]) || c.n; return w && w !== c.s ? w + ' · ' + c.s : c.s; }
     caixa.innerHTML =
       '<div class="cv-3d"><canvas tabindex="0" role="img" aria-label="' + esc(t.ley) + '"></canvas>' +
-      '<div class="cv-z"><button type="button" data-z="mes" aria-label="' + t.mes + '">+</button><button type="button" data-z="menys" aria-label="' + t.menys + '">−</button><button type="button" data-z="tot">' + t.tot + '</button></div>' +
+      '<div class="cv-z"><button type="button" data-z="mes" aria-label="' + t.mes + '">+</button><button type="button" data-z="menys" aria-label="' + t.menys + '">−</button><button type="button" data-z="tot">' + t.tot + '</button>' + (D.arees && D.arees.length ? '<button type="button" data-z="modo">' + t.perK + '</button>' : '') + '</div>' +
       '<div class="cv-k" aria-hidden="true">' + D.capas.map(function (c) { return '<span style="--c:' + col(c.id) + '"><i></i>' + esc(nomCapa(c)) + '</span>'; }).join('') + '</div></div>' +
       '<p class="cv-now" aria-live="polite"></p><p class="cv-ley">' + esc(t.ley) + '</p>' +
       '<div class="cv-p" aria-live="polite"><p>' + t.tria + '</p></div><div class="cv-f"></div>';
     var panel = caixa.querySelector('.cv-p'), now = caixa.querySelector('.cv-now');
     var DOCS = {};
-    var C3 = raiz.Cerebro3D(caixa.querySelector('canvas'), { alElegir: function (id) { if (id && DOCS[id]) triaDoc(id); else if (id) tria(id); else { C3.selecciona(null); panel.innerHTML = '<p>' + t.tria + '</p>'; panel.style.removeProperty('--c'); } } });
+    var C3 = raiz.Cerebro3D(caixa.querySelector('canvas'), { alArea: function (id) { triaArea(id); }, alElegir: function (id) { if (id && DOCS[id]) triaDoc(id); else if (id) tria(id); else { C3.selecciona(null); panel.innerHTML = '<p>' + t.tria + '</p>'; panel.style.removeProperty('--c'); } } });
     C3.monta(D, AN); C3.activa(true);
+    var ley = caixa.querySelector('.cv-ley'), kosK = caixa.querySelector('.cv-k');
+    /* El que diu la llegenda i el botó depèn de si les vedes es col·loquen per koshas o per àrees. */
+    function modo(m) {
+      m = C3.modo(m); var b = caixa.querySelector('[data-z="modo"]'), a = m === 'arees';
+      if (b) b.textContent = a ? t.perK : t.perA;
+      ley.textContent = a ? t.leyA : t.ley; caixa.querySelector('canvas').setAttribute('aria-label', a ? t.leyA : t.ley);
+      kosK.style.display = a ? 'none' : '';
+    }
+    /* Una àrea triada al 3D: el seu nom i les vedes que estira, de la que més pesa a la que menys. */
+    function triaArea(id) {
+      var a = (D.arees || []).filter(function (x) { return x.id === id; })[0]; if (!a) return;
+      C3.selecciona('area:' + id);
+      var vs = D.nodos.filter(function (n) { return n.arees && n.arees[id]; }).sort(function (x, y) { return y.arees[id] - x.arees[id] || x.i - y.i; });
+      var soles = vs.filter(function (n) { return Object.keys(n.arees).length === 1; }).length;
+      panel.style.setProperty('--c', F.COLOR_AREA[id] || 'var(--cv-l)');
+      panel.innerHTML = '<p class="cv-m">' + t.area + '</p><h3>' + esc(a.n) + '</h3><p>' + (vs.length ? t.areaP(vs.length, soles) : t.areaBuida) + '</p>' +
+        vs.map(function (n) { return chip(n.id, Math.round(n.arees[id] * 100) + ' %'); }).join('');
+    }
 
     function chip(id, extra) { var n = byId[id]; return '<button type="button" class="cv-go" data-id="' + esc(id) + '">' + n.n + ' · ' + esc(n.t) + (extra ? ' <small>· ' + esc(extra) + '</small>' : '') + '</button>'; }
     function chips(ids, txt) { return ids.length ? '<p class="cv-m" style="margin-top:10px">' + txt + '</p>' + ids.map(function (k) { return chip(k); }).join('') : ''; }
@@ -102,10 +128,19 @@
       var a = AN.alcance[id];
       panel.style.setProperty('--c', col(n.capa));
       panel.innerHTML = '<p class="cv-m">' + (op.mot || 'Veda') + ' ' + n.n + ' · ' + esc(nomCapa(capaDe[n.capa])) + (n.fecha ? ' · ' + esc(n.fecha) : '') + '</p><h3>' + esc(n.t) + '</h3>' +
-        (n.aprende ? '<p><b>' + esc(n.aprende) + '</b></p>' : '') + '<p>' + esc(n.txt) + '</p>' +
+        (n.aprende ? '<p><b>' + esc(n.aprende) + '</b></p>' : '') + '<p>' + esc(n.txt) + '</p>' + arees(n) +
         chips(cita, t.cita) + chips(citen, t.citen) + chips(ent, t.ent) +
         '<p class="cv-m" style="margin-top:10px">' + t.massa + ' ' + AN.masa[id] + ' · ' + t.pot + ' ' + AN.potencial[id] + ' · ' + t.enc(a.vedas, a.capas) + '</p>' +
         '<button type="button" class="cv-dis" data-dispara="' + esc(id) + '">' + t.dispara + '</button>';
+    }
+    /* Les àrees que estiren la veda, amb el seu pes: cada una obre la seva zona. */
+    function arees(n) {
+      var w = n.arees || {}, ks = Object.keys(w).sort(function (x, y) { return w[y] - w[x]; }), nom = {};
+      (D.arees || []).forEach(function (a) { nom[a.id] = a.n; });
+      if (!ks.length || !D.arees) return '';
+      return '<p class="cv-m" style="margin-top:10px">' + t.perA + '</p>' + ks.map(function (k) {
+        return '<button type="button" class="cv-go" data-area="' + esc(k) + '" style="border-left:4px solid ' + (F.COLOR_AREA[k] || 'var(--cv-l)') + '">' + esc(nom[k] || k) + ' <small>· ' + Math.round(w[k] * 100) + ' %</small></button>';
+      }).join('');
     }
     /* Un document triat al 3D: què és, de quina àrea, on és i quines vedes cita. */
     function triaDoc(id) {
@@ -139,12 +174,14 @@
         '<p>' + t.cast(cs[2].vedas, cs[1].vedas, cs[0].vedas, AN.aguanta) + '</p></article>';
 
     caixa.addEventListener('click', function (e) {
-      var z = e.target.closest('[data-z]'); if (z) { var k = z.getAttribute('data-z'); return k === 'tot' ? C3.centra() : C3.zoom(k === 'mes' ? 1 / 1.25 : 1.25); }
+      var z = e.target.closest('[data-z]'); if (z) { var k = z.getAttribute('data-z'); if (k === 'modo') return modo(C3.quinModo() === 'arees' ? 'koshas' : 'arees'); return k === 'tot' ? C3.centra() : C3.zoom(k === 'mes' ? 1 / 1.25 : 1.25); }
+      var ar = e.target.closest('[data-area]'); if (ar) { if (C3.quinModo() !== 'arees') modo('arees'); return triaArea(ar.getAttribute('data-area')); }
       var d = e.target.closest('[data-dispara]'); if (d) return dispara(d.getAttribute('data-dispara'));
       var b = e.target.closest('[data-id]'); if (!b) return;
       tria(b.getAttribute('data-id')); caixa.querySelector('.cv-3d').scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-    return { analisi: AN, tria: function (id) { return DOCS[id] ? triaDoc(id) : tria(id); }, docs: docs, dispara: dispara, atura: function () { C3.activa(false); }, activa: function (b) { C3.activa(b); } };
+    modo(C3.quinModo());
+    return { analisi: AN, tria: function (id) { return DOCS[id] ? triaDoc(id) : tria(id); }, docs: docs, modo: modo, dispara: dispara, atura: function () { C3.activa(false); }, activa: function (b) { C3.activa(b); } };
   }
   raiz.CervellVista = { munta: munta };
 })(window);

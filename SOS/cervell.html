@@ -351,6 +351,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
 </footer>
 <script src="/SOS/lib/recorrido.js" defer></script>
 <!--/TT-PEU-->
+<script src="lib/mapa-valor.js"></script>
 <script src="cervell/codex-parse.js"></script>
 <script src="cervell/forces.js"></script>
 <script src="cervell/3d.js"></script>
@@ -445,10 +446,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   }
   /* Els documents també al 3D, com a quadrats al voltant de la cultura. */
   function posaDocs() { if (vista && vista.docs && D) vista.docs(CervellOrg.per3d(DOCS, UNI, D.nodos, REPO)); }
+  /* Les dotze àrees (les de la taxonomia universal, amb les paraules del mapa de
+     valor): cada veda sap quines l'estiren, i el 3D les col·loca entre elles. */
+  var AREES = window.MapaValor ? window.MapaValor.AREES : null;
   function dibuixa(codex, op) {
-    var L = CP.lee(codex, op);
+    var L = CP.lee(codex, AREES ? Object.assign({}, op, { arees: AREES }) : op);
     if (vista) vista.atura();
-    D = { nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS.map(function (c) { var w = CervellPla.PARAULES.ca[c.id]; return w ? Object.assign({}, c, { n: w }) : c; }) };
+    D = { arees: AREES ? AREES.map(function (a) { return { id: a.id, n: a.ca.charAt(0).toUpperCase() + a.ca.slice(1) }; }) : [], nodos: L.nodos, aristas: CP.limpia(L.nodos, L.aristas), capas: CP.CAPAS.map(function (c) { var w = CervellPla.PARAULES.ca[c.id]; return w ? Object.assign({}, c, { n: w }) : c; }) };
     meta = { nom: op.nom, font: op.font, id: op.nom.replace(/[^\w-]/g, '-'), lang: 'ca', data: new Date().toISOString().slice(0, 10), url: 'teamtowershuma.com/SOS/cervell.html' };
     vista = CervellVista.munta(caixa, D, { lang: 'ca' });
     AN = vista && vista.analisi;
@@ -463,7 +467,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans,syst
   var ara = 'org', pla = null, org = null, cvOrg = document.getElementById('cvOrg'), DOCS = [], UNI = null, REPO = null, cvPla = document.getElementById('cvPla'), temps = document.getElementById('cvTemps');
   var DIU = {
     org: 'El cervell i, a sota, la seva cultura i les dotze àrees de qualsevol organització. Toca una àrea per veure\'n els documents, i un aprenentatge per trobar-lo al cervell.',
-    '3d': 'Cada esfera és una kosha, el cos a fora i el propòsit al centre. Els quadrats de fora són els documents, del color de la seva àrea, units a les vedes que citen.',
+    '3d': 'Les dotze àrees de qualsevol organització, cadascuna a la seva zona de l\'espai. Cada veda cau al punt d\'equilibri entre les àrees que l\'estiren, i els quadrats són els documents, a fora de la seva àrea. Amb «Per koshas» tornes a les cinc esferes, del cos al propòsit.',
     castellera: 'Els tres pisos del castell: la pinya (cos i energia) aguanta el tronc (ment i criteri), que puja el pom de dalt (propòsit). D\'esquerra a dreta, l\'ordre en què es va escriure cada veda.',
     capes: 'Les cinc koshas, de l\'obra al propòsit, i les vedes en l\'ordre en què es van aprendre.',
     mapa: 'Com un mapa de valor: cada veda és un node i cada cita, un lliurament. El propòsit al centre i l\'obra a fora.',
