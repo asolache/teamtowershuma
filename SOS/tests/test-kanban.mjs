@@ -147,7 +147,7 @@ console.log('\n══ /cliente/#panel · tu backlog de todo ══');
     return r.fulfill({ contentType: 'application/json', body: JSON.stringify(D) });
   });
   await p.goto(BASE + '#panel');
-  await p.fill('#pn-clau', 't'.repeat(32)); await p.click('text=Entrar');
+  await p.fill('#pn-clau', 't'.repeat(32)); await p.click('#panel button:has-text("Entrar")');
   await p.waitForSelector('#pn-tasques');
   const tx = await p.textContent('#pn-tasques');
   ok(/Post del blog/.test(tx) && /Revisar su mapa/.test(tx) && /ELE Barcelona/.test(tx), 'junta lo suyo y lo de cada cliente, con el proyecto en cada tarjeta');

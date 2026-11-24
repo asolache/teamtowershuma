@@ -14,7 +14,9 @@
    · `POST …/identitat` {via:'convit', inv, privacitat:true}
                                         hi entra amb aquell compte (via `convit`).
 
-   El correu no es verifica encara (cal un enviador); GitHub sí que diu qui és.
+   El correu no es verifica encara (cal un enviador): per això el correu sol
+   només obre un compte nou i el lliga a l'aparell (vegeu perCorreu). GitHub i
+   l'enllaç personal sí que diuen qui és.
    Google, quan hi hagi el client OAuth, va igual que GitHub.
 
    El que no es negocia:
@@ -29,6 +31,8 @@
 import { secret, signa, llegeix, empremta, nonce } from '../lib/signatura.mjs';
 import { magatzem } from '../lib/magatzem.mjs';
 import { MAGATZEM, deTestimoni, llista, desa, clauDe } from '../lib/convidats.mjs';
+import { clau as clauFitxa } from './fitxa.mjs';
+import { clau as clauProposta } from './proposta.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
 const DIES30 = 30 * 24 * 3600 * 1000;
@@ -55,13 +59,38 @@ export function sessio(d, env, ara = Date.now()) {
   return signa(Object.assign({ via: d.via, id: d.id, nom: net(d.nom).slice(0, 80), mail: net(d.mail).slice(0, 200), exp: ara + DIES30 }, d.inv ? { inv: d.inv } : {}), secret(env));
 }
 
-/* Amb el correu: nom, correu i la casella de privacitat de /cliente/. */
-export function perCorreu(b, env) {
+/* Amb el correu: nom, correu i la casella de privacitat de /cliente/.
+   El correu no es comprova (no hi ha enviador), i fins al 24/11/2026 escriure
+   el correu d'algú obria el seu compte: el seu dibuix, el seu espai i la seva
+   proposta. Ara el correu sol només obre un compte **nou**, i el lliga a
+   l'aparell que el crea (una clau que fa el navegador, de la qual aquí només
+   es guarda l'empremta). Després s'hi torna:
+   · des d'aquell aparell (la mateixa clau),
+   · renovant una sessió nostra d'aquell compte, encara que hagi caducat,
+   · o amb l'enllaç personal (el del panell, o «Abrir en otro aparato»).
+   Qui té enllaç personal (un convidat) no hi entra mai amb el correu sol, i
+   un compte d'abans que ja té coses guardades, tampoc. */
+export const COMPTES = 'comptes';
+export const NO_ES_TEU = 'Este correo ya tiene su espacio. Ábrelo con tu enlace personal o desde el aparato donde lo creaste; si no lo tienes, escríbenos y te mandamos uno.';
+const ANY = 365 * 24 * 3600 * 1000;
+const aparell = v => (/^[\w-]{20,80}$/.test(net(v)) ? empremta('aparell|' + net(v)) : '');
+export async function perCorreu(b, env, regs, ara = Date.now()) {
   if (!vies(env).includes('correu')) return { estat: 'sense-config' };
   const nom = net(b && b.nom), mail = net(b && b.mail).toLowerCase();
   if (!nom || !CORREU.test(mail)) return { estat: 'error', motiu: 'Falta tu nombre o un correo válido.' };
   if (!(b && b.privacitat === true)) return { estat: 'error', motiu: 'Falta aceptar cómo tratamos tus datos.' };
-  return { estat: 'fet', sessio: sessio({ via: 'correu', id: 'mail:' + empremta(mail), nom, mail }, env), via: 'correu', nom, mail };
+  const R = regs || {};
+  if (!R.comptes || !R.convidats || !R.fitxes || !R.propostes) return { estat: 'sense-config' };
+  const id = 'mail:' + empremta(mail), k = 'compte/' + empremta(id), ap = aparell(b.aparell);
+  const fet = () => ({ estat: 'fet', sessio: sessio({ via: 'correu', id, nom, mail }, env, ara), via: 'correu', nom, mail });
+  if ((await llista(R.convidats))[clauDe(mail)]) return { estat: 'error', motiu: NO_ES_TEU };
+  const c = await R.comptes.get(k), abans = llegeix(b.sessio, secret(env), 0);
+  const renova = !!(abans && abans.id === id && abans.exp > ara - ANY);
+  if (c ? !(renova || (ap && (c.aparells || []).includes(ap))) : !renova && !!(await R.fitxes.get(clauFitxa(id)) || await R.propostes.get(clauProposta(id)))) return { estat: 'error', motiu: NO_ES_TEU };
+  if (!c && !ap && !renova) return { estat: 'error', motiu: 'Recarga la página y vuelve a probar.' };
+  const aps = ((c && c.aparells) || []).filter(x => x !== ap).concat(ap ? [ap] : []).slice(-8);
+  if (!c || aps.join() !== (c.aparells || []).join()) await R.comptes.set(k, { aparells: aps, creat: (c && c.creat) || new Date(ara).toISOString() });
+  return fet();
 }
 
 /* Amb l'enllaç d'un convidat: l'enllaç diu qui és (el correu sol, no).
@@ -108,7 +137,7 @@ export const handler = async (event) => {
   let r;
   if (event.httpMethod === 'POST') {
     let b = {}; try { b = JSON.parse(event.body || '{}'); } catch (e) { /* cos buit */ }
-    r = b.via === 'correu' ? perCorreu(b, env) : b.via === 'convit' ? await perConvit(b, env, magatzem(event, MAGATZEM)).catch(() => ({ estat: 'error', motiu: 'blobs' })) : { estat: 'error', motiu: 'via' };
+    r = b.via === 'correu' ? await perCorreu(b, env, { comptes: magatzem(event, COMPTES), convidats: magatzem(event, MAGATZEM), fitxes: magatzem(event, 'fitxes'), propostes: magatzem(event, 'propostes') }).catch(() => ({ estat: 'error', motiu: 'blobs' })) : b.via === 'convit' ? await perConvit(b, env, magatzem(event, MAGATZEM)).catch(() => ({ estat: 'error', motiu: 'blobs' })) : { estat: 'error', motiu: 'via' };
   } else if (q.inv) r = await perConvit({ inv: q.inv }, env, magatzem(event, MAGATZEM)).catch(() => ({ estat: 'error', motiu: 'blobs' }));
   else if (q.via === 'github') r = aGithub(env);
   else if (q.code || q.state) r = await deGithub(q, (event.headers || {}).cookie, env);

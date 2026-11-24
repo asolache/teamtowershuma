@@ -20,6 +20,7 @@
    l'estat: mai el dibuix ni qui és. */
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 import { magatzem } from '../lib/magatzem.mjs';
+import { MAGATZEM as CONVIDATS, vetada } from '../lib/convidats.mjs';
 import { idDe } from './proposta.mjs';
 import { clau as clauFoto } from './llegeix-web-background.mjs';
 import K from '../../SOS/lib/kanban.js';
@@ -166,7 +167,7 @@ export const handler = async (event) => {
     console.log('[fitxa]', JSON.stringify({ metode: event.httpMethod, estat: r ? r.estat : 'no' }));
     return r ? json(r.estat === 'error' ? 400 : 200, r) : json(404, {});
   }
-  r = await client(cos, env, reg).catch(() => ({ estat: 'error', motiu: 'blobs' }));
+  r = await vetada(llegeix(cos && cos.sessio, secret(env)), magatzem(event, CONVIDATS)).then(v => (v ? { estat: 'identifica' } : client(cos, env, reg))).catch(() => ({ estat: 'error', motiu: 'blobs' }));
   console.log('[fitxa]', JSON.stringify({ metode: 'POST', estat: r.estat }));
   return json({ identifica: 401, 'sense-config': 503, error: 400 }[r.estat] || 200, r);
 };

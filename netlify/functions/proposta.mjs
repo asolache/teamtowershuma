@@ -22,6 +22,7 @@
    Al registre (console) només l'estat, mai el preu ni qui és. */
 import { secret, llegeix, empremta } from '../lib/signatura.mjs';
 import { magatzem } from '../lib/magatzem.mjs';
+import { MAGATZEM as CONVIDATS, vetada } from '../lib/convidats.mjs';
 import { quiDelPortal, capsPortal } from '../lib/portal.mjs';
 
 const net = v => (v == null ? '' : String(v)).trim();
@@ -95,7 +96,7 @@ export const handler = async (event) => {
   const caps = capsPortal((event.headers || {}).origin);
   if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: caps, body: '' };
   if (event.httpMethod !== 'POST') return json(405, { estat: 'error' });
-  r = await veure(cos, env, reg).catch(() => ({ estat: 'error' }));
+  r = await vetada(llegeix(cos && cos.sessio, secret(env)), magatzem(event, CONVIDATS)).then(v => (v ? { estat: 'identifica' } : veure(cos, env, reg))).catch(() => ({ estat: 'error' }));
   console.log('[proposta]', JSON.stringify({ metode: 'POST', via: cos.portal ? 'portal' : 'sessio', estat: r.estat }));
   return json({ identifica: 401, 'sense-config': 503, error: 500 }[r.estat] || 200, r, caps);
 };

@@ -44,7 +44,7 @@
 
   var main = document.querySelector('main') || body;
   var seccions = [].filter.call(main.querySelectorAll('section[id]'), function (s) {
-    return !s.parentElement.closest('section');
+    return !s.parentElement.closest('section') && !s.hasAttribute('data-pantalla-fix');
   });
   if (seccions.length < 2) return;
 
@@ -116,7 +116,7 @@
   /* ── 2 · Les pestanyes i el peu de navegació ─────────────────────────── */
   var css = document.createElement('style');
   css.textContent = [
-    'html.tt-pant-on .tt-pant-fora,html.tt-pant-on .tt-pant-index{display:none!important}',
+    'html.tt-pant-on .tt-pant-fora,html.tt-pant-on .tt-pant-index,html:not(.tt-pant-on) .tt-pant-tabs,html:not(.tt-pant-on) .tt-pant-pag{display:none!important}',
     'html.tt-pant-on{scroll-padding-top:calc(var(--tt-pant-dalt,0px) + 3.2rem)}',
     '.tt-pant-tabs{position:sticky;top:var(--tt-pant-dalt,0px);z-index:90;display:flex;gap:.3rem;overflow-x:auto;',
     '  scrollbar-width:none;padding:.45rem max(.75rem,calc((100% - 1180px)/2));margin:0;',
@@ -138,7 +138,7 @@
     '.tt-pant-pag a:hover{background:var(--panel)}',
     '.tt-pant-pag .tt-pant-seg{margin-left:auto;background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);font-weight:600}',
     '.tt-pant-pag .tt-pant-n{color:var(--muted);white-space:nowrap}',
-    '.tt-pant-pag [hidden]{display:none}',
+    '.tt-pant-pag [hidden],.tt-pant-tabs [hidden]{display:none!important}',
     '@media (pointer:coarse){.tt-pant-tabs a{min-height:40px;display:inline-flex;align-items:center}.tt-pant-pag a{min-height:44px}}',
     '@media print{html.tt-pant-on .tt-pant-fora{display:revert!important}.tt-pant-tabs,.tt-pant-pag{display:none!important}}'
   ].join('\n');
@@ -173,11 +173,21 @@
   /* ── 3 · Mostrar una pantalla ──────────────────────────────────────────── */
   var actual = -1;
   function peu(i) {
-    var a = pantalles[i - 1], s = pantalles[i + 1];
+    var a = veina(i, -1), s = veina(i, 1);
     aAnt.hidden = !a; aSeg.hidden = !s;
     if (a) { aAnt.href = '#' + a.id; aAnt.textContent = '← ' + a.nom; aAnt.title = T.ant; }
     if (s) { aSeg.href = '#' + s.id; aSeg.textContent = s.nom + ' →'; aSeg.title = T.seg; }
-    nPos.textContent = (i + 1) + ' / ' + pantalles.length;
+    var vives = pantalles.filter(function (p) { return !amagada(p); });
+    nPos.textContent = (vives.indexOf(pantalles[i]) + 1) + ' / ' + vives.length;
+  }
+  /* Una secció amb `hidden` (la pàgina encara no la vol ensenyar: un panell,
+     un bloc que depèn de les dades) no té pestanya ni compta a «anterior ·
+     següent». Quan la pàgina li treu el `hidden`, hi torna sola. */
+  function amagada(p) { return !!(p.sec && p.sec.hidden); }
+  function veina(i, d) { for (var k = i + d; pantalles[k]; k += d) if (!amagada(pantalles[k])) return pantalles[k]; return null; }
+  function refaTabs() {
+    pantalles.forEach(function (p) { p.tab.hidden = amagada(p); });
+    if (actual >= 0) peu(actual);
   }
   function mostra(i, desti) {
     if (i !== actual) {
@@ -205,7 +215,7 @@
   }
   function deHash() {
     var id = decodeURIComponent(location.hash.slice(1));
-    if (!id) return mostra(actual < 0 ? 0 : actual);
+    if (!id) return mostra(actual < 0 ? Math.max(0, pantalles.findIndex(function (p) { return !amagada(p); })) : actual);
     var k = pantalles.findIndex ? pantalles.findIndex(function (p) { return p.id === id; }) : -1;
     if (k >= 0) return mostra(k);
     var e = document.getElementById(id);
@@ -219,7 +229,7 @@
   function vesA(e) { orig.call(e, { block: 'start' }); }
   Element.prototype.scrollIntoView = function () {
     var i = onViu(this);
-    if (i >= 0 && i !== actual) mostra(i);
+    if (i >= 0 && i !== actual && !body.hasAttribute('data-pantalla-pausa')) mostra(i);
     return orig.apply(this, arguments);
   };
 
@@ -233,7 +243,21 @@
     if (actual >= 0) peu(actual);
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
-  document.documentElement.classList.add('tt-pant-on');
+  if (window.MutationObserver) pantalles.forEach(function (p) {
+    if (p.sec) new MutationObserver(refaTabs).observe(p.sec, { attributes: true, attributeFilter: ['hidden'] });
+  });
+  pantalles.forEach(function (p) { p.tab.hidden = amagada(p); });
+
+  /* Una pàgina que té un altre recorregut propi (el pas a pas de /cliente/)
+     atura les pantalles posant `data-pantalla-pausa` al body, i hi tornen
+     quan el treu: mai dos recorreguts alhora. */
+  function pausa() {
+    var p = body.hasAttribute('data-pantalla-pausa');
+    document.documentElement.classList.toggle('tt-pant-on', !p);
+    if (!p) { var a = actual; actual = -1; if (location.hash.length > 1) deHash(); if (actual < 0) mostra(a < 0 ? 0 : a); }
+  }
+  if (window.MutationObserver) new MutationObserver(pausa).observe(body, { attributes: true, attributeFilter: ['data-pantalla-pausa'] });
+  if (!body.hasAttribute('data-pantalla-pausa')) document.documentElement.classList.add('tt-pant-on');
   window.addEventListener('hashchange', deHash);
   deHash();
 

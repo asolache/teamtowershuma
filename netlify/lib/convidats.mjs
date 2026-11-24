@@ -81,3 +81,11 @@ export async function topeConvit(qui, reg) {
   return c && c.v === qui.inv ? tope(c.tope) : null;
 }
 
+
+/* Una sessió «amb el correu» d'algú que té enllaç personal no val (24/11/2026):
+   el correu no es comprova i l'enllaç sí. Tanca també les que es van obrir
+   abans d'aquell dia escrivint el correu d'un convidat. */
+export async function vetada(qui, reg) {
+  if (!qui || qui.via !== 'correu' || !qui.mail || !reg) return false;
+  return !!(await llista(reg))[clauDe(qui.mail)];
+}
