@@ -32,7 +32,10 @@ const PILOTS = [
   // Uneix-t'hi: el hero i vuit seccions, noms curts en català.
   { url: 'SOS/uneix-te.html', primer: 'Inici' },
   // La Compra: ja tenia set pestanyes pròpies; ara són les de la peça comuna.
-  { url: 'SOS/compra.html', primer: 'Inici', dins: 'btnTanca' }
+  { url: 'SOS/compra.html', primer: 'Inici', dins: 'btnTanca' },
+  // Els vedes: una llista (178 alçades). Filtre fix a dalt; l'índex i les
+  // vedes llisquen elles. Una veda per l'URL obre la pantalla on viu.
+  { url: 'SOS/vedes.html', primer: 'Inici', min: 4, dins: 'veda-83' }
 ];
 for (const P of PILOTS) {
   for (const [nom, vp] of [['tauleta', { width: 1180, height: 820 }], ['mòbil', { width: 390, height: 844 }]]) {

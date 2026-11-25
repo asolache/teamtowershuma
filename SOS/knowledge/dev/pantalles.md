@@ -52,7 +52,7 @@ Alçada de la pàgina sencera en pantalles, a tauleta apaïsada 1180 × 820:
 | `conecta/` | 19,6 | pantalles d'1 a 3 (flujos i catàleg, llistes que llisquen) | pilot ✓ |
 | `SOS/ia.html` | 8,9 | pantalles d'1 a 2 | pilot ✓ |
 | `SOS/escola.html` | 9,0 | pantalles d'1 a 2,3 | pilot ✓ |
-| `SOS/vedes.html` | 178 | — | cua · és una llista: filtre + llista que llisca |
+| `SOS/vedes.html` | 178 | pantalles d'1 a 1,4: filtre fix a dalt; índex i vedes, llistes que llisquen | guardià ✓ |
 | `SOS/blog.html` | 75 | — | cua · llista d'entrades + lectura d'una |
 | `SOS/formacio.html` | 51 | — | cua (catàleg formatiu, fil «Evolucionar el catálogo») |
 | `SOS/vna.html` | 29 | — | cua |

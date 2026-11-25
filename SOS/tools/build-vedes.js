@@ -234,6 +234,20 @@ details.ctx-i summary{cursor:pointer;font-weight:600}
    del lloc (\`build-nav.js\`) i això és una nota del contingut, just a sobre. */
 .font{border-top:1px solid var(--border);margin-top:3rem;padding:1.6rem 1.2rem 0;color:var(--muted);font-size:var(--t0)}
 .font a{color:var(--light)}
+/* Pantalles, no rotlles (pantalles.md, 13/11/2026): 178 vedes eren 178
+   alçades de pàgina. Ara el filtre queda a dalt a totes les pantalles i
+   l'índex i les vedes són llistes que llisquen elles, no la pàgina. Tot penja
+   de html.tt-pant-on: sense JS, o en imprimir, la pàgina és la de sempre. */
+html.tt-pant-on .tools{position:static;margin-bottom:.8rem}
+html.tt-pant-on .llisca{max-height:max(18rem,calc(100dvh - 15rem));overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-gutter:stable;padding:0 .4rem 0 .1rem;border:1px solid var(--border);border-radius:12px}
+html.tt-pant-on .llisca:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+html.tt-pant-on nav.idx{margin:0}
+html.tt-pant-on nav.idx h2{margin:.6rem .3rem .6rem}
+html.tt-pant-on #regles article.veda{padding-left:.8rem;padding-right:.4rem;scroll-margin-top:0}
+html.tt-pant-on .ctx{border-top:0;margin-top:0;padding-top:1rem}
+html.tt-pant-on header.top{padding-top:1.6rem}
+@media print{.llisca{max-height:none!important;overflow:visible!important;border:0!important}}
 @media print{.tools,nav.idx,.skip{display:none}article.veda{page-break-inside:avoid}body{background:#fff;color:#000}}
 `;
 
@@ -242,7 +256,7 @@ const JS = `
   var q=document.getElementById('q'),cnt=document.getElementById('count');
   var arts=[].slice.call(document.querySelectorAll('article.veda'));
   var chips=[].slice.call(document.querySelectorAll('nav.idx li'));
-  var empty=document.getElementById('empty');
+  var empties=[].slice.call(document.querySelectorAll('.empty'));
   var norm=function(s){return s.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');};
   arts.forEach(function(a){a.dataset.hay=norm(a.textContent);});
   function run(){
@@ -253,13 +267,22 @@ const JS = `
       if(chips[i])chips[i].classList.toggle('hidden',!hit);
       if(hit)n++;
     });
-    empty.classList.toggle('hidden',n>0);
+    empties.forEach(function(e){e.classList.toggle('hidden',n>0);});
     cnt.textContent=n+' de '+arts.length;
   }
-  q.addEventListener('input',run);
+  q.addEventListener('input',function(){
+    run();
+    /* Qui filtra des de l'inici vol veure la llista: s'obre l'índex. */
+    var P=window.TTPantalla;
+    if(P&&P.actual()===0)P.mostra(1);
+  });
   /* El filtre viu a l'URL: així una cerca es pot enviar tal com es veu. */
   var m=location.search.match(/[?&]q=([^&]*)/);
   if(m){q.value=decodeURIComponent(m[1].replace(/\\+/g,' '));}
+  /* I una cerca enviada s'obre a la llista, no a l'inici. */
+  if(m)document.addEventListener('DOMContentLoaded',function(){
+    var P=window.TTPantalla;if(P&&P.actual()===0&&!location.hash)P.mostra(1);
+  });
   run();
 })();
 `;
@@ -306,8 +329,8 @@ function build() {
      La guarda del CI comprova que els dos no divergeixin. -->
 <style>${CSS}</style>
 </head>
-<body>
-<a class="skip" href="#vedes">Salta a les vedes</a>
+<body data-pantalla>
+<a class="skip" href="#llista">Salta a les vedes</a>
 <header class="top"><div class="wrap">
   <p class="kicker">SOS · Sistema Operatiu Social</p>
   <h1>Els vedes</h1>
@@ -315,7 +338,7 @@ function build() {
   <p class="meta">${vedes.length} vedes · generades des del <a href="${FONT}">codex</a>, que és l'original. Cada veda té enllaç permanent: <code>/vedes#veda-83</code>.</p>
 </div></header>
 
-<div class="tools"><div class="wrap">
+<div class="tools" data-pantalla-fix><div class="wrap">
   <label class="skip" for="q">Filtra les vedes</label>
   <input id="q" type="search" placeholder="Filtra per número, títol o contingut…" autocomplete="off">
   <span id="count" aria-live="polite"></span>
@@ -323,11 +346,19 @@ function build() {
 
 <main class="wrap" id="vedes">
   <div class="pre">${pre}</div>
-  <nav class="idx" aria-label="Índex de vedes"><h2>Totes les regles, en una llista</h2><ol>${idx}</ol></nav>
-  ${arts}
-  <p class="empty hidden" id="empty">Cap veda amb aquest text. Prova amb una paraula més curta.</p>
+  <section id="llista" data-pantalla-nom="Índex">
+    <nav class="idx llisca" tabindex="0" aria-label="Índex de vedes"><h2>Totes les regles, en una llista</h2><ol>${idx}</ol>
+    <p class="empty hidden" id="empty">Cap veda amb aquest text. Prova amb una paraula més curta.</p></nav>
+  </section>
 
-  <section class="ctx">
+  <section id="regles" data-pantalla-nom="Les vedes">
+    <div class="llisca" tabindex="0" role="region" aria-label="Les vedes, una darrere l'altra">
+    ${arts}
+    <p class="empty hidden">Cap veda amb aquest text. Prova amb una paraula més curta.</p>
+    </div>
+  </section>
+
+  <section class="ctx" id="context" data-pantalla-nom="Context">
     <h2>Context: el que no és una veda però la sosté</h2>
     ${ctx}
   </section>
@@ -338,6 +369,7 @@ function build() {
 </div>
 <!--TT-PEU-->
 <!--/TT-PEU-->
+<script src="lib/pantalla.js" defer></script>
 <script>${JS}</script>
 </body>
 </html>
