@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 636 · 26677 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 637 · 26681 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 188 KB |
@@ -38,8 +38,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 46 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 156 · 1922 KB |
+| `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 47 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 157 · 1925 KB |
 | `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 84 · 1727 KB |
 
 ## saber
@@ -48,9 +48,9 @@ El que sabem i encara no és obra. Es cita, no es copia.
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 239 · 4708 KB |
+| `SOS/knowledge/` | El que sabem: llei, referents, visió, negoci i aquest mapa | 239 · 4709 KB |
 | `SOS/knowledge/cervell/` | El cervell reutilitzable: el model, la plantilla per a un projecte nou i com s'hi instal·la | 19 · 77 KB |
-| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 14 · 1363 KB |
+| `SOS/knowledge/dev/` | El backlog i la guia d'estil per a qui hi escriu | 14 · 1364 KB |
 | `SOS/knowledge/for-ai/` | El contracte de treball per a una IA que hi contribueix | 2 · 18 KB |
 | `SOS/knowledge/formacio/` | La formació: la pràctica a la comunitat de cada mòdul, l'evidència i el que en revisa la IA tutora (build-certificacio.js) | 2 · 50 KB |
 | `SOS/knowledge/legal/` | Protecció de dades: els tractaments, el registre d'activitats que en surt i la plantilla d'encàrrec amb cada client (rgpd.js) | 3 · 20 KB |
