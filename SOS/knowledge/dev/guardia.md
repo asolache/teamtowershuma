@@ -88,7 +88,7 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
    - [ ] `test-rols`, `test-ux-flux` · són de l'app `SOS/index.html` (fil «Revisión UX de SOS»)
    - [ ] `test-cliente` · és de `cliente/` (fil del kanban)
    - Nota: les peces 1–8 es van saltar el 15/11 perquè #376/#378 toquen aquells fitxers.
-10. [x] Enllaços morts del lloc i del SOS: `test-enllacos.mjs` (a la CI) rastreja els `href` de 91 pàgines contra fitxers i `_redirects`; els tres morts de `/ia` i `/finances.html` van on viu ara allò (#PR)
+10. [x] Enllaços morts del lloc i del SOS: `test-enllacos.mjs` (a la CI) rastreja els `href` de 91 pàgines contra fitxers i `_redirects`; els tres morts de `/ia` i `/finances.html` van on viu ara allò (#432)
    - 25/11/2026 (dimecres, cua D): el lot 2 d'oficis espera el #424 (mateixos fitxers); A6 i A8 esperen el #430 (`blog.html`, `build-nav.js`); de B9, `test-cost`/`test-endreca` són de la portada (#430), `test-mapavalor`/`test-vna-llenc` de `vna.html` (#430) i `test-ia` de `formacio.html`.
 11. [ ] Textos sense traduir: bloc de la pinya de `vna.html` (19 cadenes), bloc de l'embut del blog
 
