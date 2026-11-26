@@ -1,3 +1,12 @@
+---
+tipo: aprendizaje
+de: huma
+rol: [comunicación, marketing]
+fase: sostiene
+visible: privada
+estado: esborrany
+etiquetas: [xarxes, molekulon]
+---
 # Marketing SOS · social posts (base)
 
 Font original de la trilogia Shiva/Shakti/Molekulon amb ancoratge seny/rauxa/castells. **Reutilitzable per a LinkedIn, Instagram, dark-social i com a base per articles de blog**. Manté el codex V16 (llenguatge dual) coherent a tots els canals.

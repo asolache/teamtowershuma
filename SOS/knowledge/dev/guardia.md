@@ -122,7 +122,7 @@ per setmana, la volta sencera en sis setmanes)
   els que hi falten, els enllaços morts i el que el VNA hi diu (els rols i
   intangibles de la base que toquen l'àrea). Un PR petit o, si no cal res, una
   línia aquí.
-- [x] direcció i estratègia (#417) · [ ] comunicació · [ ] màrqueting · [ ] vendes ·
+- [x] direcció i estratègia (#417) · [x] comunicació (#PR) · [ ] màrqueting · [ ] vendes ·
   [ ] finances · [ ] logística · [ ] producció · [ ] operacions · [ ] persones ·
   [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
 - Torn de **direcció i estratègia** (22/11/2026, #417):
@@ -141,6 +141,25 @@ per setmana, la volta sencera en sis setmanes)
     privat. Els quatre de `negoci/` amb euros entren al cervell com a `privada` (#419)
     i el mateix dia passen al repositori privat `Teamtowers-estrategia/negocio-huma/`;
     més endavant, una auditoria del cervell (organització i estructura).
+
+- Torn de **comunicació** (26/11/2026, #PR):
+  - Documents: 9 del tronc comú porten el rol (guia d'estil de la IA, noms
+    oficials, portades, guia i flux de valor, els dos de Molekulon i els
+    sectors acollida, cultura i joventut). Hi faltaven els dos de
+    `knowledge/marketing/`, sense capçalera: ara entren al cervell amb
+    comunicació i màrqueting. La guia d'estil de marca, pública i vigent;
+    `social-posts.md`, privada i esborrany perquè el sedàs atura «pilot» a la
+    crida final. `vision/comando-peli.md` també parla del relat però el genera
+    `build-comando.js`: la capçalera s'hi ha de posar al generador (peça a part).
+    Cap enllaç relatiu mort als onze; `cervell.js --check` en verd.
+  - VNA (`MapaValor.arees` sobre les 35 peces de `base.json` amb intercanvis):
+    9 cobreixen l'àrea (sobretot per «relat», «difusió»), 26 no. Hi falten 5
+    dels 7 models (`negoci` inclòs), 11 de 14 sectors i 10 de 14 oficis
+    (restaurant, botiga, esdeveniments, escola d'idiomes…). Acollida i
+    joventut diuen comunicació a la capçalera i el seu mapa no té cap rol ni
+    intercanvi que ho digui. Per a la cua D: a cada ofici, qui explica el
+    negoci fora (xarxes, ressenyes, premsa local) amb el que dona i rep, o
+    `arees.communication: "no-aplica"` si de debò no n'hi ha.
 
 ## Esperen l'Álvaro (el guardià no les toca)
 

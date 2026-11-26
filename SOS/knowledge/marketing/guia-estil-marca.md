@@ -1,3 +1,12 @@
+---
+tipo: proceso
+de: huma
+rol: [comunicación, marketing]
+fase: sostiene
+visible: pública
+estado: vigente
+etiquetas: [marca, guia]
+---
 # Guia d'estil · TeamTowers i TeamTowers Humà
 
 > Com escrivim i com es veu. No és decoració: és el que fa que dues pàgines
