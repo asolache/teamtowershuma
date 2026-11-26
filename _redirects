@@ -150,10 +150,17 @@
 /valor.html /SOS/vna.html    301
 /mapas /SOS/vna.html    301
 /mapas.html /SOS/vna.html    301
+/mapa /SOS/vna.html    301
+/mapa.html /SOS/vna.html    301
 /app /SOS/vna.html    301
 /app.html /SOS/vna.html    301
 /comptabilitat /SOS/    301
 /comptabilitat.html /SOS/    301
+# /ia i /finances.html encara enllacen aquestes dues (25/11/2026, test-enllacos)
+/app_comptabilitat /SOS/    301
+/app_comptabilitat.html /SOS/    301
+/lacolla-accounting /SOS/    301
+/lacolla-accounting.html /SOS/    301
 /comptabilitat_de_valor /SOS/formacio.html    301
 /comptabilitat_de_valor.html /SOS/formacio.html    301
 /coops /#cataleg    301
