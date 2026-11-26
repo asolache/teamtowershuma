@@ -122,7 +122,7 @@ per setmana, la volta sencera en sis setmanes)
   els que hi falten, els enllaços morts i el que el VNA hi diu (els rols i
   intangibles de la base que toquen l'àrea). Un PR petit o, si no cal res, una
   línia aquí.
-- [x] direcció i estratègia (#417) · [x] comunicació (#PR) · [ ] màrqueting · [ ] vendes ·
+- [x] direcció i estratègia (#417) · [x] comunicació (#433) · [ ] màrqueting · [ ] vendes ·
   [ ] finances · [ ] logística · [ ] producció · [ ] operacions · [ ] persones ·
   [ ] xarxa i aliances · [ ] sistemes i dades · [ ] legal i compliment
 - Torn de **direcció i estratègia** (22/11/2026, #417):
@@ -142,7 +142,7 @@ per setmana, la volta sencera en sis setmanes)
     i el mateix dia passen al repositori privat `Teamtowers-estrategia/negocio-huma/`;
     més endavant, una auditoria del cervell (organització i estructura).
 
-- Torn de **comunicació** (26/11/2026, #PR):
+- Torn de **comunicació** (26/11/2026, #433):
   - Documents: 9 del tronc comú porten el rol (guia d'estil de la IA, noms
     oficials, portades, guia i flux de valor, els dos de Molekulon i els
     sectors acollida, cultura i joventut). Hi faltaven els dos de
