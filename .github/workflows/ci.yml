@@ -102,6 +102,10 @@ jobs:
       - name: La web vella, replicada i sense adreces perdudes
         run: node SOS/tests/test-web-vella.mjs
 
+      # Cap enllaç intern mort: cada href porta a un fitxer o a una regla de _redirects.
+      - name: Enllaços interns sense morts
+        run: node SOS/tests/test-enllacos.mjs
+
       # El nucli que carreguen l'app i l'editor: les deu regles i el pont entre
       # el mapa de l'app (per id) i la forma canònica (per nom).
       - name: Nucli del mapa de valor
