@@ -17,6 +17,7 @@ import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
+import { existsSync } from 'node:fs';
 
 const DIR = dirname(fileURLToPath(import.meta.url));
 const ARREL = join(DIR, '..', '..');
@@ -51,12 +52,13 @@ const llegeix = async (p, w = 1280) => {
       .map(e => Math.round(parseFloat(getComputedStyle(e).fontSize) * 10) / 10);
     return {
       barres: document.querySelectorAll('nav.tt-nav').length,
-      marca: n.querySelector('.tn-brand') && n.querySelector('.tn-brand').textContent.trim(),
+      /* Al lloc la marca és el logo (24/11/2026): es llegeix el text alternatiu. */
+      marca: n.querySelector('.tn-brand') && ((n.querySelector('.tn-brand img') || {}).alt || n.querySelector('.tn-brand').textContent.trim()),
       cta: n.querySelector('.tn-cta') && n.querySelector('.tn-cta').getAttribute('href'),
       llengua: !!n.querySelector('.tn-lang'),
       posicio: cs.position, mides,
       /* Cap color per resoldre: un token que la pàgina no declari surt buit. */
-      colorMarca: getComputedStyle(n.querySelector('.tn-brand span')).color,
+      colorMarca: n.querySelector('.tn-brand img') ? n.querySelector('.tn-brand img').getAttribute('src') : getComputedStyle(n.querySelector('.tn-brand span')).color,
       portes
     };
   });
@@ -98,7 +100,11 @@ console.log('\n2 · El color no depèn de la pàgina');
   ok(!bu(A.d.colorMarca) && !bu(V.d.colorMarca),
     `la marca té color a les dues (${V.d.colorMarca})`);
   ok(A.d.colorMarca === V.d.colorMarca, 'i és el mateix color: un sol joc de tokens');
-  ok(A.d.colorMarca === M.d.colorMarca, 'i també a la barra del SOS');
+  /* Des del 24/11/2026 la barra del lloc porta el logo (un fitxer de /marca/)
+     i la del SOS, la marca en text: el que s'hi mira és que cadascuna en tingui. */
+  ok(/^\/marca\/.+\.svg$/.test(A.d.colorMarca) && existsSync(join(ARREL, A.d.colorMarca)),
+    `el logo del lloc és un fitxer que existeix (${A.d.colorMarca})`);
+  ok(!bu(M.d.colorMarca), `i la barra del SOS té la marca amb color (${M.d.colorMarca})`);
 }
 
 /* ── 2b · TOT EL SOS A DINS DEL SOS (10/10/2026) ──────────────────────────

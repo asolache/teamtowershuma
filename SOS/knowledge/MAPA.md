@@ -13,7 +13,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 
 | carpeta | què hi entra | fitxers |
 |---|---|---|
-| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 641 · 26909 KB |
+| `SOS/` | L'aplicació i tot el que se serveix: una pàgina per cosa, autocontingudes | 641 · 26914 KB |
 | `SOS/atles/` | Dades geogràfiques i institucionals del territori | 5 · 15 KB |
 | `SOS/canal/` | Paquets de canal per tema, xifrats | 2 · 2 KB |
 | `SOS/cervell/` | El motor del cervell de cadascú: el lector del codex, les forces, el 3D per koshas, la vista, l'explorador d'una pàgina sencera i l'exportació (IA, HTML i SCORM). El fan servir `cervell.html` i les webs filles | 11 · 188 KB |
@@ -28,6 +28,7 @@ La cosa mateixa: el que fa servir la gent. Una sola font de veritat per cada cos
 | `cliente/` | Espai de client: el compte, el primer diagnòstic, qui hi ha al voltant i el boceto de la web, en esborrany | 2 · 347 KB |
 | `conecta/` | Prototip de serveis connectables: la pila per rol, el catàleg de serveis i el cost real de l'IA, en esborrany | 1 · 87 KB |
 | `mapa-web/` | Servei «mapa de valor i web en una hora»: la pàgina pública, en esborrany | 2 · 178 KB |
+| `marca/` | El logo de TeamTowers Humà: el de teamtowers.eu amb «Humà» a sota, en quatre talls (sencer, barra, mòbil i segell) i el perquè de la lletra | 5 · 138 KB |
 | `netlify/` | Funcions del web públic: el formulari que entra al CRM (submission-created), el pagament (checkout), l'espai de cada agència (espai-partner) i la IA de /cliente/ amb qui la fa servir (pule-mapa, identitat) el preu de cada client, només per a ell (proposta), i el seu dibuix, guardat amb el seu compte (fitxa), i la seva web d'ara, llegida amb el seu sí (llegeix-web), i el router que tria quin model de Claude fa cada tasca i compta el que gasta cada projecte (ia-router), i els proveïdors del banc de proves de la IA (ia-proveidors) | 22 · 159 KB |
 | `referencias/` | Les referències dels clients sobre l'Àlvaro: escriure-la amb l'enllaç signat que ell envia i llegir-la (una o totes) només si qui la signa ho ha permès | 1 · 15 KB |
 | `visita/` | On porten els botons de la pàgina que rep el lead: el formulari per reservar la visita o dir que el mapa no és així | 1 · 6 KB |
@@ -39,8 +40,8 @@ El que comprova que l'obra compleix la llei. Ha de petar quan toca, i només lla
 | carpeta | què hi entra | fitxers |
 |---|---|---|
 | `.github/` | El CI: quines guardes corren i en quin ordre | 5 · 47 KB |
-| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 158 · 1929 KB |
-| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 84 · 1727 KB |
+| `SOS/tests/` | Playwright contra les pàgines de debò, per `file://` | 158 · 1930 KB |
+| `SOS/tools/` | Les guardes que peten al CI quan una promesa deixa de ser certa | 84 · 1728 KB |
 
 ## saber
 
@@ -155,4 +156,4 @@ Els documents estratègics, amb el tronc comú de `taxonomia-universal.json` i l
 
 ---
 
-*46 carpetes declarades · generat des de l'arbre, no escrit.*
+*47 carpetes declarades · generat des de l'arbre, no escrit.*
