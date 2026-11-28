@@ -94,6 +94,8 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
 
 **C · Accessibilitat i pes**
 12. [ ] Camps sense nom i botons sense text accessible a les pàgines del SOS
+   - [x] Passada del 27/11/2026 (divendres; la cua D espera el #424): de les pàgines `SOS/*.html` sense PR obert, només `compra.html` en tenia, 112 camps; ara porten `aria-label` amb el producte i la unitat, i `test-compra.mjs` ho exigeix (#436)
+   - [ ] Falten les del #430 (`vna.html`, `blog.html`, els tres diagnòstics, `pressupost.html`, `vna-suport.html`) i l'app `SOS/index.html`: tornar-hi quan es mergegin
 13. [ ] Zones tàctils de menys de 44 px a mòbil a les pàgines amb `data-pantalla`
 14. [ ] Pes: cap pàgina per sobre del seu sostre gzip (portada 67 KB, app 550 KB); avisar si s'hi acosta
 

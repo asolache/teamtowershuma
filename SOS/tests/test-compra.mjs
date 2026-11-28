@@ -637,6 +637,26 @@ console.log('\n13 · A la pantalla: es tanca, es desa i no es diu mai que ningú
   await ctx.close();
 }
 
+console.log('\n14 · Cada camp diu què és, també a qui no hi veu');
+{
+  const { ctx, p, errs } = await nova();
+  const r = await p.evaluate(() => {
+    const nom = el => (el.getAttribute('aria-label') || '').trim() ||
+      (el.id && document.querySelector('label[for="' + CSS.escape(el.id) + '"]')?.textContent.trim()) ||
+      el.closest('label')?.textContent.trim() || (el.title || '').trim();
+    const camps = [...document.querySelectorAll('input,select,textarea')]
+      .filter(el => !['hidden', 'submit', 'button', 'reset', 'image'].includes(el.type));
+    const sense = camps.filter(el => !nom(el)).map(el => el.outerHTML.slice(0, 80));
+    const q = document.querySelector('input[data-q]');
+    return { n: camps.length, sense, q: q && q.getAttribute('aria-label') };
+  });
+  ok(r.n > 100 && r.sense.length === 0,
+    `els ${r.n} camps tenen nom accessible` + (r.sense.length ? ': falta a ' + r.sense.length + ', p. ex. ' + r.sense[0] : ''));
+  ok(/^Quantitat de .+ per setmana, en /.test(r.q || ''), `la quantitat diu de quin producte és: «${r.q}»`);
+  ok(errs.length === 0, 'sense errors de pàgina' + (errs.length ? ': ' + errs[0] : ''));
+  await ctx.close();
+}
+
 await b.close();
 console.log('\n' + (fail ? '❌ ' + fail + ' fallen de ' + (pass + fail) : '✅ ' + pass + ' assercions, totes verdes'));
 process.exit(fail ? 1 : 0);
