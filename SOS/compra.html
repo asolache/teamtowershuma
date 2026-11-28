@@ -1427,7 +1427,7 @@ function pintaMapa(){
           '<td>'+(q.app
             ? '<span class="xip si">d\'aquesta pàgina</span> '+esc(q.txt)
             : '<input data-rol="'+esc(r.rol)+'" data-din="'+d.id+'" value="'+esc(q.txt)+
-              '" placeholder="qui ho fa al vostre grup" style="width:100%;max-width:220px">')+'</td>'+
+              '" aria-label="Qui fa de '+esc(r.rol)+' al vostre grup" placeholder="qui ho fa al vostre grup" style="width:100%;max-width:220px">')+'</td>'+
           '<td class="n">'+r.dona.length+' <span class="mut">('+r.donaT+' T)</span></td>'+
           '<td class="n">'+r.rep.length+' <span class="mut">('+r.repT+' T)</span></td>'+
           '<td class="mut">'+(r.exposat
@@ -1496,7 +1496,7 @@ function pintaCistella(){
         '<td class="mut">'+esc(FONTS[p.font].lbl)+'<br>format de '+p.format+' '+esc(p.unit)+'</td>'+
         '<td class="n">'+num(preuBotiga(p.id))+'</td>'+
         '<td class="n">'+num(preuGrup(p.id))+'</td>'+
-        '<td class="n"><input type="number" min="0" step="0.01" data-q="'+p.id+'" value="'+q+'"> '+
+        '<td class="n"><input type="number" min="0" step="0.01" data-q="'+p.id+'" value="'+q+'" aria-label="Quantitat de '+esc(p.nom)+' per setmana, en '+esc(p.unit)+'"> '+
           '<span class="mut">'+esc(p.unit)+'</span></td>'+
         '<td class="n">'+num(e)+'</td></tr>';
     });
@@ -1508,8 +1508,8 @@ function pintaCistella(){
   PRODUCTES.forEach(p=>{
     const b=preuBotiga(p.id),g=preuGrup(p.id);
     hp+='<tr><td>'+p.ic+' '+esc(p.nom)+' <span class="mut">/'+esc(p.unit)+'</span></td>'+
-      '<td class="n"><input type="number" min="0" step="0.05" data-pb="'+p.id+'" value="'+b+'"></td>'+
-      '<td class="n"><input type="number" min="0" step="0.05" data-pg="'+p.id+'" value="'+g+'"></td>'+
+      '<td class="n"><input type="number" min="0" step="0.05" data-pb="'+p.id+'" value="'+b+'" aria-label="Preu a la botiga de '+esc(p.nom)+', € per '+esc(p.unit)+'"></td>'+
+      '<td class="n"><input type="number" min="0" step="0.05" data-pg="'+p.id+'" value="'+g+'" aria-label="Preu del grup de '+esc(p.nom)+', € per '+esc(p.unit)+'"></td>'+
       '<td class="n" style="color:'+(b>g?'var(--green)':'var(--red)')+'">'+
         pc((b-g)*100/b)+'%</td>'+
       '<td class="mut">'+esc(FONTS[p.font].diu)+'</td></tr>';
