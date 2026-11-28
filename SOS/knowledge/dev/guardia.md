@@ -95,7 +95,7 @@ La nit tria la cua (taula «Quina cola li toca cada nit»); dins de cada cua, de
 **C · Accessibilitat i pes**
 12. [ ] Camps sense nom i botons sense text accessible a les pàgines del SOS
 13. [ ] Zones tàctils de menys de 44 px a mòbil a les pàgines amb `data-pantalla`
-   - [x] Passada del 28/11/2026 (dissabte; la jutgessa no té res a jutjar: el lot 1 encara és al #424): a les 13 pàgines amb `data-pantalla` (menys `cliente/`), les pestanyes de `pantalla.js` feien 40 px d'alt i la creu de l'avís del mòdul (`modul-pantalla.js`) 14 × 16; ara, al dit, 44 × 44. `test-tactil.mjs` ho mesura a l'iPhone 13 (#PR)
+   - [x] Passada del 28/11/2026 (dissabte; la jutgessa no té res a jutjar: el lot 1 encara és al #424): a les 13 pàgines amb `data-pantalla` (menys `cliente/`), les pestanyes de `pantalla.js` feien 40 px d'alt i la creu de l'avís del mòdul (`modul-pantalla.js`) 14 × 16; ara, al dit, 44 × 44. `test-tactil.mjs` ho mesura a l'iPhone 13 (#437)
    - [ ] Falta la barra de navegació (marca, «casa», menú, «Entra», CTA i el CA/ES de `visio.html`: de 23 a 37 px d'alt). És de `build-nav.js`, que toca el #430: tornar-hi quan es mergegi
 14. [ ] Pes: cap pàgina per sobre del seu sostre gzip (portada 67 KB, app 550 KB); avisar si s'hi acosta
 
