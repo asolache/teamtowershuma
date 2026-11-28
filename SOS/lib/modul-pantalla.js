@@ -104,6 +104,8 @@
       '.tt-mp>span:not([aria-hidden]){min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.tt-mp a{color:var(--text,#222);text-decoration:none}.tt-mp a:hover,.tt-mp a:focus-visible{text-decoration:underline}',
       '.tt-mp .tt-mp-x{flex:none;border:0;background:none;color:var(--muted,#777);cursor:pointer;font-size:1rem;line-height:1;padding:0 .15rem}',
+      // Al dit, la creu fa 44 × 44 (guardia.md, C13): el marge negatiu es menja el farciment de la barra.
+      '@media (pointer:coarse){.tt-mp .tt-mp-x{min-width:44px;min-height:44px;margin:-.35rem -.55rem -.35rem 0}}',
       '@media print{.tt-mp{display:none}}'
     ].join('\n');
     document.head.appendChild(s);
