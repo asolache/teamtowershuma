@@ -139,7 +139,7 @@
     '.tt-pant-pag .tt-pant-seg{margin-left:auto;background:var(--indigo);border-color:var(--indigo);color:var(--on-accent);font-weight:600}',
     '.tt-pant-pag .tt-pant-n{color:var(--muted);white-space:nowrap}',
     '.tt-pant-pag [hidden],.tt-pant-tabs [hidden]{display:none!important}',
-    '@media (pointer:coarse){.tt-pant-tabs a{min-height:40px;display:inline-flex;align-items:center}.tt-pant-pag a{min-height:44px}}',
+    '@media (pointer:coarse){.tt-pant-tabs a{min-height:44px;display:inline-flex;align-items:center}.tt-pant-pag a{min-height:44px}}',
     '@media print{html.tt-pant-on .tt-pant-fora{display:revert!important}.tt-pant-tabs,.tt-pant-pag{display:none!important}}'
   ].join('\n');
   document.head.appendChild(css);
